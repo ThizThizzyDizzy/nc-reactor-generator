@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import javax.swing.JTextArea;
-import simplelibraryextended.JSON;
-import simplelibraryextended.JSON.JSONObject;
-import simplelibraryextended.JSON.JSONArray;
+import common.JSON;
+import common.JSON.JSONObject;
+import common.JSON.JSONArray;
 public abstract class Reactor{
     //The export format is based on this version of hellrage's reactor planner: (Saved in the json file)
     public static final int MAJOR_VERSION = 2;

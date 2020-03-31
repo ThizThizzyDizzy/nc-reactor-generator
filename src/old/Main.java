@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import simplelibrary.numbers.HugeLong;
 
 /**
  *
@@ -880,13 +879,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JCheckBox toggleTin;
     private javax.swing.JCheckBox toggleWater;
     // End of variables declaration//GEN-END:variables
-    private HugeLong fact(int val) {
-        HugeLong fact = HugeLong.parse(1);
-        for(int i = 2; i<=val; i++){
-            fact = HugeLong.multiply(fact, HugeLong.parse(i));
-        }
-        return fact;
-    }
     private ArrayList<ReactorParts> getAvailableParts(ArrayList<ReactorParts> list) {
         if(toggleCells.isSelected())list.add(ReactorParts.CELL);
         if(toggleModerators.isSelected())list.add(ReactorParts.MODERATOR);
