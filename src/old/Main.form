@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.JButton" name="buttonStart1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Start One"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Starts or stops generating reactors&lt;br&gt;&#xa;This will only create one instance. This will go much faster, but may get stuck on a bad design&#xa;This mode is for creating a quick, fairly good reactor.&#xa;&lt;/html&gt;"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonStart1ActionPerformed"/>
+      </Events>
+    </Component>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="title" type="java.lang.String" value="OLD Pre-overhaul reactor generator"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
+  </Events>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="toggleCells" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleModerators" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleWater" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleRedstone" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelCoolers" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
+                  <Component id="toggleQuartz" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleGold" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleGlowstone" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleLapis" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleDiamond" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleHelium" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleEnderium" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleCryotheum" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleIron" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleEmerald" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleCopper" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleTin" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleMagnesium" min="-2" max="-2" attributes="0"/>
+                  <Component id="toggleAir" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="jScrollPane1" pref="288" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" pref="288" max="32767" attributes="0"/>
+                  </Group>
+                  <Component id="buttonStart2" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="boxFuel" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="labelThreads" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="spinnerThreads" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="sizeX" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                      <Component id="sizeY" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                      <Component id="sizeZ" max="32767" attributes="0"/>
+                  </Group>
+                  <Component id="labelStatus" max="32767" attributes="0"/>
+                  <Component id="labelSize" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="jPanel1" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                      <Component id="jPanel2" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="checkboxDrawReactors" alignment="0" pref="133" max="32767" attributes="0"/>
+                          <Component id="labelPriority1" alignment="0" max="32767" attributes="0"/>
+                          <Component id="labelPriority2" alignment="0" max="32767" attributes="0"/>
+                          <Component id="labelPriority3" alignment="0" max="32767" attributes="0"/>
+                          <Component id="labelChangeChance" alignment="0" max="32767" attributes="0"/>
+                          <Component id="spinnerChangeChance" alignment="0" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="spinnerMergeTime" max="32767" attributes="0"/>
+                          <Component id="boxPriority1" max="32767" attributes="0"/>
+                          <Component id="boxPriority2" alignment="0" max="32767" attributes="0"/>
+                          <Component id="boxPriority3" alignment="0" max="32767" attributes="0"/>
+                          <Component id="labelMergeTime" alignment="0" pref="121" max="32767" attributes="0"/>
+                          <Component id="buttonImport" alignment="0" pref="121" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Component id="jButton1" alignment="0" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="labelStatus" min="-2" pref="20" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="spinnerThreads" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelThreads" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="boxFuel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="labelSize" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sizeX" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sizeY" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sizeZ" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="labelMergeTime" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelChangeChance" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="spinnerMergeTime" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="spinnerChangeChance" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="labelPriority1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="boxPriority1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="labelPriority2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="boxPriority2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="boxPriority3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelPriority3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="checkboxDrawReactors" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="buttonImport" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jPanel2" max="32767" attributes="0"/>
+                          <Component id="jPanel1" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="toggleCells" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleModerators" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="buttonStart2" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="labelCoolers" min="-2" pref="14" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleWater" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleRedstone" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleQuartz" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleGold" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleGlowstone" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleLapis" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleDiamond" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleHelium" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleEnderium" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleCryotheum" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleIron" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleEmerald" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleCopper" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleTin" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="toggleMagnesium" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="toggleAir" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="jScrollPane1" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JCheckBox" name="toggleCells">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Cells (C)"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Toggles fuel cells in generated reactors&lt;br&gt;Cannot be disabled, as reactors without cells generate no power&lt;/html&gt;"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleModerators">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Moderators (M)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles moderators (such as graphite or beryllium) in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleWater">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Water (W)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles water coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelCoolers">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Coolers"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleRedstone">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Redstone (R)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles redstone coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleQuartz">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Quartz (Q)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles quartz coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleGold">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Gold (O)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles gold coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleGlowstone">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Glowstone (G)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles glowstone coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleLapis">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Lapis (L)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles lapis coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleDiamond">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Diamond (D)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles diamond coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleHelium">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Liquid Helium (H)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles liquid helium coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleEnderium">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Enderium (E)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles enderium coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleCryotheum">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Cryotheum (Y)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles cryotheum coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleIron">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Iron (I)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles iron coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleEmerald">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Emerald (V)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles emerald coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleCopper">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Copper (P)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles copper coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleTin">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Tin (T)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles tin coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="toggleMagnesium">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Magnesium (N)"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles magnesium coolers in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="sizeX">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="3" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="sizeY">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="3" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="sizeZ">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="3" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="textAreaOutput">
+          <Properties>
+            <Property name="columns" type="int" value="32"/>
+            <Property name="rows" type="int" value="5"/>
+            <Property name="toolTipText" type="java.lang.String" value=""/>
+          </Properties>
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="textAreaOutputKeyTyped"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JCheckBox" name="toggleAir">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Empty Space ( )"/>
+        <Property name="toolTipText" type="java.lang.String" value="Toggles empty space in generated reactors"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="boxFuel">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="Fuel.getComboBoxModel()" type="code"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Choose what fuel reactors will be designed for"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="spinnerThreads">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="1" maximum="16" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="WARNING: Using many threads may melt your computer."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelThreads">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Threads:"/>
+        <Property name="toolTipText" type="java.lang.String" value="WARNING: Using many threads may melt your computer."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="buttonStart2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Start"/>
+        <Property name="toolTipText" type="java.lang.String" value="Starts or stops generating reactors"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonStart2ActionPerformed"/>
+      </Events>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="textAreaOutput2">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="columns" type="int" value="32"/>
+            <Property name="rows" type="int" value="5"/>
+            <Property name="toolTipText" type="java.lang.String" value=""/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="labelStatus">
+    </Component>
+    <Component class="javax.swing.JSpinner" name="spinnerMergeTime">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="2" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="If no better reactors are found for this amount of time (in seconds), the worse reactor will be discarded, and a new one will be started"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelPriority1">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="11"/>
+        <Property name="text" type="java.lang.String" value="First Priority"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="boxPriority1">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="Priority.getComboBoxModel()" type="code"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="boxPriority1ItemStateChanged"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelPriority2">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="11"/>
+        <Property name="text" type="java.lang.String" value="Second Priority"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="boxPriority2">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="Priority.getComboBoxModel()" type="code"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="boxPriority2ItemStateChanged"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="boxPriority3">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="Priority.getComboBoxModel()" type="code"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="boxPriority3ItemStateChanged"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelPriority3">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="11"/>
+        <Property name="text" type="java.lang.String" value="Third Priority"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelMergeTime">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="Merge Timeout (sec)"/>
+        <Property name="toolTipText" type="java.lang.String" value="If no better reactors are found for this amount of time (in seconds), the worse reactor will be discarded, and a new one will be started"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="spinnerChangeChance">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="10.0" maximum="100.0" minimum="0.0" numberType="java.lang.Float" stepSize="0.1" type="number"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="In stage 2, in any new reactor generated, each part will have this% chance of being changed"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelChangeChance">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="Change chance"/>
+        <Property name="toolTipText" type="java.lang.String" value="In stage 2, in any new reactor generated, each part will have this% chance of being changed"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelSize">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="Reactor Size"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="checkboxDrawReactors">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Draw reactors"/>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkboxDrawReactorsActionPerformed"/>
+      </Events>
+    </Component>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="1"/>
+      </Layout>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jPanel2">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="1"/>
+      </Layout>
+    </Container>
+    <Component class="javax.swing.JButton" name="buttonImport">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Import Reactor"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click this to import the reactor from the left box"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonImportActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Take me to the future!"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+      </Events>
+    </Component>
+  </SubComponents>
+</Form>
