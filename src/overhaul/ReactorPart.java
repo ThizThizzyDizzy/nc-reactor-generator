@@ -102,6 +102,12 @@ public class ReactorPart implements ReactorBit{
         for(ReactorPart part : parts){
             if(part.name.toLowerCase().replace(" ", "").contains(string.toLowerCase()))return part;
         }
+        for(ReactorPart part : parts){
+            if(string.toLowerCase().replace(" ", "_").contains(part.name.toLowerCase()))return part;
+        }
+        for(ReactorPart part : parts){
+            if(string.toLowerCase().replace(" ", "").contains(part.name.toLowerCase()))return part;
+        }
         if(string.contains(" "))return parse(string.replace(" ", "").trim());
         return null;
     }

@@ -130,6 +130,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
             public void importReactor(Reactor reactor, boolean running){
                 if(running){
                     synchronized(anotherSynchronizer){
+                        if(reactors==null)return;
                         for(int i = 0; i<this.reactors.length; i++){
                             if(Reactor.isbetter(reactor, this.reactors[i])){
                                 this.reactors[i] = reactor;
