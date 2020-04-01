@@ -589,7 +589,7 @@ public abstract class Reactor{
     }
     private boolean hasLineOfSight(int x, int y, int z, int maxLength, ReactorPart.Type bridge, ReactorPart.Type... end){
         return hasLineOfSight(x, y, z, 1, 0, 0, maxLength, bridge, end)
-            || hasLineOfSight(x, y, z, 1, 1, 0, maxLength, bridge, end)
+            || hasLineOfSight(x, y, z, 0, 1, 0, maxLength, bridge, end)
             || hasLineOfSight(x, y, z, 0, 0, 1, maxLength, bridge, end)
             || hasLineOfSight(x, y, z, -1, 0, 0, maxLength, bridge, end)
             || hasLineOfSight(x, y, z, 0, -1, 0, maxLength, bridge, end)
