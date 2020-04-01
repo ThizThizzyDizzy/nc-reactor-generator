@@ -1,4 +1,7 @@
 package overhaul;
+import common.Setting;
+import common.SettingInt;
+import common.ThingWithSettings;
 import java.util.ArrayList;
 import java.util.Random;
 public abstract class GenerationPlan extends ThingWithSettings{
@@ -32,7 +35,8 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 return reactors;
             }
             @Override
-            public void reset(){
+            public void reset(Fuel fuel, Fuel.Type type, int x, int y, int z){
+                if(imported!=null&&(imported.fuel!=fuel||imported.fuelType!=type||imported.x!=x||imported.y!=y||imported.z!=z))imported = null;
                 reactor = imported;
                 imported = null;
             }
@@ -122,7 +126,8 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 return details;
             }
             @Override
-            public void reset(){
+            public void reset(Fuel fuel, Fuel.Type type, int x, int y, int z){
+                if(imported!=null&&(imported.fuel!=fuel||imported.fuelType!=type||imported.x!=x||imported.y!=y||imported.z!=z))imported = null;
                 reactors = null;
                 lastUpdateTimes = null;
             }
@@ -172,6 +177,6 @@ public abstract class GenerationPlan extends ThingWithSettings{
     }
     public abstract void run(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand);
     public abstract ArrayList<Reactor> getReactors();
-    public abstract void reset();
+    public abstract void reset(Fuel fuel, Fuel.Type type, int x, int y, int z);
     public abstract void importReactor(Reactor reactor, boolean running);
 }

@@ -1,9 +1,9 @@
-package overhaul;
+package common;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 public abstract class Setting<E>{
     public E value;
-    protected final String name;
+    public final String name;
     public Setting(String name, E defaultValue){
         value = defaultValue;
         this.name = name;

@@ -51,6 +51,14 @@ public class ReactorPart implements ReactorBit{
         if(is.length==0)return ReactorPart.AIR;
         return parts.get(is[rand.nextInt(is.length)]);
     }
+    public static ArrayList<ReactorPart> getAvailableParts(){
+        int[] is = Main.instance.listParts.getSelectedIndices();
+        ArrayList<ReactorPart> available = new ArrayList<>();
+        for(int i = 0; i<is.length; i++){
+            available.add(parts.get(i));
+        }
+        return available;
+    }
     public static ReactorPart parse(String string){
         if(string.contains(";")){
             String[] strs = string.split("\\Q;");

@@ -1,4 +1,7 @@
 package overhaul;
+import common.Setting;
+import common.SettingDouble;
+import common.ThingWithSettings;
 import java.util.ArrayList;
 import java.util.Random;
 public abstract class GenerationModel extends ThingWithSettings{
@@ -18,7 +21,7 @@ public abstract class GenerationModel extends ThingWithSettings{
                     return new Reactor(fuel, type, x, y, z){
                         @Override
                         protected ReactorPart build(int X, int Y, int Z){
-                            if(rand.nextDouble()<(double)getSetting("Change Chance")/100d){
+                            if(rand.nextDouble()<getDouble("Change Chance")/100d){
                                 return ReactorPart.random(rand);
                             }else{
                                 return last.parts[X][Y][Z];

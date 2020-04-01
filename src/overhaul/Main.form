@@ -109,7 +109,7 @@
             <Component class="javax.swing.JList" name="listParts">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="cc" green="cc" red="cc" type="rgb"/>
+                  <Color blue="be" green="be" red="be" type="rgb"/>
                 </Property>
                 <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="getReactorPartsModel()" type="code"/>
@@ -161,6 +161,9 @@
                           <Component id="panelSize" alignment="0" max="32767" attributes="0"/>
                           <Component id="jPanel1" max="32767" attributes="0"/>
                           <Component id="jCheckBox1" alignment="0" max="32767" attributes="0"/>
+                          <Component id="checkBoxSymmetryX" alignment="1" max="32767" attributes="0"/>
+                          <Component id="checkBoxSymmetryY" alignment="1" max="32767" attributes="0"/>
+                          <Component id="checkBoxSymmetryZ" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -182,7 +185,13 @@
                               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="126" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="checkBoxSymmetryX" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="checkBoxSymmetryY" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="checkBoxSymmetryZ" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="57" max="32767" attributes="0"/>
                           </Group>
                           <Component id="panelGenModel" alignment="0" max="32767" attributes="0"/>
                       </Group>
@@ -610,6 +619,30 @@
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>
             </Component>
+            <Component class="javax.swing.JCheckBox" name="checkBoxSymmetryX">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Apply X Symmetry"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="checkBoxSymmetryY">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Apply Y Symmetry"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="checkBoxSymmetryZ">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Apply Z Symmetry"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel3">
@@ -770,7 +803,15 @@
                           <Component id="jScrollPane8" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="panelImportDisplay" pref="330" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="panelImportDisplay" pref="330" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <Component id="buttonImportExportImage" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="buttonImportExportJSON" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -780,16 +821,20 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="panelImportDisplay" pref="653" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
-                              <Component id="jScrollPane6" max="32767" attributes="0"/>
+                              <Component id="jScrollPane6" pref="416" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jScrollPane8" min="-2" pref="150" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jScrollPane7" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="buttonImport" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="panelImportDisplay" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="buttonImport" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="buttonImportExportImage" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="buttonImportExportJSON" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -831,6 +876,7 @@
               <SubComponents>
                 <Component class="javax.swing.JTextArea" name="textAreaImportOutput">
                   <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
                     <Property name="columns" type="int" value="20"/>
                     <Property name="rows" type="int" value="2"/>
                   </Properties>
@@ -857,12 +903,29 @@
               <SubComponents>
                 <Component class="javax.swing.JTextArea" name="textAreaImportStats">
                   <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
                     <Property name="columns" type="int" value="20"/>
                     <Property name="rows" type="int" value="5"/>
                   </Properties>
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JButton" name="buttonImportExportImage">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Export Image"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonImportExportImageActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="buttonImportExportJSON">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Export to JSON"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonImportExportJSONActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>

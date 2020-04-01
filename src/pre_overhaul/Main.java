@@ -86,6 +86,9 @@ public class Main extends javax.swing.JFrame{
         jLabel3 = new javax.swing.JLabel();
         buttonStart = new javax.swing.JButton();
         buttonStop = new javax.swing.JButton();
+        checkBoxSymmetryX = new javax.swing.JCheckBox();
+        checkBoxSymmetryY = new javax.swing.JCheckBox();
+        checkBoxSymmetryZ = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         textAreaOutput = new javax.swing.JTextArea();
@@ -103,6 +106,8 @@ public class Main extends javax.swing.JFrame{
         buttonImport = new javax.swing.JButton();
         jScrollPane8 = new javax.swing.JScrollPane();
         textAreaImportStats = new javax.swing.JTextArea();
+        buttonImportExportJSON = new javax.swing.JButton();
+        buttonImportExportImage = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -116,7 +121,7 @@ public class Main extends javax.swing.JFrame{
         labelParts.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelParts.setText("Reactor Parts");
 
-        listParts.setBackground(new java.awt.Color(204, 204, 204));
+        listParts.setBackground(new java.awt.Color(190, 190, 190));
         listParts.setModel(getReactorPartsModel());
         listParts.setSelectedIndices(generateSelectedParts());
         listParts.setSelectionBackground(new java.awt.Color(255, 255, 255));
@@ -379,6 +384,12 @@ public class Main extends javax.swing.JFrame{
                 .addGap(10, 10, 10))
         );
 
+        checkBoxSymmetryX.setText("Apply X Symmetry");
+
+        checkBoxSymmetryY.setText("Apply Y Symmetry");
+
+        checkBoxSymmetryZ.setText("Apply Z Symmetry");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -393,7 +404,10 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(panelPriorities, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelFuels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkBoxSymmetryX, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkBoxSymmetryZ, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkBoxSymmetryY, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -410,7 +424,13 @@ public class Main extends javax.swing.JFrame{
                         .addComponent(panelPriorities, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 151, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(checkBoxSymmetryX)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(checkBoxSymmetryY)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(checkBoxSymmetryZ)
+                        .addGap(0, 80, Short.MAX_VALUE))
                     .addComponent(panelGenModel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -509,6 +529,7 @@ public class Main extends javax.swing.JFrame{
 
         panelImportDisplay.setLayout(new java.awt.GridLayout(1, 0));
 
+        textAreaImportOutput.setEditable(false);
         textAreaImportOutput.setColumns(20);
         textAreaImportOutput.setRows(2);
         jScrollPane7.setViewportView(textAreaImportOutput);
@@ -520,9 +541,24 @@ public class Main extends javax.swing.JFrame{
             }
         });
 
+        textAreaImportStats.setEditable(false);
         textAreaImportStats.setColumns(20);
         textAreaImportStats.setRows(5);
         jScrollPane8.setViewportView(textAreaImportStats);
+
+        buttonImportExportJSON.setText("Export to JSON");
+        buttonImportExportJSON.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonImportExportJSONActionPerformed(evt);
+            }
+        });
+
+        buttonImportExportImage.setText("Export Image");
+        buttonImportExportImage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonImportExportImageActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -536,7 +572,13 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(buttonImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(buttonImportExportImage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(buttonImportExportJSON)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -544,15 +586,18 @@ public class Main extends javax.swing.JFrame{
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(buttonImport)))
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(10, 10, 10)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonImport)
+                    .addComponent(buttonImportExportJSON)
+                    .addComponent(buttonImportExportImage))
                 .addContainerGap())
         );
 
@@ -653,11 +698,7 @@ public class Main extends javax.swing.JFrame{
             try{
                 Thread.sleep(10);//The event is called before the character is added to the box
             }catch(InterruptedException ex){}
-            Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
-            int x = (int) spinnerX.getValue();
-            int y = (int) spinnerY.getValue();
-            int z = (int) spinnerZ.getValue();
-            Reactor reactor = Reactor.parse(textAreaImport,fuel,x,y,z);
+            Reactor reactor = getImportReactor();
             panelImportDisplay.removeAll();
             panelImportDisplay.add(new ReactorPanel(reactor));
             if(reactor==null)return;
@@ -666,11 +707,7 @@ public class Main extends javax.swing.JFrame{
         }).start();
     }//GEN-LAST:event_textAreaImportKeyTyped
     private void buttonImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
-        Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
-        int x = (int) spinnerX.getValue();
-        int y = (int) spinnerY.getValue();
-        int z = (int) spinnerZ.getValue();
-        genPlan.importReactor(Reactor.parse(textAreaImport, fuel, x, y, z), running);
+        genPlan.importReactor(getImportReactor(), running);
     }//GEN-LAST:event_buttonImportActionPerformed
     private void checkBoxDrawReactorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxDrawReactorsActionPerformed
         if(!checkBoxDrawReactors.isSelected()){
@@ -681,13 +718,28 @@ public class Main extends javax.swing.JFrame{
     private void buttonExportImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportImageActionPerformed
         ArrayList<Reactor> reactors = genPlan.getReactors();
         if(reactors.isEmpty())return;
+        if(reactors.get(0)==null)return;
         Exporter.export(new ReactorPanel(reactors.get(0)).getImage());
     }//GEN-LAST:event_buttonExportImageActionPerformed
     private void buttonExportJSONActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportJSONActionPerformed
         ArrayList<Reactor> reactors = genPlan.getReactors();
         if(reactors.isEmpty())return;
+        if(reactors.get(0)==null)return;
         Exporter.export(reactors.get(0).exportJSON());
     }//GEN-LAST:event_buttonExportJSONActionPerformed
+    private void buttonImportExportImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportExportImageActionPerformed
+        Exporter.export(new ReactorPanel(getImportReactor()).getImage());
+    }//GEN-LAST:event_buttonImportExportImageActionPerformed
+    private void buttonImportExportJSONActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportExportJSONActionPerformed
+        Exporter.export(getImportReactor().exportJSON());
+    }//GEN-LAST:event_buttonImportExportJSONActionPerformed
+    private Reactor getImportReactor(){
+        Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
+        int x = (int) spinnerX.getValue();
+        int y = (int) spinnerY.getValue();
+        int z = (int) spinnerZ.getValue();
+        return Reactor.parse(textAreaImport, fuel, x, y, z);
+    }
     public static void main(String args[]){
         try{
             for(javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()){
@@ -713,11 +765,16 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JButton buttonExportImage;
     private javax.swing.JButton buttonExportJSON;
     private javax.swing.JButton buttonImport;
+    private javax.swing.JButton buttonImportExportImage;
+    private javax.swing.JButton buttonImportExportJSON;
     private javax.swing.JButton buttonPriorityDown;
     private javax.swing.JButton buttonPriorityUp;
     private javax.swing.JButton buttonStart;
     private javax.swing.JButton buttonStop;
     private javax.swing.JCheckBox checkBoxDrawReactors;
+    public javax.swing.JCheckBox checkBoxSymmetryX;
+    public javax.swing.JCheckBox checkBoxSymmetryY;
+    public javax.swing.JCheckBox checkBoxSymmetryZ;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -793,9 +850,9 @@ public class Main extends javax.swing.JFrame{
         };
     }
     private int[] generateSelectedParts(){
-        int[] parts = new int[ReactorPart.parts.size()];
-        for(int i = 1; i<parts.length-1; i++){//don't include air and beryllium moderators, just like the previous default
-            parts[i] = i;
+        int[] parts = new int[ReactorPart.parts.size()-2];
+        for(int i = 0; i<parts.length; i++){//don't include air and beryllium moderators, just like the previous default
+            parts[i] = i+1;
         }
         return parts;
     }
@@ -823,9 +880,15 @@ public class Main extends javax.swing.JFrame{
     boolean running = true;
     private static final Object synchronizer = new Object();//This can't be duplicated... right? RIGHT?
     int activeThreads = 0;
+    int iterations = 0;
     private void start(){
-        genPlan.reset();
+        Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
+        int x = (int) spinnerX.getValue();
+        int y = (int) spinnerY.getValue();
+        int z = (int) spinnerZ.getValue();
+        genPlan.reset(fuel,x,y,z);
         Reactor.totalReactors = 0;
+        iterations = 0;
         Reactor.startTime = System.nanoTime();
         running = true;
         for(int i = 0; i<(int)spinnerThreads.getValue(); i++){
@@ -850,6 +913,9 @@ public class Main extends javax.swing.JFrame{
                     if(!running)break;
                 }
                 genPlan.run(fuel, x, y, z, rand);
+                synchronized(synchronizer){
+                    iterations++;
+                }
             }
             synchronized(synchronizer){
                 activeThreads--;
@@ -865,6 +931,7 @@ public class Main extends javax.swing.JFrame{
                     long time = System.nanoTime()-Reactor.startTime;
                     ArrayList<Reactor> reactors = genPlan.getReactors();
                     String text = "Time: "+toTime(time)+"\n"
+                            + "Iterations: "+iterations+"\n"
                             + "Reactors processed: "+Reactor.totalReactors+"\n"
                             + "Reactors per second: "+Math.round(Reactor.totalReactors/(time/1_000_000_000d)*10)/10d+"\n"
                             + genPlan.getDetails(reactors);

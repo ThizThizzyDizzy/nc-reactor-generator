@@ -1,4 +1,4 @@
-package overhaul;
+package common;
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;

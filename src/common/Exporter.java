@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package common;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -19,10 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
-/**
- *
- * @author James
- */
 public class Exporter extends javax.swing.JFrame{
     BufferedImage image = null;
     String str = null;
@@ -30,6 +21,7 @@ public class Exporter extends javax.swing.JFrame{
         new Exporter().exp(obj).setVisible(true);
     }
     private Exporter exp(Object obj){
+        if(obj==null)dispose();
         if(obj!=null&&(obj instanceof BufferedImage)){
             image = (BufferedImage)obj;
             JPanel imagePanel = new JPanel(){

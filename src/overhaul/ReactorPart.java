@@ -9,7 +9,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.imageio.ImageIO;
 public class ReactorPart implements ReactorBit{
-    public static final ArrayList<ReactorPart> parts = new ArrayList<>();
+    public static final ArrayList<ReactorPart> parts = new ArrayList<>();//TODO update cooling values https://docs.google.com/spreadsheets/d/1zo8frawlKxA--vsu_dTYUKl1jtTdc-whzMTAVY9-4bs/edit#gid=606129178
     public static final ReactorPart AIR = air();
     public static final ReactorPart FUEL_CELL = fuelCell(null, "{FUEL};False;None", 0);
     public static final ReactorPart FUEL_CELL_CF_252 = fuelCell("Cf-252", "{FUEL};True;Cf-252", 1);

@@ -1,4 +1,4 @@
-package pre_overhaul;
+package common;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;

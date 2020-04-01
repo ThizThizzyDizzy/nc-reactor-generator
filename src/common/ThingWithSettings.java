@@ -1,4 +1,4 @@
-package pre_overhaul;
+package common;
 import java.awt.Component;
 import javax.swing.JPanel;
 public class ThingWithSettings{//I got tired of copying Settings code between GenerationPlan and GenerationModel
@@ -27,6 +27,32 @@ public class ThingWithSettings{//I got tired of copying Settings code between Ge
         for(Setting s : settings){
             if(s.name.toLowerCase().contains(name.toLowerCase())){
                 return s.value;
+            }
+        }
+        return null;
+    }
+    public Integer getInteger(String name){
+        for(Setting s : settings){
+            if(s.name.equalsIgnoreCase(name)){
+                if(s.value instanceof Number)return ((Number)s.value).intValue();
+            }
+        }
+        for(Setting s : settings){
+            if(s.name.toLowerCase().contains(name.toLowerCase())){
+                if(s.value instanceof Number)return ((Number)s.value).intValue();
+            }
+        }
+        return null;
+    }
+    public Double getDouble(String name){
+        for(Setting s : settings){
+            if(s.name.equalsIgnoreCase(name)){
+                if(s.value instanceof Number)return ((Number)s.value).doubleValue();
+            }
+        }
+        for(Setting s : settings){
+            if(s.name.toLowerCase().contains(name.toLowerCase())){
+                if(s.value instanceof Number)return ((Number)s.value).doubleValue();
             }
         }
         return null;

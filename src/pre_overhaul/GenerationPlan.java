@@ -1,4 +1,7 @@
 package pre_overhaul;
+import common.Setting;
+import common.SettingInt;
+import common.ThingWithSettings;
 import java.util.ArrayList;
 import java.util.Random;
 public abstract class GenerationPlan extends ThingWithSettings{
@@ -32,7 +35,8 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 return reactors;
             }
             @Override
-            public void reset(){
+            public void reset(Fuel fuel, int x, int y, int z){
+                if(imported!=null&&(imported.fuel!=fuel||imported.x!=x||imported.y!=y||imported.z!=z))imported = null;
                 reactor = imported;
                 imported = null;
             }
@@ -90,6 +94,10 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 }
                 Reactor r = Main.genModel.generate(reactor, fuel, x, y, z, rand);
                 synchronized(anotherSynchronizer){
+                    if(reactors[idx]==null&&reactor!=null){
+                        //it timed out on a different thread- Skip!
+                        return;
+                    }
                     if(Reactor.isbetter(r, reactors[idx])){
                         reactors[idx] = r;
                         lastUpdateTimes[idx] = System.nanoTime();
@@ -122,7 +130,8 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 return details;
             }
             @Override
-            public void reset(){
+            public void reset(Fuel fuel, int x, int y, int z){
+                if(imported!=null&&(imported.fuel!=fuel||imported.x!=x||imported.y!=y||imported.z!=z))imported = null;
                 reactors = null;
                 lastUpdateTimes = null;
             }
@@ -172,6 +181,6 @@ public abstract class GenerationPlan extends ThingWithSettings{
     }
     public abstract void run(Fuel fuel, int x, int y, int z, Random rand);
     public abstract ArrayList<Reactor> getReactors();
-    public abstract void reset();
+    public abstract void reset(Fuel fuel, int x, int y, int z);
     public abstract void importReactor(Reactor reactor, boolean running);
 }

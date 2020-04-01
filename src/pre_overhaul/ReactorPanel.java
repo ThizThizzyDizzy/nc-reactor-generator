@@ -35,6 +35,7 @@ public class ReactorPanel extends JPanel{
     }
     public BufferedImage getImage(){
         int blockSize = 16;
+        if(reactor==null)return null;
         BufferedImage image = new BufferedImage(blockSize*reactor.x, blockSize*(((reactor.z+1)*reactor.y)-1), BufferedImage.TYPE_INT_ARGB);
         draw(image.createGraphics(),image.getWidth(),image.getHeight());
         return image;

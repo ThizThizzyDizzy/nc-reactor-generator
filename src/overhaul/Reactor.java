@@ -170,6 +170,14 @@ public abstract class Reactor{
             }
         };
     }
+    public static Reactor empty(Fuel fuel, Fuel.Type type, int x, int y, int z){
+        return new Reactor(fuel, type, x, y, z){
+            @Override
+            protected ReactorPart build(int X, int Y, int Z){
+                return ReactorPart.AIR;
+            }
+        };
+    }
     public final Fuel fuel;
     public final Fuel.Type fuelType;
     public final int x;
@@ -193,6 +201,9 @@ public abstract class Reactor{
     private double sparsityMult = 1;
     private int functionalBlocks;//required for JSON export
     public Reactor(Fuel fuel, Fuel.Type type, int x, int y, int z){
+        this(fuel, type, x, y, z, Main.instance.checkBoxSymmetryX.isSelected(), Main.instance.checkBoxSymmetryY.isSelected(), Main.instance.checkBoxSymmetryZ.isSelected());
+    }
+    public Reactor(Fuel fuel, Fuel.Type type, int x, int y, int z, boolean symmetryX, boolean symmetryY, boolean symmetryZ){
         synchronized(synchronizer){
             totalReactors++;
         }
@@ -206,7 +217,16 @@ public abstract class Reactor{
         for(int X = 0; X<x; X++){
             for(int Y = 0; Y<y; Y++){
                 for(int Z = 0; Z<z; Z++){
-                    parts[X][Y][Z] = build(X,Y,Z);
+                    if(parts[X][Y][Z]!=null)continue;
+                    ReactorPart part = build(X,Y,Z);
+                    parts[X][Y][Z] = part;
+                    if(symmetryX)parts[x-X-1][Y][Z] = part;
+                    if(symmetryY)parts[X][y-Y-1][Z] = part;
+                    if(symmetryZ)parts[X][Y][z-Z-1] = part;
+                    if(symmetryX&&symmetryY)parts[x-X-1][y-Y-1][Z] = part;
+                    if(symmetryY&&symmetryZ)parts[X][y-Y-1][z-Z-1] = part;
+                    if(symmetryX&&symmetryZ)parts[x-X-1][Y][z-Z-1] = part;
+                    if(symmetryX&&symmetryY&&symmetryZ)parts[x-X-1][y-Y-1][z-Z-1] = part;
                 }
             }
         }

@@ -1,16 +1,10 @@
 package old;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-/**
- *
- * @author James
- */
-public class Main extends javax.swing.JFrame {
+public class Main extends javax.swing.JFrame{
     public static Reactor best = null;
     public static Reactor best2 = null;
     public static long processed = 0;
@@ -21,9 +15,6 @@ public class Main extends javax.swing.JFrame {
     public static boolean stopSecondaries = false;
     public static boolean update1 = false;
     private Reactor imported = null;
-    /**
-     * Creates new form Main
-     */
     public Main() {
         initComponents();
         boxPriority1.setSelectedIndex(0);
