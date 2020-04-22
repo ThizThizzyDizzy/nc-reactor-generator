@@ -1,6 +1,8 @@
 package overhaul;
 import common.Setting;
+import common.SettingBoolean;
 import common.SettingDouble;
+import common.SettingInt;
 import common.ThingWithSettings;
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,7 +16,7 @@ public abstract class GenerationModel extends ThingWithSettings{
                 return Reactor.random(fuel,type,x,y,z,rand);
             }
         });
-        models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.", new SettingDouble("Change Chance", 1, 0.1f, 100, .1f)) {
+        models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.", new SettingDouble("Change Chance", 1, 0.1, 100, .1)){
             @Override
             public Reactor generate(Reactor last, Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
                 if(last!=null&&last.isValid()){
@@ -34,7 +36,7 @@ public abstract class GenerationModel extends ThingWithSettings{
         });
         DEFAULT = get("Standard");
     }
-    private static GenerationModel get(String name){
+    public static GenerationModel get(String name){
         for(GenerationModel model : models){
             if(model.name.equalsIgnoreCase(name)){
                 return model;

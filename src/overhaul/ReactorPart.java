@@ -4,12 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.imageio.ImageIO;
 public class ReactorPart implements ReactorBit{
     public static final ArrayList<ReactorPart> parts = new ArrayList<>();//TODO update cooling values https://docs.google.com/spreadsheets/d/1zo8frawlKxA--vsu_dTYUKl1jtTdc-whzMTAVY9-4bs/edit#gid=606129178
+    public static final ArrayList<ReactorPart> GROUP_CORE = new ArrayList<>();
+    public static final ArrayList<ReactorPart> GROUP_CELL = new ArrayList<>();
+    public static final ArrayList<ReactorPart> GROUP_HEATSINK = new ArrayList<>();
+    public static final ArrayList<ReactorPart> GROUP_MODERATOR = new ArrayList<>();
+    public static final ArrayList<ReactorPart> GROUP_REFLECTOR = new ArrayList<>();
     public static final ReactorPart AIR = air();
     public static final ReactorPart FUEL_CELL = fuelCell(null, "{FUEL};False;None", 0);
     public static final ReactorPart FUEL_CELL_CF_252 = fuelCell("Cf-252", "{FUEL};True;Cf-252", 1);
@@ -59,27 +65,64 @@ public class ReactorPart implements ReactorBit{
         return p;
     }
     private static ReactorPart air(){
-        return add(new ReactorPart(Type.AIR, "Air", null, "air"));
+        ReactorPart part = new ReactorPart(Type.AIR, "Air", null, "air");
+        GROUP_CORE.add(part);
+        return add(part);
     }
     private static ReactorPart fuelCell(String name, String jsonName, double efficiency){
-        return add(new FuelCell(name, jsonName, efficiency));
+        ReactorPart part = new FuelCell(name, jsonName, efficiency);
+        boolean hasBetter = false;
+        for(Iterator<ReactorPart> it = GROUP_CORE.iterator(); it.hasNext();){
+            ReactorPart p = it.next();
+            if(p instanceof FuelCell){
+                if(((FuelCell) p).efficiency<efficiency)it.remove();
+                else hasBetter = true;
+            }
+        }
+        if(!hasBetter)GROUP_CORE.add(part);
+        hasBetter = false;
+        for(Iterator<ReactorPart> it = GROUP_CELL.iterator(); it.hasNext();){
+            ReactorPart p = it.next();
+            if(p instanceof FuelCell){
+                if(((FuelCell) p).efficiency<efficiency)it.remove();
+                else hasBetter = true;
+            }
+        }
+        if(!hasBetter)GROUP_CELL.add(part);
+        return add(part);
     }
     private static ReactorPart heatsink(String name, String jsonName, int cooling, PlacementRule... rules){
-        return add(new Heatsink(name, jsonName, cooling, rules));
+        ReactorPart part = new Heatsink(name, jsonName, cooling, rules);
+        GROUP_HEATSINK.add(part);
+        return add(part);
     }
     private static ReactorPart moderator(String name, String jsonName, int fluxFactor, double efficiencyFactor){
-        return add(new Moderator(name, fluxFactor, jsonName, efficiencyFactor));
+        ReactorPart part = new Moderator(name, fluxFactor, jsonName, efficiencyFactor);
+        GROUP_CORE.add(part);
+        GROUP_MODERATOR.add(part);
+        return add(part);
     }
     private static ReactorPart conductor(){
-        return add(new ReactorPart(Type.CONDUCTOR, "Conductor", "Conductors", "conductor"));
+        ReactorPart part = new ReactorPart(Type.CONDUCTOR, "Conductor", "Conductors", "conductor");
+        return add(part);
     }
     private static ReactorPart reflector(String name, String jsonName, double reflectivity, double efficiency){
-        return add(new Reflector(name, reflectivity, jsonName, efficiency));
+        ReactorPart part = new Reflector(name, reflectivity, jsonName, efficiency);
+        GROUP_CORE.add(part);
+        GROUP_REFLECTOR.add(part);
+        return add(part);
     }
     public static ReactorPart random(Random rand){
-        int[] is = Main.instance.listParts.getSelectedIndices();
-        if(is.length==0)return ReactorPart.AIR;
-        return parts.get(is[rand.nextInt(is.length)]);
+        return random(rand, null);
+    }
+    public static ReactorPart random(Random rand, ArrayList<ReactorPart> allowedParts){
+        if(allowedParts==null){
+            int[] is = Main.instance.listParts.getSelectedIndices();
+            if(is.length==0)return ReactorPart.AIR;
+            return parts.get(is[rand.nextInt(is.length)]);
+        }
+        if(allowedParts.isEmpty())return AIR;
+        return allowedParts.get(rand.nextInt(allowedParts.size()));
     }
     public static ReactorPart parse(String string){
         if(string.contains(";")){

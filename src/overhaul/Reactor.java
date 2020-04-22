@@ -23,10 +23,24 @@ public abstract class Reactor{
     private static final double thresholdRatio = .75;
     private static final double minimumMult = .5;
     public static Reactor random(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
+        return random(fuel, type, x, y, z, rand, null);
+    }
+    public static Reactor random(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand, ArrayList<ReactorPart> allowedParts){
         return new Reactor(fuel, type, x, y, z){
             @Override
             protected ReactorPart build(int X, int Y, int Z){
-                return ReactorPart.random(rand);
+                return ReactorPart.random(rand, allowedParts);
+            }
+        };
+    }
+    public static Reactor random(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand, boolean xSymm, boolean ySymm, boolean zSymm){
+        return random(fuel, type, x, y, z, rand, xSymm, ySymm, zSymm, null);
+    }
+    public static Reactor random(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand, boolean xSymm, boolean ySymm, boolean zSymm, ArrayList<ReactorPart> allowedParts){
+        return new Reactor(fuel, type, x, y, z, xSymm, ySymm, zSymm){
+            @Override
+            protected ReactorPart build(int X, int Y, int Z){
+                return ReactorPart.random(rand, allowedParts);
             }
         };
     }
@@ -230,11 +244,16 @@ public abstract class Reactor{
                 }
             }
         }
+        applyExtraTransformations();
         build();
     }
     public boolean isValid(){
         return totalOutput>0;
     }
+    /**
+     * Use to apply extra symmetries on the reactor before it's built
+     */
+    protected void applyExtraTransformations(){}
     protected abstract ReactorPart build(int X, int Y, int Z);
     private ReactorPart get(int x, int y, int z){
         if(x==-1||y==-1||z==-1||x==this.x||y==this.y||z==this.z)return ReactorPart.CASING;
@@ -285,15 +304,15 @@ public abstract class Reactor{
                                 continue;
                             }
                         }
-                        if(p.type==ReactorPart.Type.HEATSINK){//if a heatsink is fundamentally invalid, replace it with air
-                            for(PlacementRule rule : ((Heatsink)p).rules){
-                                if(!rule.isValid(this,x,y,z)){
-                                    parts[x][y][z] = ReactorPart.AIR;
-                                    somethingChanged = true;
-                                    break;
-                                }
-                            }
-                        }
+//                        if(p.type==ReactorPart.Type.HEATSINK){//if a heatsink is fundamentally invalid, replace it with air
+//                            for(PlacementRule rule : ((Heatsink)p).rules){
+//                                if(!rule.isValid(this,x,y,z)){
+//                                    parts[x][y][z] = ReactorPart.AIR;
+//                                    somethingChanged = true;
+//                                    break;
+//                                }
+//                            }
+//                        }//this causes problems with magnesium!
                     }
                 }
             }

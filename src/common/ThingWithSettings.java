@@ -57,4 +57,17 @@ public class ThingWithSettings{//I got tired of copying Settings code between Ge
         }
         return null;
     }
+    public Boolean getBoolean(String name){
+        for(Setting s : settings){
+            if(s.name.equalsIgnoreCase(name)){
+                if(s.value instanceof Boolean)return (Boolean)s.value;
+            }
+        }
+        for(Setting s : settings){
+            if(s.name.toLowerCase().contains(name.toLowerCase())){
+                if(s.value instanceof Boolean)return (Boolean)s.value;
+            }
+        }
+        return null;
+    }
 }

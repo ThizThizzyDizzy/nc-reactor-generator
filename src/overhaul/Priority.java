@@ -3,12 +3,18 @@ import java.util.ArrayList;
 public abstract class Priority{
     public static final ArrayList<Priority> priorities = new ArrayList<>();
     static{
-        priorities.add(new Priority("Stable (Non-positive heat)"){
+        priorities.add(new Priority("Valid (>0 output)"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
                 if(main.isValid()&&!other.isValid())return 1;
                 if(!main.isValid()&&other.isValid())return -1;
                 if(!main.isValid()&&!other.isValid())return 0;
+                return 0;
+            }
+        });
+        priorities.add(new Priority("Stability"){
+            @Override
+            protected double doCompare(Reactor main, Reactor other){
                 if(main.netHeat>0&&other.netHeat<0)return -1;
                 if(main.netHeat<0&&other.netHeat>0)return -1;
                 if(main.netHeat<0&&other.netHeat<0)return 0;

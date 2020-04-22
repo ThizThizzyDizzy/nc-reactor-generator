@@ -22,6 +22,12 @@ public class ReactorPanel extends JPanel{
             for(int z = 0; z<reactor.z; z++){
                 for(int x = 0; x<reactor.x; x++){
                     g.drawImage(reactor.parts[x][y][z].getImage(), x*blockSize, yOff, blockSize, blockSize, null);
+                    
+//                    if(reactor.active[x][y][z]){
+//                        g.setColor(new Color(0, 255, 0, 127));
+//                        g.fillRect(x*blockSize, yOff, blockSize, blockSize);
+//                    }
+                    
 //                    int id = reactor.getClusterID(x,y,z);
 //                    if(id>-1){
 //                        g.setColor(new Color(id*80, 0, 0, 127));
