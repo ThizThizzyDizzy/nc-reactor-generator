@@ -32,9 +32,9 @@ public abstract class GenerationPlan extends ThingWithSettings{
             public ArrayList<Reactor> getReactors(){
                 ArrayList<Reactor> reactors = new ArrayList<>();
                 synchronized(synchronizer){
-                    reactors.add(reactor);
+                    reactors.add(reactor==null?imported:reactor);
                 }
-                    reactors.add(lastGuess);
+                reactors.add(lastGuess);
                 return reactors;
             }
             @Override
@@ -106,10 +106,13 @@ public abstract class GenerationPlan extends ThingWithSettings{
             @Override
             public ArrayList<Reactor> getReactors(){
                 ArrayList<Reactor> reactors = new ArrayList<>();
-                if(this.reactors==null)return reactors;
                 synchronized(synchronizer){
-                    for(Reactor r : this.reactors){
-                        reactors.add(r);
+                    if(this.reactors==null){
+                        reactors.add(imported);
+                    }else{
+                        for(Reactor r : this.reactors){
+                            reactors.add(r);
+                        }
                     }
                 }
                 return reactors;

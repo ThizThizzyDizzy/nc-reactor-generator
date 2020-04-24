@@ -8,8 +8,7 @@ import javax.swing.JTextArea;
 import common.JSON;
 import common.JSON.JSONObject;
 import common.JSON.JSONArray;
-import common.Scorable;
-public abstract class Reactor implements Scorable{
+public abstract class Reactor{
     //The export format is based on this version of hellrage's reactor planner: (Saved in the json file)
     public static final int MAJOR_VERSION = 1;
     public static final int MINOR_VERSION = 2;
@@ -38,12 +37,15 @@ public abstract class Reactor implements Scorable{
         }
     }
     static boolean isbetter(Reactor reactor, Reactor other){
+        return compare(reactor, other)==1;
+    }
+    static int compare(Reactor reactor, Reactor other){
         for(Priority p : Priority.priorities){
             double comparison = p.compare(reactor, other);
-            if(comparison>0)return true;
-            if(comparison<0)return false;
+            if(comparison>0)return 1;
+            if(comparison<0)return -1;
         }
-        return false;
+        return 0;
     }
     public static Reactor parse(JTextArea textAreaImport, Fuel fuel, int x, int y, int z){
         return parse(textAreaImport.getText(), fuel, x, y, z);
@@ -501,18 +503,5 @@ public abstract class Reactor implements Scorable{
             }
         }
         return cells;
-    }
-    @Override
-    public double getScore(){
-        double totalScore = 0;
-        for(int i = 0; i<Priority.priorities.size(); i++){
-            Priority p = Priority.priorities.get(i);
-            double score = p.score(this);
-//            if(score==0)continue;
-//            totalScore = score;
-//            break;
-            totalScore += score*(1d/(i+1)); //This kinda skips pririties and assumes they all have a comparable scoring scale (they do not)
-        }
-        return Math.max(1, totalScore);//make sure everything's on the list at least once
     }
 }

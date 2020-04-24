@@ -30,7 +30,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
             public ArrayList<Reactor> getReactors(){
                 ArrayList<Reactor> reactors = new ArrayList<>();
                 synchronized(yetAnotherSynchronizer){
-                    reactors.add(reactor);
+                    reactors.add(reactor==null?imported:reactor);
                 }
                 return reactors;
             }
@@ -50,14 +50,14 @@ public abstract class GenerationPlan extends ThingWithSettings{
             }
         });
         plans.add(new GenerationPlan("Multi", "Generates many reactors in parallel. If one stops improving, it is scrapped and reset.\nCreates a new thread for each reactor", new SettingInt("Reactors", 2, 2, 64), new SettingInt("Merge Timeout (Seconds)",2,1)) {
-            private final Object anotherSynchronizer = new Object();//Do I really need two of them?
+            private final Object synchronizer = new Object();//Do I really need two of them?
             private int index = 0;
             private Reactor[] reactors;
             private Long[] lastUpdateTimes;
             private Reactor imported;
             @Override
             public void run(Fuel fuel, int x, int y, int z, Random rand){
-                synchronized(anotherSynchronizer){
+                synchronized(synchronizer){
                     if(reactors==null){
                         int num = (int)getSetting("Reactors");
                         reactors = new Reactor[num];
@@ -69,7 +69,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
                     }
                 }
                 int idx;
-                synchronized(anotherSynchronizer){
+                synchronized(synchronizer){
                     idx = index;//grab ours
                     index++;//give the next thread the next one
                     if(index>=reactors.length){
@@ -78,22 +78,22 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 }
                 long diff;
                 Reactor reactor;
-                synchronized(anotherSynchronizer){
+                synchronized(synchronizer){
                     reactor = reactors[idx];
                     long time = System.nanoTime();
                     diff = time-(lastUpdateTimes[idx]==null?time:lastUpdateTimes[idx]);
                 }
                 if(idx>0&&diff/1_000_000_000>(int)getSetting("Merge Timeout")){
-                    synchronized(anotherSynchronizer){
+                    synchronized(synchronizer){
                         if(Reactor.isbetter(reactor, reactors[0]))reactors[0] = reactor;
                     }
                     reactor = null;
-                    synchronized(anotherSynchronizer){
+                    synchronized(synchronizer){
                         reactors[idx] = null;
                     }
                 }
                 Reactor r = Main.genModel.generate(reactor, fuel, x, y, z, rand);
-                synchronized(anotherSynchronizer){
+                synchronized(synchronizer){
                     if(reactors[idx]==null&&reactor!=null){
                         //it timed out on a different thread- Skip!
                         return;
@@ -107,10 +107,13 @@ public abstract class GenerationPlan extends ThingWithSettings{
             @Override
             public ArrayList<Reactor> getReactors(){
                 ArrayList<Reactor> reactors = new ArrayList<>();
-                synchronized(anotherSynchronizer){
-                    if(this.reactors==null)return reactors;
-                    for(Reactor r : this.reactors){
-                        reactors.add(r);
+                synchronized(synchronizer){
+                    if(this.reactors==null){
+                        reactors.add(imported);
+                    }else{
+                        for(Reactor r : this.reactors){
+                            reactors.add(r);
+                        }
                     }
                 }
                 return reactors;
@@ -120,7 +123,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 String details = "";
                 if(reactors==null)return details;
                 if(lastUpdateTimes==null)return details;
-                synchronized(anotherSynchronizer){
+                synchronized(synchronizer){
                     for(int i = 0; i<reactors.size(); i++){
                         if(reactors.get(i)==null)continue;
                         if(lastUpdateTimes[i]==null)continue;
@@ -138,7 +141,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
             @Override
             public void importReactor(Reactor reactor, boolean running){
                 if(running){
-                    synchronized(anotherSynchronizer){
+                    synchronized(synchronizer){
                         if(reactors==null)return;
                         for(int i = 0; i<reactors.length; i++){
                             if(Reactor.isbetter(reactor, this.reactors[i])){

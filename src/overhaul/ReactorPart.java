@@ -13,6 +13,8 @@ public class ReactorPart implements ReactorBit{
     public static final ArrayList<ReactorPart> parts = new ArrayList<>();//TODO update cooling values https://docs.google.com/spreadsheets/d/1zo8frawlKxA--vsu_dTYUKl1jtTdc-whzMTAVY9-4bs/edit#gid=606129178
     public static final ArrayList<ReactorPart> GROUP_CORE = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_CELL = new ArrayList<>();
+    public static final ArrayList<ReactorPart> GROUP_ALL_CORE = new ArrayList<>();
+    public static final ArrayList<ReactorPart> GROUP_ALL_CELL = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_HEATSINK = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_MODERATOR = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_REFLECTOR = new ArrayList<>();
@@ -66,7 +68,7 @@ public class ReactorPart implements ReactorBit{
     }
     private static ReactorPart air(){
         ReactorPart part = new ReactorPart(Type.AIR, "Air", null, "air");
-        GROUP_CORE.add(part);
+//        GROUP_CORE.add(part);GROUP_ALL_CORE.add(part);
         return add(part);
     }
     private static ReactorPart fuelCell(String name, String jsonName, double efficiency){
@@ -89,6 +91,8 @@ public class ReactorPart implements ReactorBit{
             }
         }
         if(!hasBetter)GROUP_CELL.add(part);
+        GROUP_ALL_CORE.add(part);
+        GROUP_ALL_CELL.add(part);
         return add(part);
     }
     private static ReactorPart heatsink(String name, String jsonName, int cooling, PlacementRule... rules){
@@ -98,7 +102,7 @@ public class ReactorPart implements ReactorBit{
     }
     private static ReactorPart moderator(String name, String jsonName, int fluxFactor, double efficiencyFactor){
         ReactorPart part = new Moderator(name, fluxFactor, jsonName, efficiencyFactor);
-        GROUP_CORE.add(part);
+        GROUP_CORE.add(part);GROUP_ALL_CORE.add(part);
         GROUP_MODERATOR.add(part);
         return add(part);
     }
@@ -108,12 +112,20 @@ public class ReactorPart implements ReactorBit{
     }
     private static ReactorPart reflector(String name, String jsonName, double reflectivity, double efficiency){
         ReactorPart part = new Reflector(name, reflectivity, jsonName, efficiency);
-        GROUP_CORE.add(part);
+        GROUP_CORE.add(part);GROUP_ALL_CORE.add(part);
         GROUP_REFLECTOR.add(part);
         return add(part);
     }
     public static ReactorPart random(Random rand){
         return random(rand, null);
+    }
+    public static ArrayList<ReactorPart> getSelectedParts(){
+        int[] is = Main.instance.listParts.getSelectedIndices();
+        ArrayList<ReactorPart> selected = new ArrayList<>();
+        for(int i = 0; i<is.length; i++){
+            selected.add(parts.get(is[i]));
+        }
+        return selected;
     }
     public static ReactorPart random(Random rand, ArrayList<ReactorPart> allowedParts){
         if(allowedParts==null){

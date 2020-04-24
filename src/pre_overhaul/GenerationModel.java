@@ -1,10 +1,12 @@
 package pre_overhaul;
+import common.Scorable;
 import common.Setting;
 import common.SettingInt;
 import common.ThingWithSettings;
 import common.SettingDouble;
 import common.WeightedRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 public abstract class GenerationModel extends ThingWithSettings{
     public static final ArrayList<GenerationModel> models = new ArrayList<>();
@@ -113,7 +115,20 @@ public abstract class GenerationModel extends ThingWithSettings{
                         }
                     });
                 }
-                Reactor r = WeightedRandom.random(storedReactors);
+                double weight = 1;
+                ArrayList<Scorable<Reactor>> scorableList = new ArrayList<>();
+                while(!storedReactors.isEmpty()){
+                    Reactor best = null;
+                    for(Reactor r : storedReactors){
+                        if(best==null||Reactor.isbetter(r, best)){
+                            best = r;
+                        }
+                    }
+                    storedReactors.remove(best);
+                    scorableList.add(new Scorable<>(best, weight));
+                    weight/=2;
+                }
+                Reactor r = WeightedRandom.random(scorableList).get();
                 synchronized(synchronizer){
                     if(symmetries>0){
                         symmetries--;

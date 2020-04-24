@@ -729,6 +729,7 @@ public class Main extends javax.swing.JFrame{
     }//GEN-LAST:event_textAreaImportKeyTyped
     private void buttonImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
         genPlan.importReactor(getImportReactor(), running);
+        updateDisplay();
     }//GEN-LAST:event_buttonImportActionPerformed
     private void checkBoxDrawReactorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxDrawReactorsActionPerformed
         if(!checkBoxDrawReactors.isSelected()){
@@ -907,7 +908,7 @@ public class Main extends javax.swing.JFrame{
         }
         return new DefaultComboBoxModel<>(strs);
     }
-    boolean running = true;
+    boolean running = false;
     private static final Object synchronizer = new Object();//This can't be duplicated... right? RIGHT?
     int activeThreads = 0;
     int iterations = 0;
@@ -960,21 +961,7 @@ public class Main extends javax.swing.JFrame{
         Thread t = new Thread(() -> {
             while(running||activeThreads>0){
                 try{
-                    long time = System.nanoTime()-Reactor.startTime;
-                    ArrayList<Reactor> reactors = genPlan.getReactors();
-                    String text = "Time: "+toTime(time)+"\n"
-                            + "Iterations: "+iterations+"\n"
-                            + "Reactors processed: "+Reactor.totalReactors+"\n"
-                            + "Reactors per second: "+Math.round(Reactor.totalReactors/(time/1_000_000_000d)*10)/10d+"\n"
-                            + genPlan.getDetails(reactors);
-                    textAreaOutput.setText(text);
-                    if(checkBoxDrawReactors.isSelected()){
-                        panelOutput.removeAll();
-                        for(Reactor r : reactors){
-                            panelOutput.add(new ReactorPanel(r));
-                        }
-                        repaint();
-                    }
+                    updateDisplay();
                     Thread.sleep(100);
                 }catch(InterruptedException ex){
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -983,6 +970,23 @@ public class Main extends javax.swing.JFrame{
         }, "Display Thread");
         t.setDaemon(true);
         t.start();
+    }
+    private void updateDisplay(){
+        long time = System.nanoTime()-Reactor.startTime;
+        ArrayList<Reactor> reactors = genPlan.getReactors();
+        String text = "Time: "+toTime(time)+"\n"
+                + "Iterations: "+iterations+"\n"
+                + "Reactors processed: "+Reactor.totalReactors+"\n"
+                + "Reactors per second: "+Math.round(Reactor.totalReactors/(time/1_000_000_000d)*10)/10d+"\n"
+                + genPlan.getDetails(reactors);
+        textAreaOutput.setText(text);
+        if(checkBoxDrawReactors.isSelected()){
+            panelOutput.removeAll();
+            for(Reactor r : reactors){
+                panelOutput.add(new ReactorPanel(r));
+            }
+            repaint();
+        }
     }
     private void startShutdownThread(){
         Thread t = new Thread(() -> {
