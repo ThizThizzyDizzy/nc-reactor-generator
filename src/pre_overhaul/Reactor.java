@@ -380,7 +380,7 @@ public abstract class Reactor{
     }
     private int countAdjacent(int x, int y, int z, ReactorBit... end){
         return (hasAdjacent(x,y,z,1, 0, 0, end)?1:0)
-             + (hasAdjacent(x,y,z,1, 1, 0, end)?1:0)
+             + (hasAdjacent(x,y,z,0, 1, 0, end)?1:0)
              + (hasAdjacent(x,y,z,0, 0, 1, end)?1:0)
              + (hasAdjacent(x,y,z,-1, 0, 0, end)?1:0)
              + (hasAdjacent(x,y,z,0, -1, 0, end)?1:0)

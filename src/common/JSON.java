@@ -351,7 +351,8 @@ public class JSON{
                 }
                 json+=",";
             }
-            json = json.substring(0, json.length()-1)+"]";
+            if(json.contains(","))json = json.substring(0, json.length()-1);
+            json = json+"]";
             return json;
         }
         @Override

@@ -269,6 +269,7 @@ public abstract class Reactor{
         heatMult = new int[x][y][z];
         boolean[][][] fluxed = new boolean[x][y][z];
         boolean somethingChanged;
+        if(false){
         //<editor-fold defaultstate="collapsed" desc="Removing fundamentally invalid parts">
         do{
             somethingChanged = false;
@@ -318,6 +319,7 @@ public abstract class Reactor{
             }
         }while(somethingChanged);
 //</editor-fold>
+        }
         //<editor-fold defaultstate="collapsed" desc="Adding base cell efficiencies">
         for(int x = 0; x<this.x; x++){
             for(int y = 0; y<this.y; y++){
@@ -362,13 +364,21 @@ public abstract class Reactor{
                                                 flux+=((Moderator)otherPart).fluxFactor;
                                                 modEfficiency+=((Moderator)otherPart).efficiencyFactor;
                                                 continue;
+                                            case HEATSINK:
+                                                if(isMSR()){
+                                                    X+=d.x;
+                                                    Y+=d.y;
+                                                    Z+=d.z;
+                                                    distance++;
+                                                    continue;
+                                                }
                                             case AIR:
                                             case CASING:
                                             case CONDUCTOR:
-                                            case HEATSINK:
                                                 continue DIRECTION;
                                             case FUEL_CELL:
                                                 if(distance<1||distance>4)continue DIRECTION;//too far away!
+                                                if(modEfficiency==0)continue DIRECTION;//no moderators!
                                                 neutronFlux[X][Y][Z]+=flux;
                                                 positionalEfficiency[X][Y][Z]+=(modEfficiency/distance);
                                                 heatMult[X][Y][Z]++;
@@ -425,23 +435,33 @@ public abstract class Reactor{
                                             Z+=d.z;
                                             distance++;
                                             continue;
+                                        case HEATSINK:
+                                            if(isMSR()){
+                                                X+=d.x;
+                                                Y+=d.y;
+                                                Z+=d.z;
+                                                distance++;
+                                                continue;
+                                            }
                                         case AIR:
                                         case CASING:
                                         case CONDUCTOR:
-                                        case HEATSINK:
                                             continue DIRECTION;
                                         case FUEL_CELL:
                                             if(distance<1||distance>4)continue DIRECTION;//too far away!
                                             if(!active[X][Y][Z])continue DIRECTION;//cell is inactive!
-                                            active[X-d.x*distance][Y-d.y*distance][Z-d.z*distance] = true;//activate first moderator in the chain
-                                            active[X-d.x][Y-d.y][Z-d.z] = true;//activate last moderator in the chain
+                                            if(parts[X-d.x*distance][Y-d.y*distance][Z-d.z*distance].type==ReactorPart.Type.MODERATOR)
+                                                active[X-d.x*distance][Y-d.y*distance][Z-d.z*distance] = true;//activate first moderator in the chain
+                                            if(parts[X-d.x][Y-d.y][Z-d.z].type==ReactorPart.Type.MODERATOR)
+                                                active[X-d.x][Y-d.y][Z-d.z] = true;//activate last moderator in the chain
                                             for(int i = 1; i<=distance; i++){
                                                 blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[X-d.x*i][Y-d.y*i][Z-d.z*i] = true;
                                             }
                                             break WHILE;
                                         case REFLECTOR:
                                             if(distance<1||distance>2)continue DIRECTION;//too far away!
-                                            active[X-d.x*distance][Y-d.y*distance][Z-d.z*distance] = true;//activate first moderator in the chain
+                                            if(parts[X-d.x*distance][Y-d.y*distance][Z-d.z*distance].type==ReactorPart.Type.MODERATOR)
+                                                active[X-d.x*distance][Y-d.y*distance][Z-d.z*distance] = true;//activate first moderator in the chain
                                             for(int i = 1; i<=distance; i++){
                                                 blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[X-d.x*i][Y-d.y*i][Z-d.z*i] = true;
                                             }
@@ -499,6 +519,7 @@ public abstract class Reactor{
             for(int y = 0; y<this.y; y++){
                 for(int z = 0; z<this.z; z++){
                     ReactorPart part = get(x, y, z);
+                    if(part==ReactorPart.AIR)continue;
                     if(part.matches(ReactorPart.Type.CONDUCTOR))continue;//I'll let conductors be anywhere, and won't really worry about it
                     if(!active[x][y][z]&&!blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[x][y][z]){
                         parts[x][y][z] = ReactorPart.AIR;
@@ -590,7 +611,7 @@ public abstract class Reactor{
     }
     private boolean hasLineOfSight(int x, int y, int z){
         return hasLineOfSight(x, y, z, 1, 0, 0)
-            || hasLineOfSight(x, y, z, 1, 1, 0)
+            || hasLineOfSight(x, y, z, 0, 1, 0)
             || hasLineOfSight(x, y, z, 0, 0, 1)
             || hasLineOfSight(x, y, z, -1, 0, 0)
             || hasLineOfSight(x, y, z, 0, -1, 0)
@@ -632,7 +653,7 @@ public abstract class Reactor{
     }
     private boolean hasAdjacent(int x, int y, int z, ReactorBit... end){
         return hasAdjacent(x,y,z,1, 0, 0, end)
-            || hasAdjacent(x,y,z,1, 1, 0, end)
+            || hasAdjacent(x,y,z,0, 1, 0, end)
             || hasAdjacent(x,y,z,0, 0, 1, end)
             || hasAdjacent(x,y,z,-1, 0, 0, end)
             || hasAdjacent(x,y,z,0, -1, 0, end)
@@ -988,5 +1009,8 @@ public abstract class Reactor{
             list.addAll(blocks.get(i));
         }
         return list;
+    }
+    private boolean isMSR(){
+        return fuelType.isMSR();
     }
 }

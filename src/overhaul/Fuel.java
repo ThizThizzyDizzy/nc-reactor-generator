@@ -52,17 +52,22 @@ public class Fuel{
         return name;
     }
     public static enum Type{
-        OX(" Oxide"),
-        NI(" Nitride"),
-        ZA("-Zirconium Alloy"),
-        F4(" Fluoride (Molten)");
+        OX(" Oxide", false),
+        NI(" Nitride", false),
+        ZA("-Zirconium Alloy", false),
+        F4(" Fluoride (Molten)", true);
+        private final boolean msr;
         private final String name;
-        private Type(String name){
+        private Type(String name, boolean msr){
             this.name = name;
+            this.msr = msr;
         }
         @Override
         public String toString(){
             return name;
+        }
+        boolean isMSR(){
+            return msr;
         }
     }
 }
