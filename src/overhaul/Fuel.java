@@ -55,7 +55,7 @@ public class Fuel{
         OX(" Oxide", false),
         NI(" Nitride", false),
         ZA("-Zirconium Alloy", false),
-        F4(" Fluoride (Molten)", true);
+        F4(" Fluoride)", true);
         private final boolean msr;
         private final String name;
         private Type(String name, boolean msr){

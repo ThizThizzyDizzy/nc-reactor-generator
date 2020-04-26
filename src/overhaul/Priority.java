@@ -49,4 +49,16 @@ public abstract class Priority{
         return doCompare(main, other);
     }
     protected abstract double doCompare(Reactor main, Reactor other);
+    public static Priority get(String name){
+        for(Priority p : priorities){
+            if(p.name.equalsIgnoreCase(name))return p;
+        }
+        return null;
+    }
+    public static void moveToEnd(String name){
+        Priority p = get(name);
+        if(p==null)return;
+        priorities.remove(p);
+        priorities.add(p);
+    }
 }

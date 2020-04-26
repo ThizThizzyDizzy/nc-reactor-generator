@@ -693,7 +693,8 @@ public abstract class Reactor{
                 + "Net Heat: "+netHeat+"H/t\n"
                 + "Overall Efficiency: "+Math.round(totalEfficiency*100)+"%\n"
                 + "Overall Heat Multiplier: "+Math.round(totalHeatMult*100)+"%\n"
-                + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d;
+                + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
+                + "Clusters: "+clusters.size();
         if(showClusters){
             for(Cluster c : clusters){
                 s+="\n\n"+c.getDetails();

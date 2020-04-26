@@ -162,7 +162,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
         }
         return null;
     }
-    private final String name;
+    public final String name;
     public final String description;
     public GenerationPlan(String name, String description, Setting... settings){
         super(settings);

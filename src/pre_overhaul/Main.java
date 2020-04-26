@@ -672,18 +672,9 @@ public class Main extends javax.swing.JFrame{
     }//GEN-LAST:event_buttonPriorityDownActionPerformed
     private void buttonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStartActionPerformed
         start();
-        boxGenPlan.setEnabled(false);
-        spinnerX.setEnabled(false);
-        spinnerY.setEnabled(false);
-        spinnerZ.setEnabled(false);
-        boxFuel.setEnabled(false);
-        spinnerThreads.setEnabled(false);
-        buttonStart.setEnabled(false);
-        buttonStop.setEnabled(true);
     }//GEN-LAST:event_buttonStartActionPerformed
     private void buttonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
         stop();
-        buttonStop.setEnabled(false);
     }//GEN-LAST:event_buttonStopActionPerformed
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         stop();
@@ -760,7 +751,7 @@ public class Main extends javax.swing.JFrame{
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> boxFuel;
+    public javax.swing.JComboBox<String> boxFuel;
     private javax.swing.JComboBox<String> boxGenModel;
     private javax.swing.JComboBox<String> boxGenPlan;
     private javax.swing.JButton buttonExportImage;
@@ -807,9 +798,9 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JPanel panelPriorities;
     private javax.swing.JPanel panelSize;
     private javax.swing.JSpinner spinnerThreads;
-    private javax.swing.JSpinner spinnerX;
-    private javax.swing.JSpinner spinnerY;
-    private javax.swing.JSpinner spinnerZ;
+    public javax.swing.JSpinner spinnerX;
+    public javax.swing.JSpinner spinnerY;
+    public javax.swing.JSpinner spinnerZ;
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JTextArea textAreaGenModelDesc;
     private javax.swing.JTextArea textAreaGenPlanDesc;
@@ -878,11 +869,19 @@ public class Main extends javax.swing.JFrame{
         }
         return new DefaultComboBoxModel<>(strs);
     }
-    boolean running = false;
+    public static boolean running = false;
     private static final Object synchronizer = new Object();//This can't be duplicated... right? RIGHT?
     int activeThreads = 0;
     int iterations = 0;
-    private void start(){
+    public void start(){
+        boxGenPlan.setEnabled(false);
+        spinnerX.setEnabled(false);
+        spinnerY.setEnabled(false);
+        spinnerZ.setEnabled(false);
+        boxFuel.setEnabled(false);
+        spinnerThreads.setEnabled(false);
+        buttonStart.setEnabled(false);
+        buttonStop.setEnabled(true);
         Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
         int x = (int) spinnerX.getValue();
         int y = (int) spinnerY.getValue();
@@ -897,7 +896,8 @@ public class Main extends javax.swing.JFrame{
         }
         startDisplayThread();
     }
-    private void stop(){
+    public void stop(){
+        buttonStop.setEnabled(false);
         running = false;
         startShutdownThread();
     }
