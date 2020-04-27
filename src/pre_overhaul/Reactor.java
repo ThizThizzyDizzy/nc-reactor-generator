@@ -8,6 +8,9 @@ import javax.swing.JTextArea;
 import common.JSON;
 import common.JSON.JSONObject;
 import common.JSON.JSONArray;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 public abstract class Reactor{
     //The export format is based on this version of hellrage's reactor planner: (Saved in the json file)
     public static final int MAJOR_VERSION = 1;
@@ -503,5 +506,42 @@ public abstract class Reactor{
             }
         }
         return cells;
+    }
+    public BufferedImage getImage(){
+        return getImage(new Color(240,240,240));
+    }
+    public BufferedImage getImage(Color background){
+        int blockSize = 16;
+        BufferedImage image = new BufferedImage(blockSize*x, blockSize*(((z+1)*y)-1), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = image.createGraphics();
+        g.setColor(background);
+        g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        int yOff = 0;
+        for(int Y = y-1; Y>=0; Y--){
+            for(int Z = 0; Z<z; Z++){
+                for(int X = 0; X<x; X++){
+                    g.drawImage(parts[X][Y][Z].getImage(), X*blockSize, yOff, blockSize, blockSize, null);
+                    if(parts[X][Y][Z]==ReactorPart.AIR)continue;//ignore
+//                    if(active[x][y][z]){
+//                        g.setColor(new Color(0, 255, 0, 127));
+//                        g.fillRect(x*blockSize, yOff, blockSize, blockSize);
+//                    }
+
+//                    if(!active[x][y][z]&&!blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[x][y][z]){
+//                        g.setColor(new Color(255, 0, 0, 127));
+//                        g.fillRect(x*blockSize, yOff, blockSize, blockSize);
+//                    }
+                    
+//                    int id = getClusterID(x,y,z);
+//                    if(id>-1){
+//                        g.setColor(new Color(id*80, 0, 0, 127));
+//                        g.fillRect(x*blockSize, yOff, blockSize, blockSize);
+//                    }
+                }
+                yOff+=blockSize;
+            }
+            yOff+=blockSize;
+        }
+        return image;
     }
 }

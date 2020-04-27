@@ -120,7 +120,6 @@ public class ReactorPart implements ReactorBit{
                 Enumeration enumEntries = jar.entries();
                 while(enumEntries.hasMoreElements()){
                     JarEntry file = (JarEntry)enumEntries.nextElement();
-                    System.out.println(file.getName());
                     if(file.getName().equals("textures/"+texture.replace("\\", "/")+".png")){
                         image = ImageIO.read(jar.getInputStream(file));
                         break;

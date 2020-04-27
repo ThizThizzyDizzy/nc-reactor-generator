@@ -1,10 +1,15 @@
 package discord;
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -13,6 +18,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -55,16 +61,20 @@ public class Bot extends ListenerAdapter{
             content = content.toLowerCase().replace("_", "").replace("-", "").replace(":", "").replace("=", "");
             while(content.contains("  "))content = content.replace("  ", " ");
             content = content.replace(" x ", "x");
-            if(content.startsWith("abort")){
+            if(content.startsWith("abort")||content.startsWith("halt")||content.startsWith("finish")||content.startsWith("stop")){
                 if(content.contains("overhaul")&&!content.contains("preoverhaul")&&!content.contains("underhaul")){
                     if(overhaul.Main.running){
                         overhaul.Main.instance.stop();
                         message.getChannel().sendMessage("Overhaul generation halted").queue();
+                    }else{
+                        message.getChannel().sendMessage("Overhaul generator is not running!").queue();
                     }
                 }else{
                     if(pre_overhaul.Main.running){
                         pre_overhaul.Main.instance.stop();
                         message.getChannel().sendMessage("Underhaul generation halted").queue();
+                    }else{
+                        message.getChannel().sendMessage("Underhaul generator is not running!").queue();
                     }
                 }
             }
@@ -130,7 +140,11 @@ public class Bot extends ListenerAdapter{
                     }
                     if(overhaul.Main.instance!=null)overhaul.Main.instance.dispose();
                     overhaul.Main.instance = new overhaul.Main();
-                    overhaul.Main.instance.setVisible(true);
+                    if(content.contains("symmetr")){
+                        overhaul.Main.instance.checkBoxSymmetryX.setSelected(true);
+                        overhaul.Main.instance.checkBoxSymmetryY.setSelected(true);
+                        overhaul.Main.instance.checkBoxSymmetryZ.setSelected(true);
+                    }
                     overhaul.Main.instance.spinnerX.setValue(X);
                     overhaul.Main.instance.spinnerY.setValue(Y);
                     overhaul.Main.instance.spinnerZ.setValue(Z);
@@ -143,20 +157,57 @@ public class Bot extends ListenerAdapter{
                         overhaulMessage = message.getChannel().sendMessage("Generating Reactors...").complete();
                     }
                     overhaulTime = System.nanoTime();
+                    int sx = X, sy = Y, sz = Z;
+                    overhaul.Fuel sf = fuel;
+                    overhaul.Fuel.Type sft = type;
                     Thread t = new Thread(() -> {
                         while(overhaul.Main.running&&System.nanoTime()<overhaulTime+TIME_LIMIT){
                             try{
                                 Thread.sleep(1000);
-                                updateOverhaul("Generating reactors...\n");
+                                updateOverhaul("Generating reactors...\n", true);
                             }catch(InterruptedException ex){
                                 Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         if(overhaul.Main.running)overhaul.Main.instance.stop();
-                        updateOverhaul("Generated Reactor");
+                        updateOverhaul("Generated Reactor", false);
+                        File image = new File("overhaul.png");
+                        File json = new File("overhaul.json");
+                        overhaul.Reactor r = overhaul.Main.genPlan.getReactors().get(0);
+                        try{
+                            ImageIO.write(r.getImage(new Color(54, 57, 63)), "png", image);
+                            message.getChannel().sendFile(image, "Underhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
+                            r.exportJSON().write(json);
+                            message.getChannel().sendFile(json, "Overhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+" "+sft.toString()+".json").queue();
+                        }catch(Exception ex){
+                            message.getChannel().sendMessage(ex.getClass().getName()+": "+ex.getMessage()).queue();
+                            ex.printStackTrace();
+                        }
                     });
                     t.setDaemon(true);
                     t.start();
+                    for(Attachment at : message.getAttachments()){
+                        try{
+                            if(at.getFileExtension().equals("json")){
+                                String text = "";
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(at.retrieveInputStream().get()));
+                                String line;
+                                while((line = reader.readLine())!=null){
+                                    text+=line+"\n";
+                                }
+                                reader.close();
+                                overhaul.Reactor r = overhaul.Reactor.parse(text, fuel, type, X, Y, Z);
+                                if(r==null)throw new NullPointerException("Invalid Reactor");
+                                overhaul.Main.genPlan.importReactor(r, true);
+                                message.getChannel().sendMessage("Imported reactor: "+at.getFileName()).queue();
+                            }else{
+                                System.err.println("Unknown extention: "+at.getFileExtension());
+                            }
+                        }catch(Exception ex){
+                            message.getChannel().sendMessage("Failed to parse attachment: "+at.getFileName()+"\n"+ex.getClass().getName()+": "+ex.getMessage()).queue();
+                            ex.printStackTrace();
+                        }
+                    }
                 }else{
                     if(pre_overhaul.Main.running){
                         message.getChannel().sendMessage("Underhaul generator is already running!").queue();
@@ -224,7 +275,11 @@ public class Bot extends ListenerAdapter{
                     }
                     if(pre_overhaul.Main.instance!=null)pre_overhaul.Main.instance.dispose();
                     pre_overhaul.Main.instance = new pre_overhaul.Main();
-                    pre_overhaul.Main.instance.setVisible(true);
+                    if(content.contains("symmetr")){
+                        pre_overhaul.Main.instance.checkBoxSymmetryX.setSelected(true);
+                        pre_overhaul.Main.instance.checkBoxSymmetryY.setSelected(true);
+                        pre_overhaul.Main.instance.checkBoxSymmetryZ.setSelected(true);
+                    }
                     pre_overhaul.Main.instance.spinnerX.setValue(X);
                     pre_overhaul.Main.instance.spinnerY.setValue(Y);
                     pre_overhaul.Main.instance.spinnerZ.setValue(Z);
@@ -236,26 +291,62 @@ public class Bot extends ListenerAdapter{
                         underhaulMessage = message.getChannel().sendMessage("Generating Reactors...").complete();
                     }
                     underhaulTime = System.nanoTime();
+                    int sx = X, sy = Y, sz = Z;
+                    pre_overhaul.Fuel sf = fuel;
                     Thread t = new Thread(() -> {
                         while(pre_overhaul.Main.running&&System.nanoTime()<underhaulTime+TIME_LIMIT){
                             try{
                                 Thread.sleep(1000);
-                                updateUnderhaul("Generating reactors...\n");
+                                updateUnderhaul("Generating reactors...\n", true);
                             }catch(InterruptedException ex){
                                 Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         if(pre_overhaul.Main.running)pre_overhaul.Main.instance.stop();
-                        updateUnderhaul("Generated Reactor");
+                        updateUnderhaul("Generated Reactor", false);
+                        File image = new File("underhaul.png");
+                        File json = new File("underhaul.json");
+                        pre_overhaul.Reactor r = pre_overhaul.Main.genPlan.getReactors().get(0);
+                        try{
+                            ImageIO.write(r.getImage(new Color(54, 57, 63)), "png", image);
+                            message.getChannel().sendFile(image, "Underhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
+                            r.exportJSON().write(json);
+                            message.getChannel().sendFile(json, "Underhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+".json").queue();
+                        }catch(Exception ex){
+                            message.getChannel().sendMessage(ex.getClass().getName()+": "+ex.getMessage()).queue();
+                            ex.printStackTrace();
+                        }
                     });
                     t.setDaemon(true);
                     t.start();
+                    for(Attachment at : message.getAttachments()){
+                        try{
+                            if(at.getFileExtension().equals("json")){
+                                String text = "";
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(at.retrieveInputStream().get()));
+                                String line;
+                                while((line = reader.readLine())!=null){
+                                    text+=line+"\n";
+                                }
+                                reader.close();
+                                pre_overhaul.Reactor r = pre_overhaul.Reactor.parse(text, fuel, X, Y, Z);
+                                if(r==null)throw new NullPointerException("Invalid Reactor");
+                                pre_overhaul.Main.genPlan.importReactor(r, true);
+                                message.getChannel().sendMessage("Imported reactor: "+at.getFileName()).queue();
+                            }else{
+                                System.err.println("Unknown extention: "+at.getFileExtension());
+                            }
+                        }catch(Exception ex){
+                            message.getChannel().sendMessage("Failed to parse attachment: "+at.getFileName()+"\n"+ex.getClass().getName()+": "+ex.getMessage()).queue();
+                            ex.printStackTrace();
+                        }
+                    }
                 }
             }
             break;
         }
     }
-    private void updateOverhaul(String prefix){
+    private void updateOverhaul(String prefix, boolean showLayout){
         for(CompletableFuture<Message> future : overhaulFutures){
             if(!future.isDone())future.cancel(false);
         }
@@ -275,18 +366,20 @@ public class Bot extends ListenerAdapter{
                 + "Fuel: "+overhaul.Fuel.fuels.get(overhaul.Main.instance.boxFuel.getSelectedIndex())+" "+overhaul.Fuel.Type.values()[overhaul.Main.instance.boxFuelType.getSelectedIndex()]+"\n"+r.getDetails(false, false);
         builder.addField("Details", details, false);
         text+="\n**Details**\n"+details;
-        String layout = "";
-        for(int y = 0; y<r.y; y++){
-            for(int z = 0; z<r.z; z++){
-                for(int x = 0; x<r.x; x++){
-                    layout += toEmoteString(r.parts[x][y][z], overhaulMessage.getGuild());
+        if(showLayout){
+            String layout = "";
+            for(int y = 0; y<r.y; y++){
+                for(int z = 0; z<r.z; z++){
+                    for(int x = 0; x<r.x; x++){
+                        layout += toEmoteString(r.parts[x][y][z], overhaulMessage.getGuild());
+                    }
+                    layout+="\n";
                 }
                 layout+="\n";
             }
-            layout+="\n";
+            builder.addField("Reactor Layout", layout.length()>1024?"Too big!":layout, true);
+            text+="\n**Reactor Layout**\n"+layout;
         }
-        builder.addField("Reactor Layout", layout.length()>1024?"Too big!":layout, true);
-        text+="\n**Reactor Layout**\n"+layout;
         if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>";
         builder.setColor(Color.ORANGE);
         builder.setFooter("Overhaul | Stability of multi-cluser reactors is not guaranteed");
@@ -296,7 +389,7 @@ public class Bot extends ListenerAdapter{
             overhaulFutures.add(overhaulMessage.editMessage(text).submit());
         }
     }
-    private void updateUnderhaul(String prefix){
+    private void updateUnderhaul(String prefix, boolean showLayout){
         for(CompletableFuture<Message> future : underhaulFutures){
             if(!future.isDone())future.cancel(false);
         }
@@ -315,19 +408,21 @@ public class Bot extends ListenerAdapter{
         String details = "Size: "+pre_overhaul.Main.instance.spinnerX.getValue()+"x"+pre_overhaul.Main.instance.spinnerY.getValue()+"x"+pre_overhaul.Main.instance.spinnerZ.getValue()+"\n"
                 + "Fuel: "+pre_overhaul.Fuel.fuels.get(pre_overhaul.Main.instance.boxFuel.getSelectedIndex())+"\n"+r.getDetails(false);
         builder.addField("Details", details, false);
-        text+="\n**Details**\n"+details.substring(1);
-        String layout = "";
-        for(int y = 0; y<r.y; y++){
-            for(int z = 0; z<r.z; z++){
-                for(int x = 0; x<r.x; x++){
-                    layout+=toEmoteString(r.parts[x][y][z], underhaulMessage.getGuild());
+        text+="\n**Details**\n"+details;
+        if(showLayout){
+            String layout = "";
+            for(int y = 0; y<r.y; y++){
+                for(int z = 0; z<r.z; z++){
+                    for(int x = 0; x<r.x; x++){
+                        layout+=toEmoteString(r.parts[x][y][z], underhaulMessage.getGuild());
+                    }
+                    layout+="\n";
                 }
                 layout+="\n";
             }
-            layout+="\n";
+            builder.addField("Reactor Layout", layout.length()>1024?"Too Big!":layout, true);
+            text+="\n**Reactor Layout**\n"+layout;
         }
-        builder.addField("Reactor Layout", layout.length()>1024?"Too Big!":layout, true);
-        text+="\n**Reactor Layout**\n"+layout;
         if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>";
         builder.setColor(Color.ORANGE);
         builder.setFooter("Underhaul");
