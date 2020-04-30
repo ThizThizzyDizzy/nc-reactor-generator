@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -61,6 +62,10 @@ public class Bot extends ListenerAdapter{
             content = content.toLowerCase().replace("_", "").replace("-", "").replace(":", "").replace("=", "");
             while(content.contains("  "))content = content.replace("  ", " ");
             content = content.replace(" x ", "x");
+            if(content.startsWith("help")){
+                message.getChannel().sendMessage(getHelp()).queue();
+                return;
+            }
             if(content.startsWith("abort")||content.startsWith("halt")||content.startsWith("finish")||content.startsWith("stop")){
                 if(content.contains("overhaul")&&!content.contains("preoverhaul")&&!content.contains("underhaul")){
                     if(overhaul.Main.running){
@@ -382,7 +387,7 @@ public class Bot extends ListenerAdapter{
         }
         if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>";
         builder.setColor(Color.ORANGE);
-        builder.setFooter("Overhaul | Stability of multi-cluser reactors is not guaranteed");
+        builder.setFooter((r.clusters.size()>1?"Stability of multi-cluster reactors is not guaranteed\n":"")+"Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator");
         try{
             overhaulFutures.add(overhaulMessage.editMessage(builder.build()).submit());
         }catch(InsufficientPermissionException ex){
@@ -425,7 +430,7 @@ public class Bot extends ListenerAdapter{
         }
         if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>";
         builder.setColor(Color.ORANGE);
-        builder.setFooter("Underhaul");
+        builder.setFooter("Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator");
         try{
             underhaulFutures.add(underhaulMessage.editMessage(builder.build()).submit());
         }catch(InsufficientPermissionException ex){
@@ -477,5 +482,31 @@ public class Bot extends ListenerAdapter{
                 return part.toString().toLowerCase().replace(" ", "_").replace("_moderator", "");
         }
         return part.toString();
+    }
+    private String getHelp(){
+        String prefix = "**Prefixes:**\n";
+        for(String pref : prefixes){
+            prefix+=pref+"\n";
+        }
+        if(prefixes.length==1)prefix = "";
+        return "__**S'plodo-bot help**__\n"+prefix
+                + "**Commands:**\n"
+                + prefixes[0]+"help  Shows this help window\n"
+                + prefixes[0]+"abort|stop|halt|finish  Stops the currently generating reactor (specify *-abort overhaul* to stop overhaul generation)\n"
+                + prefixes[0]+"generate  Generates a reactor with the given parameters\n"
+                + "Provide keywords for what type of reactor you wish to generate\n"
+                + "*Valid Keywords:*\n"
+                + "`overhaul` - generates an overhaul reactor (Default: pre-overhaul)\n"
+                + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for pre-overhaul; 5x5x5 for overhaul)\n"
+                + "`<fuel>` - generates a reactor using the specified fuel (Default: LEU-235 Oxide)\n"
+                + "`efficiency` or `efficient` - sets efficiency as the main proiority (default)\n"
+                + "`output` - sets output as the main priority\n"
+                + "`breeder` - sets fuel usage as the main priority (Underhaul only)\n"
+                + "`symmetry` or `symmetrical` - applies symmetry to generated reactors\n"
+                + "*Examples of valid commands:*\n"
+                + prefixes[0]+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
+                + prefixes[0]+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel\n\n"
+                + "***`Powered by Thizzy'z Reactor Generator`***\n"
+                + "https://github.com/ThizThizzyDizzy/nc-reactor-generator";
     }
 }

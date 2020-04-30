@@ -44,6 +44,11 @@ public class Main extends javax.swing.JFrame{
         }
         return time;
     }
+    static{
+        try{
+            Challenger.init();
+        }catch(Exception ex){}
+    }
     public Main(){
         initComponents();
         boxGenModelItemStateChanged(null);

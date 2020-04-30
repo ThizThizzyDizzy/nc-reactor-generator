@@ -207,7 +207,7 @@ public abstract class Reactor{
     private double[][][] efficiency;
     private double[][][] positionalEfficiency;
     private int[][][] heatMult;
-    private ArrayList<Cluster> clusters;
+    public ArrayList<Cluster> clusters;
     public int rawOutput;//required for JSON export... Output without sparsity penalty, I'm assuming?
     public int totalOutput;
     public int totalHeat;
