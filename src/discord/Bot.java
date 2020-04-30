@@ -2,7 +2,6 @@ package discord;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -385,9 +383,10 @@ public class Bot extends ListenerAdapter{
             builder.addField("Reactor Layout", layout.length()>1024?"Too big!":layout, true);
             text+="\n**Reactor Layout**\n"+layout;
         }
-        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>";
         builder.setColor(Color.ORANGE);
+        text+="\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
         builder.setFooter((r.clusters.size()>1?"Stability of multi-cluster reactors is not guaranteed\n":"")+"Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator");
+        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
         try{
             overhaulFutures.add(overhaulMessage.editMessage(builder.build()).submit());
         }catch(InsufficientPermissionException ex){
@@ -428,9 +427,10 @@ public class Bot extends ListenerAdapter{
             builder.addField("Reactor Layout", layout.length()>1024?"Too Big!":layout, true);
             text+="\n**Reactor Layout**\n"+layout;
         }
-        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>";
         builder.setColor(Color.ORANGE);
         builder.setFooter("Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator");
+        text+="\n*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
+        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>\n*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
         try{
             underhaulFutures.add(underhaulMessage.editMessage(builder.build()).submit());
         }catch(InsufficientPermissionException ex){
@@ -506,7 +506,6 @@ public class Bot extends ListenerAdapter{
                 + "*Examples of valid commands:*\n"
                 + prefixes[0]+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
                 + prefixes[0]+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel\n\n"
-                + "***`Powered by Thizzy'z Reactor Generator`***\n"
-                + "https://github.com/ThizThizzyDizzy/nc-reactor-generator";
+                + "*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
     }
 }
