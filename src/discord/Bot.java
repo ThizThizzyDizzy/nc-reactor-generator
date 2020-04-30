@@ -27,7 +27,7 @@ public class Bot extends ListenerAdapter{
     private static String[] prefixes;
     private static final long TIME_LIMIT = 1_000_000_000l*60;//one minute in nanoseconds
     private static long overhaulTime, underhaulTime;
-    private int MAX_SIZE = 128; //the biggest allowed value for the X/Y/Z dimensions
+    private int MAX_SIZE = 24; //the biggest allowed value for the X/Y/Z dimensions
     private Message overhaulMessage;
     private Message underhaulMessage;
     private ArrayList<CompletableFuture<Message>> underhaulFutures = new ArrayList<>();
@@ -88,9 +88,9 @@ public class Bot extends ListenerAdapter{
                         return;
                     }
                     int X = 5,Y = 5,Z = 5;
-                    for(int x = 0; x<MAX_SIZE; x++){
-                        for(int y = 0; y<MAX_SIZE; y++){
-                            for(int z = 0; z<MAX_SIZE; z++){
+                    for(int x = 0; x<=MAX_SIZE; x++){
+                        for(int y = 0; y<=MAX_SIZE; y++){
+                            for(int z = 0; z<=MAX_SIZE; z++){
                                 if(content.contains(x+"x"+y+"x"+z)){
                                     X = x;
                                     Y = y;
@@ -217,9 +217,9 @@ public class Bot extends ListenerAdapter{
                         return;
                     }
                     int X = 3,Y = 3,Z = 3;
-                    for(int x = 0; x<MAX_SIZE; x++){
-                        for(int y = 0; y<MAX_SIZE; y++){
-                            for(int z = 0; z<MAX_SIZE; z++){
+                    for(int x = 0; x<=MAX_SIZE; x++){
+                        for(int y = 0; y<=MAX_SIZE; y++){
+                            for(int z = 0; z<=MAX_SIZE; z++){
                                 if(content.contains(x+"x"+y+"x"+z)){
                                     X = x;
                                     Y = y;
