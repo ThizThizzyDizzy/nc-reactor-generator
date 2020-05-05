@@ -50,6 +50,7 @@ public class Bot extends ListenerAdapter{
     static void stop(){
         if(running)jda.shutdownNow();
     }
+    private String poweredBy = "Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases";
     @Override
     public void onMessageReceived(MessageReceivedEvent mre){
         Message message = mre.getMessage();
@@ -143,6 +144,17 @@ public class Bot extends ListenerAdapter{
                     }
                     if(overhaul.Main.instance!=null)overhaul.Main.instance.dispose();
                     overhaul.Main.instance = new overhaul.Main();
+                    ArrayList<overhaul.ReactorPart> allowedBlocks = new ArrayList<>(overhaul.ReactorPart.parts);
+                    allowedBlocks.remove(overhaul.ReactorPart.FUEL_CELL_PO_BE);
+                    allowedBlocks.remove(overhaul.ReactorPart.FUEL_CELL_RA_BE);
+                    for(overhaul.ReactorPart part : overhaul.ReactorPart.parts){
+                        String nam = part.jsonName;
+                        if(nam==null)continue;
+                        if(content.contains("no"+nam.toLowerCase())||content.contains("no "+nam.toLowerCase())){
+                            allowedBlocks.remove(part);
+                        }
+                    }
+                    overhaul.Main.instance.setAllowedBlocks(allowedBlocks);
                     if(content.contains("symmetr")){
                         overhaul.Main.instance.checkBoxSymmetryX.setSelected(true);
                         overhaul.Main.instance.checkBoxSymmetryY.setSelected(true);
@@ -264,7 +276,7 @@ public class Bot extends ListenerAdapter{
                         pre_overhaul.Priority.moveToEnd("Minimize Heat");
                         pre_overhaul.Priority.moveToEnd("Fuel Usage");
                         pre_overhaul.Priority.moveToEnd("Cell Count");
-                    }else if(content.contains("breeder")){
+                    }else if(content.contains("breeder")||content.contains("fuel usage")||content.contains("cell count")){
                         pre_overhaul.Priority.moveToEnd("Fuel Usage");
                         pre_overhaul.Priority.moveToEnd("Minimize Heat");
                         pre_overhaul.Priority.moveToEnd("Output");
@@ -278,6 +290,15 @@ public class Bot extends ListenerAdapter{
                     }
                     if(pre_overhaul.Main.instance!=null)pre_overhaul.Main.instance.dispose();
                     pre_overhaul.Main.instance = new pre_overhaul.Main();
+                    ArrayList<pre_overhaul.ReactorPart> allowedBlocks = new ArrayList<>(pre_overhaul.ReactorPart.parts);
+                    for(pre_overhaul.ReactorPart part : pre_overhaul.ReactorPart.parts){
+                        String nam = part.jsonName;
+                        if(nam==null)continue;
+                        if(content.contains("no"+nam.toLowerCase())||content.contains("no "+nam.toLowerCase())){
+                            allowedBlocks.remove(part);
+                        }
+                    }
+                    pre_overhaul.Main.instance.setAllowedBlocks(allowedBlocks);
                     if(content.contains("symmetr")){
                         pre_overhaul.Main.instance.checkBoxSymmetryX.setSelected(true);
                         pre_overhaul.Main.instance.checkBoxSymmetryY.setSelected(true);
@@ -384,9 +405,9 @@ public class Bot extends ListenerAdapter{
             text+="\n**Reactor Layout**\n"+layout;
         }
         builder.setColor(Color.ORANGE);
-        text+="\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
-        builder.setFooter((r.clusters.size()>1?"Stability of multi-cluster reactors is not guaranteed\n":"")+"Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator");
-        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
+        text+="\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*"+poweredBy+"*";
+        builder.setFooter((r.clusters.size()>1?"Stability of multi-cluster reactors is not guaranteed\n":"")+poweredBy);
+        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*"+poweredBy+"*";
         try{
             overhaulFutures.add(overhaulMessage.editMessage(builder.build()).submit());
         }catch(InsufficientPermissionException ex){
@@ -428,9 +449,9 @@ public class Bot extends ListenerAdapter{
             text+="\n**Reactor Layout**\n"+layout;
         }
         builder.setColor(Color.ORANGE);
-        builder.setFooter("Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator");
-        text+="\n*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
-        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>\n*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
+        builder.setFooter(poweredBy);
+        text+="\n*"+poweredBy+"*";
+        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>\n*"+poweredBy+"*";
         try{
             underhaulFutures.add(underhaulMessage.editMessage(builder.build()).submit());
         }catch(InsufficientPermissionException ex){
@@ -490,22 +511,23 @@ public class Bot extends ListenerAdapter{
         }
         if(prefixes.length==1)prefix = "";
         return "__**S'plodo-bot help**__\n"+prefix
-                + "**Commands:**\n"
+                + "> **Commands:**\n"
                 + prefixes[0]+"help  Shows this help window\n"
                 + prefixes[0]+"abort|stop|halt|finish  Stops the currently generating reactor (specify *-abort overhaul* to stop overhaul generation)\n"
                 + prefixes[0]+"generate  Generates a reactor with the given parameters\n"
                 + "Provide keywords for what type of reactor you wish to generate\n"
-                + "*Valid Keywords:*\n"
+                + "**Valid Keywords:**\n"
                 + "`overhaul` - generates an overhaul reactor (Default: pre-overhaul)\n"
                 + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for pre-overhaul; 5x5x5 for overhaul)\n"
                 + "`<fuel>` - generates a reactor using the specified fuel (Default: LEU-235 Oxide)\n"
                 + "`efficiency` or `efficient` - sets efficiency as the main proiority (default)\n"
                 + "`output` - sets output as the main priority\n"
-                + "`breeder` - sets fuel usage as the main priority (Underhaul only)\n"
+                + "`breeder` or `cell count` or `fuel usage` - sets fuel usage as the main priority (Underhaul only)\n"
                 + "`symmetry` or `symmetrical` - applies symmetry to generated reactors\n"
-                + "*Examples of valid commands:*\n"
+                + "`no <block>` - blacklists a certain block from being used in generation\n"
+                + "**Examples of valid commands:**\n"
                 + prefixes[0]+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
-                + prefixes[0]+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel\n\n"
-                + "*Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator*";
+                + prefixes[0]+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum\n\n"
+                + "> *"+poweredBy+"*";
     }
 }

@@ -90,7 +90,7 @@ public class ReactorPart implements ReactorBit{
     /**
      * For exporting to Hellrage's Reactor Planner
      */
-    String jsonName;
+    public final String jsonName;
     public ReactorPart(Type type, String name, String jsonName, String texture){
         this.type = type;
         this.name = name;

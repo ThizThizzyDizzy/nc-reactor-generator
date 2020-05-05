@@ -977,4 +977,11 @@ public class Main extends javax.swing.JFrame{
         t.setDaemon(true);
         t.start();
     }
+    public void setAllowedBlocks(ArrayList<ReactorPart> allowedBlocks){
+        int[] allowed = new int[allowedBlocks.size()];
+        for(int i = 0; i<allowed.length; i++){
+            allowed[i] = ReactorPart.parts.indexOf(allowedBlocks.get(i));
+        }
+        listParts.setSelectedIndices(allowed);
+    }
 }

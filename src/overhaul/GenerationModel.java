@@ -22,17 +22,13 @@ public abstract class GenerationModel extends ThingWithSettings{
                     return new Reactor(fuel, type, x, y, z){
                         @Override
                         protected ReactorPart build(int X, int Y, int Z){
-                            ArrayList<ReactorPart> allowedParts = ReactorPart.getSelectedParts();
                             if(getBoolean("Lock Core")){
                                 if(ReactorPart.GROUP_ALL_CORE.contains(last.parts[X][Y][Z])){
                                     return last.parts[X][Y][Z];
                                 }
-                                for(ReactorPart part : ReactorPart.GROUP_ALL_CORE){
-                                    allowedParts.remove(part);
-                                }
                             }
                             if(rand.nextDouble()<getDouble("Change Chance")/100d){
-                                return ReactorPart.random(rand, allowedParts);
+                                return ReactorPart.random(rand);
                             }else{
                                 return last.parts[X][Y][Z];
                             }
