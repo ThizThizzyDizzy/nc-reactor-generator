@@ -45,12 +45,6 @@ public abstract class Priority{
                 return main.getFuelSpeed()-other.getFuelSpeed();
             }
         });
-        priorities.add(new Priority("Cell count"){
-            @Override
-            protected double doCompare(Reactor main, Reactor other){
-                return main.getFuelCells()-other.getFuelCells();
-            }
-        });
     }
     private final String name;
     public Priority(String name){
