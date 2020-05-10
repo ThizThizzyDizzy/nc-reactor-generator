@@ -287,23 +287,19 @@ public class Bot extends ListenerAdapter{
                         pre_overhaul.Priority.moveToEnd("Output");
                         pre_overhaul.Priority.moveToEnd("Minimize Heat");
                         pre_overhaul.Priority.moveToEnd("Fuel Usage");
-                        pre_overhaul.Priority.moveToEnd("Cell Count");
                     }else if(content.contains("output")){
                         pre_overhaul.Priority.moveToEnd("Efficiency");
                         pre_overhaul.Priority.moveToEnd("Minimize Heat");
                         pre_overhaul.Priority.moveToEnd("Fuel Usage");
-                        pre_overhaul.Priority.moveToEnd("Cell Count");
                     }else if(content.contains("breeder")||content.contains("fuel usage")||content.contains("cell count")){
                         pre_overhaul.Priority.moveToEnd("Fuel Usage");
                         pre_overhaul.Priority.moveToEnd("Minimize Heat");
                         pre_overhaul.Priority.moveToEnd("Output");
                         pre_overhaul.Priority.moveToEnd("Efficiency");
-                        pre_overhaul.Priority.moveToEnd("Cell Count");
                     }else{//default
                         pre_overhaul.Priority.moveToEnd("Output");
                         pre_overhaul.Priority.moveToEnd("Minimize Heat");
                         pre_overhaul.Priority.moveToEnd("Fuel Usage");
-                        pre_overhaul.Priority.moveToEnd("Cell Count");
                     }
                     if(pre_overhaul.Main.instance!=null)pre_overhaul.Main.instance.dispose();
                     pre_overhaul.Main.instance = new pre_overhaul.Main();
