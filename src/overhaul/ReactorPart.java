@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -12,97 +11,76 @@ import javax.imageio.ImageIO;
 public class ReactorPart implements ReactorBit{
     public static final ArrayList<ReactorPart> parts = new ArrayList<>();//TODO update cooling values https://docs.google.com/spreadsheets/d/1zo8frawlKxA--vsu_dTYUKl1jtTdc-whzMTAVY9-4bs/edit#gid=606129178
     public static final ArrayList<ReactorPart> GROUP_CORE = new ArrayList<>();
-    public static final ArrayList<ReactorPart> GROUP_CELL = new ArrayList<>();
-    public static final ArrayList<ReactorPart> GROUP_ALL_CORE = new ArrayList<>();
-    public static final ArrayList<ReactorPart> GROUP_ALL_CELL = new ArrayList<>();
+    public static final ArrayList<ReactorPart> GROUP_CELLS = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_HEATSINK = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_MODERATOR = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_REFLECTOR = new ArrayList<>();
     public static final ReactorPart AIR = air();
-    public static final ReactorPart FUEL_CELL = fuelCell(null, "{FUEL};False;None", 0);
-    public static final ReactorPart FUEL_CELL_CF_252 = fuelCell("Cf-252", "{FUEL};True;Cf-252", 1);
-    public static final ReactorPart FUEL_CELL_PO_BE = fuelCell("Po-Be", "{FUEL};True;Po-Be", .95);
-    public static final ReactorPart FUEL_CELL_RA_BE = fuelCell("Ra-Be", "{FUEL};True;Ra-Be", .9);
-    public static final ReactorPart HEATSINK_WATER = heatsink("Water", "Water", 55, PlacementRule.atLeast(1, Type.FUEL_CELL));
-    public static final ReactorPart HEATSINK_IRON = heatsink("Iron", "Iron", 50, PlacementRule.atLeast(1, Type.MODERATOR));
-    public static final ReactorPart HEATSINK_REDSTONE = heatsink("Redstone", "Redstone", 85, PlacementRule.atLeast(1, Type.FUEL_CELL), PlacementRule.atLeast(1, Type.MODERATOR));
-    public static final ReactorPart HEATSINK_QUARTZ = heatsink("Quartz", "Quartz", 75, PlacementRule.atLeast(1, HEATSINK_REDSTONE));
-    public static final ReactorPart HEATSINK_GLOWSTONE = heatsink("Glowstone", "Glowstone", 100, PlacementRule.atLeast(2, Type.MODERATOR));
-    public static final ReactorPart HEATSINK_OBSIDIAN = heatsink("Obsidian", "Obsidian", 70, PlacementRule.axis(HEATSINK_GLOWSTONE));
-    public static final ReactorPart HEATSINK_NETHER_BRICK = heatsink("Nether Brick", "NetherBrick", 105, PlacementRule.atLeast(1, HEATSINK_OBSIDIAN));
-    public static final ReactorPart HEATSINK_LAPIS = heatsink("Lapis", "Lapis", 95, PlacementRule.atLeast(1, Type.FUEL_CELL), PlacementRule.atLeast(1, Type.CASING));
-    public static final ReactorPart HEATSINK_GOLD = heatsink("Gold", "Gold", 110, PlacementRule.atLeast(2, HEATSINK_IRON));
-    public static final ReactorPart HEATSINK_PRISMARINE = heatsink("Prismarine", "Prismarine", 115, PlacementRule.atLeast(2, HEATSINK_WATER));
-    public static final ReactorPart HEATSINK_LEAD = heatsink("Lead", "Lead", 60, PlacementRule.atLeast(1, HEATSINK_IRON));
-    public static final ReactorPart HEATSINK_SLIME = heatsink("Slime", "Slime", 135, PlacementRule.exactly(1, HEATSINK_WATER), PlacementRule.atLeast(2, HEATSINK_LEAD));
-    public static final ReactorPart HEATSINK_END_STONE = heatsink("End Stone", "EndStone", 65, PlacementRule.atLeast(1, Type.REFLECTOR));
-    public static final ReactorPart HEATSINK_PURPUR = heatsink("Purpur", "Purpur", 90, PlacementRule.exactly(1, HEATSINK_IRON), PlacementRule.atLeast(1, HEATSINK_END_STONE));
-    public static final ReactorPart HEATSINK_DIAMOND = heatsink("Diamond", "Diamond", 195, PlacementRule.atLeast(1, HEATSINK_GOLD),PlacementRule.atLeast(1, Type.FUEL_CELL));
-    public static final ReactorPart HEATSINK_EMERALD = heatsink("Emerald", "Emerald", 190, PlacementRule.atLeast(1, HEATSINK_PRISMARINE),PlacementRule.atLeast(1, Type.MODERATOR));
-    public static final ReactorPart HEATSINK_COPPER = heatsink("Copper", "Copper", 80, PlacementRule.atLeast(1, HEATSINK_WATER));
-    public static final ReactorPart HEATSINK_TIN = heatsink("Tin", "Tin", 120, PlacementRule.axis(HEATSINK_LAPIS));
-    public static final ReactorPart HEATSINK_BORON = heatsink("Boron", "Boron", 165, PlacementRule.exactly(1, HEATSINK_QUARTZ), PlacementRule.atLeast(1, Type.CASING));
-    public static final ReactorPart HEATSINK_LITHIUM = heatsink("Lithium", "Lithium", 130, PlacementRule.axis(HEATSINK_LEAD), PlacementRule.atLeast(1, Type.CASING));
-    public static final ReactorPart HEATSINK_MAGNESIUM = heatsink("Magnesium", "Magnesium", 125, PlacementRule.exactly(1, Type.MODERATOR), PlacementRule.atLeast(1, Type.CASING));
-    public static final ReactorPart HEATSINK_MANGANESE = heatsink("Manganese", "Manganese", 145, PlacementRule.atLeast(2, Type.FUEL_CELL));
-    public static final ReactorPart HEATSINK_ALUMINUM = heatsink("Aluminum", "Aluminum", 185, PlacementRule.atLeast(1, HEATSINK_QUARTZ), PlacementRule.atLeast(1, HEATSINK_LAPIS));
-    public static final ReactorPart HEATSINK_SILVER = heatsink("Silver", "Silver", 170, PlacementRule.atLeast(2, HEATSINK_GLOWSTONE), PlacementRule.atLeast(1, HEATSINK_TIN));
-    public static final ReactorPart HEATSINK_FLUORITE = heatsink("Fluorite", "Fluorite", 175, PlacementRule.atLeast(1, HEATSINK_GOLD), PlacementRule.atLeast(1, HEATSINK_PRISMARINE));
-    public static final ReactorPart HEATSINK_VILLIAUMITE = heatsink("Villiaumite", "Villiaumite", 160, PlacementRule.atLeast(1, HEATSINK_END_STONE), PlacementRule.atLeast(1, HEATSINK_REDSTONE));
-    public static final ReactorPart HEATSINK_CAROBBIITE = heatsink("Carobbiite", "Carobbiite", 150, PlacementRule.atLeast(1, HEATSINK_COPPER), PlacementRule.atLeast(1, HEATSINK_END_STONE));
-    public static final ReactorPart HEATSINK_ARSENIC = heatsink("Arsenic", "Arsenic", 140, PlacementRule.axis(Type.REFLECTOR));
-    public static final ReactorPart HEATSINK_NITROGEN = heatsink("Nitrogen", "Nitrogen", 180, PlacementRule.atLeast(2, HEATSINK_COPPER), PlacementRule.atLeast(1, HEATSINK_PURPUR));
-    public static final ReactorPart HEATSINK_HELIUM = heatsink("Helium", "Helium", 200, PlacementRule.exactly(2, HEATSINK_REDSTONE));
-    public static final ReactorPart HEATSINK_ENDERIUM = heatsink("Enderium", "Enderium", 155, PlacementRule.atLeast(3, Type.MODERATOR));
-    public static final ReactorPart HEATSINK_CRYOTHEUM = heatsink("Cryotheum", "Cryotheum", 205, PlacementRule.atLeast(3, Type.FUEL_CELL));
-    public static final ReactorPart BERYLLIUM = moderator("Beryllium", "Beryllium", 22, 1.05);
-    public static final ReactorPart GRAPHITE = moderator("Graphite", "Graphite", 10, 1.1);
-    public static final ReactorPart HEAVY_WATER = moderator("Heavy Water", "HeavyWater", 36, 1);
+    public static FuelCell BEST_CELL;
+    public static final FuelCell FUEL_CELL = fuelCell(null, "{FUEL};False;None");
+    public static final FuelCell FUEL_CELL_CF_252 = fuelCell("Cf-252", "{FUEL};True;Cf-252");
+    public static final FuelCell FUEL_CELL_PO_BE = fuelCell("Po-Be", "{FUEL};True;Po-Be");
+    public static final FuelCell FUEL_CELL_RA_BE = fuelCell("Ra-Be", "{FUEL};True;Ra-Be");
+    public static final Heatsink HEATSINK_WATER = heatsink("Water", "Water", PlacementRule.atLeast(1, Type.FUEL_CELL));
+    public static final Heatsink HEATSINK_IRON = heatsink("Iron", "Iron", PlacementRule.atLeast(1, Type.MODERATOR));
+    public static final Heatsink HEATSINK_REDSTONE = heatsink("Redstone", "Redstone", PlacementRule.atLeast(1, Type.FUEL_CELL), PlacementRule.atLeast(1, Type.MODERATOR));
+    public static final Heatsink HEATSINK_QUARTZ = heatsink("Quartz", "Quartz", PlacementRule.atLeast(1, HEATSINK_REDSTONE));
+    public static final Heatsink HEATSINK_GLOWSTONE = heatsink("Glowstone", "Glowstone", PlacementRule.atLeast(2, Type.MODERATOR));
+    public static final Heatsink HEATSINK_OBSIDIAN = heatsink("Obsidian", "Obsidian", PlacementRule.axis(HEATSINK_GLOWSTONE));
+    public static final Heatsink HEATSINK_NETHER_BRICK = heatsink("Nether Brick", "NetherBrick", PlacementRule.atLeast(1, HEATSINK_OBSIDIAN));
+    public static final Heatsink HEATSINK_LAPIS = heatsink("Lapis", "Lapis", PlacementRule.atLeast(1, Type.FUEL_CELL), PlacementRule.atLeast(1, Type.CASING));
+    public static final Heatsink HEATSINK_GOLD = heatsink("Gold", "Gold", PlacementRule.atLeast(2, HEATSINK_IRON));
+    public static final Heatsink HEATSINK_PRISMARINE = heatsink("Prismarine", "Prismarine", PlacementRule.atLeast(2, HEATSINK_WATER));
+    public static final Heatsink HEATSINK_LEAD = heatsink("Lead", "Lead", PlacementRule.atLeast(1, HEATSINK_IRON));
+    public static final Heatsink HEATSINK_SLIME = heatsink("Slime", "Slime", PlacementRule.exactly(1, HEATSINK_WATER), PlacementRule.atLeast(2, HEATSINK_LEAD));
+    public static final Heatsink HEATSINK_END_STONE = heatsink("End Stone", "EndStone", PlacementRule.atLeast(1, Type.REFLECTOR));
+    public static final Heatsink HEATSINK_PURPUR = heatsink("Purpur", "Purpur", PlacementRule.exactly(1, HEATSINK_IRON), PlacementRule.atLeast(1, HEATSINK_END_STONE));
+    public static final Heatsink HEATSINK_DIAMOND = heatsink("Diamond", "Diamond", PlacementRule.atLeast(1, HEATSINK_GOLD),PlacementRule.atLeast(1, Type.FUEL_CELL));
+    public static final Heatsink HEATSINK_EMERALD = heatsink("Emerald", "Emerald", PlacementRule.atLeast(1, HEATSINK_PRISMARINE),PlacementRule.atLeast(1, Type.MODERATOR));
+    public static final Heatsink HEATSINK_COPPER = heatsink("Copper", "Copper", PlacementRule.atLeast(1, HEATSINK_WATER));
+    public static final Heatsink HEATSINK_TIN = heatsink("Tin", "Tin", PlacementRule.axis(HEATSINK_LAPIS));
+    public static final Heatsink HEATSINK_BORON = heatsink("Boron", "Boron", PlacementRule.exactly(1, HEATSINK_QUARTZ), PlacementRule.atLeast(1, Type.CASING));
+    public static final Heatsink HEATSINK_LITHIUM = heatsink("Lithium", "Lithium", PlacementRule.axis(HEATSINK_LEAD), PlacementRule.atLeast(1, Type.CASING));
+    public static final Heatsink HEATSINK_MAGNESIUM = heatsink("Magnesium", "Magnesium", PlacementRule.exactly(1, Type.MODERATOR), PlacementRule.atLeast(1, Type.CASING));
+    public static final Heatsink HEATSINK_MANGANESE = heatsink("Manganese", "Manganese", PlacementRule.atLeast(2, Type.FUEL_CELL));
+    public static final Heatsink HEATSINK_ALUMINUM = heatsink("Aluminum", "Aluminum", PlacementRule.atLeast(1, HEATSINK_QUARTZ), PlacementRule.atLeast(1, HEATSINK_LAPIS));
+    public static final Heatsink HEATSINK_SILVER = heatsink("Silver", "Silver", PlacementRule.atLeast(2, HEATSINK_GLOWSTONE), PlacementRule.atLeast(1, HEATSINK_TIN));
+    public static final Heatsink HEATSINK_FLUORITE = heatsink("Fluorite", "Fluorite", PlacementRule.atLeast(1, HEATSINK_GOLD), PlacementRule.atLeast(1, HEATSINK_PRISMARINE));
+    public static final Heatsink HEATSINK_VILLIAUMITE = heatsink("Villiaumite", "Villiaumite", PlacementRule.atLeast(1, HEATSINK_END_STONE), PlacementRule.atLeast(1, HEATSINK_REDSTONE));
+    public static final Heatsink HEATSINK_CAROBBIITE = heatsink("Carobbiite", "Carobbiite", PlacementRule.atLeast(1, HEATSINK_COPPER), PlacementRule.atLeast(1, HEATSINK_END_STONE));
+    public static final Heatsink HEATSINK_ARSENIC = heatsink("Arsenic", "Arsenic", PlacementRule.axis(Type.REFLECTOR));
+    public static final Heatsink HEATSINK_NITROGEN = heatsink("Nitrogen", "Nitrogen", PlacementRule.atLeast(2, HEATSINK_COPPER), PlacementRule.atLeast(1, HEATSINK_PURPUR));
+    public static final Heatsink HEATSINK_HELIUM = heatsink("Helium", "Helium", PlacementRule.exactly(2, HEATSINK_REDSTONE));
+    public static final Heatsink HEATSINK_ENDERIUM = heatsink("Enderium", "Enderium", PlacementRule.atLeast(3, Type.MODERATOR));
+    public static final Heatsink HEATSINK_CRYOTHEUM = heatsink("Cryotheum", "Cryotheum", PlacementRule.atLeast(3, Type.FUEL_CELL));
+    public static final Moderator BERYLLIUM = moderator("Beryllium", "Beryllium");
+    public static final Moderator GRAPHITE = moderator("Graphite", "Graphite");
+    public static final Moderator HEAVY_WATER = moderator("Heavy Water", "HeavyWater");
     public static final ReactorPart CONDUCTOR = conductor();
-    public static final ReactorPart REFLECTOR_BERYLLIUM_CARBON = reflector("Beryllium-Carbon", "Beryllium-Carbon", 1, .5);
-    public static final ReactorPart REFLECTOR_LEAD_STEEL = reflector("Lead-Steel", "Lead-Steel", 0.5, .25);
+    public static final Reflector REFLECTOR_BERYLLIUM_CARBON = reflector("Beryllium-Carbon", "Beryllium-Carbon");
+    public static final Reflector REFLECTOR_LEAD_STEEL = reflector("Lead-Steel", "Lead-Steel");
     public static ReactorPart CASING = new ReactorPart(Type.CASING, "Casing", null, null);
-    private static ReactorPart add(ReactorPart p){
+    private static <T extends ReactorPart> T add(T p){
         parts.add(p);
         return p;
     }
     private static ReactorPart air(){
         ReactorPart part = new ReactorPart(Type.AIR, "Air", null, "air");
-//        GROUP_CORE.add(part);GROUP_ALL_CORE.add(part);
         return add(part);
     }
-    private static ReactorPart fuelCell(String name, String jsonName, double efficiency){
-        ReactorPart part = new FuelCell(name, jsonName, efficiency);
-        boolean hasBetter = false;
-        for(Iterator<ReactorPart> it = GROUP_CORE.iterator(); it.hasNext();){
-            ReactorPart p = it.next();
-            if(p instanceof FuelCell){
-                if(((FuelCell) p).efficiency<efficiency)it.remove();
-                else hasBetter = true;
-            }
-        }
-        if(!hasBetter)GROUP_CORE.add(part);
-        hasBetter = false;
-        for(Iterator<ReactorPart> it = GROUP_CELL.iterator(); it.hasNext();){
-            ReactorPart p = it.next();
-            if(p instanceof FuelCell){
-                if(((FuelCell) p).efficiency<efficiency)it.remove();
-                else hasBetter = true;
-            }
-        }
-        if(!hasBetter)GROUP_CELL.add(part);
-        GROUP_ALL_CORE.add(part);
-        GROUP_ALL_CELL.add(part);
+    private static FuelCell fuelCell(String name, String jsonName){
+        FuelCell part = new FuelCell(name, jsonName);
+        GROUP_CORE.add(part);
         return add(part);
     }
-    private static ReactorPart heatsink(String name, String jsonName, int cooling, PlacementRule... rules){
-        ReactorPart part = new Heatsink(name, jsonName, cooling, rules);
+    private static Heatsink heatsink(String name, String jsonName, PlacementRule... rules){
+        Heatsink part = new Heatsink(name, jsonName, rules);
         GROUP_HEATSINK.add(part);
         return add(part);
     }
-    private static ReactorPart moderator(String name, String jsonName, int fluxFactor, double efficiencyFactor){
-        ReactorPart part = new Moderator(name, fluxFactor, jsonName, efficiencyFactor);
-        GROUP_CORE.add(part);GROUP_ALL_CORE.add(part);
+    private static Moderator moderator(String name, String jsonName){
+        Moderator part = new Moderator(name, jsonName);
+        GROUP_CORE.add(part);
         GROUP_MODERATOR.add(part);
         return add(part);
     }
@@ -110,9 +88,9 @@ public class ReactorPart implements ReactorBit{
         ReactorPart part = new ReactorPart(Type.CONDUCTOR, "Conductor", "Conductors", "conductor");
         return add(part);
     }
-    private static ReactorPart reflector(String name, String jsonName, double reflectivity, double efficiency){
-        ReactorPart part = new Reflector(name, reflectivity, jsonName, efficiency);
-        GROUP_CORE.add(part);GROUP_ALL_CORE.add(part);
+    private static Reflector reflector(String name, String jsonName){
+        Reflector part = new Reflector(name, jsonName);
+        GROUP_CORE.add(part);
         GROUP_REFLECTOR.add(part);
         return add(part);
     }

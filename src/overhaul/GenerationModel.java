@@ -23,7 +23,7 @@ public abstract class GenerationModel extends ThingWithSettings{
                         @Override
                         protected ReactorPart build(int X, int Y, int Z){
                             if(getBoolean("Lock Core")){
-                                if(ReactorPart.GROUP_ALL_CORE.contains(last.parts[X][Y][Z])){
+                                if(ReactorPart.GROUP_CORE.contains(last.parts[X][Y][Z])){
                                     return last.parts[X][Y][Z];
                                 }
                             }

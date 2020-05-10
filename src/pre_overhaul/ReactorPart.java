@@ -12,25 +12,25 @@ public class ReactorPart implements ReactorBit{
     public static final ArrayList<ReactorPart> parts = new ArrayList<>();
     public static final ReactorPart AIR = air();
     public static final ReactorPart FUEL_CELL = fuelCell();
-    public static final ReactorPart COOLER_WATER = cooler("Water", "Water", 60, PlacementRule.or(PlacementRule.atLeast(1, Type.FUEL_CELL),PlacementRule.atLeast(1, Type.MODERATOR)));
-    public static final ReactorPart COOLER_REDSTONE = cooler("Redstone", "Redstone", 90, PlacementRule.atLeast(1, Type.FUEL_CELL));
-    public static final ReactorPart COOLER_QUARTZ = cooler("Quartz", "Quartz", 90, PlacementRule.atLeast(1, Type.MODERATOR));
-    public static final ReactorPart COOLER_GOLD = cooler("Gold", "Gold", 120, PlacementRule.atLeast(1, COOLER_WATER), PlacementRule.atLeast(1, COOLER_REDSTONE));
-    public static final ReactorPart COOLER_GLOWSTONE = cooler("Glowstone", "Glowstone", 130, PlacementRule.atLeast(2, Type.MODERATOR));
-    public static final ReactorPart COOLER_LAPIS = cooler("Lapis", "Lapis", 120, PlacementRule.atLeast(1, Type.FUEL_CELL), PlacementRule.atLeast(1, Type.CASING));
-    public static final ReactorPart COOLER_DIAMOND = cooler("Diamond", "Diamond", 150, PlacementRule.atLeast(1, COOLER_WATER), PlacementRule.atLeast(1, COOLER_QUARTZ));
-    public static final ReactorPart COOLER_HELIUM = cooler("Helium", "Helium", 140, PlacementRule.exactly(1, COOLER_REDSTONE), PlacementRule.atLeast(1, Type.CASING));
-    public static final ReactorPart COOLER_ENDERIUM = cooler("Enderium", "Enderium", 120, PlacementRule.exactly(3, Type.CASING));
-    public static final ReactorPart COOLER_CRYOTHEUM = cooler("Cryotheum", "Cryotheum", 160, PlacementRule.atLeast(2, Type.FUEL_CELL));
-    public static final ReactorPart COOLER_IRON = cooler("Iron", "Iron", 80, PlacementRule.atLeast(1, COOLER_GOLD));
-    public static final ReactorPart COOLER_EMERALD = cooler("Emerald", "Emerald", 160, PlacementRule.atLeast(1, Type.MODERATOR), PlacementRule.atLeast(1, Type.FUEL_CELL));
-    public static final ReactorPart COOLER_COPPER = cooler("Copper", "Copper", 80, PlacementRule.atLeast(1, COOLER_GLOWSTONE));
-    public static final ReactorPart COOLER_TIN = cooler("Tin", "Tin", 120, PlacementRule.axis(COOLER_LAPIS));
-    public static final ReactorPart COOLER_MAGNESIUM = cooler("Magnesium", "Magnesium", 110, PlacementRule.atLeast(1, Type.CASING), PlacementRule.atLeast(1, Type.MODERATOR));
+    public static final Cooler COOLER_WATER = cooler("Water", "Water", PlacementRule.or(PlacementRule.atLeast(1, Type.FUEL_CELL),PlacementRule.atLeast(1, Type.MODERATOR)));
+    public static final Cooler COOLER_REDSTONE = cooler("Redstone", "Redstone", PlacementRule.atLeast(1, Type.FUEL_CELL));
+    public static final Cooler COOLER_QUARTZ = cooler("Quartz", "Quartz", PlacementRule.atLeast(1, Type.MODERATOR));
+    public static final Cooler COOLER_GOLD = cooler("Gold", "Gold", PlacementRule.atLeast(1, COOLER_WATER), PlacementRule.atLeast(1, COOLER_REDSTONE));
+    public static final Cooler COOLER_GLOWSTONE = cooler("Glowstone", "Glowstone", PlacementRule.atLeast(2, Type.MODERATOR));
+    public static final Cooler COOLER_LAPIS = cooler("Lapis", "Lapis", PlacementRule.atLeast(1, Type.FUEL_CELL), PlacementRule.atLeast(1, Type.CASING));
+    public static final Cooler COOLER_DIAMOND = cooler("Diamond", "Diamond", PlacementRule.atLeast(1, COOLER_WATER), PlacementRule.atLeast(1, COOLER_QUARTZ));
+    public static final Cooler COOLER_HELIUM = cooler("Helium", "Helium", PlacementRule.exactly(1, COOLER_REDSTONE), PlacementRule.atLeast(1, Type.CASING));
+    public static final Cooler COOLER_ENDERIUM = cooler("Enderium", "Enderium", PlacementRule.exactly(3, Type.CASING), PlacementRule.noPancake());
+    public static final Cooler COOLER_CRYOTHEUM = cooler("Cryotheum", "Cryotheum", PlacementRule.atLeast(2, Type.FUEL_CELL));
+    public static final Cooler COOLER_IRON = cooler("Iron", "Iron", PlacementRule.atLeast(1, COOLER_GOLD));
+    public static final Cooler COOLER_EMERALD = cooler("Emerald", "Emerald", PlacementRule.atLeast(1, Type.MODERATOR), PlacementRule.atLeast(1, Type.FUEL_CELL));
+    public static final Cooler COOLER_COPPER = cooler("Copper", "Copper", PlacementRule.atLeast(1, COOLER_GLOWSTONE));
+    public static final Cooler COOLER_TIN = cooler("Tin", "Tin", PlacementRule.axis(COOLER_LAPIS));
+    public static final Cooler COOLER_MAGNESIUM = cooler("Magnesium", "Magnesium", PlacementRule.atLeast(1, Type.CASING), PlacementRule.atLeast(1, Type.MODERATOR));
     public static final ReactorPart GRAPHITE = moderator("Graphite", "Graphite");
     public static final ReactorPart BERYLLIUM = moderator("Beryllium", "Beryllium");
     public static ReactorPart CASING = new ReactorPart(Type.CASING, "Casing", null, null);
-    private static ReactorPart add(ReactorPart p){
+    private static <T extends ReactorPart> T add(T p){
         parts.add(p);
         return p;
     }
@@ -40,8 +40,8 @@ public class ReactorPart implements ReactorBit{
     private static ReactorPart fuelCell(){
         return add(new ReactorPart(Type.FUEL_CELL, "Fuel Cell", "FuelCell", "cell"));
     }
-    private static ReactorPart cooler(String name, String jsonName, int cooling, PlacementRule... rules){
-        return add(new Cooler(name, jsonName, cooling, rules));
+    private static Cooler cooler(String name, String jsonName, PlacementRule... rules){
+        return add(new Cooler(name, jsonName, rules));
     }
     private static ReactorPart moderator(String name, String jsonName){
         return add(new ReactorPart(Type.MODERATOR, name+" Moderator", jsonName, name.replace(" ", "_").toLowerCase()));

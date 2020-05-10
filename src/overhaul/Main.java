@@ -2,13 +2,17 @@ package overhaul;
 import common.Version;
 import common.Exporter;
 import discord.BotInterface;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JLabel;
+import javax.swing.JSpinner;
 import javax.swing.ListModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ListDataListener;
 public class Main extends javax.swing.JFrame{
     public static Main instance;
@@ -53,6 +57,7 @@ public class Main extends javax.swing.JFrame{
         initComponents();
         boxGenModelItemStateChanged(null);
         boxGenPlanItemStateChanged(null);
+        fillConfigPanels(Configuration.DEFAULT);
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -119,6 +124,15 @@ public class Main extends javax.swing.JFrame{
         textAreaImportStats = new javax.swing.JTextArea();
         buttonImportExportImage = new javax.swing.JButton();
         buttonImportExportJSON = new javax.swing.JButton();
+        jPanel8 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        buttonConfigDefault = new javax.swing.JButton();
+        buttonConfigCustom = new javax.swing.JButton();
+        panelConfigHeatsinks = new javax.swing.JPanel();
+        panelConfigFuels = new javax.swing.JPanel();
+        panelConfigSources = new javax.swing.JPanel();
+        panelConfigModerators = new javax.swing.JPanel();
+        panelConfigReflectors = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
 
@@ -334,11 +348,11 @@ public class Main extends javax.swing.JFrame{
                 .addGroup(panelSizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panelSizeLayout.createSequentialGroup()
-                        .addComponent(spinnerX, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
+                        .addComponent(spinnerX, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spinnerY, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
+                        .addComponent(spinnerY, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spinnerZ, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)))
+                        .addComponent(spinnerZ, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelSizeLayout.setVerticalGroup(
@@ -529,7 +543,7 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -602,7 +616,7 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(jScrollPane8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                    .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(buttonImportExportImage)
@@ -631,6 +645,76 @@ public class Main extends javax.swing.JFrame{
         );
 
         tabbedPane.addTab("Import Reactor", jPanel4);
+
+        jPanel9.setLayout(new java.awt.GridLayout());
+
+        buttonConfigDefault.setText("Default");
+        buttonConfigDefault.setEnabled(false);
+        buttonConfigDefault.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonConfigDefaultActionPerformed(evt);
+            }
+        });
+        jPanel9.add(buttonConfigDefault);
+
+        buttonConfigCustom.setText("Custom");
+        buttonConfigCustom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonConfigCustomActionPerformed(evt);
+            }
+        });
+        jPanel9.add(buttonConfigCustom);
+
+        panelConfigHeatsinks.setLayout(new java.awt.GridLayout(0, 2));
+
+        panelConfigFuels.setMaximumSize(new java.awt.Dimension(1000, 32767));
+        panelConfigFuels.setLayout(new java.awt.GridLayout(0, 13));
+
+        panelConfigSources.setLayout(new java.awt.GridLayout(0, 2));
+
+        panelConfigModerators.setLayout(new java.awt.GridLayout(0, 3));
+
+        panelConfigReflectors.setLayout(new java.awt.GridLayout(0, 3));
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(panelConfigHeatsinks, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(panelConfigSources, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(panelConfigModerators, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(panelConfigReflectors, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelConfigFuels, javax.swing.GroupLayout.PREFERRED_SIZE, 770, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 11, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelConfigFuels, javax.swing.GroupLayout.PREFERRED_SIZE, 636, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(panelConfigHeatsinks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelConfigSources, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelConfigModerators, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelConfigReflectors, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+
+        tabbedPane.addTab("Configuration", jPanel8);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -778,6 +862,130 @@ public class Main extends javax.swing.JFrame{
     private void buttonImportExportJSONActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportExportJSONActionPerformed
         Exporter.export(getImportReactor().exportJSON());
     }//GEN-LAST:event_buttonImportExportJSONActionPerformed
+    private void buttonConfigDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonConfigDefaultActionPerformed
+        if(Configuration.load(Configuration.DEFAULT)){
+            buttonConfigDefault.setEnabled(false);
+            buttonConfigCustom.setEnabled(true);
+            fillConfigPanels(Configuration.DEFAULT);
+        }
+    }//GEN-LAST:event_buttonConfigDefaultActionPerformed
+    private void buttonConfigCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonConfigCustomActionPerformed
+        if(Configuration.load(Configuration.CUSTOM)){
+            buttonConfigDefault.setEnabled(true);
+            buttonConfigCustom.setEnabled(false);
+            panelConfigHeatsinks.removeAll();
+            panelConfigFuels.removeAll();
+            panelConfigModerators.removeAll();
+            panelConfigReflectors.removeAll();
+            panelConfigSources.removeAll();
+            panelConfigHeatsinks.add(new JLabel("Heatsink"));
+            panelConfigHeatsinks.add(new JLabel("Cooling"));
+            panelConfigModerators.add(new JLabel("Moderator"));
+            panelConfigModerators.add(new JLabel("Efficiency"));
+            panelConfigModerators.add(new JLabel("Flux Factor"));
+            panelConfigReflectors.add(new JLabel("Reflector"));
+            panelConfigReflectors.add(new JLabel("Reflectivity"));
+            panelConfigReflectors.add(new JLabel("Efficiency"));
+            panelConfigSources.add(new JLabel("Source"));
+            panelConfigSources.add(new JLabel("Efficiency"));
+            for(ReactorPart part : ReactorPart.parts){
+                if(part instanceof Heatsink){
+                    panelConfigHeatsinks.add(new JLabel(part.toString().replace(" Heatsink", "")));
+                    JSpinner spinner = new JSpinner(new SpinnerNumberModel((int)Configuration.CUSTOM.cooling.get((Heatsink)part), 0, Integer.MAX_VALUE, 1));
+                    spinner.addChangeListener((e) -> {
+                        Configuration.CUSTOM.cooling.put((Heatsink)part, (Integer) spinner.getValue());
+                        if(!buttonConfigCustom.isEnabled())Configuration.load(Configuration.CUSTOM);
+                    });
+                    panelConfigHeatsinks.add(spinner);
+                }
+                if(part instanceof Moderator){
+                    panelConfigModerators.add(new JLabel(part.toString().replace(" Moderator", "")));
+                    JSpinner effSpinner = new JSpinner(new SpinnerNumberModel((double)Configuration.CUSTOM.modEff.get((Moderator)part), 0, Double.MAX_VALUE, .01));
+                    effSpinner.addChangeListener((e) -> {
+                        Configuration.CUSTOM.modEff.put((Moderator)part, (float) effSpinner.getValue());
+                        if(!buttonConfigCustom.isEnabled())Configuration.load(Configuration.CUSTOM);
+                    });
+                    panelConfigModerators.add(effSpinner);
+                    JSpinner fluxSpinner = new JSpinner(new SpinnerNumberModel((int)Configuration.CUSTOM.modFlux.get((Moderator)part), 0, Integer.MAX_VALUE, 1));
+                    fluxSpinner.addChangeListener((e) -> {
+                        Configuration.CUSTOM.modFlux.put((Moderator)part, (int) fluxSpinner.getValue());
+                        if(!buttonConfigCustom.isEnabled())Configuration.load(Configuration.CUSTOM);
+                    });
+                    panelConfigModerators.add(fluxSpinner);
+                }
+                if(part instanceof Reflector){
+                    panelConfigReflectors.add(new JLabel(part.toString().replace(" Reflector", "")));
+                    JSpinner refSpinner = new JSpinner(new SpinnerNumberModel((double)Configuration.CUSTOM.refRef.get((Reflector)part), 0, Double.MAX_VALUE, .01));
+                    refSpinner.addChangeListener((e) -> {
+                        Configuration.CUSTOM.refRef.put((Reflector)part, (float) refSpinner.getValue());
+                        if(!buttonConfigCustom.isEnabled())Configuration.load(Configuration.CUSTOM);
+                    });
+                    panelConfigReflectors.add(refSpinner);
+                    JSpinner effSpinner = new JSpinner(new SpinnerNumberModel((double)Configuration.CUSTOM.refEff.get((Reflector)part), 0, Double.MAX_VALUE, .01));
+                    effSpinner.addChangeListener((e) -> {
+                        Configuration.CUSTOM.refEff.put((Reflector)part, (float) effSpinner.getValue());
+                        if(!buttonConfigCustom.isEnabled())Configuration.load(Configuration.CUSTOM);
+                    });
+                    panelConfigReflectors.add(effSpinner);
+                }
+                if(part instanceof FuelCell){
+                    if(((FuelCell)part).efficiency==0)continue;
+                    String name = part.toString();
+                    name = name.substring(name.indexOf("(")+1, name.length()-1);
+                    panelConfigSources.add(new JLabel(name));
+                    JSpinner effSpinner = new JSpinner(new SpinnerNumberModel((double)Configuration.CUSTOM.sourceEff.get((FuelCell)part), 0, Double.MAX_VALUE, .01));
+                    effSpinner.addChangeListener((e) -> {
+                        Configuration.CUSTOM.sourceEff.put((FuelCell)part, (float) effSpinner.getValue());
+                        if(!buttonConfigCustom.isEnabled())Configuration.load(Configuration.CUSTOM);
+                    });
+                    panelConfigSources.add(effSpinner);
+                }
+            }
+            panelConfigFuels.add(new JLabel("Fuel"));
+            for(Fuel.Type type : Fuel.Type.values()){
+                panelConfigFuels.add(new JLabel("["+type.name()+"] Eff."));
+                panelConfigFuels.add(new JLabel("["+type.name()+"] Heat"));
+                panelConfigFuels.add(new JLabel("["+type.name()+"] Critica."));
+            }
+            for(Fuel fuel : Configuration.CUSTOM.fuels){
+                panelConfigFuels.add(new JLabel(fuel.toString()));
+                for(Fuel.Type type : Fuel.Type.values()){
+                    JSpinner effSpinner = new JSpinner(new SpinnerNumberModel(fuel.efficiency.get(type).doubleValue(), 0, Double.MAX_VALUE, .01));
+                    effSpinner.addChangeListener((e) -> {
+                        fuel.efficiency.put(type, (double) effSpinner.getValue());
+                    });
+                    panelConfigFuels.add(effSpinner);
+                    
+                    JSpinner heatSpinner = new JSpinner(new SpinnerNumberModel(fuel.heat.get(type).doubleValue(), 0, Double.MAX_VALUE, .01));
+                    heatSpinner.addChangeListener((e) -> {
+                        fuel.heat.put(type, (double) heatSpinner.getValue());
+                    });
+                    panelConfigFuels.add(heatSpinner);
+                    
+                    JSpinner criticalitySpinner = new JSpinner(new SpinnerNumberModel(fuel.criticality.get(type).intValue(), 0, Integer.MAX_VALUE, 1));
+                    criticalitySpinner.addChangeListener((e) -> {
+                        fuel.criticality.put(type, (int) criticalitySpinner.getValue());
+                    });
+                    panelConfigFuels.add(criticalitySpinner);
+                }
+            }
+            for(Component c : panelConfigHeatsinks.getComponents()){
+                c.setEnabled(!running);
+            }
+            for(Component c : panelConfigModerators.getComponents()){
+                c.setEnabled(!running);
+            }
+            for(Component c : panelConfigReflectors.getComponents()){
+                c.setEnabled(!running);
+            }
+            for(Component c : panelConfigSources.getComponents()){
+                c.setEnabled(!running);
+            }
+            for(Component c : panelConfigFuels.getComponents()){
+                c.setEnabled(!running);
+            }
+        }
+    }//GEN-LAST:event_buttonConfigCustomActionPerformed
     private Reactor getImportReactor(){
         Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
         Fuel.Type type = Fuel.Type.values()[boxFuelType.getSelectedIndex()];
@@ -787,6 +995,7 @@ public class Main extends javax.swing.JFrame{
         return Reactor.parse(textAreaImport, fuel, type, x, y, z);
     }
     public static void main(String args[]){
+        Configuration.load(Configuration.DEFAULT);
         if(args.length>1&&args[0].replace("_", " ").replace(" ", "").equalsIgnoreCase("discord")){
             BotInterface.main(args);
             return;
@@ -813,6 +1022,8 @@ public class Main extends javax.swing.JFrame{
     public javax.swing.JComboBox<String> boxFuelType;
     private javax.swing.JComboBox<String> boxGenModel;
     private javax.swing.JComboBox<String> boxGenPlan;
+    private javax.swing.JButton buttonConfigCustom;
+    private javax.swing.JButton buttonConfigDefault;
     private javax.swing.JButton buttonExportImage;
     private javax.swing.JButton buttonExportJSON;
     private javax.swing.JButton buttonImport;
@@ -839,6 +1050,8 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -851,6 +1064,11 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JLabel labelParts;
     public javax.swing.JList<String> listParts;
     private javax.swing.JList<String> listPriorities;
+    private javax.swing.JPanel panelConfigFuels;
+    private javax.swing.JPanel panelConfigHeatsinks;
+    private javax.swing.JPanel panelConfigModerators;
+    private javax.swing.JPanel panelConfigReflectors;
+    private javax.swing.JPanel panelConfigSources;
     private javax.swing.JPanel panelFuels;
     private javax.swing.JPanel panelGenModel;
     private javax.swing.JPanel panelGenModelSettings;
@@ -926,14 +1144,14 @@ public class Main extends javax.swing.JFrame{
         }
         return new DefaultComboBoxModel<>(strs);
     }
-    private ComboBoxModel<String> getFuels(){
+    public ComboBoxModel<String> getFuels(){
         String[] strs = new String[Fuel.fuels.size()];
         for(int i = 0; i<strs.length; i++){
             strs[i] = Fuel.fuels.get(i).toString();
         }
         return new DefaultComboBoxModel<>(strs);
     }
-    private ComboBoxModel<String> getFuelModifiers(){
+    public ComboBoxModel<String> getFuelModifiers(){
         String[] strs = new String[Fuel.Type.values().length];
         for(int i = 0; i<strs.length; i++){
             strs[i] = Fuel.Type.values()[i].toString();
@@ -945,6 +1163,21 @@ public class Main extends javax.swing.JFrame{
     int activeThreads = 0;
     int iterations = 0;
     public void start(){
+        for(Component c : panelConfigHeatsinks.getComponents()){
+            c.setEnabled(false);
+        }
+        for(Component c : panelConfigModerators.getComponents()){
+            c.setEnabled(false);
+        }
+        for(Component c : panelConfigReflectors.getComponents()){
+            c.setEnabled(false);
+        }
+        for(Component c : panelConfigSources.getComponents()){
+            c.setEnabled(false);
+        }
+        for(Component c : panelConfigFuels.getComponents()){
+            c.setEnabled(false);
+        }
         boxGenPlan.setEnabled(false);
         spinnerX.setEnabled(false);
         spinnerY.setEnabled(false);
@@ -970,6 +1203,21 @@ public class Main extends javax.swing.JFrame{
         startDisplayThread();
     }
     public void stop(){
+        for(Component c : panelConfigHeatsinks.getComponents()){
+            c.setEnabled(!buttonConfigCustom.isEnabled());
+        }
+        for(Component c : panelConfigModerators.getComponents()){
+            c.setEnabled(!buttonConfigCustom.isEnabled());
+        }
+        for(Component c : panelConfigReflectors.getComponents()){
+            c.setEnabled(!buttonConfigCustom.isEnabled());
+        }
+        for(Component c : panelConfigSources.getComponents()){
+            c.setEnabled(!buttonConfigCustom.isEnabled());
+        }
+        for(Component c : panelConfigFuels.getComponents()){
+            c.setEnabled(!buttonConfigCustom.isEnabled());
+        }
         buttonStop.setEnabled(false);
         running = false;
         startShutdownThread();
@@ -1058,5 +1306,59 @@ public class Main extends javax.swing.JFrame{
             allowed[i] = ReactorPart.parts.indexOf(allowedBlocks.get(i));
         }
         listParts.setSelectedIndices(allowed);
+    }
+    private void fillConfigPanels(Configuration config){
+        panelConfigHeatsinks.removeAll();
+        panelConfigFuels.removeAll();
+        panelConfigModerators.removeAll();
+        panelConfigReflectors.removeAll();
+        panelConfigSources.removeAll();
+        panelConfigHeatsinks.add(new JLabel("Heatsink"));
+        panelConfigHeatsinks.add(new JLabel("Cooling"));
+        panelConfigModerators.add(new JLabel("Moderator"));
+        panelConfigModerators.add(new JLabel("Efficiency"));
+        panelConfigModerators.add(new JLabel("Flux Factor"));
+        panelConfigReflectors.add(new JLabel("Reflector"));
+        panelConfigReflectors.add(new JLabel("Reflectivity"));
+        panelConfigReflectors.add(new JLabel("Efficiency"));
+        panelConfigSources.add(new JLabel("Source"));
+        panelConfigSources.add(new JLabel("Efficiency"));
+        for(ReactorPart part : ReactorPart.parts){
+            if(part instanceof Heatsink){
+                panelConfigHeatsinks.add(new JLabel(part.toString().replace(" Heatsink", "")));
+                panelConfigHeatsinks.add(new JLabel(config.cooling.get((Heatsink)part)+""));
+            }
+            if(part instanceof Moderator){
+                panelConfigModerators.add(new JLabel(part.toString().replace(" Moderator", "")));
+                panelConfigModerators.add(new JLabel(config.modEff.get((Moderator)part)+""));
+                panelConfigModerators.add(new JLabel(config.modFlux.get((Moderator)part)+""));
+            }
+            if(part instanceof Reflector){
+                panelConfigReflectors.add(new JLabel(part.toString().replace(" Reflector", "")));
+                panelConfigReflectors.add(new JLabel(config.refRef.get((Reflector)part)+""));
+                panelConfigReflectors.add(new JLabel(config.refEff.get((Reflector)part)+""));
+            }
+            if(part instanceof FuelCell){
+                if(((FuelCell)part).efficiency==0)continue;
+                String name = part.toString();
+                name = name.substring(name.indexOf("(")+1, name.length()-1);
+                panelConfigSources.add(new JLabel(name));
+                panelConfigSources.add(new JLabel(config.sourceEff.get((FuelCell)part)+""));
+            }
+        }
+        panelConfigFuels.add(new JLabel("Fuel"));
+        for(Fuel.Type type : Fuel.Type.values()){
+            panelConfigFuels.add(new JLabel("["+type.name()+"] Eff."));
+            panelConfigFuels.add(new JLabel("["+type.name()+"] Heat"));
+            panelConfigFuels.add(new JLabel("["+type.name()+"] Critica."));
+        }
+        for(Fuel fuel : config.fuels){
+            panelConfigFuels.add(new JLabel(fuel.toString()));
+            for(Fuel.Type type : Fuel.Type.values()){
+                panelConfigFuels.add(new JLabel(fuel.efficiency.get(type)+""));
+                panelConfigFuels.add(new JLabel(fuel.heat.get(type)+""));
+                panelConfigFuels.add(new JLabel((int)fuel.criticality.get(type)+""));
+            }
+        }
     }
 }

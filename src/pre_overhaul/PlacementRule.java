@@ -15,6 +15,9 @@ public class PlacementRule{
     public static PlacementRule axis(ReactorBit bit){
         return new PlacementRule(Type.AXIS, 0, 0, bit);
     }
+    public static PlacementRule noPancake(){
+        return new PlacementRule(Type.NO_PANCAKE, 0, 0, null);
+    }
     private final Type type;
     private final int min;
     private final int max;
@@ -48,6 +51,8 @@ public class PlacementRule{
                 if(reactor.matches(x, y, z+1, bit, checkActive))count++;
                 if(reactor.matches(x, y, z-1, bit, checkActive))count++;
                 return count>=min&&count<=max;
+            case NO_PANCAKE:
+                return reactor.x>1&&reactor.y>1&&reactor.z>1;
             default:
                 throw new IllegalArgumentException("Unknown Placement Rule Type: "+type.toString()+"!");
         }
@@ -59,6 +64,6 @@ public class PlacementRule{
         return isValid(reactor, x, y, z, true);
     }
     private static enum Type{
-        BETWEEN,AXIS,OR;
+        BETWEEN,AXIS,OR,NO_PANCAKE;
     }
 }
