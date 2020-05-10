@@ -126,6 +126,7 @@
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                           <Connection code="getReactorPartsModel()" type="code"/>
                         </Property>
+                        <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;This is the list of parts available&lt;br&gt;&#xa;Selected (white) parts will be used by the generator&#xa;Click to select a single part&#xa;Shift-click to select a range&#xa;Ctrl-click to toggle a part&#xa;&lt;/html&gt;"/>
                         <Property name="selectedIndices" type="[I" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                           <Connection code="generateSelectedParts()" type="code"/>
                         </Property>
@@ -757,6 +758,7 @@
                         <Component class="javax.swing.JButton" name="buttonExportJSON">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="Export to JSON"/>
+                            <Property name="toolTipText" type="java.lang.String" value="Exported JSONs are compatible with Hellrage&apos;s Reactor Planner"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonExportJSONActionPerformed"/>
@@ -837,6 +839,7 @@
                           <Properties>
                             <Property name="columns" type="int" value="20"/>
                             <Property name="rows" type="int" value="5"/>
+                            <Property name="toolTipText" type="java.lang.String" value="To import a reactor, paste the contents of the design JSON into this box and click the Import button below"/>
                           </Properties>
                           <Events>
                             <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="textAreaImportKeyTyped"/>
@@ -863,6 +866,7 @@
                             <Property name="editable" type="boolean" value="false"/>
                             <Property name="columns" type="int" value="20"/>
                             <Property name="rows" type="int" value="2"/>
+                            <Property name="text" type="java.lang.String" value="Paste a reactor JSON above to begin"/>
                           </Properties>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
@@ -873,6 +877,7 @@
                     <Component class="javax.swing.JButton" name="buttonImport">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Import Reactor"/>
+                        <Property name="toolTipText" type="java.lang.String" value="Click to import the reactor contained in the box above"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonImportActionPerformed"/>
@@ -897,6 +902,7 @@
                     <Component class="javax.swing.JButton" name="buttonImportExportJSON">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Export to JSON"/>
+                        <Property name="toolTipText" type="java.lang.String" value="Exported JSONs are compatible with Hellrage&apos;s Reactor Planner"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonImportExportJSONActionPerformed"/>

@@ -149,6 +149,7 @@ public class Main extends javax.swing.JFrame{
 
         listParts.setBackground(new java.awt.Color(190, 190, 190));
         listParts.setModel(getReactorPartsModel());
+        listParts.setToolTipText("<html>\nThis is the list of parts available<br>\nSelected (white) parts will be used by the generator\nClick to select a single part\nShift-click to select a range\nCtrl-click to toggle a part\n</html>");
         listParts.setSelectedIndices(generateSelectedParts());
         listParts.setSelectionBackground(new java.awt.Color(255, 255, 255));
         listParts.setSelectionForeground(new java.awt.Color(0, 0, 0));
@@ -177,6 +178,7 @@ public class Main extends javax.swing.JFrame{
 
         boxGenModel.setModel(getGenerationModels());
         boxGenModel.setSelectedIndex(GenerationModel.models.indexOf(genModel));
+        boxGenModel.setToolTipText("");
         boxGenModel.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 boxGenModelItemStateChanged(evt);
@@ -218,6 +220,7 @@ public class Main extends javax.swing.JFrame{
 
         boxGenPlan.setModel(getGenerationPlans());
         boxGenPlan.setSelectedIndex(GenerationPlan.plans.indexOf(genPlan));
+        boxGenPlan.setToolTipText("");
         boxGenPlan.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 boxGenPlanItemStateChanged(evt);
@@ -500,6 +503,7 @@ public class Main extends javax.swing.JFrame{
         });
 
         buttonExportJSON.setText("Export to JSON");
+        buttonExportJSON.setToolTipText("Exported JSONs are compatible with Hellrage's Reactor Planner");
         buttonExportJSON.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonExportJSONActionPerformed(evt);
@@ -563,6 +567,7 @@ public class Main extends javax.swing.JFrame{
 
         textAreaImport.setColumns(20);
         textAreaImport.setRows(5);
+        textAreaImport.setToolTipText("To import a reactor, paste the contents of the design JSON into this box and click the Import button below");
         textAreaImport.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 textAreaImportKeyTyped(evt);
@@ -575,6 +580,7 @@ public class Main extends javax.swing.JFrame{
         textAreaImportOutput.setEditable(false);
         textAreaImportOutput.setColumns(20);
         textAreaImportOutput.setRows(2);
+        textAreaImportOutput.setText("Paste a reactor JSON above to begin");
         jScrollPane7.setViewportView(textAreaImportOutput);
 
         buttonImport.setText("Import Reactor");
@@ -597,6 +603,7 @@ public class Main extends javax.swing.JFrame{
         });
 
         buttonImportExportJSON.setText("Export to JSON");
+        buttonImportExportJSON.setToolTipText("Exported JSONs are compatible with Hellrage's Reactor Planner");
         buttonImportExportJSON.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonImportExportJSONActionPerformed(evt);
@@ -646,7 +653,7 @@ public class Main extends javax.swing.JFrame{
 
         tabbedPane.addTab("Import Reactor", jPanel4);
 
-        jPanel9.setLayout(new java.awt.GridLayout());
+        jPanel9.setLayout(new java.awt.GridLayout(1, 0));
 
         buttonConfigDefault.setText("Default");
         buttonConfigDefault.setEnabled(false);
@@ -837,7 +844,10 @@ public class Main extends javax.swing.JFrame{
         }).start();
     }//GEN-LAST:event_textAreaImportKeyTyped
     private void buttonImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
+        Reactor r = getImportReactor();
+        if(r==null)return;
         genPlan.importReactor(getImportReactor(), running);
+        textAreaImportOutput.setText("Imported!");
         updateDisplay();
     }//GEN-LAST:event_buttonImportActionPerformed
     private void checkBoxDrawReactorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxDrawReactorsActionPerformed

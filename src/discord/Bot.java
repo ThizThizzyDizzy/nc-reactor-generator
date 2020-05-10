@@ -305,6 +305,7 @@ public class Bot extends ListenerAdapter{
                     if(underhaul.Main.instance!=null)underhaul.Main.instance.dispose();
                     underhaul.Main.instance = new underhaul.Main();
                     ArrayList<underhaul.ReactorPart> allowedBlocks = new ArrayList<>(underhaul.ReactorPart.parts);
+                    allowedBlocks.remove(overhaul.ReactorPart.BERYLLIUM);
                     for(underhaul.ReactorPart part : underhaul.ReactorPart.parts){
                         String nam = part.jsonName;
                         if(nam==null)continue;
