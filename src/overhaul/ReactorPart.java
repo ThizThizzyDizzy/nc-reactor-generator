@@ -50,7 +50,7 @@ public class ReactorPart implements ReactorBit{
     public static final Heatsink HEATSINK_CAROBBIITE = heatsink("Carobbiite", "Carobbiite", PlacementRule.atLeast(1, HEATSINK_COPPER), PlacementRule.atLeast(1, HEATSINK_END_STONE));
     public static final Heatsink HEATSINK_ARSENIC = heatsink("Arsenic", "Arsenic", PlacementRule.axis(Type.REFLECTOR));
     public static final Heatsink HEATSINK_NITROGEN = heatsink("Nitrogen", "Nitrogen", PlacementRule.atLeast(2, HEATSINK_COPPER), PlacementRule.atLeast(1, HEATSINK_PURPUR));
-    public static final Heatsink HEATSINK_HELIUM = heatsink("Helium", "Helium", PlacementRule.exactly(2, HEATSINK_REDSTONE));
+    public static final Heatsink HEATSINK_HELIUM = heatsink("Helium", "Helium", PlacementRule.exactly(2, HEATSINK_REDSTONE), PlacementRule.atLeast(1, Type.CASING));
     public static final Heatsink HEATSINK_ENDERIUM = heatsink("Enderium", "Enderium", PlacementRule.atLeast(3, Type.MODERATOR));
     public static final Heatsink HEATSINK_CRYOTHEUM = heatsink("Cryotheum", "Cryotheum", PlacementRule.atLeast(3, Type.FUEL_CELL));
     public static final Moderator BERYLLIUM = moderator("Beryllium", "Beryllium");
