@@ -529,9 +529,9 @@ public class Bot extends ListenerAdapter{
         if(prefixes.length==1)prefix = "";
         return "__**S'plodo-bot help**__\n"+prefix
                 + "> **Commands:**\n"
-                + prefixes[0]+"help  Shows this help window\n"
-                + prefixes[0]+"abort|stop|halt|finish  Stops the currently generating reactor (specify *-abort overhaul* to stop overhaul generation)\n"
-                + prefixes[0]+"generate  Generates a reactor with the given parameters\n"
+                + "`"+prefixes[0]+"help`  Shows this help window\n"
+                + "`"+prefixes[0]+"abort`|`stop`|`halt`|`finish`  Stops the currently generating reactor (specify `"+prefixes[0]+"abort overhaul` to stop overhaul generation)\n"
+                + "`"+prefixes[0]+"generate`  Generates a reactor with the given parameters\n"
                 + "Provide keywords for what type of reactor you wish to generate\n"
                 + "**Generation settings:**\n"
                 + "`overhaul` - generates an overhaul reactor (Default: pre-overhaul)\n"
@@ -560,9 +560,9 @@ public class Bot extends ListenerAdapter{
             builder.addField("Prefixes", prefix, false);
         }
         builder.addField("Commands",
-                  prefixes[0]+"help  Shows this help window\n"
-                + prefixes[0]+"abort|stop|halt|finish  Stops the currently generating reactor (specify *-abort overhaul* to stop overhaul generation)\n"
-                + prefixes[0]+"generate  Generates a reactor with the given parameters\n"
+                  "`"+prefixes[0]+"help`  Shows this help window\n"
+                + "`"+prefixes[0]+"abort`|`stop`|`halt`|`finish`  Stops the currently generating reactor (specify `"+prefixes[0]+"abort overhaul` to stop overhaul generation)\n"
+                + "`"+prefixes[0]+"generate`  Generates a reactor with the given parameters\n"
                 + "Provide keywords for what type of reactor you wish to generate", false);
         builder.addField("Generation settings",
                   "`overhaul` - generates an overhaul reactor (Default: pre-overhaul)\n"
