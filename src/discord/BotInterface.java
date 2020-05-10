@@ -38,7 +38,7 @@ public class BotInterface extends javax.swing.JFrame{
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Bot.stop();
         if(overhaul.Main.instance!=null)overhaul.Main.instance.stop();
-        if(pre_overhaul.Main.instance!=null)pre_overhaul.Main.instance.stop();
+        if(underhaul.Main.instance!=null)underhaul.Main.instance.stop();
         dispose();
         System.exit(0);
     }//GEN-LAST:event_jButton1ActionPerformed

@@ -43,7 +43,7 @@ public class Bot extends ListenerAdapter{
         }else{
             prefixes = new String[]{"-"};
         }
-        pre_overhaul.Configuration.load(pre_overhaul.Configuration.DEFAULT);
+        underhaul.Configuration.load(underhaul.Configuration.DEFAULT);
         overhaul.Configuration.load(overhaul.Configuration.DEFAULT);
         JDABuilder b = new JDABuilder(AccountType.BOT);
         b.setToken(args[1]);
@@ -82,8 +82,8 @@ public class Bot extends ListenerAdapter{
                         message.getChannel().sendMessage("Overhaul generator is not running!").queue();
                     }
                 }else{
-                    if(pre_overhaul.Main.running){
-                        pre_overhaul.Main.instance.stop();
+                    if(underhaul.Main.running){
+                        underhaul.Main.instance.stop();
                         message.getChannel().sendMessage("Underhaul generation halted").queue();
                     }else{
                         message.getChannel().sendMessage("Underhaul generator is not running!").queue();
@@ -232,19 +232,19 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                 }else{
-                    if(pre_overhaul.Main.running){
+                    if(underhaul.Main.running){
                         message.getChannel().sendMessage("Underhaul generator is already running!").queue();
                         return;
                     }
                     if(content.contains("e2e")){
                         override = "E2E ";
-                        pre_overhaul.Configuration.load(pre_overhaul.Configuration.E2E);
+                        underhaul.Configuration.load(underhaul.Configuration.E2E);
                     }else if(content.contains("po3")){
                         override = "PO3 ";
-                        pre_overhaul.Configuration.load(pre_overhaul.Configuration.PO3);
+                        underhaul.Configuration.load(underhaul.Configuration.PO3);
                     }else{
                         override = "";
-                        pre_overhaul.Configuration.load(pre_overhaul.Configuration.DEFAULT);
+                        underhaul.Configuration.load(underhaul.Configuration.DEFAULT);
                     }
                     int X = 3,Y = 3,Z = 3;
                     for(int x = 0; x<=MAX_SIZE; x++){
@@ -258,9 +258,9 @@ public class Bot extends ListenerAdapter{
                             }
                         }
                     }
-                    pre_overhaul.Fuel fuel = pre_overhaul.Fuel.fuels.get(7);
+                    underhaul.Fuel fuel = underhaul.Fuel.fuels.get(7);
                     boolean fuelSet = false;
-                    for(pre_overhaul.Fuel f : pre_overhaul.Fuel.fuels){
+                    for(underhaul.Fuel f : underhaul.Fuel.fuels){
                         if(!f.toString().contains("Oxide"))continue;
                         if(content.contains(f.toString().toLowerCase().replace("-", ""))){
                             content = content.replace(f.toString().toLowerCase().replace("-", ""), "");
@@ -272,7 +272,7 @@ public class Bot extends ListenerAdapter{
                             fuelSet = true;
                         }
                     }
-                    for(pre_overhaul.Fuel f : pre_overhaul.Fuel.fuels){
+                    for(underhaul.Fuel f : underhaul.Fuel.fuels){
                         if(f.toString().contains("Oxide"))continue;
                         if(content.contains(f.toString().toLowerCase().replace("-", ""))){
                             content = content.replace(f.toString().toLowerCase().replace("-", ""), "");
@@ -285,44 +285,44 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                     if(content.contains("efficiency")||content.contains("efficient")){
-                        pre_overhaul.Priority.moveToEnd("Output");
-                        pre_overhaul.Priority.moveToEnd("Minimize Heat");
-                        pre_overhaul.Priority.moveToEnd("Fuel Usage");
+                        underhaul.Priority.moveToEnd("Output");
+                        underhaul.Priority.moveToEnd("Minimize Heat");
+                        underhaul.Priority.moveToEnd("Fuel Usage");
                     }else if(content.contains("output")){
-                        pre_overhaul.Priority.moveToEnd("Efficiency");
-                        pre_overhaul.Priority.moveToEnd("Minimize Heat");
-                        pre_overhaul.Priority.moveToEnd("Fuel Usage");
+                        underhaul.Priority.moveToEnd("Efficiency");
+                        underhaul.Priority.moveToEnd("Minimize Heat");
+                        underhaul.Priority.moveToEnd("Fuel Usage");
                     }else if(content.contains("breeder")||content.contains("fuel usage")||content.contains("cell count")){
-                        pre_overhaul.Priority.moveToEnd("Fuel Usage");
-                        pre_overhaul.Priority.moveToEnd("Minimize Heat");
-                        pre_overhaul.Priority.moveToEnd("Output");
-                        pre_overhaul.Priority.moveToEnd("Efficiency");
+                        underhaul.Priority.moveToEnd("Fuel Usage");
+                        underhaul.Priority.moveToEnd("Minimize Heat");
+                        underhaul.Priority.moveToEnd("Output");
+                        underhaul.Priority.moveToEnd("Efficiency");
                     }else{//default
-                        pre_overhaul.Priority.moveToEnd("Output");
-                        pre_overhaul.Priority.moveToEnd("Minimize Heat");
-                        pre_overhaul.Priority.moveToEnd("Fuel Usage");
+                        underhaul.Priority.moveToEnd("Output");
+                        underhaul.Priority.moveToEnd("Minimize Heat");
+                        underhaul.Priority.moveToEnd("Fuel Usage");
                     }
-                    if(pre_overhaul.Main.instance!=null)pre_overhaul.Main.instance.dispose();
-                    pre_overhaul.Main.instance = new pre_overhaul.Main();
-                    ArrayList<pre_overhaul.ReactorPart> allowedBlocks = new ArrayList<>(pre_overhaul.ReactorPart.parts);
-                    for(pre_overhaul.ReactorPart part : pre_overhaul.ReactorPart.parts){
+                    if(underhaul.Main.instance!=null)underhaul.Main.instance.dispose();
+                    underhaul.Main.instance = new underhaul.Main();
+                    ArrayList<underhaul.ReactorPart> allowedBlocks = new ArrayList<>(underhaul.ReactorPart.parts);
+                    for(underhaul.ReactorPart part : underhaul.ReactorPart.parts){
                         String nam = part.jsonName;
                         if(nam==null)continue;
                         if(content.contains("no"+nam.toLowerCase())||content.contains("no "+nam.toLowerCase())){
                             allowedBlocks.remove(part);
                         }
                     }
-                    pre_overhaul.Main.instance.setAllowedBlocks(allowedBlocks);
+                    underhaul.Main.instance.setAllowedBlocks(allowedBlocks);
                     if(content.contains("symmetr")){
-                        pre_overhaul.Main.instance.checkBoxSymmetryX.setSelected(true);
-                        pre_overhaul.Main.instance.checkBoxSymmetryY.setSelected(true);
-                        pre_overhaul.Main.instance.checkBoxSymmetryZ.setSelected(true);
+                        underhaul.Main.instance.checkBoxSymmetryX.setSelected(true);
+                        underhaul.Main.instance.checkBoxSymmetryY.setSelected(true);
+                        underhaul.Main.instance.checkBoxSymmetryZ.setSelected(true);
                     }
-                    pre_overhaul.Main.instance.spinnerX.setValue(X);
-                    pre_overhaul.Main.instance.spinnerY.setValue(Y);
-                    pre_overhaul.Main.instance.spinnerZ.setValue(Z);
-                    pre_overhaul.Main.instance.boxFuel.setSelectedIndex(pre_overhaul.Fuel.fuels.indexOf(fuel));
-                    pre_overhaul.Main.instance.start();
+                    underhaul.Main.instance.spinnerX.setValue(X);
+                    underhaul.Main.instance.spinnerY.setValue(Y);
+                    underhaul.Main.instance.spinnerZ.setValue(Z);
+                    underhaul.Main.instance.boxFuel.setSelectedIndex(underhaul.Fuel.fuels.indexOf(fuel));
+                    underhaul.Main.instance.start();
                     try{
                         underhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle("Generating "+override+"Reactors...").build()).complete();
                     }catch(InsufficientPermissionException ex){
@@ -330,9 +330,9 @@ public class Bot extends ListenerAdapter{
                     }
                     underhaulTime = System.nanoTime();
                     int sx = X, sy = Y, sz = Z;
-                    pre_overhaul.Fuel sf = fuel;
+                    underhaul.Fuel sf = fuel;
                     Thread t = new Thread(() -> {
-                        while(pre_overhaul.Main.running&&System.nanoTime()<underhaulTime+TIME_LIMIT){
+                        while(underhaul.Main.running&&System.nanoTime()<underhaulTime+TIME_LIMIT){
                             try{
                                 Thread.sleep(1000);
                                 updateUnderhaul("Generating "+override+"Reactors...\n", true);
@@ -340,11 +340,11 @@ public class Bot extends ListenerAdapter{
                                 Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
-                        if(pre_overhaul.Main.running)pre_overhaul.Main.instance.stop();
+                        if(underhaul.Main.running)underhaul.Main.instance.stop();
                         updateUnderhaul("Generated "+override+"Reactor", false);
                         File image = new File("underhaul.png");
                         File json = new File("underhaul.json");
-                        pre_overhaul.Reactor r = pre_overhaul.Main.genPlan.getReactors().get(0);
+                        underhaul.Reactor r = underhaul.Main.genPlan.getReactors().get(0);
                         try{
                             ImageIO.write(r.getImage(new Color(54, 57, 63)), "png", image);
                             message.getChannel().sendFile(image, (override==null?"Underhaul ":override)+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
@@ -367,9 +367,9 @@ public class Bot extends ListenerAdapter{
                                     text+=line+"\n";
                                 }
                                 reader.close();
-                                pre_overhaul.Reactor r = pre_overhaul.Reactor.parse(text, fuel, X, Y, Z);
+                                underhaul.Reactor r = underhaul.Reactor.parse(text, fuel, X, Y, Z);
                                 if(r==null)throw new NullPointerException("Invalid Reactor");
-                                pre_overhaul.Main.genPlan.importReactor(r, true);
+                                underhaul.Main.genPlan.importReactor(r, true);
                                 message.getChannel().sendMessage("Imported reactor: "+at.getFileName()).queue();
                             }else{
                                 System.err.println("Unknown extention: "+at.getFileExtension());
@@ -437,15 +437,15 @@ public class Bot extends ListenerAdapter{
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(prefix);
         text+="**"+prefix+"**\n";
-        pre_overhaul.Reactor r = pre_overhaul.Main.genPlan.getReactors().get(0);
+        underhaul.Reactor r = underhaul.Main.genPlan.getReactors().get(0);
         String priorities = "";
-        for(pre_overhaul.Priority p : pre_overhaul.Priority.priorities){
+        for(underhaul.Priority p : underhaul.Priority.priorities){
             priorities+="\n"+p.toString();
         }
         builder.addField("Priorities", priorities.substring(1), false);
         text+="\n**Priorities**\n"+priorities.substring(1);
-        String details = "Size: "+pre_overhaul.Main.instance.spinnerX.getValue()+"x"+pre_overhaul.Main.instance.spinnerY.getValue()+"x"+pre_overhaul.Main.instance.spinnerZ.getValue()+"\n"
-                + "Fuel: "+pre_overhaul.Fuel.fuels.get(pre_overhaul.Main.instance.boxFuel.getSelectedIndex())+"\n"+r.getDetails(false);
+        String details = "Size: "+underhaul.Main.instance.spinnerX.getValue()+"x"+underhaul.Main.instance.spinnerY.getValue()+"x"+underhaul.Main.instance.spinnerZ.getValue()+"\n"
+                + "Fuel: "+underhaul.Fuel.fuels.get(underhaul.Main.instance.boxFuel.getSelectedIndex())+"\n"+r.getDetails(false);
         builder.addField("Details", details, false);
         text+="\n**Details**\n"+details;
         if(showLayout){
@@ -472,7 +472,7 @@ public class Bot extends ListenerAdapter{
             underhaulFutures.add(underhaulMessage.editMessage(text).submit());
         }
     }
-    private String toEmoteString(pre_overhaul.ReactorPart part, Guild guild){
+    private String toEmoteString(underhaul.ReactorPart part, Guild guild){
         String s = toEString(part);
         List<Emote> emotes = guild.getEmotesByName(s, true);
         if(emotes.isEmpty())return s;
@@ -484,7 +484,7 @@ public class Bot extends ListenerAdapter{
         if(emotes.isEmpty())return s;
         return emotes.get(0).getAsMention();
     }
-    private String toEString(pre_overhaul.ReactorPart part){
+    private String toEString(underhaul.ReactorPart part){
         switch(part.type){
             case AIR:
                 return "air";
