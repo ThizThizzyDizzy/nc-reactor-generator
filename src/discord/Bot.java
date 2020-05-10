@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -32,6 +33,7 @@ public class Bot extends ListenerAdapter{
     private Message underhaulMessage;
     private ArrayList<CompletableFuture<Message>> underhaulFutures = new ArrayList<>();
     private ArrayList<CompletableFuture<Message>> overhaulFutures = new ArrayList<>();
+    private static String override = "";
     public static void start(String[] args) throws LoginException{
         if(args.length>2){
             prefixes = new String[args.length-2];
@@ -41,6 +43,8 @@ public class Bot extends ListenerAdapter{
         }else{
             prefixes = new String[]{"-"};
         }
+        pre_overhaul.Configuration.load(pre_overhaul.Configuration.DEFAULT);
+        overhaul.Configuration.load(overhaul.Configuration.DEFAULT);
         JDABuilder b = new JDABuilder(AccountType.BOT);
         b.setToken(args[1]);
         b.addEventListeners(new Bot());
@@ -62,7 +66,11 @@ public class Bot extends ListenerAdapter{
             while(content.contains("  "))content = content.replace("  ", " ");
             content = content.replace(" x ", "x");
             if(content.startsWith("help")){
-                message.getChannel().sendMessage(getHelp()).queue();
+                try{
+                    message.getChannel().sendMessage(getHelpEmbed()).queue();
+                }catch(InsufficientPermissionException ex){
+                    message.getChannel().sendMessage(getHelp()).queue();
+                }
                 return;
             }
             if(content.startsWith("abort")||content.startsWith("halt")||content.startsWith("finish")||content.startsWith("stop")){
@@ -167,9 +175,9 @@ public class Bot extends ListenerAdapter{
                     overhaul.Main.instance.boxFuelType.setSelectedIndex(type.ordinal());
                     overhaul.Main.instance.start();
                     try{
-                        overhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle("Generating Reactors...").build()).complete();
+                        overhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle("Generating "+override+"Reactors...").build()).complete();
                     }catch(InsufficientPermissionException ex){
-                        overhaulMessage = message.getChannel().sendMessage("Generating Reactors...").complete();
+                        overhaulMessage = message.getChannel().sendMessage("Generating "+override+"Reactors...").complete();
                     }
                     overhaulTime = System.nanoTime();
                     int sx = X, sy = Y, sz = Z;
@@ -179,19 +187,19 @@ public class Bot extends ListenerAdapter{
                         while(overhaul.Main.running&&System.nanoTime()<overhaulTime+TIME_LIMIT){
                             try{
                                 Thread.sleep(1000);
-                                updateOverhaul("Generating reactors...\n", true);
+                                updateOverhaul("Generating "+override+"Reactors...\n", true);
                             }catch(InterruptedException ex){
                                 Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         if(overhaul.Main.running)overhaul.Main.instance.stop();
-                        updateOverhaul("Generated Reactor", false);
+                        updateOverhaul("Generated "+override+"Reactor", false);
                         File image = new File("overhaul.png");
                         File json = new File("overhaul.json");
                         overhaul.Reactor r = overhaul.Main.genPlan.getReactors().get(0);
                         try{
                             ImageIO.write(r.getImage(new Color(54, 57, 63)), "png", image);
-                            message.getChannel().sendFile(image, "Underhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
+                            message.getChannel().sendFile(image, "Overhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
                             r.exportJSON().write(json);
                             message.getChannel().sendFile(json, "Overhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+" "+sft.toString()+".json").queue();
                         }catch(Exception ex){
@@ -227,6 +235,15 @@ public class Bot extends ListenerAdapter{
                     if(pre_overhaul.Main.running){
                         message.getChannel().sendMessage("Underhaul generator is already running!").queue();
                         return;
+                    }
+                    override = "";
+                    if(content.contains("e2e")){
+                        override = "E2E ";
+                        pre_overhaul.Configuration.load(pre_overhaul.Configuration.E2E);
+                    }
+                    if(content.contains("po3")){
+                        override = "PO3 ";
+                        pre_overhaul.Configuration.load(pre_overhaul.Configuration.PO3);
                     }
                     int X = 3,Y = 3,Z = 3;
                     for(int x = 0; x<=MAX_SIZE; x++){
@@ -310,9 +327,9 @@ public class Bot extends ListenerAdapter{
                     pre_overhaul.Main.instance.boxFuel.setSelectedIndex(pre_overhaul.Fuel.fuels.indexOf(fuel));
                     pre_overhaul.Main.instance.start();
                     try{
-                        underhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle("Generating Reactors...").build()).complete();
+                        underhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle("Generating "+override+"Reactors...").build()).complete();
                     }catch(InsufficientPermissionException ex){
-                        underhaulMessage = message.getChannel().sendMessage("Generating Reactors...").complete();
+                        underhaulMessage = message.getChannel().sendMessage("Generating "+override+"Reactors...").complete();
                     }
                     underhaulTime = System.nanoTime();
                     int sx = X, sy = Y, sz = Z;
@@ -321,21 +338,21 @@ public class Bot extends ListenerAdapter{
                         while(pre_overhaul.Main.running&&System.nanoTime()<underhaulTime+TIME_LIMIT){
                             try{
                                 Thread.sleep(1000);
-                                updateUnderhaul("Generating reactors...\n", true);
+                                updateUnderhaul("Generating "+override+"Reactors...\n", true);
                             }catch(InterruptedException ex){
                                 Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         if(pre_overhaul.Main.running)pre_overhaul.Main.instance.stop();
-                        updateUnderhaul("Generated Reactor", false);
+                        updateUnderhaul("Generated "+override+"Reactor", false);
                         File image = new File("underhaul.png");
                         File json = new File("underhaul.json");
                         pre_overhaul.Reactor r = pre_overhaul.Main.genPlan.getReactors().get(0);
                         try{
                             ImageIO.write(r.getImage(new Color(54, 57, 63)), "png", image);
-                            message.getChannel().sendFile(image, "Underhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
+                            message.getChannel().sendFile(image, (override==null?"Underhaul ":override)+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
                             r.exportJSON().write(json);
-                            message.getChannel().sendFile(json, "Underhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+".json").queue();
+                            message.getChannel().sendFile(json, (override==null?"Underhaul ":override)+sx+"x"+sy+"x"+sz+" "+sf.toString()+".json").queue();
                         }catch(Exception ex){
                             message.getChannel().sendMessage(ex.getClass().getName()+": "+ex.getMessage()).queue();
                             ex.printStackTrace();
@@ -401,13 +418,13 @@ public class Bot extends ListenerAdapter{
                 }
                 layout+="\n";
             }
-            builder.addField("Reactor Layout", layout.length()>1024?"Too big!":layout, true);
+            builder.addField("Reactor Layout", layout.length()>1024?"(Too big for live display)":layout, true);
             text+="\n**Reactor Layout**\n"+layout;
         }
         builder.setColor(Color.ORANGE);
         text+="\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*"+poweredBy+"*";
         builder.setFooter((r.clusters.size()>1?"Stability of multi-cluster reactors is not guaranteed\n":"")+poweredBy);
-        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*"+poweredBy+"*";
+        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n(Too big for live display)\n"+(r.clusters.size()>1?"*Stability of multi-cluster reactors is not guaranteed*\n":"")+"*"+poweredBy+"*";
         try{
             overhaulFutures.add(overhaulMessage.editMessage(builder.build()).submit());
         }catch(InsufficientPermissionException ex){
@@ -445,13 +462,13 @@ public class Bot extends ListenerAdapter{
                 }
                 layout+="\n";
             }
-            builder.addField("Reactor Layout", layout.length()>1024?"Too Big!":layout, true);
+            builder.addField("Reactor Layout", layout.length()>1024?"(Too big for live display)":layout, true);
             text+="\n**Reactor Layout**\n"+layout;
         }
         builder.setColor(Color.ORANGE);
         builder.setFooter(poweredBy);
         text+="\n*"+poweredBy+"*";
-        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n<Too big>\n*"+poweredBy+"*";
+        if(text.length()>2000)text = text.substring(0, text.indexOf("Reactor Layout"))+"Reactor Layout**\n(Too big for live display)\n*"+poweredBy+"*";
         try{
             underhaulFutures.add(underhaulMessage.editMessage(builder.build()).submit());
         }catch(InsufficientPermissionException ex){
@@ -516,7 +533,7 @@ public class Bot extends ListenerAdapter{
                 + prefixes[0]+"abort|stop|halt|finish  Stops the currently generating reactor (specify *-abort overhaul* to stop overhaul generation)\n"
                 + prefixes[0]+"generate  Generates a reactor with the given parameters\n"
                 + "Provide keywords for what type of reactor you wish to generate\n"
-                + "**Valid Keywords:**\n"
+                + "**Generation settings:**\n"
                 + "`overhaul` - generates an overhaul reactor (Default: pre-overhaul)\n"
                 + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for pre-overhaul; 5x5x5 for overhaul)\n"
                 + "`<fuel>` - generates a reactor using the specified fuel (Default: LEU-235 Oxide)\n"
@@ -525,9 +542,44 @@ public class Bot extends ListenerAdapter{
                 + "`breeder` or `cell count` or `fuel usage` - sets fuel usage as the main priority (Underhaul only)\n"
                 + "`symmetry` or `symmetrical` - applies symmetry to generated reactors\n"
                 + "`no <block>` - blacklists a certain block from being used in generation\n"
+                + "`e2e` - Uses the Enigmatica 2 Expert config\n"
+                + "`po3` - Uses the Project: Ozone 3 config\n"
                 + "**Examples of valid commands:**\n"
                 + prefixes[0]+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
                 + prefixes[0]+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum\n\n"
                 + "> *"+poweredBy+"*";
+    }
+    private MessageEmbed getHelpEmbed(){
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setTitle("S'plodo-bot help");
+        if(prefixes.length>1){
+            String prefix = "";
+            for(String pref : prefixes){
+                prefix+=pref+"\n";
+            }
+            builder.addField("Prefixes", prefix, false);
+        }
+        builder.addField("Commands",
+                  prefixes[0]+"help  Shows this help window\n"
+                + prefixes[0]+"abort|stop|halt|finish  Stops the currently generating reactor (specify *-abort overhaul* to stop overhaul generation)\n"
+                + prefixes[0]+"generate  Generates a reactor with the given parameters\n"
+                + "Provide keywords for what type of reactor you wish to generate", false);
+        builder.addField("Generation settings",
+                  "`overhaul` - generates an overhaul reactor (Default: pre-overhaul)\n"
+                + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for pre-overhaul; 5x5x5 for overhaul)\n"
+                + "`<fuel>` - generates a reactor using the specified fuel (Default: LEU-235 Oxide)\n"
+                + "`efficiency` or `efficient` - sets efficiency as the main proiority (default)\n"
+                + "`output` - sets output as the main priority\n"
+                + "`breeder` or `cell count` or `fuel usage` - sets fuel usage as the main priority (Underhaul only)\n"
+                + "`symmetry` or `symmetrical` - applies symmetry to generated reactors\n"
+                + "`no <block>` - blacklists a certain block from being used in generation\n"
+                + "`e2e` - Uses the Enigmatica 2 Expert config\n"
+                + "`po3` - Uses the Project: Ozone 3 config",false);
+        builder.addField("Examples of valid commands", 
+                  prefixes[0]+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
+                + prefixes[0]+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum",false);
+        builder.setFooter(poweredBy);
+        builder.setColor(Color.ORANGE);
+        return builder.build();
     }
 }
