@@ -236,14 +236,15 @@ public class Bot extends ListenerAdapter{
                         message.getChannel().sendMessage("Underhaul generator is already running!").queue();
                         return;
                     }
-                    override = "";
                     if(content.contains("e2e")){
                         override = "E2E ";
                         pre_overhaul.Configuration.load(pre_overhaul.Configuration.E2E);
-                    }
-                    if(content.contains("po3")){
+                    }else if(content.contains("po3")){
                         override = "PO3 ";
                         pre_overhaul.Configuration.load(pre_overhaul.Configuration.PO3);
+                    }else{
+                        override = "";
+                        pre_overhaul.Configuration.load(pre_overhaul.Configuration.DEFAULT);
                     }
                     int X = 3,Y = 3,Z = 3;
                     for(int x = 0; x<=MAX_SIZE; x++){
