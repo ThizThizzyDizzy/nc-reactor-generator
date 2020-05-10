@@ -198,7 +198,7 @@ public class Bot extends ListenerAdapter{
                         File json = new File("overhaul.json");
                         overhaul.Reactor r = overhaul.Main.genPlan.getReactors().get(0);
                         try{
-                            ImageIO.write(r.getImage(new Color(54, 57, 63)), "png", image);
+                            ImageIO.write(r.getImage(), "png", image);
                             message.getChannel().sendFile(image, "Overhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
                             r.exportJSON().write(json);
                             message.getChannel().sendFile(json, "Overhaul "+sx+"x"+sy+"x"+sz+" "+sf.toString()+" "+sft.toString()+".json").queue();
@@ -347,7 +347,7 @@ public class Bot extends ListenerAdapter{
                         File json = new File("underhaul.json");
                         underhaul.Reactor r = underhaul.Main.genPlan.getReactors().get(0);
                         try{
-                            ImageIO.write(r.getImage(new Color(54, 57, 63)), "png", image);
+                            ImageIO.write(r.getImage(), "png", image);
                             message.getChannel().sendFile(image, (override==null?"Underhaul ":override)+sx+"x"+sy+"x"+sz+" "+sf.toString()+".png").queue();
                             r.exportJSON().write(json);
                             message.getChannel().sendFile(json, (override==null?"Underhaul ":override)+sx+"x"+sy+"x"+sz+" "+sf.toString()+".json").queue();

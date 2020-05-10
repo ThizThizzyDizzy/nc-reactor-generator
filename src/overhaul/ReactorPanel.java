@@ -16,12 +16,8 @@ public class ReactorPanel extends JPanel{
         g.setColor(new Color(240,240,240));
         g.fillRect(0, 0, w, h);
         if(reactor==null)return;
-        g.drawImage(reactor.getImage(), 0, 0, null);
-    }
-    public BufferedImage getImage(){
-        int blockSize = 16;
-        BufferedImage image = new BufferedImage(blockSize*reactor.x, blockSize*(((reactor.z+1)*reactor.y)-1), BufferedImage.TYPE_INT_ARGB);
-        draw(image.createGraphics(),image.getWidth(),image.getHeight());
-        return image;
+        BufferedImage image = reactor.getImage();
+        int size = Math.min(getWidth()/image.getWidth(), getHeight()/image.getHeight());
+        g.drawImage(reactor.getImage(), 0, 0, image.getWidth()*size, image.getHeight()*size, null);
     }
 }

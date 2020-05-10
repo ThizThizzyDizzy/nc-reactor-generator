@@ -832,7 +832,7 @@ public class Main extends javax.swing.JFrame{
         ArrayList<Reactor> reactors = genPlan.getReactors();
         if(reactors.isEmpty())return;
         if(reactors.get(0)==null)return;
-        Exporter.export(new ReactorPanel(reactors.get(0)).getImage());
+        Exporter.export(reactors.get(0).getImage());
     }//GEN-LAST:event_buttonExportImageActionPerformed
     private void buttonExportJSONActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportJSONActionPerformed
         ArrayList<Reactor> reactors = genPlan.getReactors();
@@ -841,7 +841,7 @@ public class Main extends javax.swing.JFrame{
         Exporter.export(reactors.get(0).exportJSON());
     }//GEN-LAST:event_buttonExportJSONActionPerformed
     private void buttonImportExportImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportExportImageActionPerformed
-        Exporter.export(new ReactorPanel(getImportReactor()).getImage());
+        Exporter.export(getImportReactor().getImage());
     }//GEN-LAST:event_buttonImportExportImageActionPerformed
     private void buttonImportExportJSONActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportExportJSONActionPerformed
         Exporter.export(getImportReactor().exportJSON());

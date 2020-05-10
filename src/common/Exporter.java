@@ -56,15 +56,13 @@ public class Exporter extends javax.swing.JFrame{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        outputPanel = new javax.swing.JPanel();
         buttonSaveFile = new javax.swing.JButton();
         buttonClose = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        outputPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Export Window");
-        setResizable(false);
-
-        outputPanel.setLayout(new java.awt.GridLayout(1, 0));
 
         buttonSaveFile.setText("Save File");
         buttonSaveFile.addActionListener(new java.awt.event.ActionListener() {
@@ -80,30 +78,34 @@ public class Exporter extends javax.swing.JFrame{
             }
         });
 
+        outputPanel.setLayout(new java.awt.GridLayout(1, 0));
+        jScrollPane1.setViewportView(outputPanel);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 188, Short.MAX_VALUE)
                         .addComponent(buttonSaveFile)
                         .addGap(18, 18, 18)
                         .addComponent(buttonClose))
-                    .addComponent(outputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(outputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonSaveFile)
                     .addComponent(buttonClose))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -156,6 +158,7 @@ public class Exporter extends javax.swing.JFrame{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonClose;
     private javax.swing.JButton buttonSaveFile;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel outputPanel;
     // End of variables declaration//GEN-END:variables
 }

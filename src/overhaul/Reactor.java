@@ -1018,13 +1018,10 @@ public abstract class Reactor{
         return fuelType.isMSR();
     }
     public BufferedImage getImage(){
-        return getImage(new Color(240,240,240));
-    }
-    public BufferedImage getImage(Color background){
         int blockSize = 16;
         BufferedImage image = new BufferedImage(blockSize*x, blockSize*(((z+1)*y)-1), BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
-        g.setColor(background);
+        g.setColor(new Color(0, 0, 0, 0));
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
         int yOff = 0;
         for(int Y = y-1; Y>=0; Y--){
