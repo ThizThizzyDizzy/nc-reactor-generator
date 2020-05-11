@@ -41,12 +41,19 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 imported = null;
             }
             @Override
-            public void importReactor(Reactor reactor, boolean running){
+            public boolean importReactor(Reactor reactor, boolean running){
                 if(running){
                     synchronized(yetAnotherSynchronizer){
-                        if(Reactor.isbetter(reactor, this.reactor))this.reactor = reactor;
+                        if(Reactor.isbetter(reactor, this.reactor)){
+                            this.reactor = reactor;
+                            return true;
+                        }
                     }
-                }else imported = reactor;
+                }else{
+                    imported = reactor;
+                    return true;
+                }
+                return false;
             }
         });
         plans.add(new GenerationPlan("Multi", "Generates many reactors in parallel. If one stops improving, it is scrapped and reset.\nCreates a new thread for each reactor", new SettingInt("Reactors", 2, 2, 64), new SettingInt("Merge Timeout (Seconds)",2,1)) {
@@ -139,18 +146,22 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 lastUpdateTimes = null;
             }
             @Override
-            public void importReactor(Reactor reactor, boolean running){
+            public boolean importReactor(Reactor reactor, boolean running){
                 if(running){
                     synchronized(synchronizer){
-                        if(reactors==null)return;
+                        if(reactors==null)return false;
                         for(int i = 0; i<reactors.length; i++){
                             if(Reactor.isbetter(reactor, this.reactors[i])){
                                 this.reactors[i] = reactor;
-                                break;
+                                return i==0;
                             }
                         }
                     }
-                }else imported = reactor;
+                }else{
+                    imported = reactor;
+                    return true;
+                }
+                return false;
             }
         });
         DEFAULT = get("Multi");
@@ -185,5 +196,11 @@ public abstract class GenerationPlan extends ThingWithSettings{
     public abstract void run(Fuel fuel, int x, int y, int z, Random rand);
     public abstract ArrayList<Reactor> getReactors();
     public abstract void reset(Fuel fuel, int x, int y, int z);
-    public abstract void importReactor(Reactor reactor, boolean running);
+    /**
+     * Imports a reactor into the Generation plan
+     * @param reactor the reactor to import
+     * @param running if the generator is currently running
+     * @return true if the imported reactor is better than than the best existing reactor
+     */
+    public abstract boolean importReactor(Reactor reactor, boolean running);
 }

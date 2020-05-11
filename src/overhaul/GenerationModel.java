@@ -46,6 +46,20 @@ public abstract class GenerationModel extends ThingWithSettings{
                 return model;
             }
         }
+        if(name.equalsIgnoreCase("none")){
+            return new GenerationModel("None", "Does nothing"){
+                @Override
+                public Reactor generate(Reactor last, Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
+                    if(last==null)return new Reactor(fuel, type, x, y, z){
+                        @Override
+                        protected ReactorPart build(int X, int Y, int Z){
+                            return ReactorPart.AIR;
+                        }
+                    };
+                    return last;
+                }
+            };
+        }
         return null;
     }
     public final String name;

@@ -141,11 +141,25 @@ public abstract class GenerationModel extends ThingWithSettings{
         });
         DEFAULT = get("Standard");
     }
-    private static GenerationModel get(String name){
+    public static GenerationModel get(String name){
         for(GenerationModel model : models){
             if(model.name.equalsIgnoreCase(name)){
                 return model;
             }
+        }
+        if(name.equalsIgnoreCase("none")){
+            return new GenerationModel("None", "Does nothing"){
+                @Override
+                public Reactor generate(Reactor last, Fuel fuel, int x, int y, int z, Random rand){
+                    if(last==null)return new Reactor(fuel, x, y, z){
+                        @Override
+                        protected ReactorPart build(int X, int Y, int Z){
+                            return ReactorPart.AIR;
+                        }
+                    };
+                    return last;
+                }
+            };
         }
         return null;
     }

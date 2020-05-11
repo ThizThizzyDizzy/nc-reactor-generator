@@ -115,8 +115,10 @@ public class ReactorPart implements ReactorBit{
         return allowedParts.get(rand.nextInt(allowedParts.size()));
     }
     public static ReactorPart parse(String string){
+        if(string.equals("Reflectors"))return REFLECTOR_BERYLLIUM_CARBON;
         if(string.contains(";")){
             String[] strs = string.split("\\Q;");
+            if(strs.length==2)return FUEL_CELL_CF_252;//old compat
             string = strs[strs.length-1];
             if(string.equals("None"))return FUEL_CELL;
         }

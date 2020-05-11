@@ -118,16 +118,27 @@ public abstract class Reactor{
         };
     }
     private static Reactor parseJSON(String text, Fuel fuel, Fuel.Type type, int x, int y, int z) throws IOException{
-        Main.instance.textAreaImportOutput.setText("");
-        String error = "";
         JSONObject json;
         json = JSON.parse(text);
+        return parseJSON(json, fuel, type, x, y, z);
+    }
+    public static Reactor parseJSON(JSONObject json, Fuel fuel, Fuel.Type type, int x, int y, int z) throws IOException{
+        Main.instance.textAreaImportOutput.setText("");
+        String error = "";
         if(json==null)return null;
-        JSONObject dim = json.getJSONObject("InteriorDimensions");
+        Object dim = json.get("InteriorDimensions");
+        int X,Y,Z;
         if(dim==null)return null;
-        int X = dim.getInt("X");
-        int Y = dim.getInt("Y");
-        int Z = dim.getInt("Z");
+        if(dim instanceof JSONObject){
+            X = ((JSONObject)dim).getInt("X");
+            Y = ((JSONObject)dim).getInt("Y");
+            Z = ((JSONObject)dim).getInt("Z");
+        }else if(dim instanceof String){
+            String[] strs = ((String)dim).split(",");
+            X = Integer.parseInt(strs[0]);
+            Y = Integer.parseInt(strs[1]);
+            Z = Integer.parseInt(strs[2]);
+        }else return null;
         ReactorPart[][][] prts = new ReactorPart[X][Y][Z];
         if(X!=x||Y!=y||Z!=z){
             error = "Incorrect dimensions! Found "+X+" "+Y+" "+Z+", expected "+x+" "+y+" "+z+"!";
@@ -153,6 +164,12 @@ public abstract class Reactor{
                                 Y = ((JSONObject)obj).getInt("Y");
                                 Z = ((JSONObject)obj).getInt("Z");
                                 prts[X-1][Y-1][Z-1] = part;
+                            }else if(obj instanceof String){
+                                String[] strs = ((String)obj).split(",");
+                                X = Integer.parseInt(strs[0]);
+                                Y = Integer.parseInt(strs[1]);
+                                Z = Integer.parseInt(strs[2]);
+                                prts[X-1][Y-1][Z-1] = part;
                             }else{
                                 error+="; Unknown object in reactor array: "+obj.toString();
                             }
@@ -170,6 +187,12 @@ public abstract class Reactor{
                             X = ((JSONObject)obj).getInt("X");
                             Y = ((JSONObject)obj).getInt("Y");
                             Z = ((JSONObject)obj).getInt("Z");
+                            prts[X-1][Y-1][Z-1] = part;
+                        }else if(obj instanceof String){
+                            String[] strs = ((String)obj).split(",");
+                            X = Integer.parseInt(strs[0]);
+                            Y = Integer.parseInt(strs[1]);
+                            Z = Integer.parseInt(strs[2]);
                             prts[X-1][Y-1][Z-1] = part;
                         }else{
                             error+="; Unknown object in reactor array: "+obj.toString();
@@ -218,7 +241,7 @@ public abstract class Reactor{
     private double sparsityMult = 1;
     private int functionalBlocks;//required for JSON export
     public Reactor(Fuel fuel, Fuel.Type type, int x, int y, int z){
-        this(fuel, type, x, y, z, Main.instance.checkBoxSymmetryX.isSelected(), Main.instance.checkBoxSymmetryY.isSelected(), Main.instance.checkBoxSymmetryZ.isSelected());
+        this(fuel, type, x, y, z, Main.instance==null?false:Main.instance.checkBoxSymmetryX.isSelected(), Main.instance==null?false:Main.instance.checkBoxSymmetryY.isSelected(), Main.instance==null?false:Main.instance.checkBoxSymmetryZ.isSelected());
     }
     public Reactor(Fuel fuel, Fuel.Type type, int x, int y, int z, boolean symmetryX, boolean symmetryY, boolean symmetryZ){
         synchronized(synchronizer){
@@ -531,7 +554,7 @@ public abstract class Reactor{
             }
         }
 //</editor-fold>
-        if(Main.instance.jCheckBox1.isSelected()){
+        if(Main.instance==null?true:Main.instance.jCheckBox1.isSelected()){
             //<editor-fold defaultstate="collapsed" desc="Fill with conductors">
             for(int x = 0; x<this.x; x++){
                 for(int y = 0; y<this.y; y++){

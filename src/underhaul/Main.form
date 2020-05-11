@@ -4,7 +4,7 @@
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-      <Connection code="&quot;Pre-overhaul Reactor Generator &quot;+Version.VERSION" type="code"/>
+      <Connection code="&quot;Underhaul Reactor Generator &quot;+Version.VERSION" type="code"/>
     </Property>
   </Properties>
   <SyntheticProperties>
@@ -808,7 +808,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="jScrollPane6" pref="416" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane6" pref="433" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jScrollPane8" min="-2" pref="150" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>

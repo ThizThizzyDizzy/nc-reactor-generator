@@ -1,11 +1,17 @@
 package discord;
+import common.JSON;
+import common.JSON.JSONObject;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -19,13 +25,16 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class Bot extends ListenerAdapter{
     private static JDA jda;
     private static boolean running = false;
-    private static String[] prefixes;
+    private static ArrayList<String> prefixes = new ArrayList<>();
     private static final long TIME_LIMIT = 1_000_000_000l*60;//one minute in nanoseconds
     private static long overhaulTime, underhaulTime;
     private int MAX_SIZE = 24; //the biggest allowed value for the X/Y/Z dimensions
@@ -34,15 +43,32 @@ public class Bot extends ListenerAdapter{
     private ArrayList<CompletableFuture<Message>> underhaulFutures = new ArrayList<>();
     private ArrayList<CompletableFuture<Message>> overhaulFutures = new ArrayList<>();
     private static String override = "";
-    public static void start(String[] args) throws LoginException{
-        if(args.length>2){
-            prefixes = new String[args.length-2];
-            for(int i = 0; i<prefixes.length; i++){
-                prefixes[i] = args[i+2];
+    private static ArrayList<Long> botChannels = new ArrayList<>();
+    private static ArrayList<Long> dataChannels = new ArrayList<>();
+    private static final int batchSize = 100;
+    private static final HashMap<Integer, HashMap<Integer, HashMap<Integer, ArrayList<JSONObject>>>> storedReactors =  new HashMap<>();
+    private static final HashMap<JSONObject, Message> reactorLinks =  new HashMap<>();
+    static{
+        for(int x = 1; x<=24; x++){
+            HashMap<Integer, HashMap<Integer, ArrayList<JSONObject>>> xs = new HashMap<>();
+            for(int y = 1; y<=24; y++){
+                HashMap<Integer, ArrayList<JSONObject>> ys = new HashMap<>();
+                for(int z = 1; z<=24; z++){
+                    ys.put(z, new ArrayList<>());
+                }
+                xs.put(y,ys);
             }
-        }else{
-            prefixes = new String[]{"-"};
+            storedReactors.put(x, xs);
         }
+    }
+    public static void start(String[] args) throws LoginException{
+        for(int i = 2; i<args.length; i++){
+            String arg = args[i];
+            if(arg.startsWith("bot"))botChannels.add(Long.parseLong(arg.substring(3)));
+            else if(arg.startsWith("data"))dataChannels.add(Long.parseLong(arg.substring(4)));
+            else prefixes.add(arg);
+        }
+        if(prefixes.isEmpty())prefixes.add("-");
         underhaul.Configuration.load(underhaul.Configuration.DEFAULT);
         overhaul.Configuration.load(overhaul.Configuration.DEFAULT);
         JDABuilder b = new JDABuilder(AccountType.BOT);
@@ -56,8 +82,104 @@ public class Bot extends ListenerAdapter{
     }
     private String poweredBy = "Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases";
     @Override
+    public void onReady(ReadyEvent re){
+        Thread channelRead = new Thread(() -> {
+            int bytes = 0;
+            int totalCount = 0;
+            for(Long id : dataChannels){
+                TextChannel channel = jda.getTextChannelById(id);
+                if(channel==null){
+                    System.err.println("Invalid channel: "+id);
+                    continue;
+                }
+                System.out.println("Reading channel: "+channel.getName());
+                MessageHistory history = channel.getHistoryFromBeginning(batchSize).complete();
+                int count = 0;
+                while(true){
+                    Message last = null;
+                    ArrayList<Message> messages = new ArrayList<>(history.getRetrievedHistory());
+                    Stack<Message> stak = new Stack<>();
+                    for(Message m : messages){
+                        stak.push(m);
+                    }
+                    messages.clear();
+                    while(!stak.isEmpty())messages.add(stak.pop());
+                    for(Message message : messages){
+                        last = message;
+                        storeReactors(message);
+                        for(Attachment att : message.getAttachments()){
+                            if(att.getFileExtension().equalsIgnoreCase("json")){
+                                count++;
+                                System.out.println("Found "+att.getFileName()+" ("+count+")");
+                                bytes+=att.getSize();
+                            }
+                        }
+                    }
+                    if(last==null)break;
+                    if(history.size()<batchSize){
+                        break;
+                    }else{
+                        history = channel.getHistoryAfter(last, batchSize).complete();
+                    }
+                }
+                System.out.println("Finished Reading channel: "+channel.getName()+". Reactors: "+count);
+                totalCount+=count;
+            }
+            System.out.println("Total Reactors: "+totalCount);
+            System.out.println("Total Size: "+bytes);
+        });
+        channelRead.setDaemon(true);
+        channelRead.start();
+    }
+    public void storeReactors(Message message){
+        for(Attachment att : message.getAttachments()){
+            JSONObject json = storeReactor(att);
+            if(json!=null)reactorLinks.put(json, message);
+        }
+    }
+    public JSONObject storeReactor(Attachment att){
+        if(!att.getFileExtension().equalsIgnoreCase("json"))return null;
+        String s = "";
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(att.retrieveInputStream().get()))){
+            String line;
+            while((line = reader.readLine())!=null){
+                s+=line+"\n";
+            }
+        }catch(IOException|InterruptedException|ExecutionException ex){
+            System.err.println("Failed to read file: "+att.getFileName());
+            return null;
+        }
+        int x = 0,y = 0,z = 0;
+        JSONObject json = null;
+        try{
+            json = JSON.parse(s);
+            Object dim = json.get("InteriorDimensions");
+            if(dim instanceof JSONObject){
+                x = ((JSONObject)dim).getInt("X");
+                y = ((JSONObject)dim).getInt("Y");
+                z = ((JSONObject)dim).getInt("Z");
+            }
+            if(dim instanceof String){
+                String[] strs = ((String)dim).split(",");
+                x = Integer.parseInt(strs[0]);
+                y = Integer.parseInt(strs[1]);
+                z = Integer.parseInt(strs[2]);
+            }
+        }catch(Exception ex){}
+        if(json==null)return null;
+        try{
+            storedReactors.get(x).get(y).get(z).add(json);
+        }catch(Exception ex){}
+        return json;
+    }
+    @Override
     public void onMessageReceived(MessageReceivedEvent mre){
+        if(mre.getAuthor().isBot())return;
+        if(!botChannels.isEmpty()){
+            if(!botChannels.contains(mre.getChannel().getIdLong()))return;//not a bot channel! DO NOTHING
+        }
         Message message = mre.getMessage();
+        storeReactors(message);
         String content = message.getContentStripped();
         for(String prefix : prefixes){
             if(!content.startsWith(prefix))continue;
@@ -91,6 +213,7 @@ public class Bot extends ListenerAdapter{
                 }
             }
             if(content.startsWith("generate")||content.startsWith("search")||content.startsWith("find")){
+                boolean isGenerating = content.startsWith("generate");
                 if(content.contains("overhaul")&&!content.contains("preoverhaul")&&!content.contains("underhaul")){
                     if(overhaul.Main.running){
                         message.getChannel().sendMessage("Overhaul generator is already running!").queue();
@@ -151,6 +274,7 @@ public class Bot extends ListenerAdapter{
                         overhaul.Priority.moveToEnd("Efficiency");
                     }
                     if(overhaul.Main.instance!=null)overhaul.Main.instance.dispose();
+                    overhaul.Main.genModel = overhaul.GenerationModel.DEFAULT;
                     overhaul.Main.instance = new overhaul.Main();
                     ArrayList<overhaul.ReactorPart> allowedBlocks = new ArrayList<>(overhaul.ReactorPart.parts);
                     allowedBlocks.remove(overhaul.ReactorPart.FUEL_CELL_PO_BE);
@@ -173,11 +297,14 @@ public class Bot extends ListenerAdapter{
                     overhaul.Main.instance.spinnerZ.setValue(Z);
                     overhaul.Main.instance.boxFuel.setSelectedIndex(overhaul.Fuel.fuels.indexOf(fuel));
                     overhaul.Main.instance.boxFuelType.setSelectedIndex(type.ordinal());
+                    if(!isGenerating){
+                        overhaul.Main.genModel = overhaul.GenerationModel.get("None");
+                    }
                     overhaul.Main.instance.start();
                     try{
-                        overhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle("Generating "+override+"Reactors...").build()).complete();
+                        overhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle((isGenerating?"Generating ":"Searching ")+override+"Reactors...").build()).complete();
                     }catch(InsufficientPermissionException ex){
-                        overhaulMessage = message.getChannel().sendMessage("Generating "+override+"Reactors...").complete();
+                        overhaulMessage = message.getChannel().sendMessage((isGenerating?"Generating ":"Searching ")+override+"Reactors...").complete();
                     }
                     overhaulTime = System.nanoTime();
                     int sx = X, sy = Y, sz = Z;
@@ -187,13 +314,13 @@ public class Bot extends ListenerAdapter{
                         while(overhaul.Main.running&&System.nanoTime()<overhaulTime+TIME_LIMIT){
                             try{
                                 Thread.sleep(1000);
-                                updateOverhaul("Generating "+override+"Reactors...\n", true);
+                                updateOverhaul((isGenerating?"Generating ":"Searching ")+override+"Reactors...\n", true);
                             }catch(InterruptedException ex){
                                 Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         if(overhaul.Main.running)overhaul.Main.instance.stop();
-                        updateOverhaul("Generated "+override+"Reactor", false);
+                        updateOverhaul((isGenerating?"Generated ":"Found ")+override+"Reactor", false);
                         File image = new File("overhaul.png");
                         File json = new File("overhaul.json");
                         overhaul.Reactor r = overhaul.Main.genPlan.getReactors().get(0);
@@ -209,27 +336,53 @@ public class Bot extends ListenerAdapter{
                     });
                     t.setDaemon(true);
                     t.start();
-                    for(Attachment at : message.getAttachments()){
-                        try{
-                            if(at.getFileExtension().equals("json")){
-                                String text = "";
-                                BufferedReader reader = new BufferedReader(new InputStreamReader(at.retrieveInputStream().get()));
-                                String line;
-                                while((line = reader.readLine())!=null){
-                                    text+=line+"\n";
+                    boolean shouldImport = true;
+                    if(isGenerating){
+                        for(Attachment at : message.getAttachments()){
+                            shouldImport = false;
+                            try{
+                                if(at.getFileExtension().equals("json")){
+                                    String text = "";
+                                    BufferedReader reader = new BufferedReader(new InputStreamReader(at.retrieveInputStream().get()));
+                                    String line;
+                                    while((line = reader.readLine())!=null){
+                                        text+=line+"\n";
+                                    }
+                                    reader.close();
+                                    overhaul.Reactor r = overhaul.Reactor.parse(text, fuel, type, X, Y, Z);
+                                    if(r==null)throw new NullPointerException("Invalid Reactor");
+                                    overhaul.Main.genPlan.importReactor(r, true);
+                                    message.getChannel().sendMessage("Imported reactor: "+at.getFileName()).queue();
+                                }else{
+                                    System.err.println("Unknown extention: "+at.getFileExtension());
                                 }
-                                reader.close();
-                                overhaul.Reactor r = overhaul.Reactor.parse(text, fuel, type, X, Y, Z);
-                                if(r==null)throw new NullPointerException("Invalid Reactor");
-                                overhaul.Main.genPlan.importReactor(r, true);
-                                message.getChannel().sendMessage("Imported reactor: "+at.getFileName()).queue();
-                            }else{
-                                System.err.println("Unknown extention: "+at.getFileExtension());
+                            }catch(Exception ex){
+                                message.getChannel().sendMessage("Failed to parse attachment: "+at.getFileName()+"\n"+ex.getClass().getName()+": "+ex.getMessage()).queue();
+                                ex.printStackTrace();
                             }
-                        }catch(Exception ex){
-                            message.getChannel().sendMessage("Failed to parse attachment: "+at.getFileName()+"\n"+ex.getClass().getName()+": "+ex.getMessage()).queue();
-                            ex.printStackTrace();
                         }
+                    }
+                    if(shouldImport){
+                        int imported = 0;
+                        System.out.println("Importing "+storedReactors.get(X).get(Y).get(Z).size()+" Reactors...");
+                        JSONObject best = null;
+                        for(JSONObject json : storedReactors.get(X).get(Y).get(Z)){
+                            imported++;
+                            System.out.println("Importing... "+imported+"/ "+storedReactors.get(X).get(Y).get(Z).size());
+                            try{
+                                overhaul.Reactor r = overhaul.Reactor.parseJSON(json, fuel, type, X, Y, Z);
+                                if(r==null)continue;
+                                if(overhaul.Main.genPlan.importReactor(r, true))best = json;
+                                System.out.println("Imported Player-made Reactor!");
+                            }catch(Exception ex){}
+                        }
+                        System.out.println("Done importing reactors");
+                        if(best!=null){
+                            message.getChannel().sendMessage("Found basis reactor: "+reactorLinks.get(best).getJumpUrl()).queue();
+                        }
+                    }
+                    if(!isGenerating){
+                        overhaul.Main.instance.stop();
                     }
                 }else{
                     if(underhaul.Main.running){
@@ -303,9 +456,10 @@ public class Bot extends ListenerAdapter{
                         underhaul.Priority.moveToEnd("Fuel Usage");
                     }
                     if(underhaul.Main.instance!=null)underhaul.Main.instance.dispose();
+                    underhaul.Main.genModel = underhaul.GenerationModel.DEFAULT;
                     underhaul.Main.instance = new underhaul.Main();
                     ArrayList<underhaul.ReactorPart> allowedBlocks = new ArrayList<>(underhaul.ReactorPart.parts);
-                    allowedBlocks.remove(overhaul.ReactorPart.BERYLLIUM);
+                    allowedBlocks.remove(underhaul.ReactorPart.BERYLLIUM);
                     for(underhaul.ReactorPart part : underhaul.ReactorPart.parts){
                         String nam = part.jsonName;
                         if(nam==null)continue;
@@ -323,11 +477,14 @@ public class Bot extends ListenerAdapter{
                     underhaul.Main.instance.spinnerY.setValue(Y);
                     underhaul.Main.instance.spinnerZ.setValue(Z);
                     underhaul.Main.instance.boxFuel.setSelectedIndex(underhaul.Fuel.fuels.indexOf(fuel));
+                    if(!isGenerating){
+                        underhaul.Main.genModel = underhaul.GenerationModel.get("None");
+                    }
                     underhaul.Main.instance.start();
                     try{
-                        underhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle("Generating "+override+"Reactors...").build()).complete();
+                        underhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle((isGenerating?"Generating ":"Searching ")+override+"Reactors...").build()).complete();
                     }catch(InsufficientPermissionException ex){
-                        underhaulMessage = message.getChannel().sendMessage("Generating "+override+"Reactors...").complete();
+                        underhaulMessage = message.getChannel().sendMessage((isGenerating?"Generating ":"Searching ")+override+"Reactors...").complete();
                     }
                     underhaulTime = System.nanoTime();
                     int sx = X, sy = Y, sz = Z;
@@ -336,13 +493,13 @@ public class Bot extends ListenerAdapter{
                         while(underhaul.Main.running&&System.nanoTime()<underhaulTime+TIME_LIMIT){
                             try{
                                 Thread.sleep(1000);
-                                updateUnderhaul("Generating "+override+"Reactors...\n", true);
+                                updateUnderhaul((isGenerating?"Generating ":"Searching ")+override+"Reactors...\n", true);
                             }catch(InterruptedException ex){
                                 Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         if(underhaul.Main.running)underhaul.Main.instance.stop();
-                        updateUnderhaul("Generated "+override+"Reactor", false);
+                        updateUnderhaul((isGenerating?"Generated ":"Found ")+override+"Reactor", false);
                         File image = new File("underhaul.png");
                         File json = new File("underhaul.json");
                         underhaul.Reactor r = underhaul.Main.genPlan.getReactors().get(0);
@@ -358,27 +515,55 @@ public class Bot extends ListenerAdapter{
                     });
                     t.setDaemon(true);
                     t.start();
-                    for(Attachment at : message.getAttachments()){
-                        try{
-                            if(at.getFileExtension().equals("json")){
-                                String text = "";
-                                BufferedReader reader = new BufferedReader(new InputStreamReader(at.retrieveInputStream().get()));
-                                String line;
-                                while((line = reader.readLine())!=null){
-                                    text+=line+"\n";
+                    boolean shouldImport = true;
+                    if(isGenerating){
+                        for(Attachment at : message.getAttachments()){
+                            shouldImport = false;
+                            try{
+                                if(at.getFileExtension().equals("json")){
+                                    String text = "";
+                                    BufferedReader reader = new BufferedReader(new InputStreamReader(at.retrieveInputStream().get()));
+                                    String line;
+                                    while((line = reader.readLine())!=null){
+                                        text+=line+"\n";
+                                    }
+                                    reader.close();
+                                    underhaul.Reactor r = underhaul.Reactor.parse(text, fuel, X, Y, Z);
+                                    if(r==null)throw new NullPointerException("Invalid Reactor");
+                                    underhaul.Main.genPlan.importReactor(r, true);
+                                    message.getChannel().sendMessage("Imported reactor: "+at.getFileName()).queue();
+                                }else{
+                                    System.err.println("Unknown extention: "+at.getFileExtension());
                                 }
-                                reader.close();
-                                underhaul.Reactor r = underhaul.Reactor.parse(text, fuel, X, Y, Z);
-                                if(r==null)throw new NullPointerException("Invalid Reactor");
-                                underhaul.Main.genPlan.importReactor(r, true);
-                                message.getChannel().sendMessage("Imported reactor: "+at.getFileName()).queue();
-                            }else{
-                                System.err.println("Unknown extention: "+at.getFileExtension());
+                            }catch(Exception ex){
+                                message.getChannel().sendMessage("Failed to parse attachment: "+at.getFileName()+"\n"+ex.getClass().getName()+": "+ex.getMessage()).queue();
+                                ex.printStackTrace();
                             }
-                        }catch(Exception ex){
-                            message.getChannel().sendMessage("Failed to parse attachment: "+at.getFileName()+"\n"+ex.getClass().getName()+": "+ex.getMessage()).queue();
-                            ex.printStackTrace();
                         }
+                    }
+                    if(shouldImport){
+                        System.out.println("Importing "+storedReactors.get(X).get(Y).get(Z).size()+" Reactors...");
+                        JSONObject best = null;
+                        int imported = 0;
+                        for(JSONObject json : storedReactors.get(X).get(Y).get(Z)){
+                            imported++;
+                            System.out.println("Importing... "+imported+"/ "+storedReactors.get(X).get(Y).get(Z).size());
+                            try{
+                                underhaul.Reactor r = underhaul.Reactor.parseJSON(json, fuel, X, Y, Z);
+                                if(r==null){
+                                    continue;
+                                }
+                                if(underhaul.Main.genPlan.importReactor(r, true))best = json;
+                                System.out.println("Imported Player-made Reactor!");
+                            }catch(Exception ex){}
+                        }
+                        System.out.println("Done importing reactors");
+                        if(best!=null){
+                            message.getChannel().sendMessage("Found basis reactor: "+reactorLinks.get(best).getJumpUrl()).queue();
+                        }
+                    }
+                    if(!isGenerating){
+                        underhaul.Main.instance.stop();
                     }
                 }
             }
@@ -524,16 +709,16 @@ public class Bot extends ListenerAdapter{
         for(String pref : prefixes){
             prefix+=pref+"\n";
         }
-        if(prefixes.length==1)prefix = "";
+        if(prefixes.size()==1)prefix = "";
         return "__**S'plodo-bot help**__\n"+prefix
                 + "> **Commands:**\n"
-                + "`"+prefixes[0]+"help`  Shows this help window\n"
-                + "`"+prefixes[0]+"abort`|`stop`|`halt`|`finish`  Stops the currently generating reactor (specify `"+prefixes[0]+"abort overhaul` to stop overhaul generation)\n"
-                + "`"+prefixes[0]+"generate`  Generates a reactor with the given parameters\n"
+                + "`"+prefixes.get(0)+"help`  Shows this help window\n"
+                + "`"+prefixes.get(0)+"abort`|`stop`|`halt`|`finish`  Stops the currently generating reactor (specify `"+prefixes.get(0)+"abort overhaul` to stop overhaul generation)\n"
+                + "`"+prefixes.get(0)+"generate`  Generates a reactor with the given parameters\n"
                 + "Provide keywords for what type of reactor you wish to generate\n"
                 + "**Generation settings:**\n"
-                + "`overhaul` - generates an overhaul reactor (Default: pre-overhaul)\n"
-                + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for pre-overhaul; 5x5x5 for overhaul)\n"
+                + "`overhaul` - generates an overhaul reactor (Default: underhaul)\n"
+                + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for underhaul; 5x5x5 for overhaul)\n"
                 + "`<fuel>` - generates a reactor using the specified fuel (Default: LEU-235 Oxide)\n"
                 + "`efficiency` or `efficient` - sets efficiency as the main proiority (default)\n"
                 + "`output` - sets output as the main priority\n"
@@ -543,14 +728,14 @@ public class Bot extends ListenerAdapter{
                 + "`e2e` - Uses the Enigmatica 2 Expert config\n"
                 + "`po3` - Uses the Project: Ozone 3 config\n"
                 + "**Examples of valid commands:**\n"
-                + prefixes[0]+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
-                + prefixes[0]+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum\n\n"
+                + prefixes.get(0)+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
+                + prefixes.get(0)+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum\n\n"
                 + "> *"+poweredBy+"*";
     }
     private MessageEmbed getHelpEmbed(){
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("S'plodo-bot help");
-        if(prefixes.length>1){
+        if(prefixes.size()>1){
             String prefix = "";
             for(String pref : prefixes){
                 prefix+=pref+"\n";
@@ -558,13 +743,14 @@ public class Bot extends ListenerAdapter{
             builder.addField("Prefixes", prefix, false);
         }
         builder.addField("Commands",
-                  "`"+prefixes[0]+"help`  Shows this help window\n"
-                + "`"+prefixes[0]+"abort`|`stop`|`halt`|`finish`  Stops the currently generating reactor (specify `"+prefixes[0]+"abort overhaul` to stop overhaul generation)\n"
-                + "`"+prefixes[0]+"generate`  Generates a reactor with the given parameters\n"
+                  "`"+prefixes.get(0)+"help`  Shows this help window\n"
+                + "`"+prefixes.get(0)+"abort`|`stop`|`halt`|`finish`  Stops the currently generating reactor (specify `"+prefixes.get(0)+"abort overhaul` to stop overhaul generation)\n"
+                + "`"+prefixes.get(0)+"generate`  Generates a reactor with the given parameters\n"
+                + "`"+prefixes.get(0)+"search`|`find`  Finds a design with the given parameters from <#639859364383031356>\n"
                 + "Provide keywords for what type of reactor you wish to generate", false);
         builder.addField("Generation settings",
-                  "`overhaul` - generates an overhaul reactor (Default: pre-overhaul)\n"
-                + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for pre-overhaul; 5x5x5 for overhaul)\n"
+                  "`overhaul` - generates an overhaul reactor (Default: underhaul)\n"
+                + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for underhaul; 5x5x5 for overhaul)\n"
                 + "`<fuel>` - generates a reactor using the specified fuel (Default: LEU-235 Oxide)\n"
                 + "`efficiency` or `efficient` - sets efficiency as the main proiority (default)\n"
                 + "`output` - sets output as the main priority\n"
@@ -574,8 +760,8 @@ public class Bot extends ListenerAdapter{
                 + "`e2e` - Uses the Enigmatica 2 Expert config\n"
                 + "`po3` - Uses the Project: Ozone 3 config",false);
         builder.addField("Examples of valid commands", 
-                  prefixes[0]+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
-                + prefixes[0]+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum",false);
+                  prefixes.get(0)+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
+                + prefixes.get(0)+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum",false);
         builder.setFooter(poweredBy);
         builder.setColor(Color.ORANGE);
         return builder.build();
