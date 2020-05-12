@@ -153,7 +153,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
                         for(int i = 0; i<reactors.length; i++){
                             if(Reactor.isbetter(reactor, this.reactors[i])){
                                 this.reactors[i] = reactor;
-                                return i==0;
+                                return true;
                             }
                         }
                     }

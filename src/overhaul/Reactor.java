@@ -53,7 +53,7 @@ public abstract class Reactor{
             if(t.canCluster)clusterables.add(t);
         }
     }
-    static boolean isbetter(Reactor reactor, Reactor other){
+    public static boolean isbetter(Reactor reactor, Reactor other){
         for(Priority p : Priority.priorities){
             double comparison = p.compare(reactor, other);
             if(comparison>0)return true;

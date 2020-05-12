@@ -363,16 +363,22 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                     if(shouldImport){
-                        int imported = 0;
                         System.out.println("Importing "+storedReactors.get(X).get(Y).get(Z).size()+" Reactors...");
                         JSONObject best = null;
+                        int imported = 0;
                         for(JSONObject json : storedReactors.get(X).get(Y).get(Z)){
                             imported++;
                             System.out.println("Importing... "+imported+"/ "+storedReactors.get(X).get(Y).get(Z).size());
                             try{
                                 overhaul.Reactor r = overhaul.Reactor.parseJSON(json, fuel, type, X, Y, Z);
-                                if(r==null)continue;
-                                if(overhaul.Main.genPlan.importReactor(r, true))best = json;
+                                if(r==null){
+                                    continue;
+                                }
+                                boolean isBest = true;
+                                for(overhaul.Reactor re : overhaul.Main.genPlan.getReactors()){
+                                    if(overhaul.Reactor.isbetter(re, r))isBest = false;
+                                }
+                                if(isBest&&overhaul.Main.genPlan.importReactor(r, true))best = json;
                                 System.out.println("Imported Player-made Reactor!");
                             }catch(Exception ex){}
                         }
@@ -553,7 +559,11 @@ public class Bot extends ListenerAdapter{
                                 if(r==null){
                                     continue;
                                 }
-                                if(underhaul.Main.genPlan.importReactor(r, true))best = json;
+                                boolean isBest = true;
+                                for(underhaul.Reactor re : underhaul.Main.genPlan.getReactors()){
+                                    if(underhaul.Reactor.isbetter(re, r))isBest = false;
+                                }
+                                if(isBest&&underhaul.Main.genPlan.importReactor(r, true))best = json;
                                 System.out.println("Imported Player-made Reactor!");
                             }catch(Exception ex){}
                         }
