@@ -47,7 +47,7 @@ public class Bot extends ListenerAdapter{
     private static ArrayList<Long> dataChannels = new ArrayList<>();
     private static final int batchSize = 100;
     private static final HashMap<Integer, HashMap<Integer, HashMap<Integer, ArrayList<JSONObject>>>> storedReactors =  new HashMap<>();
-    private static final HashMap<JSONObject, Message> reactorLinks =  new HashMap<>();
+    private static final HashMap<JSONObject, String> reactorLinks =  new HashMap<>();
     static{
         for(int x = 1; x<=24; x++){
             HashMap<Integer, HashMap<Integer, ArrayList<JSONObject>>> xs = new HashMap<>();
@@ -134,7 +134,7 @@ public class Bot extends ListenerAdapter{
     public void storeReactors(Message message){
         for(Attachment att : message.getAttachments()){
             JSONObject json = storeReactor(att);
-            if(json!=null)reactorLinks.put(json, message);
+            if(json!=null)reactorLinks.put(json, message.getJumpUrl());
         }
     }
     public JSONObject storeReactor(Attachment att){
@@ -287,14 +287,13 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                     overhaul.Main.instance.setAllowedBlocks(allowedBlocks);
-                    if(content.contains("symmetr")){
-                        overhaul.Main.instance.checkBoxSymmetryX.setSelected(true);
-                        overhaul.Main.instance.checkBoxSymmetryY.setSelected(true);
-                        overhaul.Main.instance.checkBoxSymmetryZ.setSelected(true);
-                    }
+                    overhaul.Main.instance.checkBoxSymmetryX.setSelected(content.contains("symmetr"));
+                    overhaul.Main.instance.checkBoxSymmetryY.setSelected(content.contains("symmetr"));
+                    overhaul.Main.instance.checkBoxSymmetryZ.setSelected(content.contains("symmetr"));
                     overhaul.Main.instance.spinnerX.setValue(X);
                     overhaul.Main.instance.spinnerY.setValue(Y);
                     overhaul.Main.instance.spinnerZ.setValue(Z);
+                    overhaul.Main.instance.checkBoxFillConductors.setSelected(false);;
                     overhaul.Main.instance.boxFuel.setSelectedIndex(overhaul.Fuel.fuels.indexOf(fuel));
                     overhaul.Main.instance.boxFuelType.setSelectedIndex(type.ordinal());
                     if(!isGenerating){
@@ -384,7 +383,7 @@ public class Bot extends ListenerAdapter{
                         }
                         System.out.println("Done importing reactors");
                         if(best!=null){
-                            message.getChannel().sendMessage("Found basis reactor: "+reactorLinks.get(best).getJumpUrl()).queue();
+                            message.getChannel().sendMessage("Found basis reactor: "+reactorLinks.get(best)).queue();
                         }
                     }
                     if(!isGenerating){
@@ -474,11 +473,9 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                     underhaul.Main.instance.setAllowedBlocks(allowedBlocks);
-                    if(content.contains("symmetr")){
-                        underhaul.Main.instance.checkBoxSymmetryX.setSelected(true);
-                        underhaul.Main.instance.checkBoxSymmetryY.setSelected(true);
-                        underhaul.Main.instance.checkBoxSymmetryZ.setSelected(true);
-                    }
+                    underhaul.Main.instance.checkBoxSymmetryX.setSelected(content.contains("symmetr"));
+                    underhaul.Main.instance.checkBoxSymmetryY.setSelected(content.contains("symmetr"));
+                    underhaul.Main.instance.checkBoxSymmetryZ.setSelected(content.contains("symmetr"));
                     underhaul.Main.instance.spinnerX.setValue(X);
                     underhaul.Main.instance.spinnerY.setValue(Y);
                     underhaul.Main.instance.spinnerZ.setValue(Z);
@@ -569,7 +566,7 @@ public class Bot extends ListenerAdapter{
                         }
                         System.out.println("Done importing reactors");
                         if(best!=null){
-                            message.getChannel().sendMessage("Found basis reactor: "+reactorLinks.get(best).getJumpUrl()).queue();
+                            message.getChannel().sendMessage("Found basis reactor: "+reactorLinks.get(best)).queue();
                         }
                     }
                     if(!isGenerating){

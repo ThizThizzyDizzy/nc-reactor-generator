@@ -1,6 +1,7 @@
 package underhaul;
 import common.Scorable;
 import common.Setting;
+import common.SettingBoolean;
 import common.SettingInt;
 import common.ThingWithSettings;
 import common.SettingDouble;
@@ -18,20 +19,45 @@ public abstract class GenerationModel extends ThingWithSettings{
                 return Reactor.random(fuel,x,y,z,rand);
             }
         });
-        models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.", new SettingDouble("Change Chance", 1, 0.1f, 100, .1f)) {
+        models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.\nIf rate is variable, each block has an x% chance of changing\nIf rate is fixed, exactly x% of the blocks will be changed (minimum 1)", new SettingDouble("Change Chance", 1, 0.1f, 100, .1f), new SettingBoolean("Variable Rate", true)){
             @Override
             public Reactor generate(Reactor last, Fuel fuel, int x, int y, int z, Random rand){
                 if(last!=null&&last.isValid()){
-                    return new Reactor(fuel, x, y, z){
-                        @Override
-                        protected ReactorPart build(int X, int Y, int Z){
-                            if(rand.nextDouble()<getDouble("Change Chance")/100d){
-                                return ReactorPart.random(rand);
-                            }else{
-                                return last.parts[X][Y][Z];
+                    if(getBoolean("Variable")){
+                        return new Reactor(fuel, x, y, z){
+                            @Override
+                            protected ReactorPart build(int X, int Y, int Z){
+                                if(rand.nextDouble()<getDouble("Change Chance")/100d){
+                                    return ReactorPart.random(rand);
+                                }else{
+                                    return last.parts[X][Y][Z];
+                                }
+                            }
+                        };
+                    }else{
+                        long changes = Math.max(1, Math.round((double)getDouble("Change Chance")*x*y*z));
+                        ArrayList<int[]> pool = new ArrayList<>();
+                        ReactorPart[][][] prts = new ReactorPart[x][y][z];
+                        for(int X = 0; X<prts.length; X++){
+                            for(int Y = 0; Y<prts[X].length; Y++){
+                                for(int Z = 0; Z<prts[Y].length; Z++){
+                                    pool.add(new int[]{X,Y,Z});
+                                }
                             }
                         }
-                    };
+                        for(int i = 0; i<changes; i++){//so it can't change the same cell twice
+                            if(pool.isEmpty())break;
+                            int[] pos = pool.remove(rand.nextInt(pool.size()));
+                            prts[pos[0]][pos[1]][pos[2]] = ReactorPart.random(rand);
+                        }
+                        return new Reactor(fuel, x, y, z){
+                            @Override
+                            protected ReactorPart build(int X, int Y, int Z){
+                                if(prts[X][Y][Z]!=null)return prts[X][Y][Z];
+                                return last.parts[X][Y][Z];
+                            }
+                        };
+                    }
                 }
                 return Reactor.random(fuel,x,y,z,rand);
             }

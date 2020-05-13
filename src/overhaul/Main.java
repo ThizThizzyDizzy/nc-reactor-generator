@@ -100,7 +100,7 @@ public class Main extends javax.swing.JFrame{
         jLabel3 = new javax.swing.JLabel();
         buttonStart = new javax.swing.JButton();
         buttonStop = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        checkBoxFillConductors = new javax.swing.JCheckBox();
         checkBoxSymmetryX = new javax.swing.JCheckBox();
         checkBoxSymmetryY = new javax.swing.JCheckBox();
         checkBoxSymmetryZ = new javax.swing.JCheckBox();
@@ -419,12 +419,16 @@ public class Main extends javax.swing.JFrame{
                 .addGap(10, 10, 10))
         );
 
-        jCheckBox1.setText("Replace air with conductors");
+        checkBoxFillConductors.setSelected(true);
+        checkBoxFillConductors.setText("Replace air with conductors");
 
+        checkBoxSymmetryX.setSelected(true);
         checkBoxSymmetryX.setText("Apply X Symmetry");
 
+        checkBoxSymmetryY.setSelected(true);
         checkBoxSymmetryY.setText("Apply Y Symmetry");
 
+        checkBoxSymmetryZ.setSelected(true);
         checkBoxSymmetryZ.setText("Apply Z Symmetry");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -442,7 +446,7 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(panelFuels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkBoxFillConductors, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(checkBoxSymmetryX, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(checkBoxSymmetryY, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(checkBoxSymmetryZ, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -463,7 +467,7 @@ public class Main extends javax.swing.JFrame{
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox1)
+                        .addComponent(checkBoxFillConductors)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(checkBoxSymmetryX)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -637,7 +641,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1044,12 +1048,12 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JButton buttonStart;
     private javax.swing.JButton buttonStop;
     private javax.swing.JCheckBox checkBoxDrawReactors;
+    public javax.swing.JCheckBox checkBoxFillConductors;
     public javax.swing.JCheckBox checkBoxShowClusters;
     public javax.swing.JCheckBox checkBoxSymmetryX;
     public javax.swing.JCheckBox checkBoxSymmetryY;
     public javax.swing.JCheckBox checkBoxSymmetryZ;
     private javax.swing.JButton jButton1;
-    public javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

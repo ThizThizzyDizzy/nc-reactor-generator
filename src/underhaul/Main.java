@@ -401,10 +401,13 @@ public class Main extends javax.swing.JFrame{
                 .addGap(10, 10, 10))
         );
 
+        checkBoxSymmetryX.setSelected(true);
         checkBoxSymmetryX.setText("Apply X Symmetry");
 
+        checkBoxSymmetryY.setSelected(true);
         checkBoxSymmetryY.setText("Apply Y Symmetry");
 
+        checkBoxSymmetryZ.setSelected(true);
         checkBoxSymmetryZ.setText("Apply Z Symmetry");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -609,7 +612,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

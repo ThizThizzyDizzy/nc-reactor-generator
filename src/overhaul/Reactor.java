@@ -554,7 +554,7 @@ public abstract class Reactor{
             }
         }
 //</editor-fold>
-        if(Main.instance==null?true:Main.instance.jCheckBox1.isSelected()){
+        if(Main.instance==null?true:Main.instance.checkBoxFillConductors.isSelected()){
             //<editor-fold defaultstate="collapsed" desc="Fill with conductors">
             for(int x = 0; x<this.x; x++){
                 for(int y = 0; y<this.y; y++){

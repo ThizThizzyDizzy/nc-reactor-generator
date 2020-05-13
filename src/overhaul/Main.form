@@ -173,7 +173,7 @@
                                   <Component id="panelFuels" max="32767" attributes="0"/>
                                   <Component id="panelSize" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jPanel1" max="32767" attributes="0"/>
-                                  <Component id="jCheckBox1" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="checkBoxFillConductors" alignment="0" max="32767" attributes="0"/>
                                   <Component id="checkBoxSymmetryX" alignment="1" max="32767" attributes="0"/>
                                   <Component id="checkBoxSymmetryY" alignment="1" max="32767" attributes="0"/>
                                   <Component id="checkBoxSymmetryZ" alignment="0" max="32767" attributes="0"/>
@@ -197,7 +197,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="checkBoxFillConductors" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="checkBoxSymmetryX" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -637,8 +637,9 @@
                         </Component>
                       </SubComponents>
                     </Container>
-                    <Component class="javax.swing.JCheckBox" name="jCheckBox1">
+                    <Component class="javax.swing.JCheckBox" name="checkBoxFillConductors">
                       <Properties>
+                        <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" value="Replace air with conductors"/>
                       </Properties>
                       <AuxValues>
@@ -647,6 +648,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="checkBoxSymmetryX">
                       <Properties>
+                        <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" value="Apply X Symmetry"/>
                       </Properties>
                       <AuxValues>
@@ -655,6 +657,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="checkBoxSymmetryY">
                       <Properties>
+                        <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" value="Apply Y Symmetry"/>
                       </Properties>
                       <AuxValues>
@@ -663,6 +666,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="checkBoxSymmetryZ">
                       <Properties>
+                        <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" value="Apply Z Symmetry"/>
                       </Properties>
                       <AuxValues>
@@ -849,7 +853,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="jScrollPane6" pref="445" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane6" pref="462" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jScrollPane8" min="-2" pref="150" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
