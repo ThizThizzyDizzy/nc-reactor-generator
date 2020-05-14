@@ -137,8 +137,8 @@ public abstract class Configuration{
     public static final Configuration PO3 = new Configuration() {
         @Override
         public void init(ArrayList<Fuel> fuels, HashMap<Cooler, Integer> cooling){
-            fuels.add(new Fuel("TBU", 6000, 18, 144000));
-            fuels.add(new Fuel("TBU Oxide", 8400, 22.5, 144000));
+            fuels.add(new Fuel("TBU", 600, 18, 144000));
+            fuels.add(new Fuel("TBU Oxide", 840, 22.5, 144000));
             fuels.add(new Fuel("LEU-233", 1440, 60, 64000));
             fuels.add(new Fuel("LEU-233 Oxide",2010.6,75.0, 64000));
             fuels.add(new Fuel("HEU-233",5760.0,360.0, 64000));
