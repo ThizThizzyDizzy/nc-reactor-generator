@@ -54,7 +54,7 @@ public class ReactorPart implements ReactorBit{
     public static ArrayList<ReactorPart> getAvailableParts(){
         int[] is = Main.instance.listParts.getSelectedIndices();
         ArrayList<ReactorPart> available = new ArrayList<>();
-        for(int i = 0; i<is.length; i++){
+        for(int i : is){
             available.add(parts.get(i));
         }
         return available;

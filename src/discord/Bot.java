@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -31,6 +32,8 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import simplelibrary.Sys;
+import simplelibrary.config2.Config;
 public class Bot extends ListenerAdapter{
     private static JDA jda;
     private static boolean running = false;
@@ -48,6 +51,8 @@ public class Bot extends ListenerAdapter{
     private static final int batchSize = 100;
     private static final HashMap<Integer, HashMap<Integer, HashMap<Integer, ArrayList<JSONObject>>>> storedReactors =  new HashMap<>();
     private static final HashMap<JSONObject, String> reactorLinks =  new HashMap<>();
+    private static int cookies = 0;
+    private static Config config;
     static{
         for(int x = 1; x<=24; x++){
             HashMap<Integer, HashMap<Integer, ArrayList<JSONObject>>> xs = new HashMap<>();
@@ -69,10 +74,19 @@ public class Bot extends ListenerAdapter{
             else prefixes.add(arg);
         }
         if(prefixes.isEmpty())prefixes.add("-");
+        try{
+            Sys.init(File.createTempFile("this", "that").getParentFile(), null);
+        }catch(IOException ex){
+            Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
+        }
         underhaul.Configuration.load(underhaul.Configuration.DEFAULT);
         overhaul.Configuration.load(overhaul.Configuration.DEFAULT);
+        config = Config.newConfig(new File(new File("special.dat").getAbsolutePath()));
+        config.load();
+        cookies = config.get("cookies", 0);
         JDABuilder b = new JDABuilder(AccountType.BOT);
         b.setToken(args[1]);
+        b.setActivity(Activity.watching("cookies accumulate ("+cookies+")"));
         b.addEventListeners(new Bot());
         jda = b.build();
         running = true;
@@ -80,7 +94,7 @@ public class Bot extends ListenerAdapter{
     static void stop(){
         if(running)jda.shutdownNow();
     }
-    private String poweredBy = "Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases";
+    private final String poweredBy = "Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases";
     @Override
     public void onReady(ReadyEvent re){
         Thread channelRead = new Thread(() -> {
@@ -187,6 +201,14 @@ public class Bot extends ListenerAdapter{
             content = content.toLowerCase().replace("_", "").replace("-", "").replace(":", "").replace("=", "");
             while(content.contains("  "))content = content.replace("  ", " ");
             content = content.replace(" x ", "x");
+            if(content.startsWith("cookie")){
+                cookies++;
+                config.set("cookies", cookies);
+                System.out.println("saving "+cookies+" cookies");
+                config.save();
+                jda.getPresence().setActivity(Activity.watching("cookies accumulate ("+cookies+")"));
+                return;
+            }
             if(content.startsWith("help")){
                 try{
                     message.getChannel().sendMessage(getHelpEmbed()).queue();
@@ -373,6 +395,13 @@ public class Bot extends ListenerAdapter{
                                 if(r==null){
                                     continue;
                                 }
+                                final overhaul.Reactor react = r;
+                                r = new overhaul.Reactor(fuel, type, X, Y, Z){
+                                    @Override
+                                    protected overhaul.ReactorPart build(int X, int Y, int Z){
+                                        return overhaul.ReactorPart.getSelectedParts().contains(react.parts[X][Y][Z])?react.parts[X][Y][Z]:overhaul.ReactorPart.AIR;
+                                    }
+                                };
                                 boolean isBest = true;
                                 for(overhaul.Reactor re : overhaul.Main.genPlan.getReactors()){
                                     if(overhaul.Reactor.isbetter(re, r))isBest = false;
@@ -465,6 +494,7 @@ public class Bot extends ListenerAdapter{
                     underhaul.Main.instance = new underhaul.Main();
                     ArrayList<underhaul.ReactorPart> allowedBlocks = new ArrayList<>(underhaul.ReactorPart.parts);
                     allowedBlocks.remove(underhaul.ReactorPart.BERYLLIUM);
+                    allowedBlocks.remove(underhaul.ReactorPart.AIR);
                     for(underhaul.ReactorPart part : underhaul.ReactorPart.parts){
                         String nam = part.jsonName;
                         if(nam==null)continue;
@@ -552,10 +582,16 @@ public class Bot extends ListenerAdapter{
                             imported++;
                             System.out.println("Importing... "+imported+"/ "+storedReactors.get(X).get(Y).get(Z).size());
                             try{
-                                underhaul.Reactor r = underhaul.Reactor.parseJSON(json, fuel, X, Y, Z);
-                                if(r==null){
+                                underhaul.Reactor react = underhaul.Reactor.parseJSON(json, fuel, X, Y, Z);
+                                if(react==null){
                                     continue;
                                 }
+                                underhaul.Reactor r = new underhaul.Reactor(fuel, X, Y, Z){
+                                    @Override
+                                    protected underhaul.ReactorPart build(int X, int Y, int Z){
+                                        return underhaul.ReactorPart.getAvailableParts().contains(react.parts[X][Y][Z])?react.parts[X][Y][Z]:underhaul.ReactorPart.AIR;
+                                    }
+                                };
                                 boolean isBest = true;
                                 for(underhaul.Reactor re : underhaul.Main.genPlan.getReactors()){
                                     if(underhaul.Reactor.isbetter(re, r))isBest = false;

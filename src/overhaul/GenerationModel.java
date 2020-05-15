@@ -15,7 +15,7 @@ public abstract class GenerationModel extends ThingWithSettings{
                 return Reactor.random(fuel,type,x,y,z,rand);
             }
         });
-        models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.", new SettingDouble("Change Chance", 1, 0.1, 100, .1), new SettingBoolean("Lock Core", false)){
+        models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.", new SettingDouble("Change Chance", 1, 0.1, 100, .1), new SettingBoolean("Lock Core", false), new SettingBoolean("Fill Air", false)){
             @Override
             public Reactor generate(Reactor last, Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
                 if(last!=null&&last.isValid()){
@@ -27,7 +27,7 @@ public abstract class GenerationModel extends ThingWithSettings{
                                     return last.parts[X][Y][Z];
                                 }
                             }
-                            if(rand.nextDouble()<getDouble("Change Chance")/100d){
+                            if(rand.nextDouble()<((getBoolean("Fill Air")&&last.parts[X][Y][Z]==ReactorPart.AIR)?1:(getDouble("Change Chance")/100d))){
                                 return ReactorPart.random(rand);
                             }else{
                                 return last.parts[X][Y][Z];
