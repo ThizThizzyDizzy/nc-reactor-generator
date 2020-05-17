@@ -17,7 +17,8 @@ public class ReactorPanel extends JPanel{
         g.fillRect(0, 0, w, h);
         if(reactor==null)return;
         BufferedImage image = reactor.getImage();
-        int size = Math.min(getWidth()/image.getWidth(), getHeight()/image.getHeight());
+        if(getHeight()<image.getHeight())setSize(getWidth(), image.getHeight());
+        int size = Math.max(1,Math.min(getWidth()/image.getWidth(), getHeight()/image.getHeight()));
         g.drawImage(reactor.getImage(), 0, 0, image.getWidth()*size, image.getHeight()*size, null);
     }
 }

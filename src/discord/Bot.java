@@ -168,6 +168,7 @@ public class Bot extends ListenerAdapter{
         JSONObject json = null;
         try{
             json = JSON.parse(s);
+            if(json.containsKey("Data"))json = json.getJSONObject("Data");
             Object dim = json.get("InteriorDimensions");
             if(dim instanceof JSONObject){
                 x = ((JSONObject)dim).getInt("X");
@@ -239,7 +240,7 @@ public class Bot extends ListenerAdapter{
                 boolean isGenerating = content.startsWith("generate");
                 if(content.contains("overhaul")&&!content.contains("preoverhaul")&&!content.contains("underhaul")){
                     if(overhaul.Main.running){
-                        message.getChannel().sendMessage("Overhaul generator is already running!").queue();
+                        message.getChannel().sendMessage("Overhaul generator is already running! Use `-abort overhaul` to stop generation").queue();
                         return;
                     }
                     int X = 5,Y = 5,Z = 5;
@@ -424,7 +425,7 @@ public class Bot extends ListenerAdapter{
                     }
                 }else{
                     if(underhaul.Main.running){
-                        message.getChannel().sendMessage("Underhaul generator is already running!").queue();
+                        message.getChannel().sendMessage("Underhaul generator is already running! Use `-abort` to stop generation").queue();
                         return;
                     }
                     if(content.contains("e2e")){

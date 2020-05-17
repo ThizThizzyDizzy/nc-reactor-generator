@@ -2,6 +2,9 @@ package underhaul;
 import java.util.ArrayList;
 import java.util.HashMap;
 public abstract class Configuration{
+    private static double yellorFactor = 8/9d;
+    private static double ic2Enriched = 18/19d;
+    private static double ic2Mox = 9/7d;
     public static final Configuration DEFAULT = new Configuration(){
         @Override
         public void init(ArrayList<Fuel> fuels, HashMap<Cooler, Integer> cooling){
@@ -57,6 +60,9 @@ public abstract class Configuration{
             fuels.add(new Fuel("LECf-251 Oxide",315.0,150.0, 58000));
             fuels.add(new Fuel("HECf-251",900.0,720.0, 58000));
             fuels.add(new Fuel("HECf-251 Oxide",1_260.0,900.0, 58000));
+            fuels.add(new Fuel("Yellorium",120.0*yellorFactor,50.0*yellorFactor, 72000));
+            fuels.add(new Fuel("Enriched Uranium",120.0*ic2Enriched,50.0*ic2Enriched, 72000));
+            fuels.add(new Fuel("MOX",155.4*ic2Mox,57.5*ic2Mox, 84000));
         }
     };
     public static final Configuration E2E = new Configuration() {
@@ -114,6 +120,10 @@ public abstract class Configuration{
             fuels.add(new Fuel("LECf-251 Oxide",315.0,150.0, 58000));
             fuels.add(new Fuel("HECf-251",900.0,720.0, 58000));
             fuels.add(new Fuel("HECf-251 Oxide",1_260.0,900.0, 58000));
+            fuels.add(new Fuel("Uranium Ingot", 100, 40, 0));
+            fuels.add(new Fuel("Yellorium",120.0*yellorFactor,50.0*yellorFactor, 72000));
+            fuels.add(new Fuel("Enriched Uranium",120.0*ic2Enriched,50.0*ic2Enriched, 72000));
+            fuels.add(new Fuel("MOX",155.4*ic2Mox,57.5*ic2Mox, 84000));
             powerMult(6);
             fuelRate(2);
             heatGen(1.2f);
@@ -189,6 +199,9 @@ public abstract class Configuration{
             fuels.add(new Fuel("LECf-251 Oxide",3150.0,150.0, 58000));
             fuels.add(new Fuel("HECf-251",9000.0,720.0, 58000));
             fuels.add(new Fuel("HECf-251 Oxide",1_2600.0,900.0, 58000));
+            fuels.add(new Fuel("Yellorium",1200.0*yellorFactor,50.0*yellorFactor, 72000));
+            fuels.add(new Fuel("Enriched Uranium",1200.0*ic2Enriched,50.0*ic2Enriched, 72000));
+            fuels.add(new Fuel("MOX",1550.4*ic2Mox,57.5*ic2Mox, 84000));
             powerMult(30);
             fuelRate(4);
             heatGen(4);

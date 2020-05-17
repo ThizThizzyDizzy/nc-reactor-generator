@@ -117,6 +117,7 @@ public abstract class Reactor{
         Main.instance.textAreaImportOutput.setText("");
         String error = "";
         if(json==null)return null;
+        if(json.containsKey("Data"))json = json.getJSONObject("Data");
         Object dim = json.get("InteriorDimensions");
         int X,Y,Z;
         if(dim==null)return null;
@@ -165,7 +166,7 @@ public abstract class Reactor{
         }
         Main.instance.textAreaImportOutput.setText(error.startsWith("; ")?error.substring(2):error);
         if(!error.isEmpty())return null;
-        return new Reactor(fuel, x, y, z){
+        return new Reactor(fuel, x, y, z, false, false, false){
             @Override
             protected ReactorPart build(int X, int Y, int Z){
                 return prts[X][Y][Z]==null?ReactorPart.AIR:prts[X][Y][Z];

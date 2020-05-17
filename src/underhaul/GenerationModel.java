@@ -19,7 +19,7 @@ public abstract class GenerationModel extends ThingWithSettings{
                 return Reactor.random(fuel,x,y,z,rand);
             }
         });
-        models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.\nIf rate is variable, each block has an x% chance of changing\nIf rate is fixed, exactly x% of the blocks will be changed (minimum 1)", new SettingDouble("Change Chance", 1, 0.1f, 100, .1f), new SettingBoolean("Variable Rate", true), new SettingBoolean("Fill Air", false)){
+        models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.\nIf rate is variable, each block has an x% chance of changing\nIf rate is fixed, exactly x% of the blocks will be changed (minimum 1)", new SettingDouble("Change Chance", 1, 0.1f, 100, .1f), new SettingBoolean("Variable Rate", true), new SettingBoolean("Fill Air", true)){
             @Override
             public Reactor generate(Reactor last, Fuel fuel, int x, int y, int z, Random rand){
                 if(last!=null&&last.isValid()){

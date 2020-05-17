@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 public class JSON{
     public static boolean debug = false;
     public static JSONObject parse(String str) throws IOException{
@@ -61,14 +60,29 @@ public class JSON{
                     break;
                 }
                 if(json.startsWith("\"")){
-                    int c = json.indexOf(':');
-                    String key = json.substring(1, c-1);
-                    json = json.substring(c+1).trim();
+                    json = json.substring(1);
+                    String key = "";
+                    while(true){
+                        while(json.startsWith("\\\"")){
+                            key+="\\\"";
+                            json = json.substring(2);
+                        }
+                        if(json.startsWith("\"")){
+                            json = json.substring(1);
+                            break;
+                        }
+                        key+=json.charAt(0);
+                        json = json.substring(1);
+                    }
+                    json = json.substring(1).trim();
+//                    int c = json.indexOf(':');
+//                    String key = json.substring(1, c-1);
+//                    json = json.substring(c+1).trim();
                     //what's this new entry?
                     if(json.startsWith("\"")){
                         //it's a string!
                         json = json.substring(1);
-                        c = json.replaceAll("\\Q\\\"", ":D").indexOf('"');
+                        int c = json.replaceAll("\\Q\\\"", ":D").indexOf('"');
                         String value = json.substring(0, c);
                         put(key, value.replaceAll("\\Q\\\"", "\""));
                         if(debug)System.out.println("Found new entry: \""+key+"\": \""+value+"\"");

@@ -120,6 +120,7 @@ public class ReactorPart implements ReactorBit{
             String[] strs = string.split("\\Q;");
             if(strs.length==2)return FUEL_CELL_CF_252;//old compat
             string = strs[strs.length-1];
+            if(string.equals("Self"))return FUEL_CELL_CF_252;
             if(string.equals("None"))return FUEL_CELL;
         }
         for(ReactorPart part : parts){
