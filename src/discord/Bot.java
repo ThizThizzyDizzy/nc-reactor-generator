@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -765,8 +766,13 @@ public class Bot extends ListenerAdapter{
                 + "`no <block>` - blacklists a certain block from being used in generation\n"
                 + "`e2e` - Uses the Enigmatica 2 Expert config\n"
                 + "`po3` - Uses the Project: Ozone 3 config\n"
+                + "**Special Fuels**\n"
+                + "`Yellorium` (Extreme Reactors)\n"
+                + "`IC2-MOX` (IC2)\n"
+                + "`Enriched Uranium` (IC2)\n"
+                + "`Uranium Ingot` (E2E Only)\n"
                 + "**Examples of valid commands:**\n"
-                + prefixes.get(0)+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
+                + prefixes.get(0)+"generate a 3x3x3 PO3 LEU-235 Oxide breeder with symmetry\n"
                 + prefixes.get(0)+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum\n\n"
                 + "> *"+poweredBy+"*";
     }
@@ -786,6 +792,32 @@ public class Bot extends ListenerAdapter{
                 + "`"+prefixes.get(0)+"generate`  Generates a reactor with the given parameters\n"
                 + "`"+prefixes.get(0)+"search`|`find`  Finds a design with the given parameters from <#639859364383031356>\n"
                 + "Provide keywords for what type of reactor you wish to generate", false);
+        if(new Random().nextDouble()<.01){
+            String secret;
+            switch(new Random().nextInt(6)){//There's a much better way to do this, but I really don't care
+                case 0:
+                    secret = "c     ";
+                    break;
+                case 1:
+                    secret = " o    ";
+                    break;
+                case 2:
+                    secret = "  o   ";
+                    break;
+                case 3:
+                    secret = "   k  ";
+                    break;
+                case 4:
+                    secret = "    i ";
+                    break;
+                case 5:
+                    secret = "     e";
+                    break;
+                default:
+                    secret = "      ";
+            }
+            builder.addField("Secret Command", "`-"+secret+"`", false);
+        }
         builder.addField("Generation settings",
                   "`overhaul` - generates an overhaul reactor (Default: underhaul)\n"
                 + "`XxYxZ` - generates a reactor of size XxYxZ (Default: 3x3x3 for underhaul; 5x5x5 for overhaul)\n"
@@ -797,8 +829,13 @@ public class Bot extends ListenerAdapter{
                 + "`no <block>` - blacklists a certain block from being used in generation\n"
                 + "`e2e` - Uses the Enigmatica 2 Expert config\n"
                 + "`po3` - Uses the Project: Ozone 3 config",false);
+        builder.addField("Special Fuels",
+                  "`Yellorium` (Extreme Reactors)\n"
+                + "`IC2-MOX` (IC2)\n"
+                + "`Enriched Uranium` (IC2)\n"
+                + "`Uranium Ingot` (E2E Only)",false);
         builder.addField("Examples of valid commands", 
-                  prefixes.get(0)+"generate a 3x3x3 LEU-235 Oxide breeder reactor with symmetry\n"
+                  prefixes.get(0)+"generate a 3x3x3 PO3 LEU-235 Oxide breeder with symmetry\n"
                 + prefixes.get(0)+"generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum",false);
         builder.setFooter(poweredBy);
         builder.setColor(Color.ORANGE);

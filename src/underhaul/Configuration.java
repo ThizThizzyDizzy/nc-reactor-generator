@@ -62,7 +62,7 @@ public abstract class Configuration{
             fuels.add(new Fuel("HECf-251 Oxide",1_260.0,900.0, 58000));
             fuels.add(new Fuel("Yellorium",120.0*yellorFactor,50.0*yellorFactor, 72000));
             fuels.add(new Fuel("Enriched Uranium",120.0*ic2Enriched,50.0*ic2Enriched, 72000));
-            fuels.add(new Fuel("MOX",155.4*ic2Mox,57.5*ic2Mox, 84000));
+            fuels.add(new Fuel("IC2-MOX",155.4*ic2Mox,57.5*ic2Mox, 84000));
         }
     };
     public static final Configuration E2E = new Configuration() {
@@ -123,7 +123,7 @@ public abstract class Configuration{
             fuels.add(new Fuel("Uranium Ingot", 100, 40, 0));
             fuels.add(new Fuel("Yellorium",120.0*yellorFactor,50.0*yellorFactor, 72000));
             fuels.add(new Fuel("Enriched Uranium",120.0*ic2Enriched,50.0*ic2Enriched, 72000));
-            fuels.add(new Fuel("MOX",155.4*ic2Mox,57.5*ic2Mox, 84000));
+            fuels.add(new Fuel("IC2-MOX",155.4*ic2Mox,57.5*ic2Mox, 84000));
             powerMult(6);
             fuelRate(2);
             heatGen(1.2f);
@@ -201,7 +201,7 @@ public abstract class Configuration{
             fuels.add(new Fuel("HECf-251 Oxide",1_2600.0,900.0, 58000));
             fuels.add(new Fuel("Yellorium",1200.0*yellorFactor,50.0*yellorFactor, 72000));
             fuels.add(new Fuel("Enriched Uranium",1200.0*ic2Enriched,50.0*ic2Enriched, 72000));
-            fuels.add(new Fuel("MOX",1550.4*ic2Mox,57.5*ic2Mox, 84000));
+            fuels.add(new Fuel("IC2-MOX",1550.4*ic2Mox,57.5*ic2Mox, 84000));
             powerMult(30);
             fuelRate(4);
             heatGen(4);
