@@ -53,6 +53,7 @@ public class Bot extends ListenerAdapter{
     private static final HashMap<JSONObject, String> reactorLinks =  new HashMap<>();
     private static int cookies = 0;
     private static Config config;
+    private static String underhaulPriority, overhaulPriority;
     static{
         for(int x = 1; x<=24; x++){
             HashMap<Integer, HashMap<Integer, ArrayList<JSONObject>>> xs = new HashMap<>();
@@ -288,13 +289,16 @@ public class Bot extends ListenerAdapter{
                             typeSet = true;
                         }
                     }
-                    if(content.contains("efficiency")||content.contains("efficient")){
-                        overhaul.Priority.moveToEnd("Output");
-                    }else if(content.contains("output")){
-                        overhaul.Priority.moveToEnd("Efficiency");
-                    }else{//default
-                        overhaul.Priority.moveToEnd("Efficiency");
+                    overhaul.Priority.Preset pre = overhaul.Priority.presets.get(0);
+                    for(overhaul.Priority.Preset p : overhaul.Priority.presets){
+                        for(String s : p.alternatives){
+                            if(content.contains(s.toLowerCase())){
+                                pre = p;
+                            }
+                        }
                     }
+                    pre.set();
+                    overhaulPriority = pre.name;
                     if(overhaul.Main.instance!=null)overhaul.Main.instance.dispose();
                     overhaul.Main.genModel = overhaul.GenerationModel.DEFAULT;
                     overhaul.Main.instance = new overhaul.Main();
@@ -471,24 +475,16 @@ public class Bot extends ListenerAdapter{
                             fuelSet = true;
                         }
                     }
-                    if(content.contains("efficiency")||content.contains("efficient")){
-                        underhaul.Priority.moveToEnd("Output");
-                        underhaul.Priority.moveToEnd("Minimize Heat");
-                        underhaul.Priority.moveToEnd("Fuel Usage");
-                    }else if(content.contains("output")){
-                        underhaul.Priority.moveToEnd("Efficiency");
-                        underhaul.Priority.moveToEnd("Minimize Heat");
-                        underhaul.Priority.moveToEnd("Fuel Usage");
-                    }else if(content.contains("breeder")||content.contains("fuel usage")||content.contains("cell count")){
-                        underhaul.Priority.moveToEnd("Fuel Usage");
-                        underhaul.Priority.moveToEnd("Minimize Heat");
-                        underhaul.Priority.moveToEnd("Output");
-                        underhaul.Priority.moveToEnd("Efficiency");
-                    }else{//default
-                        underhaul.Priority.moveToEnd("Output");
-                        underhaul.Priority.moveToEnd("Minimize Heat");
-                        underhaul.Priority.moveToEnd("Fuel Usage");
+                    underhaul.Priority.Preset pre = underhaul.Priority.presets.get(0);
+                    for(underhaul.Priority.Preset p : underhaul.Priority.presets){
+                        for(String s : p.alternatives){
+                            if(content.contains(s.toLowerCase())){
+                                pre = p;
+                            }
+                        }
                     }
+                    pre.set();
+                    underhaulPriority = pre.name;
                     if(underhaul.Main.instance!=null)underhaul.Main.instance.dispose();
                     underhaul.Main.genModel = underhaul.GenerationModel.DEFAULT;
                     underhaul.Main.instance = new underhaul.Main();
@@ -623,14 +619,12 @@ public class Bot extends ListenerAdapter{
         builder.setTitle(prefix);
         text+="**"+prefix+"**\n";
         overhaul.Reactor r = overhaul.Main.genPlan.getReactors().get(0);
-        String priorities = "";
-        for(overhaul.Priority p : overhaul.Priority.priorities){
-            priorities+="\n"+p.toString();
-        }
-        builder.addField("Priorities", priorities.substring(1), false);
-        text+="\n**Priorities**\n"+priorities;
-        String details = "Size: "+overhaul.Main.instance.spinnerX.getValue()+"x"+overhaul.Main.instance.spinnerY.getValue()+"x"+overhaul.Main.instance.spinnerZ.getValue()+"\n"
-                + "Fuel: "+overhaul.Fuel.fuels.get(overhaul.Main.instance.boxFuel.getSelectedIndex())+" "+overhaul.Fuel.Type.values()[overhaul.Main.instance.boxFuelType.getSelectedIndex()]+"\n"+r.getDetails(false, false);
+        String settings = "Priority: "+overhaulPriority;
+        settings+="\nSize: "+overhaul.Main.instance.spinnerX.getValue()+"x"+overhaul.Main.instance.spinnerY.getValue()+"x"+overhaul.Main.instance.spinnerZ.getValue();
+        settings+="\nFuel: "+overhaul.Fuel.fuels.get(overhaul.Main.instance.boxFuel.getSelectedIndex())+" "+overhaul.Fuel.Type.values()[overhaul.Main.instance.boxFuelType.getSelectedIndex()];
+        builder.addField("Settings", settings, false);
+        text+="\n**Settings**\n"+settings;
+        String details = r.getDetails(false, false);
         builder.addField("Details", details, false);
         text+="\n**Details**\n"+details;
         if(showLayout){
@@ -667,14 +661,14 @@ public class Bot extends ListenerAdapter{
         builder.setTitle(prefix);
         text+="**"+prefix+"**\n";
         underhaul.Reactor r = underhaul.Main.genPlan.getReactors().get(0);
-        String priorities = "";
-        for(underhaul.Priority p : underhaul.Priority.priorities){
-            priorities+="\n"+p.toString();
-        }
-        builder.addField("Priorities", priorities.substring(1), false);
-        text+="\n**Priorities**\n"+priorities.substring(1);
-        String details = "Size: "+underhaul.Main.instance.spinnerX.getValue()+"x"+underhaul.Main.instance.spinnerY.getValue()+"x"+underhaul.Main.instance.spinnerZ.getValue()+"\n"
-                + "Fuel: "+underhaul.Fuel.fuels.get(underhaul.Main.instance.boxFuel.getSelectedIndex())+"\n"+r.getDetails(false);
+        
+        String settings = "Priority: "+underhaulPriority;
+        settings+="\nSize: "+underhaul.Main.instance.spinnerX.getValue()+"x"+underhaul.Main.instance.spinnerY.getValue()+"x"+underhaul.Main.instance.spinnerZ.getValue();
+        settings+="\nFuel: "+underhaul.Fuel.fuels.get(underhaul.Main.instance.boxFuel.getSelectedIndex());
+        builder.addField("Settings", settings, false);
+        text+="\n**Settings**\n"+settings;
+        
+        String details = r.getDetails(false);
         builder.addField("Details", details, false);
         text+="\n**Details**\n"+details;
         if(showLayout){

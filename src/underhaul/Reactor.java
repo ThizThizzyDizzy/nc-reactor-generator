@@ -60,6 +60,7 @@ public abstract class Reactor{
                 return parseJSON(text, fuel, x, y, z);
             }catch(Exception ex){
                 Main.instance.textAreaImportOutput.setText(ex.getMessage());
+                return null;
             }
         }
         ReactorPart[][][] prts = new ReactorPart[x][y][z];
@@ -99,6 +100,7 @@ public abstract class Reactor{
             text = text.substring(part.length());
         }
         Main.instance.textAreaImportOutput.setText(error);
+        if(!error.isEmpty())return null;
         return new Reactor(fuel, x, y, z){
             @Override
             protected ReactorPart build(int X, int Y, int Z){
@@ -508,10 +510,6 @@ public abstract class Reactor{
         usedFuel.set("FuelTime", fuel.time);
         obj.set("UsedFuel", usedFuel);
         return obj;
-    }
-    public double getFuelSpeed(){
-        if(totalEfficiency==0)return 0;
-        return getFuelCells()/totalEfficiency;
     }
     public int getFuelCells(){
         int cells = 0;

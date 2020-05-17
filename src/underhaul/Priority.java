@@ -2,8 +2,9 @@ package underhaul;
 import java.util.ArrayList;
 public abstract class Priority{
     public static final ArrayList<Priority> priorities = new ArrayList<>();
+    public static final ArrayList<Preset> presets = new ArrayList<>();
     static{
-        priorities.add(new Priority("Valid (>0 output)"){
+        Priority valid = add(new Priority("Valid (>0 output)"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
                 if(main.isValid()&&!other.isValid())return 1;
@@ -12,7 +13,7 @@ public abstract class Priority{
                 return 0;
             }
         });
-        priorities.add(new Priority("Stability"){
+        Priority stable = add(new Priority("Stability"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
                 if(main.heat>0&&other.heat<0)return -1;
@@ -21,30 +22,38 @@ public abstract class Priority{
                 return Math.max(0, other.heat)-Math.max(0, main.heat);
             }
         });
-        priorities.add(new Priority("Efficiency"){
+        Priority efficiency = add(new Priority("Efficiency"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
                 return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
             }
         });
-        priorities.add(new Priority("Output"){
+        Priority output = add(new Priority("Output"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
                 return main.power-other.power;
             }
         });
-        priorities.add(new Priority("Minimize Heat"){
+        Priority heat = add(new Priority("Minimize Heat"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
                 return other.heat-main.heat;
             }
         });
-        priorities.add(new Priority("Fuel usage"){
+        Priority breeder = add(new Priority("Fuel usage"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
-                return main.getFuelSpeed()-other.getFuelSpeed();
+                return main.getFuelCells()-other.getFuelCells();
             }
         });
+        presets.add(new Preset("Efficiency", valid, stable, efficiency, output, heat).addAlternative("Efficient"));
+        presets.add(new Preset("Output", valid, stable, output, efficiency, heat));
+        presets.add(new Preset("Fuel Usage (Breeder)", valid, stable, breeder, heat, output, efficiency).addAlternative("Fuel Usage").addAlternative("Fuel Speed").addAlternative("Cell Count").addAlternative("Breeder"));
+        presets.get(0).set();
+    }
+    private static Priority add(Priority p){
+        priorities.add(p);
+        return p;
     }
     private final String name;
     public Priority(String name){
@@ -67,10 +76,32 @@ public abstract class Priority{
         }
         return null;
     }
-    public static void moveToEnd(String name){
-        Priority p = get(name);
-        if(p==null)return;
-        priorities.remove(p);
-        priorities.add(p);
+    public static class Preset{
+        public final String name;
+        private final ArrayList<Priority> prior = new ArrayList<>();
+        public ArrayList<String> alternatives = new ArrayList<>();
+        public Preset(String name, Priority... priorities){
+            this.name = name;
+            for(Priority p : priorities)prior.add(p);
+        }
+        public Preset(String name, String... priorities){
+            this.name = name;
+            for(String s : priorities){
+                Priority p = get(s);
+                if(p!=null)prior.add(p);
+            }
+        }
+        public void set(){
+            ArrayList<Priority> irrelevant = new ArrayList<>();
+            irrelevant.addAll(priorities);
+            irrelevant.removeAll(prior);
+            priorities.clear();
+            priorities.addAll(prior);
+            priorities.addAll(irrelevant);
+        }
+        private Preset addAlternative(String alt){
+            alternatives.add(alt);
+            return this;
+        }
     }
 }

@@ -169,7 +169,6 @@
                               <Component id="panelGenModel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="panelPriorities" max="32767" attributes="0"/>
                                   <Component id="panelFuels" max="32767" attributes="0"/>
                                   <Component id="panelSize" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jPanel1" max="32767" attributes="0"/>
@@ -177,6 +176,13 @@
                                   <Component id="checkBoxSymmetryX" alignment="1" max="32767" attributes="0"/>
                                   <Component id="checkBoxSymmetryY" alignment="1" max="32767" attributes="0"/>
                                   <Component id="checkBoxSymmetryZ" alignment="0" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jLabel1" max="32767" attributes="0"/>
+                                          <Component id="jTabbedPane1" max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -193,7 +199,9 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="panelFuels" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="panelPriorities" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jTabbedPane1" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -204,7 +212,7 @@
                                       <Component id="checkBoxSymmetryY" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="checkBoxSymmetryZ" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace pref="120" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="panelGenModel" alignment="0" max="32767" attributes="0"/>
                               </Group>
@@ -219,10 +227,10 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="1" attributes="0">
+                              <Group type="102" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="panelGenModelSettings" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="panelGenModelSettings" alignment="1" max="32767" attributes="0"/>
                                       <Component id="jScrollPane2" alignment="1" pref="280" max="32767" attributes="0"/>
                                       <Component id="boxGenModel" alignment="0" max="32767" attributes="0"/>
                                   </Group>
@@ -362,84 +370,6 @@
                         </Container>
                       </SubComponents>
                     </Container>
-                    <Container class="javax.swing.JPanel" name="panelPriorities">
-
-                      <Layout>
-                        <DimensionLayout dim="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jLabel1" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="jScrollPane4" alignment="0" pref="0" max="32767" attributes="0"/>
-                                      <Component id="buttonPriorityUp" max="32767" attributes="0"/>
-                                      <Component id="buttonPriorityDown" alignment="0" max="32767" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                        </DimensionLayout>
-                        <DimensionLayout dim="1">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jScrollPane4" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="buttonPriorityUp" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="buttonPriorityDown" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
-                              </Group>
-                          </Group>
-                        </DimensionLayout>
-                      </Layout>
-                      <SubComponents>
-                        <Component class="javax.swing.JLabel" name="jLabel1">
-                          <Properties>
-                            <Property name="horizontalAlignment" type="int" value="0"/>
-                            <Property name="text" type="java.lang.String" value="Generator Priorities"/>
-                          </Properties>
-                        </Component>
-                        <Container class="javax.swing.JScrollPane" name="jScrollPane4">
-                          <AuxValues>
-                            <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-                          </AuxValues>
-
-                          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-                          <SubComponents>
-                            <Component class="javax.swing.JList" name="listPriorities">
-                              <Properties>
-                                <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                                  <Connection code="getPrioritiesModel()" type="code"/>
-                                </Property>
-                                <Property name="selectionMode" type="int" value="0"/>
-                              </Properties>
-                              <AuxValues>
-                                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-                              </AuxValues>
-                            </Component>
-                          </SubComponents>
-                        </Container>
-                        <Component class="javax.swing.JButton" name="buttonPriorityDown">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="Move Down"/>
-                          </Properties>
-                          <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonPriorityDownActionPerformed"/>
-                          </Events>
-                        </Component>
-                        <Component class="javax.swing.JButton" name="buttonPriorityUp">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="Move Up"/>
-                          </Properties>
-                          <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonPriorityUpActionPerformed"/>
-                          </Events>
-                        </Component>
-                      </SubComponents>
-                    </Container>
                     <Container class="javax.swing.JPanel" name="panelFuels">
 
                       <Layout>
@@ -502,11 +432,11 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="spinnerX" pref="104" max="32767" attributes="0"/>
+                                          <Component id="spinnerX" max="32767" attributes="0"/>
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                                          <Component id="spinnerY" pref="104" max="32767" attributes="0"/>
+                                          <Component id="spinnerY" max="32767" attributes="0"/>
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                                          <Component id="spinnerZ" pref="105" max="32767" attributes="0"/>
+                                          <Component id="spinnerZ" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -673,6 +603,108 @@
                         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
                       </AuxValues>
                     </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel1">
+                      <Properties>
+                        <Property name="horizontalAlignment" type="int" value="0"/>
+                        <Property name="text" type="java.lang.String" value="Generator Priorities"/>
+                      </Properties>
+                    </Component>
+                    <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="panelPrioritiesBasic">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Basic">
+                                <Property name="tabTitle" type="java.lang.String" value="Basic"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                            <Property name="columns" type="int" value="1"/>
+                            <Property name="rows" type="int" value="0"/>
+                          </Layout>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="panelPrioritiesAdvanced">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Advanced">
+                                <Property name="tabTitle" type="java.lang.String" value="Advanced"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jScrollPane4" alignment="0" pref="0" max="32767" attributes="0"/>
+                                          <Component id="buttonPriorityUp" max="32767" attributes="0"/>
+                                          <Component id="buttonPriorityDown" alignment="0" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jScrollPane4" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="buttonPriorityUp" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="buttonPriorityDown" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Container class="javax.swing.JScrollPane" name="jScrollPane4">
+                              <AuxValues>
+                                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+                              </AuxValues>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                              <SubComponents>
+                                <Component class="javax.swing.JList" name="listPriorities">
+                                  <Properties>
+                                    <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                      <Connection code="getPrioritiesModel()" type="code"/>
+                                    </Property>
+                                    <Property name="selectionMode" type="int" value="0"/>
+                                  </Properties>
+                                  <AuxValues>
+                                    <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                                  </AuxValues>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                            <Component class="javax.swing.JButton" name="buttonPriorityDown">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Move Down"/>
+                              </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonPriorityDownActionPerformed"/>
+                              </Events>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="buttonPriorityUp">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Move Up"/>
+                              </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonPriorityUpActionPerformed"/>
+                              </Events>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JPanel" name="jPanel3">
@@ -853,7 +885,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="jScrollPane6" pref="462" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane6" pref="496" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jScrollPane8" min="-2" pref="150" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -922,6 +954,7 @@
                     <Component class="javax.swing.JButton" name="buttonImport">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Import Reactor"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonImportActionPerformed"/>
@@ -946,6 +979,7 @@
                     <Component class="javax.swing.JButton" name="buttonImportExportImage">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Export Image"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonImportExportImageActionPerformed"/>
@@ -955,6 +989,7 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Export to JSON"/>
                         <Property name="toolTipText" type="java.lang.String" value="Exported JSONs are compatible with Hellrage&apos;s Reactor Planner"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonImportExportJSONActionPerformed"/>

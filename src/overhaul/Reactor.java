@@ -71,6 +71,7 @@ public abstract class Reactor{
                 return parseJSON(text, fuel, type, x, y, z);
             }catch(Exception ex){
                 Main.instance.textAreaImportOutput.setText(ex.getMessage());
+                return null;
             }
         }
         ReactorPart[][][] prts = new ReactorPart[x][y][z];
@@ -110,6 +111,7 @@ public abstract class Reactor{
             text = text.substring(part.length());
         }
         Main.instance.textAreaImportOutput.setText(error);
+        if(!error.isEmpty())return null;
         return new Reactor(fuel, type, x, y, z){
             @Override
             protected ReactorPart build(int X, int Y, int Z){

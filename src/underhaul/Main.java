@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.ListModel;
@@ -52,6 +53,22 @@ public class Main extends javax.swing.JFrame{
         boxGenModelItemStateChanged(null);
         boxGenPlanItemStateChanged(null);
         fillConfigPanels(Configuration.DEFAULT);
+        for(int i = 0; i<Priority.presets.size(); i++){
+            Priority.Preset p = Priority.presets.get(i);
+            JButton button = new JButton(p.name);
+            button.addActionListener((e) -> {
+                for(Component c : panelPrioritiesBasic.getComponents()){
+                    c.setEnabled(true);
+                }
+                button.setEnabled(false);
+                p.set();
+                listPriorities.setModel(getPrioritiesModel());
+            });
+            if(i==0){
+                button.setEnabled(false);
+            }
+            panelPrioritiesBasic.add(button);
+        }
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -64,7 +81,7 @@ public class Main extends javax.swing.JFrame{
         jScrollPane1 = new javax.swing.JScrollPane();
         listParts = new javax.swing.JList<>();
         tabbedPane = new javax.swing.JTabbedPane();
-        jPanel2 = new javax.swing.JPanel();
+        panelGenerationSettings = new javax.swing.JPanel();
         panelGenModel = new javax.swing.JPanel();
         boxGenModel = new javax.swing.JComboBox<>();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -75,12 +92,6 @@ public class Main extends javax.swing.JFrame{
         jScrollPane3 = new javax.swing.JScrollPane();
         textAreaGenPlanDesc = new javax.swing.JTextArea();
         panelGenPlanSettings = new javax.swing.JPanel();
-        panelPriorities = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        listPriorities = new javax.swing.JList<>();
-        buttonPriorityDown = new javax.swing.JButton();
-        buttonPriorityUp = new javax.swing.JButton();
         panelFuels = new javax.swing.JPanel();
         boxFuel = new javax.swing.JComboBox<>();
         panelSize = new javax.swing.JPanel();
@@ -96,6 +107,14 @@ public class Main extends javax.swing.JFrame{
         checkBoxSymmetryX = new javax.swing.JCheckBox();
         checkBoxSymmetryY = new javax.swing.JCheckBox();
         checkBoxSymmetryZ = new javax.swing.JCheckBox();
+        jLabel1 = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        panelPrioritiesBasic = new javax.swing.JPanel();
+        panelPrioritiesAdvanced = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        listPriorities = new javax.swing.JList<>();
+        buttonPriorityDown = new javax.swing.JButton();
+        buttonPriorityUp = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         textAreaOutput = new javax.swing.JTextArea();
@@ -248,54 +267,6 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap())
         );
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Generator Priorities");
-
-        listPriorities.setModel(getPrioritiesModel());
-        listPriorities.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane4.setViewportView(listPriorities);
-
-        buttonPriorityDown.setText("Move Down");
-        buttonPriorityDown.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonPriorityDownActionPerformed(evt);
-            }
-        });
-
-        buttonPriorityUp.setText("Move Up");
-        buttonPriorityUp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonPriorityUpActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout panelPrioritiesLayout = new javax.swing.GroupLayout(panelPriorities);
-        panelPriorities.setLayout(panelPrioritiesLayout);
-        panelPrioritiesLayout.setHorizontalGroup(
-            panelPrioritiesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPrioritiesLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelPrioritiesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(buttonPriorityUp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(buttonPriorityDown, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        panelPrioritiesLayout.setVerticalGroup(
-            panelPrioritiesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPrioritiesLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonPriorityUp)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonPriorityDown)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         boxFuel.setModel(getFuels());
 
         javax.swing.GroupLayout panelFuelsLayout = new javax.swing.GroupLayout(panelFuels);
@@ -333,11 +304,11 @@ public class Main extends javax.swing.JFrame{
                 .addGroup(panelSizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panelSizeLayout.createSequentialGroup()
-                        .addComponent(spinnerX, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                        .addComponent(spinnerX)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spinnerY, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                        .addComponent(spinnerY)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spinnerZ, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)))
+                        .addComponent(spinnerZ)))
                 .addContainerGap())
         );
         panelSizeLayout.setVerticalGroup(
@@ -410,38 +381,91 @@ public class Main extends javax.swing.JFrame{
         checkBoxSymmetryZ.setSelected(true);
         checkBoxSymmetryZ.setText("Apply Z Symmetry");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Generator Priorities");
+
+        panelPrioritiesBasic.setLayout(new java.awt.GridLayout(0, 1));
+        jTabbedPane1.addTab("Basic", panelPrioritiesBasic);
+
+        listPriorities.setModel(getPrioritiesModel());
+        listPriorities.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane4.setViewportView(listPriorities);
+
+        buttonPriorityDown.setText("Move Down");
+        buttonPriorityDown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPriorityDownActionPerformed(evt);
+            }
+        });
+
+        buttonPriorityUp.setText("Move Up");
+        buttonPriorityUp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPriorityUpActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panelPrioritiesAdvancedLayout = new javax.swing.GroupLayout(panelPrioritiesAdvanced);
+        panelPrioritiesAdvanced.setLayout(panelPrioritiesAdvancedLayout);
+        panelPrioritiesAdvancedLayout.setHorizontalGroup(
+            panelPrioritiesAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPrioritiesAdvancedLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelPrioritiesAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(buttonPriorityUp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(buttonPriorityDown, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        panelPrioritiesAdvancedLayout.setVerticalGroup(
+            panelPrioritiesAdvancedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPrioritiesAdvancedLayout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonPriorityUp)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonPriorityDown)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Advanced", panelPrioritiesAdvanced);
+
+        javax.swing.GroupLayout panelGenerationSettingsLayout = new javax.swing.GroupLayout(panelGenerationSettings);
+        panelGenerationSettings.setLayout(panelGenerationSettingsLayout);
+        panelGenerationSettingsLayout.setHorizontalGroup(
+            panelGenerationSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGenerationSettingsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panelGenPlan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelGenModel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelPriorities, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(panelGenerationSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelFuels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(checkBoxSymmetryX, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(checkBoxSymmetryZ, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(checkBoxSymmetryY, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(checkBoxSymmetryY, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane1))
                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        panelGenerationSettingsLayout.setVerticalGroup(
+            panelGenerationSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelGenerationSettingsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelGenerationSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelGenPlan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGroup(panelGenerationSettingsLayout.createSequentialGroup()
                         .addComponent(panelSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(panelFuels, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelPriorities, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -450,12 +474,12 @@ public class Main extends javax.swing.JFrame{
                         .addComponent(checkBoxSymmetryY)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(checkBoxSymmetryZ)
-                        .addGap(0, 80, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 115, Short.MAX_VALUE))
                     .addComponent(panelGenModel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        tabbedPane.addTab("Generation Settings", jPanel2);
+        tabbedPane.addTab("Generation Settings", panelGenerationSettings);
 
         textAreaOutput.setEditable(false);
         textAreaOutput.setColumns(20);
@@ -529,7 +553,7 @@ public class Main extends javax.swing.JFrame{
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
+                    .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 704, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jScrollPane5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -559,6 +583,7 @@ public class Main extends javax.swing.JFrame{
 
         buttonImport.setText("Import Reactor");
         buttonImport.setToolTipText("Click to import the reactor contained in the box above");
+        buttonImport.setEnabled(false);
         buttonImport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonImportActionPerformed(evt);
@@ -572,6 +597,7 @@ public class Main extends javax.swing.JFrame{
 
         buttonImportExportJSON.setText("Export to JSON");
         buttonImportExportJSON.setToolTipText("Exported JSONs are compatible with Hellrage's Reactor Planner");
+        buttonImportExportJSON.setEnabled(false);
         buttonImportExportJSON.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonImportExportJSONActionPerformed(evt);
@@ -579,6 +605,7 @@ public class Main extends javax.swing.JFrame{
         });
 
         buttonImportExportImage.setText("Export Image");
+        buttonImportExportImage.setEnabled(false);
         buttonImportExportImage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonImportExportImageActionPerformed(evt);
@@ -612,7 +639,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -689,7 +716,7 @@ public class Main extends javax.swing.JFrame{
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelConfigFuels, javax.swing.GroupLayout.DEFAULT_SIZE, 607, Short.MAX_VALUE)
+                    .addComponent(panelConfigFuels, javax.swing.GroupLayout.DEFAULT_SIZE, 658, Short.MAX_VALUE)
                     .addGroup(jPanel8Layout.createSequentialGroup()
                         .addComponent(panelConfigCoolers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -714,9 +741,12 @@ public class Main extends javax.swing.JFrame{
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tabbedPane)
-                    .addComponent(panelParts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(tabbedPane)
+                        .addGap(10, 10, 10))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(panelParts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         jScrollPane9.setViewportView(jPanel6);
@@ -783,6 +813,9 @@ public class Main extends javax.swing.JFrame{
         Priority.priorities.add(index-1, Priority.priorities.remove(index));
         listPriorities.setModel(getPrioritiesModel());
         listPriorities.setSelectedIndex(index-1);
+        for(Component c : panelPrioritiesBasic.getComponents()){
+            c.setEnabled(true);
+        }
     }//GEN-LAST:event_buttonPriorityUpActionPerformed
     private void buttonPriorityDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPriorityDownActionPerformed
         int index = listPriorities.getSelectedIndex();
@@ -790,6 +823,9 @@ public class Main extends javax.swing.JFrame{
         Priority.priorities.add(index+1, Priority.priorities.remove(index));
         listPriorities.setModel(getPrioritiesModel());
         listPriorities.setSelectedIndex(index+1);
+        for(Component c : panelPrioritiesBasic.getComponents()){
+            c.setEnabled(true);
+        }
     }//GEN-LAST:event_buttonPriorityDownActionPerformed
     private void buttonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStartActionPerformed
         start();
@@ -812,9 +848,13 @@ public class Main extends javax.swing.JFrame{
             }catch(InterruptedException ex){}
             Reactor reactor = getImportReactor();
             panelImportDisplay.removeAll();
-            panelImportDisplay.add(new ReactorPanel(reactor));
+            buttonImport.setEnabled(reactor!=null);
+            buttonImportExportJSON.setEnabled(reactor!=null);
+            buttonImportExportImage.setEnabled(reactor!=null);
+            textAreaImportStats.setText(reactor==null?"":reactor.getDetails(false));
             if(reactor==null)return;
-            textAreaImportStats.setText(reactor.getDetails(false));
+            textAreaImportOutput.setText("Press the button below to import the reactor");
+            panelImportDisplay.add(new ReactorPanel(reactor));
             repaint();
         }).start();
     }//GEN-LAST:event_textAreaImportKeyTyped
@@ -976,7 +1016,6 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -993,6 +1032,7 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel labelParts;
     public javax.swing.JList<String> listParts;
     private javax.swing.JList<String> listPriorities;
@@ -1003,10 +1043,12 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JPanel panelGenModelSettings;
     private javax.swing.JPanel panelGenPlan;
     private javax.swing.JPanel panelGenPlanSettings;
+    private javax.swing.JPanel panelGenerationSettings;
     private javax.swing.JPanel panelImportDisplay;
     private javax.swing.JPanel panelOutput;
     private javax.swing.JPanel panelParts;
-    private javax.swing.JPanel panelPriorities;
+    private javax.swing.JPanel panelPrioritiesAdvanced;
+    private javax.swing.JPanel panelPrioritiesBasic;
     private javax.swing.JPanel panelSize;
     private javax.swing.JSpinner spinnerThreads;
     public javax.swing.JSpinner spinnerX;
