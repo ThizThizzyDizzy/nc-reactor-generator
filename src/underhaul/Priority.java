@@ -83,6 +83,7 @@ public abstract class Priority{
         public Preset(String name, Priority... priorities){
             this.name = name;
             for(Priority p : priorities)prior.add(p);
+            alternatives.add(name);
         }
         public Preset(String name, String... priorities){
             this.name = name;

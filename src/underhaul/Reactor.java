@@ -189,7 +189,7 @@ public abstract class Reactor{
     public boolean[][][] active;
     public boolean[][][] blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved;
     private double[][][] efficiency;
-    public int power;
+    public double power;
     public int heat;
     public double totalEfficiency;
     public Reactor(Fuel fuel, int x, int y, int z){
@@ -429,7 +429,7 @@ public abstract class Reactor{
         return getDetails(false);
     }
     public String getDetails(boolean showParts){
-        String s = "Power Generation: "+power+"RF/t\n"
+        String s = "Power Generation: "+(int)power+"RF/t\n"
                 + "Heat: "+(int)heat+"H/t\n"
                 + "Efficiency: "+Math.round(totalEfficiency*1000)/10d+"%\n"
                 + "Fuel cells: "+getFuelCells();
