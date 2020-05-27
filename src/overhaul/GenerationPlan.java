@@ -14,12 +14,12 @@ public abstract class GenerationPlan extends ThingWithSettings{
             private Reactor reactor;
             private Reactor lastGuess;
             @Override
-            public void run(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
+            public void run(int x, int y, int z, Random rand){
                 Reactor r;
                 synchronized(synchronizer){
                     r = reactor;
                 }
-                Reactor newReactor = Main.genModel.generate(r, fuel, type, x, y, z, rand);
+                Reactor newReactor = Main.genModel.generate(r, x, y, z, rand);
                 if(newReactor==null)return;
                 if(Reactor.isbetter(newReactor,r)){
                     synchronized(synchronizer){
@@ -38,8 +38,8 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 return reactors;
             }
             @Override
-            public void reset(Fuel fuel, Fuel.Type type, int x, int y, int z){
-                if(imported!=null&&(imported.fuel!=fuel||imported.fuelType!=type||imported.x!=x||imported.y!=y||imported.z!=z))imported = null;
+            public void reset(int x, int y, int z){
+                if(imported!=null&&(imported.x!=x||imported.y!=y||imported.z!=z))imported = null;
                 reactor = imported;
                 imported = null;
             }
@@ -66,7 +66,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
             private Long[] lastUpdateTimes;
             private Reactor imported;
             @Override
-            public void run(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
+            public void run(int x, int y, int z, Random rand){
                 synchronized(synchronizer){
                     if(reactors==null){
                         int num = (int)getSetting("Reactors");
@@ -102,7 +102,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
                         reactors[idx] = null;
                     }
                 }
-                Reactor r = Main.genModel.generate(reactor, fuel, type, x, y, z, rand);
+                Reactor r = Main.genModel.generate(reactor, x, y, z, rand);
                 synchronized(synchronizer){
                     if(Reactor.isbetter(r, reactors[idx])){
                         reactors[idx] = r;
@@ -139,8 +139,8 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 return details;
             }
             @Override
-            public void reset(Fuel fuel, Fuel.Type type, int x, int y, int z){
-                if(imported!=null&&(imported.fuel!=fuel||imported.fuelType!=type||imported.x!=x||imported.y!=y||imported.z!=z))imported = null;
+            public void reset(int x, int y, int z){
+                if(imported!=null&&(imported.x!=x||imported.y!=y||imported.z!=z))imported = null;
                 reactors = null;
                 lastUpdateTimes = null;
             }
@@ -192,9 +192,9 @@ public abstract class GenerationPlan extends ThingWithSettings{
         }
         return details;
     }
-    public abstract void run(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand);
+    public abstract void run(int x, int y, int z, Random rand);
     public abstract ArrayList<Reactor> getReactors();
-    public abstract void reset(Fuel fuel, Fuel.Type type, int x, int y, int z);
+    public abstract void reset(int x, int y, int z);
     /**
      * Imports a reactor into the Generation plan
      * @param reactor the reactor to import

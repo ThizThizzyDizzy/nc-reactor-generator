@@ -25,25 +25,33 @@ public abstract class Reactor{
     private static final int leniency = 10;
     private static final double thresholdRatio = .75;
     private static final double minimumMult = .5;
-    public static Reactor random(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
-        return random(fuel, type, x, y, z, rand, null);
+    public static Reactor random(int x, int y, int z, Random rand){
+        return random(x, y, z, rand, null);
     }
-    public static Reactor random(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand, ArrayList<ReactorPart> allowedParts){
-        return new Reactor(fuel, type, x, y, z){
+    public static Reactor random(int x, int y, int z, Random rand, ArrayList<ReactorPart> allowedParts){
+        return new Reactor(x, y, z){
             @Override
             protected ReactorPart build(int X, int Y, int Z){
                 return ReactorPart.random(rand, allowedParts);
             }
+            @Override
+            protected Fuel.Group buildFuel(int X, int Y, int Z){
+                return Main.instance.randomFuel();
+            }
         };
     }
-    public static Reactor random(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand, boolean xSymm, boolean ySymm, boolean zSymm){
-        return random(fuel, type, x, y, z, rand, xSymm, ySymm, zSymm, null);
+    public static Reactor random(int x, int y, int z, Random rand, boolean xSymm, boolean ySymm, boolean zSymm){
+        return random(x, y, z, rand, xSymm, ySymm, zSymm, null);
     }
-    public static Reactor random(Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand, boolean xSymm, boolean ySymm, boolean zSymm, ArrayList<ReactorPart> allowedParts){
-        return new Reactor(fuel, type, x, y, z, xSymm, ySymm, zSymm){
+    public static Reactor random(int x, int y, int z, Random rand, boolean xSymm, boolean ySymm, boolean zSymm, ArrayList<ReactorPart> allowedParts){
+        return new Reactor(x, y, z, xSymm, ySymm, zSymm){
             @Override
             protected ReactorPart build(int X, int Y, int Z){
                 return ReactorPart.random(rand, allowedParts);
+            }
+            @Override
+            protected Fuel.Group buildFuel(int X, int Y, int Z){
+                return Main.instance.randomFuel();
             }
         };
     }
@@ -61,20 +69,22 @@ public abstract class Reactor{
         }
         return false;
     }
-    public static Reactor parse(JTextArea textAreaImport, Fuel fuel, Fuel.Type type, int x, int y, int z){
-        return parse(textAreaImport.getText(), fuel, type, x, y, z);
+    public static Reactor parse(JTextArea textAreaImport, int x, int y, int z){
+        return parse(textAreaImport.getText(), x, y, z);
     }
-    public static Reactor parse(String text, Fuel fuel, Fuel.Type type, int x, int y, int z){
+    public static Reactor parse(String text, int x, int y, int z){
         String error = "";
         if(text.startsWith("{")){
             try{
-                return parseJSON(text, fuel, type, x, y, z);
+                return parseJSON(text, x, y, z);
             }catch(Exception ex){
                 Main.instance.textAreaImportOutput.setText(ex.getMessage());
                 return null;
             }
         }
         ReactorPart[][][] prts = new ReactorPart[x][y][z];
+        Fuel[][][] feuls = new Fuel[x][y][z];
+        Fuel.Type[][][] types = new Fuel.Type[x][y][z];
         int X = 0;
         int Y = 0;
         int Z = 0;
@@ -99,7 +109,10 @@ public abstract class Reactor{
             }
             String part = text.split("\n")[0].split(" ")[0];
             try{
-                prts[X][Y][Z] = ReactorPart.parse(part);
+                ReactorPart.PartContainer cont = ReactorPart.parse(part);
+                prts[X][Y][Z] = cont.part;
+                feuls[X][Y][Z] = cont.fuel;
+                types[X][Y][Z] = cont.type;
                 if(prts[X][Y][Z] == null){
                     error += "Unknown part: "+part;
                 }
@@ -112,19 +125,23 @@ public abstract class Reactor{
         }
         Main.instance.textAreaImportOutput.setText(error);
         if(!error.isEmpty())return null;
-        return new Reactor(fuel, type, x, y, z){
+        return new Reactor(x, y, z){
             @Override
             protected ReactorPart build(int X, int Y, int Z){
                 return prts[X][Y][Z]==null?ReactorPart.AIR:prts[X][Y][Z];
             }
+            @Override
+            protected Fuel.Group buildFuel(int X, int Y, int Z){
+                return new Fuel.Group(feuls[X][Y][Z],types[X][Y][Z]);
+            }
         };
     }
-    private static Reactor parseJSON(String text, Fuel fuel, Fuel.Type type, int x, int y, int z) throws IOException{
+    private static Reactor parseJSON(String text, int x, int y, int z) throws IOException{
         JSONObject json;
         json = JSON.parse(text);
-        return parseJSON(json, fuel, type, x, y, z);
+        return parseJSON(json, x, y, z);
     }
-    public static Reactor parseJSON(JSONObject json, Fuel fuel, Fuel.Type type, int x, int y, int z) throws IOException{
+    public static Reactor parseJSON(JSONObject json, int x, int y, int z) throws IOException{
         Main.instance.textAreaImportOutput.setText("");
         String error = "";
         if(json==null)return null;
@@ -143,6 +160,8 @@ public abstract class Reactor{
             Z = Integer.parseInt(strs[2]);
         }else return null;
         ReactorPart[][][] prts = new ReactorPart[X][Y][Z];
+        Fuel[][][] feuls = new Fuel[x][y][z];
+        Fuel.Type[][][] types = new Fuel.Type[x][y][z];
         if(X!=x||Y!=y||Z!=z){
             error = "Incorrect dimensions! Found "+X+" "+Y+" "+Z+", expected "+x+" "+y+" "+z+"!";
         }else{
@@ -156,7 +175,8 @@ public abstract class Reactor{
                         if(array==null){
                             error+="; Unknown reactor object: "+s;
                         }
-                        ReactorPart part = ReactorPart.parse(s);
+                        ReactorPart.PartContainer cont = ReactorPart.parse(s);
+                        ReactorPart part = cont.part;
                         if(part == null){
                             error = "Unknown part: "+s;
                             part = ReactorPart.AIR;
@@ -167,12 +187,16 @@ public abstract class Reactor{
                                 Y = ((JSONObject)obj).getInt("Y");
                                 Z = ((JSONObject)obj).getInt("Z");
                                 prts[X-1][Y-1][Z-1] = part;
+                                feuls[X-1][Y-1][Z-1] = cont.fuel;
+                                types[X-1][Y-1][Z-1] = cont.type;
                             }else if(obj instanceof String){
                                 String[] strs = ((String)obj).split(",");
                                 X = Integer.parseInt(strs[0]);
                                 Y = Integer.parseInt(strs[1]);
                                 Z = Integer.parseInt(strs[2]);
                                 prts[X-1][Y-1][Z-1] = part;
+                                feuls[X-1][Y-1][Z-1] = cont.fuel;
+                                types[X-1][Y-1][Z-1] = cont.type;
                             }else{
                                 error+="; Unknown object in reactor array: "+obj.toString();
                             }
@@ -180,7 +204,8 @@ public abstract class Reactor{
                     }
                 }else if(o instanceof JSONArray){
                     JSONArray array = (JSONArray)o;
-                    ReactorPart part = ReactorPart.parse(name);
+                    ReactorPart.PartContainer cont = ReactorPart.parse(name);
+                    ReactorPart part = cont.part;
                     if(part == null){
                         error = "Unknown part: "+name;
                         part = ReactorPart.AIR;
@@ -191,12 +216,16 @@ public abstract class Reactor{
                             Y = ((JSONObject)obj).getInt("Y");
                             Z = ((JSONObject)obj).getInt("Z");
                             prts[X-1][Y-1][Z-1] = part;
+                            feuls[X-1][Y-1][Z-1] = cont.fuel;
+                            types[X-1][Y-1][Z-1] = cont.type;
                         }else if(obj instanceof String){
                             String[] strs = ((String)obj).split(",");
                             X = Integer.parseInt(strs[0]);
                             Y = Integer.parseInt(strs[1]);
                             Z = Integer.parseInt(strs[2]);
                             prts[X-1][Y-1][Z-1] = part;
+                            feuls[X-1][Y-1][Z-1] = cont.fuel;
+                            types[X-1][Y-1][Z-1] = cont.type;
                         }else{
                             error+="; Unknown object in reactor array: "+obj.toString();
                         }
@@ -206,36 +235,44 @@ public abstract class Reactor{
         }
         Main.instance.textAreaImportOutput.setText(error.startsWith("; ")?error.substring(2):error);
         if(!error.isEmpty())return null;
-        return new Reactor(fuel, type, x, y, z, false, false, false){
+        return new Reactor(x, y, z, false, false, false){
             @Override
             protected ReactorPart build(int X, int Y, int Z){
                 return prts[X][Y][Z]==null?ReactorPart.AIR:prts[X][Y][Z];
             }
+            @Override
+            protected Fuel.Group buildFuel(int X, int Y, int Z){
+                return new Fuel.Group(feuls[X][Y][Z], types[X][Y][Z]);
+            }
         };
     }
-    public static Reactor empty(Fuel fuel, Fuel.Type type, int x, int y, int z){
-        return new Reactor(fuel, type, x, y, z){
+    public static Reactor empty(int x, int y, int z){
+        return new Reactor(x, y, z){
             @Override
             protected ReactorPart build(int X, int Y, int Z){
                 return ReactorPart.AIR;
             }
+            @Override
+            protected Fuel.Group buildFuel(int X, int Y, int Z){
+                return null;
+            }
         };
     }
-    public final Fuel fuel;
-    public final Fuel.Type fuelType;
     public final int x;
     public final int y;
     public final int z;
     public final ReactorPart[][][] parts;
     public boolean[][][] active;
     public boolean[][][] blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved;
+    public Fuel[][][] fuel;
+    public Fuel.Type[][][] fuelType;
     private int[][][] neutronFlux;
     private double[][][] efficiency;
     private double[][][] positionalEfficiency;
     private int[][][] heatMult;
     public ArrayList<Cluster> clusters;
     public int rawOutput;//required for JSON export... Output without sparsity penalty, I'm assuming?
-    public int totalOutput;
+    public double totalOutput;
     public int totalHeat;
     public int totalCooling;
     public int netHeat;
@@ -243,33 +280,68 @@ public abstract class Reactor{
     public double totalHeatMult;
     private double sparsityMult = 1;
     private int functionalBlocks;//required for JSON export
-    public Reactor(Fuel fuel, Fuel.Type type, int x, int y, int z){
-        this(fuel, type, x, y, z, Main.instance==null?false:Main.instance.checkBoxSymmetryX.isSelected(), Main.instance==null?false:Main.instance.checkBoxSymmetryY.isSelected(), Main.instance==null?false:Main.instance.checkBoxSymmetryZ.isSelected());
+    public Reactor(int x, int y, int z){
+        this(x, y, z, Main.instance==null?false:Main.instance.checkBoxSymmetryX.isSelected(), Main.instance==null?false:Main.instance.checkBoxSymmetryY.isSelected(), Main.instance==null?false:Main.instance.checkBoxSymmetryZ.isSelected());
     }
-    public Reactor(Fuel fuel, Fuel.Type type, int x, int y, int z, boolean symmetryX, boolean symmetryY, boolean symmetryZ){
+    public Reactor(int x, int y, int z, boolean symmetryX, boolean symmetryY, boolean symmetryZ){
         synchronized(synchronizer){
             totalReactors++;
         }
-        if(fuel==null||type==null)throw new IllegalArgumentException("You can't have a reactor without fuel...");
-        this.fuel = fuel;
-        this.fuelType = type;
         this.x = x;
         this.y = y;
         this.z = z;
         parts = new ReactorPart[x][y][z];
+        fuel = new Fuel[x][y][z];
+        fuelType = new Fuel.Type[x][y][z];
         for(int X = 0; X<x; X++){
             for(int Y = 0; Y<y; Y++){
                 for(int Z = 0; Z<z; Z++){
                     if(parts[X][Y][Z]!=null)continue;
                     ReactorPart part = build(X,Y,Z);
+                    if(part.type==ReactorPart.Type.FUEL_CELL){
+                        Fuel.Group group = buildFuel(X, Y, Z);
+                        if(group==null)part = ReactorPart.AIR;
+                        else{
+                            fuel[X][Y][Z] = group.fuel;
+                            fuelType[X][Y][Z] = group.type;
+                        }
+                    }
                     parts[X][Y][Z] = part;
-                    if(symmetryX)parts[x-X-1][Y][Z] = part;
-                    if(symmetryY)parts[X][y-Y-1][Z] = part;
-                    if(symmetryZ)parts[X][Y][z-Z-1] = part;
-                    if(symmetryX&&symmetryY)parts[x-X-1][y-Y-1][Z] = part;
-                    if(symmetryY&&symmetryZ)parts[X][y-Y-1][z-Z-1] = part;
-                    if(symmetryX&&symmetryZ)parts[x-X-1][Y][z-Z-1] = part;
-                    if(symmetryX&&symmetryY&&symmetryZ)parts[x-X-1][y-Y-1][z-Z-1] = part;
+                    if(symmetryX){//TODO better symmetry
+                        parts[x-X-1][Y][Z] = part;
+                        fuel[x-X-1][Y][Z] = fuel[X][Y][Z];
+                        fuelType[x-X-1][Y][Z] = fuelType[X][Y][Z];
+                    }
+                    if(symmetryY){
+                        parts[X][y-Y-1][Z] = part;
+                        fuel[X][y-Y-1][Z] = fuel[X][Y][Z];
+                        fuelType[X][y-Y-1][Z] = fuelType[X][Y][Z];
+                    }
+                    if(symmetryZ){
+                        parts[X][Y][z-Z-1] = part;
+                        fuel[X][Y][z-Z-1] = fuel[X][Y][Z];
+                        fuelType[X][Y][z-Z-1] = fuelType[X][Y][Z];
+                    }
+                    if(symmetryX&&symmetryY){
+                        parts[x-X-1][y-Y-1][Z] = part;
+                        fuel[x-X-1][y-Y-1][Z] = fuel[X][Y][Z];
+                        fuelType[x-X-1][y-Y-1][Z] = fuelType[X][Y][Z];
+                    }
+                    if(symmetryY&&symmetryZ){
+                        parts[X][y-Y-1][z-Z-1] = part;
+                        fuel[X][y-Y-1][z-Z-1] = fuel[X][Y][Z];
+                        fuelType[X][y-Y-1][z-Z-1] = fuelType[X][Y][Z];
+                    }
+                    if(symmetryX&&symmetryZ){
+                        parts[x-X-1][Y][z-Z-1] = part;
+                        fuel[x-X-1][Y][z-Z-1] = fuel[X][Y][Z];
+                        fuelType[x-X-1][Y][z-Z-1] = fuelType[X][Y][Z];
+                    }
+                    if(symmetryX&&symmetryY&&symmetryZ){
+                        parts[x-X-1][y-Y-1][z-Z-1] = part;
+                        fuel[x-X-1][y-Y-1][z-Z-1] = fuel[X][Y][Z];
+                        fuelType[x-X-1][y-Y-1][z-Z-1] = fuelType[X][Y][Z];
+                    }
                 }
             }
         }
@@ -284,6 +356,7 @@ public abstract class Reactor{
      */
     protected void applyExtraTransformations(){}
     protected abstract ReactorPart build(int X, int Y, int Z);
+    protected abstract Fuel.Group buildFuel(int X, int Y, int Z);
     private ReactorPart get(int x, int y, int z){
         if(x==-1||y==-1||z==-1||x==this.x||y==this.y||z==this.z)return ReactorPart.CASING;
         return parts[x][y][z];
@@ -298,35 +371,13 @@ public abstract class Reactor{
         heatMult = new int[x][y][z];
         boolean[][][] fluxed = new boolean[x][y][z];
         boolean somethingChanged;
-        if(false){
-        //<editor-fold defaultstate="collapsed" desc="Removing fundamentally invalid parts">
+        //<editor-fold defaultstate="collapsed" desc="Managing cell sources">
         do{
             somethingChanged = false;
             for(int x = 0; x<this.x; x++){
                 for(int y = 0; y<this.y; y++){
                     for(int z = 0; z<this.z; z++){
                         ReactorPart p = get(x, y, z);
-                        if(p.type==ReactorPart.Type.REFLECTOR){
-                            if(!hasLineOfSight(x, y, z, 2, ReactorPart.Type.MODERATOR, ReactorPart.Type.FUEL_CELL)){//if a reflector is fundamentally invalid, replace it with air
-                                parts[x][y][z] = ReactorPart.AIR;
-                                somethingChanged = true;
-                                continue;
-                            }
-                        }
-                        if(p.type==ReactorPart.Type.MODERATOR){
-                            if(!hasLineOfSight(x, y, z, 1, ReactorPart.Type.MODERATOR, ReactorPart.Type.FUEL_CELL)){//if a moderator is fundamentally invalid, replace it with air
-                                parts[x][y][z] = ReactorPart.AIR;
-                                somethingChanged = true;
-                                continue;
-                            }
-                        }
-                        if(p.type==ReactorPart.Type.FUEL_CELL){
-                            if(!hasLineOfSight(x,y,z,2, ReactorPart.Type.MODERATOR, ReactorPart.Type.REFLECTOR)&&!hasLineOfSight(x,y,z,4, ReactorPart.Type.MODERATOR, ReactorPart.Type.FUEL_CELL)){//if a cell is fundamentally invalid, replace it with air
-                                parts[x][y][z] = ReactorPart.AIR;
-                                somethingChanged = true;
-                                continue;
-                            }
-                        }
                         if(p.type==ReactorPart.Type.FUEL_CELL){
                             if(((FuelCell)p).efficiency!=0&&!hasLineOfSight(x,y,z)){//if a cell has a source, but has no line-of-sight, remove the source
                                 parts[x][y][z] = ReactorPart.FUEL_CELL;
@@ -334,28 +385,25 @@ public abstract class Reactor{
                                 continue;
                             }
                         }
-//                        if(p.type==ReactorPart.Type.HEATSINK){//if a heatsink is fundamentally invalid, replace it with air
-//                            for(PlacementRule rule : ((Heatsink)p).rules){
-//                                if(!rule.isValid(this,x,y,z)){
-//                                    parts[x][y][z] = ReactorPart.AIR;
-//                                    somethingChanged = true;
-//                                    break;
-//                                }
-//                            }
-//                        }//this causes problems with magnesium!
+                        if(p.type==ReactorPart.Type.FUEL_CELL){
+                            if(((FuelCell)p).efficiency!=0&&fuel[x][y][z].selfPriming.get(fuelType[x][y][z]).floatValue()!=0){//if a cell has a source, but is self-priming, remove the source
+                                parts[x][y][z] = ReactorPart.FUEL_CELL;
+                                somethingChanged = true;
+                                continue;
+                            }
+                        }
                     }
                 }
             }
         }while(somethingChanged);
 //</editor-fold>
-        }
         //<editor-fold defaultstate="collapsed" desc="Adding base cell efficiencies">
         for(int x = 0; x<this.x; x++){
             for(int y = 0; y<this.y; y++){
                 for(int z = 0; z<this.z; z++){
                     ReactorPart part = get(x, y, z);
                     if(part.type==ReactorPart.Type.FUEL_CELL){
-                        efficiency[x][y][z] = fuel.efficiency.get(fuelType).doubleValue();
+                        efficiency[x][y][z] = fuel[x][y][z].efficiency.get(fuelType[x][y][z]).doubleValue();
                         positionalEfficiency[x][y][z] = 0;
                     }
                 }
@@ -373,8 +421,8 @@ public abstract class Reactor{
                         ReactorPart part = get(x, y, z);
                         if(part.type==ReactorPart.Type.FUEL_CELL){
                             FuelCell cell = (FuelCell)part;
-                            if(cell.efficiency==0&&!hasDoneThePrimedOnes)continue;//do the primed ones first
-                            if(cell.efficiency>0||active[x][y][z]){//if primed or has been activated
+                            if((cell.efficiency==0&&fuel[x][y][z].selfPriming.get(fuelType[x][y][z]).floatValue()==0)&&!hasDoneThePrimedOnes)continue;//do the primed ones first
+                            if(cell.efficiency>0||fuel[x][y][z].selfPriming.get(fuelType[x][y][z]).floatValue()>0||active[x][y][z]){//if primed or has been activated
                                 DIRECTION:for(Direction d : Direction.values()){
                                     int distance = 0;
                                     int X = x+d.x;
@@ -394,7 +442,7 @@ public abstract class Reactor{
                                                 modEfficiency+=((Moderator)otherPart).efficiencyFactor;
                                                 continue;
                                             case HEATSINK:
-                                                if(isMSR()){
+                                                if(fuelType[x][y][z].isMSR()){
                                                     X+=d.x;
                                                     Y+=d.y;
                                                     Z+=d.z;
@@ -425,11 +473,11 @@ public abstract class Reactor{
                                                 throw new IllegalArgumentException("I don't know what this is!");//continue DIRECTION if this hits
                                         }
                                     }
-                                    if(neutronFlux[X][Y][Z]>=fuel.criticality.get(fuelType).intValue()){
+                                    if(parts[X][Y][Z].type==ReactorPart.Type.FUEL_CELL&&neutronFlux[X][Y][Z]>=fuel[X][Y][Z].criticality.get(fuelType[X][Y][Z]).intValue()){
                                         active[X][Y][Z] = true;
                                         somethingChanged = true;
                                     }
-                                    if(neutronFlux[x][y][z]>=fuel.criticality.get(fuelType).intValue()){
+                                    if(parts[x][y][z].type==ReactorPart.Type.FUEL_CELL&&neutronFlux[x][y][z]>=fuel[x][y][z].criticality.get(fuelType[x][y][z]).intValue()){
                                         active[x][y][z] = true;
                                         somethingChanged = true;
                                     }
@@ -465,7 +513,7 @@ public abstract class Reactor{
                                             distance++;
                                             continue;
                                         case HEATSINK:
-                                            if(isMSR()){
+                                            if(fuelType[x][y][z].isMSR()){
                                                 X+=d.x;
                                                 Y+=d.y;
                                                 Z+=d.z;
@@ -512,10 +560,11 @@ public abstract class Reactor{
                     ReactorPart part = get(x, y, z);
                     if(part.type==ReactorPart.Type.FUEL_CELL){
                         efficiency[x][y][z] *= positionalEfficiency[x][y][z];
-                        double sourceEff = ((FuelCell)part).efficiency;
+                        double sourceEff = fuel[x][y][z].selfPriming.get(fuelType[x][y][z]).doubleValue();
+                        if(sourceEff==0)sourceEff = ((FuelCell)part).efficiency;
                         if(sourceEff==0)sourceEff = 1;
                         efficiency[x][y][z] *= sourceEff;
-                        efficiency[x][y][z] *= (1/(1+Math.exp(2*(neutronFlux[x][y][z]-2*fuel.criticality.get(fuelType).doubleValue()))));
+                        efficiency[x][y][z] *= (1/(1+Math.exp(2*(neutronFlux[x][y][z]-2*fuel[x][y][z].criticality.get(fuelType[x][y][z]).doubleValue()))));
                     }
                 }
             }
@@ -794,18 +843,31 @@ public abstract class Reactor{
                     }
                     break;
                 case FUEL_CELL:
-                    JSONArray array = new JSONArray();
+                    HashMap<Fuel, HashMap<Fuel.Type, JSONArray>> arrayses = new HashMap<>();
                     for(int[] i : prts.get(part)){
                         JSONObject partt = new JSONObject();
-                        partt.set("X", i[0]+1);
-                        partt.set("Y", i[1]+1);
-                        partt.set("Z", i[2]+1);
-                        array.add(partt);
+                        int X = i[0];
+                        int Y = i[1];
+                        int Z = i[2];
+                        partt.set("X", X+1);
+                        partt.set("Y", Y+1);
+                        partt.set("Z", Z+1);
+                        if(!arrayses.containsKey(fuel[X][Y][Z])){
+                            arrayses.put(fuel[X][Y][Z], new HashMap<>());
+                        }
+                        if(!arrayses.get(fuel[X][Y][Z]).containsKey(fuelType[X][Y][Z])){
+                            arrayses.get(fuel[X][Y][Z]).put(fuelType[X][Y][Z], new JSONArray());
+                        }
+                        arrayses.get(fuel[X][Y][Z]).get(fuelType[X][Y][Z]).add(partt);
                     }
-                    fuelCells.set(part.jsonName.replace("{FUEL}", "["+fuelType.name()+"]"+fuel.toString()), array);
+                    for(Fuel feul : arrayses.keySet()){
+                        for(Fuel.Type type : arrayses.get(feul).keySet()){
+                            fuelCells.set(part.jsonName.replace("{FUEL}", "["+type.name()+"]"+feul.toString()), arrayses.get(feul).get(type));//TODO redo with a for each fuel type thingey
+                        }
+                    }
                     break;
                 case HEATSINK:
-                    array = new JSONArray();
+                    JSONArray array = new JSONArray();
                     for(int[] i : prts.get(part)){
                         JSONObject partt = new JSONObject();
                         partt.set("X", i[0]+1);
@@ -907,9 +969,9 @@ public abstract class Reactor{
                 switch(part.type){
                     case FUEL_CELL:
                         fuelCells++;
-                        totalOutput+=fuel.heat.get(fuelType).intValue()*Reactor.this.efficiency[block[0]][block[1]][block[2]];
+                        totalOutput+=fuel[block[0]][block[1]][block[2]].heat.get(fuelType[block[0]][block[1]][block[2]]).intValue()*Reactor.this.efficiency[block[0]][block[1]][block[2]];
                         efficiency+=Reactor.this.efficiency[block[0]][block[1]][block[2]];
-                        totalHeat+=Reactor.this.heatMult[block[0]][block[1]][block[2]]*fuel.heat.get(fuelType).intValue();
+                        totalHeat+=Reactor.this.heatMult[block[0]][block[1]][block[2]]*fuel[block[0]][block[1]][block[2]].heat.get(fuelType[block[0]][block[1]][block[2]]).intValue();
                         heatMult+=Reactor.this.heatMult[block[0]][block[1]][block[2]];
                         break;
                     case HEATSINK:
@@ -1039,9 +1101,6 @@ public abstract class Reactor{
             list.addAll(blocks.get(i));
         }
         return list;
-    }
-    private boolean isMSR(){
-        return fuelType.isMSR();
     }
     public BufferedImage getImage(){
         int blockSize = 16;

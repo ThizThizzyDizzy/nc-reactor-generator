@@ -11,15 +11,15 @@ public abstract class GenerationModel extends ThingWithSettings{
     static{
         models.add(new GenerationModel("Random", "Generates completely random reactors") {
             @Override
-            public Reactor generate(Reactor last, Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
-                return Reactor.random(fuel,type,x,y,z,rand);
+            public Reactor generate(Reactor last, int x, int y, int z, Random rand){
+                return Reactor.random(x,y,z,rand);
             }
         });
         models.add(new GenerationModel("Standard", "Generates random reactors until a valid reactor is found, then changes some random parts of the reactor to random other parts- if the result is better, keep the changes. if not, discard.", new SettingDouble("Change Chance", 1, 0.1, 100, .1), new SettingBoolean("Lock Core", false), new SettingBoolean("Fill Air", false)){
             @Override
-            public Reactor generate(Reactor last, Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
+            public Reactor generate(Reactor last, int x, int y, int z, Random rand){
                 if(last!=null&&last.isValid()){
-                    return new Reactor(fuel, type, x, y, z){
+                    return new Reactor(x, y, z){
                         @Override
                         protected ReactorPart build(int X, int Y, int Z){
                             if(getBoolean("Lock Core")){
@@ -33,9 +33,13 @@ public abstract class GenerationModel extends ThingWithSettings{
                                 return last.parts[X][Y][Z];
                             }
                         }
+                        @Override
+                        protected Fuel.Group buildFuel(int X, int Y, int Z){
+                            return Main.instance.randomFuel();
+                        }
                     };
                 }
-                return Reactor.random(fuel,type,x,y,z,rand);
+                return Reactor.random(x,y,z,rand);
             }
         });
         DEFAULT = get("Standard");
@@ -49,11 +53,15 @@ public abstract class GenerationModel extends ThingWithSettings{
         if(name.equalsIgnoreCase("none")){
             return new GenerationModel("None", "Does nothing"){
                 @Override
-                public Reactor generate(Reactor last, Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand){
-                    if(last==null)return new Reactor(fuel, type, x, y, z){
+                public Reactor generate(Reactor last, int x, int y, int z, Random rand){
+                    if(last==null)return new Reactor(x, y, z){
                         @Override
                         protected ReactorPart build(int X, int Y, int Z){
                             return ReactorPart.AIR;
+                        }
+                        @Override
+                        protected Fuel.Group buildFuel(int X, int Y, int Z){
+                            return null;
                         }
                     };
                     return last;
@@ -73,5 +81,5 @@ public abstract class GenerationModel extends ThingWithSettings{
     public String toString(){
         return "Generation model: "+name;
     }
-    public abstract Reactor generate(Reactor last, Fuel fuel, Fuel.Type type, int x, int y, int z, Random rand);
+    public abstract Reactor generate(Reactor last, int x, int y, int z, Random rand);
 }

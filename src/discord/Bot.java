@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import overhaul.Fuel;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 public class Bot extends ListenerAdapter{
@@ -322,8 +323,8 @@ public class Bot extends ListenerAdapter{
                     overhaul.Main.instance.spinnerY.setValue(Y);
                     overhaul.Main.instance.spinnerZ.setValue(Z);
                     overhaul.Main.instance.checkBoxFillConductors.setSelected(false);;
-                    overhaul.Main.instance.boxFuel.setSelectedIndex(overhaul.Fuel.fuels.indexOf(fuel));
-                    overhaul.Main.instance.boxFuelType.setSelectedIndex(type.ordinal());
+                    overhaul.Main.instance.allowedFuels.clear();
+                    overhaul.Main.instance.allowFuel(fuel, type);
                     if(!isGenerating){
                         overhaul.Main.genModel = overhaul.GenerationModel.get("None");
                     }
@@ -376,8 +377,21 @@ public class Bot extends ListenerAdapter{
                                         text+=line+"\n";
                                     }
                                     reader.close();
-                                    overhaul.Reactor r = overhaul.Reactor.parse(text, fuel, type, X, Y, Z);
+                                    overhaul.Reactor r = overhaul.Reactor.parse(text, X, Y, Z);
                                     if(r==null)throw new NullPointerException("Invalid Reactor");
+                                    final overhaul.Reactor react = r;
+                                    final Fuel feul = fuel;
+                                    final Fuel.Type typ = type;
+                                    r = new overhaul.Reactor(X, Y, Z){
+                                        @Override
+                                        protected overhaul.ReactorPart build(int X, int Y, int Z){
+                                            return overhaul.ReactorPart.getSelectedParts().contains(react.parts[X][Y][Z])?react.parts[X][Y][Z]:overhaul.ReactorPart.AIR;
+                                        }
+                                        @Override
+                                        protected Fuel.Group buildFuel(int X, int Y, int Z){
+                                            return new Fuel.Group(feul, typ);
+                                        }
+                                    };
                                     overhaul.Main.genPlan.importReactor(r, true);
                                     message.getChannel().sendMessage("Imported reactor: "+at.getFileName()).queue();
                                 }else{
@@ -397,15 +411,21 @@ public class Bot extends ListenerAdapter{
                             imported++;
                             System.out.println("Importing... "+imported+"/ "+storedReactors.get(X).get(Y).get(Z).size());
                             try{
-                                overhaul.Reactor r = overhaul.Reactor.parseJSON(json, fuel, type, X, Y, Z);
+                                overhaul.Reactor r = overhaul.Reactor.parseJSON(json, X, Y, Z);
                                 if(r==null){
                                     continue;
                                 }
                                 final overhaul.Reactor react = r;
-                                r = new overhaul.Reactor(fuel, type, X, Y, Z){
+                                final Fuel feul = fuel;
+                                final Fuel.Type typ = type;
+                                r = new overhaul.Reactor(X, Y, Z){
                                     @Override
                                     protected overhaul.ReactorPart build(int X, int Y, int Z){
                                         return overhaul.ReactorPart.getSelectedParts().contains(react.parts[X][Y][Z])?react.parts[X][Y][Z]:overhaul.ReactorPart.AIR;
+                                    }
+                                    @Override
+                                    protected Fuel.Group buildFuel(int X, int Y, int Z){
+                                        return new Fuel.Group(feul, typ);
                                     }
                                 };
                                 boolean isBest = true;
@@ -623,7 +643,7 @@ public class Bot extends ListenerAdapter{
         overhaul.Reactor r = overhaul.Main.genPlan.getReactors().get(0);
         String settings = "Priority: "+overhaulPriority;
         settings+="\nSize: "+overhaul.Main.instance.spinnerX.getValue()+"x"+overhaul.Main.instance.spinnerY.getValue()+"x"+overhaul.Main.instance.spinnerZ.getValue();
-        settings+="\nFuel: "+overhaul.Fuel.fuels.get(overhaul.Main.instance.boxFuel.getSelectedIndex())+" "+overhaul.Fuel.Type.values()[overhaul.Main.instance.boxFuelType.getSelectedIndex()];
+        settings+="\nFuel: "+overhaul.Main.instance.randomFuel().toString();
         builder.addField("Settings", settings, false);
         text+="\n**Settings**\n"+settings;
         String details = r.getDetails(false, false);

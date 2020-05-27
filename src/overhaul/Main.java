@@ -4,12 +4,14 @@ import common.Exporter;
 import discord.BotInterface;
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.ListModel;
@@ -19,6 +21,7 @@ public class Main extends javax.swing.JFrame{
     public static Main instance;
     public static GenerationPlan genPlan = GenerationPlan.DEFAULT;
     public static GenerationModel genModel = GenerationModel.DEFAULT;
+    public HashMap<Fuel,ArrayList<Fuel.Type>> allowedFuels = new HashMap<>();
     public static String toTime(long timeDiff) {
         String time;
         if(timeDiff<1_000_000){
@@ -75,6 +78,7 @@ public class Main extends javax.swing.JFrame{
             }
             panelPrioritiesBasic.add(button);
         }
+        refreshFuels();
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -99,8 +103,6 @@ public class Main extends javax.swing.JFrame{
         textAreaGenPlanDesc = new javax.swing.JTextArea();
         panelGenPlanSettings = new javax.swing.JPanel();
         panelFuels = new javax.swing.JPanel();
-        boxFuel = new javax.swing.JComboBox<>();
-        boxFuelType = new javax.swing.JComboBox<>();
         panelSize = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         spinnerX = new javax.swing.JSpinner();
@@ -279,30 +281,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap())
         );
 
-        boxFuel.setModel(getFuels());
-
-        boxFuelType.setModel(getFuelModifiers());
-
-        javax.swing.GroupLayout panelFuelsLayout = new javax.swing.GroupLayout(panelFuels);
-        panelFuels.setLayout(panelFuelsLayout);
-        panelFuelsLayout.setHorizontalGroup(
-            panelFuelsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelFuelsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(boxFuel, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(boxFuelType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        panelFuelsLayout.setVerticalGroup(
-            panelFuelsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelFuelsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelFuelsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(boxFuel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(boxFuelType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        panelFuels.setLayout(new java.awt.GridLayout(0, 5));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Reactor Size");
@@ -462,38 +441,35 @@ public class Main extends javax.swing.JFrame{
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelGenModel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelFuels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(checkBoxSymmetryX, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkBoxFillConductors, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(checkBoxFillConductors, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(checkBoxSymmetryX, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(checkBoxSymmetryY, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(checkBoxSymmetryZ, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTabbedPane1))))
+                    .addComponent(jTabbedPane1)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkBoxSymmetryY, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkBoxSymmetryZ, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelFuels, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelGenPlan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(panelFuels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelGenPlan, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addComponent(panelSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelFuels, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(10, 10, 10)
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(checkBoxFillConductors)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(checkBoxSymmetryX)
@@ -501,9 +477,9 @@ public class Main extends javax.swing.JFrame{
                         .addComponent(checkBoxSymmetryY)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(checkBoxSymmetryZ)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 120, Short.MAX_VALUE))
-                    .addComponent(panelGenModel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                        .addGap(0, 193, Short.MAX_VALUE))
+                    .addComponent(panelGenModel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, 0))
         );
 
         tabbedPane.addTab("Generation Settings", jPanel2);
@@ -578,7 +554,7 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
+                .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -586,7 +562,7 @@ public class Main extends javax.swing.JFrame{
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
+                    .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jScrollPane5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -657,7 +633,7 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(jScrollPane8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
+                    .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(buttonImportExportImage)
@@ -671,7 +647,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -733,7 +709,7 @@ public class Main extends javax.swing.JFrame{
                             .addComponent(panelConfigReflectors, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(panelConfigFuels, javax.swing.GroupLayout.PREFERRED_SIZE, 770, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 11, Short.MAX_VALUE)))
+                        .addGap(0, 311, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel8Layout.setVerticalGroup(
@@ -1041,12 +1017,10 @@ public class Main extends javax.swing.JFrame{
         }
     }//GEN-LAST:event_buttonConfigCustomActionPerformed
     private Reactor getImportReactor(){
-        Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
-        Fuel.Type type = Fuel.Type.values()[boxFuelType.getSelectedIndex()];
         int x = (int) spinnerX.getValue();
         int y = (int) spinnerY.getValue();
         int z = (int) spinnerZ.getValue();
-        return Reactor.parse(textAreaImport, fuel, type, x, y, z);
+        return Reactor.parse(textAreaImport, x, y, z);
     }
     public static void main(String args[]){
         Configuration.load(Configuration.DEFAULT);
@@ -1072,8 +1046,6 @@ public class Main extends javax.swing.JFrame{
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JComboBox<String> boxFuel;
-    public javax.swing.JComboBox<String> boxFuelType;
     private javax.swing.JComboBox<String> boxGenModel;
     private javax.swing.JComboBox<String> boxGenPlan;
     private javax.swing.JButton buttonConfigCustom;
@@ -1238,17 +1210,13 @@ public class Main extends javax.swing.JFrame{
         spinnerX.setEnabled(false);
         spinnerY.setEnabled(false);
         spinnerZ.setEnabled(false);
-        boxFuel.setEnabled(false);
-        boxFuelType.setEnabled(false);
         spinnerThreads.setEnabled(false);
         buttonStart.setEnabled(false);
         buttonStop.setEnabled(true);
-        Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
-        Fuel.Type type = Fuel.Type.values()[boxFuelType.getSelectedIndex()];
         int x = (int) spinnerX.getValue();
         int y = (int) spinnerY.getValue();
         int z = (int) spinnerZ.getValue();
-        genPlan.reset(fuel,type,x,y,z);
+        genPlan.reset(x,y,z);
         Reactor.totalReactors = 0;
         iterations = 0;
         Reactor.startTime = System.nanoTime();
@@ -1281,8 +1249,6 @@ public class Main extends javax.swing.JFrame{
     private void startGenerationThread(){
         activeThreads++;
         Thread t = new Thread(() -> {
-            Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
-            Fuel.Type type = Fuel.Type.values()[boxFuelType.getSelectedIndex()];
             int x = (int) spinnerX.getValue();
             int y = (int) spinnerY.getValue();
             int z = (int) spinnerZ.getValue();
@@ -1291,7 +1257,7 @@ public class Main extends javax.swing.JFrame{
                 synchronized(synchronizer){
                     if(!running)break;
                 }
-                genPlan.run(fuel, type, x, y, z, rand);
+                genPlan.run(x, y, z, rand);
                 synchronized(synchronizer){
                     iterations++;
                 }
@@ -1348,8 +1314,6 @@ public class Main extends javax.swing.JFrame{
             spinnerX.setEnabled(true);
             spinnerY.setEnabled(true);
             spinnerZ.setEnabled(true);
-            boxFuel.setEnabled(true);
-            boxFuelType.setEnabled(true);
             spinnerThreads.setEnabled(true);
             buttonStart.setEnabled(true);
         }, "Shutdown Thread");
@@ -1416,5 +1380,55 @@ public class Main extends javax.swing.JFrame{
                 panelConfigFuels.add(new JLabel((int)fuel.criticality.get(type)+""));
             }
         }
+    }
+    public void refreshFuels(){
+        panelFuels.removeAll();
+        allowedFuels.clear();
+        panelFuels.add(new JLabel("Fuel"));
+        for(Fuel.Type type : Fuel.Type.values()){
+            panelFuels.add(new JLabel(type.name()));
+        }
+        for(Fuel fuel : Fuel.fuels){
+            panelFuels.add(new JLabel(fuel.toString()));
+            for(Fuel.Type type : Fuel.Type.values()){
+                JCheckBox box = new JCheckBox();
+                box.addActionListener((e) -> {
+                    if(box.isSelected()){
+                        allowFuel(fuel, type);
+                    }else{
+                        disallowFuel(fuel, type);
+                    }
+                });
+                panelFuels.add(box);
+            }
+        }
+    }
+    public void allowFuel(Fuel fuel, Fuel.Type type){
+        if(allowedFuels.containsKey(fuel)){
+            if(!allowedFuels.get(fuel).contains(type)){
+                allowedFuels.get(fuel).add(type);
+            }
+        }else{
+            ArrayList<Fuel.Type> types = new ArrayList<>();
+            types.add(type);
+            allowedFuels.put(fuel,types);
+        }
+    }
+    public void disallowFuel(Fuel fuel, Fuel.Type type){
+        if(allowedFuels.containsKey(fuel)){
+            if(allowedFuels.get(fuel).contains(type)){
+                allowedFuels.get(fuel).remove(type);
+            }
+        }
+    }
+    public Fuel.Group randomFuel(){
+        ArrayList<Fuel.Group> fuels = new ArrayList<>();
+        for(Fuel f : Fuel.fuels){
+            for(Fuel.Type t : Fuel.Type.values()){
+                fuels.add(new Fuel.Group(f, t));
+            }
+        }
+        if(fuels.isEmpty())return null;
+        return fuels.get(new Random().nextInt(fuels.size()));
     }
 }

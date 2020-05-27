@@ -114,35 +114,50 @@ public class ReactorPart implements ReactorBit{
         if(allowedParts.isEmpty())return AIR;
         return allowedParts.get(rand.nextInt(allowedParts.size()));
     }
-    public static ReactorPart parse(String string){
-        if(string.equals("Reflectors"))return REFLECTOR_BERYLLIUM_CARBON;
+    public static PartContainer parse(String string){
+        if(string.equals("Reflectors"))return new PartContainer(REFLECTOR_BERYLLIUM_CARBON);
         if(string.contains(";")){
             String[] strs = string.split("\\Q;");
-            if(strs.length==2)return FUEL_CELL_CF_252;//old compat
-            string = strs[strs.length-1];
-            if(string.equals("Self"))return FUEL_CELL_CF_252;
-            if(string.equals("None"))return FUEL_CELL;
+            ReactorPart part = null;
+            Fuel fuel = Fuel.parse(strs[0]);
+            Fuel.Type type = Fuel.Type.parse(strs[0]);
+            if(strs.length==2)part = FUEL_CELL_CF_252;//pre-source compat
+            else{
+                boolean b = Boolean.parseBoolean(strs[1]);
+                if(b){
+                    String source = strs[2];
+                    if(source.equals("Self")||source.equals("None"))part = FUEL_CELL;
+                    for(ReactorPart p : parts){
+                        if(p.type!=Type.FUEL_CELL)continue;
+                        if(p.name.contains(source))part = p;
+                    }
+                }else{//no source
+                    part = FUEL_CELL;
+                }
+            }
+            if(part==null)return null;
+            return new PartContainer(part, fuel, type);
         }
         for(ReactorPart part : parts){
-            if(part.name.replace(" ", "_").equalsIgnoreCase(string))return part;
+            if(part.name.replace(" ", "_").equalsIgnoreCase(string))return new PartContainer(part);
         }
         for(ReactorPart part : parts){
-            if(part.name.toLowerCase().replace(" ", "_").startsWith(string.toLowerCase()))return part;
+            if(part.name.toLowerCase().replace(" ", "_").startsWith(string.toLowerCase()))return new PartContainer(part);
         }
         for(ReactorPart part : parts){
-            if(part.name.toLowerCase().replace(" ", "_").contains(string.toLowerCase()))return part;
+            if(part.name.toLowerCase().replace(" ", "_").contains(string.toLowerCase()))return new PartContainer(part);
         }
         for(ReactorPart part : parts){
-            if(part.name.toLowerCase().replace(" ", "").startsWith(string.toLowerCase()))return part;
+            if(part.name.toLowerCase().replace(" ", "").startsWith(string.toLowerCase()))return new PartContainer(part);
         }
         for(ReactorPart part : parts){
-            if(part.name.toLowerCase().replace(" ", "").contains(string.toLowerCase()))return part;
+            if(part.name.toLowerCase().replace(" ", "").contains(string.toLowerCase()))return new PartContainer(part);
         }
         for(ReactorPart part : parts){
-            if(string.toLowerCase().replace(" ", "_").contains(part.name.toLowerCase()))return part;
+            if(string.toLowerCase().replace(" ", "_").contains(part.name.toLowerCase()))return new PartContainer(part);
         }
         for(ReactorPart part : parts){
-            if(string.toLowerCase().replace(" ", "").contains(part.name.toLowerCase()))return part;
+            if(string.toLowerCase().replace(" ", "").contains(part.name.toLowerCase()))return new PartContainer(part);
         }
         if(string.contains(" "))return parse(string.replace(" ", "").trim());
         return null;
@@ -207,6 +222,19 @@ public class ReactorPart implements ReactorBit{
         public final boolean canCluster;//For some reason, this is the only type-specific variable that I didn't hard-code everywhere (like Line-of-sight)
         private Type(boolean canCluster){
             this.canCluster = canCluster;
+        }
+    }
+    public static class PartContainer{
+        public final ReactorPart part;
+        public final Fuel fuel;
+        public final Fuel.Type type;
+        public PartContainer(ReactorPart part){
+            this(part, null, null);
+        }
+        public PartContainer(ReactorPart part, Fuel fuel, Fuel.Type type){
+            this.part = part;
+            this.fuel = fuel;
+            this.type = type;
         }
     }
 }
