@@ -39,6 +39,21 @@ public class Fuel{
     public String toString(){
         return name;
     }
+    public Fuel getSelfPrimingFuel(){
+        Number[] stats = new Number[numStats*Type.values().length];
+        int i = 0;
+        for(Type t : Type.values()){
+            stats[i] = efficiency.get(t);
+            i++;
+            stats[i] = heat.get(t);
+            i++;
+            stats[i] = criticality.get(t);
+            i++;
+            stats[i] = 1;
+            i++;
+        }
+        return new Fuel(name, stats);
+    }
     public static enum Type{
         OX(" Oxide", false),
         NI(" Nitride", false),

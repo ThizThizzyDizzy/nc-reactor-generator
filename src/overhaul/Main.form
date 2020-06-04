@@ -419,7 +419,7 @@
                         <Component class="javax.swing.JSpinner" name="spinnerX">
                           <Properties>
                             <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                              <SpinnerModel initial="3" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                              <SpinnerModel initial="5" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                             </Property>
                           </Properties>
                           <AuxValues>
@@ -429,7 +429,7 @@
                         <Component class="javax.swing.JSpinner" name="spinnerY">
                           <Properties>
                             <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                              <SpinnerModel initial="3" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                              <SpinnerModel initial="5" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                             </Property>
                           </Properties>
                           <AuxValues>
@@ -439,7 +439,7 @@
                         <Component class="javax.swing.JSpinner" name="spinnerZ">
                           <Properties>
                             <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                              <SpinnerModel initial="3" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                              <SpinnerModel initial="5" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                             </Property>
                           </Properties>
                           <AuxValues>
@@ -835,7 +835,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="jScrollPane6" pref="530" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane6" pref="547" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jScrollPane8" min="-2" pref="150" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>

@@ -286,11 +286,11 @@ public class Main extends javax.swing.JFrame{
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Reactor Size");
 
-        spinnerX.setModel(new javax.swing.SpinnerNumberModel(3, 1, null, 1));
+        spinnerX.setModel(new javax.swing.SpinnerNumberModel(5, 1, null, 1));
 
-        spinnerY.setModel(new javax.swing.SpinnerNumberModel(3, 1, null, 1));
+        spinnerY.setModel(new javax.swing.SpinnerNumberModel(5, 1, null, 1));
 
-        spinnerZ.setModel(new javax.swing.SpinnerNumberModel(3, 1, null, 1));
+        spinnerZ.setModel(new javax.swing.SpinnerNumberModel(5, 1, null, 1));
 
         javax.swing.GroupLayout panelSizeLayout = new javax.swing.GroupLayout(panelSize);
         panelSize.setLayout(panelSizeLayout);
@@ -647,7 +647,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -815,7 +815,9 @@ public class Main extends javax.swing.JFrame{
     private void buttonPriorityUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPriorityUpActionPerformed
         int index = listPriorities.getSelectedIndex();
         if(index==0)return;
-        Priority.priorities.add(index-1, Priority.priorities.remove(index));
+        synchronized(Priority.priorities){
+            Priority.priorities.add(index-1, Priority.priorities.remove(index));
+        }
         listPriorities.setModel(getPrioritiesModel());
         listPriorities.setSelectedIndex(index-1);
         for(Component c : panelPrioritiesBasic.getComponents()){
@@ -825,7 +827,9 @@ public class Main extends javax.swing.JFrame{
     private void buttonPriorityDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPriorityDownActionPerformed
         int index = listPriorities.getSelectedIndex();
         if(index==listPriorities.getModel().getSize()-1)return;
-        Priority.priorities.add(index+1, Priority.priorities.remove(index));
+        synchronized(Priority.priorities){
+            Priority.priorities.add(index+1, Priority.priorities.remove(index));
+        }
         listPriorities.setModel(getPrioritiesModel());
         listPriorities.setSelectedIndex(index+1);
         for(Component c : panelPrioritiesBasic.getComponents()){
@@ -1421,7 +1425,21 @@ public class Main extends javax.swing.JFrame{
             }
         }
     }
+    public ArrayList<Fuel.Group> getAllowedFuels(){
+        ArrayList<Fuel.Group> fuels = new ArrayList<>();
+        for(Fuel f : allowedFuels.keySet()){
+            for(Fuel.Type t : allowedFuels.get(f)){
+                fuels.add(new Fuel.Group(f, t));
+            }
+        }
+        return fuels;
+    }
     public Fuel.Group randomFuel(){
+        ArrayList<Fuel.Group> fuels = getAllowedFuels();
+        if(fuels.isEmpty())return totallyRandomFuel();
+        return fuels.get(new Random().nextInt(fuels.size()));
+    }
+    public Fuel.Group totallyRandomFuel(){
         ArrayList<Fuel.Group> fuels = new ArrayList<>();
         for(Fuel f : Fuel.fuels){
             for(Fuel.Type t : Fuel.Type.values()){

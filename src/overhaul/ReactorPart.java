@@ -56,6 +56,7 @@ public class ReactorPart implements ReactorBit{
     public static final Moderator BERYLLIUM = moderator("Beryllium", "Beryllium");
     public static final Moderator GRAPHITE = moderator("Graphite", "Graphite");
     public static final Moderator HEAVY_WATER = moderator("Heavy Water", "HeavyWater");
+    public static final NeutronShield SHIELD_BORON_SILVER = shield("Boron-Silver", "Boron-Silver");
     public static final ReactorPart CONDUCTOR = conductor();
     public static final Reflector REFLECTOR_BERYLLIUM_CARBON = reflector("Beryllium-Carbon", "Beryllium-Carbon");
     public static final Reflector REFLECTOR_LEAD_STEEL = reflector("Lead-Steel", "Lead-Steel");
@@ -80,6 +81,12 @@ public class ReactorPart implements ReactorBit{
     }
     private static Moderator moderator(String name, String jsonName){
         Moderator part = new Moderator(name, jsonName);
+        GROUP_CORE.add(part);
+        GROUP_MODERATOR.add(part);
+        return add(part);
+    }
+    private static NeutronShield shield(String name, String jsonName){
+        NeutronShield part = new NeutronShield(name, jsonName);
         GROUP_CORE.add(part);
         GROUP_MODERATOR.add(part);
         return add(part);

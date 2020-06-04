@@ -59,7 +59,7 @@ public abstract class GenerationPlan extends ThingWithSettings{
                 return false;
             }
         });
-        plans.add(new GenerationPlan("Multi", "Generates many reactors in parallel. If one stops improving, it is scrapped and reset.\nCreates a new thread for each reactor", new SettingInt("Reactors", 2, 2, 64), new SettingInt("Merge Timeout (Seconds)",2,1)) {
+        plans.add(new GenerationPlan("Multi", "Generates many reactors in parallel. If one stops improving, it is scrapped and reset.\nCreates a new thread for each reactor", new SettingInt("Reactors", 2, 2, 64), new SettingInt("Merge Timeout (Seconds)",10,1)) {
             private final Object synchronizer = new Object();
             private int index = 0;
             private Reactor[] reactors;
