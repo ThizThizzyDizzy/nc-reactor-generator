@@ -113,8 +113,27 @@ public abstract class Reactor{
         json = JSON.parse(text);
         return parseJSON(json, fuel, x, y, z);
     }
+    public static Reactor parseJSON(JSONObject json, Fuel fuel) throws IOException{
+        int x = 0,y = 0,z = 0;
+        try{
+            if(json.containsKey("Data"))json = json.getJSONObject("Data");
+            Object dim = json.get("InteriorDimensions");
+            if(dim instanceof JSONObject){
+                x = ((JSONObject)dim).getInt("X");
+                y = ((JSONObject)dim).getInt("Y");
+                z = ((JSONObject)dim).getInt("Z");
+            }
+            if(dim instanceof String){
+                String[] strs = ((String)dim).split(",");
+                x = Integer.parseInt(strs[0]);
+                y = Integer.parseInt(strs[1]);
+                z = Integer.parseInt(strs[2]);
+            }
+        }catch(Exception ex){}
+        return parseJSON(json, fuel, x, y, z);
+    }
     public static Reactor parseJSON(JSONObject json, Fuel fuel, int x, int y, int z) throws IOException{
-        Main.instance.textAreaImportOutput.setText("");
+        if(Main.instance!=null)Main.instance.textAreaImportOutput.setText("");
         String error = "";
         if(json==null)return null;
         if(json.containsKey("Data"))json = json.getJSONObject("Data");
@@ -164,7 +183,7 @@ public abstract class Reactor{
                 }
             }
         }
-        Main.instance.textAreaImportOutput.setText(error.startsWith("; ")?error.substring(2):error);
+        if(Main.instance!=null)Main.instance.textAreaImportOutput.setText(error.startsWith("; ")?error.substring(2):error);
         if(!error.isEmpty())return null;
         return new Reactor(fuel, x, y, z, false, false, false){
             @Override
