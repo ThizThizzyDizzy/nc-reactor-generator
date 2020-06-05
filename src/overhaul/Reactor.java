@@ -11,7 +11,6 @@ import common.JSON.JSONArray;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import org.jetbrains.annotations.NotNull;
 public abstract class Reactor{
     //The export format is based on this version of hellrage's reactor planner: (Saved in the json file)
     public static final int MAJOR_VERSION = 2;
@@ -122,7 +121,7 @@ public abstract class Reactor{
                 }
             }catch(ArrayIndexOutOfBoundsException ex){
                 error += "Cannot set part "+X+" "+Y+" "+Z+"!\nReactor is only "+x+" "+y+" "+z+"!";
-            }catch(Exception ex){
+            }catch(NullPointerException ex){
                 prts[X][Y][Z] = ReactorPart.AIR;
             }
             text = text.substring(part.length());
@@ -188,7 +187,7 @@ public abstract class Reactor{
         if(X!=x||Y!=y||Z!=z){
             error = "Incorrect dimensions! Found "+X+" "+Y+" "+Z+", expected "+x+" "+y+" "+z+"!";
         }else{
-            String[] names = {"HeatSinks", "Moderators", "Conductors", "Reflectors", "FuelCells", "NeutronShields"};
+            String[] names = {"HeatSinks", "Moderators", "Conductors", "Reflectors", "FuelCells", "NeutronShields", "Irradiators"};
             for(String name : names){
                 Object o = json.get(name);
                 if(o instanceof JSONObject){
@@ -301,6 +300,7 @@ public abstract class Reactor{
     public int netHeat;
     public double totalEfficiency;
     public double totalHeatMult;
+    public int totalIrradiation;
     private double sparsityMult = 1;
     private int functionalBlocks;//required for JSON export
     public Reactor(int x, int y, int z){
@@ -484,11 +484,6 @@ public abstract class Reactor{
                                                 heatMult[X][Y][Z]++;
                                                 somethingChanged = true;
                                                 blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[x][y][z] = true;
-                                                for(int i = 1; i<=distance; i++){
-                                                    if(parts[X-d.x*i][Y-d.y*i][Z-d.z*i] instanceof NeutronShield){
-                                                        neutronFlux[X-d.x*i][Y-d.y*i][Z-d.z*i]+=flux/2;
-                                                    }
-                                                }
                                                 break WHILE;
                                             case REFLECTOR:
                                                 if(distance<1||distance>2)continue DIRECTION;//too far away!
@@ -497,11 +492,12 @@ public abstract class Reactor{
                                                 positionalEfficiency[x][y][z]+=(modEfficiency/distance)*((Reflector)otherPart).efficiency;
                                                 heatMult[x][y][z]++;
                                                 somethingChanged = true;
-                                                for(int i = 1; i<=distance; i++){
-                                                    if(parts[X-d.x*i][Y-d.y*i][Z-d.z*i] instanceof NeutronShield){
-                                                        neutronFlux[X-d.x*i][Y-d.y*i][Z-d.z*i]+=flux*(1+((Reflector)otherPart).reflectivity);
-                                                    }
-                                                }
+                                                break WHILE;
+                                            case IRRADIATOR:
+                                                if(distance<1||distance>4)continue DIRECTION;//too far away!
+                                                if(flux==0)continue DIRECTION;//no moderators!
+                                                heatMult[x][y][z]+=2;
+                                                somethingChanged = true;
                                                 break WHILE;
                                             default:
                                                 throw new IllegalArgumentException("I don't know what this is!");//continue DIRECTION if this hits
@@ -537,6 +533,7 @@ public abstract class Reactor{
                                 int X = x+d.x;
                                 int Y = y+d.y;
                                 int Z = z+d.z;
+                                int flux = 0;
                                 WHILE:while(true){
                                     ReactorPart otherPart = get(X,Y,Z);
                                     switch(otherPart.type){
@@ -545,6 +542,7 @@ public abstract class Reactor{
                                             Y+=d.y;
                                             Z+=d.z;
                                             distance++;
+                                            flux+=((Moderator)otherPart).fluxFactor;
                                             continue;
                                         case HEATSINK:
                                             if(fuelType[x][y][z].isMSR()){
@@ -560,6 +558,7 @@ public abstract class Reactor{
                                             continue DIRECTION;
                                         case FUEL_CELL:
                                             if(distance<1||distance>4)continue DIRECTION;//too far away!
+                                            if(flux==0)continue DIRECTION;//no moderators!
                                             if(!active[X][Y][Z])continue DIRECTION;//cell is inactive!
                                             if(parts[X-d.x*distance][Y-d.y*distance][Z-d.z*distance].type==ReactorPart.Type.MODERATOR&&((Moderator)parts[X-d.x*distance][Y-d.y*distance][Z-d.z*distance]).canBeActive(fuelType[x][y][z].isMSR()))
                                                 active[X-d.x*distance][Y-d.y*distance][Z-d.z*distance] = true;//activate first moderator in the chain
@@ -567,17 +566,42 @@ public abstract class Reactor{
                                                 active[X-d.x][Y-d.y][Z-d.z] = true;//activate last moderator in the chain
                                             for(int i = 1; i<=distance; i++){
                                                 blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[X-d.x*i][Y-d.y*i][Z-d.z*i] = true;
+                                                if(parts[X-d.x*i][Y-d.y*i][Z-d.z*i] instanceof NeutronShield){
+                                                    neutronFlux[X-d.x*i][Y-d.y*i][Z-d.z*i]+=flux/2;
+                                                }
                                             }
                                             break WHILE;
                                         case REFLECTOR:
                                             if(distance<1||distance>2)continue DIRECTION;//too far away!
+                                            if(flux==0)continue DIRECTION;//no moderators!
                                             if(parts[X-d.x*distance][Y-d.y*distance][Z-d.z*distance].type==ReactorPart.Type.MODERATOR&&((Moderator)parts[X-d.x*distance][Y-d.y*distance][Z-d.z*distance]).canBeActive(fuelType[x][y][z].isMSR()))
                                                 active[X-d.x*distance][Y-d.y*distance][Z-d.z*distance] = true;//activate first moderator in the chain
                                             for(int i = 1; i<=distance; i++){
                                                 blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[X-d.x*i][Y-d.y*i][Z-d.z*i] = true;
+                                                if(parts[X-d.x*i][Y-d.y*i][Z-d.z*i] instanceof NeutronShield){
+                                                    neutronFlux[X-d.x*i][Y-d.y*i][Z-d.z*i]+=flux*(1+((Reflector)otherPart).reflectivity);
+                                                }
                                             }
                                             active[X][Y][Z] = true;//activate the reflector
                                             break WHILE;
+                                        case IRRADIATOR:
+                                            if(distance<1||distance>4)continue DIRECTION;//too far away!
+                                            if(flux==0)continue DIRECTION;//no moderators!
+                                            if(parts[X-d.x*distance][Y-d.y*distance][Z-d.z*distance].type==ReactorPart.Type.MODERATOR&&((Moderator)parts[X-d.x*distance][Y-d.y*distance][Z-d.z*distance]).canBeActive(fuelType[x][y][z].isMSR()))
+                                                active[X-d.x*distance][Y-d.y*distance][Z-d.z*distance] = true;//activate first moderator in the chain
+                                            int theFlux = 0;
+                                            for(int i = 1; i<=distance; i++){
+                                                if(parts[X-d.x*i][Y-d.y*i][Z-d.z*i] instanceof Moderator)theFlux += ((Moderator)parts[X-d.x*i][Y-d.y*i][Z-d.z*i]).fluxFactor;
+                                                blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[X-d.x*i][Y-d.y*i][Z-d.z*i] = true;
+                                                if(parts[X-d.x*i][Y-d.y*i][Z-d.z*i] instanceof NeutronShield){
+                                                    neutronFlux[X-d.x*i][Y-d.y*i][Z-d.z*i]+=theFlux;
+                                                }
+                                            }
+                                            neutronFlux[X][Y][Z]+=flux;
+                                            active[X][Y][Z] = true;
+                                            break WHILE;
+                                        default:
+                                            throw new IllegalArgumentException("I don't know what this is!");//continue DIRECTION if this hits
                                     }
                                 }
                             }
@@ -674,13 +698,11 @@ public abstract class Reactor{
                 }
             }
         }
-        //<editor-fold defaultstate="collapsed" desc="Deactivate clusters containing no fuel cells">
+        //<editor-fold defaultstate="collapsed" desc="Deactivate clusters containing no cluster-creating blocks">
         FOR:for(Iterator<Cluster> it = clusters.iterator(); it.hasNext();){
             Cluster cluster = it.next();
             for(int[] b : cluster.blocks){
-                if(get(b[0], b[1], b[2]).matches(ReactorPart.Type.FUEL_CELL)){
-                    continue FOR;
-                }
+                if(get(b[0], b[1], b[2]).type.createsCluster)continue FOR;
             }
             for(int[] b : cluster.blocks){
                 active[b[0]][b[1]][b[2]] = false;
@@ -702,6 +724,7 @@ public abstract class Reactor{
             netHeat+=cluster.netHeat;
             totalEfficiency+=cluster.efficiency;
             totalHeatMult+=cluster.heatMult;
+            totalIrradiation+=cluster.irradiation;
         }
         totalEfficiency/=clusters.size();
         totalHeatMult/=clusters.size();
@@ -807,6 +830,7 @@ public abstract class Reactor{
                 + "Overall Heat Multiplier: "+Math.round(totalHeatMult*100)+"%\n"
                 + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                 + "Clusters: "+clusters.size()+"\n"
+                + "Total Irradiation: "+totalIrradiation+"\n"
                 + "Shutdown factor: "+getShutdownFactor();
         if(showClusters){
             for(Cluster c : clusters){
@@ -1015,6 +1039,7 @@ public abstract class Reactor{
         public int netHeat;
         public double heatMult;
         public double coolingPenaltyMult;
+        public int irradiation;
         public Cluster(int x, int y, int z){
             blocks.addAll(toList(getBlocks(clusterables, x, y, z)));
             ArrayList<ReactorBit> conductorList = new ArrayList<>();
@@ -1059,6 +1084,9 @@ public abstract class Reactor{
                         if(part instanceof NeutronShield){
                             totalHeat+=((NeutronShield) part).heatMult*neutronFlux[block[0]][block[1]][block[2]];
                         }
+                        break;
+                    case IRRADIATOR:
+                        irradiation+=neutronFlux[block[0]][block[1]][block[2]];
                         break;
                     default:
                         throw new IllegalArgumentException("Wait, I didn't know "+part.type.toString()+" could be in a cluster! WHAT DO I DO?!?!?");

@@ -7,7 +7,6 @@ import common.ThingWithSettings;
 import common.SettingDouble;
 import common.WeightedRandom;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 public abstract class GenerationModel extends ThingWithSettings{
     public static final ArrayList<GenerationModel> models = new ArrayList<>();
@@ -35,7 +34,7 @@ public abstract class GenerationModel extends ThingWithSettings{
                             }
                         };
                     }else{
-                        long changes = Math.max(1, Math.round((double)getDouble("Change Chance")*x*y*z));
+                        int changes = (int) Math.max(1, Math.round((double)getDouble("Change Chance")*x*y*z));
                         ArrayList<int[]> pool = new ArrayList<>();
                         ReactorPart[][][] prts = new ReactorPart[x][y][z];
                         for(int X = 0; X<prts.length; X++){

@@ -889,6 +889,7 @@ public class Bot extends ListenerAdapter{
                 + "`efficiency` or `efficient` - sets efficiency as the main proiority (default)\n"
                 + "`output` - sets output as the main priority\n"
                 + "`breeder` or `cell count` or `fuel usage` - sets fuel usage as the main priority (Underhaul only)\n"
+                + "`irradiator` - sets irradiation as the main priority (Overhaul only)\n"
                 + "`symmetry` or `symmetrical` - applies symmetry to generated reactors\n"
                 + "`no <block>` - blacklists a certain block from being used in generation\n"
                 + "`e2e` - Uses the Enigmatica 2 Expert config\n"

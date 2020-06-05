@@ -60,6 +60,7 @@ public class ReactorPart implements ReactorBit{
     public static final ReactorPart CONDUCTOR = conductor();
     public static final Reflector REFLECTOR_BERYLLIUM_CARBON = reflector("Beryllium-Carbon", "Beryllium-Carbon");
     public static final Reflector REFLECTOR_LEAD_STEEL = reflector("Lead-Steel", "Lead-Steel");
+    public static final Irradiator IRRADIATOR = irradiator();
     public static ReactorPart CASING = new ReactorPart(Type.CASING, "Casing", null, null);
     private static <T extends ReactorPart> T add(T p){
         parts.add(p);
@@ -146,6 +147,9 @@ public class ReactorPart implements ReactorBit{
             return new PartContainer(part, fuel, type);
         }
         for(ReactorPart part : parts){
+            if(part.getJsonName().replace(" ", "_").equalsIgnoreCase(string))return new PartContainer(part);
+        }
+        for(ReactorPart part : parts){
             if(part.name.replace(" ", "_").equalsIgnoreCase(string))return new PartContainer(part);
         }
         for(ReactorPart part : parts){
@@ -168,6 +172,11 @@ public class ReactorPart implements ReactorBit{
         }
         if(string.contains(" "))return parse(string.replace(" ", "").trim());
         return null;
+    }
+    private static Irradiator irradiator(){
+        Irradiator part = new Irradiator();
+        GROUP_CORE.add(part);
+        return add(part);
     }
     public final Type type;
     private final String name;
@@ -218,25 +227,36 @@ public class ReactorPart implements ReactorBit{
         }
         return image;
     }
+    private String getJsonName(){
+        return jsonName==null?name:jsonName;
+    }
     public static enum Type implements ReactorBit{
-        AIR(false),
-        FUEL_CELL(true),
-        HEATSINK(true),
-        MODERATOR(false),
-        CONDUCTOR(false),
-        REFLECTOR(false),
-        CASING(false);
+        AIR(false, false),
+        FUEL_CELL(true, true),
+        HEATSINK(true, false),
+        MODERATOR(false, true),//because shields
+        CONDUCTOR(false, false),
+        REFLECTOR(false, false),
+        IRRADIATOR(true, true),
+        CASING(false, false);
         public final boolean canCluster;//For some reason, this is the only type-specific variable that I didn't hard-code everywhere (like Line-of-sight)
-        private Type(boolean canCluster){
+        public final boolean createsCluster;//For some reason, this is the only type-specific variable that I didn't hard-code everywhere (like Line-of-sight)
+        private Type(boolean canCluster, boolean createsCluster){
             this.canCluster = canCluster;
+            this.createsCluster = createsCluster;
         }
     }
     public static class PartContainer{
         public final ReactorPart part;
-        public final Fuel fuel;
-        public final Fuel.Type type;
+        public Fuel fuel;
+        public Fuel.Type type;
         public PartContainer(ReactorPart part){
             this(part, null, null);
+            if(part.type==Type.FUEL_CELL){
+                Fuel.Group g = Main.instance.randomFuel();
+                fuel = g.fuel;
+                type = g.type;
+            }
         }
         public PartContainer(ReactorPart part, Fuel fuel, Fuel.Type type){
             this.part = part;

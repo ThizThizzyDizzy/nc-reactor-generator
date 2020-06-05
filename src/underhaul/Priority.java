@@ -9,16 +9,12 @@ public abstract class Priority{
             protected double doCompare(Reactor main, Reactor other){
                 if(main.isValid()&&!other.isValid())return 1;
                 if(!main.isValid()&&other.isValid())return -1;
-                if(!main.isValid()&&!other.isValid())return 0;
                 return 0;
             }
         });
         Priority stable = add(new Priority("Stability"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
-                if(main.heat>0&&other.heat<0)return -1;
-                if(main.heat<0&&other.heat>0)return 1;
-                if(main.heat<0&&other.heat<0)return 0;
                 return Math.max(0, other.heat)-Math.max(0, main.heat);
             }
         });
@@ -48,7 +44,7 @@ public abstract class Priority{
         });
         presets.add(new Preset("Efficiency", valid, stable, efficiency, output, heat).addAlternative("Efficient"));
         presets.add(new Preset("Output", valid, stable, output, efficiency, heat));
-        presets.add(new Preset("Fuel Usage (Breeder)", valid, stable, breeder, heat, output, efficiency).addAlternative("Fuel Usage").addAlternative("Fuel Speed").addAlternative("Cell Count").addAlternative("Breeder"));
+        presets.add(new Preset("Fuel Usage (Breeder)", valid, stable, breeder, heat, output, efficiency).addAlternative("Fuel Usage").addAlternative("Speed").addAlternative("Cell Count").addAlternative("Breeder").addAlternative("Fast"));
         presets.get(0).set();
     }
     private static Priority add(Priority p){

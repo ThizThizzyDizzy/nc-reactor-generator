@@ -193,7 +193,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addComponent(labelParts)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 690, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 722, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -647,7 +647,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1261,7 +1261,12 @@ public class Main extends javax.swing.JFrame{
                 synchronized(synchronizer){
                     if(!running)break;
                 }
-                genPlan.run(x, y, z, rand);
+                try{
+                    genPlan.run(x, y, z, rand);
+                }catch(Exception ex){
+                    System.err.println("Exception while running generation plan!");
+                    ex.printStackTrace();
+                }
                 synchronized(synchronizer){
                     iterations++;
                 }

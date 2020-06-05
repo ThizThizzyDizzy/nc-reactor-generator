@@ -9,7 +9,6 @@ public abstract class Priority{
             protected double doCompare(Reactor main, Reactor other){
                 if(main.isValid()&&!other.isValid())return 1;
                 if(!main.isValid()&&other.isValid())return -1;
-                if(!main.isValid()&&!other.isValid())return 0;
                 return 0;
             }
         });
@@ -22,9 +21,6 @@ public abstract class Priority{
         Priority stable = add(new Priority("Stability"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
-                if(main.netHeat>0&&other.netHeat<0)return -1;
-                if(main.netHeat<0&&other.netHeat>0)return -1;
-                if(main.netHeat<0&&other.netHeat<0)return 0;
                 return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
             }
         });
@@ -40,8 +36,15 @@ public abstract class Priority{
                 return main.totalOutput-other.totalOutput;
             }
         });
+        Priority irradiation = add(new Priority("Irradiation"){
+            @Override
+            protected double doCompare(Reactor main, Reactor other){
+                return main.totalIrradiation-other.totalIrradiation;
+            }
+        });
         presets.add(new Preset("Efficiency", valid, shutdown, stable, efficiency, output).addAlternative("Efficient"));
         presets.add(new Preset("Output", valid, shutdown, stable, output, efficiency));
+        presets.add(new Preset("Irradiation", valid, shutdown, stable, irradiation, efficiency, output).addAlternative("Irradiate").addAlternative("Irradiator"));
         presets.get(0).set();
     }
     private static Priority add(Priority p){
