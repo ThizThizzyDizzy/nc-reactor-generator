@@ -14,8 +14,8 @@ import java.awt.image.BufferedImage;
 public abstract class Reactor{
     //The export format is based on this version of hellrage's reactor planner: (Saved in the json file)
     public static final int MAJOR_VERSION = 2;
-    public static final int MINOR_VERSION = 0;
-    public static final int BUILD = 37;
+    public static final int MINOR_VERSION = 1;
+    public static final int BUILD = 5;
     public static final int REVISION = 0;
     public static final int MAJOR_REVISION = 0;
     public static final int MINOR_REVISION = 0;
@@ -303,6 +303,7 @@ public abstract class Reactor{
     public int totalIrradiation;
     private double sparsityMult = 1;
     private int functionalBlocks;//required for JSON export
+    private Double shutdownFactor = null;
     public Reactor(int x, int y, int z){
         this(x, y, z, Main.instance==null?false:Main.instance.checkBoxSymmetryX.isSelected(), Main.instance==null?false:Main.instance.checkBoxSymmetryY.isSelected(), Main.instance==null?false:Main.instance.checkBoxSymmetryZ.isSelected());
     }
@@ -496,7 +497,7 @@ public abstract class Reactor{
                                             case IRRADIATOR:
                                                 if(distance<1||distance>4)continue DIRECTION;//too far away!
                                                 if(flux==0)continue DIRECTION;//no moderators!
-                                                heatMult[x][y][z]+=2;
+                                                heatMult[x][y][z]++;
                                                 somethingChanged = true;
                                                 break WHILE;
                                             default:
@@ -638,7 +639,13 @@ public abstract class Reactor{
                         if(part.type==ReactorPart.Type.HEATSINK){
                             Heatsink sink = (Heatsink)part;
                             for(PlacementRule rule : sink.rules){
-                                if(!rule.isActive(this, x, y, z))continue PART;//one of the rules is not met
+                                if(!rule.isActive(this, x, y, z)){
+                                    if(active[x][y][z]){//that's not supposed to be active!
+                                        active[x][y][z] = false;
+                                        somethingChanged = true;
+                                    }
+                                    continue PART;
+                                }//one of the rules is not met
                             }
                             if(!active[x][y][z]){
                                 active[x][y][z] = true;//all rules are met!
@@ -832,6 +839,16 @@ public abstract class Reactor{
                 + "Clusters: "+clusters.size()+"\n"
                 + "Total Irradiation: "+totalIrradiation+"\n"
                 + "Shutdown factor: "+getShutdownFactor();
+        if(GenerationModel.get("Challenger")!=null){
+            s+="\nChallenger score: "+Challenger.score(this);
+        }
+        s+="\nBad cells: "+getBadCells();
+        for(Fuel f : Main.instance.allowedFuels.keySet()){
+            for(Fuel.Type t : Main.instance.allowedFuels.get(f)){
+                Fuel.Group g = new Fuel.Group(f,t);
+                s+="\n"+g.toString()+": "+getFuelCount(g);
+            }
+        }
         if(showClusters){
             for(Cluster c : clusters){
                 s+="\n\n"+c.getDetails();
@@ -886,6 +903,7 @@ public abstract class Reactor{
         JSONObject moderators = new JSONObject();
         JSONArray conductors = new JSONArray();
         JSONObject reflectors = new JSONObject();
+        JSONObject irradiators = new JSONObject();
         JSONObject fuelCells = new JSONObject();
         for(ReactorPart part : prts.keySet()){
             switch(part.type){
@@ -958,21 +976,34 @@ public abstract class Reactor{
                     }
                     reflectors.set(part.jsonName, array);
                     break;
+                case IRRADIATOR:
+                    array = new JSONArray();
+                    for(int[] i : prts.get(part)){
+                        JSONObject partt = new JSONObject();
+                        partt.set("X", i[0]+1);
+                        partt.set("Y", i[1]+1);
+                        partt.set("Z", i[2]+1);
+                        array.add(partt);
+                    }
+                    irradiators.set(part.jsonName, array);
+                    break;
                 default:
                     throw new IllegalArgumentException("I don't know what this part is: "+part.toString()+"!");
             }
         }
-        obj.set("HeatSinks", heatSinks);
-        obj.set("Moderators", moderators);
-        obj.set("Conductors", conductors);
-        obj.set("Reflectors", reflectors);
-        obj.set("FuelCells", fuelCells);
+        JSONObject data = new JSONObject();
+        data.set("HeatSinks", heatSinks);
+        data.set("Moderators", moderators);
+        data.set("Conductors", conductors);
+        data.set("Reflectors", reflectors);
+        data.set("Irradiators", irradiators);
+        data.set("FuelCells", fuelCells);
         JSONObject interiorDimensions = new JSONObject();
         interiorDimensions.set("X", x);
         interiorDimensions.set("Y", y);
         interiorDimensions.set("Z", z);
-        obj.set("InteriorDimensions", interiorDimensions);
-        obj.set("CoolantRecipeName", "Water to High Pressure Steam");
+        data.set("InteriorDimensions", interiorDimensions);
+        data.set("CoolantRecipeName", "Water to High Pressure Steam");
         JSONObject reactorStats = new JSONObject();
         reactorStats.set("TotalOutput", totalOutput);
         reactorStats.set("RawOutput", rawOutput);
@@ -984,7 +1015,8 @@ public abstract class Reactor{
         reactorStats.set("FunctionalBlocks", functionalBlocks);
         reactorStats.set("TotalInteriorBlocks", x*y*z);
         reactorStats.set("SparsityPenaltyMultiplier", sparsityMult);
-        obj.set("ReactorOverallStats", reactorStats);
+        data.set("OverallStats", reactorStats);
+        obj.set("Data", data);
         return obj;
     }
     public Reactor copy(){
@@ -1014,6 +1046,7 @@ public abstract class Reactor{
         };
     }
     public double getShutdownFactor(){
+        if(shutdownFactor!=null)return shutdownFactor;
         boolean found = false;
         for(int X = 0; X<x; X++){
             for(int Y = 0; Y<y; Y++){
@@ -1027,7 +1060,32 @@ public abstract class Reactor{
         if(copy.totalOutput==0)return 0;
         Reactor shutdown = getShutdownReactor();
         double output = shutdown.totalOutput;
-        return (copy.totalOutput-output)/copy.totalOutput;
+        shutdownFactor = (copy.totalOutput-output)/copy.totalOutput;
+        return shutdownFactor;
+    }
+    public int getBadCells(){
+        int badCells = 0;
+        for(int X = 0; X<x; X++){
+            for(int Y = 0; Y<y; Y++){
+                for(int Z = 0; Z<z; Z++){
+                    if(parts[X][Y][Z] instanceof FuelCell){
+                        if(!active[X][Y][Z])badCells++;
+                    }
+                }
+            }
+        }
+        return badCells;
+    }
+    public int getFuelCount(Fuel.Group f){
+        int count = 0;
+        for(int x = 0; x<this.x; x++){
+            for(int y = 0; y<this.x; y++){
+                for(int z = 0; z<this.x; z++){
+                    if(fuel[x][y][z]==f.fuel&&fuelType[x][y][z]==f.type)count++;
+                }
+            }
+        }
+        return count;
     }
     private class Cluster{
         public ArrayList<int[]> blocks = new ArrayList<>();
@@ -1094,6 +1152,8 @@ public abstract class Reactor{
             }
             efficiency/=fuelCells;
             heatMult/=fuelCells;
+            if(Double.isNaN(efficiency))efficiency = 0;
+            if(Double.isNaN(heatMult))heatMult = 0;
             netHeat = totalHeat-totalCooling;
             if(totalCooling==0){
                 coolingPenaltyMult = 1;
@@ -1225,20 +1285,15 @@ public abstract class Reactor{
                 for(int X = 0; X<x; X++){
                     g.drawImage(parts[X][Y][Z].getImage(), X*blockSize, yOff, blockSize, blockSize, null);
                     if(parts[X][Y][Z]==ReactorPart.AIR||parts[X][Y][Z]==ReactorPart.CONDUCTOR)continue;//ignore
-//                    if(active[x][y][z]){
-//                        g.setColor(new Color(0, 255, 0, 127));
-//                        g.fillRect(x*blockSize, yOff, blockSize, blockSize);
-//                    }
-
-//                    if(!active[x][y][z]&&!blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[x][y][z]){
-//                        g.setColor(new Color(255, 0, 0, 127));
-//                        g.fillRect(x*blockSize, yOff, blockSize, blockSize);
-//                    }
-                    
-//                    int id = getClusterID(x,y,z);
+                    if((parts[X][Y][Z].type==ReactorPart.Type.MODERATOR&&!blocksThatAreNotNeccesarilyActiveButHaveBeenUsedSoTheyShouldNotBeRemoved[X][Y][Z])
+                            ||(parts[X][Y][Z].type!=ReactorPart.Type.MODERATOR&&!active[X][Y][Z])){
+                        g.setColor(new Color(255, 0, 0, 127));
+                        g.fillRect(X*blockSize, yOff, blockSize, blockSize);
+                    }
+//                    int id = getClusterID(X,Y,Z);
 //                    if(id>-1){
 //                        g.setColor(new Color(id*80, 0, 0, 127));
-//                        g.fillRect(x*blockSize, yOff, blockSize, blockSize);
+//                        g.fillRect(X*blockSize, yOff, blockSize, blockSize);
 //                    }
                 }
                 yOff+=blockSize;

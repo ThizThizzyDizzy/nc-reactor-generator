@@ -115,6 +115,16 @@ public class ReactorPart implements ReactorBit{
     }
     public static ReactorPart random(Random rand, ArrayList<ReactorPart> allowedParts){
         if(allowedParts==null){
+            return randPart(rand, allowedParts);
+        }
+        ArrayList<ReactorPart> reallyAllowed = new ArrayList<>();
+        for(ReactorPart part : getSelectedParts()){
+            if(allowedParts.contains(part))reallyAllowed.add(part);
+        }
+        return randPart(rand, reallyAllowed);
+    }
+    private static ReactorPart randPart(Random rand, ArrayList<ReactorPart> allowedParts){
+        if(allowedParts==null){
             int[] is = Main.instance.listParts.getSelectedIndices();
             if(is.length==0)return ReactorPart.AIR;
             return parts.get(is[rand.nextInt(is.length)]);

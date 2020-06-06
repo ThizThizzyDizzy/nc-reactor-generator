@@ -81,6 +81,10 @@ public class Fuel{
         }
     }
     public static class Group{
+        public static Group test(Fuel fuel, Type type, Fuel.Group backup){
+            if(fuel==null||type==null)return backup;
+            return new Group(fuel, type);
+        }
         public final Fuel fuel;
         public final Fuel.Type type;
         public Group(Fuel fuel, Fuel.Type type){

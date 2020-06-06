@@ -12,6 +12,12 @@ public abstract class Priority{
                 return 0;
             }
         });
+        Priority valid2 = add(new Priority("Minimize Bad Cells"){
+            @Override
+            protected double doCompare(Reactor main, Reactor other){
+                return other.getBadCells()-main.getBadCells();
+            }
+        });
         Priority shutdown = add(new Priority("Shutdownable"){
             @Override
             protected double doCompare(Reactor main, Reactor other){
@@ -42,9 +48,9 @@ public abstract class Priority{
                 return main.totalIrradiation-other.totalIrradiation;
             }
         });
-        presets.add(new Preset("Efficiency", valid, shutdown, stable, efficiency, output).addAlternative("Efficient"));
-        presets.add(new Preset("Output", valid, shutdown, stable, output, efficiency));
-        presets.add(new Preset("Irradiation", valid, shutdown, stable, irradiation, efficiency, output).addAlternative("Irradiate").addAlternative("Irradiator"));
+        presets.add(new Preset("Efficiency", valid, valid2, shutdown, stable, efficiency, output).addAlternative("Efficient"));
+        presets.add(new Preset("Output", valid, valid2, shutdown, stable, output, efficiency));
+        presets.add(new Preset("Irradiation", valid, valid2, shutdown, stable, irradiation, efficiency, output).addAlternative("Irradiate").addAlternative("Irradiator"));
         presets.get(0).set();
     }
     private static Priority add(Priority p){
