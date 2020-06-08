@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -207,6 +208,7 @@ public class Bot extends ListenerAdapter{
             content = content.toLowerCase().replace("_", "").replace("-", "").replace(":", "").replace("=", "");
             while(content.contains("  "))content = content.replace("  ", " ");
             content = content.replace(" x ", "x");
+            //<editor-fold defaultstate="collapsed" desc="Secret">
             if(content.startsWith("cookie")){
                 cookies++;
                 config.set("cookies", cookies);
@@ -215,6 +217,8 @@ public class Bot extends ListenerAdapter{
                 jda.getPresence().setActivity(Activity.watching("cookies accumulate ("+cookies+")"));
                 return;
             }
+//</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Help">
             if(content.startsWith("help")){
                 try{
                     message.getChannel().sendMessage(getHelpEmbed()).queue();
@@ -223,6 +227,8 @@ public class Bot extends ListenerAdapter{
                 }
                 return;
             }
+//</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Abort">
             if(content.startsWith("abort")||content.startsWith("halt")||content.startsWith("finish")||content.startsWith("stop")){
                 if(content.contains("overhaul")&&!content.contains("preoverhaul")&&!content.contains("underhaul")){
                     if(overhaul.Main.running){
@@ -240,6 +246,8 @@ public class Bot extends ListenerAdapter{
                     }
                 }
             }
+//</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Info">
             if(content.startsWith("info")){
                 for(Attachment at : message.getAttachments()){
                     try{
@@ -305,6 +313,8 @@ public class Bot extends ListenerAdapter{
                     }catch(Exception ex){}
                 }
             }
+//</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="generate / search">
             if(content.startsWith("generate")||content.startsWith("search")||content.startsWith("find")){
                 boolean isGenerating = content.startsWith("generate");
                 if(content.contains("overhaul")&&!content.contains("preoverhaul")&&!content.contains("underhaul")){
@@ -397,9 +407,9 @@ public class Bot extends ListenerAdapter{
                     }
                     overhaul.Main.instance.start();
                     try{
-                        overhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle((isGenerating?"Generating ":"Searching ")+override+"Reactors...").build()).complete();
+                        overhaulMessage = message.getChannel().sendMessage(new EmbedBuilder().setTitle((isGenerating?"Generating ":"Searching ")+"Overhaul Reactors...").build()).complete();
                     }catch(InsufficientPermissionException ex){
-                        overhaulMessage = message.getChannel().sendMessage((isGenerating?"Generating ":"Searching ")+override+"Reactors...").complete();
+                        overhaulMessage = message.getChannel().sendMessage((isGenerating?"Generating ":"Searching ")+"Overhaul Reactors...").complete();
                     }
                     overhaulTime = System.nanoTime();
                     int sx = X, sy = Y, sz = Z;
@@ -409,13 +419,13 @@ public class Bot extends ListenerAdapter{
                         while(overhaul.Main.running&&System.nanoTime()<overhaulTime+TIME_LIMIT){
                             try{
                                 Thread.sleep(1000);
-                                updateOverhaul((isGenerating?"Generating ":"Searching ")+override+"Reactors...\n", true);
+                                updateOverhaul((isGenerating?"Generating ":"Searching ")+"Overhaul Reactors...\n", true);
                             }catch(InterruptedException ex){
                                 Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         if(overhaul.Main.running)overhaul.Main.instance.stop();
-                        updateOverhaul((isGenerating?"Generated ":"Found ")+override+"Reactor", false);
+                        updateOverhaul((isGenerating?"Generated ":"Found ")+"Overhaul Reactor", false);
                         File image = new File("overhaul.png");
                         File json = new File("overhaul.json");
                         overhaul.Reactor r = overhaul.Main.genPlan.getReactors().get(0);
@@ -695,6 +705,7 @@ public class Bot extends ListenerAdapter{
                     }
                 }
             }
+//</editor-fold>
             break;
         }
     }

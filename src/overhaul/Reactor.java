@@ -846,7 +846,8 @@ public abstract class Reactor{
         for(Fuel f : Main.instance.allowedFuels.keySet()){
             for(Fuel.Type t : Main.instance.allowedFuels.get(f)){
                 Fuel.Group g = new Fuel.Group(f,t);
-                s+="\n"+g.toString()+": "+getFuelCount(g);
+                int i = getFuelCount(g);
+                if(i>0)s+="\n"+g.toString()+": "+i;
             }
         }
         if(showClusters){
