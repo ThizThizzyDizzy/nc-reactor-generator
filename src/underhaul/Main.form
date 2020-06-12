@@ -751,6 +751,8 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="checkBoxDrawReactors" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="buttonExportNCPF" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="buttonExportImage" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="buttonExportJSON" min="-2" max="-2" attributes="0"/>
@@ -766,6 +768,7 @@
                                       <Component id="checkBoxDrawReactors" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="buttonExportImage" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                                       <Component id="buttonExportJSON" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="buttonExportNCPF" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                               </Group>
@@ -797,6 +800,14 @@
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonExportJSONActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JButton" name="buttonExportNCPF">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Export to NCPF"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonExportNCPFActionPerformed"/>
                           </Events>
                         </Component>
                       </SubComponents>
@@ -843,7 +854,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="jScrollPane6" pref="467" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane6" pref="484" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jScrollPane8" min="-2" pref="150" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>

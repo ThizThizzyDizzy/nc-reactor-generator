@@ -1303,4 +1303,15 @@ public abstract class Reactor{
         }
         return image;
     }
+    public double getEmptySpace(){
+        double air = 0;
+        for(int X = 0; X<x; X++){
+            for(int Y = 0; Y<y; Y++){
+                for(int Z = 0; Z<z; Z++){
+                    if(parts[X][Y][Z].matches(ReactorPart.Type.AIR))air++;
+                }
+            }
+        }
+        return air/(x*y*z);
+    }
 }

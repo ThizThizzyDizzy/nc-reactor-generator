@@ -2,6 +2,8 @@ package underhaul;
 import common.Version;
 import common.Exporter;
 import java.awt.Component;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
@@ -123,6 +125,7 @@ public class Main extends javax.swing.JFrame{
         checkBoxDrawReactors = new javax.swing.JCheckBox();
         buttonExportImage = new javax.swing.JButton();
         buttonExportJSON = new javax.swing.JButton();
+        buttonExportNCPF = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         textAreaImport = new javax.swing.JTextArea();
@@ -511,6 +514,13 @@ public class Main extends javax.swing.JFrame{
             }
         });
 
+        buttonExportNCPF.setText("Export to NCPF");
+        buttonExportNCPF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonExportNCPFActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -519,6 +529,8 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addComponent(checkBoxDrawReactors)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonExportNCPF)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonExportImage)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonExportJSON)
@@ -531,7 +543,8 @@ public class Main extends javax.swing.JFrame{
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(checkBoxDrawReactors)
                     .addComponent(buttonExportImage, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buttonExportJSON))
+                    .addComponent(buttonExportJSON)
+                    .addComponent(buttonExportNCPF))
                 .addGap(10, 10, 10))
         );
 
@@ -639,7 +652,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -964,6 +977,14 @@ public class Main extends javax.swing.JFrame{
             }
         }
     }//GEN-LAST:event_buttonConfigCustomActionPerformed
+    private void buttonExportNCPFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportNCPFActionPerformed
+        ArrayList<Reactor> reactors = genPlan.getReactors();
+        if(reactors.isEmpty())return;
+        if(reactors.get(0)==null)return;
+        Exporter.export((file) -> {
+            NCPFExporter.exportSFR(reactors.get(0), file);
+        }).setExtension("ncpf", "NuclearCraft Planner File");
+    }//GEN-LAST:event_buttonExportNCPFActionPerformed
     private Reactor getImportReactor(){
         Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
         int x = (int) spinnerX.getValue();
@@ -1000,6 +1021,7 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JButton buttonConfigPO3;
     private javax.swing.JButton buttonExportImage;
     private javax.swing.JButton buttonExportJSON;
+    private javax.swing.JButton buttonExportNCPF;
     private javax.swing.JButton buttonImport;
     private javax.swing.JButton buttonImportExportImage;
     private javax.swing.JButton buttonImportExportJSON;
@@ -1097,7 +1119,7 @@ public class Main extends javax.swing.JFrame{
     private int[] generateSelectedParts(){
         int[] parts = new int[ReactorPart.parts.size()-2];
         for(int i = 0; i<parts.length; i++){//don't include air and beryllium moderators, just like the previous default
-            parts[i] = i+1;
+            parts[i] = i;
         }
         return parts;
     }

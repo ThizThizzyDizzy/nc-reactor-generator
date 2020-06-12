@@ -18,11 +18,11 @@ public class PlacementRule{
     public static PlacementRule noPancake(){
         return new PlacementRule(Type.NO_PANCAKE, 0, 0, null);
     }
-    private final Type type;
-    private final int min;
-    private final int max;
-    private final ReactorBit bit;
-    private final PlacementRule[] rules;
+    final Type type;
+    final int min;
+    final int max;
+    final ReactorBit bit;
+    final PlacementRule[] rules;
     public PlacementRule(Type type, int min, int max, ReactorBit bit, PlacementRule... rules){
         this.type = type;
         this.min = min;
@@ -63,7 +63,7 @@ public class PlacementRule{
     public boolean isActive(Reactor reactor, int x, int y, int z){
         return isValid(reactor, x, y, z, true);
     }
-    private static enum Type{
+    public static enum Type{
         BETWEEN,AXIS,OR,NO_PANCAKE;
     }
 }

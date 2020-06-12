@@ -36,7 +36,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import overhaul.Fuel;
-import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import underhaul.Configuration;
 public class Bot extends ListenerAdapter{
@@ -80,11 +79,6 @@ public class Bot extends ListenerAdapter{
             else prefixes.add(arg);
         }
         if(prefixes.isEmpty())prefixes.add("-");
-        try{
-            Sys.init(File.createTempFile("this", "that").getParentFile(), null);
-        }catch(IOException ex){
-            Logger.getLogger(Bot.class.getName()).log(Level.SEVERE, null, ex);
-        }
         underhaul.Configuration.load(underhaul.Configuration.DEFAULT);
         overhaul.Configuration.load(overhaul.Configuration.DEFAULT);
         config = Config.newConfig(new File(new File("special.dat").getAbsolutePath()));

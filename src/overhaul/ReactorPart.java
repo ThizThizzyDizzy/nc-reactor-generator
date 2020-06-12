@@ -15,12 +15,8 @@ public class ReactorPart implements ReactorBit{
     public static final ArrayList<ReactorPart> GROUP_HEATSINK = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_MODERATOR = new ArrayList<>();
     public static final ArrayList<ReactorPart> GROUP_REFLECTOR = new ArrayList<>();
-    public static final ReactorPart AIR = air();
     public static FuelCell BEST_CELL;
     public static final FuelCell FUEL_CELL = fuelCell(null, "{FUEL};False;None");
-    public static final FuelCell FUEL_CELL_CF_252 = fuelCell("Cf-252", "{FUEL};True;Cf-252");
-    public static final FuelCell FUEL_CELL_PO_BE = fuelCell("Po-Be", "{FUEL};True;Po-Be");
-    public static final FuelCell FUEL_CELL_RA_BE = fuelCell("Ra-Be", "{FUEL};True;Ra-Be");
     public static final Heatsink HEATSINK_WATER = heatsink("Water", "Water", PlacementRule.atLeast(1, Type.FUEL_CELL));
     public static final Heatsink HEATSINK_IRON = heatsink("Iron", "Iron", PlacementRule.atLeast(1, Type.MODERATOR));
     public static final Heatsink HEATSINK_REDSTONE = heatsink("Redstone", "Redstone", PlacementRule.atLeast(1, Type.FUEL_CELL), PlacementRule.atLeast(1, Type.MODERATOR));
@@ -61,7 +57,11 @@ public class ReactorPart implements ReactorBit{
     public static final Reflector REFLECTOR_BERYLLIUM_CARBON = reflector("Beryllium-Carbon", "Beryllium-Carbon");
     public static final Reflector REFLECTOR_LEAD_STEEL = reflector("Lead-Steel", "Lead-Steel");
     public static final Irradiator IRRADIATOR = irradiator();
-    public static ReactorPart CASING = new ReactorPart(Type.CASING, "Casing", null, null);
+    public static final FuelCell FUEL_CELL_CF_252 = fuelCell("Cf-252", "{FUEL};True;Cf-252");
+    public static final FuelCell FUEL_CELL_PO_BE = fuelCell("Po-Be", "{FUEL};True;Po-Be");
+    public static final FuelCell FUEL_CELL_RA_BE = fuelCell("Ra-Be", "{FUEL};True;Ra-Be");
+    public static final ReactorPart AIR = air();
+    public static final ReactorPart CASING = new ReactorPart(Type.CASING, "Casing", null, null);
     private static <T extends ReactorPart> T add(T p){
         parts.add(p);
         return p;
@@ -73,6 +73,7 @@ public class ReactorPart implements ReactorBit{
     private static FuelCell fuelCell(String name, String jsonName){
         FuelCell part = new FuelCell(name, jsonName);
         GROUP_CORE.add(part);
+        GROUP_CELLS.add(part);
         return add(part);
     }
     private static Heatsink heatsink(String name, String jsonName, PlacementRule... rules){
@@ -245,7 +246,7 @@ public class ReactorPart implements ReactorBit{
         FUEL_CELL(true, true),
         HEATSINK(true, false),
         MODERATOR(false, true),//because shields
-        CONDUCTOR(false, false),
+        CONDUCTOR(true, false),
         REFLECTOR(false, false),
         IRRADIATOR(true, true),
         CASING(false, false);

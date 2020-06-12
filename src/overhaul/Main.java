@@ -3,6 +3,8 @@ import common.Version;
 import common.Exporter;
 import discord.BotInterface;
 import java.awt.Component;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -134,6 +136,7 @@ public class Main extends javax.swing.JFrame{
         checkBoxShowClusters = new javax.swing.JCheckBox();
         buttonExportImage = new javax.swing.JButton();
         buttonExportJSON = new javax.swing.JButton();
+        buttonExportNCPF = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         textAreaImport = new javax.swing.JTextArea();
@@ -477,7 +480,7 @@ public class Main extends javax.swing.JFrame{
                         .addComponent(checkBoxSymmetryY)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(checkBoxSymmetryZ)
-                        .addGap(0, 193, Short.MAX_VALUE))
+                        .addGap(0, 244, Short.MAX_VALUE))
                     .addComponent(panelGenModel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, 0))
         );
@@ -517,6 +520,13 @@ public class Main extends javax.swing.JFrame{
             }
         });
 
+        buttonExportNCPF.setText("Export to NCPF");
+        buttonExportNCPF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonExportNCPFActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -526,7 +536,9 @@ public class Main extends javax.swing.JFrame{
                 .addComponent(checkBoxDrawReactors)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(checkBoxShowClusters)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addComponent(buttonExportNCPF)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonExportImage)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonExportJSON)
@@ -540,7 +552,8 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(checkBoxDrawReactors)
                     .addComponent(buttonExportImage, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonExportJSON)
-                    .addComponent(checkBoxShowClusters))
+                    .addComponent(checkBoxShowClusters)
+                    .addComponent(buttonExportNCPF))
                 .addGap(10, 10, 10))
         );
 
@@ -550,11 +563,11 @@ public class Main extends javax.swing.JFrame{
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane5)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
+                .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 701, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -562,7 +575,7 @@ public class Main extends javax.swing.JFrame{
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
+                    .addComponent(panelOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 818, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jScrollPane5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -647,7 +660,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1020,6 +1033,14 @@ public class Main extends javax.swing.JFrame{
             }
         }
     }//GEN-LAST:event_buttonConfigCustomActionPerformed
+    private void buttonExportNCPFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportNCPFActionPerformed
+        ArrayList<Reactor> reactors = genPlan.getReactors();
+        if(reactors.isEmpty())return;
+        if(reactors.get(0)==null)return;
+        Exporter.export((file) -> {
+            NCPFExporter.exportSFR(reactors.get(0), file);
+        }).setExtension("ncpf", "NuclearCraft Planner File");
+    }//GEN-LAST:event_buttonExportNCPFActionPerformed
     private Reactor getImportReactor(){
         int x = (int) spinnerX.getValue();
         int y = (int) spinnerY.getValue();
@@ -1056,6 +1077,7 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JButton buttonConfigDefault;
     private javax.swing.JButton buttonExportImage;
     private javax.swing.JButton buttonExportJSON;
+    private javax.swing.JButton buttonExportNCPF;
     private javax.swing.JButton buttonImport;
     private javax.swing.JButton buttonImportExportImage;
     private javax.swing.JButton buttonImportExportJSON;

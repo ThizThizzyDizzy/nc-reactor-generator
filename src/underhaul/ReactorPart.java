@@ -10,7 +10,6 @@ import java.util.jar.JarFile;
 import javax.imageio.ImageIO;
 public class ReactorPart implements ReactorBit{
     public static final ArrayList<ReactorPart> parts = new ArrayList<>();
-    public static final ReactorPart AIR = air();
     public static final ReactorPart FUEL_CELL = fuelCell();
     public static final Cooler COOLER_WATER = cooler("Water", "Water", PlacementRule.or(PlacementRule.atLeast(1, Type.FUEL_CELL),PlacementRule.atLeast(1, Type.MODERATOR)));
     public static final Cooler COOLER_REDSTONE = cooler("Redstone", "Redstone", PlacementRule.atLeast(1, Type.FUEL_CELL));
@@ -30,6 +29,7 @@ public class ReactorPart implements ReactorBit{
     public static final ReactorPart GRAPHITE = moderator("Graphite", "Graphite");
     public static final ReactorPart BERYLLIUM = moderator("Beryllium", "Beryllium");
     public static ReactorPart CASING = new ReactorPart(Type.CASING, "Casing", null, null);
+    public static final ReactorPart AIR = air();
     private static <T extends ReactorPart> T add(T p){
         parts.add(p);
         return p;

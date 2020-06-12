@@ -1,4 +1,5 @@
 package common;
+import common.JSON.JSONObject;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -17,36 +18,75 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class Exporter extends javax.swing.JFrame{
     BufferedImage image = null;
     String str = null;
-    public static void export(Object obj){
-        new Exporter().exp(obj).setVisible(true);
+    Export export = null;
+    private String extension = null;
+    private String extDesc = "All Files";
+    public static Exporter export(Export e){
+        Exporter exp = new Exporter().exp(e);
+        exp.setVisible(true);
+        return exp;
+    }
+    public static Exporter export(BufferedImage i){
+        Exporter exp = new Exporter().exp(i);
+        exp.setVisible(true);
+        return exp;
+    }
+    public static Exporter export(JSONObject obj){
+        Exporter exp = new Exporter().exp(obj);
+        exp.setVisible(true);
+        return exp;
+    }
+    public static Exporter export(Object obj){
+        Exporter exp = new Exporter().exp(obj);
+        exp.setVisible(true);
+        return exp;
+    }
+    private Exporter exp(Export obj){
+        if(obj==null)dispose();
+        export = obj;
+        return this;
+    }
+    private Exporter exp(BufferedImage obj){
+        if(obj==null)dispose();
+        image = (BufferedImage)obj;
+        JPanel imagePanel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g){
+                g.setColor(Color.white);
+                float sizeFac = 16;
+                sizeFac = Math.min(sizeFac, getWidth()/(float)image.getWidth());
+                sizeFac = Math.min(sizeFac, getHeight()/(float)image.getHeight());
+                sizeFac = Math.max(1,sizeFac);
+                int width = (int) (image.getWidth()*sizeFac);
+                int height = (int) (image.getHeight()*sizeFac);
+                g.drawImage(image, 0,0,width,height,getBackground(),null);
+            }
+        };
+        outputPanel.add(imagePanel);
+        repaint();
+        extension = "png";
+        extDesc = "PNG Image File";
+        return this;
+    }
+    private Exporter exp(JSONObject obj){
+        extension = "json";
+        extDesc = "JSON File";
+        return exp((Object)obj);
     }
     private Exporter exp(Object obj){
         if(obj==null)dispose();
-        if(obj!=null&&(obj instanceof BufferedImage)){
-            image = (BufferedImage)obj;
-            JPanel imagePanel = new JPanel(){
-                @Override
-                protected void paintComponent(Graphics g){
-                    g.setColor(Color.white);
-                    float sizeFac = 16;
-                    sizeFac = Math.min(sizeFac, getWidth()/(float)image.getWidth());
-                    sizeFac = Math.min(sizeFac, getHeight()/(float)image.getHeight());
-                    sizeFac = Math.max(1,sizeFac);
-                    int width = (int) (image.getWidth()*sizeFac);
-                    int height = (int) (image.getHeight()*sizeFac);
-                    g.drawImage(image, 0,0,width,height,getBackground(),null);
-                }
-            };
-            outputPanel.add(imagePanel);
-        }else{
-            str = Objects.toString(obj);
-            JTextArea area = new JTextArea(str);
-            area.setLineWrap(true);
-            area.setWrapStyleWord(true);
-            area.setEditable(false);
-            outputPanel.add(area);
-        }
+        str = Objects.toString(obj);
+        JTextArea area = new JTextArea(str);
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setEditable(false);
+        outputPanel.add(area);
         repaint();
+        return this;
+    }
+    public Exporter setExtension(String extension, String description){
+        this.extension = extension;
+        this.extDesc = description;
         return this;
     }
     public Exporter(){
@@ -115,19 +155,23 @@ public class Exporter extends javax.swing.JFrame{
     }//GEN-LAST:event_buttonCloseActionPerformed
     private void buttonSaveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveFileActionPerformed
         JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(image!=null?"PNG Image File":"JSON File", image!=null?"png":"json");
-        chooser.setFileFilter(filter);
+        if(extension!=null){
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(extDesc+" (."+extension+")", extension);
+            chooser.setFileFilter(filter);
+        }
         chooser.setMultiSelectionEnabled(false);
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         if(chooser.showSaveDialog(this)==JFileChooser.APPROVE_OPTION){
             File f = chooser.getSelectedFile();
-            if(!f.getName().contains(".")){
-                f = new File(f.getAbsolutePath()+"."+(image!=null?".png":".json"));
+            if(!f.getName().endsWith("."+extension)){
+                f = new File(f.getAbsolutePath()+"."+extension);
             }
             try{
-                if(image!=null){
-                    ImageIO.write(image, "png", f);
+                if(export!=null){
+                    export.export(f);
+                }else if(image!=null){
+                    ImageIO.write(image, extension, f);
                 }else{
                     try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)))) {
                         writer.write(str);

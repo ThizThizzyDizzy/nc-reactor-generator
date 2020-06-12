@@ -12,13 +12,10 @@ public class PlacementRule{
     public static PlacementRule axis(ReactorBit bit){
         return new PlacementRule(Type.AXIS, 0, 0, bit);
     }
-    public static PlacementRule exactAxis(ReactorBit bit){
-        return new PlacementRule(Type.EXACT_AXIS, 0, 0, bit);
-    }
-    private final Type type;
-    private final int min;
-    private final int max;
-    private final ReactorBit bit;
+    final Type type;
+    final int min;
+    final int max;
+    final ReactorBit bit;
     public PlacementRule(Type type, int min, int max, ReactorBit bit){
         this.type = type;
         this.min = min;
@@ -32,12 +29,6 @@ public class PlacementRule{
                 if(reactor.matches(x, y+1, z, bit, checkActive)&&reactor.matches(x, y-1, z, bit, checkActive))return true;
                 if(reactor.matches(x, y, z+1, bit, checkActive)&&reactor.matches(x, y, z-1, bit, checkActive))return true;
                 return false;
-            case EXACT_AXIS:
-                int axial = 0;
-                if(reactor.matches(x+1, y, z, bit, checkActive)&&reactor.matches(x-1, y, z, bit, checkActive))axial++;
-                if(reactor.matches(x, y+1, z, bit, checkActive)&&reactor.matches(x, y-1, z, bit, checkActive))axial++;
-                if(reactor.matches(x, y, z+1, bit, checkActive)&&reactor.matches(x, y, z-1, bit, checkActive))axial++;
-                return axial==1;
             case BETWEEN:
                 int count = 0;
                 if(reactor.matches(x+1, y, z, bit, checkActive))count++;
@@ -57,7 +48,7 @@ public class PlacementRule{
     public boolean isActive(Reactor reactor, int x, int y, int z){
         return isValid(reactor, x, y, z, true);
     }
-    private static enum Type{
-        BETWEEN,AXIS,EXACT_AXIS;
+    public static enum Type{
+        BETWEEN,AXIS;
     }
 }
