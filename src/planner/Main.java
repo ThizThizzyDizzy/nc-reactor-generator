@@ -1,3 +1,4 @@
+package planner;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -399,6 +400,7 @@ public class Main{
             ZipEntry entry;
             while((entry = in.getNextEntry())!=null){
                 File destFile = new File(toDir.getAbsolutePath()+"\\"+entry.getName().replaceAll("/", "\\"));
+                if(destFile.exists())continue;
                 delete(destFile);
                 try(FileOutputStream out = new FileOutputStream(destFile)){
                     byte[] buffer = new byte[1024];

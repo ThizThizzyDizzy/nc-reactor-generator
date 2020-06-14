@@ -1,4 +1,6 @@
-import menu.MenuMain;
+package planner;
+import planner.multiblock.UnderhaulSFR;
+import planner.menu.MenuMain;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -7,11 +9,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import planner.multiblock.Multiblock;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
@@ -32,9 +36,22 @@ public class Core extends Renderer2D{
     public static boolean enableCullFace = true;
     public static final boolean fullscreen = false;
     public static final boolean supportTyping = true;
+
+    public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
+    public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
+    public static HashMap<String, String> metadata = new HashMap<>();
+    static{
+        multiblockTypes.add(new UnderhaulSFR());
+        resetMetadata();
+    }
+    public static void resetMetadata(){
+        metadata.clear();
+        metadata.put("Name", "");
+        metadata.put("Author", "");
+    }
     public static void main(String[] args) throws NoSuchMethodException{
         helper = new GameHelper();
-        helper.setBackground(Color.gray);
+        helper.setBackground(new Color(40,50,100));
         helper.setDisplaySize(800, 600);
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
