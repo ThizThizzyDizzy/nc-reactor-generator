@@ -16,6 +16,38 @@ public class MenuMain extends Menu{
     private MenuComponentMinimaList multiblocks = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private MenuComponentButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
     private MenuComponentButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
+    private MenuComponentButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true){
+        @Override
+        public void drawText(){
+            double holeRad = width*.1;
+            int teeth = 8;
+            double averageRadius = width*.3;
+            double toothSize = width*.1;
+            double rot = 360/16d;
+            int resolution = (int)(2*Math.PI*averageRadius*2);//an extra *2 to account for wavy surface?
+            GL11.glBegin(GL11.GL_QUADS);
+            double angle = rot;
+            double radius = averageRadius+toothSize/2;
+            for(int i = 0; i<teeth*resolution; i++){
+                double inX = x+width/2+Math.cos(Math.toRadians(angle-90))*holeRad;
+                double inY = y+height/2+Math.sin(Math.toRadians(angle-90))*holeRad;
+                GL11.glVertex2d(inX, inY);
+                double outX = x+width/2+Math.cos(Math.toRadians(angle-90))*radius;
+                double outY = y+height/2+Math.sin(Math.toRadians(angle-90))*radius;
+                GL11.glVertex2d(outX,outY);
+                angle+=(360d/(teeth*resolution));
+                if(angle>=360)angle-=360;
+                radius = averageRadius+(toothSize/2)*Math.cos(Math.toRadians(teeth*(angle-rot)));
+                outX = x+width/2+Math.cos(Math.toRadians(angle-90))*radius;
+                outY = y+height/2+Math.sin(Math.toRadians(angle-90))*radius;
+                GL11.glVertex2d(outX,outY);
+                inX = x+width/2+Math.cos(Math.toRadians(angle-90))*holeRad;
+                inY = y+height/2+Math.sin(Math.toRadians(angle-90))*holeRad;
+                GL11.glVertex2d(inX, inY);
+            }
+            GL11.glEnd();
+        }
+    });
     private boolean forceMetaUpdate = true;
     private MenuComponent metadataPanel = add(new MenuComponent(0, 0, 0, 0){
         MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
@@ -90,10 +122,10 @@ public class MenuMain extends Menu{
     private ArrayList<MenuComponentMinimalistButton> multiblockButtons = new ArrayList<>();
     private boolean adding = false;
     private int addingScale = 0;
-    private int addingTime = 3;
+    private final int addingTime = 3;
     private boolean metadating = false;
     private int metadatingScale = 0;
-    private int metadatingTime = 4;
+    private final int metadatingTime = 4;
     public MenuMain(GUI gui){
         super(gui, null);
         for(Multiblock m : Core.multiblockTypes){
@@ -117,6 +149,9 @@ public class MenuMain extends Menu{
             metadating = true;
             forceMetaUpdate = true;
         });
+        settings.addActionListener((e) -> {
+            gui.open(new MenuTransition(gui, this, new MenuSettings(gui, this), new MenuTransition.SlideTransition(0, -1), 5));
+        });
     }
     @Override
     public void renderBackground(){
@@ -126,9 +161,22 @@ public class MenuMain extends Menu{
         drawRect(0, Display.getHeight()/16, Display.getWidth()/3, Display.getHeight()/8, 0);
         applyColor(textColor);
         drawCenteredText(0, Display.getHeight()/16, Display.getWidth()/3-Display.getHeight()/16, Display.getHeight()/8, "Multiblocks");
+    }
+    @Override
+    public void tick(){
+        super.tick();
+        if(adding)addingScale = Math.min(addingScale+1, addingTime);
+        else addingScale = Math.max(addingScale-1, 0);
+        if(metadating)metadatingScale = Math.min(metadatingScale+1, metadatingTime);
+        else metadatingScale = Math.max(metadatingScale-1, 0);
+    }
+    @Override
+    public void render(int millisSinceLastTick){
         editMetadata.x = Display.getWidth()/3;
-        editMetadata.width = Display.getWidth()*2/3;
+        editMetadata.width = Display.getWidth()*2/3-Display.getHeight()/16;
         editMetadata.height = Display.getHeight()/16;
+        settings.x = Display.getWidth()-Display.getHeight()/16;
+        settings.width = settings.height = Display.getHeight()/16;
         multiblocks.y = Display.getHeight()/8;
         multiblocks.height = Display.getHeight()-multiblocks.y;
         multiblocks.width = Display.getWidth()/3;
@@ -141,23 +189,13 @@ public class MenuMain extends Menu{
         addMultiblock.width = addMultiblock.height = Display.getHeight()/16;
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);
+        settings.enabled = !(adding||metadating);
         for(MenuComponentMinimalistButton b : multiblockButtons){
             b.enabled = adding;
         }
         metadataPanel.width = Display.getWidth()*.75;
         metadataPanel.height = Display.getHeight()*.75;
         metadataPanel.x = Display.getWidth()/2-metadataPanel.width/2;
-    }
-    @Override
-    public void tick(){
-        super.tick();
-        if(adding)addingScale = Math.min(addingScale+1, addingTime);
-        else addingScale = Math.max(addingScale-1, 0);
-        if(metadating)metadatingScale = Math.min(metadatingScale+1, metadatingTime);
-        else metadatingScale = Math.max(metadatingScale-1, 0);
-    }
-    @Override
-    public void render(int millisSinceLastTick){
         double addScale = Math.min(1,Math.max(0,(adding?(addingScale+(millisSinceLastTick/50d)):(addingScale-(millisSinceLastTick/50d)))/addingTime));
         for(int i = 0; i<multiblockButtons.size(); i++){
             MenuComponentMinimalistButton button = multiblockButtons.get(i);
@@ -190,7 +228,7 @@ public class MenuMain extends Menu{
         for(MenuComponent c : multiblocks.components){
             if(c instanceof MenuComponentMultiblock){
                 if(button==((MenuComponentMultiblock) c).edit){
-                    gui.open(new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock));
+                    gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock), new MenuTransition.SlideTransition(1, 0), 5));
                 }
             }
         }

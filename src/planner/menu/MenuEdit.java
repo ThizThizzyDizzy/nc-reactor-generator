@@ -1,4 +1,6 @@
 package planner.menu;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 import planner.multiblock.Multiblock;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
