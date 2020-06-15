@@ -1,4 +1,10 @@
 package planner.menu;
+import planner.menu.component.MenuComponentMultiblock;
+import planner.menu.component.MenuComponentMulticolumnMinimaList;
+import planner.menu.component.MenuComponentMinimalistButton;
+import planner.menu.component.MenuComponentMinimaList;
+import planner.menu.component.MenuComponentMinimalistTextBox;
+import planner.menu.configuration.MenuConfiguration;
 import java.awt.Color;
 import java.util.ArrayList;
 import org.lwjgl.opengl.Display;
@@ -91,8 +97,8 @@ public class MenuMain extends Menu{
                 list.components.clear();
                 for(String key : Core.metadata.keySet()){
                     String value = Core.metadata.get(key);
-                    list.add(new MenuComponentMinimalistTextBox(0,0,0,0,key, true).setColor(header2Color).setForegroundColor(textColor));
-                    list.add(new MenuComponentMinimalistTextBox(0,0,0,0,value, true).setColor(header2Color).setForegroundColor(textColor));
+                    list.add(new MenuComponentMinimalistTextBox(0,0,0,0,key, true));
+                    list.add(new MenuComponentMinimalistTextBox(0,0,0,0,value, true));
                 }
             }
             if(!metadating)return;
@@ -114,8 +120,8 @@ public class MenuMain extends Menu{
             }
             list.components.removeAll(remove);
             if(add){
-                list.add(new MenuComponentMinimalistTextBox(0,0,0,0,"", true).setColor(header2Color).setForegroundColor(textColor));
-                list.add(new MenuComponentMinimalistTextBox(0,0,0,0,"", true).setColor(header2Color).setForegroundColor(textColor));
+                list.add(new MenuComponentMinimalistTextBox(0,0,0,0,"", true));
+                list.add(new MenuComponentMinimalistTextBox(0,0,0,0,"", true));
             }
         }
     });
@@ -150,7 +156,7 @@ public class MenuMain extends Menu{
             forceMetaUpdate = true;
         });
         settings.addActionListener((e) -> {
-            gui.open(new MenuTransition(gui, this, new MenuSettings(gui, this), new MenuTransition.SlideTransition(0, -1), 5));
+            gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this), MenuTransition.SlideTransition.slideFrom(0, -1), 5));
         });
     }
     @Override
@@ -228,7 +234,7 @@ public class MenuMain extends Menu{
         for(MenuComponent c : multiblocks.components){
             if(c instanceof MenuComponentMultiblock){
                 if(button==((MenuComponentMultiblock) c).edit){
-                    gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock), new MenuTransition.SlideTransition(1, 0), 5));
+                    gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock), MenuTransition.SlideTransition.slideFrom(1, 0), 5));
                 }
             }
         }

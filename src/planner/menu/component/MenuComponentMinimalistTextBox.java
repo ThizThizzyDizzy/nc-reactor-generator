@@ -1,4 +1,4 @@
-package planner.menu;
+package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.opengl.GL11;
 import static simplelibrary.opengl.Renderer2D.drawRect;
@@ -6,6 +6,8 @@ import simplelibrary.opengl.gui.components.MenuComponentTextBox;
 public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
     public MenuComponentMinimalistTextBox(double x, double y, double width, double height, String text, boolean editable){
         super(x, y, width, height, text, editable);
+        setColor(new Color(.25f, .25f, .5f, 1f));
+        setForegroundColor(new Color(.1f, .1f, .2f, 1f));
     }
     @Override
     public void render(){

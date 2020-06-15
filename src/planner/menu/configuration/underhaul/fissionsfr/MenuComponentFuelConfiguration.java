@@ -1,10 +1,11 @@
-package planner.menu;
+package planner.menu.configuration.underhaul.fissionsfr;
 import java.awt.Color;
 import org.lwjgl.opengl.GL11;
-import planner.multiblock.Multiblock;
+import planner.configuration.underhaul.fissionsfr.Fuel;
+import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentMultiblock extends MenuComponent{
-    public final Multiblock multiblock;
+public class MenuComponentFuelConfiguration extends MenuComponent{
+    public final Fuel fuel;
     public final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, .55f){
         @Override
         public void renderForeground(){
@@ -28,19 +29,38 @@ public class MenuComponentMultiblock extends MenuComponent{
             GL11.glEnd();
         }
     });
-    public MenuComponentMultiblock(Multiblock multiblock){
+    public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, .55f){
+        @Override
+        public void renderForeground(){
+            super.renderForeground();
+            GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
+            GL11.glBegin(GL11.GL_QUADS);
+            GL11.glVertex2d(x+width*.1, y+height*.8);
+            GL11.glVertex2d(x+width*.2, y+height*.9);
+            GL11.glVertex2d(x+width*.9, y+height*.2);
+            GL11.glVertex2d(x+width*.8, y+height*.1);
+            
+            GL11.glVertex2d(x+width*.1, y+height*.2);
+            GL11.glVertex2d(x+width*.2, y+height*.1);
+            GL11.glVertex2d(x+width*.9, y+height*.8);
+            GL11.glVertex2d(x+width*.8, y+height*.9);
+            GL11.glEnd();
+        }
+    });
+    public MenuComponentFuelConfiguration(Fuel fuel){
         super(0, 0, 0, 100);
         color = new Color(.3f, .3f, .6f, 1f);
         selectedColor = new Color(.35f, .35f, .7f, 1f);
         foregroundColor = new Color(.1f, .1f, .2f, 1f);
-        this.multiblock = multiblock;
+        this.fuel = fuel;
     }
     @Override
     public void renderBackground(){
         super.renderBackground();
-        edit.x = width-height/2-height/4;
-        edit.y = height/4;
-        edit.width = edit.height = height/2;
+        delete.x = width-height/2-height/4;
+        edit.x = delete.x - height;
+        delete.y = edit.y = height/4;
+        delete.width = delete.height = edit.width = edit.height = height/2;
     }
     @Override
     public void render(){
@@ -49,6 +69,6 @@ public class MenuComponentMultiblock extends MenuComponent{
     @Override
     public void renderForeground(){
         GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
-        drawText(x, y, x+width, y+height/4, multiblock.getDefinitionName());
+        drawText(x, y, x+width, y+height/4, fuel.name);
     }
 }

@@ -1,4 +1,4 @@
-package planner.menu;
+package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;

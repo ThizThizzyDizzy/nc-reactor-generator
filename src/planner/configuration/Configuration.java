@@ -8,6 +8,6 @@ public class Configuration{
         this.name = name;
         this.version = version;
     }
-    public UnderhaulConfiguration underhaul;
+    public UnderhaulConfiguration underhaul = new UnderhaulConfiguration();
     public OverhaulConfiguration overhaul;
 }

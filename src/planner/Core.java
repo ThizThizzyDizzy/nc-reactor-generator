@@ -15,6 +15,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import planner.configuration.Configuration;
 import planner.multiblock.Multiblock;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorAdapter;
@@ -36,10 +37,10 @@ public class Core extends Renderer2D{
     public static boolean enableCullFace = true;
     public static final boolean fullscreen = false;
     public static final boolean supportTyping = true;
-
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
+    public static Configuration configuration = new Configuration("Temporary", "-1");
     static{
         multiblockTypes.add(new UnderhaulSFR());
         resetMetadata();
@@ -91,8 +92,8 @@ public class Core extends Renderer2D{
                 helper.running = false;
             }
         });
-        FontManager.addFont("/simplelibrary/font");
-        FontManager.setFont("font");
+        FontManager.addFont("/planner/font/high resolution");
+        FontManager.setFont("high resolution");
         GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_ALPHA_TEST);

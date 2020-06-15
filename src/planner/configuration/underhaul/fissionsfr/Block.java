@@ -8,4 +8,7 @@ public class Block{
     public boolean fuelCell = false;
     public boolean moderator = false;
     public BufferedImage texture;
+    public Block(String name){
+        this.name = name;
+    }
 }
