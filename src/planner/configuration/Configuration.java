@@ -9,5 +9,5 @@ public class Configuration{
         this.version = version;
     }
     public UnderhaulConfiguration underhaul = new UnderhaulConfiguration();
-    public OverhaulConfiguration overhaul;
+    public OverhaulConfiguration overhaul = new OverhaulConfiguration();
 }

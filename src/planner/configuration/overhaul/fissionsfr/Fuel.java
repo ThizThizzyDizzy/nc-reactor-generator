@@ -6,4 +6,12 @@ public class Fuel{
     public int time;
     public int criticality;
     public boolean selfPriming;
+    public Fuel(String name, float efficiency, float heat, int time, int criticality, boolean selfPriming){
+        this.name = name;
+        this.efficiency = efficiency;
+        this.heat = heat;
+        this.time = time;
+        this.criticality = criticality;
+        this.selfPriming = selfPriming;
+    }
 }

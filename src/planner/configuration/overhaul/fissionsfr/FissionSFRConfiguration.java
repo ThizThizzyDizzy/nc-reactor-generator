@@ -4,5 +4,12 @@ public class FissionSFRConfiguration{
     public ArrayList<Block> blocks = new ArrayList<>();
     public ArrayList<Fuel> fuels = new ArrayList<>();
     public ArrayList<Source> sources = new ArrayList<>();
-    public ArrayList<IrradiatorRecipe> irraidatorRecipes = new ArrayList<>();
+    public ArrayList<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
+    public String[] getBlockStringList(){
+        String[] strs = new String[blocks.size()];
+        for(int i = 0; i<strs.length; i++){
+            strs[i] = blocks.get(i).name;
+        }
+        return strs;
+    }
 }

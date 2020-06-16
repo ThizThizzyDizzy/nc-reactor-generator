@@ -1,6 +1,5 @@
 package planner.configuration.overhaul.fissionsfr;
-import java.util.ArrayList;
-public class Block{
+public class Block extends RuleContainer{
     public String name;
     public int cooling = 0;
     public boolean cluster = false;
@@ -18,5 +17,7 @@ public class Block{
     public int heatMult;
     public boolean blocksLOS = false;
     public boolean functional;
-    public ArrayList<PlacementRule> rules = new ArrayList<>();
+    public Block(String name){
+        this.name = name;
+    }
 }

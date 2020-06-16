@@ -47,8 +47,8 @@ public class MenuBlockConfiguration extends Menu{
         cooling.y = name.height;
         fuelCell.y = cooling.y+cooling.height;
         moderator.y = fuelCell.y+fuelCell.height;
+        rules.y = moderator.y+moderator.height;
         back.y = Display.getHeight()-back.height;
-        rules.y = back.y-rules.height;
         GL11.glColor4f(textColor.getRed()/255f, textColor.getGreen()/255f, textColor.getBlue()/255f, textColor.getAlpha()/255f);
         drawText(0, Display.getHeight()/16, Display.getWidth()*.25, Display.getHeight()/8, "Cooling");
         GL11.glColor4f(1, 1, 1, 1);
