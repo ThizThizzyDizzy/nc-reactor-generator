@@ -19,6 +19,9 @@ public class MenuBlockConfiguration extends Menu{
     private final Block block;
     public MenuBlockConfiguration(GUI gui, Menu parent, Block block){
         super(gui, parent);
+        rules.addActionListener((e) -> {
+            gui.open(new MenuPlacementRulesConfiguration(gui, this, block));
+        });
         back.addActionListener((e) -> {
             block.name = name.text;
             block.cooling = Integer.parseInt(cooling.text);
@@ -39,8 +42,8 @@ public class MenuBlockConfiguration extends Menu{
     public void render(int millisSinceLastTick){
         cooling.width = Display.getWidth()*.75;
         cooling.x = Display.getWidth()-cooling.width;
-        moderator.width = fuelCell.width = name.width = back.width = Display.getWidth();
-        moderator.height = fuelCell.height = cooling.height = name.height = back.height = Display.getHeight()/16;
+        moderator.width = fuelCell.width = name.width = rules.width = back.width = Display.getWidth();
+        moderator.height = fuelCell.height = cooling.height = name.height = rules.height = back.height = Display.getHeight()/16;
         cooling.y = name.height;
         fuelCell.y = cooling.y+cooling.height;
         moderator.y = fuelCell.y+fuelCell.height;

@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class PlacementRule{
     public RuleType ruleType;
     public BlockType blockType;
+    public Block block;
     public int min;
     public int max;
     public ArrayList<PlacementRule> rules = new ArrayList<>();
