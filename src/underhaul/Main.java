@@ -137,6 +137,7 @@ public class Main extends javax.swing.JFrame{
         textAreaImportStats = new javax.swing.JTextArea();
         buttonImportExportJSON = new javax.swing.JButton();
         buttonImportExportImage = new javax.swing.JButton();
+        buttonImportExportNCPF = new javax.swing.JButton();
         jPanel8 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         buttonConfigDefault = new javax.swing.JButton();
@@ -625,6 +626,14 @@ public class Main extends javax.swing.JFrame{
             }
         });
 
+        buttonImportExportNCPF.setText("Export to NCPF");
+        buttonImportExportNCPF.setEnabled(false);
+        buttonImportExportNCPF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonImportExportNCPFActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -641,6 +650,8 @@ public class Main extends javax.swing.JFrame{
                     .addComponent(panelImportDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(buttonImportExportNCPF)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonImportExportImage)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(buttonImportExportJSON)))
@@ -652,7 +663,7 @@ public class Main extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -662,7 +673,8 @@ public class Main extends javax.swing.JFrame{
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonImport)
                     .addComponent(buttonImportExportJSON)
-                    .addComponent(buttonImportExportImage))
+                    .addComponent(buttonImportExportImage)
+                    .addComponent(buttonImportExportNCPF))
                 .addContainerGap())
         );
 
@@ -864,6 +876,7 @@ public class Main extends javax.swing.JFrame{
             buttonImport.setEnabled(reactor!=null);
             buttonImportExportJSON.setEnabled(reactor!=null);
             buttonImportExportImage.setEnabled(reactor!=null);
+            buttonImportExportNCPF.setEnabled(reactor!=null);
             textAreaImportStats.setText(reactor==null?"":reactor.getDetails(false));
             if(reactor==null)return;
             textAreaImportOutput.setText("Press the button below to import the reactor");
@@ -985,6 +998,11 @@ public class Main extends javax.swing.JFrame{
             NCPFExporter.exportSFR(reactors.get(0), file);
         }).setExtension("ncpf", "NuclearCraft Planner File");
     }//GEN-LAST:event_buttonExportNCPFActionPerformed
+    private void buttonImportExportNCPFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportExportNCPFActionPerformed
+        Exporter.export((file) -> {
+            NCPFExporter.exportSFR(getImportReactor(), file);
+        }).setExtension("ncpf", "NuclearCraft Planner File");
+    }//GEN-LAST:event_buttonImportExportNCPFActionPerformed
     private Reactor getImportReactor(){
         Fuel fuel = Fuel.fuels.get(boxFuel.getSelectedIndex());
         int x = (int) spinnerX.getValue();
@@ -1025,6 +1043,7 @@ public class Main extends javax.swing.JFrame{
     private javax.swing.JButton buttonImport;
     private javax.swing.JButton buttonImportExportImage;
     private javax.swing.JButton buttonImportExportJSON;
+    private javax.swing.JButton buttonImportExportNCPF;
     private javax.swing.JButton buttonPriorityDown;
     private javax.swing.JButton buttonPriorityUp;
     private javax.swing.JButton buttonStart;
