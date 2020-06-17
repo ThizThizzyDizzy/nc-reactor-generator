@@ -1,5 +1,7 @@
 package planner.configuration.overhaul.fissionsfr;
 import java.util.ArrayList;
+import simplelibrary.config2.Config;
+import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration{
     public ArrayList<Block> blocks = new ArrayList<>();
     public ArrayList<Fuel> fuels = new ArrayList<>();
@@ -11,5 +13,29 @@ public class FissionSFRConfiguration{
             strs[i] = blocks.get(i).name;
         }
         return strs;
+    }
+    public Config save(){
+        Config config = Config.newConfig();
+        ConfigList blocks = new ConfigList();
+        for(Block block : this.blocks){
+            blocks.add(block.save());
+        }
+        config.set("blocks", blocks);
+        ConfigList fuels = new ConfigList();
+        for(Fuel fuel : this.fuels){
+            fuels.add(fuel.save());
+        }
+        config.set("fuels", fuels);
+        ConfigList sources = new ConfigList();
+        for(Source source : this.sources){
+            sources.add(source.save());
+        }
+        config.set("sources", new ConfigList());
+        ConfigList irradiatorRecipes = new ConfigList();
+        for(IrradiatorRecipe recipe : this.irradiatorRecipes){
+            irradiatorRecipes.add(recipe.save());
+        }
+        config.set("irradiatorRecipes", irradiatorRecipes);
+        return config;
     }
 }

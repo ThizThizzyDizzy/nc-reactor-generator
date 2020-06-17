@@ -1,4 +1,5 @@
 package planner.configuration.overhaul.fissionsfr;
+import simplelibrary.config2.Config;
 public class Fuel{
     public String name;
     public float efficiency;
@@ -13,5 +14,15 @@ public class Fuel{
         this.time = time;
         this.criticality = criticality;
         this.selfPriming = selfPriming;
+    }
+    public Config save(){
+        Config config = Config.newConfig();
+        config.set("name", name);
+        config.set("efficiency", efficiency);
+        config.set("heat", heat);
+        config.set("time", time);
+        config.set("criticality", criticality);
+        config.set("selfPriming", selfPriming);
+        return config;
     }
 }

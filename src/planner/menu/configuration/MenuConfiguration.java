@@ -1,14 +1,22 @@
 package planner.menu.configuration;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.opengl.Display;
+import planner.Core;
 import planner.menu.MenuTransition;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.configuration.underhaul.MenuUnderhaulConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulConfiguration;
+import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuConfiguration extends Menu{
     private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", false, true));
-    private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save Configuration", false, true));
+    private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save Configuration", true, true));
     private final MenuComponentMinimalistButton underhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Underhaul Configuration", true, true));
     private final MenuComponentMinimalistButton overhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Overhaul Configuration", true, true));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
@@ -16,11 +24,35 @@ public class MenuConfiguration extends Menu{
         super(gui, parent);
         load.addActionListener((e) -> {
             throw new UnsupportedOperationException("Cannot load yet! :(");
-            //TODO load from .ncpf (ncpc?) or NC config
+            //TODO load from .ncpf or NC config
         });
         save.addActionListener((e) -> {
-            throw new UnsupportedOperationException("Cannot save yet! :(");
-            //TODO save to .ncpf (ncpc?)
+            new Thread(() -> {
+                JFileChooser chooser = new JFileChooser(new File("asdf").getAbsoluteFile().getParentFile());
+                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
+                chooser.addActionListener((event) -> {
+                    if(event.getActionCommand().equals("ApproveSelection")){
+                        File file = chooser.getSelectedFile();
+                        if(file.exists()){
+                            if(JOptionPane.showConfirmDialog(Core.helper.frame, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
+                            file.delete();
+                        }
+                        try{
+                            FileOutputStream stream = new FileOutputStream(file);
+                            Config header = Config.newConfig();
+                            header.set("version", (byte)1);
+                            header.set("count", 0);
+                            header.save(stream);
+                            Core.configuration.save(stream);
+                            //TODO save configuration to stream
+                            stream.close();
+                        }catch(IOException ex){
+                            JOptionPane.showMessageDialog(Core.helper.frame, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+                chooser.showSaveDialog(null);
+            }).start();
         });
         underhaul.addActionListener((e) -> {
             gui.open(new MenuUnderhaulConfiguration(gui, this));

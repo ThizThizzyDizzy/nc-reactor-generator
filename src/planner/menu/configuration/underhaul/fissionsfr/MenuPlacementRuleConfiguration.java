@@ -25,16 +25,16 @@ public class MenuPlacementRuleConfiguration extends Menu{
             rule.ruleType = PlacementRule.RuleType.values()[type.getIndex()];
             rule.blockType = PlacementRule.BlockType.values()[type.getIndex()];
             rule.block = Core.configuration.underhaul.fissionSFR.blocks.get(block.getIndex());
-            rule.min = (int) min.getValue();
-            rule.max = (int) max.getValue();
+            rule.min = (byte) min.getValue();
+            rule.max = (byte) max.getValue();
             gui.open(new MenuPlacementRulesConfiguration(gui, this, rule));
         });
         back.addActionListener((e) -> {
             rule.ruleType = PlacementRule.RuleType.values()[type.getIndex()];
             rule.blockType = PlacementRule.BlockType.values()[type.getIndex()];
             rule.block = Core.configuration.underhaul.fissionSFR.blocks.get(block.getIndex());
-            rule.min = (int) min.getValue();
-            rule.max = (int) max.getValue();
+            rule.min = (byte) min.getValue();
+            rule.max = (byte) max.getValue();
             gui.open(parent);
         });
         this.rule = rule;
