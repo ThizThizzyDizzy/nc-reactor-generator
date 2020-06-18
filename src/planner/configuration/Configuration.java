@@ -1,5 +1,9 @@
 package planner.configuration;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
 import simplelibrary.config2.Config;
@@ -10,8 +14,8 @@ public class Configuration{
         this.name = name;
         this.version = version;
     }
-    public UnderhaulConfiguration underhaul = new UnderhaulConfiguration();
-    public OverhaulConfiguration overhaul = new OverhaulConfiguration();
+    public UnderhaulConfiguration underhaul;
+    public OverhaulConfiguration overhaul;
     public void save(FileOutputStream stream){
         Config config = Config.newConfig();
         if(underhaul!=null)config.set("underhaul", underhaul.save());

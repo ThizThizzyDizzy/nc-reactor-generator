@@ -1,6 +1,8 @@
 package planner.configuration.overhaul.fissionsfr;
+import java.awt.image.BufferedImage;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
+import simplelibrary.config2.ConfigNumberList;
 public class Block extends RuleContainer{
     public String name;
     public int cooling = 0;
@@ -19,6 +21,7 @@ public class Block extends RuleContainer{
     public int heatMult;
     public boolean blocksLOS = false;
     public boolean functional;
+    public BufferedImage texture;
     public Block(String name){
         this.name = name;
     }
@@ -47,6 +50,16 @@ public class Block extends RuleContainer{
                 ruls.add(rule.save());
             }
             config.set("rules", ruls);
+        }
+        if(texture!=null){
+            ConfigNumberList tex = new ConfigNumberList();
+            tex.add(texture.getWidth());
+            for(int x = 0; x<texture.getWidth(); x++){
+                for(int y = 0; y<texture.getHeight(); y++){
+                    tex.add(texture.getRGB(x, y));
+                }
+            }
+            config.set("texture", tex);
         }
         return config;
     }

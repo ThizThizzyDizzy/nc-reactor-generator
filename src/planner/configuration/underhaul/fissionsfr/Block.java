@@ -2,6 +2,7 @@ package planner.configuration.underhaul.fissionsfr;
 import java.awt.image.BufferedImage;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
+import simplelibrary.config2.ConfigNumberList;
 public class Block extends RuleContainer{
     public String name;
     public int cooling = 0;
@@ -25,7 +26,8 @@ public class Block extends RuleContainer{
         if(fuelCell)config.set("fuelCell", true);
         if(moderator)config.set("moderator", true);
         if(texture!=null){
-            ConfigList tex = new ConfigList();
+            ConfigNumberList tex = new ConfigNumberList();
+            tex.add(texture.getWidth());
             for(int x = 0; x<texture.getWidth(); x++){
                 for(int y = 0; y<texture.getHeight(); y++){
                     tex.add(texture.getRGB(x, y));

@@ -10,7 +10,7 @@ import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuIrradiatorRecipesConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
-    private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add IrradiatorRecipe", true, true));
+    private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Irradiator Recipe", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     public MenuIrradiatorRecipesConfiguration(GUI gui, Menu parent){
         super(gui, parent);

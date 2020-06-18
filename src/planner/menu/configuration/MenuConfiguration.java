@@ -7,6 +7,8 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.opengl.Display;
 import planner.Core;
+import planner.file.FileReader;
+import planner.file.NCPFFile;
 import planner.menu.MenuTransition;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.configuration.underhaul.MenuUnderhaulConfiguration;
@@ -15,7 +17,7 @@ import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuConfiguration extends Menu{
-    private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", false, true));
+    private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", true, true));
     private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save Configuration", true, true));
     private final MenuComponentMinimalistButton underhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Underhaul Configuration", true, true));
     private final MenuComponentMinimalistButton overhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Overhaul Configuration", true, true));
@@ -23,12 +25,23 @@ public class MenuConfiguration extends Menu{
     public MenuConfiguration(GUI gui, Menu parent){
         super(gui, parent);
         load.addActionListener((e) -> {
-            throw new UnsupportedOperationException("Cannot load yet! :(");
-            //TODO load from .ncpf or NC config
+            new Thread(() -> {
+                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
+                chooser.addActionListener((event) -> {
+                    if(event.getActionCommand().equals("ApproveSelection")){
+                        File file = chooser.getSelectedFile();
+                        NCPFFile ncpf = FileReader.read(file);
+                        if(ncpf==null)return;
+                        Core.configuration = ncpf.configuration;
+                    }
+                });
+                chooser.showOpenDialog(null);
+            }).start();
         });
         save.addActionListener((e) -> {
             new Thread(() -> {
-                JFileChooser chooser = new JFileChooser(new File("asdf").getAbsoluteFile().getParentFile());
+                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
