@@ -20,6 +20,7 @@ public class NCPFExporter{
     }
     private static void saveConfig(FileOutputStream stream){
         Config config = Config.newConfig();
+        config.set("partial", true);
         Config overhaulCfg = Config.newConfig();
         Config fissionSFR = Config.newConfig();
         ConfigList blocks = new ConfigList();
@@ -168,6 +169,7 @@ public class NCPFExporter{
                 fuel.set("heat", f.heat.get(typ).floatValue());
                 fuel.set("criticality", f.criticality.get(typ).intValue());
                 fuel.set("selfPriming", f.selfPriming.get(typ).intValue()==1);
+                fuel.set("time", 0);
                 fuels.add(fuel);
             }
         }
