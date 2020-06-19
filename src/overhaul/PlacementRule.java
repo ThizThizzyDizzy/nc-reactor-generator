@@ -12,10 +12,10 @@ public class PlacementRule{
     public static PlacementRule axis(ReactorBit bit){
         return new PlacementRule(Type.AXIS, 0, 0, bit);
     }
-    final Type type;
-    final int min;
-    final int max;
-    final ReactorBit bit;
+    public final Type type;
+    public final int min;
+    public final int max;
+    public final ReactorBit bit;
     public PlacementRule(Type type, int min, int max, ReactorBit bit){
         this.type = type;
         this.min = min;

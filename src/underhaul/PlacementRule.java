@@ -18,11 +18,11 @@ public class PlacementRule{
     public static PlacementRule noPancake(){
         return new PlacementRule(Type.NO_PANCAKE, 0, 0, null);
     }
-    final Type type;
-    final int min;
-    final int max;
-    final ReactorBit bit;
-    final PlacementRule[] rules;
+    public final Type type;
+    public final int min;
+    public final int max;
+    public final ReactorBit bit;
+    public final PlacementRule[] rules;
     public PlacementRule(Type type, int min, int max, ReactorBit bit, PlacementRule... rules){
         this.type = type;
         this.min = min;

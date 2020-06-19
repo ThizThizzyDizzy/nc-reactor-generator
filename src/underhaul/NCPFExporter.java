@@ -18,7 +18,7 @@ public class NCPFExporter{
         header.set("count", 1);
         header.save(stream);
     }
-    private static void saveConfig(FileOutputStream stream){;
+    private static void saveConfig(FileOutputStream stream){
         Config config = Config.newConfig();
         Config underhaulCfg = Config.newConfig();
         Config fissionSFR = Config.newConfig();

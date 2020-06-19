@@ -2,8 +2,6 @@ package underhaul;
 import common.Version;
 import common.Exporter;
 import java.awt.Component;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;

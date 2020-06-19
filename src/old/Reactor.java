@@ -1,7 +1,6 @@
 package old;
 import java.awt.Color;
 import java.util.ArrayList;
-import common.JSON;
 public abstract class Reactor{
     public static Reactor parse(Fuel fuel, int X, int Y, int Z, String text) {
         try{

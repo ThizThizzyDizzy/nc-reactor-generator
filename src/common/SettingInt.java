@@ -1,6 +1,5 @@
 package common;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
