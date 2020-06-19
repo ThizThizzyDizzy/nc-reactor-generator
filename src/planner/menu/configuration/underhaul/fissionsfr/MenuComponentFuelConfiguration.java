@@ -70,5 +70,8 @@ public class MenuComponentFuelConfiguration extends MenuComponent{
     public void renderForeground(){
         GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
         drawText(x, y, x+width, y+height/4, fuel.name);
+        drawText(x, y+height/4, x+width, y+height/4*2, "Heat: "+fuel.heat);
+        drawText(x, y+height/4*2, x+width, y+height/4*3, "Power: "+fuel.power);
+        drawText(x, y+height/4*3, x+width, y+height/4*4, "Time: "+fuel.time);
     }
 }

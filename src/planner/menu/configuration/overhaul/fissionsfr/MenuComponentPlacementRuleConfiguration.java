@@ -69,6 +69,6 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
     @Override
     public void renderForeground(){
         GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
-        drawText(x, y, x+width, y+height/4, rule.ruleType.toString());
+        drawText(x, y, x+width, y+height/2, rule.getDetails());
     }
 }

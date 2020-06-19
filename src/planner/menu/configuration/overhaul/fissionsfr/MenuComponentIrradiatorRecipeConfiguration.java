@@ -70,5 +70,7 @@ public class MenuComponentIrradiatorRecipeConfiguration extends MenuComponent{
     public void renderForeground(){
         GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
         drawText(x, y, x+width, y+height/4, irradiatorRecipe.name);
+        drawText(x, y+height/4, x+width, y+height/4*2, "Efficiency: "+irradiatorRecipe.efficiency);
+        drawText(x, y+height/4*2, x+width, y+height/4*3, "Heat: "+irradiatorRecipe.heat);
     }
 }

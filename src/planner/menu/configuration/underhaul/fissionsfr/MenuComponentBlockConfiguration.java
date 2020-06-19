@@ -70,5 +70,8 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
     public void renderForeground(){
         GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
         drawText(x, y, x+width, y+height/4, block.name);
+        if(block.cooling>0)drawText(x, y+height/4, x+width, y+height/4*2, "Cooling: "+block.cooling+" H/t");
+        if(block.fuelCell)drawText(x, y+height/4*2, x+width, y+height/4*3, "Fuel Cell");
+        if(block.moderator)drawText(x, y+height/4*3, x+width, y+height/4*4, "Moderator");
     }
 }

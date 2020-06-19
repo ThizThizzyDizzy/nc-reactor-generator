@@ -11,7 +11,7 @@ import simplelibrary.opengl.gui.Menu;
 public class MenuBlockConfiguration extends Menu{
     private static final Color textColor = new Color(.1f, .1f, .2f, 1f);
     private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "Name", true));
-    private final MenuComponentMinimalistTextBox cooling = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true));
+    private final MenuComponentMinimalistTextBox cooling = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
     private final MenuComponentMinimalistOptionButton fuelCell = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Fuel Cell", true, true, 0, "FALSE", "TRUE"));
     private final MenuComponentMinimalistOptionButton moderator = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Moderator", true, true, 0, "FALSE", "TRUE"));
     private final MenuComponentMinimalistButton rules = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Placement Rules", true, true));
@@ -23,10 +23,6 @@ public class MenuBlockConfiguration extends Menu{
             gui.open(new MenuPlacementRulesConfiguration(gui, this, block));
         });
         back.addActionListener((e) -> {
-            block.name = name.text;
-            block.cooling = Integer.parseInt(cooling.text);
-            block.fuelCell = fuelCell.getIndex()==1;
-            block.moderator = moderator.getIndex()==1;
             gui.open(parent);
         });
         this.block = block;
@@ -37,6 +33,14 @@ public class MenuBlockConfiguration extends Menu{
         cooling.text = block.cooling+"";
         fuelCell.setIndex(block.fuelCell?1:0);
         moderator.setIndex(block.moderator?1:0);
+    }
+    @Override
+    public void onGUIClosed(){
+        block.name = name.text;
+        block.cooling = Integer.parseInt(cooling.text);
+        block.fuelCell = fuelCell.getIndex()==1;
+        block.moderator = moderator.getIndex()==1;
+        super.onGUIClosed();
     }
     @Override
     public void render(int millisSinceLastTick){

@@ -21,6 +21,10 @@ public class MenuMain extends Menu{
     private static final Color textColor = new Color(.1f, .1f, .2f, 1f);
     private MenuComponentMinimaList multiblocks = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private MenuComponentButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
+    private MenuComponentButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", true, true));
+    private MenuComponentButton exportFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", true, true));
+    private MenuComponentButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", true, true));
+    private MenuComponentButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", true, true));
     private MenuComponentButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
     private MenuComponentButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true){
         @Override
@@ -179,10 +183,14 @@ public class MenuMain extends Menu{
     @Override
     public void render(int millisSinceLastTick){
         editMetadata.x = Display.getWidth()/3;
+        importFile.width = exportFile.width = saveFile.width = loadFile.width = Display.getWidth()/12;
+        exportFile.x = importFile.width;
+        saveFile.x = exportFile.x+exportFile.width;
+        loadFile.x = saveFile.x+saveFile.width;
         editMetadata.width = Display.getWidth()*2/3-Display.getHeight()/16;
-        editMetadata.height = Display.getHeight()/16;
+        importFile.height = exportFile.height = saveFile.height = loadFile.height = editMetadata.height = settings.width = settings.height = Display.getHeight()/16;
+        importFile.textInset = exportFile.textInset = saveFile.textInset = loadFile.textInset = importFile.height/4;
         settings.x = Display.getWidth()-Display.getHeight()/16;
-        settings.width = settings.height = Display.getHeight()/16;
         multiblocks.y = Display.getHeight()/8;
         multiblocks.height = Display.getHeight()-multiblocks.y;
         multiblocks.width = Display.getWidth()/3;

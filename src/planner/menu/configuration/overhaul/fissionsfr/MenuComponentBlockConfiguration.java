@@ -1,5 +1,6 @@
 package planner.menu.configuration.overhaul.fissionsfr;
 import java.awt.Color;
+import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import planner.configuration.overhaul.fissionsfr.Block;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -48,7 +49,7 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
         }
     });
     public MenuComponentBlockConfiguration(Block block){
-        super(0, 0, 0, 100);
+        super(0, 0, 0, 150);
         color = new Color(.3f, .3f, .6f, 1f);
         selectedColor = new Color(.35f, .35f, .7f, 1f);
         foregroundColor = new Color(.1f, .1f, .2f, 1f);
@@ -69,6 +70,27 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
     @Override
     public void renderForeground(){
         GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
-        drawText(x, y, x+width, y+height/4, block.name);
+        ArrayList<String> strs = new ArrayList<>();
+        strs.add(block.name);
+        if(block.cooling>0)strs.add("Cooling: "+block.cooling+" H/t");
+        if(block.cluster)strs.add("Can Cluster");
+        if(block.createCluster)strs.add("Creates Cluster");
+        if(block.conductor)strs.add("Conductor");
+        if(block.fuelCell)strs.add("Fuel Cell");
+        if(block.reflector)strs.add("Reflector");
+        if(block.irradiator)strs.add("Irradiator");
+        if(block.moderator)strs.add("Moderator");
+        if(block.activeModerator)strs.add("Active Moderator");
+        if(block.shield)strs.add("Neutron Shield");
+        if(block.flux>0)strs.add("Neutron Flux: "+block.flux);
+        if(block.moderator||block.shield||block.reflector)strs.add("Efficiency: "+block.efficiency);
+        if(block.reflector)strs.add("Reflectivity: "+block.reflectivity);
+        if(block.shield)strs.add("Heat Multiplier: "+block.heatMult);
+        if(block.blocksLOS)strs.add("Blocks Line of Sight");
+        if(block.functional)strs.add("Functional");
+        for(int i = 0; i<strs.size(); i++){
+            String str = strs.get(i);
+            drawText(x, y+height/strs.size()*i, x+width, y+height/strs.size()*(i+1), str);
+        }
     }
 }

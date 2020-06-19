@@ -22,19 +22,9 @@ public class MenuPlacementRuleConfiguration extends Menu{
     public MenuPlacementRuleConfiguration(GUI gui, Menu parent, PlacementRule rule){
         super(gui, parent);
         rules.addActionListener((e) -> {
-            rule.ruleType = PlacementRule.RuleType.values()[type.getIndex()];
-            rule.blockType = PlacementRule.BlockType.values()[type.getIndex()];
-            rule.block = Core.configuration.overhaul.fissionSFR.blocks.get(block.getIndex());
-            rule.min = (byte) min.getValue();
-            rule.max = (byte) max.getValue();
             gui.open(new MenuPlacementRulesConfiguration(gui, this, rule));
         });
         back.addActionListener((e) -> {
-            rule.ruleType = PlacementRule.RuleType.values()[type.getIndex()];
-            rule.blockType = PlacementRule.BlockType.values()[type.getIndex()];
-            rule.block = Core.configuration.overhaul.fissionSFR.blocks.get(block.getIndex());
-            rule.min = (byte) min.getValue();
-            rule.max = (byte) max.getValue();
             gui.open(parent);
         });
         this.rule = rule;
@@ -46,6 +36,14 @@ public class MenuPlacementRuleConfiguration extends Menu{
         block.setIndex(rule.block==null?0:Core.configuration.overhaul.fissionSFR.blocks.indexOf(rule.block));
         min.setValue(rule.min);
         max.setValue(rule.max);
+    }
+    @Override
+    public void onGUIClosed(){
+        rule.ruleType = PlacementRule.RuleType.values()[type.getIndex()];
+        rule.blockType = PlacementRule.BlockType.values()[blockType.getIndex()];
+        rule.block = Core.configuration.overhaul.fissionSFR.blocks.get(block.getIndex());
+        rule.min = (byte) min.getValue();
+        rule.max = (byte) max.getValue();
     }
     @Override
     public void render(int millisSinceLastTick){

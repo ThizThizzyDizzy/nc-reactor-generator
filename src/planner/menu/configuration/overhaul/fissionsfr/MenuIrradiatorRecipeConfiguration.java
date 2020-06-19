@@ -10,8 +10,8 @@ import simplelibrary.opengl.gui.Menu;
 public class MenuIrradiatorRecipeConfiguration extends Menu{
     private static final Color textColor = new Color(.1f, .1f, .2f, 1f);
     private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "Name", true));
-    private final MenuComponentMinimalistTextBox efficiency = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true));
-    private final MenuComponentMinimalistTextBox heat = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true));
+    private final MenuComponentMinimalistTextBox efficiency = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
+    private final MenuComponentMinimalistTextBox heat = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private final IrradiatorRecipe irradiatorRecipe;
     public MenuIrradiatorRecipeConfiguration(GUI gui, Menu parent, IrradiatorRecipe irradiatorRecipe){

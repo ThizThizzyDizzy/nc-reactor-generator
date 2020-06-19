@@ -57,6 +57,41 @@ public class PlacementRule extends RuleContainer{
         }
         return config;
     }
+    public String getDetails(){
+        switch(ruleType){
+            case BETWEEN:
+                if(max==6)return "At least "+min+" "+block.name;
+                if(min==max)return "Exactly "+min+" "+block.name;
+                return "Between "+min+" and "+max+" "+block.name;
+            case BETWEEN_GROUP:
+                if(max==6)return "At least "+min+" "+blockType.name;
+                if(min==max)return "Exactly "+min+" "+blockType.name;
+                return "Between "+min+" and "+max+" "+blockType.name;
+            case AXIAL:
+                if(max==6)return "At least "+min+" Axial pairs of "+block.name;
+                if(min==max)return "Exactly "+min+" Axial pairs of "+block.name;
+                return "Between "+min+" and "+max+" Axial pairs of "+block.name;
+            case AXIAL_GROUP:
+                if(max==6)return "At least "+min+" Axial pairs of "+blockType.name;
+                if(min==max)return "Exactly "+min+" Axial pairs of "+blockType.name;
+                return "Between "+min+" and "+max+" Axial pairs of "+blockType.name;
+            case NO_PANCAKES:
+                return "No Pancakes";
+            case AND:
+                String s = "";
+                for(PlacementRule rule : rules){
+                    s+=" AND "+rule.getDetails();
+                }
+                return s.isEmpty()?s:s.substring(5);
+            case OR:
+                s = "";
+                for(PlacementRule rule : rules){
+                    s+=" OR "+rule.getDetails();
+                }
+                return s.isEmpty()?s:s.substring(5);
+        }
+        return "Unknown Rule";
+    }
     public static enum RuleType{
         BETWEEN("Between"),
         AXIAL("Axial"),

@@ -19,8 +19,8 @@ import simplelibrary.opengl.gui.Menu;
 public class MenuConfiguration extends Menu{
     private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", true, true));
     private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save Configuration", true, true));
-    private final MenuComponentMinimalistButton underhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Underhaul Configuration", true, true));
-    private final MenuComponentMinimalistButton overhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Overhaul Configuration", true, true));
+    private final MenuComponentMinimalistButton underhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Underhaul Configuration", Core.configuration.underhaul!=null, true));
+    private final MenuComponentMinimalistButton overhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Overhaul Configuration", Core.configuration.overhaul!=null, true));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
     public MenuConfiguration(GUI gui, Menu parent){
         super(gui, parent);
@@ -46,21 +46,19 @@ public class MenuConfiguration extends Menu{
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
                         File file = chooser.getSelectedFile();
+                        if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
                         if(file.exists()){
-                            if(JOptionPane.showConfirmDialog(Core.helper.frame, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
+                            if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
                             file.delete();
                         }
-                        try{
-                            FileOutputStream stream = new FileOutputStream(file);
+                        try(FileOutputStream stream = new FileOutputStream(file)){
                             Config header = Config.newConfig();
                             header.set("version", (byte)1);
                             header.set("count", 0);
                             header.save(stream);
                             Core.configuration.save(stream);
-                            //TODO save configuration to stream
-                            stream.close();
                         }catch(IOException ex){
-                            JOptionPane.showMessageDialog(Core.helper.frame, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 });

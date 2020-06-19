@@ -27,6 +27,6 @@ public class MenuComponentMinimalistButton extends MenuComponentButton{
         GL11.glColor4f(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F, color.getAlpha()/255F);
     }
     public void drawText(){
-        drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, label);
+        drawCenteredText(x, y+textInset, x+width, y+height-textInset, label);
     }
 }
