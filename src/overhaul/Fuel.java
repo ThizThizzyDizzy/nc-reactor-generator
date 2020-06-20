@@ -69,7 +69,7 @@ public class Fuel{
         public String toString(){
             return name;
         }
-        boolean isMSR(){
+        public boolean isMSR(){
             return msr;
         }
         public static Type parse(String str){
