@@ -56,7 +56,7 @@ public class NCPFExporter{
                                 rul.set("max", (byte)3);
                                 if(rule.bit instanceof ReactorPart){
                                     rul.set("type", (byte)1);
-                                    rul.set("block", (byte)ReactorPart.parts.indexOf(rule.bit));
+                                    rul.set("block", (byte)(byte)(rule.bit==ReactorPart.AIR?0:ReactorPart.parts.indexOf(rule.bit)+1));
                                 }else{
                                     rul.set("type", (byte)3);
                                     switch((ReactorPart.Type)rule.bit){
@@ -93,7 +93,7 @@ public class NCPFExporter{
                                 rul.set("max", (byte)Math.min(6,rule.max));
                                 if(rule.bit instanceof ReactorPart){
                                     rul.set("type", (byte)0);
-                                    rul.set("block", (byte)ReactorPart.parts.indexOf(rule.bit));
+                                    rul.set("block", (byte)(rule.bit==ReactorPart.AIR?0:ReactorPart.parts.indexOf(rule.bit)+1));
                                 }else{
                                     rul.set("type", (byte)2);
                                     switch((ReactorPart.Type)rule.bit){
