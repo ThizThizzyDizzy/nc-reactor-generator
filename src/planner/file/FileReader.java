@@ -77,7 +77,14 @@ public class FileReader{
                                 ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
                             }
                             for(planner.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
-                                rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(underhaulPostLoadMap.get(rule));
+                                byte index = underhaulPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
+                                }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
@@ -135,7 +142,14 @@ public class FileReader{
                                 ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
                             }
                             for(planner.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulPostLoadMap.keySet()){
-                                rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(overhaulPostLoadMap.get(rule));
+                                byte index = overhaulPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
+                                }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
