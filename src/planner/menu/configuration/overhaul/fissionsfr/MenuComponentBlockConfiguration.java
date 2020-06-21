@@ -65,6 +65,8 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
     }
     @Override
     public void render(){
+        if(isMouseOver)GL11.glColor4f(selectedColor.getRed()/255f, selectedColor.getGreen()/255f, selectedColor.getBlue()/255f, selectedColor.getAlpha()/255f);
+        else GL11.glColor4f(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override

@@ -44,6 +44,7 @@ public class MenuComponentMultiblock extends MenuComponent{
     }
     @Override
     public void render(){
+        if(isMouseOver&&!isSelected)GL11.glColor4f((color.getRed()+selectedColor.getRed())/510f, (color.getGreen()+selectedColor.getGreen())/510f, (color.getBlue()+selectedColor.getBlue())/510f, (color.getAlpha()+selectedColor.getAlpha())/510f);
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override

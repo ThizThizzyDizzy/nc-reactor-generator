@@ -142,7 +142,7 @@ public class MenuMain extends Menu{
             MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true){
                 @Override
                 public void drawText(){
-                    drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+textInset+height/5, m.getDefinitionName());
+                    drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+textInset+height/6, m.getDefinitionName());
                 }
             });
             button.addActionListener((e) -> {

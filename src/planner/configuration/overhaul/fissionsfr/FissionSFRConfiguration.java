@@ -7,10 +7,10 @@ public class FissionSFRConfiguration{
     public ArrayList<Fuel> fuels = new ArrayList<>();
     public ArrayList<Source> sources = new ArrayList<>();
     public ArrayList<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
-    public int coolingEfficiencyLeniency;
     public int minSize;
     public int maxSize;
     public int neutronReach;
+    public int coolingEfficiencyLeniency;
     public float sparsityPenaltyMult;
     public float sparsityPenaltyThreshold;
     public String[] getBlockStringList(){

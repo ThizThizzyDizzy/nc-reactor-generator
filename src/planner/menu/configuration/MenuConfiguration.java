@@ -27,7 +27,7 @@ public class MenuConfiguration extends Menu{
         load.addActionListener((e) -> {
             new Thread(() -> {
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
+                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Configuration File", "ncpf", "cfg", "json"));
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
                         File file = chooser.getSelectedFile();

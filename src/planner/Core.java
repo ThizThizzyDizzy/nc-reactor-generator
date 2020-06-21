@@ -23,6 +23,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.configuration.Configuration;
 import planner.multiblock.Multiblock;
+import planner.multiblock.OverhaulSFR;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
@@ -49,6 +50,7 @@ public class Core extends Renderer2D{
     public static Configuration configuration = new Configuration("Temporary", "-1");
     static{
         multiblockTypes.add(new UnderhaulSFR());
+        multiblockTypes.add(new OverhaulSFR());
         resetMetadata();
     }
     public static void resetMetadata(){
@@ -57,6 +59,22 @@ public class Core extends Renderer2D{
         metadata.put("Author", "");
     }
     public static void main(String[] args) throws NoSuchMethodException{
+        try{
+            for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
+                if("Nimbus".equals(info.getName())){
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
+        try{
+            for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
+                if("Windows".equals(info.getName())){
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
         helper = new GameHelper();
         helper.setBackground(new Color(40,50,100));
         helper.setDisplaySize(800, 600);
