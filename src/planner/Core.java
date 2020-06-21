@@ -4,12 +4,18 @@ import planner.menu.MenuMain;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import javax.imageio.ImageIO;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -181,6 +187,26 @@ public class Core extends Renderer2D{
             Renderer2D.drawLine(x1-i, y1, x2-i, y2);
             Renderer2D.drawLine(x1, y1+i, x2, y2+i);
             Renderer2D.drawLine(x1, y1-i, x2, y2-i);
+        }
+    }
+    public static BufferedImage getImage(String texture){
+        try{
+            if(new File("nbproject").exists()){
+                return ImageIO.read(new File("src\\textures\\"+texture.replace("/", "\\")+".png"));
+            }else{
+                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
+                Enumeration enumEntries = jar.entries();
+                while(enumEntries.hasMoreElements()){
+                    JarEntry file = (JarEntry)enumEntries.nextElement();
+                    if(file.getName().equals("textures/"+texture.replace("\\", "/")+".png")){
+                        return ImageIO.read(jar.getInputStream(file));
+                    }
+                }
+            }
+            throw new IllegalArgumentException("Cannot find file: "+texture);
+        }catch(IOException ex){
+            System.err.println("Couldn't read file: "+texture);
+            return new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         }
     }
 }

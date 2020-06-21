@@ -3,11 +3,11 @@ import simplelibrary.config2.Config;
 public class Fuel{
     public String name;
     public float efficiency;
-    public float heat;
+    public int heat;
     public int time;
     public int criticality;
     public boolean selfPriming;
-    public Fuel(String name, float efficiency, float heat, int time, int criticality, boolean selfPriming){
+    public Fuel(String name, float efficiency, int heat, int time, int criticality, boolean selfPriming){
         this.name = name;
         this.efficiency = efficiency;
         this.heat = heat;

@@ -34,6 +34,7 @@ public class MenuConfiguration extends Menu{
                         NCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
                         Core.configuration = ncpf.configuration;
+                        onGUIOpened();
                     }
                 });
                 chooser.showOpenDialog(null);
@@ -74,6 +75,11 @@ public class MenuConfiguration extends Menu{
         done.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(0, -1), 4));
         });
+    }
+    @Override
+    public void onGUIOpened(){
+        underhaul.enabled = Core.configuration.underhaul!=null;
+        overhaul.enabled = Core.configuration.overhaul!=null;
     }
     @Override
     public void render(int millisSinceLastTick){

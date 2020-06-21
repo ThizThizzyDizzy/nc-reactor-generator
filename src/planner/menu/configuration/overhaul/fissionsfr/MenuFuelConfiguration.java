@@ -12,7 +12,7 @@ public class MenuFuelConfiguration extends Menu{
     private static final Color textColor = new Color(.1f, .1f, .2f, 1f);
     private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "Name", true));
     private final MenuComponentMinimalistTextBox efficiency = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
-    private final MenuComponentMinimalistTextBox heat = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
+    private final MenuComponentMinimalistTextBox heat = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
     private final MenuComponentMinimalistTextBox time = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
     private final MenuComponentMinimalistTextBox criticality = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
     private final MenuComponentMinimalistOptionButton selfPriming = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Self Prming", true, true, 0, "FALSE", "TRUE"));
@@ -23,7 +23,7 @@ public class MenuFuelConfiguration extends Menu{
         back.addActionListener((e) -> {
             fuel.name = name.text;
             fuel.efficiency = Float.parseFloat(efficiency.text);
-            fuel.heat = Float.parseFloat(heat.text);
+            fuel.heat = Integer.parseInt(heat.text);
             fuel.time = Integer.parseInt(time.text);
             fuel.criticality = Integer.parseInt(criticality.text);
             fuel.selfPriming = selfPriming.getIndex()==1;

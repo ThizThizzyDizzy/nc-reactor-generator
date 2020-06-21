@@ -8,6 +8,73 @@ public class PlacementRule extends RuleContainer{
     public Block block;
     public byte min;
     public byte max;
+    public static PlacementRule atLeast(int min, BlockType block){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.BETWEEN_GROUP;
+        rule.blockType = block;
+        rule.min = (byte)Math.min(6,Math.max(1,min));
+        rule.max = 6;
+        return rule;
+    }
+    public static PlacementRule atLeast(int min, Block block){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.BETWEEN;
+        rule.block = block;
+        rule.min = (byte)Math.min(6,Math.max(1,min));
+        rule.max = 6;
+        return rule;
+    }
+    public static PlacementRule exactly(int num, BlockType block){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.BETWEEN_GROUP;
+        rule.blockType = block;
+        rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
+        return rule;
+    }
+    public static PlacementRule exactly(int num, Block block){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.BETWEEN;
+        rule.block = block;
+        rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
+        return rule;
+    }
+    public static PlacementRule axis(BlockType block){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.AXIAL_GROUP;
+        rule.blockType = block;
+        rule.min = 1;
+        rule.max = 3;
+        return rule;
+    }
+    public static PlacementRule axis(Block block){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.AXIAL;
+        rule.block = block;
+        rule.min = 1;
+        rule.max = 3;
+        return rule;
+    }
+    public static PlacementRule or(PlacementRule... rules){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.OR;
+        for(PlacementRule r : rules){
+            rule.rules.add(r);
+        }
+        return rule;
+    }
+    public static PlacementRule and(PlacementRule... rules){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.AND;
+        for(PlacementRule r : rules){
+            rule.rules.add(r);
+        }
+        return rule;
+    }
+    public static PlacementRule noPancake(){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.NO_PANCAKES;
+        return rule;
+    }
     public Config save(){
         Config config = Config.newConfig();
         switch(ruleType){

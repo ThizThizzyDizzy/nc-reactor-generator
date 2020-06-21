@@ -1,9 +1,72 @@
 package planner.configuration.overhaul.fissionsfr;
 import java.awt.image.BufferedImage;
+import planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 public class Block extends RuleContainer{
+    public static Block heatsink(String name, int cooling, String texture, PlacementRule... rules){
+        Block block = new Block(name);
+        block.cooling = cooling;
+        for(PlacementRule r : rules){
+            block.rules.add(r);
+        }
+        block.texture = Core.getImage(texture);
+        block.functional = true;
+        block.cluster = true;
+        return block;
+    }
+    public static Block moderator(String name, String texture, int flux, float efficiency){
+        Block block = new Block(name);
+        block.moderator = true;
+        block.activeModerator = true;
+        block.flux = flux;
+        block.efficiency = efficiency;
+        block.texture = Core.getImage(texture);
+        block.functional = true;
+        return block;
+    }
+    public static Block reflector(String name, String texture, float efficiency, float reflectivity){
+        Block block = new Block(name);
+        block.reflector = true;
+        block.efficiency = efficiency;
+        block.reflectivity = reflectivity;
+        block.functional = true;
+        block.blocksLOS = true;
+        block.texture = Core.getImage(texture);
+        return block;
+    }
+    public static Block shield(String name, String texture, int heatPerFlux, float efficiency){
+        Block block = new Block(name);
+        block.shield = true;
+        block.moderator = true;
+        block.functional = true;
+        block.cluster = true;
+        block.createCluster = true;
+        block.heatMult = heatPerFlux;
+        block.efficiency = efficiency;
+        block.texture = Core.getImage(texture);
+        return block;
+    }
+    public static Block cell(String name, String texture){
+        Block block = new Block(name);
+        block.fuelCell = true;
+        block.cluster = true;
+        block.createCluster = true;
+        block.blocksLOS = true;
+        block.functional = true;
+        block.texture = Core.getImage(texture);
+        return block;
+    }
+    public static Block irradiator(String name, String texture){
+        Block block = new Block(name);
+        block.cluster = true;
+        block.createCluster = true;
+        block.irradiator = true;
+        block.functional = true;
+        block.texture = Core.getImage(texture);
+        return block;
+    }
     public String name;
     public int cooling = 0;
     public boolean cluster = false;

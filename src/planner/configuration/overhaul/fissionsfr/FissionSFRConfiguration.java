@@ -7,6 +7,12 @@ public class FissionSFRConfiguration{
     public ArrayList<Fuel> fuels = new ArrayList<>();
     public ArrayList<Source> sources = new ArrayList<>();
     public ArrayList<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
+    public int coolingEfficiencyLeniency;
+    public int minSize;
+    public int maxSize;
+    public int neutronReach;
+    public float sparsityPenaltyMult;
+    public float sparsityPenaltyThreshold;
     public String[] getBlockStringList(){
         String[] strs = new String[blocks.size()];
         for(int i = 0; i<strs.length; i++){
@@ -16,6 +22,12 @@ public class FissionSFRConfiguration{
     }
     public Config save(){
         Config config = Config.newConfig();
+        config.set("minSize", minSize);
+        config.set("maxSize", maxSize);
+        config.set("neutronReach", neutronReach);
+        config.set("coolingEfficiencyLeniency", coolingEfficiencyLeniency);
+        config.set("sparsityPenaltyMult", sparsityPenaltyMult);
+        config.set("sparsityPenaltyThreshold", sparsityPenaltyThreshold);
         ConfigList blocks = new ConfigList();
         for(Block block : this.blocks){
             blocks.add(block.save());

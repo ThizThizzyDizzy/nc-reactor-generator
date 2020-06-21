@@ -10,7 +10,7 @@ public class Configuration{
     public String version;
     public static ArrayList<Configuration> configurations = new ArrayList<>();
     static{
-        Configuration nuclear = new NuclearCraftConfiguration("2o.2.7-1.12.2");
+        Configuration nuclear = new Configuration("nah", "nope");
         configurations.add(nuclear);
 //        Configuration e2e = new Configuration("E2E", version);
 //        configurations.add(e2e);
@@ -22,8 +22,8 @@ public class Configuration{
         this.name = name;
         this.version = version;
     }
-    public UnderhaulConfiguration underhaul = new UnderhaulConfiguration();
-    public OverhaulConfiguration overhaul = new OverhaulConfiguration();
+    public UnderhaulConfiguration underhaul;
+    public OverhaulConfiguration overhaul;
     public void save(FileOutputStream stream){
         Config config = Config.newConfig();
         config.set("partial", isPartial());

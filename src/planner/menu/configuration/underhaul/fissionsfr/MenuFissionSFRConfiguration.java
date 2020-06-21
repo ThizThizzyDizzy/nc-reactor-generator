@@ -8,6 +8,7 @@ public class MenuFissionSFRConfiguration extends Menu{
     private final MenuComponentMinimalistButton blocks = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Blocks", true, true));
     private final MenuComponentMinimalistButton fuels = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Fuels", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
+    //TODO other values
     public MenuFissionSFRConfiguration(GUI gui, Menu parent){
         super(gui, parent);
         blocks.addActionListener((e) -> {
