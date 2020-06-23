@@ -42,7 +42,7 @@ public class FissionSFRConfiguration{
         for(Source source : this.sources){
             sources.add(source.save());
         }
-        config.set("sources", new ConfigList());
+        config.set("sources", sources);
         ConfigList irradiatorRecipes = new ConfigList();
         for(IrradiatorRecipe recipe : this.irradiatorRecipes){
             irradiatorRecipes.add(recipe.save());

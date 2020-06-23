@@ -1,6 +1,7 @@
 package planner.configuration;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Objects;
 import planner.Core;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
@@ -33,5 +34,16 @@ public class Configuration{
     }
     protected boolean isPartial(){
         return false;
+    }
+    public void impose(Configuration configuration){
+        if(Objects.equals(configuration.name, name)){
+            if(underhaul!=null)configuration.underhaul = underhaul;
+            if(overhaul!=null)configuration.overhaul = overhaul;
+        }else{
+            configuration.underhaul = underhaul;
+            configuration.overhaul = overhaul;
+        }
+        configuration.name = name;
+        configuration.version = version;
     }
 }

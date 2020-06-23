@@ -12,6 +12,7 @@ public class MenuIrradiatorRecipesConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Irradiator Recipe", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
+    private boolean refreshNeeded = false;
     public MenuIrradiatorRecipesConfiguration(GUI gui, Menu parent){
         super(gui, parent);
         add.addActionListener((e) -> {
@@ -29,6 +30,14 @@ public class MenuIrradiatorRecipesConfiguration extends Menu{
         for(IrradiatorRecipe b : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
             list.add(new MenuComponentIrradiatorRecipeConfiguration(b));
         }
+    }
+    @Override
+    public void tick(){
+        if(refreshNeeded){
+            onGUIOpened();
+            refreshNeeded = false;
+        }
+        super.tick();
     }
     @Override
     public void render(int millisSinceLastTick){
@@ -49,7 +58,7 @@ public class MenuIrradiatorRecipesConfiguration extends Menu{
             if(c instanceof MenuComponentIrradiatorRecipeConfiguration){
                 if(button==((MenuComponentIrradiatorRecipeConfiguration) c).delete){
                     Core.configuration.overhaul.fissionSFR.irradiatorRecipes.remove(((MenuComponentIrradiatorRecipeConfiguration) c).irradiatorRecipe);
-                    onGUIOpened();
+                    refreshNeeded = true;
                     return;
                 }
                 if(button==((MenuComponentIrradiatorRecipeConfiguration) c).edit){

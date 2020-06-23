@@ -3,7 +3,9 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,10 +22,11 @@ public class FileReader{
     static{
         formats.add(new FormatReader(){
             @Override
-            public boolean formatMatches(File file){
-                try(FileInputStream in = new FileInputStream(file)){
+            public boolean formatMatches(InputStream in){
+                try{
                     Config header = Config.newConfig();
                     header.load(in);
+                    in.close();
                     return header.get("version", (byte)0)==(byte)1;
                 }catch(Throwable t){
                     return false;
@@ -32,8 +35,8 @@ public class FileReader{
             HashMap<planner.configuration.underhaul.fissionsfr.PlacementRule, Byte> underhaulPostLoadMap = new HashMap<>();
             HashMap<planner.configuration.overhaul.fissionsfr.PlacementRule, Byte> overhaulPostLoadMap = new HashMap<>();
             @Override
-            public synchronized NCPFFile read(File file){
-                try(FileInputStream in = new FileInputStream(file)){
+            public synchronized NCPFFile read(InputStream in){
+                try{
                     Config header = Config.newConfig();
                     header.load(in);
                     int multiblocks = header.get("count");
@@ -172,18 +175,19 @@ public class FileReader{
                                 ncpf.configuration.overhaul.fissionSFR.fuels.add(new planner.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
                             }
                             ConfigList sources = fissionSFR.get("sources");
-                            for(Iterator fit = sources.iterator(); fit.hasNext();){
-                                Config sourceCfg = (Config)fit.next();
+                            for(Iterator sit = sources.iterator(); sit.hasNext();){
+                                Config sourceCfg = (Config)sit.next();
                                 ncpf.configuration.overhaul.fissionSFR.sources.add(new planner.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
                             }
                             ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
-                            for(Iterator fit = irradiatorRecipes.iterator(); fit.hasNext();){
-                                Config irradiatorRecipeCfg = (Config)fit.next();
+                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                                Config irradiatorRecipeCfg = (Config)irit.next();
                                 ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
                             }
                         }
                     }
                     //TODO and the multiblocks?
+                    in.close();
                     return ncpf;
                 }catch(IOException ex){
                     throw new RuntimeException(ex);
@@ -384,8 +388,8 @@ public class FileReader{
         });// .ncpf
         formats.add(new FormatReader(){
             @Override
-            public boolean formatMatches(File file){//There's probably a better way of detecting the format...
-                try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+            public boolean formatMatches(InputStream in){//There's probably a better way of detecting the format...
+                try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
                     String s = "";
                     String line;
                     while((line = reader.readLine())!=null)s+=line+"\n";
@@ -395,8 +399,8 @@ public class FileReader{
             }
             String s = "";
             @Override
-            public synchronized NCPFFile read(File file){
-                try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+            public synchronized NCPFFile read(InputStream in){
+                try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
                     NCPFFile ncpf = new NCPFFile();
                     s = "";
                     String line;
@@ -575,8 +579,8 @@ public class FileReader{
         });// UNDERHAUL nuclearcraft.cfg
         formats.add(new FormatReader(){
             @Override
-            public boolean formatMatches(File file){//There's probably a better way of detecting the format...
-                try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+            public boolean formatMatches(InputStream in){//There's probably a better way of detecting the format...
+                try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
                     String s = "";
                     String line;
                     while((line = reader.readLine())!=null)s+=line+"\n";
@@ -586,8 +590,8 @@ public class FileReader{
             }
             String s = "";
             @Override
-            public synchronized NCPFFile read(File file){
-                try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+            public synchronized NCPFFile read(InputStream in){
+                try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
                     NCPFFile ncpf = new NCPFFile();
                     s = "";
                     String line;
@@ -830,14 +834,23 @@ public class FileReader{
             }
         });// OVERHAUL nuclearcraft.cfg
     }
-    public static NCPFFile read(File file){
+    public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){
             boolean matches = false;
             try{
-                if(reader.formatMatches(file))matches = true;
+                if(reader.formatMatches(provider.getInputStream()))matches = true;
             }catch(Throwable t){}
-            if(matches)return reader.read(file);
+            if(matches)return reader.read(provider.getInputStream());
         }
         throw new IllegalArgumentException("Unknown file format!");
+    }
+    public static NCPFFile read(File file){
+        return read(() -> {
+            try{
+                return new FileInputStream(file);
+            }catch(FileNotFoundException ex){
+                return null;
+            }
+        });
     }
 }

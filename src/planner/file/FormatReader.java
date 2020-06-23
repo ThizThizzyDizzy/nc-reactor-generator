@@ -1,6 +1,6 @@
 package planner.file;
-import java.io.File;
+import java.io.InputStream;
 public interface FormatReader{
-    public boolean formatMatches(File file);
-    public NCPFFile read(File file);
+    public boolean formatMatches(InputStream stream);
+    public NCPFFile read(InputStream stream);
 }

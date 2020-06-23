@@ -12,6 +12,7 @@ public class MenuSourcesConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Source", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
+    private boolean refreshNeeded = false;
     public MenuSourcesConfiguration(GUI gui, Menu parent){
         super(gui, parent);
         add.addActionListener((e) -> {
@@ -29,6 +30,14 @@ public class MenuSourcesConfiguration extends Menu{
         for(Source b : Core.configuration.overhaul.fissionSFR.sources){
             list.add(new MenuComponentSourceConfiguration(b));
         }
+    }
+    @Override
+    public void tick(){
+        if(refreshNeeded){
+            onGUIOpened();
+            refreshNeeded = false;
+        }
+        super.tick();
     }
     @Override
     public void render(int millisSinceLastTick){
@@ -49,7 +58,7 @@ public class MenuSourcesConfiguration extends Menu{
             if(c instanceof MenuComponentSourceConfiguration){
                 if(button==((MenuComponentSourceConfiguration) c).delete){
                     Core.configuration.overhaul.fissionSFR.sources.remove(((MenuComponentSourceConfiguration) c).source);
-                    onGUIOpened();
+                    refreshNeeded = true;
                     return;
                 }
                 if(button==((MenuComponentSourceConfiguration) c).edit){

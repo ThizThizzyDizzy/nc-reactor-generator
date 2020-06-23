@@ -12,6 +12,7 @@ public class MenuBlocksConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Block", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
+    private boolean refreshNeeded = false;
     public MenuBlocksConfiguration(GUI gui, Menu parent){
         super(gui, parent);
         add.addActionListener((e) -> {
@@ -22,6 +23,14 @@ public class MenuBlocksConfiguration extends Menu{
         back.addActionListener((e) -> {
             gui.open(parent);
         });
+    }
+    @Override
+    public void tick(){
+        if(refreshNeeded){
+            onGUIOpened();
+            refreshNeeded = false;
+        }
+        super.tick();
     }
     @Override
     public void onGUIOpened(){
@@ -49,7 +58,7 @@ public class MenuBlocksConfiguration extends Menu{
             if(c instanceof MenuComponentBlockConfiguration){
                 if(button==((MenuComponentBlockConfiguration) c).delete){
                     Core.configuration.overhaul.fissionSFR.blocks.remove(((MenuComponentBlockConfiguration) c).block);
-                    onGUIOpened();
+                    refreshNeeded = true;
                     return;
                 }
                 if(button==((MenuComponentBlockConfiguration) c).edit){

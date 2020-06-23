@@ -33,7 +33,7 @@ public class MenuConfiguration extends Menu{
                         File file = chooser.getSelectedFile();
                         NCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
-                        Core.configuration = ncpf.configuration;
+                        ncpf.configuration.impose(Core.configuration);
                         onGUIOpened();
                     }
                 });

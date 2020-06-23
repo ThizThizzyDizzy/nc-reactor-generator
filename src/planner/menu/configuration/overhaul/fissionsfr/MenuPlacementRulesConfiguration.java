@@ -13,6 +13,7 @@ public class MenuPlacementRulesConfiguration extends Menu{
     private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Rule", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private final RuleContainer container;
+    private boolean refreshNeeded = false;
     public MenuPlacementRulesConfiguration(GUI gui, Menu parent, RuleContainer container){
         super(gui, parent);
         add.addActionListener((e) -> {
@@ -33,6 +34,14 @@ public class MenuPlacementRulesConfiguration extends Menu{
         }
     }
     @Override
+    public void tick(){
+        if(refreshNeeded){
+            onGUIOpened();
+            refreshNeeded = false;
+        }
+        super.tick();
+    }
+    @Override
     public void render(int millisSinceLastTick){
         list.width = Display.getWidth();
         list.height = Display.getHeight()-back.height-add.height;
@@ -51,7 +60,7 @@ public class MenuPlacementRulesConfiguration extends Menu{
             if(c instanceof MenuComponentPlacementRuleConfiguration){
                 if(button==((MenuComponentPlacementRuleConfiguration) c).delete){
                     container.rules.remove(((MenuComponentPlacementRuleConfiguration) c).rule);
-                    onGUIOpened();
+                    refreshNeeded = true;
                     return;
                 }
                 if(button==((MenuComponentPlacementRuleConfiguration) c).edit){

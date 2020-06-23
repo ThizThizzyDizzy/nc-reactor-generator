@@ -12,6 +12,7 @@ public class MenuFuelsConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Fuel", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
+    private boolean refreshNeeded = false;
     public MenuFuelsConfiguration(GUI gui, Menu parent){
         super(gui, parent);
         add.addActionListener((e) -> {
@@ -29,6 +30,14 @@ public class MenuFuelsConfiguration extends Menu{
         for(Fuel b : Core.configuration.underhaul.fissionSFR.fuels){
             list.add(new MenuComponentFuelConfiguration(b));
         }
+    }
+    @Override
+    public void tick(){
+        if(refreshNeeded){
+            onGUIOpened();
+            refreshNeeded = false;
+        }
+        super.tick();
     }
     @Override
     public void render(int millisSinceLastTick){
@@ -49,7 +58,7 @@ public class MenuFuelsConfiguration extends Menu{
             if(c instanceof MenuComponentFuelConfiguration){
                 if(button==((MenuComponentFuelConfiguration) c).delete){
                     Core.configuration.underhaul.fissionSFR.fuels.remove(((MenuComponentFuelConfiguration) c).fuel);
-                    onGUIOpened();
+                    refreshNeeded = true;
                     return;
                 }
                 if(button==((MenuComponentFuelConfiguration) c).edit){

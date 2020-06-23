@@ -1,5 +1,5 @@
 package planner;
-import planner.multiblock.UnderhaulSFR;
+import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.menu.MenuMain;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
@@ -22,13 +22,16 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.configuration.Configuration;
+import planner.file.FileReader;
+import planner.file.NCPFFile;
 import planner.multiblock.Multiblock;
-import planner.multiblock.OverhaulSFR;
+import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.font.FontManager;
 import simplelibrary.game.GameHelper;
+import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -47,8 +50,11 @@ public class Core extends Renderer2D{
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
-    public static Configuration configuration = new Configuration("Temporary", "-1");
+    public static Configuration configuration;
     static{
+        configuration = FileReader.read(() -> {
+            return getInputStream("configurations/nuclearcraft.ncpf");
+        }).configuration;
         multiblockTypes.add(new UnderhaulSFR());
         multiblockTypes.add(new OverhaulSFR());
         resetMetadata();
@@ -226,5 +232,32 @@ public class Core extends Renderer2D{
             System.err.println("Couldn't read file: "+texture);
             return new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         }
+    }
+    public static InputStream getInputStream(String path){
+        try{
+            if(new File("nbproject").exists()){
+                return new FileInputStream(new File("src\\"+path.replace("/", "\\")));
+            }else{
+                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
+                Enumeration enumEntries = jar.entries();
+                while(enumEntries.hasMoreElements()){
+                    JarEntry file = (JarEntry)enumEntries.nextElement();
+                    if(file.getName().equals(path.replace("\\", "/")+".png")){
+                        return jar.getInputStream(file);
+                    }
+                }
+            }
+            throw new IllegalArgumentException("Cannot find file: "+path);
+        }catch(IOException ex){
+            System.err.println("Couldn't read file: "+path);
+            return null;
+        }
+    }
+    private static final HashMap<BufferedImage, Integer> imgs = new HashMap<>();
+    public static int getTexture(BufferedImage image){
+        if(!imgs.containsKey(image)){
+            imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image));
+        }
+        return imgs.get(image);
     }
 }
