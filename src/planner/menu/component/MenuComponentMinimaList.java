@@ -2,6 +2,7 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentList;
 public class MenuComponentMinimaList extends MenuComponentList{
     private Color backgroundColor = new Color(.4f, .4f, .8f, 1f);
@@ -83,10 +84,6 @@ public class MenuComponentMinimaList extends MenuComponentList{
         GL11.glEnd();
     }
     @Override
-    public void mouseEvent(int button, boolean pressed, float x, float y, float xChange, float yChange, int wheelChange){
-        super.mouseEvent(button, pressed, x, y, xChange, yChange, wheelChange);
-    }
-    @Override
     public void persistMouseEvent(int button, boolean pressed, float x, float y){
         if(button==-1&&Mouse.isButtonDown(0)){
             button = 0;
@@ -94,5 +91,11 @@ public class MenuComponentMinimaList extends MenuComponentList{
         }
         super.persistMouseEvent(button, pressed, x, y);
     }
-    
+    @Override
+    public void renderBackground(){
+        for(MenuComponent comp : components){
+            comp.isSelected = comp==selected;
+        }
+        super.renderBackground();
+    }
 }
