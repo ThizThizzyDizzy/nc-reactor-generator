@@ -67,6 +67,12 @@ public class Block extends RuleContainer{
         block.texture = Core.getImage(texture);
         return block;
     }
+    public static Block conductor(String name, String texture){
+        Block block = new Block(name);
+        block.conductor = true;
+        block.texture = Core.getImage(texture);
+        return block;
+    }
     public String name;
     public int cooling = 0;
     public boolean cluster = false;

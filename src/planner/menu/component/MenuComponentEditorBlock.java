@@ -5,7 +5,7 @@ import simplelibrary.opengl.ImageStash;
 public class MenuComponentEditorBlock extends MenuComponentMinimalistButton{
     private final Block block;
     public MenuComponentEditorBlock(Block block){
-        super(0, 0, 0, 0, block.getName(), true, true);
+        super(0, 0, 0, 0, block.getName(), true, true, .9f);
         this.block = block;
         selectedColor = foregroundColor.darker();
     }
