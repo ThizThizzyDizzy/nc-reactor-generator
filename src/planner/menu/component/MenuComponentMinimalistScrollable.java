@@ -2,11 +2,11 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import simplelibrary.opengl.gui.components.MenuComponentMulticolumnList;
-public class MenuComponentMulticolumnMinimaList extends MenuComponentMulticolumnList{
+import simplelibrary.opengl.gui.components.MenuComponentScrollable;
+public class MenuComponentMinimalistScrollable extends MenuComponentScrollable{
     private Color backgroundColor = new Color(.4f, .4f, .8f, 1f);
-    public MenuComponentMulticolumnMinimaList(double x, double y, double width, double height, double columnWidth, double rowHeight, double scrollbarWidth){
-        super(x, y, width, height, columnWidth, rowHeight, scrollbarWidth);
+    public MenuComponentMinimalistScrollable(double x, double y, double width, double height, double horizScrollbarHeight, double vertScrollbarWidth){
+        super(x, y, width, height, horizScrollbarHeight, vertScrollbarWidth);
         color = new Color(.25f, .25f, .5f, 1f);
         foregroundColor = new Color(.1f, .1f, .2f, 1f);
     }
@@ -90,12 +90,19 @@ public class MenuComponentMulticolumnMinimaList extends MenuComponentMulticolumn
         }
         super.persistMouseEvent(button, pressed, x, y);
     }
+    int lowestNonZeroWheel = Integer.MAX_VALUE;
     @Override
-    public void renderBackground(){
-        setScrollMagnitude(Math.min(width, height)/20);
-        for(int i = 0; i<components.size(); i++){
-            components.get(i).isSelected = getSelectedIndex()==i;
+    public boolean mouseWheelChange(int wheelChange){
+        if(wheelChange!=0){
+            lowestNonZeroWheel = Math.min(lowestNonZeroWheel, Math.abs(wheelChange));
         }
-        super.renderBackground();
+        int scroll = wheelChange/lowestNonZeroWheel;
+        for(int i = 0; i<scroll; i++){
+            scrollUp();
+        }
+        for(int i = 0; i<-scroll; i++){
+            scrollDown();
+        }
+        return super.mouseWheelChange(wheelChange);
     }
 }

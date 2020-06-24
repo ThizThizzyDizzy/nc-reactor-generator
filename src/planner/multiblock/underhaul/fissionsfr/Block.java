@@ -11,7 +11,7 @@ public class Block implements planner.multiblock.Block{
     }
     @Override
     public BufferedImage getTexture(){
-        return template.texture;
+        return template.displayTexture;
     }
     @Override
     public String getName(){

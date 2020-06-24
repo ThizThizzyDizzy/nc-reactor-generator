@@ -47,6 +47,10 @@ public class Core extends Renderer2D{
     public static boolean enableCullFace = true;
     public static final boolean fullscreen = false;
     public static final boolean supportTyping = true;
+    public static boolean SEPARATE_BRIGHT_TEXTURES = true;
+    public static final float IMG_FAC = .003925f;
+    public static final float IMG_POW = 2f;
+    public static final float IMG_STRAIGHT_FAC = 1.5f;
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
@@ -259,5 +263,14 @@ public class Core extends Renderer2D{
             imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image));
         }
         return imgs.get(image);
+    }
+    public static int img_convert(int c){
+        if(SEPARATE_BRIGHT_TEXTURES){
+            double f = IMG_FAC*Math.pow(c, IMG_POW);
+            float g = c/255f;
+            double h = f*Math.pow(g, IMG_STRAIGHT_FAC)+c*(1-Math.pow(g, IMG_STRAIGHT_FAC));
+            c = (int)h;
+        }
+        return c;
     }
 }

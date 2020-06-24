@@ -1,4 +1,5 @@
 package planner.file;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -74,11 +75,12 @@ public class FileReader{
                                     int index = 1;
                                     for(int x = 0; x<image.getWidth(); x++){
                                         for(int y = 0; y<image.getHeight(); y++){
-                                            image.setRGB(x, y, (int) texture.get(index));
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
                                             index++;
                                         }
                                     }
-                                    block.texture = image;
+                                    block.setTexture(image);
                                 }
                                 if(blockCfg.hasProperty("rules")){
                                     ConfigList rules = blockCfg.get("rules");
@@ -146,11 +148,12 @@ public class FileReader{
                                     int index = 1;
                                     for(int x = 0; x<image.getWidth(); x++){
                                         for(int y = 0; y<image.getHeight(); y++){
-                                            image.setRGB(x, y, (int) texture.get(index));
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
                                             index++;
                                         }
                                     }
-                                    block.texture = image;
+                                    block.setTexture(image);
                                 }
                                 if(blockCfg.hasProperty("rules")){
                                     ConfigList rules = blockCfg.get("rules");

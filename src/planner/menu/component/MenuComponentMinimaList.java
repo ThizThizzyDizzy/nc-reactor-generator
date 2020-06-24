@@ -2,7 +2,6 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentList;
 public class MenuComponentMinimaList extends MenuComponentList{
     private Color backgroundColor = new Color(.4f, .4f, .8f, 1f);
@@ -93,8 +92,9 @@ public class MenuComponentMinimaList extends MenuComponentList{
     }
     @Override
     public void renderBackground(){
-        for(MenuComponent comp : components){
-            comp.isSelected = comp==selected;
+        setScrollMagnitude(Math.min(width, height)/20);
+        for(int i = 0; i<components.size(); i++){
+            components.get(i).isSelected = getSelectedIndex()==i;
         }
         super.renderBackground();
     }

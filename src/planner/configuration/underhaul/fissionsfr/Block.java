@@ -1,4 +1,5 @@
 package planner.configuration.underhaul.fissionsfr;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,8 @@ public class Block extends RuleContainer{
     public boolean fuelCell = false;
     public boolean moderator = false;
     public String active;
-    public BufferedImage texture;
+    private BufferedImage texture;
+    public BufferedImage displayTexture;
     public Block(String name){
         this.name = name;
     }
@@ -77,5 +79,16 @@ public class Block extends RuleContainer{
             config.set("texture", tex);
         }
         return config;
+    }
+    public void setTexture(BufferedImage image){
+        texture = image;
+        BufferedImage displayImg = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        for(int x = 0; x<image.getWidth(); x++){
+            for(int y = 0; y<image.getHeight(); y++){
+                Color col = new Color(image.getRGB(x, y));
+                displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
+            }
+        }
+        displayTexture = displayImg;
     }
 }
