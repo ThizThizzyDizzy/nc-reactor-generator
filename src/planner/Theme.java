@@ -4,14 +4,14 @@ import java.util.ArrayList;
 public abstract class Theme{
     public static ArrayList<Theme> themes = new ArrayList<>();
     static{
-        themes.add(new SolidColorTheme("Grey", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f));
-        themes.add(new SolidColorTheme("Heavy Water", new Color(40, 50, 100), new Color(0.5f, 0.5f, 1f, 1f), .625f));
-        themes.add(new SolidColorTheme("Violet", new Color(100, 0, 100), new Color(1f, 0f, 1f, 1f), .625f));
-        themes.add(new SolidColorTheme("Blue", new Color(0, 0, 100), new Color(0f, 0f, 1f, 1f), .625f));
-        themes.add(new SolidColorTheme("Aqua", new Color(0, 100, 100), new Color(0f, 1f, 1f, 1f), .625f));
-        themes.add(new SolidColorTheme("Green", new Color(0, 100, 0), new Color(0f, 1f, 0f, 1f), .625f));
-        themes.add(new SolidColorTheme("Yellow", new Color(100, 100, 0), new Color(1f, 1f, 0f, 1f), .625f));
-        themes.add(new SolidColorTheme("Red", new Color(100, 0, 0), new Color(1f, 0f, 0f, 1f), .625f));
+        themes.add(new SolidColorTheme("Grey", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .5f));
+        themes.add(new SolidColorTheme("Heavy Water", new Color(40, 50, 100), new Color(0.5f, 0.5f, 1f, 1f), .625f, 1f));
+        themes.add(new SolidColorTheme("Violet", new Color(100, 0, 100), new Color(1f, 0f, 1f, 1f), .625f, 1f));
+        themes.add(new SolidColorTheme("Blue", new Color(0, 0, 100), new Color(0f, 0f, 1f, 1f), .625f, 1f));
+        themes.add(new SolidColorTheme("Aqua", new Color(0, 100, 100), new Color(0f, 1f, 1f, 1f), .625f, 1f));
+        themes.add(new SolidColorTheme("Green", new Color(0, 100, 0), new Color(0f, 1f, 0f, 1f), .625f, 1f));
+        themes.add(new SolidColorTheme("Yellow", new Color(100, 100, 0), new Color(1f, 1f, 0f, 1f), .625f, 1f));
+        themes.add(new SolidColorTheme("Red", new Color(100, 0, 0), new Color(1f, 0f, 0f, 1f), .625f, 1f));
     }
     public final String name;
     public Theme(String name){
@@ -35,11 +35,13 @@ public abstract class Theme{
         private final Color background;
         private final Color color;
         private final float rgbTint;
-        public SolidColorTheme(String name, Color background, Color color, float rgbTint){
+        private final float rgbSat;
+        public SolidColorTheme(String name, Color background, Color color, float rgbTint, float rgbSat){
             super(name);
             this.background = background;
             this.color = color;
             this.rgbTint = rgbTint;
+            this.rgbSat = rgbSat;
         }
         @Override
         public Color getBackgroundColor(){
@@ -83,15 +85,15 @@ public abstract class Theme{
         }
         @Override
         public Color getRed(){
-            return new Color(rgbTint, 0, 0);
+            return new Color(rgbTint, rgbTint*(1-rgbSat), rgbTint*(1-rgbSat));
         }
         @Override
         public Color getGreen(){
-            return new Color(0, rgbTint, 0);
+            return new Color(rgbTint*(1-rgbSat), rgbTint, rgbTint*(1-rgbSat));
         }
         @Override
         public Color getBlue(){
-            return new Color(0, 0, rgbTint);
+            return new Color(rgbTint*(1-rgbSat), rgbTint*(1-rgbSat), rgbTint);
         }
         @Override
         public Color getButtonColor(float tint){
