@@ -91,7 +91,7 @@ public class Block extends RuleContainer{
     public int heatMult;
     public boolean blocksLOS = false;
     public boolean functional;
-    private BufferedImage texture;
+    public BufferedImage texture;
     public BufferedImage displayTexture;
     public Block(String name){
         this.name = name;

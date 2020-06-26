@@ -27,6 +27,13 @@ public class MenuComponentMinimalistButton extends MenuComponentButton{
         GL11.glColor4f(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F, color.getAlpha()/255F);
     }
     public void drawText(){
+        if(height>width){
+            drawCenteredText(x, y+height/2-width/2, x+width, y+height/2+width/2, label);
+        }
         drawCenteredText(x, y+textInset, x+width, y+height-textInset, label);
+    }
+    @Override
+    public boolean mouseWheelChange(int wheelChange){
+        return parent.mouseWheelChange(wheelChange);
     }
 }

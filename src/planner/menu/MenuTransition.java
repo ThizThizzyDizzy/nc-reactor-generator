@@ -17,6 +17,10 @@ public class MenuTransition extends Menu{
         this.time = time;
     }
     @Override
+    public void onGUIOpened(){
+        to.onGUIOpened();
+    }
+    @Override
     public void tick(){
         from.tick();
         to.tick();

@@ -116,13 +116,13 @@ public class PlacementRule extends RuleContainer{
         switch(ruleType){
             case BETWEEN:
                 config.set("type", (byte)0);
-                config.set("block", (byte)Core.configuration.overhaul.fissionSFR.blocks.indexOf(block));
+                config.set("block", (byte)(Core.configuration.overhaul.fissionSFR.blocks.indexOf(block)+1));
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case AXIAL:
                 config.set("type", (byte)1);
-                config.set("block", (byte)Core.configuration.overhaul.fissionSFR.blocks.indexOf(block));
+                config.set("block", (byte)(Core.configuration.overhaul.fissionSFR.blocks.indexOf(block)+1));
                 config.set("min", min);
                 config.set("max", max);
                 break;

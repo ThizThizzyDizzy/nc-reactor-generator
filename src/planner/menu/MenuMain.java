@@ -204,6 +204,10 @@ public class MenuMain extends Menu{
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);
         settings.enabled = !(adding||metadating);
+        importFile.enabled = !(adding||metadating);
+        exportFile.enabled = !(adding||metadating);
+        saveFile.enabled = !(adding||metadating);
+        loadFile.enabled = !(adding||metadating);
         for(MenuComponentMinimalistButton b : multiblockButtons){
             b.enabled = adding;
         }
@@ -246,5 +250,9 @@ public class MenuMain extends Menu{
                 }
             }
         }
+    }
+    public Multiblock getSelectedMultiblock(){
+        if(multiblocks.getSelectedIndex()==-1)return null;
+        return ((MenuComponentMultiblock)multiblocks.components.get(multiblocks.getSelectedIndex())).multiblock;
     }
 }

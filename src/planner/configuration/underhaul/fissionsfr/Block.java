@@ -1,14 +1,7 @@
 package planner.configuration.underhaul.fissionsfr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import javax.imageio.ImageIO;
 import planner.Core;
-import planner.Main;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
@@ -49,7 +42,7 @@ public class Block extends RuleContainer{
     public boolean fuelCell = false;
     public boolean moderator = false;
     public String active;
-    private BufferedImage texture;
+    public BufferedImage texture;
     public BufferedImage displayTexture;
     public Block(String name){
         this.name = name;
@@ -86,6 +79,11 @@ public class Block extends RuleContainer{
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){
                 Color col = new Color(image.getRGB(x, y));
+                if(active!=null){
+                    if(x==0||y==0||x==image.getWidth()-1||y==image.getHeight()-1){
+                        col = new Color(144, 238, 144);
+                    }
+                }
                 displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
             }
         }

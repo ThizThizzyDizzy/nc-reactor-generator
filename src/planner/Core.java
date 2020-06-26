@@ -23,7 +23,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.configuration.Configuration;
 import planner.file.FileReader;
-import planner.file.NCPFFile;
 import planner.multiblock.Multiblock;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.Sys;
@@ -101,7 +100,6 @@ public class Core extends Renderer2D{
             helper.setFullscreen(true);
             helper.setAutoExitFullscreen(false);
         }
-        helper.setRenderRange(0, 1000);
         helper.setFrameOfView(90);
         Sys.initLWJGLGame(new File("errors/"), new ErrorAdapter(){
             @Override
@@ -159,11 +157,33 @@ public class Core extends Renderer2D{
     public static void finalInit() throws LWJGLException{
     }
     public static void tick(boolean isLastTick){
+        if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))xRot-=2;
+        if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))xRot+=2;
+        if(Keyboard.isKeyDown(Keyboard.KEY_UP))yRot-=2;
+        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))yRot+=2;
+        yRot = Math.min(45, Math.max(-45, yRot));
         if(!isLastTick){
             gui.tick();
         }
     }
+    private static float xRot = 0;
+    private static float yRot = 0;
     public static void render(int millisSinceLastTick){
+        GL11.glColor4d(1, 1, 1, 1);
+        if(gui.menu instanceof MenuMain){
+            GL11.glPushMatrix();
+            GL11.glTranslated(.4, 0, -1.5);
+            GL11.glRotated(yRot, 1, 0, 0);
+            GL11.glRotated(xRot, 0, 1, 0);
+            Multiblock mb = ((MenuMain)gui.menu).getSelectedMultiblock();
+            if(mb!=null){
+                double size = Math.max(mb.getX(), Math.max(mb.getY(), mb.getZ()));
+                GL11.glScaled(1/size, 1/size, 1/size);
+                GL11.glTranslated(-mb.getX()/2d, -mb.getY()/2d, -mb.getZ()/2d);
+                mb.draw3D();
+            }
+            GL11.glPopMatrix();
+        }
         if(is3D&&enableCullFace) GL11.glDisable(GL11.GL_CULL_FACE);
         gui.render(millisSinceLastTick);
         if(is3D&&enableCullFace) GL11.glEnable(GL11.GL_CULL_FACE);

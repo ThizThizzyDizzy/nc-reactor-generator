@@ -1,6 +1,7 @@
 package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.gui.components.MenuComponentScrollable;
 public class MenuComponentMinimalistScrollable extends MenuComponentScrollable{
@@ -93,6 +94,7 @@ public class MenuComponentMinimalistScrollable extends MenuComponentScrollable{
     int lowestNonZeroWheel = Integer.MAX_VALUE;
     @Override
     public boolean mouseWheelChange(int wheelChange){
+        if(!isClickWithinBounds(Mouse.getX(), Display.getHeight()-Mouse.getY(), x, y, x+width, y+height))return false;
         if(wheelChange!=0){
             lowestNonZeroWheel = Math.min(lowestNonZeroWheel, Math.abs(wheelChange));
         }
@@ -103,6 +105,6 @@ public class MenuComponentMinimalistScrollable extends MenuComponentScrollable{
         for(int i = 0; i<-scroll; i++){
             scrollDown();
         }
-        return super.mouseWheelChange(wheelChange);
+        return true;
     }
 }
