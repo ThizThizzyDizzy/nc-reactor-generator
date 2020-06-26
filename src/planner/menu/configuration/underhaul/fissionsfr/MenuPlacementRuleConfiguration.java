@@ -1,7 +1,5 @@
 package planner.menu.configuration.underhaul.fissionsfr;
-import java.awt.Color;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.configuration.underhaul.fissionsfr.PlacementRule;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -10,7 +8,6 @@ import planner.menu.component.MenuComponentMinimalistSlider;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuPlacementRuleConfiguration extends Menu{
-    private static final Color textColor = new Color(.1f, .1f, .2f, 1f);
     private final MenuComponentMinimalistOptionButton type = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Type", true, true, 0, PlacementRule.RuleType.getStringList()));
     private final MenuComponentMinimalistOptionButton blockType = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Type", true, true, 0, PlacementRule.BlockType.getStringList()));
     private final MenuComponentMinimalistOptionButton block = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Block", true, true, 0, Core.configuration.underhaul.fissionSFR.getBlockStringList()));
@@ -73,8 +70,8 @@ public class MenuPlacementRuleConfiguration extends Menu{
                 throw new IllegalArgumentException("Unknown rule type: "+PlacementRule.RuleType.values()[type.getIndex()].name());
         }
         back.y = Display.getHeight()-back.height;
-        GL11.glColor4f(textColor.getRed()/255f, textColor.getGreen()/255f, textColor.getBlue()/255f, textColor.getAlpha()/255f);
-        GL11.glColor4f(1, 1, 1, 1);
+        Core.applyColor(Core.theme.getTextColor());
+        Core.applyWhite();
         super.render(millisSinceLastTick);
     }
 }

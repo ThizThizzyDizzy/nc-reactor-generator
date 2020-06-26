@@ -1,7 +1,5 @@
 package planner.menu.configuration.underhaul.fissionsfr;
-import java.awt.Color;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
@@ -9,7 +7,6 @@ import static simplelibrary.opengl.Renderer2D.drawText;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuFissionSFRConfiguration extends Menu{
-    private static final Color textColor = new Color(.1f, .1f, .2f, 1f);
     private final MenuComponentMinimalistButton blocks = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Blocks", true, true));
     private final MenuComponentMinimalistButton fuels = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Fuels", true, true));
     private final MenuComponentMinimalistTextBox minSize = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
@@ -65,14 +62,14 @@ public class MenuFissionSFRConfiguration extends Menu{
         moderatorExtraHeat.y = moderatorExtraPower.y+moderatorExtraPower.height;
         activeCoolerRate.y = moderatorExtraHeat.y+moderatorExtraHeat.height;
         back.y = Display.getHeight()-back.height;
-        GL11.glColor4f(textColor.getRed()/255f, textColor.getGreen()/255f, textColor.getBlue()/255f, textColor.getAlpha()/255f);
+        Core.applyColor(Core.theme.getTextColor());
         drawText(0, minSize.y+Display.getHeight()/64, Display.getWidth()*.25, minSize.y+minSize.height-Display.getHeight()/64, "Minimum reactor size");
         drawText(0, maxSize.y+Display.getHeight()/64, Display.getWidth()*.25, maxSize.y+maxSize.height-Display.getHeight()/64, "Maximum reactor size");
         drawText(0, neutronReach.y+Display.getHeight()/64, Display.getWidth()*.25, neutronReach.y+neutronReach.height-Display.getHeight()/64, "Neutron reach");
         drawText(0, moderatorExtraPower.y+Display.getHeight()/64, Display.getWidth()*.25, moderatorExtraPower.y+moderatorExtraPower.height-Display.getHeight()/64, "Moderator extra power");
         drawText(0, moderatorExtraHeat.y+Display.getHeight()/64, Display.getWidth()*.25, moderatorExtraHeat.y+moderatorExtraHeat.height-Display.getHeight()/64, "Moderator extra heat");
         drawText(0, activeCoolerRate.y+Display.getHeight()/64, Display.getWidth()*.25, activeCoolerRate.y+activeCoolerRate.height-Display.getHeight()/64, "Active cooler fluid rate");
-        GL11.glColor4f(1, 1, 1, 1);
+        Core.applyWhite();
         super.render(millisSinceLastTick);
     }
 }

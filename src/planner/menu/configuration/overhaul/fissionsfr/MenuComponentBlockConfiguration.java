@@ -1,7 +1,7 @@
 package planner.menu.configuration.overhaul.fissionsfr;
-import java.awt.Color;
 import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
+import planner.Core;
 import planner.configuration.overhaul.fissionsfr.Block;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -11,7 +11,7 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
+            Core.applyColor(foregroundColor);
             GL11.glBegin(GL11.GL_TRIANGLES);
             GL11.glVertex2d(x+width*.25, y+height*.75);
             GL11.glVertex2d(x+width*.375, y+height*.75);
@@ -34,7 +34,7 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
+            Core.applyColor(foregroundColor);
             GL11.glBegin(GL11.GL_QUADS);
             GL11.glVertex2d(x+width*.1, y+height*.8);
             GL11.glVertex2d(x+width*.2, y+height*.9);
@@ -50,9 +50,9 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
     });
     public MenuComponentBlockConfiguration(Block block){
         super(0, 0, 0, 150);
-        color = new Color(.3f, .3f, .6f, 1f);
-        selectedColor = new Color(.35f, .35f, .7f, 1f);
-        foregroundColor = new Color(.1f, .1f, .2f, 1f);
+        color = Core.theme.getMultiblockColor();
+        selectedColor = Core.theme.getSelectedMultiblockColor();
+        foregroundColor = Core.theme.getTextColor();
         this.block = block;
     }
     @Override
@@ -65,13 +65,13 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
     }
     @Override
     public void render(){
-        if(isMouseOver)GL11.glColor4f(selectedColor.getRed()/255f, selectedColor.getGreen()/255f, selectedColor.getBlue()/255f, selectedColor.getAlpha()/255f);
-        else GL11.glColor4f(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
+        if(isMouseOver)Core.applyColor(selectedColor);
+        else Core.applyColor(color);
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void renderForeground(){
-        GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
+        Core.applyColor(foregroundColor);
         ArrayList<String> strs = new ArrayList<>();
         strs.add(block.name);
         if(block.cooling>0)strs.add("Cooling: "+block.cooling+" H/t");

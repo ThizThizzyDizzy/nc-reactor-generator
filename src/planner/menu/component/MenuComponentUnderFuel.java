@@ -1,25 +1,21 @@
 package planner.menu.component;
-import java.awt.Color;
-import org.lwjgl.opengl.GL11;
+import planner.Core;
 import planner.configuration.underhaul.fissionsfr.Fuel;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentUnderFuel extends MenuComponent{
     private final Fuel fuel;
     public MenuComponentUnderFuel(Fuel fuel){
         super(0, 0, 0, 0);
-        float tint = .9f;
-        color = new Color(tint/2, tint/2, tint, 1f);
-        foregroundColor = new Color(.1f, .1f, .2f, 1f);
+        color = Core.theme.getMultiblockColor();
+        selectedColor = Core.theme.getSelectedMultiblockColor();
+        foregroundColor = Core.theme.getTextColor();
         this.fuel = fuel;
     }
     @Override
     public void render(){
-        Color col = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-        if(isSelected)col = col.brighter();
-        if(isMouseOver)col = col.brighter();
-        GL11.glColor4f(col.getRed()/255F, col.getGreen()/255F, col.getBlue()/255F, col.getAlpha()/255F);
+        if(isMouseOver&&!isSelected)Core.applyAverageColor(color, selectedColor);
         drawRect(x, y, x+width, y+height, 0);
-        GL11.glColor4d(foregroundColor.getRed()/255f, foregroundColor.getGreen()/255f, foregroundColor.getBlue()/255f, foregroundColor.getAlpha()/255f);
+        Core.applyColor(foregroundColor);
         drawText();
     }
     public void drawText(){

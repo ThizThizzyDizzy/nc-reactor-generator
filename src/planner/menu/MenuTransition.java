@@ -1,6 +1,7 @@
 package planner.menu;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import planner.Core;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuTransition extends Menu{
@@ -60,18 +61,18 @@ public class MenuTransition extends Menu{
                 to.render(millisSinceLastTick);
                 GL11.glPushMatrix();
                 GL11.glTranslated(xOff, yOff, 0);
-                GL11.glColor4d(40/255d,50/255d,100/255d, 1);
+                Core.applyColor(Core.theme.getBackgroundColor());
                 drawRect(0, 0, Display.getWidth(), Display.getHeight(), 0);
-                GL11.glColor4d(1, 1, 1, 1);
+                Core.applyWhite();
                 from.render(millisSinceLastTick);
                 GL11.glPopMatrix();
             }else{
                 from.render(millisSinceLastTick);
                 GL11.glPushMatrix();
                 GL11.glTranslated(xOff, yOff, 0);
-                GL11.glColor4d(40/255d,50/255d,100/255d, 1);
+                Core.applyColor(Core.theme.getBackgroundColor());
                 drawRect(0, 0, Display.getWidth(), Display.getHeight(), 0);
-                GL11.glColor4d(1, 1, 1, 1);
+                Core.applyWhite();
                 to.render(millisSinceLastTick);
                 GL11.glPopMatrix();
             }

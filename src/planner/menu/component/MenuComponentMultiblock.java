@@ -1,6 +1,6 @@
 package planner.menu.component;
-import java.awt.Color;
 import org.lwjgl.opengl.GL11;
+import planner.Core;
 import planner.multiblock.Multiblock;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblock extends MenuComponent{
@@ -9,7 +9,7 @@ public class MenuComponentMultiblock extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
+            Core.applyColor(foregroundColor);
             GL11.glBegin(GL11.GL_TRIANGLES);
             GL11.glVertex2d(x+width*.25, y+height*.75);
             GL11.glVertex2d(x+width*.375, y+height*.75);
@@ -30,9 +30,9 @@ public class MenuComponentMultiblock extends MenuComponent{
     });
     public MenuComponentMultiblock(Multiblock multiblock){
         super(0, 0, 0, 100);
-        color = new Color(.3f, .3f, .6f, 1f);
-        selectedColor = new Color(.35f, .35f, .7f, 1f);
-        foregroundColor = new Color(.1f, .1f, .2f, 1f);
+        color = Core.theme.getMultiblockColor();
+        selectedColor = Core.theme.getSelectedMultiblockColor();
+        foregroundColor = Core.theme.getTextColor();
         this.multiblock = multiblock;
     }
     @Override
@@ -44,12 +44,12 @@ public class MenuComponentMultiblock extends MenuComponent{
     }
     @Override
     public void render(){
-        if(isMouseOver&&!isSelected)GL11.glColor4f((color.getRed()+selectedColor.getRed())/510f, (color.getGreen()+selectedColor.getGreen())/510f, (color.getBlue()+selectedColor.getBlue())/510f, (color.getAlpha()+selectedColor.getAlpha())/510f);
+        if(isMouseOver&&!isSelected)Core.applyAverageColor(color, selectedColor);
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void renderForeground(){
-        GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255f);
+        Core.applyColor(foregroundColor);
         drawText(x, y, x+width, y+height/4, multiblock.getDefinitionName());
     }
 }

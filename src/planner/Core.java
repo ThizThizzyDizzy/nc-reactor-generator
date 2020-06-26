@@ -1,7 +1,7 @@
 package planner;
+import java.awt.Color;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.menu.MenuMain;
-import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -54,6 +54,7 @@ public class Core extends Renderer2D{
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
     public static Configuration configuration;
+    public static Theme theme = Theme.themes.get(0);
     static{
         configuration = FileReader.read(() -> {
             return getInputStream("configurations/nuclearcraft.ncpf");
@@ -85,7 +86,7 @@ public class Core extends Renderer2D{
             }
         }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
         helper = new GameHelper();
-        helper.setBackground(new Color(40,50,100));
+        helper.setBackground(theme.getBackgroundColor());
         helper.setDisplaySize(800, 600);
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
@@ -169,7 +170,7 @@ public class Core extends Renderer2D{
     private static float xRot = 0;
     private static float yRot = 0;
     public static void render(int millisSinceLastTick){
-        GL11.glColor4d(1, 1, 1, 1);
+        applyWhite();
         if(gui.menu instanceof MenuMain){
             GL11.glPushMatrix();
             GL11.glTranslated(.4, 0, -1.5);
@@ -292,5 +293,21 @@ public class Core extends Renderer2D{
             c = (int)h;
         }
         return c;
+    }
+    public static void setTheme(Theme t){
+        theme = t;
+        helper.setBackground(theme.getBackgroundColor());
+    }
+    public static void applyWhite(){
+        applyColor(Color.white);
+    }
+    public static void applyColor(Color c){
+        GL11.glColor4f(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, c.getAlpha()/255f);
+    }
+    public static void applyColor(Color c, float alpha){
+        GL11.glColor4f(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, c.getAlpha()/255f*alpha);
+    }
+    public static void applyAverageColor(Color c1, Color c2){
+        GL11.glColor4f((c1.getRed()+c2.getRed())/510f, (c1.getGreen()+c2.getGreen())/510f, (c1.getBlue()+c2.getBlue())/510f, (c1.getAlpha()+c2.getAlpha())/510f);
     }
 }

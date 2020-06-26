@@ -5,7 +5,6 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.MenuConfiguration;
-import java.awt.Color;
 import java.util.ArrayList;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -16,9 +15,6 @@ import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuMain extends Menu{
-    private static final Color headerColor = new Color(.2f, .2f, .4f, 1f);
-    private static final Color header2Color = new Color(.25f, .25f, .5f, 1f);
-    private static final Color textColor = new Color(.1f, .1f, .2f, 1f);
     private MenuComponentMinimaList multiblocks = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private MenuComponentButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
     private MenuComponentButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", true, true));
@@ -87,11 +83,11 @@ public class MenuMain extends Menu{
         }
         @Override
         public void render(){
-            GL11.glColor4d(.18, .225, .45, 1);
+            Core.applyColor(Core.theme.getMetadataPanelBackgroundColor());
             drawRect(x, y, x+width, y+height, 0);
-            applyColor(new Color(.225f,.225f,.45f,1f));
+            Core.applyColor(Core.theme.getMetadataPanelHeaderColor());
             drawRect(x, y, x+width, y+height/16, 0);
-            applyColor(textColor);
+            Core.applyColor(Core.theme.getTextColor());
             drawCenteredText(x, y, x+width, y+height/16, "Metadata");
         }
         @Override
@@ -165,11 +161,11 @@ public class MenuMain extends Menu{
     }
     @Override
     public void renderBackground(){
-        applyColor(headerColor);
+        Core.applyColor(Core.theme.getHeaderColor());
         drawRect(0, 0, Display.getWidth(), Display.getHeight()/16, 0);
-        applyColor(header2Color);
+        Core.applyColor(Core.theme.getHeader2Color());
         drawRect(0, Display.getHeight()/16, Display.getWidth()/3, Display.getHeight()/8, 0);
-        applyColor(textColor);
+        Core.applyColor(Core.theme.getTextColor());
         drawCenteredText(0, Display.getHeight()/16, Display.getWidth()/3-Display.getHeight()/16, Display.getHeight()/8, "Multiblocks");
     }
     @Override
@@ -237,9 +233,6 @@ public class MenuMain extends Menu{
             multiblocks.add(new MenuComponentMultiblock(multi));
         }
         editMetadata.label = Core.metadata.containsKey("Name")?Core.metadata.get("Name"):"";
-    }
-    private void applyColor(Color color){
-        GL11.glColor4f(color.getRed()/255f,color.getGreen()/255f,color.getBlue()/255f,color.getAlpha()/255f);
     }
     @Override
     public void buttonClicked(MenuComponentButton button){

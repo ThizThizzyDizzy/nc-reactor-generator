@@ -1,14 +1,15 @@
 package planner.menu.component;
-import java.awt.Color;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import planner.Core;
+import static simplelibrary.opengl.Renderer2D.isClickWithinBounds;
 import simplelibrary.opengl.gui.components.MenuComponentList;
 public class MenuComponentMinimaList extends MenuComponentList{
-    private Color backgroundColor = new Color(.4f, .4f, .8f, 1f);
     public MenuComponentMinimaList(double x, double y, double width, double height, double scrollbarWidth){
         super(x, y, width, height, scrollbarWidth);
-        color = new Color(.25f, .25f, .5f, 1f);
-        foregroundColor = new Color(.1f, .1f, .2f, 1f);
+        color = Core.theme.getListColor();
+        foregroundColor = Core.theme.getTextColor();
     }
     @Override
     public void drawUpwardScrollbarButton(double x, double y, double width, double height){
@@ -48,29 +49,29 @@ public class MenuComponentMinimaList extends MenuComponentList{
     }
     @Override
     public void drawVerticalScrollbarBackground(double x, double y, double width, double height){
-        GL11.glColor3f(backgroundColor.getRed()/255F, backgroundColor.getGreen()/255F, backgroundColor.getBlue()/255F);
+        Core.applyColor(Core.theme.getListBackgroundColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawVerticalScrollbarForeground(double x, double y, double width, double height){
-        GL11.glColor3f(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F);
+        Core.applyColor(color);
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawHorizontalScrollbarBackground(double x, double y, double width, double height){
-        GL11.glColor3f(backgroundColor.getRed()/255F, backgroundColor.getGreen()/255F, backgroundColor.getBlue()/255F);
+        Core.applyColor(Core.theme.getListBackgroundColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawHorizontalScrollbarForeground(double x, double y, double width, double height){
-        GL11.glColor3f(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F);
+        Core.applyColor(color);
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawButton(double x, double y, double width, double height){
-        GL11.glColor3f(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F);
+        Core.applyColor(color);
         drawRect(x, y, x+width, y+height, 0);
-        GL11.glColor3f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F);
+        Core.applyColor(foregroundColor);
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2d(x+1, y);
         GL11.glVertex2d(x+1, y+height-1);
@@ -97,5 +98,21 @@ public class MenuComponentMinimaList extends MenuComponentList{
             components.get(i).isSelected = getSelectedIndex()==i;
         }
         super.renderBackground();
+    }
+    int lowestNonZeroWheel = Integer.MAX_VALUE;
+    @Override
+    public boolean mouseWheelChange(int wheelChange){
+        if(!isClickWithinBounds(Mouse.getX(), Display.getHeight()-Mouse.getY(), x, y, x+width, y+height))return false;
+        if(wheelChange!=0){
+            lowestNonZeroWheel = Math.min(lowestNonZeroWheel, Math.abs(wheelChange));
+        }
+        int scroll = wheelChange/lowestNonZeroWheel;
+        for(int i = 0; i<scroll; i++){
+            scrollUp();
+        }
+        for(int i = 0; i<-scroll; i++){
+            scrollDown();
+        }
+        return true;
     }
 }

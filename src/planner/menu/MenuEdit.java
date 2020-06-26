@@ -1,6 +1,5 @@
 package planner.menu;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.component.MenuComponentEditorBlock;
 import planner.menu.component.MenuComponentEditorListBlock;
@@ -115,7 +114,7 @@ public class MenuEdit extends Menu{
         multibwauk.x = parts.width;
         multibwauk.height = parts.height;
         super.render(millisSinceLastTick);
-        GL11.glColor4d(0, 0, 0, 1);
+        Core.applyColor(Core.theme.getTextColor());
         double ty = resize.height;
         double th = 20;
         String tip = multiblock.getTooltip()+"\n\n"+tooltip;

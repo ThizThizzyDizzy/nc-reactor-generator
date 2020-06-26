@@ -1,14 +1,13 @@
 package planner.menu;
-import java.awt.Color;
 import java.util.ArrayList;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistScrollable;
 import planner.menu.component.MenuComponentVisibleBlock;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
-import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -84,7 +83,7 @@ public class MenuResize extends Menu{
                     }
                 }
             });//add right
-            del.setForegroundColor(new Color(159, 0, 0));top.setForegroundColor(new Color(0, 159, 0));bottom.setForegroundColor(new Color(0, 159, 0));left.setForegroundColor(new Color(0, 159, 0));right.setForegroundColor(new Color(0, 159, 0));
+            del.setForegroundColor(Core.theme.getRed());top.setForegroundColor(Core.theme.getGreen());bottom.setForegroundColor(Core.theme.getGreen());left.setForegroundColor(Core.theme.getGreen());right.setForegroundColor(Core.theme.getGreen());
             del.addActionListener((e) -> {
                 deleteY(layer);
             });
@@ -113,7 +112,7 @@ public class MenuResize extends Menu{
                         }
                     }
                 });
-                delRow.setForegroundColor(new Color(159, 0, 0));
+                delRow.setForegroundColor(Core.theme.getRed());
                 delRow.addActionListener((e) -> {
                     deleteZ(row);
                 });
@@ -131,7 +130,7 @@ public class MenuResize extends Menu{
                                 }
                             }
                         });
-                        delColumn.setForegroundColor(new Color(159, 0, 0));
+                        delColumn.setForegroundColor(Core.theme.getRed());
                         delColumn.addActionListener((e) -> {
                             deleteX(column);
                         });
@@ -141,7 +140,7 @@ public class MenuResize extends Menu{
             }
         }
         MenuComponentMinimalistButton layerBottom = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE*2+CELL_SIZE*(multiblock.getY()*(multiblock.getZ()+4)), CELL_SIZE*(multiblock.getX()+4), CELL_SIZE, "+", multiblock.getY()<multiblock.getMaxSize(), true));
-        layerTop.setForegroundColor(new Color(0, 159, 0));layerBottom.setForegroundColor(new Color(0, 159, 0));
+        layerTop.setForegroundColor(Core.theme.getGreen());layerBottom.setForegroundColor(Core.theme.getGreen());
         layerTop.addActionListener((e) -> {
             expand(0,-1,0);
         });

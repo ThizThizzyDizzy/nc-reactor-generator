@@ -1,6 +1,6 @@
 package planner.menu.component;
 import java.awt.Color;
-import org.lwjgl.opengl.GL11;
+import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentSlider;
 public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled){
@@ -11,8 +11,8 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     }
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled, float tint){
         super(x, y, width, height, minimum, maximum, initial, enabled);
-        color = new Color(tint/2, tint/2, tint, 1f);
-        foregroundColor = new Color(.1f, .1f, .2f, 1f);
+        color = Core.theme.getButtonColor(tint);
+        foregroundColor = Core.theme.getTextColor();
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
@@ -20,8 +20,8 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     }
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, double minimum, double maximum, double initial, int digits, boolean enabled, float tint){
         super(x, y, width, height, minimum, maximum, initial, digits, enabled);
-        color = new Color(tint/2, tint/2, tint, 1f);
-        foregroundColor = new Color(.1f, .1f, .2f, 1f);
+        color = Core.theme.getButtonColor(tint);
+        foregroundColor = Core.theme.getTextColor();
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
@@ -58,11 +58,11 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
             col = col.darker().darker();
         }
         col = col.brighter();
-        GL11.glColor4f(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F, color.getAlpha()/255F);
+        Core.applyColor(color);
         drawRect(x, y, x+width, y+height, 0);
-        GL11.glColor4f(col.getRed()/255F, col.getGreen()/255F, col.getBlue()/255F, col.getAlpha()/255F);
+        Core.applyColor(col);
         drawRect(x+sliderX, y, x+sliderX+sliderHeight, y+sliderHeight, 0);
-        GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255F);
+        Core.applyColor(foregroundColor);
         drawCenteredText(x+textInset, y+sliderHeight+textInset, x+width-textInset, y+height-textInset, name+": "+getValueS());
     }
     @Override

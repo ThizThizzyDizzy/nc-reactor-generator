@@ -1,6 +1,6 @@
 package planner.menu.component;
 import java.awt.Color;
-import org.lwjgl.opengl.GL11;
+import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentOptionButton;
 public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton{
     public MenuComponentMinimalistOptionButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, int startingOption, String... options){
@@ -11,8 +11,8 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
     public MenuComponentMinimalistOptionButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, float tint, int startingOption, String... options){
         super(x, y, width, height, label, enabled, useMouseover, startingOption, options);
         this.label = label;
-        color = new Color(tint/2, tint/2, tint, 1f);
-        foregroundColor = new Color(.1f, .1f, .2f, 1f);
+        color = Core.theme.getButtonColor(tint);
+        foregroundColor = Core.theme.getTextColor();
     }
     @Override
     public void mouseEvent(double x, double y, int button, boolean isDown){
@@ -45,11 +45,11 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
         }else{
             col = col.darker();
         }
-        GL11.glColor4f(col.getRed()/255F, col.getGreen()/255F, col.getBlue()/255F, col.getAlpha()/255F);
+        Core.applyColor(col);
         drawRect(x, y, x+width, y+height, 0);
-        GL11.glColor4f(foregroundColor.getRed()/255F, foregroundColor.getGreen()/255F, foregroundColor.getBlue()/255F, foregroundColor.getAlpha()/255F);
+        Core.applyColor(foregroundColor);
         drawText();
-        GL11.glColor4f(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F, color.getAlpha()/255F);
+        Core.applyColor(color);
     }
     public void drawText(){
         drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, label+": "+getSelectedString());
