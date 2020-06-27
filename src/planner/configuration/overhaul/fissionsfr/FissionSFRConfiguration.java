@@ -1,5 +1,9 @@
 package planner.configuration.overhaul.fissionsfr;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import planner.multiblock.Multiblock;
+import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration{
@@ -20,7 +24,7 @@ public class FissionSFRConfiguration{
         }
         return strs;
     }
-    public Config save(){
+    public Config save(boolean partial){
         Config config = Config.newConfig();
         config.set("minSize", minSize);
         config.set("maxSize", maxSize);
@@ -30,7 +34,7 @@ public class FissionSFRConfiguration{
         config.set("sparsityPenaltyThreshold", sparsityPenaltyThreshold);
         ConfigList blocks = new ConfigList();
         for(Block block : this.blocks){
-            blocks.add(block.save());
+            blocks.add(block.save(this, partial));
         }
         config.set("blocks", blocks);
         ConfigList fuels = new ConfigList();
@@ -49,5 +53,49 @@ public class FissionSFRConfiguration{
         }
         config.set("irradiatorRecipes", irradiatorRecipes);
         return config;
+    }
+    public void applyPartial(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks){
+        Set<Block> usedBlocks = new HashSet<>();
+        Set<Fuel> usedFuels = new HashSet<>();
+        Set<Source> usedSources = new HashSet<>();
+        Set<IrradiatorRecipe> usedRecipes = new HashSet<>();
+        for(Multiblock mb : multiblocks){
+            if(mb instanceof OverhaulSFR){
+                for(planner.multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)mb).getBlocks()){
+                    usedBlocks.add(b.template);
+                    if(b.fuel!=null)usedFuels.add(b.fuel);
+                    if(b.source!=null)usedSources.add(b.source);
+                    if(b.recipe!=null)usedRecipes.add(b.recipe);
+                }
+            }
+        }
+        partial.blocks.addAll(usedBlocks);
+        partial.fuels.addAll(usedFuels);
+        partial.sources.addAll(usedSources);
+        partial.irradiatorRecipes.addAll(usedRecipes);
+    }
+    public Block convert(Block template){
+        for(Block block : blocks){
+            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+        }
+        throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
+    }
+    public Fuel convert(Fuel template){
+        for(Fuel fuel : fuels){
+            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
+        }
+        throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
+    }
+    public Source convert(Source template){
+        for(Source source : sources){
+            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
+        }
+        throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
+    }
+    public IrradiatorRecipe convert(IrradiatorRecipe template){
+        for(IrradiatorRecipe recipe : irradiatorRecipes){
+            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+        }
+        throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.toString()+"!");
     }
 }

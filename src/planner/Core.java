@@ -158,12 +158,12 @@ public class Core extends Renderer2D{
     public static void finalInit() throws LWJGLException{
     }
     public static void tick(boolean isLastTick){
-        if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))xRot-=2;
-        if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))xRot+=2;
-        if(Keyboard.isKeyDown(Keyboard.KEY_UP))yRot-=2;
-        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))yRot+=2;
-        yRot = Math.min(45, Math.max(-45, yRot));
         if(!isLastTick){
+            if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))xRot-=2;
+            if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))xRot+=2;
+            if(Keyboard.isKeyDown(Keyboard.KEY_UP))yRot-=2;
+            if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))yRot+=2;
+            yRot = Math.min(45, Math.max(-45, yRot));
             gui.tick();
         }
     }

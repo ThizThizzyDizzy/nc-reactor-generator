@@ -11,6 +11,7 @@ import planner.file.FileReader;
 import planner.file.NCPFFile;
 import planner.menu.MenuTransition;
 import planner.menu.component.MenuComponentMinimalistButton;
+import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.underhaul.MenuUnderhaulConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulConfiguration;
 import simplelibrary.config2.Config;
@@ -19,6 +20,8 @@ import simplelibrary.opengl.gui.Menu;
 public class MenuConfiguration extends Menu{
     private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", true, true));
     private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save Configuration", true, true));
+    private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, Core.configuration.name, true));
+    private final MenuComponentMinimalistTextBox version = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, Core.configuration.version, true));
     private final MenuComponentMinimalistButton underhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Underhaul Configuration", Core.configuration.underhaul!=null, true));
     private final MenuComponentMinimalistButton overhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Overhaul Configuration", Core.configuration.overhaul!=null, true));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
@@ -42,6 +45,8 @@ public class MenuConfiguration extends Menu{
         });
         save.addActionListener((e) -> {
             new Thread(() -> {
+                Core.configuration.name = name.text.trim().isEmpty()?null:name.text;
+                Core.configuration.version = version.text.trim().isEmpty()?null:version.text;
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
                 chooser.addActionListener((event) -> {
@@ -80,15 +85,29 @@ public class MenuConfiguration extends Menu{
     public void onGUIOpened(){
         underhaul.enabled = Core.configuration.underhaul!=null;
         overhaul.enabled = Core.configuration.overhaul!=null;
+        name.text = Core.configuration.name==null?"":Core.configuration.name;
+        version.text = Core.configuration.version==null?"":Core.configuration.version;
+    }
+    @Override
+    public void onGUIClosed(){
+        Core.configuration.name = name.text.trim().isEmpty()?null:name.text;
+        Core.configuration.version = version.text.trim().isEmpty()?null:version.text;
     }
     @Override
     public void render(int millisSinceLastTick){
         load.width = save.width = underhaul.width = overhaul.width = done.width = Display.getWidth();
-        load.height = save.height = underhaul.height = overhaul.height = done.height = Display.getHeight()/16;
+        name.height = version.height = load.height = save.height = underhaul.height = overhaul.height = done.height = Display.getHeight()/16;
+        name.width = version.width = Display.getWidth()*.75;
+        name.x = version.x = Display.getWidth()*.25;
         save.y = load.y+load.height;
-        underhaul.y = save.y+save.height;
+        name.y = save.y+save.height;
+        version.y = name.y+name.height;
+        underhaul.y = version.y+version.height;
         overhaul.y = underhaul.y+underhaul.height;
         done.y = Display.getHeight()-done.height;
+        Core.applyColor(Core.theme.getTextColor());
+        drawText(0, name.y, name.x, name.y+name.height, "Name");
+        drawText(0, version.y, version.x, version.y+version.height, "Version");
         super.render(millisSinceLastTick);
     }
 }

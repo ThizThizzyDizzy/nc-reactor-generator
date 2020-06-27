@@ -11,9 +11,8 @@ public class MenuComponentVisibleBlock extends MenuComponent{
     public final int blockZ;
     public MenuComponentVisibleBlock(int x, int y, int width, int height, Multiblock multiblock, int blockX, int blockY, int blockZ){
         super(x, y, width, height);
-        float tint = .9f;
         this.multiblock = multiblock;
-        color = Core.theme.getButtonColor(tint);
+        color = Core.theme.getEditorListBorderColor();
         foregroundColor = Core.theme.getTextColor();
         this.blockX = blockX;
         this.blockY = blockY;

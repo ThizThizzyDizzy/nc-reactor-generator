@@ -47,21 +47,21 @@ public class Block extends RuleContainer{
     public Block(String name){
         this.name = name;
     }
-    public Config save(){
+    public Config save(FissionSFRConfiguration configuration, boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
         if(cooling!=0)config.set("cooling", cooling);
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
             for(PlacementRule rule : rules){
-                ruls.add(rule.save());
+                ruls.add(rule.save(configuration));
             }
             config.set("rules", ruls);
         }
         if(active!=null)config.set("active", active);
         if(fuelCell)config.set("fuelCell", true);
         if(moderator)config.set("moderator", true);
-        if(texture!=null){
+        if(texture!=null&&!partial){
             ConfigNumberList tex = new ConfigNumberList();
             tex.add(texture.getWidth());
             for(int x = 0; x<texture.getWidth(); x++){

@@ -1,4 +1,7 @@
 package planner.menu;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import planner.menu.component.MenuComponentMultiblock;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -6,10 +9,18 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.MenuConfiguration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.configuration.PartialConfiguration;
+import planner.file.FileReader;
+import planner.file.NCPFFile;
 import planner.multiblock.Multiblock;
+import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -17,10 +28,10 @@ import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuMain extends Menu{
     private MenuComponentMinimaList multiblocks = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private MenuComponentButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
-    private MenuComponentButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", true, true));
-    private MenuComponentButton exportFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", true, true));
-    private MenuComponentButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", true, true));
-    private MenuComponentButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", true, true));
+    private MenuComponentButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", false, true));
+    private MenuComponentButton exportFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true));
+    private MenuComponentButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", false, true));
+    private MenuComponentButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", false, true));
     private MenuComponentButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
     private MenuComponentButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true){
         @Override
@@ -148,6 +159,69 @@ public class MenuMain extends Menu{
             });
             multiblockButtons.add(button);
         }
+        saveFile.addActionListener((e) -> {
+            new Thread(() -> {
+                NCPFFile ncpf = new NCPFFile();
+                ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
+                ncpf.multiblocks.addAll(Core.multiblocks);
+                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
+                chooser.addActionListener((event) -> {
+                    if(event.getActionCommand().equals("ApproveSelection")){
+                        File file = chooser.getSelectedFile();
+                        if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                        if(file.exists()){
+                            if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
+                            file.delete();
+                        }
+                        try(FileOutputStream stream = new FileOutputStream(file)){
+                            Config header = Config.newConfig();
+                            header.set("version", (byte)1);
+                            header.set("count", ncpf.multiblocks.size());
+                            Config meta = Config.newConfig();
+                            for(String key : Core.metadata.keySet()){
+                                if(key.trim().isEmpty())continue;
+                                meta.set(key,Core.metadata.get(key));
+                            }
+                            if(meta.properties().length>0){
+                                header.set("metadata", meta);
+                            }
+                            header.save(stream);
+                            ncpf.configuration.save(stream);
+                            for(Multiblock m : ncpf.multiblocks){
+                                m.save(ncpf.configuration, stream);
+                            }
+                        }catch(IOException ex){
+                            JOptionPane.showMessageDialog(null, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+                chooser.showSaveDialog(null);
+            }).start();
+        });
+        loadFile.addActionListener((e) -> {
+            new Thread(() -> {
+                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
+                chooser.addActionListener((event) -> {
+                    if(event.getActionCommand().equals("ApproveSelection")){
+                        File file = chooser.getSelectedFile();
+                        NCPFFile ncpf = FileReader.read(file);
+                        if(ncpf==null)return;
+                        if(!ncpf.configuration.name.equals(Core.configuration.name)){
+                            JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        for(Multiblock mb : ncpf.multiblocks){
+                            mb.convertTo(Core.configuration);
+                            Core.multiblocks.add(mb);
+                        }
+                        onGUIOpened();
+                    }
+                });
+                chooser.showOpenDialog(null);
+            }).start();
+        });
         addMultiblock.addActionListener((e) -> {
             adding = true;
         });
@@ -200,9 +274,9 @@ public class MenuMain extends Menu{
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);
         settings.enabled = !(adding||metadating);
-        importFile.enabled = !(adding||metadating);
-        exportFile.enabled = !(adding||metadating);
-        saveFile.enabled = !(adding||metadating);
+//        importFile.enabled = !(adding||metadating);
+//        exportFile.enabled = !(adding||metadating);
+        saveFile.enabled = !Core.multiblocks.isEmpty()&&!(adding||metadating);
         loadFile.enabled = !(adding||metadating);
         for(MenuComponentMinimalistButton b : multiblockButtons){
             b.enabled = adding;

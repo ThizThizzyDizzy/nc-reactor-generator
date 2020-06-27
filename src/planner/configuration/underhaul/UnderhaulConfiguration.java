@@ -1,13 +1,21 @@
 package planner.configuration.underhaul;
+import java.util.ArrayList;
 import planner.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
+import planner.multiblock.Multiblock;
 import simplelibrary.config2.Config;
 public class UnderhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
-    public Config save(){
+    public Config save(boolean partial){
         Config config = Config.newConfig();
         if(fissionSFR!=null){
-            config.set("fissionSFR", fissionSFR.save());
+            config.set("fissionSFR", fissionSFR.save(partial));
         }
         return config;
+    }
+    public void applyPartial(UnderhaulConfiguration partial, ArrayList<Multiblock> multiblocks){
+        if(fissionSFR!=null){
+            partial.fissionSFR = new FissionSFRConfiguration();
+            fissionSFR.applyPartial(partial.fissionSFR, multiblocks);
+        }
     }
 }

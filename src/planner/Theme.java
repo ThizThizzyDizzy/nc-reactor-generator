@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public abstract class Theme{
     public static ArrayList<Theme> themes = new ArrayList<>();
     static{
-        themes.add(new SolidColorTheme("Grey", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .5f));
+        themes.add(new SolidColorTheme("Grey", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f));
         themes.add(new SolidColorTheme("Heavy Water", new Color(40, 50, 100), new Color(0.5f, 0.5f, 1f, 1f), .625f, 1f));
         themes.add(new SolidColorTheme("Violet", new Color(100, 0, 100), new Color(1f, 0f, 1f, 1f), .625f, 1f));
         themes.add(new SolidColorTheme("Blue", new Color(0, 0, 100), new Color(0f, 0f, 1f, 1f), .625f, 1f));
@@ -22,7 +22,6 @@ public abstract class Theme{
     public abstract Color getHeaderColor();
     public abstract Color getHeader2Color();
     public abstract Color getListColor();
-    public abstract Color getMultiblockColor();
     public abstract Color getSelectedMultiblockColor();
     public abstract Color getListBackgroundColor();
     public abstract Color getMetadataPanelBackgroundColor();
@@ -30,7 +29,9 @@ public abstract class Theme{
     public abstract Color getRed();
     public abstract Color getGreen();
     public abstract Color getBlue();
-    public abstract Color getButtonColor(float tint);
+    public abstract Color getEditorListBorderColor();
+    public abstract Color getDarkButtonColor();
+    public abstract Color getButtonColor();
     private static class SolidColorTheme extends Theme{
         private final Color background;
         private final Color color;
@@ -64,7 +65,11 @@ public abstract class Theme{
             return tint(.5f);
         }
         @Override
-        public Color getMultiblockColor(){
+        public Color getDarkButtonColor(){
+            return tint(.55f);
+        }
+        @Override
+        public Color getButtonColor(){
             return tint(.6f);
         }
         @Override
@@ -74,6 +79,10 @@ public abstract class Theme{
         @Override
         public Color getListBackgroundColor(){
             return tint(.8f);
+        }
+        @Override
+        public Color getEditorListBorderColor(){
+            return tint(.9f);
         }
         @Override
         public Color getMetadataPanelBackgroundColor(){
@@ -94,10 +103,6 @@ public abstract class Theme{
         @Override
         public Color getBlue(){
             return new Color(rgbTint*(1-rgbSat), rgbTint*(1-rgbSat), rgbTint);
-        }
-        @Override
-        public Color getButtonColor(float tint){
-            return tint(tint);
         }
         private Color tint(float f){
             return tint(color, f);

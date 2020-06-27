@@ -6,7 +6,7 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
     public final PlacementRule rule;
-    public final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, .55f){
+    public final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, true){
         @Override
         public void renderForeground(){
             super.renderForeground();
@@ -29,7 +29,7 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
             GL11.glEnd();
         }
     });
-    public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, .55f){
+    public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, true){
         @Override
         public void renderForeground(){
             super.renderForeground();
@@ -49,7 +49,7 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
     });
     public MenuComponentPlacementRuleConfiguration(PlacementRule rule){
         super(0, 0, 0, 100);
-        color = Core.theme.getMultiblockColor();
+        color = Core.theme.getButtonColor();
         selectedColor = Core.theme.getSelectedMultiblockColor();
         foregroundColor = Core.theme.getTextColor();
         this.rule = rule;

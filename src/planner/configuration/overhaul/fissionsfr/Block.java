@@ -2,6 +2,7 @@ package planner.configuration.overhaul.fissionsfr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import planner.Core;
+import planner.configuration.Configuration;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
@@ -96,7 +97,7 @@ public class Block extends RuleContainer{
     public Block(String name){
         this.name = name;
     }
-    public Config save(){
+    public Config save(FissionSFRConfiguration configuration, boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
         if(cooling!=0)config.set("cooling", cooling);
@@ -118,11 +119,11 @@ public class Block extends RuleContainer{
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
             for(PlacementRule rule : rules){
-                ruls.add(rule.save());
+                ruls.add(rule.save(configuration));
             }
             config.set("rules", ruls);
         }
-        if(texture!=null){
+        if(texture!=null&&!partial){
             ConfigNumberList tex = new ConfigNumberList();
             tex.add(texture.getWidth());
             for(int x = 0; x<texture.getWidth(); x++){

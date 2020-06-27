@@ -3,15 +3,15 @@ import java.awt.Color;
 import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentOptionButton;
 public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton{
-    public MenuComponentMinimalistOptionButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, int startingOption, String... options){
-        this(x, y, width, height, label, enabled, useMouseover, .6f, startingOption, options);
-    }
     private String label;
     private boolean isPressed, isRightPressed;
-    public MenuComponentMinimalistOptionButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, float tint, int startingOption, String... options){
+    public MenuComponentMinimalistOptionButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, int startingOption, String... options){
+        this(x, y, width, height, label, enabled, useMouseover, false, startingOption, options);
+    }
+    public MenuComponentMinimalistOptionButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, boolean darker, int startingOption, String... options){
         super(x, y, width, height, label, enabled, useMouseover, startingOption, options);
         this.label = label;
-        color = Core.theme.getButtonColor(tint);
+        color = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
         foregroundColor = Core.theme.getTextColor();
     }
     @Override

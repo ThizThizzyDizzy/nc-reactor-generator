@@ -1,5 +1,9 @@
 package planner.configuration.underhaul.fissionsfr;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import planner.multiblock.Multiblock;
+import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration{
@@ -18,7 +22,7 @@ public class FissionSFRConfiguration{
         }
         return strs;
     }
-    public Config save(){
+    public Config save(boolean partial){
         Config config = Config.newConfig();
         config.set("minSize", minSize);
         config.set("maxSize", maxSize);
@@ -28,7 +32,7 @@ public class FissionSFRConfiguration{
         config.set("activeCoolerRate", activeCoolerRate);
         ConfigList blocks = new ConfigList();
         for(Block b : this.blocks){
-            blocks.add(b.save());
+            blocks.add(b.save(this, partial));
         }
         config.set("blocks", blocks);
         ConfigList fuels = new ConfigList();
@@ -37,5 +41,37 @@ public class FissionSFRConfiguration{
         }
         config.set("fuels", fuels);
         return config;
+    }
+    public void applyPartial(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks){
+        Set<Block> usedBlocks = new HashSet<>();
+        Set<Fuel> usedFuels = new HashSet<>();
+        for(Multiblock mb : multiblocks){
+            if(mb instanceof UnderhaulSFR){
+                for(planner.multiblock.underhaul.fissionsfr.Block b : ((UnderhaulSFR)mb).getBlocks()){
+                    usedBlocks.add(b.template);
+                }
+                usedFuels.add(((UnderhaulSFR)mb).fuel);
+            }
+        }
+        partial.blocks.addAll(usedBlocks);
+        partial.fuels.addAll(usedFuels);
+        partial.minSize = minSize;
+        partial.maxSize = maxSize;
+        partial.neutronReach = neutronReach;
+        partial.moderatorExtraPower = moderatorExtraPower;
+        partial.moderatorExtraHeat = moderatorExtraHeat;
+        partial.activeCoolerRate = activeCoolerRate;
+    }
+    public Block convert(Block template){
+        for(Block block : blocks){
+            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+        }
+        throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
+    }
+    public Fuel convert(Fuel template){
+        for(Fuel fuel : fuels){
+            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
+        }
+        throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
     }
 }

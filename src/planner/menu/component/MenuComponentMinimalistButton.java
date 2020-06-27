@@ -4,11 +4,11 @@ import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuComponentMinimalistButton extends MenuComponentButton{
     public MenuComponentMinimalistButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover){
-        this(x, y, width, height, label, enabled, useMouseover, .6f);
+        this(x, y, width, height, label, enabled, useMouseover, false);
     }
-    public MenuComponentMinimalistButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, float tint){
+    public MenuComponentMinimalistButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, boolean darker){
         super(x, y, width, height, label, enabled, useMouseover);
-        color = Core.theme.getButtonColor(tint);
+        color = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
         foregroundColor = Core.theme.getTextColor();
     }
     @Override

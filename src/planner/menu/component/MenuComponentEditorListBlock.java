@@ -8,7 +8,7 @@ public class MenuComponentEditorListBlock extends MenuComponent{
     public final Block block;
     public MenuComponentEditorListBlock(Block block){
         super(0, 0, 0, 0);
-        color = Core.theme.getButtonColor(.9f);
+        color = Core.theme.getEditorListBorderColor();
         foregroundColor = Core.theme.getTextColor();
         this.block = block;
         selectedColor = foregroundColor.darker();

@@ -1,16 +1,22 @@
 package planner.multiblock.underhaul.fissionsfr;
 import java.util.List;
 import planner.Core;
+import planner.configuration.Configuration;
 import planner.configuration.underhaul.fissionsfr.Fuel;
 import planner.multiblock.Multiblock;
 import simplelibrary.Queue;
+import simplelibrary.config2.Config;
+import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
     private int heat, power;
     private float efficiency;
     public Fuel fuel;
     public UnderhaulSFR(){
-        super(7, 5, 7);
-        fuel = Core.configuration.underhaul.fissionSFR.fuels.get(0);
+        this(7, 5, 7, Core.configuration.underhaul.fissionSFR.fuels.get(0));
+    }
+    public UnderhaulSFR(int x, int y, int z, Fuel fuel){
+        super(x, y, z);
+        this.fuel = fuel;
     }
     @Override
     public String getDefinitionName(){
@@ -69,5 +75,59 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return "Power Generation: "+power+"RF/t\n"
                 + "Heat: "+heat+"H/t\n"
                 + "Efficiency: "+percent(efficiency, 0);
+    }
+    @Override
+    public int getMultiblockID(){
+        return 0;
+    }
+    @Override
+    protected void save(Configuration configuration, Config config){
+        ConfigNumberList size = new ConfigNumberList();
+        size.add(getX());
+        size.add(getY());
+        size.add(getZ());
+        config.set("size", size);
+        config.set("fuel", (byte)configuration.underhaul.fissionSFR.fuels.indexOf(fuel));
+        boolean compact = isCompact(configuration);//find perfect compression ratio
+        config.set("compact", compact);
+        ConfigNumberList blox = new ConfigNumberList();
+        if(compact){
+            for(int x = 0; x<getX(); x++){
+                for(int y = 0; y<getY(); y++){
+                    for(int z = 0; z<getZ(); z++){
+                        Block block = getBlock(x, y, z);
+                        if(block==null)blox.add(0);
+                        else blox.add(configuration.underhaul.fissionSFR.blocks.indexOf(block.template)+1);
+                    }
+                }
+            }
+        }else{
+            for(Block block : getBlocks()){
+                blox.add(block.x);
+                blox.add(block.y);
+                blox.add(block.z);
+                blox.add(configuration.underhaul.fissionSFR.blocks.indexOf(block.template)+1);
+            }
+        }
+        config.set("blocks", blox);
+    }
+    private boolean isCompact(Configuration configuration){
+        int blockCount = getBlocks().size();
+        int volume = getX()*getY()*getZ();
+        int bitsPerDim = logBase(2, Math.max(getX(), Math.max(getY(), getZ())));
+        int bitsPerType = logBase(2, configuration.underhaul.fissionSFR.blocks.size());
+        int compactBits = bitsPerType*volume;
+        int spaciousBits = 4*Math.max(bitsPerDim, bitsPerType)*blockCount;
+        return compactBits<spaciousBits;
+    }
+    private static int logBase(int base, int n){
+        return (int)(Math.log(n)/Math.log(base));
+    }
+    @Override
+    public void convertTo(Configuration to){
+        for(Block block : getBlocks()){
+            block.template = to.underhaul.fissionSFR.convert(block.template);
+        }
+        fuel = to.underhaul.fissionSFR.convert(fuel);
     }
 }

@@ -1,9 +1,12 @@
 package planner.multiblock;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.configuration.Configuration;
 import simplelibrary.Queue;
+import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
 public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public Block[][][] blocks;
@@ -230,4 +233,13 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         GL11.glVertex3d(x, y+1, z);
         GL11.glEnd();
     }
+    public final void save(Configuration configuration, FileOutputStream stream){
+        Config config = Config.newConfig();
+        config.set("id", getMultiblockID());
+        save(configuration, config);
+        config.save(stream);
+    }
+    protected abstract void save(Configuration configuration, Config config);
+    public abstract int getMultiblockID();
+    public abstract void convertTo(Configuration to);
 }

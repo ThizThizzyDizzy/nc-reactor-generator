@@ -5,6 +5,9 @@ import java.util.Objects;
 import planner.Core;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
+import planner.configuration.underhaul.fissionsfr.Block;
+import planner.configuration.underhaul.fissionsfr.Fuel;
+import planner.multiblock.Multiblock;
 import simplelibrary.config2.Config;
 public class Configuration{
     public String name;
@@ -28,8 +31,10 @@ public class Configuration{
     public void save(FileOutputStream stream){
         Config config = Config.newConfig();
         config.set("partial", isPartial());
-        if(underhaul!=null)config.set("underhaul", underhaul.save());
-        if(overhaul!=null)config.set("overhaul", overhaul.save());
+        if(underhaul!=null)config.set("underhaul", underhaul.save(isPartial()));
+        if(overhaul!=null)config.set("overhaul", overhaul.save(isPartial()));
+        if(name!=null)config.set("name", name);
+        if(version!=null)config.set("version", version);
         config.save(stream);
     }
     protected boolean isPartial(){
@@ -45,5 +50,15 @@ public class Configuration{
         }
         configuration.name = name;
         configuration.version = version;
+    }
+    public void applyPartial(PartialConfiguration partial, ArrayList<Multiblock> multiblocks){
+        if(underhaul!=null){
+            partial.underhaul = new UnderhaulConfiguration();
+            underhaul.applyPartial(partial.underhaul, multiblocks);
+        }
+        if(overhaul!=null){
+            partial.overhaul = new OverhaulConfiguration();
+            overhaul.applyPartial(partial.overhaul, multiblocks);
+        }
     }
 }

@@ -16,6 +16,8 @@ import planner.configuration.Configuration;
 import planner.configuration.PartialConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
 import planner.configuration.underhaul.UnderhaulConfiguration;
+import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 public class FileReader{
@@ -47,6 +49,7 @@ public class FileReader{
                     NCPFFile ncpf = new NCPFFile();
                     if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"));
                     else ncpf.configuration = new Configuration(config.get("name"), config.get("version"));
+                    //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
                     if(config.hasProperty("underhaul")){
                         ncpf.configuration.underhaul = new UnderhaulConfiguration();
                         Config underhaul = config.get("underhaul");
@@ -108,6 +111,8 @@ public class FileReader{
                             }
                         }
                     }
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Overhaul Configuration">
                     if(config.hasProperty("overhaul")){
                         ncpf.configuration.overhaul = new OverhaulConfiguration();
                         Config overhaul = config.get("overhaul");
@@ -191,7 +196,89 @@ public class FileReader{
                             }
                         }
                     }
-                    //TODO and the multiblocks?
+//</editor-fold>
+                    for(int i = 0; i<multiblocks; i++){
+                        Config data = Config.newConfig();
+                        data.load(in);
+                        int id = data.get("id");
+                        switch(id){
+                            case 0:
+                                ConfigNumberList size = data.get("size");
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
+                                boolean compact = data.get("compact");
+                                ConfigNumberList blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<underhaulSFR.getX(); x++){
+                                        for(int y = 0; y<underhaulSFR.getY(); y++){
+                                            for(int z = 0; z<underhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0)underhaulSFR.blocks[x][y][z] = new planner.multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        underhaulSFR.blocks[x][y][z] = new planner.multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
+                                    }
+                                }
+                                ncpf.multiblocks.add(underhaulSFR);
+                                break;
+                            case 1:
+                                size = data.get("size");
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                compact = data.get("compact");
+                                blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<overhaulSFR.getX(); x++){
+                                        for(int y = 0; y<overhaulSFR.getY(); y++){
+                                            for(int z = 0; z<overhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0){
+                                                    overhaulSFR.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
+                                                }
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        overhaulSFR.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
+                                    }
+                                }
+                                ConfigNumberList fuels = data.get("fuels");
+                                ConfigNumberList sources = data.get("sources");
+                                ConfigNumberList irradiatorRecipes = data.get("irradiatorRecipes");
+                                int fuelIndex = 0;
+                                int sourceIndex = 0;
+                                int recipeIndex = 0;
+                                for(planner.multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
+                                    if(block.template.fuelCell){
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
+                                        fuelIndex++;
+                                        int sid = (int) sources.get(sourceIndex);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
+                                        sourceIndex++;
+                                    }
+                                    if(block.template.irradiator){
+                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                                        if(rid>0)block.recipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
+                                        recipeIndex++;
+                                    }
+                                }
+                                ncpf.multiblocks.add(overhaulSFR);
+                        }
+                    }
                     in.close();
                     return ncpf;
                 }catch(IOException ex){

@@ -14,7 +14,7 @@ public class MenuComponentEditorBlock extends MenuComponent{
     public MenuComponentEditorBlock(int x, int y, int width, int height, MenuEdit editor, Multiblock multiblock, int blockX, int blockY, int blockZ){
         super(x, y, width, height);
         this.multiblock = multiblock;
-        color = Core.theme.getButtonColor(.9f);
+        color = Core.theme.getEditorListBorderColor();
         foregroundColor = Core.theme.getTextColor();
         this.blockX = blockX;
         this.blockY = blockY;

@@ -5,7 +5,10 @@ import planner.configuration.underhaul.fissionsfr.PlacementRule;
 import planner.multiblock.Direction;
 import simplelibrary.Queue;
 public class Block extends planner.multiblock.Block{
-    public final planner.configuration.underhaul.fissionsfr.Block template;
+    /**
+     * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
+     */
+    public planner.configuration.underhaul.fissionsfr.Block template;
     //fuel cell
     public int adjacentCells, adjacentModerators;
     public float energyMult, heatMult;

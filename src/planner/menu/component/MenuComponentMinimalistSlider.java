@@ -4,23 +4,23 @@ import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentSlider;
 public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled){
-        this(x, y, width, height, name, minimum, maximum, initial, enabled, .6f);
+        this(x, y, width, height, name, minimum, maximum, initial, enabled, false);
     }
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, double minimum, double maximum, double initial, int digits, boolean enabled){
-        this(x, y, width, height, name, minimum, maximum, initial, digits, enabled, .6f);
+        this(x, y, width, height, name, minimum, maximum, initial, digits, enabled, false);
     }
-    public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled, float tint){
+    public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled, boolean darker){
         super(x, y, width, height, minimum, maximum, initial, enabled);
-        color = Core.theme.getButtonColor(tint);
+        color = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
         foregroundColor = Core.theme.getTextColor();
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
         updateSlider();
     }
-    public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, double minimum, double maximum, double initial, int digits, boolean enabled, float tint){
+    public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, double minimum, double maximum, double initial, int digits, boolean enabled, boolean darker){
         super(x, y, width, height, minimum, maximum, initial, digits, enabled);
-        color = Core.theme.getButtonColor(tint);
+        color = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
         foregroundColor = Core.theme.getTextColor();
         this.name = name;
         this.minimum = minimum;

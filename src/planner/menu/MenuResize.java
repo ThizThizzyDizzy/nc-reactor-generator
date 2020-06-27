@@ -15,7 +15,7 @@ public class MenuResize extends Menu{
     private final Multiblock<Block> multiblock;
     private final MenuComponentMinimalistScrollable multibwauk = add(new MenuComponentMinimalistScrollable(0, 0, 0, 0, 32, 32));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
-    private int CELL_SIZE = 64;
+    private int CELL_SIZE = 48;
     public MenuResize(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         this.multiblock = multiblock;
@@ -163,6 +163,8 @@ public class MenuResize extends Menu{
         done.height = 64;
         multibwauk.height = Display.getHeight();
         super.render(millisSinceLastTick);
+        Core.applyColor(Core.theme.getTextColor());
+        drawCenteredText(done.x, done.height, done.x+done.width, done.height+40, multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getZ());
     }
     public void expand(int x, int y, int z){
         if(x>0)multiblock.expandRight(x);
@@ -196,13 +198,4 @@ public class MenuResize extends Menu{
         }
         rects.clear();
     }
-//    public static void drawNotRect(double left, double top, double right, double bottom){
-//        ImageStash.instance.bindTexture(0);
-//        GL11.glBegin(GL11.GL_QUADS);
-//        GL11.glVertex2d(left, top);
-//        GL11.glVertex2d(right, top);
-//        GL11.glVertex2d(right, bottom);
-//        GL11.glVertex2d(left, bottom);
-//        GL11.glEnd();
-//    }
 }

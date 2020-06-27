@@ -6,7 +6,7 @@ public class MenuComponentUnderFuel extends MenuComponent{
     private final Fuel fuel;
     public MenuComponentUnderFuel(Fuel fuel){
         super(0, 0, 0, 0);
-        color = Core.theme.getMultiblockColor();
+        color = Core.theme.getButtonColor();
         selectedColor = Core.theme.getSelectedMultiblockColor();
         foregroundColor = Core.theme.getTextColor();
         this.fuel = fuel;

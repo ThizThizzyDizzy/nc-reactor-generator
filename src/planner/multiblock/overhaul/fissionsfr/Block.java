@@ -1,7 +1,13 @@
 package planner.multiblock.overhaul.fissionsfr;
 import java.awt.image.BufferedImage;
 public class Block extends planner.multiblock.Block{
-    private final planner.configuration.overhaul.fissionsfr.Block template;
+    /**
+     * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
+     */
+    public planner.configuration.overhaul.fissionsfr.Block template;
+    public planner.configuration.overhaul.fissionsfr.Fuel fuel;
+    public planner.configuration.overhaul.fissionsfr.Source source;
+    public planner.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe;
     public Block(int x, int y, int z, planner.configuration.overhaul.fissionsfr.Block template){
         super(x, y, z);
         this.template = template;

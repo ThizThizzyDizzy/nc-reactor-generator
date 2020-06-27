@@ -53,14 +53,16 @@ public class MenuEdit extends Menu{
             LAYER_GAP = CELL_SIZE/2;
             onGUIOpened();
         });
+        for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
+            parts.add(new MenuComponentEditorListBlock(availableBlock));
+        }
+        for(planner.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.fuels){
+            underFuel.add(new MenuComponentUnderFuel(fuel));
+        }
     }
     @Override
     public void onGUIOpened(){
         multisPerRow = Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)));
-        parts.components.clear();
-        for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
-            parts.add(new MenuComponentEditorListBlock(availableBlock));
-        }
         multibwauk.components.clear();
         for(int y = 0; y<multiblock.getY(); y++){
             for(int z = 0; z<multiblock.getZ(); z++){
@@ -72,10 +74,6 @@ public class MenuEdit extends Menu{
                     multibwauk.add(new MenuComponentEditorBlock(x*CELL_SIZE+column*layerWidth, z*CELL_SIZE+row*layerHeight, CELL_SIZE, CELL_SIZE, this, multiblock, x, y, z));
                 }
             }
-        }
-        underFuel.components.clear();
-        for(planner.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.fuels){
-            underFuel.add(new MenuComponentUnderFuel(fuel));
         }
     }
     @Override

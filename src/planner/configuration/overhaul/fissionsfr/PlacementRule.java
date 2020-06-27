@@ -1,5 +1,6 @@
 package planner.configuration.overhaul.fissionsfr;
 import planner.Core;
+import planner.configuration.Configuration;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class PlacementRule extends RuleContainer{
@@ -111,18 +112,18 @@ public class PlacementRule extends RuleContainer{
     public Block block;
     public byte min;
     public byte max;
-    public Config save(){
+    public Config save(FissionSFRConfiguration configuration){
         Config config = Config.newConfig();
         switch(ruleType){
             case BETWEEN:
                 config.set("type", (byte)0);
-                config.set("block", (byte)(Core.configuration.overhaul.fissionSFR.blocks.indexOf(block)+1));
+                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case AXIAL:
                 config.set("type", (byte)1);
-                config.set("block", (byte)(Core.configuration.overhaul.fissionSFR.blocks.indexOf(block)+1));
+                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
                 config.set("min", min);
                 config.set("max", max);
                 break;
@@ -145,7 +146,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("type", (byte)5);
                 ConfigList ruls = new ConfigList();
                 for(PlacementRule rule : rules){
-                    ruls.add(rule.save());
+                    ruls.add(rule.save(configuration));
                 }
                 config.set("rules", ruls);
                 break;
@@ -153,7 +154,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("type", (byte)6);
                 ruls = new ConfigList();
                 for(PlacementRule rule : rules){
-                    ruls.add(rule.save());
+                    ruls.add(rule.save(configuration));
                 }
                 config.set("rules", ruls);
                 break;
