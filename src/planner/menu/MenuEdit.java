@@ -1,6 +1,7 @@
 package planner.menu;
 import org.lwjgl.opengl.Display;
 import planner.Core;
+import planner.menu.component.MenuComponentCoolantRecipe;
 import planner.menu.component.MenuComponentEditorBlock;
 import planner.menu.component.MenuComponentEditorListBlock;
 import planner.menu.component.MenuComponentMinimaList;
@@ -10,6 +11,7 @@ import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentUnderFuel;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
+import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
@@ -22,7 +24,7 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimalistButton zoomOut = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "-", true, true));
     private final MenuComponentMinimalistButton zoomIn = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
     private final MenuComponentMinimalistButton resize = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Resize", true, true));
-    private final MenuComponentMinimaList underFuel = new MenuComponentMinimaList(0, 0, 0, 0, 32);
+    private final MenuComponentMinimaList fuelOrCoolantRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 32);
     private double scale = 4;
     private double minScale = 0.5;
     private double maxScale = 16;
@@ -32,12 +34,24 @@ public class MenuEdit extends Menu{
     private int multisPerRow = 0;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
-        if(multiblock instanceof UnderhaulSFR)add(underFuel);
+        if(multiblock instanceof UnderhaulSFR){
+            add(fuelOrCoolantRecipe);
+            for(planner.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.fuels){
+                fuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
+            }
+        }
+        if(multiblock instanceof OverhaulSFR){
+            add(fuelOrCoolantRecipe);
+            for(planner.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                fuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
+            }
+        }
         this.multiblock = multiblock;
         multibwauk.setScrollMagnitude(CELL_SIZE/2);
         back.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(1, 0), 5));
         });
+        resize.textInset+=10;
         resize.addActionListener((e) -> {
             gui.open(new MenuResize(gui, this, multiblock));
         });
@@ -55,9 +69,6 @@ public class MenuEdit extends Menu{
         });
         for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
             parts.add(new MenuComponentEditorListBlock(availableBlock));
-        }
-        for(planner.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.fuels){
-            underFuel.add(new MenuComponentUnderFuel(fuel));
         }
     }
     @Override
@@ -93,19 +104,29 @@ public class MenuEdit extends Menu{
         resize.x = Display.getWidth()-resize.width;
         zoomOut.x = resize.x-zoomOut.width;
         zoomIn.x = zoomOut.x-zoomIn.width;
-        underFuel.x = resize.x;
-        underFuel.y = resize.height;
-        underFuel.width = resize.width;
-        underFuel.height = Display.getHeight()-resize.height;
-        for(MenuComponent c : underFuel.components){
-            c.width = underFuel.width-underFuel.vertScrollbarWidth;
+        fuelOrCoolantRecipe.x = resize.x;
+        fuelOrCoolantRecipe.y = resize.height;
+        fuelOrCoolantRecipe.width = resize.width;
+        fuelOrCoolantRecipe.height = Display.getHeight()-resize.height;
+        if(multiblock instanceof OverhaulSFR)fuelOrCoolantRecipe.height/=2;
+        for(MenuComponent c : fuelOrCoolantRecipe.components){
+            c.width = fuelOrCoolantRecipe.width-fuelOrCoolantRecipe.vertScrollbarWidth;
             c.height = 64;
         }
         if(multiblock instanceof UnderhaulSFR){
-            if(underFuel.getSelectedIndex()>-1){
-                planner.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.fuels.get(underFuel.getSelectedIndex());
+            if(fuelOrCoolantRecipe.getSelectedIndex()>-1){
+                planner.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.fuels.get(fuelOrCoolantRecipe.getSelectedIndex());
                 if(((UnderhaulSFR)multiblock).fuel!=fuel){
                     ((UnderhaulSFR)multiblock).fuel = fuel;
+                    recalculate();
+                }
+            }
+        }
+        if(multiblock instanceof OverhaulSFR){
+            if(fuelOrCoolantRecipe.getSelectedIndex()>-1){
+                planner.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.coolantRecipes.get(fuelOrCoolantRecipe.getSelectedIndex());
+                if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
+                    ((OverhaulSFR)multiblock).coolantRecipe = recipe;
                     recalculate();
                 }
             }
