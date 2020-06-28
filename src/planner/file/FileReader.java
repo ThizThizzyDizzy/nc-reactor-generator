@@ -14,13 +14,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import planner.Core;
 import simplelibrary.config2.Config;
 import planner.configuration.Configuration;
 import planner.configuration.PartialConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
+import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
@@ -201,6 +200,11 @@ public class FileReader{
                                 Config irradiatorRecipeCfg = (Config)irit.next();
                                 ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
                             }
+                            ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
+                            for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
+                                Config coolantRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new planner.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
+                            }
                         }
                     }
 //</editor-fold>
@@ -238,7 +242,7 @@ public class FileReader{
                                 break;
                             case 1:
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -828,6 +832,9 @@ public class FileReader{
                     ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Recipe 1", (float)irrEff[0], (float)irrHeat[0]));
                     ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Recipe 2", (float)irrEff[1], (float)irrHeat[1]));
                     ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Recipe 3", (float)irrEff[2], (float)irrHeat[2]));
+                    ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new planner.configuration.overhaul.fissionsfr.CoolantRecipe("Water to High Pressure Steam", "Water", "High Pressure Steam", 64, 4));
+                    ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new planner.configuration.overhaul.fissionsfr.CoolantRecipe("Preheated Water to High Pressure Steam", "Preheated Water", "High Pressure Steam", 32, 4));
+                    ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new planner.configuration.overhaul.fissionsfr.CoolantRecipe("IC2 Coolant to Hot IC2 Coolant", "IC2 Coolant", "Hot IC2 Coolant", 160, 1));
                     addFuels(ncpf, fuelTimeMult, "thorium", null, "TBU Oxide", "TBU Nitride", "TBU-Zirconium Alloy", null);
                     addFuels(ncpf, fuelTimeMult, "uranium", null, "LEU-233 Oxide", "LEU-233 Nitride", "LEU-233-Zirconium Alloy", null, null, "HEU-233 Oxide", "HEU-233 Nitride", "HEU-233-Zirconium Alloy", null, null, "LEU-235 Oxide", "LEU-235 Nitride", "LEU-235-Zirconium Alloy", null, null, "HEU-235 Oxide", "HEU-235 Nitride", "HEU-235-Zirconium Alloy", null);
                     addFuels(ncpf, fuelTimeMult, "neptunium", null, "LEN-236 Oxide", "LEN-236 Nitride", "LEN-236-Zirconium Alloy", null, null, "HEN-236 Oxide", "HEN-236 Nitride", "HEN-236-Zirconium Alloy", null);
@@ -1038,7 +1045,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.coolantRecipes.get(0));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionsfr.Block block = null;
@@ -1146,7 +1153,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.coolantRecipes.get(0));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionsfr.Block block = null;
@@ -1272,7 +1279,13 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                String coolantRecipeName = hellrage.getString("CoolantRecipeName").replace("Hight", "High");
+                CoolantRecipe coolantRecipe = null;
+                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                    if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
+                }
+                if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
+                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), coolantRecipe);
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionsfr.Block block = null;
@@ -1381,7 +1394,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.0.30 //TODO coolant recipe Hight pressure steam
+        });// hellrage .json 2.0.30
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
@@ -1396,7 +1409,13 @@ public class FileReader{
             public synchronized NCPFFile read(InputStream in){
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
-                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                String coolantRecipeName = hellrage.getString("CoolantRecipeName").replace("Hight", "High");
+                CoolantRecipe coolantRecipe = null;
+                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                    if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
+                }
+                if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
+                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionsfr.Block block = null;
@@ -1500,7 +1519,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.0.31 //TODO coolant recipe Hight pressure steam
+        });// hellrage .json 2.0.31
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
@@ -1515,7 +1534,13 @@ public class FileReader{
             public synchronized NCPFFile read(InputStream in){
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
-                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                String coolantRecipeName = hellrage.getString("CoolantRecipeName");
+                CoolantRecipe coolantRecipe = null;
+                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                    if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
+                }
+                if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
+                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionsfr.Block block = null;
@@ -1618,7 +1643,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.0.32-2.0.37 //TODO coolant recipe High pressure steam
+        });// hellrage .json 2.0.32-2.0.37
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
@@ -1634,7 +1659,13 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject data = hellrage.getJSONObject("Data");
                 JSONObject dims = data.getJSONObject("InteriorDimensions");
-                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                String coolantRecipeName = hellrage.getString("CoolantRecipeName");
+                CoolantRecipe coolantRecipe = null;
+                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                    if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
+                }
+                if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
+                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
                 JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionsfr.Block block = null;
@@ -1766,7 +1797,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.1.1-2.1.7 (present) //TODO coolant recipe High pressure steam
+        });// hellrage .json 2.1.1-2.1.7 (present)
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){

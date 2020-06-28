@@ -11,6 +11,7 @@ public class FissionSFRConfiguration{
     public ArrayList<Fuel> fuels = new ArrayList<>();
     public ArrayList<Source> sources = new ArrayList<>();
     public ArrayList<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
+    public ArrayList<CoolantRecipe> coolantRecipes = new ArrayList<>();
     public int minSize;
     public int maxSize;
     public int neutronReach;
@@ -52,27 +53,35 @@ public class FissionSFRConfiguration{
             irradiatorRecipes.add(recipe.save());
         }
         config.set("irradiatorRecipes", irradiatorRecipes);
+        ConfigList coolantRecipes = new ConfigList();
+        for(CoolantRecipe recipe : this.coolantRecipes){
+            coolantRecipes.add(recipe.save());
+        }
+        config.set("coolantRecipes", coolantRecipes);
         return config;
     }
     public void applyPartial(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks){
         Set<Block> usedBlocks = new HashSet<>();
         Set<Fuel> usedFuels = new HashSet<>();
         Set<Source> usedSources = new HashSet<>();
-        Set<IrradiatorRecipe> usedRecipes = new HashSet<>();
+        Set<IrradiatorRecipe> usedIrradiatorRecipes = new HashSet<>();
+        Set<CoolantRecipe> usedCoolantRecipes = new HashSet<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulSFR){
                 for(planner.multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)mb).getBlocks()){
                     usedBlocks.add(b.template);
                     if(b.fuel!=null)usedFuels.add(b.fuel);
                     if(b.source!=null)usedSources.add(b.source);
-                    if(b.recipe!=null)usedRecipes.add(b.recipe);
+                    if(b.recipe!=null)usedIrradiatorRecipes.add(b.recipe);
                 }
+                usedCoolantRecipes.add(((OverhaulSFR) mb).coolantRecipe);
             }
         }
         partial.blocks.addAll(usedBlocks);
         partial.fuels.addAll(usedFuels);
         partial.sources.addAll(usedSources);
-        partial.irradiatorRecipes.addAll(usedRecipes);
+        partial.irradiatorRecipes.addAll(usedIrradiatorRecipes);
+        partial.coolantRecipes.addAll(usedCoolantRecipes);
     }
     public Block convert(Block template){
         if(template==null)return null;
@@ -101,5 +110,12 @@ public class FissionSFRConfiguration{
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }
         throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.toString()+"!");
+    }
+    public CoolantRecipe convert(CoolantRecipe template){
+        if(template==null)return null;
+        for(CoolantRecipe recipe : coolantRecipes){
+            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+        }
+        throw new IllegalArgumentException("Failed to find match for coolant recipe "+template.toString()+"!");
     }
 }

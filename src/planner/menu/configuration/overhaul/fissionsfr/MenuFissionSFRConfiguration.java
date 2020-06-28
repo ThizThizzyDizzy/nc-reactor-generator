@@ -10,7 +10,8 @@ public class MenuFissionSFRConfiguration extends Menu{
     private final MenuComponentMinimalistButton blocks = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Blocks", true, true));
     private final MenuComponentMinimalistButton fuels = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Fuels", true, true));
     private final MenuComponentMinimalistButton sources = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Sources", true, true));
-    private final MenuComponentMinimalistButton irrecipes = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Irradiator Recipes", true, true));
+    private final MenuComponentMinimalistButton irradiatorRecipes = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Irradiator Recipes", true, true));
+    private final MenuComponentMinimalistButton coolantRecipes = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Coolant Recipes", true, true));
     private final MenuComponentMinimalistTextBox minSize = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
     private final MenuComponentMinimalistTextBox maxSize = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
     private final MenuComponentMinimalistTextBox neutronReach = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
@@ -29,8 +30,11 @@ public class MenuFissionSFRConfiguration extends Menu{
         sources.addActionListener((e) -> {
             gui.open(new MenuSourcesConfiguration(gui, this));
         });
-        irrecipes.addActionListener((e) -> {
+        irradiatorRecipes.addActionListener((e) -> {
             gui.open(new MenuIrradiatorRecipesConfiguration(gui, this));
+        });
+        coolantRecipes.addActionListener((e) -> {
+            gui.open(new MenuCoolantRecipesConfiguration(gui, this));
         });
         back.addActionListener((e) -> {
             gui.open(parent);
@@ -41,7 +45,8 @@ public class MenuFissionSFRConfiguration extends Menu{
         blocks.label = "Blocks ("+Core.configuration.overhaul.fissionSFR.blocks.size()+")";
         fuels.label = "Fuels ("+Core.configuration.overhaul.fissionSFR.fuels.size()+")";
         sources.label = "Sources ("+Core.configuration.overhaul.fissionSFR.sources.size()+")";
-        irrecipes.label = "Irradiator Recipes ("+Core.configuration.overhaul.fissionSFR.irradiatorRecipes.size()+")";
+        irradiatorRecipes.label = "Irradiator Recipes ("+Core.configuration.overhaul.fissionSFR.irradiatorRecipes.size()+")";
+        coolantRecipes.label = "Coolant Recipes ("+Core.configuration.overhaul.fissionSFR.coolantRecipes.size()+")";
         minSize.text = Core.configuration.overhaul.fissionSFR.minSize+"";
         maxSize.text = Core.configuration.overhaul.fissionSFR.maxSize+"";
         neutronReach.text = Core.configuration.overhaul.fissionSFR.neutronReach+"";
@@ -62,12 +67,13 @@ public class MenuFissionSFRConfiguration extends Menu{
     public void render(int millisSinceLastTick){
         minSize.width = maxSize.width = neutronReach.width = coolingEfficiencyLeniency.width = sparsityPenaltyMult.width = sparsityPenaltyThreshold.width = Display.getWidth()*.75;
         minSize.x = maxSize.x = neutronReach.x = coolingEfficiencyLeniency.x = sparsityPenaltyMult.x = sparsityPenaltyThreshold.x = Display.getWidth()*.25;
-        blocks.width = fuels.width = sources.width = irrecipes.width = back.width = Display.getWidth();
-        minSize.height = maxSize.height = neutronReach.height = coolingEfficiencyLeniency.height = sparsityPenaltyMult.height = sparsityPenaltyThreshold.height = blocks.height = fuels.height = sources.height = irrecipes.height = back.height = Display.getHeight()/16;
+        blocks.width = fuels.width = sources.width = irradiatorRecipes.width = coolantRecipes.width = back.width = Display.getWidth();
+        minSize.height = maxSize.height = neutronReach.height = coolingEfficiencyLeniency.height = sparsityPenaltyMult.height = sparsityPenaltyThreshold.height = blocks.height = fuels.height = sources.height = irradiatorRecipes.height = coolantRecipes.height = back.height = Display.getHeight()/16;
         fuels.y = blocks.height;
         sources.y = fuels.y+fuels.height;
-        irrecipes.y = sources.y+sources.height;
-        minSize.y = irrecipes.y+irrecipes.height;
+        irradiatorRecipes.y = sources.y+sources.height;
+        coolantRecipes.y = irradiatorRecipes.y+irradiatorRecipes.height;
+        minSize.y = coolantRecipes.y+coolantRecipes.height;
         maxSize.y = minSize.y+minSize.height;
         neutronReach.y = maxSize.y+maxSize.height;
         coolingEfficiencyLeniency.y = neutronReach.y+neutronReach.height;

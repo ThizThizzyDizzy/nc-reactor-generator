@@ -2,15 +2,18 @@ package planner.multiblock.overhaul.fissionsfr;
 import java.util.List;
 import planner.Core;
 import planner.configuration.Configuration;
+import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.multiblock.Multiblock;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulSFR extends Multiblock<Block>{
+    public CoolantRecipe coolantRecipe;
     public OverhaulSFR(){
-        this(7, 5, 7);
+        this(7, 5, 7, Core.configuration.overhaul.fissionSFR.coolantRecipes.get(0));
     }
-    public OverhaulSFR(int x, int y, int z){
+    public OverhaulSFR(int x, int y, int z, CoolantRecipe coolantRecipe){
         super(x, y, z);
+        this.coolantRecipe = coolantRecipe;
     }
     @Override
     public String getDefinitionName(){
