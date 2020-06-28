@@ -13,4 +13,8 @@ public class Source{
         config.set("efficiency", efficiency);
         return config;
     }
+    @Override
+    public String toString(){
+        return name;
+    }
 }

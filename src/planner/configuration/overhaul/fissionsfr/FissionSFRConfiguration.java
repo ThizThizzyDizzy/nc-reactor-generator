@@ -75,24 +75,28 @@ public class FissionSFRConfiguration{
         partial.irradiatorRecipes.addAll(usedRecipes);
     }
     public Block convert(Block template){
+        if(template==null)return null;
         for(Block block : blocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
     }
     public Fuel convert(Fuel template){
+        if(template==null)return null;
         for(Fuel fuel : fuels){
             if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
         }
         throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
     }
     public Source convert(Source template){
+        if(template==null)return null;
         for(Source source : sources){
             if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
         }
         throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
     }
     public IrradiatorRecipe convert(IrradiatorRecipe template){
+        if(template==null)return null;
         for(IrradiatorRecipe recipe : irradiatorRecipes){
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }

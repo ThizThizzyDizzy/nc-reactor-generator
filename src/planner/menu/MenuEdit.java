@@ -75,6 +75,7 @@ public class MenuEdit extends Menu{
                 }
             }
         }
+        recalculate();
     }
     @Override
     public void render(int millisSinceLastTick){

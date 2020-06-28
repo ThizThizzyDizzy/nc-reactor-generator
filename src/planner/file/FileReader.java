@@ -1,4 +1,7 @@
 package planner.file;
+import common.JSON;
+import common.JSON.JSONArray;
+import common.JSON.JSONObject;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -11,10 +14,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import planner.Core;
 import simplelibrary.config2.Config;
 import planner.configuration.Configuration;
 import planner.configuration.PartialConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
+import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
@@ -477,7 +484,7 @@ public class FileReader{
                 }
                 return rule;
             }
-        });// .ncpf
+        });// .ncpf version 1
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){//There's probably a better way of detecting the format...
@@ -811,7 +818,7 @@ public class FileReader{
                     ncpf.configuration.overhaul.fissionSFR.blocks.add(planner.configuration.overhaul.fissionsfr.Block.moderator("Heavy Water Moderator", "overhaul/heavy water", fluxFac[2], (float) modEff[2]));
                     double[] refEff = getDoubles("fission_reflector_efficiency");
                     double[] refRef = getDoubles("fission_reflector_reflectivity");
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(planner.configuration.overhaul.fissionsfr.Block.reflector("Berrylium-Carbon Reflector", "overhaul/beryllium-carbon", (float) refEff[0], (float) refRef[0]));
+                    ncpf.configuration.overhaul.fissionSFR.blocks.add(planner.configuration.overhaul.fissionsfr.Block.reflector("Beryllium-Carbon Reflector", "overhaul/beryllium-carbon", (float) refEff[0], (float) refRef[0]));
                     ncpf.configuration.overhaul.fissionSFR.blocks.add(planner.configuration.overhaul.fissionsfr.Block.reflector("Lead-Steel Reflector", "overhaul/lead-steel", (float) refEff[1], (float) refRef[1]));
                     double[] shieldHeat = getDoubles("fission_shield_heat_per_flux");
                     double[] shieldEff = getDoubles("fission_shield_efficiency");
@@ -926,6 +933,840 @@ public class FileReader{
                 return ret;
             }
         });// OVERHAUL nuclearcraft.cfg
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                return major==1&&minor==2&&build>=5&&build<=22;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                String dimS = hellrage.getString("InteriorDimensions");
+                String[] dims = dimS.split(",");
+                JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");
+                String fuelName = usedFuel.getString("Name");
+                planner.configuration.underhaul.fissionsfr.Fuel fuel = null;
+                for(planner.configuration.underhaul.fissionsfr.Fuel fool : Core.configuration.underhaul.fissionSFR.fuels){
+                    if(fool.name.equalsIgnoreCase(fuelName))fuel = fool;
+                }
+                if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+fuelName);
+                UnderhaulSFR sfr = new UnderhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), fuel);
+                JSON.JSONArray compressedReactor = hellrage.getJSONArray("CompressedReactor");
+                for(Object o : compressedReactor){
+                    JSONObject ob = (JSONObject) o;
+                    String name = ob.keySet().iterator().next();
+                    planner.configuration.underhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSONArray blocks = ob.getJSONArray(name);
+                    for(Object blok : blocks){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.underhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(sfr);
+                return file;
+            }
+        });// hellrage .json 1.2.5-1.2.22
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                return major==1&&minor==2&&build>=23;//&&build<=25;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
+                JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");
+                String fuelName = usedFuel.getString("Name");
+                planner.configuration.underhaul.fissionsfr.Fuel fuel = null;
+                for(planner.configuration.underhaul.fissionsfr.Fuel fool : Core.configuration.underhaul.fissionSFR.fuels){
+                    if(fool.name.equalsIgnoreCase(fuelName))fuel = fool;
+                }
+                if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+fuelName);
+                UnderhaulSFR sfr = new UnderhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), fuel);
+                JSON.JSONObject compressedReactor = hellrage.getJSONObject("CompressedReactor");
+                for(String name : compressedReactor.keySet()){
+                    planner.configuration.underhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSONArray blocks = compressedReactor.getJSONArray(name);
+                    for(Object blok : blocks){
+                        JSONObject blokLoc = (JSONObject) blok;
+                        int x = blokLoc.getInt("X")-1;
+                        int y = blokLoc.getInt("Y")-1;
+                        int z = blokLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.underhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(sfr);
+                return file;
+            }
+        });// hellrage .json 1.2.23-1.2.25 (present)
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                return major==2&&minor==0&&build>=1&&build<=6;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                String dimS = hellrage.getString("InteriorDimensions");
+                String[] dims = dimS.split(",");
+                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.conductor)conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, conductor);
+                }
+                planner.configuration.overhaul.fissionsfr.Block cell = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.fuelCell)cell = blok;
+                }
+                if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean source = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionsfr.Source src = null;
+                    float highest = 0;
+                    for(planner.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                        if(scr.efficiency>highest){
+                            src = scr;
+                            highest = src.efficiency;
+                        }
+                    }
+                    if(src==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = fuelCells.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, cell);
+                        sfr.getBlock(x, y, z).fuel = fuel;
+                        if(source)sfr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(sfr);
+                return file;
+            }
+        });// hellrage .json 2.0.1-2.0.6
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                return major==2&&minor==0&&build>=7&&build<=29;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                String dimS = hellrage.getString("InteriorDimensions");
+                String[] dims = dimS.split(",");
+                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.conductor)conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, conductor);
+                }
+                planner.configuration.overhaul.fissionsfr.Block reflector = null;
+                float best = 0;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.reflector&&blok.reflectivity>best){
+                        reflector = blok;
+                        best = blok.reflectivity;
+                    }
+                }
+                if(reflector==null)throw new IllegalArgumentException("Unknown block: Reflector");
+                JSON.JSONArray reflectors = hellrage.getJSONArray("Reflectors");
+                for(Object blok : reflectors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, reflector);
+                }
+                planner.configuration.overhaul.fissionsfr.Block cell = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.fuelCell)cell = blok;
+                }
+                if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean source = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionsfr.Source src = null;
+                    float highest = 0;
+                    for(planner.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                        if(scr.efficiency>highest){
+                            src = scr;
+                            highest = src.efficiency;
+                        }
+                    }
+                    if(src==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = fuelCells.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, cell);
+                        sfr.getBlock(x, y, z).fuel = fuel;
+                        if(source)sfr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(sfr);
+                return file;
+            }
+        });// hellrage .json 2.0.7-2.0.29
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                return major==2&&minor==0&&build==30;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                String dimS = hellrage.getString("InteriorDimensions");
+                String[] dims = dimS.split(",");
+                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.conductor)conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, conductor);
+                }
+                planner.configuration.overhaul.fissionsfr.Block reflector = null;
+                float best = 0;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.reflector&&blok.reflectivity>best){
+                        reflector = blok;
+                        best = blok.reflectivity;
+                    }
+                }
+                if(reflector==null)throw new IllegalArgumentException("Unknown block: Reflector");
+                JSON.JSONArray reflectors = hellrage.getJSONArray("Reflectors");
+                for(Object blok : reflectors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, reflector);
+                }
+                planner.configuration.overhaul.fissionsfr.Block cell = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.fuelCell)cell = blok;
+                }
+                if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionsfr.Source src = null;
+                    if(hasSource){
+                        String sourceName = fuelSettings[2];
+                        for(planner.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                            if(scr.name.equalsIgnoreCase(sourceName))src = scr;
+                        }
+                        if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
+                    }
+                    JSON.JSONArray array = fuelCells.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, cell);
+                        sfr.getBlock(x, y, z).fuel = fuel;
+                        if(hasSource)sfr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(sfr);
+                return file;
+            }
+        });// hellrage .json 2.0.30 //TODO coolant recipe Hight pressure steam
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                return major==2&&minor==0&&build==31;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
+                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.conductor)conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, conductor);
+                }
+                planner.configuration.overhaul.fissionsfr.Block reflector = null;
+                float best = 0;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.reflector&&blok.reflectivity>best){
+                        reflector = blok;
+                        best = blok.reflectivity;
+                    }
+                }
+                if(reflector==null)throw new IllegalArgumentException("Unknown block: Reflector");
+                JSON.JSONArray reflectors = hellrage.getJSONArray("Reflectors");
+                for(Object blok : reflectors){
+                    JSONObject blockLoc = (JSONObject) blok;
+                    int x = blockLoc.getInt("X")-1;
+                    int y = blockLoc.getInt("Y")-1;
+                    int z = blockLoc.getInt("Z")-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, reflector);
+                }
+                planner.configuration.overhaul.fissionsfr.Block cell = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.fuelCell)cell = blok;
+                }
+                if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionsfr.Source src = null;
+                    if(hasSource){
+                        String sourceName = fuelSettings[2];
+                        for(planner.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                            if(scr.name.equalsIgnoreCase(sourceName))src = scr;
+                        }
+                        if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
+                    }
+                    JSON.JSONArray array = fuelCells.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, cell);
+                        sfr.getBlock(x, y, z).fuel = fuel;
+                        if(hasSource)sfr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(sfr);
+                return file;
+            }
+        });// hellrage .json 2.0.31 //TODO coolant recipe Hight pressure steam
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                return major==2&&minor==0&&build>=32&&build<=37;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
+                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.conductor)conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, conductor);
+                }
+                JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
+                for(String name : reflectors.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = reflectors.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block cell = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.fuelCell)cell = blok;
+                }
+                if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionsfr.Source src = null;
+                    if(hasSource){
+                        String sourceName = fuelSettings[2];
+                        for(planner.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                            if(scr.name.equalsIgnoreCase(sourceName))src = scr;
+                        }
+                        if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
+                    }
+                    JSON.JSONArray array = fuelCells.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, cell);
+                        sfr.getBlock(x, y, z).fuel = fuel;
+                        if(hasSource)sfr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(sfr);
+                return file;
+            }
+        });// hellrage .json 2.0.32-2.0.37 //TODO coolant recipe High pressure steam
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                return major==2&&minor==1&&build>=1;//&&build<=7;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject data = hellrage.getJSONObject("Data");
+                JSONObject dims = data.getJSONObject("InteriorDimensions");
+                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = data.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.conductor)conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = data.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                    sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, conductor);
+                }
+                JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
+                for(String name : reflectors.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = reflectors.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block irradiator = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.irradiator)irradiator = blok;
+                }
+                if(irradiator==null)throw new IllegalArgumentException("Unknown block: Irradiator");
+                JSON.JSONObject irradiators = data.getJSONObject("Irradiators");
+                for(String name : irradiators.keySet()){
+                    IrradiatorRecipe irrecipe = null;
+                    try{
+                        JSON.JSONObject recipe = JSON.parse(name);
+                        for(IrradiatorRecipe irr : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
+                            if(irr.heat==recipe.getFloat("HeatPerFlux")&&irr.efficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
+                        }
+                    }catch(IOException ex){
+                        throw new IllegalArgumentException("Invalid irradiator recipe: "+name);
+                    }
+                    JSON.JSONArray array = irradiators.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, irradiator);
+                        sfr.getBlock(x, y, z).recipe = irrecipe;
+                    }
+                }
+                planner.configuration.overhaul.fissionsfr.Block cell = null;
+                for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                    if(blok.fuelCell)cell = blok;
+                }
+                if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
+                JSON.JSONObject fuelCells = data.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionsfr.Source src = null;
+                    if(hasSource){
+                        String sourceName = fuelSettings[2];
+                        if(sourceName.equals("Self"))hasSource = false;
+                        else{
+                            for(planner.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                                if(scr.name.equalsIgnoreCase(sourceName))src = scr;
+                            }
+                            if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
+                        }
+                    }
+                    JSON.JSONArray array = fuelCells.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, cell);
+                        sfr.getBlock(x, y, z).fuel = fuel;
+                        if(hasSource)sfr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(sfr);
+                return file;
+            }
+        });// hellrage .json 2.1.1-2.1.7 (present) //TODO coolant recipe High pressure steam
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){

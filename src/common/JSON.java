@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -15,7 +16,14 @@ public class JSON{
         return new JSONObject(str);
     }
     public static JSONObject parse(File file){
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+        try{
+            return parse(new FileInputStream(file));
+        }catch(IOException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+    public static JSONObject parse(InputStream stream){
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(stream))){
             String json = "";
             String line;
             if(debug)System.out.print("Reading JSON file...");
@@ -84,7 +92,7 @@ public class JSON{
                         json = json.substring(1);
                         int c = json.replaceAll("\\Q\\\"", ":D").indexOf('"');
                         String value = json.substring(0, c);
-                        put(key, value.replaceAll("\\Q\\\"", "\""));
+                        put(key.replaceAll("\\Q\\\"", "\""), value.replaceAll("\\Q\\\"", "\""));
                         if(debug)System.out.println("Found new entry: \""+key+"\": \""+value+"\"");
                         json = json.substring(c+1);
                     }else if(json.startsWith("{")){
@@ -92,7 +100,7 @@ public class JSON{
                         if(debug)System.out.println("Found new object: \""+key+"\"");
                         JSONObject newObject = new JSONObject();
                         json = newObject.parse(json);
-                        put(key, newObject);
+                        put(key.replaceAll("\\Q\\\"", "\""), newObject);
                     }else if(Character.isDigit(json.charAt(0))||json.charAt(0)=='.'||json.charAt(0)=='-'){
                         if(json.startsWith(".")||json.startsWith("-.")){
                             throw new IOException("Decimals must have a whole number! ..."+json);
@@ -134,14 +142,14 @@ public class JSON{
                                 json = json.substring(1);
                             }
                         }
-                        put(key, value);
+                        put(key.replaceAll("\\Q\\\"", "\""), value);
                         if(debug)System.out.println("Found new entry: \""+key+"\": "+value);
                     }else if(json.startsWith("[")){
                         //it's an array!
                         if(debug)System.out.println("Found new array: \""+key+"\"");
                         JSONArray newArray = new JSONArray();
                         json = newArray.parse(json.substring(1));
-                        put(key, newArray);
+                        put(key.replaceAll("\\Q\\\"", "\""), newArray);
                     }else if(json.startsWith("true")||json.startsWith("false")){
                         //it's a boolean!
                         boolean value = json.startsWith("true");
@@ -150,7 +158,7 @@ public class JSON{
                         }else{
                             json = json.substring(5);
                         }
-                        put(key, value);
+                        put(key.replaceAll("\\Q\\\"", "\""), value);
                         if(debug)System.out.println("Found new entry: \""+key+"\": "+value);
                     }else{
                         throw new IOException("Failed to parse JSON file: Unknown entry - "+sub(json,25)+"...");
@@ -282,9 +290,9 @@ public class JSON{
                 }else if(json.startsWith("\"")){
                     //it's a string!
                     json = json.substring(1);
-                    int c = json.indexOf('"');
+                    int c = json.replaceAll("\\Q\\\"", ":D").indexOf('"');
                     String value = json.substring(0, c);
-                    add(value);
+                    add(value.replaceAll("\\Q\\\"", "\""));
                     if(debug)System.out.println("Found new item: \""+value+"\"");
                     json = json.substring(c+1);
                 }else if(json.startsWith("{")){

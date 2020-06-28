@@ -1,5 +1,6 @@
 package planner.multiblock.overhaul.fissionsfr;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 public class Block extends planner.multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -33,7 +34,7 @@ public class Block extends planner.multiblock.Block{
     }
     @Override
     public String getTooltip(){
-        return "";
+        return getName()+"\nFuel: "+Objects.toString(fuel)+"\nSource: "+Objects.toString(source)+"\nRecipe: "+Objects.toString(recipe);
     }
     @Override
     public boolean isActive(){

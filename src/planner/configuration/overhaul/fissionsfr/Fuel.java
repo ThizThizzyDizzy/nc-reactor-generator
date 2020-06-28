@@ -25,4 +25,8 @@ public class Fuel{
         config.set("selfPriming", selfPriming);
         return config;
     }
+    @Override
+    public String toString(){
+        return name;
+    }
 }

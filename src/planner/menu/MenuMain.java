@@ -9,7 +9,6 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.MenuConfiguration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -180,8 +179,9 @@ public class MenuMain extends Menu{
                             header.set("count", ncpf.multiblocks.size());
                             Config meta = Config.newConfig();
                             for(String key : Core.metadata.keySet()){
-                                if(key.trim().isEmpty())continue;
-                                meta.set(key,Core.metadata.get(key));
+                                String value = Core.metadata.get(key);
+                                if(value.trim().isEmpty())continue;
+                                meta.set(key,value);
                             }
                             if(meta.properties().length>0){
                                 header.set("metadata", meta);
@@ -202,13 +202,13 @@ public class MenuMain extends Menu{
         loadFile.addActionListener((e) -> {
             new Thread(() -> {
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
+                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf", "json"));
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
                         File file = chooser.getSelectedFile();
                         NCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
-                        if(!ncpf.configuration.name.equals(Core.configuration.name)){
+                        if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
                             JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
