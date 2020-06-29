@@ -50,9 +50,13 @@ public class UnderhaulSFR extends Multiblock<Block>{
         float totalHeatMult = 0;
         float totalEnergyMult = 0;
         int cells = 0;
-        for(Block block : blocks){
-            block.calculateCooler(this);
-        }
+        boolean somethingChanged;
+        do{
+            somethingChanged = false;
+            for(Block block : blocks){
+                if(block.calculateCooler(this))somethingChanged = true;
+            }
+        }while(somethingChanged);
         int cooling = 0;
         for(Block block : blocks){
             if(block.isFuelCell()){
@@ -130,4 +134,6 @@ public class UnderhaulSFR extends Multiblock<Block>{
         }
         fuel = to.underhaul.fissionSFR.convert(fuel);
     }
+    @Override
+    public void validate(){}//nothin' to do
 }

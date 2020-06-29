@@ -71,7 +71,7 @@ public class Block extends RuleContainer{
     }
     public static Block conductor(String name, String texture){
         Block block = new Block(name);
-        block.conductor = true;
+        block.cluster = true;//because conductors connect clusters together
         block.texture = Core.getImage(texture);
         return block;
     }

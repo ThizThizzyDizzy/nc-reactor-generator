@@ -190,6 +190,7 @@ public class MenuEdit extends Menu{
     }
     private void recalculate(){
         multiblock.clearData();
+        multiblock.validate();
         multiblock.calculate();
     }
     private static interface TraceStep{

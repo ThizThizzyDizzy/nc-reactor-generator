@@ -80,6 +80,8 @@ public class MenuBlockConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
+        cluster.enabled = conductor.getIndex()==0;
+        conductor.enabled = cluster.getIndex()==0;
         createCluster.enabled = cluster.getIndex()==1;
         activeModerator.enabled = moderator.getIndex()==1;
         flux.editable = moderator.getIndex()==1||shield.getIndex()==1;

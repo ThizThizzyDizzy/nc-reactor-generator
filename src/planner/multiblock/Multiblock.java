@@ -242,4 +242,5 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     protected abstract void save(Configuration configuration, Config config);
     public abstract int getMultiblockID();
     public abstract void convertTo(Configuration to);
+    public abstract void validate();
 }

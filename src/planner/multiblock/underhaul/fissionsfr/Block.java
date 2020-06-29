@@ -95,13 +95,22 @@ public class Block extends planner.multiblock.Block{
         energyMult+=baseEff/6*Core.configuration.underhaul.fissionSFR.moderatorExtraPower*adjacentModerators;
         heatMult+=baseEff/6*Core.configuration.underhaul.fissionSFR.moderatorExtraHeat*adjacentModerators;
     }
+    /**
+     * Calculates the cooler
+     * @param reactor the reactor
+     * @return <code>true</code> if the cooler state has changed
+     */
     public boolean calculateCooler(UnderhaulSFR reactor){
         if(template.cooling==0)return false;
+        boolean wasValid = coolerValid;
         for(PlacementRule rule : template.rules){
-            if(!rule.isValid(this, reactor))return false;
+            if(!rule.isValid(this, reactor)){
+                coolerValid = false;
+                return wasValid!=coolerValid;
+            }
         }
         coolerValid = true;
-        return true;
+        return wasValid!=coolerValid;
     }
     @Override
     public String getTooltip(){

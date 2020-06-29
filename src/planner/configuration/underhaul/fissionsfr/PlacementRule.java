@@ -1,6 +1,4 @@
 package planner.configuration.underhaul.fissionsfr;
-import planner.Core;
-import planner.configuration.Configuration;
 import planner.multiblock.Axis;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
@@ -215,6 +213,7 @@ public class PlacementRule extends RuleContainer{
                         for(Axis axis : Axis.values()){
                             planner.multiblock.underhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                             planner.multiblock.underhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                            if(b1==null||b2==null)continue;
                             if(!b1.isActive()||!b2.isActive())continue;
                             switch(blockType){
                                 case CASING:

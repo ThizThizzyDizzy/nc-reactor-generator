@@ -1728,6 +1728,22 @@ public class FileReader{
                         sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
                     }
                 }
+                JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
+                for(String name : neutronShields.keySet()){
+                    planner.configuration.overhaul.fissionsfr.Block block = null;
+                    for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("neutronshield", "").replace("shield", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = neutronShields.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        sfr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, block);
+                    }
+                }
                 planner.configuration.overhaul.fissionsfr.Block irradiator = null;
                 for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
                     if(blok.irradiator)irradiator = blok;

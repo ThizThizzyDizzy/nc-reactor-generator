@@ -1,6 +1,6 @@
 package planner.configuration.overhaul.fissionsfr;
-import planner.Core;
-import planner.configuration.Configuration;
+import planner.multiblock.Axis;
+import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class PlacementRule extends RuleContainer{
@@ -195,6 +195,118 @@ public class PlacementRule extends RuleContainer{
                 return s.isEmpty()?s:s.substring(5);
         }
         return "Unknown Rule";
+    }
+    public boolean isValid(planner.multiblock.overhaul.fissionsfr.Block block, OverhaulSFR reactor){
+        int num = 0;
+        switch(ruleType){
+            case BETWEEN:
+                for(planner.multiblock.overhaul.fissionsfr.Block b : block.getActiveAdjacent(reactor)){
+                    if(b.template==this.block)num++;
+                }
+                return num>=min&&num<=max;
+            case BETWEEN_GROUP:
+                switch(blockType){
+                    case AIR:
+                        num = 6-block.getAdjacent(reactor).size();
+                        break;
+                    default:
+                        for(planner.multiblock.overhaul.fissionsfr.Block b : block.getActiveAdjacent(reactor)){
+                            switch(blockType){
+                                case CASING:
+                                    if(b.isCasing())num++;
+                                    break;
+                                case CONDUCTOR:
+                                    if(b.isConductor())num++;
+                                    break;
+                                case FUEL_CELL:
+                                    if(b.isFuelCell())num++;
+                                    break;
+                                case HEATSINK:
+                                    if(b.isHeatsink())num++;
+                                    break;
+                                case IRRADIATOR:
+                                    if(b.isIrradiator())num++;
+                                    break;
+                                case MODERATOR:
+                                    if(b.isModeratorActive())num++;
+                                    break;
+                                case REFLECTOR:
+                                    if(b.isReflector())num++;
+                                    break;
+                                case SHIELD:
+                                    if(b.isShield())num++;
+                                    break;
+                            }
+                        }
+                        break;
+                }
+                return num>=min&&num<=max;
+            case AXIAL:
+                for(Axis axis : Axis.values()){
+                    planner.multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                    planner.multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                    if(b1!=null&&b1.template==this.block&&b1.isActive()&&b2!=null&&b2.template==this.block&&b2.isActive())num++;
+                }
+                return num>=min&&num<=max;
+            case AXIAL_GROUP:
+                switch(blockType){
+                    case AIR:
+                        for(Axis axis : Axis.values()){
+                            planner.multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                            planner.multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                            if(b1==null&&b2==null)num++;
+                        }
+                        break;
+                    default:
+                        for(Axis axis : Axis.values()){
+                            planner.multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                            planner.multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                            if(b1==null||b2==null)continue;
+                            if(!b1.isActive()||!b2.isActive())continue;
+                            switch(blockType){
+                                case CASING:
+                                    if(b1.isCasing()&&b2.isCasing())num++;
+                                    break;
+                                case HEATSINK:
+                                    if(b1.isHeatsink()&&b2.isHeatsink())num++;
+                                    break;
+                                case FUEL_CELL:
+                                    if(b1.isFuelCell()&&b2.isFuelCell())num++;
+                                    break;
+                                case MODERATOR:
+                                    if(b1.isModeratorActive()&&b2.isModeratorActive())num++;
+                                    break;
+                                case CONDUCTOR:
+                                    if(b1.isConductor()&&b2.isConductor())num++;
+                                    break;
+                                case IRRADIATOR:
+                                    if(b1.isIrradiator()&&b2.isIrradiator())num++;
+                                    break;
+                                case REFLECTOR:
+                                    if(b1.isReflector()&&b2.isReflector())num++;
+                                    break;
+                                case SHIELD:
+                                    if(b1.isShield()&&b2.isShield())num++;
+                                    break;
+                            }
+                        }
+                        break;
+                }
+                return num>=min&&num<=max;
+            case NO_PANCAKES:
+                return reactor.getX()>1&&reactor.getY()>1&&reactor.getZ()>1;
+            case AND:
+                for(PlacementRule rule : rules){
+                    if(!rule.isValid(block, reactor))return false;
+                }
+                return true;
+            case OR:
+                for(PlacementRule rule : rules){
+                    if(rule.isValid(block, reactor))return true;
+                }
+                return false;
+        }
+        throw new IllegalArgumentException("Unknown rule type: "+ruleType);
     }
     public static enum RuleType{
         BETWEEN("Between"),
