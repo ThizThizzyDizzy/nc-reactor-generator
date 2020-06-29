@@ -259,7 +259,6 @@ public class MenuMain extends Menu{
         loadFile.x = saveFile.x+saveFile.width;
         editMetadata.width = Display.getWidth()*2/3-Display.getHeight()/16;
         importFile.height = exportFile.height = saveFile.height = loadFile.height = editMetadata.height = settings.width = settings.height = Display.getHeight()/16;
-        importFile.textInset = exportFile.textInset = saveFile.textInset = loadFile.textInset = importFile.height/4;
         settings.x = Display.getWidth()-Display.getHeight()/16;
         multiblocks.y = Display.getHeight()/8;
         multiblocks.height = Display.getHeight()-multiblocks.y;

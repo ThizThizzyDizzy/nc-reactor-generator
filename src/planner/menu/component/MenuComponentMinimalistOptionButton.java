@@ -1,6 +1,8 @@
 package planner.menu.component;
 import java.awt.Color;
 import planner.Core;
+import simplelibrary.font.FontManager;
+import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.components.MenuComponentOptionButton;
 public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton{
     private String label;
@@ -52,6 +54,10 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
         Core.applyColor(color);
     }
     public void drawText(){
-        drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, label+": "+getSelectedString());
+        String text = label+": "+getSelectedString();
+        double textLength = FontManager.getLengthForStringWithHeight(text, height);
+        double scale = Math.min(1, (width-textInset*2)/textLength);
+        double textHeight = (int)((height-textInset*2)*scale)-4;
+        drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
 }
