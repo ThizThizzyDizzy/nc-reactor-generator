@@ -1082,7 +1082,7 @@ public class FileReader{
                 }
                 planner.configuration.overhaul.fissionsfr.Block conductor = null;
                 for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                    if(blok.conductor)conductor = blok;
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
@@ -1190,7 +1190,7 @@ public class FileReader{
                 }
                 planner.configuration.overhaul.fissionsfr.Block conductor = null;
                 for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                    if(blok.conductor)conductor = blok;
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
@@ -1322,7 +1322,7 @@ public class FileReader{
                 }
                 planner.configuration.overhaul.fissionsfr.Block conductor = null;
                 for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                    if(blok.conductor)conductor = blok;
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
@@ -1450,7 +1450,7 @@ public class FileReader{
                 }
                 planner.configuration.overhaul.fissionsfr.Block conductor = null;
                 for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                    if(blok.conductor)conductor = blok;
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
@@ -1575,7 +1575,7 @@ public class FileReader{
                 }
                 planner.configuration.overhaul.fissionsfr.Block conductor = null;
                 for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                    if(blok.conductor)conductor = blok;
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
@@ -1701,7 +1701,7 @@ public class FileReader{
                 }
                 planner.configuration.overhaul.fissionsfr.Block conductor = null;
                 for(planner.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                    if(blok.conductor)conductor = blok;
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = data.getJSONArray("Conductors");

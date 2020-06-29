@@ -208,6 +208,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         config.set("fuels", fuels);
         config.set("sources", sources);
         config.set("irradiatorRecipes", irradiatorRecipes);
+        config.set("coolantRecipe", (byte)configuration.overhaul.fissionSFR.coolantRecipes.indexOf(coolantRecipe));
     }
     private boolean isCompact(Configuration configuration){
         int blockCount = getBlocks().size();
