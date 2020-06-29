@@ -493,10 +493,10 @@ public class FileReader{
             @Override
             public boolean formatMatches(InputStream in){//There's probably a better way of detecting the format...
                 try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
-                    String s = "";
                     String line;
-                    while((line = reader.readLine())!=null)s+=line+"\n";
-                    return s.contains("D:fission_cooling_rate");
+                    while((line = reader.readLine())!=null){
+                        if(line.contains("D:fission_cooling_rate"))return true;
+                    }
                 }catch(IOException ex){}
                 return false;
             }
@@ -684,10 +684,10 @@ public class FileReader{
             @Override
             public boolean formatMatches(InputStream in){//There's probably a better way of detecting the format...
                 try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
-                    String s = "";
                     String line;
-                    while((line = reader.readLine())!=null)s+=line+"\n";
-                    return s.contains("I:fission_sink_cooling_rate");
+                    while((line = reader.readLine())!=null){
+                        if(line.contains("I:fission_sink_cooling_rate"))return true;
+                    }
                 }catch(IOException ex){}
                 return false;
             }
@@ -1647,6 +1647,7 @@ public class FileReader{
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
+                if(true)return true;
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
                 int major = saveVersion.getInt("Major");
@@ -1659,7 +1660,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject data = hellrage.getJSONObject("Data");
                 JSONObject dims = data.getJSONObject("InteriorDimensions");
-                String coolantRecipeName = hellrage.getString("CoolantRecipeName");
+                String coolantRecipeName = data.getString("CoolantRecipeName");
                 CoolantRecipe coolantRecipe = null;
                 for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
