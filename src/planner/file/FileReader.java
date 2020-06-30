@@ -22,6 +22,7 @@ import planner.configuration.overhaul.OverhaulConfiguration;
 import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import planner.configuration.underhaul.UnderhaulConfiguration;
+import planner.multiblock.Multiblock;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.ConfigList;
@@ -46,13 +47,19 @@ public class FileReader{
             @Override
             public synchronized NCPFFile read(InputStream in){
                 try{
+                    NCPFFile ncpf = new NCPFFile();
                     Config header = Config.newConfig();
                     header.load(in);
                     int multiblocks = header.get("count");
+                    if(header.hasProperty("metadata")){
+                        Config metadata = header.get("metadata");
+                        for(String key : metadata.properties()){
+                            ncpf.metadata.put(key, metadata.get(key));
+                        }
+                    }
                     Config config = Config.newConfig();
                     config.load(in);
                     boolean partial = config.get("partial");
-                    NCPFFile ncpf = new NCPFFile();
                     if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"));
                     else ncpf.configuration = new Configuration(config.get("name"), config.get("version"));
                     //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
@@ -211,6 +218,7 @@ public class FileReader{
                     for(int i = 0; i<multiblocks; i++){
                         Config data = Config.newConfig();
                         data.load(in);
+                        Multiblock multiblock;
                         int id = data.get("id");
                         switch(id){
                             case 0:
@@ -238,7 +246,7 @@ public class FileReader{
                                         underhaulSFR.blocks[x][y][z] = new planner.multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
                                     }
                                 }
-                                ncpf.multiblocks.add(underhaulSFR);
+                                multiblock = underhaulSFR;
                                 break;
                             case 1:
                                 size = data.get("size");
@@ -287,8 +295,18 @@ public class FileReader{
                                         recipeIndex++;
                                     }
                                 }
-                                ncpf.multiblocks.add(overhaulSFR);
+                                multiblock = overhaulSFR;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
                         }
+                        if(data.hasProperty("metadata")){
+                            Config metadata = data.get("metadata");
+                            for(String key : metadata.properties()){
+                                multiblock.metadata.put(key, metadata.get(key));
+                            }
+                        }
+                        ncpf.multiblocks.add(multiblock);
                     }
                     in.close();
                     return ncpf;

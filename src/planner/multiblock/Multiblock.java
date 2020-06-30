@@ -3,6 +3,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -10,6 +11,15 @@ import planner.configuration.Configuration;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
 public abstract class Multiblock<T extends Block> extends MultiblockBit{
+    public HashMap<String, String> metadata = new HashMap<>();
+    {
+        resetMetadata();
+    }
+    public void resetMetadata(){
+        metadata.clear();
+        metadata.put("Name", "");
+        metadata.put("Author", "");
+    }
     public Block[][][] blocks;
     public Multiblock(int x, int y, int z){
         blocks = new Block[x][y][z];
@@ -268,6 +278,15 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public final void save(Configuration configuration, FileOutputStream stream){
         Config config = Config.newConfig();
         config.set("id", getMultiblockID());
+        Config meta = Config.newConfig();
+        for(String key : metadata.keySet()){
+            String value = metadata.get(key);
+            if(value.trim().isEmpty())continue;
+            meta.set(key,value);
+        }
+        if(meta.properties().length>0){
+            config.set("metadata", meta);
+        }
         save(configuration, config);
         config.save(stream);
     }
@@ -287,5 +306,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
                 }
             }
         }
+    }
+    public String getName(){
+        return metadata.containsKey("Name")?metadata.get("Name"):"";
     }
 }

@@ -50,6 +50,7 @@ public class MenuComponentMultiblock extends MenuComponent{
     @Override
     public void renderForeground(){
         Core.applyColor(foregroundColor);
-        drawText(x, y, x+width, y+height/4, multiblock.getDefinitionName());
+        drawText(x, y, x+width, y+height/4, multiblock.getName());
+        drawText(x, y+height/4, x+width, y+height/2, multiblock.getDefinitionName());
     }
 }

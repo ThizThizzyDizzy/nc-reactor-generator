@@ -33,6 +33,7 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimaList overFuel = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimaList irradiatorRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
+    private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
     private double scale = 4;
     private double minScale = 0.5;
     private double maxScale = 16;
@@ -83,12 +84,16 @@ public class MenuEdit extends Menu{
             LAYER_GAP = CELL_SIZE/2;
             onGUIOpened();
         });
+        editMetadata.addActionListener((e) -> {
+            gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
+        });
         for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
             parts.add(new MenuComponentEditorListBlock(this, availableBlock));
         }
     }
     @Override
     public void onGUIOpened(){
+        editMetadata.label = multiblock.getName();
         if(multiblock instanceof UnderhaulSFR){
             underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
         }
@@ -102,7 +107,7 @@ public class MenuEdit extends Menu{
             int row = y/multisPerRow;
             int layerWidth = multiblock.getX()*CELL_SIZE+LAYER_GAP;
             int layerHeight = multiblock.getZ()*CELL_SIZE+LAYER_GAP;
-            multibwauk.add(new planner.menu.component.MenuComponentEditorGrid(column*layerWidth, row*layerHeight, CELL_SIZE, this, multiblock, y));
+            multibwauk.add(new planner.menu.component.MenuComponentEditorGrid(column*layerWidth+LAYER_GAP/2, row*layerHeight+LAYER_GAP/2, CELL_SIZE, this, multiblock, y));
         }
         recalculate();
     }
@@ -113,11 +118,11 @@ public class MenuEdit extends Menu{
             onGUIOpened();
         }
         textBox.width = multibwauk.x = back.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
-        back.height = 48;
-        parts.y = back.height;
+        multibwauk.y = parts.y = editMetadata.height = back.height = 48;
         parts.height = (parts.components.size()+5)/partsWide*partSize;
         resize.width = 320;
-        multibwauk.width = Display.getWidth()-parts.width-resize.width;
+        editMetadata.x = parts.width;
+        editMetadata.width = multibwauk.width = Display.getWidth()-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
         zoomIn.width = zoomOut.width = resize.width/2;
         zoomIn.y = zoomOut.y = resize.height;
@@ -165,7 +170,7 @@ public class MenuEdit extends Menu{
                 }
             }
         }
-        multibwauk.height = Display.getHeight();
+        multibwauk.height = Display.getHeight()-multibwauk.y;
         textBox.y = parts.y+parts.height;
         textBox.height = Display.getHeight()-textBox.y;
         super.render(millisSinceLastTick);

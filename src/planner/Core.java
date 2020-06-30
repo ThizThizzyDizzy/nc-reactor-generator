@@ -51,7 +51,7 @@ public class Core extends Renderer2D{
     public static final float IMG_FAC = .003925f;
     public static final float IMG_POW = 2f;
     public static final float IMG_STRAIGHT_FAC = 1.5f;
-    public static final float maxYRot = 90f;
+    public static final float maxYRot = 80f;
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
@@ -89,7 +89,7 @@ public class Core extends Renderer2D{
         }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
         helper = new GameHelper();
         helper.setBackground(theme.getBackgroundColor());
-        helper.setDisplaySize(1150, 700);
+        helper.setDisplaySize(1200, 700);
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
         helper.setFinalInitMethod(Core.class.getDeclaredMethod("finalInit", new Class<?>[0]));

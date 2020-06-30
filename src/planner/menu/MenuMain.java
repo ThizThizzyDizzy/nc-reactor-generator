@@ -138,6 +138,7 @@ public class MenuMain extends Menu{
         }
     });
     private ArrayList<MenuComponentMinimalistButton> multiblockButtons = new ArrayList<>();
+    private MenuComponentMinimalistButton multiblockCancel = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Cancel", true, true, true));
     private boolean adding = false;
     private int addingScale = 0;
     private final int addingTime = 3;
@@ -147,12 +148,7 @@ public class MenuMain extends Menu{
     public MenuMain(GUI gui){
         super(gui, null);
         for(Multiblock m : Core.multiblockTypes){
-            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true){
-                @Override
-                public void drawText(){
-                    drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+textInset+height/7, m.getDefinitionName());
-                }
-            });
+            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true));
             button.addActionListener((e) -> {
                 Core.multiblocks.add(m.newInstance());
                 adding = false;
@@ -211,6 +207,8 @@ public class MenuMain extends Menu{
                         NCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
                         Core.multiblocks.clear();
+                        Core.metadata.clear();
+                        Core.metadata.putAll(ncpf.metadata);
                         if(ncpf.configuration==null||ncpf.configuration.isPartial()){
                             if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
                                 JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", JOptionPane.ERROR_MESSAGE);
@@ -266,6 +264,9 @@ public class MenuMain extends Menu{
             Core.multiblocks.remove(multiblocks.getSelectedIndex());
             onGUIOpened();
         });
+        multiblockCancel.addActionListener((e) -> {
+            adding = false;
+        });
     }
     @Override
     public void renderBackground(){
@@ -319,14 +320,19 @@ public class MenuMain extends Menu{
         for(MenuComponentMinimalistButton b : multiblockButtons){
             b.enabled = adding;
         }
+        multiblockCancel.enabled = adding;
         metadataPanel.width = Display.getWidth()*.75;
         metadataPanel.height = Display.getHeight()*.75;
         metadataPanel.x = Display.getWidth()/2-metadataPanel.width/2;
         double addScale = Math.min(1,Math.max(0,(adding?(addingScale+(millisSinceLastTick/50d)):(addingScale-(millisSinceLastTick/50d)))/addingTime));
+        multiblockCancel.width = Display.getWidth()/3*addScale;
+        multiblockCancel.height = Display.getHeight()/10*addScale;
+        multiblockCancel.x = Display.getWidth()/2-multiblockCancel.width/2;
+        multiblockCancel.y = Display.getHeight()-Display.getHeight()/8*1.5-multiblockCancel.height/2;
         for(int i = 0; i<multiblockButtons.size(); i++){
             MenuComponentMinimalistButton button = multiblockButtons.get(i);
             double midX = Display.getWidth()/(multiblockButtons.size()+1d)*(i+1);
-            double midY = Display.getHeight()/2;
+            double midY = Display.getHeight()/2-multiblockCancel.height;
             button.width = button.height = Display.getWidth()/multiblockButtons.size()/2*addScale;
             button.x = midX-button.width/2;
             button.y = midY-button.height/2;
