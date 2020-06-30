@@ -106,10 +106,10 @@ public class Main{
             }
             String[] osPaths = nativesPaths[whichOS];
             //32 bit
-            if(!new File(getLibraryRoot()+"\\natives32.zip").exists()){
+            if(!new File(getLibraryRoot()+"/natives32.zip").exists()){
                 downloadSize += 303;
             }
-            if((!new File(getLibraryRoot()+"\\natives64.zip").exists())&&whichBitDepth==BIT_64){
+            if((!new File(getLibraryRoot()+"/natives64.zip").exists())&&whichBitDepth==BIT_64){
                 downloadSize += 338;
             }
             addRequiredLibrary("https://dl.dropboxusercontent.com/s/p7v72lix4gl96co/lwjgl.jar?dl=1&token_hash=AAG5TMAYw0Oq1_xwgVjKoE8FkKXMaWOfpj5cau1UuWKZlA", "lwjgl.jar", 912);
@@ -117,14 +117,14 @@ public class Main{
             addRequiredLibrary("https://dl.dropboxusercontent.com/s/fog6w5pcxqf4zd9/lwjgl_util.jar?dl=1&token_hash=AAHwYq0uL4zeuTrLoi8EiG_RiUeMDZDsnlm4KYNScpy0Sw", "lwjgl_util.jar", 170);
             addRequiredLibrary("https://dl.dropboxusercontent.com/s/60en1x8in11leqn/lzma.jar?dl=1&token_hash=AAGUFJwmD9jKmk7j4M53Xr0_6Sisf5RSRW3JAjRgsml4gg", "lzma.jar", 6);
             for(String[] lib : requiredLibraries.keySet()){
-                if(!new File(getLibraryRoot()+"\\"+lib[1]).exists()){
+                if(!new File(getLibraryRoot()+"/"+lib[1]).exists()){
                     downloadSize+=requiredLibraries.get(lib);
                 }
             }
-            if(!new File(getLibraryRoot()+"\\Simplelibrary "+requiredSimpleLibraryVersion+".jar").exists()){
+            if(!new File(getLibraryRoot()+"/Simplelibrary "+requiredSimpleLibraryVersion+".jar").exists()){
                 downloadSize+=simplelibrarySize+2;//2 kb for the versions file
             }
-            if(requiredSimpleLibraryExtendedVersion!=null&&(!new File(getLibraryRoot()+"\\Simplelibrary_extended "+requiredSimpleLibraryExtendedVersion+".jar").exists())){
+            if(requiredSimpleLibraryExtendedVersion!=null&&(!new File(getLibraryRoot()+"/Simplelibrary_extended "+requiredSimpleLibraryExtendedVersion+".jar").exists())){
                 downloadSize+=simplelibraryExtendedSize+1;//1 kb for the versions file
             }
             if(downloadSize>0&&!allowDownload){
@@ -145,9 +145,9 @@ public class Main{
             if(downloadSize>0){
                 frame.setVisible(true);
             }
-            File bit32 = downloadFile(osPaths[BIT_32], new File(getLibraryRoot()+"\\natives32.zip"));
-            File bit64 = whichBitDepth==BIT_64?downloadFile(osPaths[BIT_64], new File(getLibraryRoot()+"\\natives64.zip")):null;
-            File nativesDir = new File(getLibraryRoot()+"\\natives");
+            File bit32 = downloadFile(osPaths[BIT_32], new File(getLibraryRoot()+"/natives32.zip"));
+            File bit64 = whichBitDepth==BIT_64?downloadFile(osPaths[BIT_64], new File(getLibraryRoot()+"/natives64.zip")):null;
+            File nativesDir = new File(getLibraryRoot()+"/natives");
             if(bit32==null||(whichBitDepth==BIT_64&&bit64==null&&osPaths[BIT_64]!=null)){
                 JOptionPane.showMessageDialog(null, "Could not download the required natives!  "+applicationName+" will now exit.", "Native Download Failed", JOptionPane.OK_OPTION);
                 System.exit(0);
@@ -196,7 +196,7 @@ public class Main{
             for(String[] lib : requiredLibraries.keySet()){
                 String url = lib[0];
                 String filename = lib[1];
-                requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"\\"+filename));
+                requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"/"+filename));
                 n++;
             }
             frame.dispose();
@@ -376,7 +376,7 @@ public class Main{
         try(ZipInputStream in = new ZipInputStream(new FileInputStream(fromZip))){
             ZipEntry entry;
             while((entry = in.getNextEntry())!=null){
-                File destFile = new File(toDir.getAbsolutePath()+"\\"+entry.getName().replaceAll("/", "\\"));
+                File destFile = new File(toDir.getAbsolutePath()+"/"+entry.getName());
                 if(destFile.exists())continue;
                 delete(destFile);
                 try(FileOutputStream out = new FileOutputStream(destFile)){
