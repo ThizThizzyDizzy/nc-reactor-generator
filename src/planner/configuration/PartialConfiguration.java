@@ -11,7 +11,7 @@ public class PartialConfiguration extends Configuration{
         super(name, version);
     }
     @Override
-    protected boolean isPartial(){
+    public boolean isPartial(){
         return true;
     }
 }

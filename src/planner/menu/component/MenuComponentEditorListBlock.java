@@ -1,15 +1,17 @@
 package planner.menu.component;
 import java.awt.Color;
 import planner.Core;
+import planner.menu.MenuEdit;
 import planner.multiblock.Block;
-import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorListBlock extends MenuComponent{
+    private final MenuEdit editor;
     public final Block block;
-    public MenuComponentEditorListBlock(Block block){
+    public MenuComponentEditorListBlock(MenuEdit editor, Block block){
         super(0, 0, 0, 0);
         color = Core.theme.getEditorListBorderColor();
         foregroundColor = Core.theme.getTextColor();
+        this.editor = editor;
         this.block = block;
         selectedColor = foregroundColor.darker();
     }
@@ -36,6 +38,7 @@ public class MenuComponentEditorListBlock extends MenuComponent{
             drawRect(x+width-border, y+border, x+width, y+height-border, 0);
         }
         if(isMouseOver){
+            editor.setTooltip(block.getListTooltip());
             Core.applyColor(color, .6375f);
             drawRect(x, y, x+border, y+border, 0);
             drawRect(x+width-border, y, x+width, y+border, 0);
@@ -49,11 +52,6 @@ public class MenuComponentEditorListBlock extends MenuComponent{
         }
     }
     public void drawText(){
-        if(block.getTexture()==null){
-            drawCenteredText(x, y+height*.4, x+width, y+height*.6, block.getName());
-        }else{
-            Core.applyWhite();
-            drawRect(x, y, x+width, y+height, ImageStash.instance.allocateAndSetupTexture(block.getTexture()));
-        }
+        block.render(x, y, width, height, false);
     }
 }

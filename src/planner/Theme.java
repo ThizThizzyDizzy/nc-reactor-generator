@@ -32,6 +32,7 @@ public abstract class Theme{
     public abstract Color getEditorListBorderColor();
     public abstract Color getDarkButtonColor();
     public abstract Color getButtonColor();
+    public abstract Color getRGB(float r, float g, float b);
     private static class SolidColorTheme extends Theme{
         private final Color background;
         private final Color color;
@@ -109,6 +110,10 @@ public abstract class Theme{
         }
         private Color tint(Color color, float f){
             return new Color(color.getRed()/255f*f, color.getGreen()/255f*f, color.getBlue()/255f*f, color.getAlpha()/255f);
+        }
+        @Override
+        public Color getRGB(float r, float g, float b){
+            return new Color(r*(1-(1-rgbTint)*rgbSat), g*(1-(1-rgbTint)*rgbSat), b*(1-(1-rgbTint)*rgbSat));
         }
     }
 }

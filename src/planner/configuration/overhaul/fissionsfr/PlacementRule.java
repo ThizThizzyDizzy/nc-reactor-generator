@@ -161,7 +161,8 @@ public class PlacementRule extends RuleContainer{
         }
         return config;
     }
-    public String getDetails(){
+    @Override
+    public String toString(){
         switch(ruleType){
             case BETWEEN:
                 if(max==6)return "At least "+min+" "+block.name;
@@ -184,15 +185,15 @@ public class PlacementRule extends RuleContainer{
             case AND:
                 String s = "";
                 for(PlacementRule rule : rules){
-                    s+=" AND "+rule.getDetails();
+                    s+=" AND "+rule.toString();
                 }
                 return s.isEmpty()?s:s.substring(5);
             case OR:
                 s = "";
                 for(PlacementRule rule : rules){
-                    s+=" OR "+rule.getDetails();
+                    s+=" OR "+rule.toString();
                 }
-                return s.isEmpty()?s:s.substring(5);
+                return s.isEmpty()?s:s.substring(4);
         }
         return "Unknown Rule";
     }

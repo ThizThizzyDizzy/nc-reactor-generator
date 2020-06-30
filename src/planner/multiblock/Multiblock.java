@@ -1,11 +1,12 @@
 package planner.multiblock;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.configuration.Configuration;
-import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
 public abstract class Multiblock<T extends Block> extends MultiblockBit{
@@ -47,6 +48,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void expandLeft(int i){
         if(getX()+i>getMaxSize())return;
@@ -59,6 +61,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void expandUp(int i){
         if(getY()+i>getMaxSize())return;
@@ -71,6 +74,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void exandDown(int i){
         if(getY()+i>getMaxSize())return;
@@ -83,6 +87,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void expandToward(int i){
         if(getZ()+i>getMaxSize())return;
@@ -95,6 +100,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void expandAway(int i){
         if(getZ()+i>getMaxSize())return;
@@ -107,6 +113,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void deleteX(int X){
         if(getX()<=getMinSize())return;
@@ -119,6 +126,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void deleteY(int Y){
         if(getY()<=getMinSize())return;
@@ -131,6 +139,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void deleteZ(int Z){
         if(getZ()<=getMinSize())return;
@@ -143,6 +152,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
+        updateBlockLocations();
     }
     public void clearData(){
         for(T t : getBlocks()){
@@ -150,13 +160,13 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
     }
     public abstract void calculate();
-    public Queue<T> getBlocks(){
-        Queue<T> blox = new Queue<>();
+    public ArrayList<T> getBlocks(){
+        ArrayList<T> blox = new ArrayList<>();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
                 for(int z = 0; z<getZ(); z++){
                     T b = getBlock(x, y, z);
-                    if(b!=null)blox.enqueue(b);
+                    if(b!=null)blox.add(b);
                 }
             }
         }
@@ -165,73 +175,95 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     protected abstract T newCasing(int x, int y, int z);
     public abstract String getTooltip();
     public void draw3D(){
-        for(int x = 0; x<getX(); x++){
-            for(int y = 0; y<getY(); y++){
-                for(int z = 0; z<getZ(); z++){
-                    drawCube(x, y, z, getBlock(x, y, z));
-                }
+        ArrayList<T> blocks = getBlocks();
+        Collections.sort(blocks, new Comparator<T>() {
+            @Override
+            public int compare(T o1, T o2){
+                return o1.getName().compareTo(o2.getName());
             }
+        });
+        Block last = null;
+        for(T block : blocks){
+            if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
+                if(last!=null)GL11.glEnd();
+                ImageStash.instance.bindTexture(Core.getTexture(block.getBaseTexture()));
+                GL11.glBegin(GL11.GL_QUADS);
+            }
+            drawCube(block);
+            last = block;
         }
-    }
-    private void drawCube(int x, int y, int z, T block){
-        if(block==null)return;
-        ImageStash.instance.bindTexture(Core.getTexture(block.getBaseTexture()));
-        GL11.glBegin(GL11.GL_QUADS);
-        //xy +z
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(x, y, z+1);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(x+1, y, z+1);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(x+1, y+1, z+1);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(x, y+1, z+1);
-        //xy -z
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(x, y, z);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(x, y+1, z);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(x+1, y+1, z);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(x+1, y, z);
-        //xz +y
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(x, y+1, z);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(x, y+1, z+1);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(x+1, y+1, z+1);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(x+1, y+1, z);
-        //xz -y
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(x, y, z);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(x+1, y, z);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(x+1, y, z+1);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(x, y, z+1);
-        //yz +x
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(x+1, y, z);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(x+1, y+1, z);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(x+1, y+1, z+1);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(x+1, y, z+1);
-        //yz -x
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(x, y, z);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(x, y, z+1);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(x, y+1, z+1);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(x, y+1, z);
         GL11.glEnd();
+    }
+    private void drawCube(T block){
+        int x = block.x;
+        int y = block.y;
+        int z = block.z;
+        //xy +z
+        if(z==getZ()-1||getBlock(x, y, z+1)==null){
+            GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(x, y, z+1);
+            GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(x+1, y, z+1);
+            GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(x+1, y+1, z+1);
+            GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x, y+1, z+1);
+        }
+        //xy -z
+        if(z==0||getBlock(x,y,z-1)==null){
+            GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(x, y, z);
+            GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(x, y+1, z);
+            GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(x+1, y+1, z);
+            GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x+1, y, z);
+        }
+        //xz +y
+        if(y==getY()-1||getBlock(x, y+1, z)==null){
+            GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(x, y+1, z);
+            GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(x, y+1, z+1);
+            GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(x+1, y+1, z+1);
+            GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x+1, y+1, z);
+        }
+        //xz -y
+        if(y==0||getBlock(x, y-1, z)==null){
+            GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(x, y, z);
+            GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(x+1, y, z);
+            GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(x+1, y, z+1);
+            GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x, y, z+1);
+        }
+        //yz +x
+        if(x==getX()-1||getBlock(x+1, y, z)==null){
+            GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(x+1, y, z);
+            GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(x+1, y+1, z);
+            GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(x+1, y+1, z+1);
+            GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x+1, y, z+1);
+        }
+        //yz -x
+        if(x==0||getBlock(x-1, y, z)==null){
+            GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(x, y, z);
+            GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(x, y, z+1);
+            GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(x, y+1, z+1);
+            GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x, y+1, z);
+        }
     }
     public final void save(Configuration configuration, FileOutputStream stream){
         Config config = Config.newConfig();
@@ -243,4 +275,17 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public abstract int getMultiblockID();
     public abstract void convertTo(Configuration to);
     public abstract void validate();
+    private void updateBlockLocations(){
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    T b = getBlock(x, y, z);
+                    if(b==null)continue;
+                    b.x = x;
+                    b.y = y;
+                    b.z = z;
+                }
+            }
+        }
+    }
 }

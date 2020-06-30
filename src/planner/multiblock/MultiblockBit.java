@@ -1,6 +1,7 @@
 package planner.multiblock;
 import simplelibrary.Queue;
-public class MultiblockBit{
+import simplelibrary.opengl.Renderer2D;
+public class MultiblockBit extends Renderer2D{
     protected static final Queue<Direction> directions = directions();
     private static Queue<Direction> directions(){
         Queue<Direction> directions = new Queue<>();

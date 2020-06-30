@@ -56,6 +56,9 @@ public class Block extends planner.multiblock.Block{
     public boolean isActive(){
         return isCasing()||isFuelCell()||moderatorActive||coolerValid;
     }
+    public boolean isValid(){
+        return isCasing()||isFuelCell()||moderatorValid||coolerValid;
+    }
     public int getCooling(){
         return template.cooling;
     }
@@ -129,5 +132,29 @@ public class Block extends planner.multiblock.Block{
             tip+="\nCooler "+(coolerValid?"Valid":"Invalid");
         }
         return tip;
+    }
+    @Override
+    public String getListTooltip(){
+        String tip = getName();
+        if(isFuelCell())tip+="\nFuel Cell";
+        if(isModerator())tip+="\nModerator";
+        if(isCooler()){
+            tip+="\nCooler"
+                    + "\nCooling: "+template.cooling+" H/t";
+            if(template.active!=null)tip+="\nActive ("+template.active+")";
+        }
+        for(PlacementRule rule : template.rules){
+            tip+="\nRequires "+rule.toString();
+        }
+        return tip;
+    }
+    @Override
+    public void renderOverlay(double x, double y, double width, double height){
+        if(!isValid()){
+            drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
+        }
+        if(isActive()){
+            drawOutline(x, y, width, height, 1/32d, Core.theme.getGreen());
+        }
     }
 }

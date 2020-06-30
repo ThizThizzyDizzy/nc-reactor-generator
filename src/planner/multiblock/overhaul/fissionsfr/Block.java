@@ -1,7 +1,7 @@
 package planner.multiblock.overhaul.fissionsfr;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import java.util.Objects;
 import planner.Core;
 import planner.configuration.overhaul.fissionsfr.PlacementRule;
 import planner.multiblock.Direction;
@@ -104,6 +104,27 @@ public class Block extends planner.multiblock.Block{
         }
         return tip;
     }
+    @Override
+    public String getListTooltip(){
+        String tip = getName();
+        if(isFuelCell())tip+="\nFuel Cell";
+        if(isModerator())tip+="\nModerator"
+                + "\nFlux: "+template.flux
+                + "\nEfficiency: "+template.efficiency;
+        if(isReflector())tip+="\nReflector"
+                + "\nReflectivity: "+template.reflectivity
+                + "\nEfficiency: "+template.efficiency;
+        if(isShield())tip+="\nNeutron Shield"
+                + "\nHeat per flux: "+template.heatMult
+                + "\nEfficiency: "+template.efficiency;
+        if(isIrradiator())tip+="\nIrradiator";
+        if(isHeatsink())tip+="\nHeatsink"
+                + "\nCooling: "+template.cooling+" H/t";
+        for(PlacementRule rule : template.rules){
+            tip+="\nRequires "+rule.toString();
+        }
+        return tip;
+    }
     public boolean isPrimed(){
         if(!isFuelCell())return false;
         return source!=null||fuel.selfPriming;
@@ -114,6 +135,9 @@ public class Block extends planner.multiblock.Block{
     @Override
     public boolean isActive(){
         return isCasing()||isConductor()||isModeratorActive()||isFuelCellActive()||isHeatsinkActive()||isIrradiatorActive()||reflectorActive||isShieldActive();
+    }
+    public boolean isValid(){
+        return isInert()||isConductor()||isModeratorActive()||moderatorValid||isFuelCellActive()||isHeatsinkActive()||isIrradiatorActive()||reflectorActive||isShieldActive();
     }
     public boolean isModeratorActive(){
         return isModerator()&&moderatorActive&&template.activeModerator;
@@ -283,5 +307,26 @@ public class Block extends planner.multiblock.Block{
     public boolean canCluster(){
         if(isCasing())return false;
         return isActive()&&template.cluster;
+    }
+    @Override
+    public void renderOverlay(double x, double y, double width, double height){
+        if(!isValid()){
+            drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
+        }
+        if(isActive()){
+            drawOutline(x, y, width, height, 1/32d, Core.theme.getGreen());
+        }
+        boolean self = fuel!=null&&fuel.selfPriming;
+        if(source!=null||self){
+            float fac = self?1:(float) Math.pow(source.efficiency, 10);
+            float r = self?0:Math.min(1, -2*fac+2);
+            float g = self?0:Math.min(1, fac*2);
+            float b = self?1:0;
+            drawCircle(x+width/2, y+height/2, width*(4/16d), width*(6/16d), Core.theme.getRGB(r, g, b));
+        }
+    }
+    private boolean isInert(){
+        if(isCasing())return true;
+        return template.cluster&&!template.functional;
     }
 }

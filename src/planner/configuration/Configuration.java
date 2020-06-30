@@ -37,7 +37,7 @@ public class Configuration{
         if(version!=null)config.set("version", version);
         config.save(stream);
     }
-    protected boolean isPartial(){
+    public boolean isPartial(){
         return false;
     }
     public void impose(Configuration configuration){

@@ -36,12 +36,7 @@ public class MenuComponentVisibleBlock extends MenuComponent{
     public void drawText(){
         Block block = multiblock.getBlock(blockX, blockY, blockZ);
         if(block==null)return;
-        if(block.getTexture()==null){
-            drawCenteredText(x, y+height*.4, x+width, y+height*.6, block.getName());
-        }else{
-            Core.applyWhite();
-            drawRect(x, y, x+width, y+height, Core.getTexture(block.getTexture()));
-        }
+        block.render(x, y, width, height, false);
     }
     @Override
     public boolean mouseWheelChange(int wheelChange){

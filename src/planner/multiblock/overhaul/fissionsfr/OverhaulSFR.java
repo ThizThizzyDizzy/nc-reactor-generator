@@ -57,7 +57,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void calculate(){
-        Queue<Block> blocks = getBlocks();
+        ArrayList<Block> blocks = getBlocks();
         for(Block block : blocks){
             if(block.isPrimed())block.propogateNeutronFlux(this);
         }

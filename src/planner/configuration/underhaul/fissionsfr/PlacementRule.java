@@ -125,7 +125,8 @@ public class PlacementRule extends RuleContainer{
         }
         return config;
     }
-    public String getDetails(){
+    @Override
+    public String toString(){
         switch(ruleType){
             case BETWEEN:
                 if(max==6)return "At least "+min+" "+block.name;
@@ -136,11 +137,11 @@ public class PlacementRule extends RuleContainer{
                 if(min==max)return "Exactly "+min+" "+blockType.name;
                 return "Between "+min+" and "+max+" "+blockType.name;
             case AXIAL:
-                if(max==6)return "At least "+min+" Axial pairs of "+block.name;
+                if(max==3)return "At least "+min+" Axial pairs of "+block.name;
                 if(min==max)return "Exactly "+min+" Axial pairs of "+block.name;
                 return "Between "+min+" and "+max+" Axial pairs of "+block.name;
             case AXIAL_GROUP:
-                if(max==6)return "At least "+min+" Axial pairs of "+blockType.name;
+                if(max==3)return "At least "+min+" Axial pairs of "+blockType.name;
                 if(min==max)return "Exactly "+min+" Axial pairs of "+blockType.name;
                 return "Between "+min+" and "+max+" Axial pairs of "+blockType.name;
             case NO_PANCAKES:
@@ -148,15 +149,15 @@ public class PlacementRule extends RuleContainer{
             case AND:
                 String s = "";
                 for(PlacementRule rule : rules){
-                    s+=" AND "+rule.getDetails();
+                    s+=" AND "+rule.toString();
                 }
                 return s.isEmpty()?s:s.substring(5);
             case OR:
                 s = "";
                 for(PlacementRule rule : rules){
-                    s+=" OR "+rule.getDetails();
+                    s+=" OR "+rule.toString();
                 }
-                return s.isEmpty()?s:s.substring(5);
+                return s.isEmpty()?s:s.substring(4);
         }
         return "Unknown Rule";
     }

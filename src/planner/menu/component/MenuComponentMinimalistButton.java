@@ -12,6 +12,7 @@ public class MenuComponentMinimalistButton extends MenuComponentButton{
         super(x, y, width, height, label, enabled, useMouseover);
         color = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
         foregroundColor = Core.theme.getTextColor();
+        textInset+=5;
     }
     @Override
     public void render(){

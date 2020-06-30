@@ -71,6 +71,6 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
     @Override
     public void renderForeground(){
         Core.applyColor(foregroundColor);
-        drawText(x, y, x+width, y+height/2, rule.getDetails());
+        drawText(x, y, x+width, y+height/2, rule.toString());
     }
 }

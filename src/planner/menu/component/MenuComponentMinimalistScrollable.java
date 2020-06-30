@@ -6,7 +6,7 @@ import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentScrollable;
 public class MenuComponentMinimalistScrollable extends MenuComponentScrollable{
     public MenuComponentMinimalistScrollable(double x, double y, double width, double height, double horizScrollbarHeight, double vertScrollbarWidth){
-        super(x, y, width, height, horizScrollbarHeight, vertScrollbarWidth);
+        super(x, y, width, height, horizScrollbarHeight, vertScrollbarWidth, false, false);
         color = Core.theme.getListColor();
         foregroundColor = Core.theme.getTextColor();
     }

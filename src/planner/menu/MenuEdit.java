@@ -1,13 +1,16 @@
 package planner.menu;
 import org.lwjgl.opengl.Display;
 import planner.Core;
+import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import planner.menu.component.MenuComponentCoolantRecipe;
-import planner.menu.component.MenuComponentEditorBlock;
 import planner.menu.component.MenuComponentEditorListBlock;
+import planner.menu.component.MenuComponentIrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistScrollable;
+import planner.menu.component.MenuComponentMinimalistTextView;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
+import planner.menu.component.MenuComponentOverFuel;
 import planner.menu.component.MenuComponentUnderFuel;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
@@ -18,40 +21,53 @@ import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuEdit extends Menu{
     private final Multiblock multiblock;
+    private final int partSize = 48;
+    private final int partsWide = 7;
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
-    private final MenuComponentMulticolumnMinimaList parts = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 64, 64, 32));
+    private final MenuComponentMulticolumnMinimaList parts = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, partSize, partSize, partSize/2));
     private final MenuComponentMinimalistScrollable multibwauk = add(new MenuComponentMinimalistScrollable(0, 0, 0, 0, 32, 32));
-    private final MenuComponentMinimalistButton zoomOut = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "-", true, true));
-    private final MenuComponentMinimalistButton zoomIn = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
+    private final MenuComponentMinimalistButton zoomOut = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom out", true, true));
+    private final MenuComponentMinimalistButton zoomIn = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom in", true, true));
     private final MenuComponentMinimalistButton resize = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Resize", true, true));
-    private final MenuComponentMinimaList fuelOrCoolantRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 32);
+    private final MenuComponentMinimaList underFuelOrCoolantRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
+    private final MenuComponentMinimaList overFuel = new MenuComponentMinimaList(0, 0, 0, 0, 24);
+    private final MenuComponentMinimaList irradiatorRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
+    private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
     private double scale = 4;
     private double minScale = 0.5;
     private double maxScale = 16;
     private int CELL_SIZE = (int) (16*scale);
     private int LAYER_GAP = CELL_SIZE/2;
-    public String tooltip = "";
     private int multisPerRow = 0;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         if(multiblock instanceof UnderhaulSFR){
-            add(fuelOrCoolantRecipe);
+            add(underFuelOrCoolantRecipe);
             for(planner.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.fuels){
-                fuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
+                underFuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
             }
         }
         if(multiblock instanceof OverhaulSFR){
-            add(fuelOrCoolantRecipe);
+            add(underFuelOrCoolantRecipe);
             for(planner.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
-                fuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
+                underFuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
             }
+            add(overFuel);
+            for(planner.configuration.overhaul.fissionsfr.Fuel fuel : Core.configuration.overhaul.fissionSFR.fuels){
+                overFuel.add(new MenuComponentOverFuel(fuel));
+            }
+            overFuel.setSelectedIndex(0);
+            add(irradiatorRecipe);
+            for(planner.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
+                irradiatorRecipe.add(new MenuComponentIrradiatorRecipe(recipe));
+            }
+            irradiatorRecipe.setSelectedIndex(0);
         }
         this.multiblock = multiblock;
         multibwauk.setScrollMagnitude(CELL_SIZE/2);
         back.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(1, 0), 5));
         });
-        resize.textInset+=10;
         resize.addActionListener((e) -> {
             gui.open(new MenuResize(gui, this, multiblock));
         });
@@ -68,54 +84,72 @@ public class MenuEdit extends Menu{
             onGUIOpened();
         });
         for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
-            parts.add(new MenuComponentEditorListBlock(availableBlock));
+            parts.add(new MenuComponentEditorListBlock(this, availableBlock));
         }
     }
     @Override
     public void onGUIOpened(){
+        if(multiblock instanceof UnderhaulSFR){
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
+        }
+        if(multiblock instanceof OverhaulSFR){
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.coolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
+        }
         multisPerRow = Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)));
         multibwauk.components.clear();
         for(int y = 0; y<multiblock.getY(); y++){
-            for(int z = 0; z<multiblock.getZ(); z++){
-                for(int x = 0; x<multiblock.getX(); x++){
-                    int column = y%multisPerRow;
-                    int row = y/multisPerRow;
-                    int layerWidth = multiblock.getX()*CELL_SIZE+LAYER_GAP;
-                    int layerHeight = multiblock.getZ()*CELL_SIZE+LAYER_GAP;
-                    multibwauk.add(new MenuComponentEditorBlock(x*CELL_SIZE+column*layerWidth, z*CELL_SIZE+row*layerHeight, CELL_SIZE, CELL_SIZE, this, multiblock, x, y, z));
-                }
-            }
+            int column = y%multisPerRow;
+            int row = y/multisPerRow;
+            int layerWidth = multiblock.getX()*CELL_SIZE+LAYER_GAP;
+            int layerHeight = multiblock.getZ()*CELL_SIZE+LAYER_GAP;
+            multibwauk.add(new planner.menu.component.MenuComponentEditorGrid(column*layerWidth, row*layerHeight, CELL_SIZE, this, multiblock, y));
         }
         recalculate();
     }
     @Override
     public void render(int millisSinceLastTick){
+        setTooltip("");
         if(multisPerRow!=Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)))){
             onGUIOpened();
         }
-        back.width = parts.width = 288;
-        back.height = 64;
+        textBox.width = multibwauk.x = back.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
+        back.height = 48;
         parts.y = back.height;
-        parts.height = Display.getHeight()-back.height;
-        multibwauk.width = (Display.getWidth()-parts.width)/2;
+        parts.height = (parts.components.size()+5)/partsWide*partSize;
+        resize.width = 320;
+        multibwauk.width = Display.getWidth()-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
-        resize.width = (Display.getWidth()-multibwauk.width-parts.width)/2;
         zoomIn.width = zoomOut.width = resize.width/2;
+        zoomIn.y = zoomOut.y = resize.height;
         resize.x = Display.getWidth()-resize.width;
-        zoomOut.x = resize.x-zoomOut.width;
-        zoomIn.x = zoomOut.x-zoomIn.width;
-        fuelOrCoolantRecipe.x = resize.x;
-        fuelOrCoolantRecipe.y = resize.height;
-        fuelOrCoolantRecipe.width = resize.width;
-        fuelOrCoolantRecipe.height = Display.getHeight()-resize.height;
-        if(multiblock instanceof OverhaulSFR)fuelOrCoolantRecipe.height/=2;
-        for(MenuComponent c : fuelOrCoolantRecipe.components){
-            c.width = fuelOrCoolantRecipe.width-fuelOrCoolantRecipe.vertScrollbarWidth;
-            c.height = 64;
+        zoomIn.x = resize.x;
+        zoomOut.x = zoomIn.x+zoomIn.width;
+        irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
+        underFuelOrCoolantRecipe.y = resize.height*2;
+        irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
+        underFuelOrCoolantRecipe.height = Display.getHeight()-resize.height*2;
+        if(multiblock instanceof OverhaulSFR){
+            underFuelOrCoolantRecipe.height = 96;
+            irradiatorRecipe.height = 96;
+            irradiatorRecipe.y = Display.getHeight()-irradiatorRecipe.height;
+            overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
+            overFuel.height = irradiatorRecipe.y-overFuel.y;
+        }
+        for(MenuComponent c : underFuelOrCoolantRecipe.components){
+            c.width = underFuelOrCoolantRecipe.width-underFuelOrCoolantRecipe.vertScrollbarWidth;
+            c.height = 32;
+        }
+        for(MenuComponent c : irradiatorRecipe.components){
+            c.width = irradiatorRecipe.width-irradiatorRecipe.vertScrollbarWidth;
+            c.height = 32;
+        }
+        for(MenuComponent c : overFuel.components){
+            c.width = overFuel.width-overFuel.vertScrollbarWidth;
+            c.height = 32;
         }
         if(multiblock instanceof UnderhaulSFR){
-            if(fuelOrCoolantRecipe.getSelectedIndex()>-1){
-                planner.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.fuels.get(fuelOrCoolantRecipe.getSelectedIndex());
+            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
+                planner.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.fuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((UnderhaulSFR)multiblock).fuel!=fuel){
                     ((UnderhaulSFR)multiblock).fuel = fuel;
                     recalculate();
@@ -123,77 +157,51 @@ public class MenuEdit extends Menu{
             }
         }
         if(multiblock instanceof OverhaulSFR){
-            if(fuelOrCoolantRecipe.getSelectedIndex()>-1){
-                planner.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.coolantRecipes.get(fuelOrCoolantRecipe.getSelectedIndex());
+            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
+                planner.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.coolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
                     ((OverhaulSFR)multiblock).coolantRecipe = recipe;
                     recalculate();
                 }
             }
         }
-        multibwauk.x = parts.width;
-        multibwauk.height = parts.height;
+        multibwauk.height = Display.getHeight();
+        textBox.y = parts.y+parts.height;
+        textBox.height = Display.getHeight()-textBox.y;
         super.render(millisSinceLastTick);
-        Core.applyColor(Core.theme.getTextColor());
-        double ty = resize.height;
-        double th = 20;
-        String tip = multiblock.getTooltip()+"\n\n"+tooltip;
-        String[] strs = tip.split("\n");
-        for(int i = 0; i<strs.length; i++){
-            String str = strs[i];
-            drawText(multibwauk.x+multibwauk.width, ty, resize.x, ty+th, str);
-            ty+=th;
-        }
     }
-    private Block getSelectedBlock(){
+    public void setTooltip(String tooltip){
+        if(!tooltip.isEmpty())tooltip+="\n\n";
+        textBox.setText(tooltip+multiblock.getTooltip());
+    }
+    public Block getSelectedBlock(){
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
     }
-    private MenuComponentEditorBlock dragStart = null;
-    public void editorClicked(MenuComponentEditorBlock b, int button, boolean pressed){
-        if(pressed){
-            Block selected = getSelectedBlock();
-            if(button==0)multiblock.blocks[b.blockX][b.blockY][b.blockZ] = selected==null?null:selected.newInstance(b.blockX, b.blockY, b.blockZ);
-            else if(button==1)multiblock.blocks[b.blockX][b.blockY][b.blockZ] = null;
-            recalculate();
-            dragStart = b;
-        }else{
-            dragStart = null;
-        }
+    public planner.configuration.overhaul.fissionsfr.Fuel getSelectedOverFuel(){
+        return ((MenuComponentOverFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
     }
-    public void editorDragged(MenuComponentEditorBlock b, int button){
-        if(button!=0&&button!=1){
-            return;
-        }
-        if(dragStart!=null){
-            Block setTo = button==0?getSelectedBlock():null;
-            if(dragStart.blockY!=b.blockY){
-                multiblock.blocks[b.blockX][b.blockY][b.blockZ] = setTo==null?null:setTo.newInstance(b.blockX, b.blockY, b.blockZ);
-            }else{
-                //Y values are equal
-                raytrace(dragStart, b, (x,y,z) -> {
-                    multiblock.blocks[x][y][z] = setTo==null?null:setTo.newInstance(x, y, z);
-                });
-            }
-            recalculate();
-            dragStart = b;
-        }
+    public IrradiatorRecipe getSelectedIrradiatorRecipe(){
+        return ((MenuComponentIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
     }
-    public void raytrace(MenuComponentEditorBlock from, MenuComponentEditorBlock to, TraceStep step){
-        int xDiff = to.blockX-from.blockX;
-        int yDiff = to.blockY-from.blockY;
-        int zDiff = to.blockZ-from.blockZ;
-        double dist = Math.sqrt(Math.pow(from.blockX-to.blockX, 2)+Math.pow(from.blockY-to.blockY, 2)+Math.pow(from.blockZ-to.blockZ, 2));
-        for(float r = 0; r<1; r+=.25/dist){
-            step.step(Math.round(from.blockX+xDiff*r), Math.round(from.blockY+yDiff*r), Math.round(from.blockZ+zDiff*r));
-        }
-    }
-    private void recalculate(){
+    public void recalculate(){
         multiblock.clearData();
         multiblock.validate();
         multiblock.calculate();
     }
-    private static interface TraceStep{
-        public void step(int x, int y, int z);
+    public void setblock(int x, int y, int z, Block template){
+        if(template==null){
+            multiblock.blocks[x][y][z] = null;
+            return;
+        }
+        multiblock.blocks[x][y][z] = template.newInstance(x, y, z);
+        if(multiblock instanceof OverhaulSFR){
+            if(((planner.multiblock.overhaul.fissionsfr.Block)multiblock.blocks[x][y][z]).isFuelCell()){
+                ((planner.multiblock.overhaul.fissionsfr.Block)multiblock.blocks[x][y][z]).fuel = getSelectedOverFuel();
+            }
+            if(((planner.multiblock.overhaul.fissionsfr.Block)multiblock.blocks[x][y][z]).isIrradiator()){
+                ((planner.multiblock.overhaul.fissionsfr.Block)multiblock.blocks[x][y][z]).recipe = getSelectedIrradiatorRecipe();
+            }
+        }
     }
 }

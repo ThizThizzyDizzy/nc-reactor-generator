@@ -1,4 +1,5 @@
 package planner.multiblock.underhaul.fissionsfr;
+import java.util.ArrayList;
 import java.util.List;
 import planner.Core;
 import planner.configuration.Configuration;
@@ -43,7 +44,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void calculate(){
-        Queue<Block> blocks = getBlocks();
+        ArrayList<Block> blocks = getBlocks();
         for(Block block : blocks){
             block.calculateCore(this);
         }

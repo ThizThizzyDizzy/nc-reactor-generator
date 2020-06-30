@@ -21,6 +21,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import planner.configuration.Configuration;
 import planner.file.FileReader;
 import planner.multiblock.Multiblock;
@@ -50,6 +51,7 @@ public class Core extends Renderer2D{
     public static final float IMG_FAC = .003925f;
     public static final float IMG_POW = 2f;
     public static final float IMG_STRAIGHT_FAC = 1.5f;
+    public static final float maxYRot = 90f;
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
@@ -87,7 +89,7 @@ public class Core extends Renderer2D{
         }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
         helper = new GameHelper();
         helper.setBackground(theme.getBackgroundColor());
-        helper.setDisplaySize(800, 600);
+        helper.setDisplaySize(1150, 700);
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
         helper.setFinalInitMethod(Core.class.getDeclaredMethod("finalInit", new Class<?>[0]));
@@ -97,6 +99,7 @@ public class Core extends Renderer2D{
         helper.setUsesControllers(true);
         helper.setWindowTitle(Main.applicationName+" "+VersionManager.currentVersion);
         helper.setMode(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D);
+        helper.setAntiAliasing(4);
         if(fullscreen){
             helper.setFullscreen(true);
             helper.setAutoExitFullscreen(false);
@@ -125,11 +128,15 @@ public class Core extends Renderer2D{
                 helper.running = false;
             }
         });
+        FontManager.addFont("/simplelibrary/font");
         FontManager.addFont("/planner/font/high resolution");
+        FontManager.addFont("/planner/font/small");
+        FontManager.addFont("/planner/font/slim");
         FontManager.setFont("high resolution");
         GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL13.GL_MULTISAMPLE);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_BLEND);
         if(is3D){
@@ -155,15 +162,13 @@ public class Core extends Renderer2D{
         gui.open(new MenuMain(gui));
     }
     public static void tickInit() throws LWJGLException{}
-    public static void finalInit() throws LWJGLException{
-    }
+    public static void finalInit() throws LWJGLException{}
     public static void tick(boolean isLastTick){
         if(!isLastTick){
             if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))xRot-=2;
             if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))xRot+=2;
-            if(Keyboard.isKeyDown(Keyboard.KEY_UP))yRot-=2;
-            if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))yRot+=2;
-            yRot = Math.min(45, Math.max(-45, yRot));
+            if(Keyboard.isKeyDown(Keyboard.KEY_UP))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot-2));
+            if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot+2));
             gui.tick();
         }
     }

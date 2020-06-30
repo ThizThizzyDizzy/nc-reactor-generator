@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -26,13 +27,13 @@ import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuMain extends Menu{
     private MenuComponentMinimaList multiblocks = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
-    private MenuComponentButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
-    private MenuComponentButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", false, true));
-    private MenuComponentButton exportFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true));
-    private MenuComponentButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", false, true));
-    private MenuComponentButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", false, true));
-    private MenuComponentButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
-    private MenuComponentButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true){
+    private MenuComponentMinimalistButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
+    private MenuComponentMinimalistButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", false, true));
+    private MenuComponentMinimalistButton exportFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true));
+    private MenuComponentMinimalistButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", false, true));
+    private MenuComponentMinimalistButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", false, true));
+    private MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
+    private MenuComponentMinimalistButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true){
         @Override
         public void drawText(){
             double holeRad = width*.1;
@@ -40,7 +41,7 @@ public class MenuMain extends Menu{
             double averageRadius = width*.3;
             double toothSize = width*.1;
             double rot = 360/16d;
-            int resolution = (int)(2*Math.PI*averageRadius*2);//an extra *2 to account for wavy surface?
+            int resolution = (int)(2*Math.PI*averageRadius*2/teeth);//an extra *2 to account for wavy surface?
             GL11.glBegin(GL11.GL_QUADS);
             double angle = rot;
             double radius = averageRadius+toothSize/2;
@@ -64,6 +65,7 @@ public class MenuMain extends Menu{
             GL11.glEnd();
         }
     });
+    private MenuComponentMinimalistButton delete = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setForegroundColor(Core.theme.getRed()));
     private boolean forceMetaUpdate = true;
     private MenuComponent metadataPanel = add(new MenuComponent(0, 0, 0, 0){
         MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
@@ -145,10 +147,10 @@ public class MenuMain extends Menu{
     public MenuMain(GUI gui){
         super(gui, null);
         for(Multiblock m : Core.multiblockTypes){
-            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true){
+            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true){
                 @Override
                 public void drawText(){
-                    drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+textInset+height/6, m.getDefinitionName());
+                    drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+textInset+height/7, m.getDefinitionName());
                 }
             });
             button.addActionListener((e) -> {
@@ -208,6 +210,34 @@ public class MenuMain extends Menu{
                         File file = chooser.getSelectedFile();
                         NCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
+                        Core.multiblocks.clear();
+                        if(ncpf.configuration==null||ncpf.configuration.isPartial()){
+                            if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
+                                JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                        }else{
+                            Core.configuration = ncpf.configuration;
+                        }
+                        for(Multiblock mb : ncpf.multiblocks){
+                            mb.convertTo(Core.configuration);
+                            Core.multiblocks.add(mb);
+                        }
+                        onGUIOpened();
+                    }
+                });
+                chooser.showOpenDialog(null);
+            }).start();
+        });
+        importFile.addActionListener((e) -> {
+            new Thread(() -> {
+                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf", "json"));
+                chooser.addActionListener((event) -> {
+                    if(event.getActionCommand().equals("ApproveSelection")){
+                        File file = chooser.getSelectedFile();
+                        NCPFFile ncpf = FileReader.read(file);
+                        if(ncpf==null)return;
                         if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
                             JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", JOptionPane.ERROR_MESSAGE);
                             return;
@@ -231,6 +261,10 @@ public class MenuMain extends Menu{
         });
         settings.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this), MenuTransition.SlideTransition.slideFrom(0, -1), 5));
+        });
+        delete.addActionListener((e) -> {
+            Core.multiblocks.remove(multiblocks.getSelectedIndex());
+            onGUIOpened();
         });
     }
     @Override
@@ -270,13 +304,18 @@ public class MenuMain extends Menu{
         addMultiblock.x = Display.getWidth()/3-Display.getHeight()/16;
         addMultiblock.y = Display.getHeight()/16;
         addMultiblock.width = addMultiblock.height = Display.getHeight()/16;
+        delete.height = addMultiblock.height;
+        delete.width = (Display.getWidth()-multiblocks.width)*.8;
+        delete.x = Display.getWidth()-delete.width;
+        delete.y = Display.getHeight()-delete.height;
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);
         settings.enabled = !(adding||metadating);
-//        importFile.enabled = !(adding||metadating);
-//        exportFile.enabled = !(adding||metadating);
+        importFile.enabled = !(adding||metadating);
+        exportFile.enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
         saveFile.enabled = !Core.multiblocks.isEmpty()&&!(adding||metadating);
         loadFile.enabled = !(adding||metadating);
+        delete.enabled = (!(adding||metadating)&&multiblocks.getSelectedIndex()!=-1)&&(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
         for(MenuComponentMinimalistButton b : multiblockButtons){
             b.enabled = adding;
         }
