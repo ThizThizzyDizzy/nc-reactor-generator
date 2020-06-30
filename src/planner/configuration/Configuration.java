@@ -2,9 +2,10 @@ package planner.configuration;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
-import planner.Core;
+import static planner.Core.getInputStream;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
+import planner.file.FileReader;
 import planner.multiblock.Multiblock;
 import simplelibrary.config2.Config;
 public class Configuration{
@@ -12,13 +13,15 @@ public class Configuration{
     public String version;
     public static ArrayList<Configuration> configurations = new ArrayList<>();
     static{
-        Configuration nuclear = new Configuration("nah", "nope");
-        configurations.add(nuclear);
-//        Configuration e2e = new Configuration("E2E", version);
-//        configurations.add(e2e);
-//        Configuration po3 = new Configuration("PO3", version);
-//        configurations.add(po3);
-        Core.configuration = nuclear;
+        configurations.add(FileReader.read(() -> {
+            return getInputStream("configurations/nuclearcraft.ncpf");
+        }).configuration);
+        configurations.add(FileReader.read(() -> {
+            return getInputStream("configurations/po3.ncpf");
+        }).configuration);
+        configurations.add(FileReader.read(() -> {
+            return getInputStream("configurations/e2e.ncpf");
+        }).configuration);
     }
     public Configuration(String name, String version){
         this.name = name;

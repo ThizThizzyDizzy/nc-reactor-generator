@@ -5,13 +5,13 @@ import planner.Core;
 import planner.configuration.Configuration;
 import planner.configuration.underhaul.fissionsfr.Fuel;
 import planner.multiblock.Multiblock;
-import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
-    private int heat, power;
+    private int netHeat, power, heat, cooling;
     private float efficiency;
     public Fuel fuel;
+    private double heatMult;
     public UnderhaulSFR(){
         this(7, 5, 7, Core.configuration.underhaul.fissionSFR.fuels.get(0));
     }
@@ -58,7 +58,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 if(block.calculateCooler(this))somethingChanged = true;
             }
         }while(somethingChanged);
-        int cooling = 0;
+        cooling = 0;
         for(Block block : blocks){
             if(block.isFuelCell()){
                 totalHeatMult+=block.heatMult;
@@ -67,7 +67,9 @@ public class UnderhaulSFR extends Multiblock<Block>{
             }
             if(block.isCooler()&&block.isActive())cooling+=block.getCooling();
         }
-        heat = (int) (totalHeatMult*fuel.heat)-cooling;
+        this.heatMult = totalHeatMult/cells;
+        heat = (int) (totalHeatMult*fuel.heat);
+        netHeat = heat-cooling;
         power = (int) (totalEnergyMult*fuel.power);
         efficiency = totalEnergyMult/cells;
     }
@@ -78,8 +80,11 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public String getTooltip(){
         return "Power Generation: "+power+"RF/t\n"
-                + "Heat: "+heat+"H/t\n"
-                + "Efficiency: "+percent(efficiency, 0);
+                + "Total Heat: "+heat+"\n"
+                + "Total Cooling: "+cooling+"\n"
+                + "Net Heat: "+netHeat+"H/t\n"
+                + "Efficiency: "+percent(efficiency, 0)+"\n"
+                + "Heat multiplier: "+percent(heatMult, 0);
     }
     @Override
     public int getMultiblockID(){
@@ -130,6 +135,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void convertTo(Configuration to){
+        if(to.underhaul==null||to.underhaul.fissionSFR==null)return;
         for(Block block : getBlocks()){
             block.template = to.underhaul.fissionSFR.convert(block.template);
         }
@@ -137,4 +143,8 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void validate(){}//nothin' to do
+    @Override
+    public boolean exists(){
+        return Core.configuration.underhaul!=null&&Core.configuration.underhaul.fissionSFR!=null;
+    }
 }

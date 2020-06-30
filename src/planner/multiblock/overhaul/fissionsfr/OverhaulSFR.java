@@ -224,6 +224,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void convertTo(Configuration to){
+        if(to.overhaul==null||to.overhaul.fissionSFR==null)return;
         for(Block block : getBlocks()){
             if(block.template.fuelCell)block.fuel = to.overhaul.fissionSFR.convert(block.fuel);
             if(block.template.fuelCell)block.source = to.overhaul.fissionSFR.convert(block.source);
@@ -402,5 +403,9 @@ public class OverhaulSFR extends Multiblock<Block>{
             list.addAll(blocks.get(i));
         }
         return list;
+    }
+    @Override
+    public boolean exists(){
+        return Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionSFR!=null;
     }
 }

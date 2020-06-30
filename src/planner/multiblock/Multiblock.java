@@ -310,4 +310,5 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public String getName(){
         return metadata.containsKey("Name")?metadata.get("Name"):"";
     }
+    public abstract boolean exists();
 }

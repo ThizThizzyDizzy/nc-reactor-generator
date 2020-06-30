@@ -12,7 +12,7 @@ public class Block extends RuleContainer{
         for(PlacementRule r : rules){
             block.rules.add(r);
         }
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public static Block activeCooler(String name, int cooling, String liquid, String texture, PlacementRule... rules){
@@ -22,19 +22,19 @@ public class Block extends RuleContainer{
         for(PlacementRule r : rules){
             block.rules.add(r);
         }
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public static Block fuelCell(String name, String texture){
         Block block = new Block(name);
         block.fuelCell = true;
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public static Block moderator(String name, String texture){
         Block block = new Block(name);
         block.moderator = true;
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public String name;

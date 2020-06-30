@@ -2,11 +2,13 @@ package planner.menu.configuration;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.opengl.Display;
 import planner.Core;
+import planner.configuration.Configuration;
 import planner.file.FileReader;
 import planner.file.NCPFFile;
 import planner.menu.MenuTransition;
@@ -14,6 +16,7 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.underhaul.MenuUnderhaulConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulConfiguration;
+import planner.multiblock.Multiblock;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
@@ -25,8 +28,20 @@ public class MenuConfiguration extends Menu{
     private final MenuComponentMinimalistButton underhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Underhaul Configuration", Core.configuration.underhaul!=null, true));
     private final MenuComponentMinimalistButton overhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Overhaul Configuration", Core.configuration.overhaul!=null, true));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
+    private final ArrayList<MenuComponentMinimalistButton> buttons = new ArrayList<>();
     public MenuConfiguration(GUI gui, Menu parent){
         super(gui, parent);
+        for(Configuration config : Configuration.configurations){
+            MenuComponentMinimalistButton b = new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration: "+config.name+" ("+config.version+")", Core.configuration!=config, true);
+            b.addActionListener((e) -> {
+                config.impose(Core.configuration);
+                for(Multiblock multi : Core.multiblocks){
+                    multi.convertTo(Core.configuration);
+                }
+                onGUIOpened();
+            });
+            buttons.add(add(b));
+        }
         load.addActionListener((e) -> {
             new Thread(() -> {
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
@@ -37,6 +52,9 @@ public class MenuConfiguration extends Menu{
                         NCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
                         ncpf.configuration.impose(Core.configuration);
+                        for(Multiblock multi : Core.multiblocks){
+                            multi.convertTo(Core.configuration);
+                        }
                         onGUIOpened();
                     }
                 });
@@ -87,6 +105,11 @@ public class MenuConfiguration extends Menu{
         overhaul.enabled = Core.configuration.overhaul!=null;
         name.text = Core.configuration.name==null?"":Core.configuration.name;
         version.text = Core.configuration.version==null?"":Core.configuration.version;
+        for(int i = 0; i<buttons.size(); i++){
+            MenuComponentMinimalistButton b = buttons.get(i);
+            Configuration c = Configuration.configurations.get(i);
+            b.enabled = Core.configuration!=c;
+        }
     }
     @Override
     public void onGUIClosed(){
@@ -95,10 +118,17 @@ public class MenuConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
+        for(int i = 0; i<buttons.size(); i++){
+            MenuComponentMinimalistButton b = buttons.get(i);
+            b.width = Display.getWidth();
+            b.height = Display.getHeight()/16;
+            b.y = b.height*i;
+        }
         load.width = save.width = underhaul.width = overhaul.width = done.width = Display.getWidth();
         name.height = version.height = load.height = save.height = underhaul.height = overhaul.height = done.height = Display.getHeight()/16;
         name.width = version.width = Display.getWidth()*.75;
         name.x = version.x = Display.getWidth()*.25;
+        load.y = load.height*Configuration.configurations.size();
         save.y = load.y+load.height;
         name.y = save.y+save.height;
         version.y = name.y+name.height;

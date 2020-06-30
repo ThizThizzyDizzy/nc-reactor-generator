@@ -341,7 +341,7 @@ public class MenuMain extends Menu{
         multiblocks.width = Display.getWidth()/3;
         for(MenuComponent c : multiblocks.components){
             c.width = multiblocks.width-(multiblocks.hasScrollbar()?multiblocks.vertScrollbarWidth:0);
-            ((MenuComponentMultiblock) c).edit.enabled = !(adding||metadating);
+            ((MenuComponentMultiblock) c).edit.enabled = ((MenuComponentMultiblock) c).multiblock.exists()&&(!(adding||metadating));
         }
         addMultiblock.x = Display.getWidth()/3-Display.getHeight()/16;
         addMultiblock.y = Display.getHeight()/16;
@@ -359,7 +359,7 @@ public class MenuMain extends Menu{
         loadFile.enabled = !(adding||metadating);
         delete.enabled = (!(adding||metadating)&&multiblocks.getSelectedIndex()!=-1)&&(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
         for(MenuComponentMinimalistButton b : multiblockButtons){
-            b.enabled = adding;
+            b.enabled = adding&&Core.multiblockTypes.get(multiblockButtons.indexOf(b)).exists();
         }
         multiblockCancel.enabled = adding;
         metadataPanel.width = Display.getWidth()*.75;

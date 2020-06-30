@@ -23,7 +23,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import planner.configuration.Configuration;
-import planner.file.FileReader;
 import planner.multiblock.Multiblock;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.Sys;
@@ -55,12 +54,10 @@ public class Core extends Renderer2D{
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
-    public static Configuration configuration;
+    public static Configuration configuration = new Configuration(null, null);
     public static Theme theme = Theme.themes.get(0);
     static{
-        configuration = FileReader.read(() -> {
-            return getInputStream("configurations/nuclearcraft.ncpf");
-        }).configuration;
+        Configuration.configurations.get(0).impose(configuration);
         multiblockTypes.add(new UnderhaulSFR());
         multiblockTypes.add(new OverhaulSFR());
         resetMetadata();

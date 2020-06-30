@@ -313,7 +313,7 @@ public class Block extends planner.multiblock.Block{
         if(!isValid()){
             drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
         }
-        if(isActive()){
+        if(isModeratorActive()){
             drawOutline(x, y, width, height, 1/32d, Core.theme.getGreen());
         }
         boolean self = fuel!=null&&fuel.selfPriming;
