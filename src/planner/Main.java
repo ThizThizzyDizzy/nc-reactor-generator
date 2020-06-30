@@ -423,7 +423,7 @@ public class Main{
         params.add("-classpath");
         String filepath = mainClass.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
         for(String str : additionalFiles){
-            filepath+=";"+str;
+            filepath+=(os==OS_LINUX?":":";")+str;
         }
         params.add(filepath);
         params.add(mainClass.getName());
