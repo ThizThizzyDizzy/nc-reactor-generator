@@ -47,7 +47,7 @@ public class Updater{
         Updater updater = new Updater();
         File file = new File("version.version");
         file.delete();
-        downloadFile(fileURL, file);
+        downloadFile(fileURL, file.getAbsoluteFile());
         try(BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
             String line;
             while((line = in.readLine())!=null){
@@ -59,6 +59,7 @@ public class Updater{
                 updater.links.put(spl[0], spl[1]);
             }
         }catch(IOException ex){}
+        file.delete();
         updater.setCurrentVersion(currentVersion);
         updater.applicationName = applicationName;
         return updater;

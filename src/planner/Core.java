@@ -269,7 +269,7 @@ public class Core extends Renderer2D{
                 Enumeration enumEntries = jar.entries();
                 while(enumEntries.hasMoreElements()){
                     JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals(path.replace("\\", "/")+".png")){
+                    if(file.getName().equals(path.replace("\\", "/"))){
                         return jar.getInputStream(file);
                     }
                 }
