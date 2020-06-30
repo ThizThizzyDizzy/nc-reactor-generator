@@ -38,10 +38,14 @@ public class Main{
     private static JProgressBar bar;
     private static boolean allowDownload = true;
     public static int os;
+    public static final int OS_UNKNOWN = -1;
     public static final int OS_WINDOWS = 0;
     public static final int OS_SOLARIS = 1;
     public static final int OS_MACOSX = 2;
     public static final int OS_LINUX = 3;
+    public static final int BIT_UNKNOWN = -1;
+    public static final int BIT_32 = 0;
+    public static final int BIT_64 = 1;
     private static void addRequiredLibrary(String url, String filename, int sizeKB){
         requiredLibraries.put(new String[]{url,filename}, sizeKB);
     }
@@ -67,8 +71,6 @@ public class Main{
                     System.exit(0);
                 }
             }
-            int BIT_32 = 0;
-            int BIT_64 = 1;
             String[][] nativesPaths = {
                 {"https://dl.dropboxusercontent.com/s/1nt1g7ui7p4eb54/windows32natives.zip?dl=1&token_hash=AAFsOnqBqipIOxc4sNr138FnlZIjHBf-KPwMTNe8F5lqOQ",
                  "https://dl.dropboxusercontent.com/s/y41peavuls3ptzu/windows64natives.zip?dl=1&token_hash=AAEJ6Ih8HGEsla1tJmIB7R-YBCTC8LVq_D4OFcFWDCEZ5Q"},
@@ -80,38 +82,24 @@ public class Main{
                  "https://dl.dropboxusercontent.com/s/rp6uhdmec7697ty/linux64natives.zip?dl=1&token_hash=AAHl6tcg11VwWr31WtqMUlozabCSpr0LfS5MLS2MpmWnEA"}
             };
             String OS = System.getenv("OS");
-            int whichOS;
-            switch(OS){
-                case "Windows_NT":
-                    whichOS = OS_WINDOWS;
-                    break;
-//                    whichOS = OS_SOLARIS;
-//                    break;
-//                    whichOS = OS_MACOSX;
-//                    break;
-//                    whichOS = OS_LINUX;
-//                    break;
-                default:
-                    whichOS = JOptionPane.showOptionDialog(null, "Unrecognized OS \""+OS+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, which natives should I load?", "Unrecognized Operating System", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Solaris", "Mac OSX", "Linux"}, "Windows");
-                    if(whichOS<0||whichOS>3){
-                        System.exit(0);
-                    }
+            int whichOS = OS_UNKNOWN;
+            if("Windows_NT".equals(OS))whichOS = OS_WINDOWS;
+            if(whichOS==OS_UNKNOWN){
+                whichOS = JOptionPane.showOptionDialog(null, "Unrecognized OS \""+OS+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, which natives should I load?", "Unrecognized Operating System", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Solaris", "Mac OSX", "Linux"}, "Windows");
+                if(whichOS<0||whichOS>3){
+                    System.exit(0);
+                }
             }
             os = whichOS;
             String version = System.getenv("PROCESSOR_ARCHITECTURE");
-            int whichBitDepth;
-            switch(version){
-                case "x86":
-                    whichBitDepth = BIT_32;
-                    break;
-                case "AMD64":
-                    whichBitDepth = BIT_64;
-                    break;
-                default:
-                    whichBitDepth = JOptionPane.showOptionDialog(null, "Unrecognized processor architecture \""+version+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, should I load the 64 bit binaries with the 32 bit ones?", "Unrecognized Processor Architecture", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"No, treat it as a 32 bit system", "Yes, treat it as a 64 bit system"}, "Yes, treat it as a 64 bit system");
-                    if(whichBitDepth<0||whichBitDepth>1){
-                        System.exit(0);
-                    }
+            int whichBitDepth = BIT_UNKNOWN;
+            if("x86".equals(version))whichBitDepth = BIT_32;
+            if("AMD64".equals(version))whichBitDepth = BIT_64;
+            if(whichBitDepth==BIT_UNKNOWN){
+                whichBitDepth = JOptionPane.showOptionDialog(null, "Unrecognized processor architecture \""+version+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, should I load the 64 bit binaries with the 32 bit ones?", "Unrecognized Processor Architecture", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"No, treat it as a 32 bit system", "Yes, treat it as a 64 bit system"}, "Yes, treat it as a 64 bit system");
+                if(whichBitDepth<0||whichBitDepth>1){
+                    System.exit(0);
+                }
             }
             if(whichBitDepth==BIT_32){
                 current++;
