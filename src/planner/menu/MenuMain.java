@@ -9,8 +9,10 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.MenuConfiguration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -18,6 +20,8 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.configuration.PartialConfiguration;
 import planner.file.FileReader;
+import planner.file.FileWriter;
+import planner.file.FormatWriter;
 import planner.file.NCPFFile;
 import planner.multiblock.Multiblock;
 import simplelibrary.config2.Config;
@@ -29,7 +33,7 @@ public class MenuMain extends Menu{
     private MenuComponentMinimaList multiblocks = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private MenuComponentMinimalistButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
     private MenuComponentMinimalistButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", false, true));
-    private MenuComponentMinimalistButton exportFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true));
+    private MenuComponentMinimalistButton exportMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true));
     private MenuComponentMinimalistButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", false, true));
     private MenuComponentMinimalistButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", false, true));
     private MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
@@ -162,6 +166,7 @@ public class MenuMain extends Menu{
                 ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
                 ncpf.multiblocks.addAll(Core.multiblocks);
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                chooser.setAcceptAllFileFilterUsed(false);
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
@@ -200,6 +205,7 @@ public class MenuMain extends Menu{
         loadFile.addActionListener((e) -> {
             new Thread(() -> {
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                chooser.setAcceptAllFileFilterUsed(false);
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf", "json"));
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
@@ -230,6 +236,7 @@ public class MenuMain extends Menu{
         importFile.addActionListener((e) -> {
             new Thread(() -> {
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                chooser.setAcceptAllFileFilterUsed(false);
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf", "json"));
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
@@ -248,6 +255,38 @@ public class MenuMain extends Menu{
                     }
                 });
                 chooser.showOpenDialog(null);
+            }).start();
+        });
+        exportMultiblock.addActionListener((e) -> {
+            new Thread(() -> {
+                NCPFFile ncpf = new NCPFFile();
+                ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
+                ncpf.multiblocks.addAll(Core.multiblocks);
+                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                chooser.setAcceptAllFileFilterUsed(false);
+                HashMap<FileFilter, FormatWriter> filters = new HashMap<>();
+                for(FormatWriter writer : FileWriter.formats){
+                    FileFilter f = new FileNameExtensionFilter(writer.getName(), writer.getExtensions());
+                    chooser.addChoosableFileFilter(f);
+                    filters.put(f, writer);
+                }
+                chooser.addActionListener((event) -> {
+                    if(event.getActionCommand().equals("ApproveSelection")){
+                        File file = chooser.getSelectedFile();
+                        FormatWriter writer = filters.get(chooser.getFileFilter());
+                        boolean hasExtension = false;
+                        for(String ext : writer.getExtensions()){
+                            if(file.getName().endsWith("."+ext))hasExtension = true;
+                        }
+                        if(!hasExtension)file = new File(file.getAbsolutePath()+"."+writer.getExtensions()[0]);
+                        if(file.exists()){
+                            if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
+                            file.delete();
+                        }
+                        FileWriter.write(ncpf, file, writer);
+                    }
+                });
+                chooser.showSaveDialog(null);
             }).start();
         });
         addMultiblock.addActionListener((e) -> {
@@ -288,12 +327,12 @@ public class MenuMain extends Menu{
     @Override
     public void render(int millisSinceLastTick){
         editMetadata.x = Display.getWidth()/3;
-        importFile.width = exportFile.width = saveFile.width = loadFile.width = Display.getWidth()/12;
-        exportFile.x = importFile.width;
-        saveFile.x = exportFile.x+exportFile.width;
+        importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = Display.getWidth()/12;
+        exportMultiblock.x = importFile.width;
+        saveFile.x = exportMultiblock.x+exportMultiblock.width;
         loadFile.x = saveFile.x+saveFile.width;
         editMetadata.width = Display.getWidth()*2/3-Display.getHeight()/16;
-        importFile.height = exportFile.height = saveFile.height = loadFile.height = editMetadata.height = settings.width = settings.height = Display.getHeight()/16;
+        importFile.height = exportMultiblock.height = saveFile.height = loadFile.height = editMetadata.height = settings.width = settings.height = Display.getHeight()/16;
         settings.x = Display.getWidth()-Display.getHeight()/16;
         multiblocks.y = Display.getHeight()/8;
         multiblocks.height = Display.getHeight()-multiblocks.y;
@@ -313,7 +352,7 @@ public class MenuMain extends Menu{
         editMetadata.enabled = !(adding||metadating);
         settings.enabled = !(adding||metadating);
         importFile.enabled = !(adding||metadating);
-        exportFile.enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
+        exportMultiblock.enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
         saveFile.enabled = !Core.multiblocks.isEmpty()&&!(adding||metadating);
         loadFile.enabled = !(adding||metadating);
         delete.enabled = (!(adding||metadating)&&multiblocks.getSelectedIndex()!=-1)&&(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
