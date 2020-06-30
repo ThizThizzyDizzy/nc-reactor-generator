@@ -20,18 +20,16 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 public class Main{
-    private static String requiredSimpleLibraryVersion = "10.3.2";
+    private static String requiredSimpleLibraryVersion = "11.0.0";
     private static int simplelibrarySize = 560;
     private static int simplelibraryExtendedSize = 628;
     /**
      * Set to "" for latest, otherwise exact version #
      */
     private static String requiredSimpleLibraryExtendedVersion = null;
-    private static String versionListURL = "";
+    private static String versionListURL = "https://www.dropbox.com/s/0jezlrj26wmcurz/versions.txt?dl=1";
     public static final String applicationName = "Nuclearcraft Reactor Generator";
-    public static final String discordAppID = null;
     private static HashMap<String[], Integer> requiredLibraries = new HashMap<>();
-    public static final boolean jLayer = false;
     private static int downloadSize = 0;
     //Download details
     private static int total;
@@ -39,15 +37,6 @@ public class Main{
     private static JFrame frame;
     private static JProgressBar bar;
     private static boolean allowDownload = true;
-    static{
-        if(jLayer){
-            addRequiredLibrary("https://www.dropbox.com/s/phv29x1suv4i4b0/jl1.0.1.jar?dl=1", "jl1.0.1.jar", 103);
-        }
-        if(discordAppID!=null){
-            addRequiredLibrary("https://www.dropbox.com/s/ml0rg2ze9ks4xbe/jna-5.3.1.jar?dl=1", "jna-5.3.1.jar", 1470);
-            addRequiredLibrary("https://www.dropbox.com/s/qb9i7dq98qt0pd6/java-discord-rpc-2.0.2.jar?dl=1", "java-discord-rpc-2.0.2.jar", 8);
-        }
-    }
     public static int os;
     public static final int OS_WINDOWS = 0;
     public static final int OS_SOLARIS = 1;

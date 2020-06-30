@@ -165,6 +165,7 @@ public class MenuMain extends Menu{
                 NCPFFile ncpf = new NCPFFile();
                 ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
                 ncpf.multiblocks.addAll(Core.multiblocks);
+                ncpf.metadata.putAll(Core.metadata);
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
                 chooser.setAcceptAllFileFilterUsed(false);
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
@@ -181,8 +182,8 @@ public class MenuMain extends Menu{
                             header.set("version", (byte)1);
                             header.set("count", ncpf.multiblocks.size());
                             Config meta = Config.newConfig();
-                            for(String key : Core.metadata.keySet()){
-                                String value = Core.metadata.get(key);
+                            for(String key : ncpf.metadata.keySet()){
+                                String value = ncpf.metadata.get(key);
                                 if(value.trim().isEmpty())continue;
                                 meta.set(key,value);
                             }
@@ -260,8 +261,9 @@ public class MenuMain extends Menu{
         exportMultiblock.addActionListener((e) -> {
             new Thread(() -> {
                 NCPFFile ncpf = new NCPFFile();
-                ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
-                ncpf.multiblocks.addAll(Core.multiblocks);
+                Multiblock multi = getSelectedMultiblock();
+                ncpf.multiblocks.add(multi);
+                ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
                 chooser.setAcceptAllFileFilterUsed(false);
                 HashMap<FileFilter, FormatWriter> filters = new HashMap<>();

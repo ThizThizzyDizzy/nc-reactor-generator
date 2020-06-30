@@ -1,5 +1,5 @@
 package planner.multiblock;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -275,7 +275,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             GL11.glVertex3d(x, y+1, z);
         }
     }
-    public final void save(Configuration configuration, FileOutputStream stream){
+    public final void save(Configuration configuration, OutputStream stream){
         Config config = Config.newConfig();
         config.set("id", getMultiblockID());
         Config meta = Config.newConfig();

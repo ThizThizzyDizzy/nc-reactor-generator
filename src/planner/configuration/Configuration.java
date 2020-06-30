@@ -1,12 +1,10 @@
 package planner.configuration;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 import planner.Core;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
-import planner.configuration.underhaul.fissionsfr.Block;
-import planner.configuration.underhaul.fissionsfr.Fuel;
 import planner.multiblock.Multiblock;
 import simplelibrary.config2.Config;
 public class Configuration{
@@ -28,7 +26,7 @@ public class Configuration{
     }
     public UnderhaulConfiguration underhaul;
     public OverhaulConfiguration overhaul;
-    public void save(FileOutputStream stream){
+    public void save(OutputStream stream){
         Config config = Config.newConfig();
         config.set("partial", isPartial());
         if(underhaul!=null)config.set("underhaul", underhaul.save(isPartial()));
