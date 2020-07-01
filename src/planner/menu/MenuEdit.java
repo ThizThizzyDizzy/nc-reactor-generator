@@ -225,6 +225,9 @@ public class MenuEdit extends Menu{
     }
     public void setblock(int x, int y, int z, Block template){
         if(template==null){
+            if(Core.isControlPressed()){
+                if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).matches(getSelectedBlock()))return;
+            }
             multiblock.action(new SetblockAction(x,y,z,null));
             return;
         }
@@ -258,7 +261,11 @@ public class MenuEdit extends Menu{
         for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
             int[] b = it.next();
             if(Core.isControlPressed()){
-                if(multiblock.getBlock(b[0], b[1], b[2])!=null||!isValid(set.block, b[0], b[1], b[2]))it.remove();
+                if(set.block==null){
+                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock()))it.remove();
+                }else{
+                    if(multiblock.getBlock(b[0], b[1], b[2])!=null||!isValid(set.block, b[0], b[1], b[2]))it.remove();
+                }
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulSFR){

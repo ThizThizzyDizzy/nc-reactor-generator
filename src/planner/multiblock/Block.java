@@ -97,4 +97,5 @@ public abstract class Block extends MultiblockBit{
     }
     public abstract boolean hasRules();
     public abstract boolean calculateRules(Multiblock multiblock);
+    public abstract boolean matches(Block template);
 }

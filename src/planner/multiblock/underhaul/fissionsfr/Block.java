@@ -173,4 +173,12 @@ public class Block extends planner.multiblock.Block{
         }
         return true;
     }
+    @Override
+    public boolean matches(planner.multiblock.Block template){
+        if(template==null)return false;
+        if(template instanceof Block){
+            return ((Block) template).template==this.template;
+        }
+        return false;
+    }
 }
