@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
+import simplelibrary.opengl.ImageStash;
 public abstract class Block extends MultiblockBit{
     public int x;
     public int y;
@@ -64,6 +65,7 @@ public abstract class Block extends MultiblockBit{
     public void drawCircle(double x, double y, double innerRadius, double outerRadius, Color color){
         Core.applyColor(color);
         int resolution = (int)(2*Math.PI*outerRadius);//an extra *2 to account for wavy surface?
+        ImageStash.instance.bindTexture(0);
         GL11.glBegin(GL11.GL_QUADS);
         double angle = 0;
         for(int i = 0; i<resolution; i++){

@@ -15,6 +15,8 @@ import planner.menu.component.MenuComponentOverFuel;
 import planner.menu.component.MenuComponentUnderFuel;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
+import planner.multiblock.action.SetCoolantRecipeAction;
+import planner.multiblock.action.SetFuelAction;
 import planner.multiblock.action.SetblockAction;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
@@ -31,7 +33,7 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimalistButton zoomOut = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom out", true, true));
     private final MenuComponentMinimalistButton zoomIn = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom in", true, true));
     private final MenuComponentMinimalistButton resize = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Resize", true, true));
-    private final MenuComponentMinimaList underFuelOrCoolantRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
+    public final MenuComponentMinimaList underFuelOrCoolantRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimaList overFuel = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimaList irradiatorRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
@@ -158,8 +160,7 @@ public class MenuEdit extends Menu{
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
                 planner.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.fuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((UnderhaulSFR)multiblock).fuel!=fuel){
-                    ((UnderhaulSFR)multiblock).fuel = fuel;
-                    recalculate();
+                    multiblock.action(new SetFuelAction(this, fuel));
                 }
             }
         }
@@ -167,8 +168,7 @@ public class MenuEdit extends Menu{
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
                 planner.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.coolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
-                    ((OverhaulSFR)multiblock).coolantRecipe = recipe;
-                    recalculate();
+                    multiblock.action(new SetCoolantRecipeAction(this, recipe));
                 }
             }
         }
@@ -192,9 +192,7 @@ public class MenuEdit extends Menu{
         return ((MenuComponentIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
     }
     public void recalculate(){
-        multiblock.clearData();
-        multiblock.validate();
-        multiblock.calculate();
+        multiblock.recalculate();
     }
     public void setblock(int x, int y, int z, Block template){
         if(template==null){

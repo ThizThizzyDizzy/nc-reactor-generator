@@ -5,6 +5,7 @@ import planner.Core;
 import planner.menu.MenuEdit;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
+import planner.multiblock.action.SourceAction;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -83,8 +84,8 @@ public class MenuComponentEditorGrid extends MenuComponent{
     @Override
     public void mouseEvent(double x, double y, int button, boolean isDown){
         super.mouseEvent(x, y, button, isDown);
-        int blockX = (int) (x/blockSize);
-        int blockZ = (int) (y/blockSize);
+        int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
+        int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
         if(isDown){
             if(multiblock instanceof OverhaulSFR&&(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))&&((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()){
                 planner.multiblock.overhaul.fissionsfr.Block b = (planner.multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
@@ -93,7 +94,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     index--;
                     if(index>=Core.configuration.overhaul.fissionSFR.sources.size())index = 0;
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.sources.size()-1;
-                    b.source = index==-1?null:Core.configuration.overhaul.fissionSFR.sources.get(index);
+                    multiblock.action(new SourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.sources.get(index)));
                 }
             }else{
                 Block selected = editor.getSelectedBlock();
@@ -113,8 +114,8 @@ public class MenuComponentEditorGrid extends MenuComponent{
     public void mouseDragged(double x, double y, int button){
         super.mouseDragged(x, y, button);
         if(button!=0&&button!=1)return;
-        int blockX = (int) (x/blockSize);
-        int blockZ = (int) (y/blockSize);
+        int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
+        int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
         if(dragStart!=null){
             if(dragStart[0]==blockX&&dragStart[1]==blockZ)return;
             Block setTo = button==0?editor.getSelectedBlock():null;

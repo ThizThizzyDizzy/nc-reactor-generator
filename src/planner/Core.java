@@ -169,8 +169,8 @@ public class Core extends Renderer2D{
             gui.tick();
         }
     }
-    private static float xRot = 0;
-    private static float yRot = 0;
+    private static float xRot = 30;
+    private static float yRot = 30;
     public static void render(int millisSinceLastTick){
         applyWhite();
         if(gui.menu instanceof MenuMain){

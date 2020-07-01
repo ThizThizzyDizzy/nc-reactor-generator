@@ -62,6 +62,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void expandLeft(int i){
         if(getX()+i>getMaxSize())return;
@@ -75,6 +77,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void expandUp(int i){
         if(getY()+i>getMaxSize())return;
@@ -88,6 +92,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void exandDown(int i){
         if(getY()+i>getMaxSize())return;
@@ -101,6 +107,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void expandToward(int i){
         if(getZ()+i>getMaxSize())return;
@@ -114,6 +122,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void expandAway(int i){
         if(getZ()+i>getMaxSize())return;
@@ -127,6 +137,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void deleteX(int X){
         if(getX()<=getMinSize())return;
@@ -140,6 +152,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void deleteY(int Y){
         if(getY()<=getMinSize())return;
@@ -153,6 +167,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void deleteZ(int Z){
         if(getZ()<=getMinSize())return;
@@ -166,6 +182,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         blocks = blks;
         updateBlockLocations();
+        history.clear();
+        future.clear();
     }
     public void clearData(){
         for(T t : getBlocks()){
@@ -319,6 +337,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             Action a = history.pop();
             a.undo(this);
             future.push(a);
+            recalculate();
         }
     }
     public void redo(){
@@ -326,11 +345,18 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             Action a = future.pop();
             a.apply(this);
             history.push(a);
+            recalculate();
         }
     }
     public void action(Action action){
         action.apply(this);
         future.clear();
         history.push(action);
+        recalculate();
+    }
+    public void recalculate(){
+        clearData();
+        validate();
+        calculate();
     }
 }

@@ -381,6 +381,8 @@ public class MenuMain extends Menu{
         double metadataScale = Math.min(1,Math.max(0,(metadating?(metadatingScale+(millisSinceLastTick/50d)):(metadatingScale-(millisSinceLastTick/50d)))/metadatingTime));
         metadataPanel.y = Display.getHeight()/2-metadataPanel.height/2-Display.getHeight()*(1-metadataScale);
         super.render(millisSinceLastTick);
+        Core.applyColor(Core.theme.getTextColor(), .4f);
+        if(getSelectedMultiblock()!=null)drawCenteredText(delete.x, delete.y-45, delete.x+delete.width, delete.y-5, "Use Arrow keys to rotate preview");
     }
     @Override
     public void onGUIOpened(){
