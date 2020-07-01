@@ -1,4 +1,5 @@
 package planner.menu.component;
+import java.util.ArrayList;
 import org.lwjgl.input.Keyboard;
 import planner.Core;
 import planner.menu.MenuEdit;
@@ -128,8 +129,16 @@ public class MenuComponentEditorGrid extends MenuComponent{
         int xDiff = toX-fromX;
         int zDiff = toZ-fromZ;
         double dist = Math.sqrt(Math.pow(fromX-toX, 2)+Math.pow(fromZ-toZ, 2));
-        for(float r = 0; r<1; r+=.25/dist){
-            step.step(Math.round(fromX+xDiff*r), Math.round(fromZ+zDiff*r));
+        ArrayList<int[]> steps = new ArrayList<>();
+        steps.add(new int[]{fromX,fromZ});
+        FOR:for(float r = 0; r<1; r+=.25/dist){
+            int x = Math.round(fromX+xDiff*r);
+            int y = Math.round(fromZ+zDiff*r);
+            for(int[] stp : steps){
+                if(x==stp[0]&&y==stp[1])continue FOR;
+            }
+            steps.add(new int[]{x,y});
+            step.step(x, y);
         }
     }
     private static interface TraceStep{

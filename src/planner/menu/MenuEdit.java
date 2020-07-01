@@ -1,4 +1,5 @@
 package planner.menu;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import planner.Core;
 import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
@@ -14,6 +15,7 @@ import planner.menu.component.MenuComponentOverFuel;
 import planner.menu.component.MenuComponentUnderFuel;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
+import planner.multiblock.action.SetblockAction;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.opengl.gui.GUI;
@@ -196,16 +198,29 @@ public class MenuEdit extends Menu{
     }
     public void setblock(int x, int y, int z, Block template){
         if(template==null){
-            multiblock.blocks[x][y][z] = null;
+            multiblock.action(new SetblockAction(x,y,z,null));
             return;
         }
-        multiblock.blocks[x][y][z] = template.newInstance(x, y, z);
+        Block blok = template.newInstance(x, y, z);
         if(multiblock instanceof OverhaulSFR){
-            if(((planner.multiblock.overhaul.fissionsfr.Block)multiblock.blocks[x][y][z]).isFuelCell()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)multiblock.blocks[x][y][z]).fuel = getSelectedOverFuel();
+            if(((planner.multiblock.overhaul.fissionsfr.Block)blok).isFuelCell()){
+                ((planner.multiblock.overhaul.fissionsfr.Block)blok).fuel = getSelectedOverFuel();
             }
-            if(((planner.multiblock.overhaul.fissionsfr.Block)multiblock.blocks[x][y][z]).isIrradiator()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)multiblock.blocks[x][y][z]).recipe = getSelectedIrradiatorRecipe();
+            if(((planner.multiblock.overhaul.fissionsfr.Block)blok).isIrradiator()){
+                ((planner.multiblock.overhaul.fissionsfr.Block)blok).recipe = getSelectedIrradiatorRecipe();
+            }
+        }
+        multiblock.action(new SetblockAction(x,y,z,blok));
+    }
+    @Override
+    public void keyboardEvent(char character, int key, boolean pressed, boolean repeat){
+        super.keyboardEvent(character, key, pressed, repeat);
+        if(pressed&&(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)||Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))){
+            if(key==Keyboard.KEY_Z){
+                multiblock.undo();
+            }
+            if(key==Keyboard.KEY_Y){
+                multiblock.redo();
             }
         }
     }

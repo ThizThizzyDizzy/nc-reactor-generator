@@ -8,9 +8,12 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.configuration.Configuration;
+import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
 public abstract class Multiblock<T extends Block> extends MultiblockBit{
+    public Stack<Action> history = new Stack<>();
+    public Stack<Action> future = new Stack<>();
     public HashMap<String, String> metadata = new HashMap<>();
     {
         resetMetadata();
@@ -311,4 +314,23 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return metadata.containsKey("Name")?metadata.get("Name"):"";
     }
     public abstract boolean exists();
+    public void undo(){
+        if(!history.isEmpty()){
+            Action a = history.pop();
+            a.undo(this);
+            future.push(a);
+        }
+    }
+    public void redo(){
+        if(!future.isEmpty()){
+            Action a = future.pop();
+            a.apply(this);
+            history.push(a);
+        }
+    }
+    public void action(Action action){
+        action.apply(this);
+        future.clear();
+        history.push(action);
+    }
 }
