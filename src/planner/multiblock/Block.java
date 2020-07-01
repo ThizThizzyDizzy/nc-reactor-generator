@@ -16,6 +16,7 @@ public abstract class Block extends MultiblockBit{
         this.z = z;
     }
     public abstract Block newInstance(int x, int y, int z);
+    public abstract void copyProperties(Block other);
     public abstract BufferedImage getBaseTexture();
     public abstract BufferedImage getTexture();
     public abstract String getName();
@@ -40,6 +41,9 @@ public abstract class Block extends MultiblockBit{
     public abstract String getTooltip();
     public abstract String getListTooltip();
     public void render(double x, double y, double width, double height, boolean renderOverlay){
+        render(x, y, width, height, renderOverlay, 1);
+    }
+    public void render(double x, double y, double width, double height, boolean renderOverlay, float alpha){
         if(getTexture()==null){
             Core.applyColor(Core.theme.getTextColor());
             String text = getName();
@@ -48,7 +52,7 @@ public abstract class Block extends MultiblockBit{
             double textHeight = (int)((height)*scale)-4;
             drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
         }else{
-            Core.applyWhite();
+            Core.applyWhite(alpha);
             drawRect(x, y, x+width, y+height, Core.getTexture(getTexture()));
         }
         if(renderOverlay)renderOverlay(x,y,width,height);
@@ -86,4 +90,11 @@ public abstract class Block extends MultiblockBit{
         }
         GL11.glEnd();
     }
+    public Block copy(int x, int y, int z){
+        Block b = newInstance(x, y, z);
+        copyProperties(b);
+        return b;
+    }
+    public abstract boolean hasRules();
+    public abstract boolean calculateRules(Multiblock multiblock);
 }

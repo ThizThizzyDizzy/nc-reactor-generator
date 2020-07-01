@@ -115,4 +115,10 @@ public class MenuComponentMinimaList extends MenuComponentList{
         }
         return true;
     }
+    @Override
+    public void setSelectedIndex(int index){
+        super.setSelectedIndex(index);
+        if(index<0||index>=components.size()) selected = null;
+        else selected = components.get(index);
+    }
 }

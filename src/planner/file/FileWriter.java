@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import planner.multiblock.Multiblock;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
@@ -18,37 +16,7 @@ public class FileWriter{
         formats.add(new FormatWriter() {
             @Override
             public String getName(){
-                return "NuclearCraft Planner Format";
-            }
-            @Override
-            public String[] getExtensions(){
-                return new String[]{"ncpf"};
-            }
-            @Override
-            public void write(NCPFFile ncpf, OutputStream stream){
-                Config header = Config.newConfig();
-                header.set("version", (byte)1);
-                header.set("count", ncpf.multiblocks.size());
-                Config meta = Config.newConfig();
-                for(String key : ncpf.metadata.keySet()){
-                    String value = ncpf.metadata.get(key);
-                    if(value.trim().isEmpty())continue;
-                    meta.set(key,value);
-                }
-                if(meta.properties().length>0){
-                    header.set("metadata", meta);
-                }
-                header.save(stream);
-                ncpf.configuration.save(stream);
-                for(Multiblock m : ncpf.multiblocks){
-                    m.save(ncpf.configuration, stream);
-                }
-            }
-        });
-        formats.add(new FormatWriter() {
-            @Override
-            public String getName(){
-                return "Hellrage JSON format";
+                return "Hellrage format";
             }
             @Override
             public String[] getExtensions(){
@@ -253,6 +221,36 @@ public class FileWriter{
                 }else{
                     //TODO config export?
                     throw new UnsupportedOperationException("Not supported yet.");
+                }
+            }
+        });
+        formats.add(new FormatWriter() {
+            @Override
+            public String getName(){
+                return "NuclearCraft Planner Format";
+            }
+            @Override
+            public String[] getExtensions(){
+                return new String[]{"ncpf"};
+            }
+            @Override
+            public void write(NCPFFile ncpf, OutputStream stream){
+                Config header = Config.newConfig();
+                header.set("version", (byte)1);
+                header.set("count", ncpf.multiblocks.size());
+                Config meta = Config.newConfig();
+                for(String key : ncpf.metadata.keySet()){
+                    String value = ncpf.metadata.get(key);
+                    if(value.trim().isEmpty())continue;
+                    meta.set(key,value);
+                }
+                if(meta.properties().length>0){
+                    header.set("metadata", meta);
+                }
+                header.save(stream);
+                ncpf.configuration.save(stream);
+                for(Multiblock m : ncpf.multiblocks){
+                    m.save(ncpf.configuration, stream);
                 }
             }
         });

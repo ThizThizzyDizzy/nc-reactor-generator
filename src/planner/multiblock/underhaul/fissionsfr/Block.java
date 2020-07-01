@@ -3,6 +3,7 @@ import java.awt.image.BufferedImage;
 import planner.Core;
 import planner.configuration.underhaul.fissionsfr.PlacementRule;
 import planner.multiblock.Direction;
+import planner.multiblock.Multiblock;
 import simplelibrary.Queue;
 public class Block extends planner.multiblock.Block{
     /**
@@ -25,6 +26,8 @@ public class Block extends planner.multiblock.Block{
     public planner.multiblock.Block newInstance(int x, int y, int z){
         return new Block(x, y, z, template);
     }
+    @Override
+    public void copyProperties(planner.multiblock.Block other){}
     @Override
     public BufferedImage getBaseTexture(){
         return template.texture;
@@ -156,5 +159,18 @@ public class Block extends planner.multiblock.Block{
         if(isActive()&&isModerator()){
             drawOutline(x, y, width, height, 1/32d, Core.theme.getGreen());
         }
+    }
+    @Override
+    public boolean hasRules(){
+        return !template.rules.isEmpty();
+    }
+    @Override
+    public boolean calculateRules(Multiblock multiblock){
+        for(PlacementRule rule : template.rules){
+            if(!rule.isValid(this, (UnderhaulSFR) multiblock)){
+                return false;
+            }
+        }
+        return true;
     }
 }

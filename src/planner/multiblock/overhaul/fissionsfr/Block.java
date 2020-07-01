@@ -1,10 +1,10 @@
 package planner.multiblock.overhaul.fissionsfr;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import planner.Core;
 import planner.configuration.overhaul.fissionsfr.PlacementRule;
 import planner.multiblock.Direction;
+import planner.multiblock.Multiblock;
 import simplelibrary.Queue;
 public class Block extends planner.multiblock.Block{
     /**
@@ -32,6 +32,11 @@ public class Block extends planner.multiblock.Block{
     @Override
     public planner.multiblock.Block newInstance(int x, int y, int z){
         return new Block(x, y, z, template);
+    }
+    @Override
+    public void copyProperties(planner.multiblock.Block other){
+        ((Block)other).fuel = fuel;
+        ((Block)other).source = source;
     }
     @Override
     public BufferedImage getBaseTexture(){
@@ -328,5 +333,18 @@ public class Block extends planner.multiblock.Block{
     private boolean isInert(){
         if(isCasing())return true;
         return template.cluster&&!template.functional;
+    }
+    @Override
+    public boolean hasRules(){
+        return !template.rules.isEmpty();
+    }
+    @Override
+    public boolean calculateRules(Multiblock multiblock){
+        for(PlacementRule rule : template.rules){
+            if(!rule.isValid(this, (OverhaulSFR) multiblock)){
+                return false;
+            }
+        }
+        return true;
     }
 }

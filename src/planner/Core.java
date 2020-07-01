@@ -303,6 +303,9 @@ public class Core extends Renderer2D{
     public static void applyWhite(){
         applyColor(Color.white);
     }
+    public static void applyWhite(float alpha){
+        applyColor(Color.white, alpha);
+    }
     public static void applyColor(Color c){
         GL11.glColor4f(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, c.getAlpha()/255f);
     }
@@ -311,5 +314,8 @@ public class Core extends Renderer2D{
     }
     public static void applyAverageColor(Color c1, Color c2){
         GL11.glColor4f((c1.getRed()+c2.getRed())/510f, (c1.getGreen()+c2.getGreen())/510f, (c1.getBlue()+c2.getBlue())/510f, (c1.getAlpha()+c2.getAlpha())/510f);
+    }
+    public static boolean isControlPressed(){
+        return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)||Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
     }
 }

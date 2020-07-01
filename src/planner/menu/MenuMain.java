@@ -268,7 +268,7 @@ public class MenuMain extends Menu{
                 chooser.setAcceptAllFileFilterUsed(false);
                 HashMap<FileFilter, FormatWriter> filters = new HashMap<>();
                 for(FormatWriter writer : FileWriter.formats){
-                    FileFilter f = new FileNameExtensionFilter(writer.getName(), writer.getExtensions());
+                    FileFilter f = new FileNameExtensionFilter(writer.getDesc(), writer.getExtensions());
                     chooser.addChoosableFileFilter(f);
                     filters.put(f, writer);
                 }

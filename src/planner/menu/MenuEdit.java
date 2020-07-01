@@ -1,10 +1,13 @@
 package planner.menu;
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import planner.Core;
 import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import planner.menu.component.MenuComponentCoolantRecipe;
 import planner.menu.component.MenuComponentEditorListBlock;
+import planner.menu.component.MenuComponentEditorTool;
 import planner.menu.component.MenuComponentIrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -13,18 +16,29 @@ import planner.menu.component.MenuComponentMinimalistTextView;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentOverFuel;
 import planner.menu.component.MenuComponentUnderFuel;
+import planner.tool.EditorTool;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
 import planner.multiblock.action.SetCoolantRecipeAction;
 import planner.multiblock.action.SetFuelAction;
 import planner.multiblock.action.SetblockAction;
+import planner.multiblock.action.SetblocksAction;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import planner.tool.LineTool;
+import planner.tool.PencilTool;
+import planner.tool.RectangleTool;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuEdit extends Menu{
-    private final Multiblock multiblock;
+    private final ArrayList<EditorTool> editorTools = new ArrayList<>();
+    {
+        editorTools.add(new PencilTool(this));
+        editorTools.add(new LineTool(this));
+        editorTools.add(new RectangleTool(this));
+    }
+    public final Multiblock multiblock;
     private final int partSize = 48;
     private final int partsWide = 7;
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
@@ -38,6 +52,7 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimaList irradiatorRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
+    private final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
     private double scale = 4;
     private double minScale = 0.5;
     private double maxScale = 16;
@@ -94,6 +109,11 @@ public class MenuEdit extends Menu{
         for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
             parts.add(new MenuComponentEditorListBlock(this, availableBlock));
         }
+        parts.setSelectedIndex(0);
+        for(EditorTool tool : editorTools){
+            tools.add(new MenuComponentEditorTool(tool));
+        }
+        tools.setSelectedIndex(0);
     }
     @Override
     public void onGUIOpened(){
@@ -121,12 +141,14 @@ public class MenuEdit extends Menu{
         if(multisPerRow!=Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)))){
             onGUIOpened();
         }
-        textBox.width = multibwauk.x = back.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
-        multibwauk.y = parts.y = editMetadata.height = back.height = 48;
-        parts.height = (parts.components.size()+5)/partsWide*partSize;
+        parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
+        tools.width = partSize;
+        parts.x = tools.width+partSize/4;
+        editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
+        tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
+        tools.height = parts.height = (parts.components.size()+5)/partsWide*partSize;
         resize.width = 320;
-        editMetadata.x = parts.width;
-        editMetadata.width = multibwauk.width = Display.getWidth()-parts.width-resize.width;
+        editMetadata.width = multibwauk.width = Display.getWidth()-parts.x-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
         zoomIn.width = zoomOut.width = resize.width/2;
         zoomIn.y = zoomOut.y = resize.height;
@@ -137,6 +159,9 @@ public class MenuEdit extends Menu{
         underFuelOrCoolantRecipe.y = resize.height*2;
         irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
         underFuelOrCoolantRecipe.height = Display.getHeight()-resize.height*2;
+        for(MenuComponent c : tools.components){
+            c.width = c.height = partSize;
+        }
         if(multiblock instanceof OverhaulSFR){
             underFuelOrCoolantRecipe.height = 96;
             irradiatorRecipe.height = 96;
@@ -185,6 +210,10 @@ public class MenuEdit extends Menu{
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
     }
+    public EditorTool getSelectedTool(){
+        if(tools.getSelectedIndex()==-1)return null;
+        return ((MenuComponentEditorTool) tools.components.get(tools.getSelectedIndex())).tool;
+    }
     public planner.configuration.overhaul.fissionsfr.Fuel getSelectedOverFuel(){
         return ((MenuComponentOverFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
     }
@@ -198,6 +227,9 @@ public class MenuEdit extends Menu{
         if(template==null){
             multiblock.action(new SetblockAction(x,y,z,null));
             return;
+        }
+        if(Core.isControlPressed()){
+            if(multiblock.getBlock(x, y, z)!=null||!isValid(template, x, y, z))return;
         }
         Block blok = template.newInstance(x, y, z);
         if(multiblock instanceof OverhaulSFR){
@@ -221,5 +253,26 @@ public class MenuEdit extends Menu{
                 multiblock.redo();
             }
         }
+    }
+    public void setblocks(SetblocksAction set){
+        for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
+            int[] b = it.next();
+            if(Core.isControlPressed()){
+                if(multiblock.getBlock(b[0], b[1], b[2])!=null||!isValid(set.block, b[0], b[1], b[2]))it.remove();
+            }
+        }
+        if(set.block!=null&&multiblock instanceof OverhaulSFR){
+            if(((planner.multiblock.overhaul.fissionsfr.Block)set.block).isFuelCell()){
+                ((planner.multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverFuel();
+            }
+            if(((planner.multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
+                ((planner.multiblock.overhaul.fissionsfr.Block)set.block).recipe = getSelectedIrradiatorRecipe();
+            }
+        }
+        multiblock.action(set);
+    }
+    public boolean isValid(Block selectedBlock, int x, int layer, int z){
+        Block b = selectedBlock.newInstance(x, layer, z);
+        return b.hasRules()&&b.calculateRules(multiblock);
     }
 }

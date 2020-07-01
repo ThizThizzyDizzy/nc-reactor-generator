@@ -14,8 +14,12 @@ public class MenuComponentEditorGrid extends MenuComponent{
     private final int layer;
     private final MenuEdit editor;
     private int blockSize;
-    private int[] dragStart;//TODO ADD MORE TOOLS; NOT JUST PENCIL!
     private int[] mouseover;
+    private static final int resonatingTime = 60;
+    private static final float resonatingMin = .25f;
+    private static final float resonatingMax = .5f;
+    private int resonatingTick = 0;
+    private float resonatingAlpha = 0;
     public MenuComponentEditorGrid(int x, int y, int blockSize, MenuEdit editor, Multiblock multiblock, int layer){
         super(x, y, blockSize*multiblock.getX(), blockSize*multiblock.getZ());
         this.multiblock = multiblock;
@@ -26,9 +30,23 @@ public class MenuComponentEditorGrid extends MenuComponent{
         this.blockSize = blockSize;
     }
     @Override
+    public void tick(){
+        resonatingTick++;
+        if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
+    }
+    @Override
+    public void render(int millisSinceLastTick){
+        float tick = resonatingTick+(Math.max(0, Math.min(1, millisSinceLastTick/50)));
+        resonatingAlpha = (float) (-Math.cos(2*Math.PI*tick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
+        super.render(millisSinceLastTick);
+    }
+    @Override
     public void render(){
-        if(!(gui.mouseWereDown.contains(0)||gui.mouseWereDown.contains(1))){
-            dragStart = null;
+        if(!(gui.mouseWereDown.contains(0))){
+            editor.getSelectedTool().mouseReset(0);
+        }
+        if(!(gui.mouseWereDown.contains(1))){
+            editor.getSelectedTool().mouseReset(1);
         }
         if(!isMouseOver)mouseover = null;
         if(mouseover!=null){
@@ -54,9 +72,14 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 drawRect(X+blockSize-border/4, Y+border/4, X+blockSize, Y+blockSize-border/4, 0);
                 if(block!=null){
                     block.render(X, Y, blockSize, blockSize, true);
+                }else if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)||Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)){
+                    if(editor.isValid(editor.getSelectedBlock(), x, layer, z)){
+                        editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha);
+                    }
                 }
             }
         }
+        editor.getSelectedTool().drawGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
         if(mouseover!=null){
             Block block = multiblock.getBlock(mouseover[0],layer,mouseover[1]);
             double X = this.x+mouseover[0]*blockSize;
@@ -96,14 +119,12 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.sources.size()-1;
                     multiblock.action(new SourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.sources.get(index)));
                 }
+                editor.recalculate();
             }else{
-                Block selected = editor.getSelectedBlock();
-                if(button==0||button==1)editor.setblock(blockX,layer,blockZ,button==0?selected:null);
+                editor.getSelectedTool().mousePressed(blockX, layer, blockZ, button);
             }
-            editor.recalculate();
-            dragStart = new int[]{blockX,blockZ};
         }else{
-            dragStart = null;
+            editor.getSelectedTool().mouseReleased(blockX, layer, blockZ, button);
         }
     }
     @Override
@@ -116,34 +137,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
         if(button!=0&&button!=1)return;
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
-        if(dragStart!=null){
-            if(dragStart[0]==blockX&&dragStart[1]==blockZ)return;
-            Block setTo = button==0?editor.getSelectedBlock():null;
-            raytrace(dragStart[0], dragStart[1], blockX, blockZ, (X,Z) -> {
-                editor.setblock(X, layer, Z, setTo);
-            });
-            editor.recalculate();
-            dragStart = new int[]{blockX,blockZ};
-        }
-    }
-    public void raytrace(int fromX, int fromZ, int toX, int toZ, TraceStep step){
-        int xDiff = toX-fromX;
-        int zDiff = toZ-fromZ;
-        double dist = Math.sqrt(Math.pow(fromX-toX, 2)+Math.pow(fromZ-toZ, 2));
-        ArrayList<int[]> steps = new ArrayList<>();
-        steps.add(new int[]{fromX,fromZ});
-        FOR:for(float r = 0; r<1; r+=.25/dist){
-            int x = Math.round(fromX+xDiff*r);
-            int y = Math.round(fromZ+zDiff*r);
-            for(int[] stp : steps){
-                if(x==stp[0]&&y==stp[1])continue FOR;
-            }
-            steps.add(new int[]{x,y});
-            step.step(x, y);
-        }
-    }
-    private static interface TraceStep{
-        public void step(int x, int z);
+        editor.getSelectedTool().mouseDragged(blockX, layer, blockZ, button);
     }
     @Override
     public boolean mouseWheelChange(int wheelChange){
