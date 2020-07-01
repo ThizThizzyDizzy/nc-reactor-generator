@@ -31,6 +31,7 @@ public abstract class EditorTool{
     public void raytrace(int fromX, int fromZ, int toX, int toZ, TraceStep step){
         raytrace(fromX, fromZ, toX, toZ, step, true);
     }
+    public abstract boolean isEditTool();
     public static interface TraceStep{
         public void step(int x, int z);
     }

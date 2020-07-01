@@ -8,7 +8,6 @@ import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.configuration.overhaul.fissionsfr.Fuel;
 import planner.multiblock.Direction;
 import planner.multiblock.Multiblock;
-import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulSFR extends Multiblock<Block>{
@@ -252,7 +251,7 @@ public class OverhaulSFR extends Multiblock<Block>{
             }
         }
     }
-    private Cluster getCluster(Block block){
+    public Cluster getCluster(Block block){
         if(!block.canCluster())return null;
         for(Cluster cluster : clusters){
             if(cluster.contains(block))return cluster;
@@ -266,7 +265,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         }
         return count;
     }
-    private class Cluster{
+    public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();
         public boolean isConnectedToWall = false;
         public float totalOutput = 0;

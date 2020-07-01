@@ -1,12 +1,11 @@
 package planner.menu.component;
-import java.util.ArrayList;
-import org.lwjgl.input.Keyboard;
 import planner.Core;
 import planner.menu.MenuEdit;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
 import planner.multiblock.action.SourceAction;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorGrid extends MenuComponent{
@@ -72,9 +71,43 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 drawRect(X+blockSize-border/4, Y+border/4, X+blockSize, Y+blockSize-border/4, 0);
                 if(block!=null){
                     block.render(X, Y, blockSize, blockSize, true);
-                }else if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)||Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)){
+                }else if(Core.isControlPressed()){
                     if(editor.isValid(editor.getSelectedBlock(), x, layer, z)){
                         editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha);
+                    }
+                }
+                if(isSelected(x, z)){
+                    Core.applyColor(Core.theme.getSelectionColor(), .5f);
+                    Renderer2D.drawRect(X, Y, X+blockSize, Y+blockSize, 0);
+                    Core.applyColor(Core.theme.getSelectionColor());
+                    border = blockSize/8f;
+                    boolean top = isSelected(x, z-1);
+                    boolean right = isSelected(x+1, z);
+                    boolean bottom = isSelected(x, z+1);
+                    boolean left = isSelected(x-1, z);
+                    if(!top||!left||!isSelected(x-1, z-1)){//top left
+                        Renderer2D.drawRect(X, Y, X+border, Y+border, 0);
+                    }
+                    if(!top){//top
+                        Renderer2D.drawRect(X+border, Y, X+blockSize-border, Y+border, 0);
+                    }
+                    if(!top||!right||!isSelected(x+1, z-1)){//top right
+                        Renderer2D.drawRect(X+blockSize-border, Y, X+blockSize, Y+border, 0);
+                    }
+                    if(!right){//right
+                        Renderer2D.drawRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border, 0);
+                    }
+                    if(!bottom||!right||!isSelected(x+1, z+1)){//bottom right
+                        Renderer2D.drawRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize, 0);
+                    }
+                    if(!bottom){//bottom
+                        Renderer2D.drawRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize, 0);
+                    }
+                    if(!bottom||!left||!isSelected(x-1, z+1)){//bottom left
+                        Renderer2D.drawRect(X, Y+blockSize-border, X+border, Y+blockSize, 0);
+                    }
+                    if(!left){//left
+                        Renderer2D.drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
                     }
                 }
             }
@@ -110,7 +143,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
         if(isDown){
-            if(multiblock instanceof OverhaulSFR&&(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))&&((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()){
+            if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()){
                 planner.multiblock.overhaul.fissionsfr.Block b = (planner.multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     int index = Core.configuration.overhaul.fissionSFR.sources.indexOf(b.source);
@@ -142,5 +175,8 @@ public class MenuComponentEditorGrid extends MenuComponent{
     @Override
     public boolean mouseWheelChange(int wheelChange){
         return parent.mouseWheelChange(wheelChange);
+    }
+    public boolean isSelected(int x, int z){
+        return editor.isSelected(x,layer,z);
     }
 }

@@ -32,6 +32,7 @@ public abstract class Theme{
     public abstract Color getEditorListBorderColor();
     public abstract Color getDarkButtonColor();
     public abstract Color getButtonColor();
+    public abstract Color getSelectionColor();
     public abstract Color getRGB(float r, float g, float b);
     private static class SolidColorTheme extends Theme{
         private final Color background;
@@ -114,6 +115,10 @@ public abstract class Theme{
         @Override
         public Color getRGB(float r, float g, float b){
             return new Color(r*(1-(1-rgbTint)*rgbSat), g*(1-(1-rgbTint)*rgbSat), b*(1-(1-rgbTint)*rgbSat));
+        }
+        @Override
+        public Color getSelectionColor(){
+            return getRGB(.75f, .75f, 0);
         }
     }
 }

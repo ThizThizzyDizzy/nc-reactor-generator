@@ -315,7 +315,13 @@ public class Core extends Renderer2D{
     public static void applyAverageColor(Color c1, Color c2){
         GL11.glColor4f((c1.getRed()+c2.getRed())/510f, (c1.getGreen()+c2.getGreen())/510f, (c1.getBlue()+c2.getBlue())/510f, (c1.getAlpha()+c2.getAlpha())/510f);
     }
+    public static boolean isAltPressed(){
+        return Keyboard.isKeyDown(Keyboard.KEY_LMENU)||Keyboard.isKeyDown(Keyboard.KEY_RMENU);
+    }
     public static boolean isControlPressed(){
         return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)||Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
+    }
+    public static boolean isShiftPressed(){
+        return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
     }
 }

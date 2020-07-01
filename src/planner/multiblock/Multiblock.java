@@ -359,4 +359,25 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         validate();
         calculate();
     }
+    public ArrayList<Block> getGroup(Block block){
+        ArrayList<Block> group = new ArrayList<>();
+        if(block==null)return group;
+        group.add(block);
+        boolean somethingChanged;
+        do{
+            somethingChanged = false;
+            for(Block blok : getBlocks()){
+                if(group.contains(blok))continue;
+                boolean req = false;
+                for(Block b : group){
+                    if(b.requires(blok, this)||blok.requires(b, this))req = true;
+                }
+                if(req){
+                    group.add(blok);
+                    somethingChanged = true;
+                }
+            }
+        }while(somethingChanged);
+        return group;
+    }
 }

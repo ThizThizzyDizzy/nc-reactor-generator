@@ -69,4 +69,8 @@ public class LineTool extends EditorTool{
         if(button==0)leftDragEnd = new int[]{x,y,z};
         if(button==1)rightDragEnd = new int[]{x,y,z};
     }
+    @Override
+    public boolean isEditTool(){
+        return true;
+    }
 }

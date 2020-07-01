@@ -181,4 +181,24 @@ public class Block extends planner.multiblock.Block{
         }
         return false;
     }
+    @Override
+    public boolean requires(planner.multiblock.Block oth, Multiblock mb){
+        if(template.cooling==0)return false;
+        Block other = (Block) oth;
+        int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y+y)+Math.abs(oth.z+z);
+        if(totalDist>1)return false;//too far away
+        if(hasRules()){
+            for(PlacementRule rule : template.rules){
+                if(ruleHas(rule, other))return true;
+            }
+        }
+        return false;
+    }
+    private boolean ruleHas(PlacementRule rule, Block b){
+        if(rule.block==b.template)return true;
+        for(PlacementRule rul : rule.rules){
+            if(ruleHas(rul, b))return true;
+        }
+        return false;
+    }
 }

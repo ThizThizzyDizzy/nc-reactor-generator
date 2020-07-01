@@ -1,7 +1,6 @@
 package planner.tool;
 import planner.Core;
 import planner.menu.MenuEdit;
-import planner.multiblock.Block;
 import planner.multiblock.action.SetblocksAction;
 import simplelibrary.opengl.Renderer2D;
 public class RectangleTool extends EditorTool{
@@ -72,5 +71,9 @@ public class RectangleTool extends EditorTool{
     public void mouseDragged(int x, int y, int z, int button){
         if(button==0)leftDragEnd = new int[]{x,y,z};
         if(button==1)rightDragEnd = new int[]{x,y,z};
+    }
+    @Override
+    public boolean isEditTool(){
+        return true;
     }
 }

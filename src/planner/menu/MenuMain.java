@@ -357,7 +357,7 @@ public class MenuMain extends Menu{
         exportMultiblock.enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
         saveFile.enabled = !Core.multiblocks.isEmpty()&&!(adding||metadating);
         loadFile.enabled = !(adding||metadating);
-        delete.enabled = (!(adding||metadating)&&multiblocks.getSelectedIndex()!=-1)&&(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
+        delete.enabled = (!(adding||metadating)&&multiblocks.getSelectedIndex()!=-1)&&Core.isShiftPressed();
         for(MenuComponentMinimalistButton b : multiblockButtons){
             b.enabled = adding&&Core.multiblockTypes.get(multiblockButtons.indexOf(b)).exists();
         }

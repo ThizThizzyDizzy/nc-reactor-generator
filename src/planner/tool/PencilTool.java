@@ -1,5 +1,4 @@
 package planner.tool;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
@@ -10,7 +9,9 @@ public class PencilTool extends EditorTool{
         super(editor);
     }
     private int[] leftDragStart;
+    private int leftLayerStart = -1;
     private int[] rightDragStart;
+    private int rightLayerStart = -1;
     @Override
     public void render(double x, double y, double width, double height){
         Core.applyColor(Core.theme.getTextColor());
@@ -34,16 +35,28 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void mouseReset(int button){
-        if(button==0)leftDragStart = null;
-        if(button==1)rightDragStart = null;
+        if(button==0){
+            leftDragStart = null;
+            leftLayerStart = -1;
+        }
+        if(button==1){
+            rightDragStart = null;
+            rightLayerStart = -1;
+        }
     }
     @Override
     public void mousePressed(int x, int y, int z, int button){
         Block selected = editor.getSelectedBlock();
         if(button==0||button==1)editor.setblock(x,y,z,button==0?selected:null);
         editor.recalculate();
-        if(button==0)leftDragStart = new int[]{x,z};
-        if(button==1)rightDragStart = new int[]{x,z};
+        if(button==0){
+            leftDragStart = new int[]{x,z};
+            leftLayerStart = y;
+        }
+        if(button==1){
+            rightDragStart = new int[]{x,z};
+            rightLayerStart = y;
+        }
     }
     @Override
     public void mouseReleased(int x, int y, int z, int button){
@@ -52,6 +65,10 @@ public class PencilTool extends EditorTool{
     @Override
     public void mouseDragged(int x, int y, int z, int button){
         if(button==0){
+            if(y!=leftLayerStart){
+                leftDragStart = new int[]{x,z};
+                leftLayerStart = y;
+            }
             if(leftDragStart!=null){
                 if(leftDragStart[0]==x&&leftDragStart[1]==z)return;
                 Block setTo = editor.getSelectedBlock();
@@ -63,6 +80,10 @@ public class PencilTool extends EditorTool{
             }
         }
         if(button==1){
+            if(y!=rightLayerStart){
+                rightDragStart = new int[]{x,z};
+                rightLayerStart = y;
+            }
             if(rightDragStart!=null){
                 if(rightDragStart[0]==x&&rightDragStart[1]==z)return;
                 Block setTo = null;
@@ -73,5 +94,9 @@ public class PencilTool extends EditorTool{
                 rightDragStart = new int[]{x,z};
             }
         }
+    }
+    @Override
+    public boolean isEditTool(){
+        return true;
     }
 }

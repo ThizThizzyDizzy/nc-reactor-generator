@@ -28,12 +28,14 @@ import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.tool.LineTool;
 import planner.tool.PencilTool;
 import planner.tool.RectangleTool;
+import planner.tool.SelectionTool;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuEdit extends Menu{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     {
+        editorTools.add(new SelectionTool(this));
         editorTools.add(new PencilTool(this));
         editorTools.add(new LineTool(this));
         editorTools.add(new RectangleTool(this));
@@ -53,6 +55,7 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
     private final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
+    public final ArrayList<int[]> selection = new ArrayList<>();
     private double scale = 4;
     private double minScale = 0.5;
     private double maxScale = 16;
@@ -113,7 +116,7 @@ public class MenuEdit extends Menu{
         for(EditorTool tool : editorTools){
             tools.add(new MenuComponentEditorTool(tool));
         }
-        tools.setSelectedIndex(0);
+        tools.setSelectedIndex(1);
     }
     @Override
     public void onGUIOpened(){
@@ -224,6 +227,7 @@ public class MenuEdit extends Menu{
         multiblock.recalculate();
     }
     public void setblock(int x, int y, int z, Block template){
+        if(hasSelection()&&!isSelected(x, y, z))return;
         if(template==null){
             if(Core.isControlPressed()){
                 if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).matches(getSelectedBlock()))return;
@@ -248,7 +252,8 @@ public class MenuEdit extends Menu{
     @Override
     public void keyboardEvent(char character, int key, boolean pressed, boolean repeat){
         super.keyboardEvent(character, key, pressed, repeat);
-        if(pressed&&(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)||Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))){
+        if(pressed&&key==Keyboard.KEY_ESCAPE)selection.clear();
+        if(pressed&&Core.isControlPressed()){
             if(key==Keyboard.KEY_Z){
                 multiblock.undo();
             }
@@ -260,7 +265,8 @@ public class MenuEdit extends Menu{
     public void setblocks(SetblocksAction set){
         for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
             int[] b = it.next();
-            if(Core.isControlPressed()){
+            if(hasSelection()&&!isSelected(b[0], b[1], b[2]))it.remove();
+            else if(Core.isControlPressed()){
                 if(set.block==null){
                     if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock()))it.remove();
                 }else{
@@ -281,5 +287,100 @@ public class MenuEdit extends Menu{
     public boolean isValid(Block selectedBlock, int x, int layer, int z){
         Block b = selectedBlock.newInstance(x, layer, z);
         return b.hasRules()&&b.calculateRules(multiblock);
+    }
+    public void select(int x1, int y1, int z1, int x2, int y2, int z2){
+        if(!Core.isShiftPressed()){
+            if(x1==x2&&y1==y2&&z1==z2)return;
+        }
+        ArrayList<int[]> is = new ArrayList<>();
+        for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
+            for(int y = Math.min(y1,y2); y<=Math.max(y1,y2); y++){
+                for(int z = Math.min(z1,z2); z<=Math.max(z1,z2); z++){
+                    is.add(new int[]{x,y,z});
+                    if(isSelected(x, y, z))continue;
+                    selection.add(new int[]{x,y,z});
+                }
+            }
+        }
+        select(is);
+    }
+    public void deselect(int x1, int y1, int z1, int x2, int y2, int z2){
+        ArrayList<int[]> is = new ArrayList<>();
+        for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
+            for(int y = Math.min(y1,y2); y<=Math.max(y1,y2); y++){
+                for(int z = Math.min(z1,z2); z<=Math.max(z1,z2); z++){
+                    is.add(new int[]{x,y,z});
+                }
+            }
+        }
+        deselect(is);
+    }
+    public void select(ArrayList<int[]> is){
+        if(!Core.isShiftPressed()){
+            selection.clear();
+        }
+        for(int[] i : is){
+            if(isSelected(i[0], i[1], i[2]))continue;
+            selection.add(i);
+        }
+    }
+    public void deselect(ArrayList<int[]> is){
+        if(!Core.isShiftPressed()){
+            selection.clear();
+            return;
+        }
+        for(int[] i : is){
+            for(Iterator<int[]> it = selection.iterator(); it.hasNext();){
+                int[] s = it.next();
+                if(s[0]==i[0]&&s[1]==i[1]&&s[2]==i[2])it.remove();
+            }
+        }
+    }
+    public boolean isSelected(int x, int y, int z){
+        for(int[] s : selection){
+            if(s[0]==x&&s[1]==y&&s[2]==z)return true;
+        }
+        return false;
+    }
+    private boolean hasSelection(){
+        return !selection.isEmpty();
+    }
+    public void selectCluster(int x, int y, int z){
+        if(multiblock instanceof OverhaulSFR){
+            OverhaulSFR osfr = (OverhaulSFR) multiblock;
+            OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
+            ArrayList<int[]> is = new ArrayList<>();
+            for(Block b : c.blocks){
+                is.add(new int[]{b.x,b.y,b.z});
+            }
+            select(is);
+        }
+    }
+    public void deselectCluster(int x, int y, int z){
+        if(multiblock instanceof OverhaulSFR){
+            OverhaulSFR osfr = (OverhaulSFR) multiblock;
+            OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
+            ArrayList<int[]> is = new ArrayList<>();
+            for(Block b : c.blocks){
+                is.add(new int[]{b.x,b.y,b.z});
+            }
+            deselect(is);
+        }
+    }
+    public void selectGroup(int x, int y, int z){
+        ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+        ArrayList<int[]> is = new ArrayList<>();
+        for(Block b : g){
+            is.add(new int[]{b.x,b.y,b.z});
+        }
+        select(is);
+    }
+    public void deselectGroup(int x, int y, int z){
+        ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+        ArrayList<int[]> is = new ArrayList<>();
+        for(Block b : g){
+            is.add(new int[]{b.x,b.y,b.z});
+        }
+        deselect(is);
     }
 }
