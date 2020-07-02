@@ -1706,7 +1706,7 @@ public class FileReader{
                     ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe("Protactinium-Enriched Thorium to Protactinium-233", (float)irrEff[1], (float)irrHeat[1]));
                     ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe("Bismuth Dust to Polonium Dust", (float)irrEff[2], (float)irrHeat[2]));
                     addMSRFuels(ncpf, fuelTimeMult, "thorium", null, null, null, null, "TBU Fluoride");
-                    addMSRFuels(ncpf, fuelTimeMult, "uranium", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-233 Fluoride", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-235 Fluoride");
+                    addMSRFuels(ncpf, fuelTimeMult, "uranium", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-233 Fluoride", null, null, null, null, "LEU-235 Fluoride", null, null, null, null, "HEU-235 Fluoride");
                     addMSRFuels(ncpf, fuelTimeMult, "neptunium", null, null, null, null, "LEN-236 Fluoride", null, null, null, null, "HEN-236 Fluoride");
                     addMSRFuels(ncpf, fuelTimeMult, "plutonium", null, null, null, null, "LEP-239 Fluoride", null, null, null, null, "HEP-239 Fluoride", null, null, null, null, "LEP-241 Fluoride", null, null, null, null, "HEP-241 Fluoride");
                     addMSRFuels(ncpf, fuelTimeMult, "mixed", null, null, null, null, "MF4-239", null, null, null, null, "MF4-241");
