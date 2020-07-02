@@ -2549,7 +2549,6 @@ public class FileReader{
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
-                if(true)return true;
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
                 int major = saveVersion.getInt("Major");
@@ -2730,7 +2729,7 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     if(!name.startsWith("[F4]"))return false;//that's not an MSR!
                 }
@@ -2746,7 +2745,7 @@ public class FileReader{
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionmsr.Block block = null;
                     for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -2795,14 +2794,12 @@ public class FileReader{
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
-                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
-                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
@@ -2842,7 +2839,7 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     if(!name.startsWith("[F4]"))return false;//that's not an MSR!
                 }
@@ -2858,7 +2855,7 @@ public class FileReader{
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionmsr.Block block = null;
                     for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -2925,14 +2922,12 @@ public class FileReader{
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
-                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
-                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
@@ -2972,7 +2967,7 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     if(!name.startsWith("[F4]"))return false;//that's not an MSR!
                 }
@@ -2988,7 +2983,7 @@ public class FileReader{
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionmsr.Block block = null;
                     for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -3055,14 +3050,12 @@ public class FileReader{
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
-                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
-                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
@@ -3101,7 +3094,7 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     if(!name.startsWith("[F4]"))return false;//that's not an MSR!
                 }
@@ -3116,7 +3109,7 @@ public class FileReader{
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionmsr.Block block = null;
                     for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -3179,14 +3172,12 @@ public class FileReader{
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
-                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
-                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
@@ -3224,7 +3215,7 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     if(!name.startsWith("[F4]"))return false;//that's not an MSR!
                 }
@@ -3239,7 +3230,7 @@ public class FileReader{
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionmsr.Block block = null;
                     for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -3301,14 +3292,12 @@ public class FileReader{
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
-                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
-                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
-                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
@@ -3341,14 +3330,13 @@ public class FileReader{
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
-                if(true)return true;
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
                 JSONObject data = hellrage.getJSONObject("Data");
-                JSON.JSONObject fuelVessels = data.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = data.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     if(!name.startsWith("[F4]"))return false;//that's not an MSR!
                 }
@@ -3364,7 +3352,7 @@ public class FileReader{
                 for(String name : heatSinks.keySet()){
                     planner.configuration.overhaul.fissionmsr.Block block = null;
                     for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -3468,14 +3456,12 @@ public class FileReader{
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
-                JSON.JSONObject fuelVessels = data.getJSONObject("FuelVessels");
+                JSON.JSONObject fuelVessels = data.getJSONObject("FuelCells");
                 for(String name : fuelVessels.keySet()){
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
-                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
-                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
