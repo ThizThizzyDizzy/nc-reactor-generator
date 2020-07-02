@@ -236,7 +236,7 @@ public class FileWriter{
             @Override
             public void write(NCPFFile ncpf, OutputStream stream){
                 Config header = Config.newConfig();
-                header.set("version", (byte)1);
+                header.set("version", NCPFFile.SAVE_VERSION);
                 header.set("count", ncpf.multiblocks.size());
                 Config meta = Config.newConfig();
                 for(String key : ncpf.metadata.keySet()){

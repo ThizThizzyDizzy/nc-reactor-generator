@@ -4,17 +4,18 @@ import java.util.Iterator;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import planner.menu.component.MenuComponentCoolantRecipe;
 import planner.menu.component.MenuComponentEditorListBlock;
 import planner.menu.component.MenuComponentEditorTool;
-import planner.menu.component.MenuComponentIrradiatorRecipe;
+import planner.menu.component.MenuComponentSFRIrradiatorRecipe;
+import planner.menu.component.MenuComponentMSRIrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistScrollable;
 import planner.menu.component.MenuComponentMinimalistTextView;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
-import planner.menu.component.MenuComponentOverFuel;
+import planner.menu.component.MenuComponentOverMSRFuel;
+import planner.menu.component.MenuComponentOverSFRFuel;
 import planner.menu.component.MenuComponentUnderFuel;
 import planner.tool.EditorTool;
 import planner.multiblock.Block;
@@ -24,6 +25,7 @@ import planner.multiblock.action.SetFuelAction;
 import planner.multiblock.action.SetblockAction;
 import planner.multiblock.action.SetblocksAction;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.tool.LineTool;
 import planner.tool.PencilTool;
@@ -77,12 +79,24 @@ public class MenuEdit extends Menu{
             }
             add(overFuel);
             for(planner.configuration.overhaul.fissionsfr.Fuel fuel : Core.configuration.overhaul.fissionSFR.fuels){
-                overFuel.add(new MenuComponentOverFuel(fuel));
+                overFuel.add(new MenuComponentOverSFRFuel(fuel));
             }
             overFuel.setSelectedIndex(0);
             add(irradiatorRecipe);
             for(planner.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
-                irradiatorRecipe.add(new MenuComponentIrradiatorRecipe(recipe));
+                irradiatorRecipe.add(new MenuComponentSFRIrradiatorRecipe(recipe));
+            }
+            irradiatorRecipe.setSelectedIndex(0);
+        }
+        if(multiblock instanceof OverhaulMSR){
+            add(overFuel);
+            for(planner.configuration.overhaul.fissionmsr.Fuel fuel : Core.configuration.overhaul.fissionMSR.fuels){
+                overFuel.add(new MenuComponentOverMSRFuel(fuel));
+            }
+            overFuel.setSelectedIndex(0);
+            add(irradiatorRecipe);
+            for(planner.configuration.overhaul.fissionmsr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionMSR.irradiatorRecipes){
+                irradiatorRecipe.add(new MenuComponentMSRIrradiatorRecipe(recipe));
             }
             irradiatorRecipe.setSelectedIndex(0);
         }
@@ -172,6 +186,13 @@ public class MenuEdit extends Menu{
             overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
             overFuel.height = irradiatorRecipe.y-overFuel.y;
         }
+        if(multiblock instanceof OverhaulMSR){
+            underFuelOrCoolantRecipe.height = 0;
+            irradiatorRecipe.height = 96;
+            irradiatorRecipe.y = Display.getHeight()-irradiatorRecipe.height;
+            overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
+            overFuel.height = irradiatorRecipe.y-overFuel.y;
+        }
         for(MenuComponent c : underFuelOrCoolantRecipe.components){
             c.width = underFuelOrCoolantRecipe.width-underFuelOrCoolantRecipe.vertScrollbarWidth;
             c.height = 32;
@@ -217,11 +238,17 @@ public class MenuEdit extends Menu{
         if(tools.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorTool) tools.components.get(tools.getSelectedIndex())).tool;
     }
-    public planner.configuration.overhaul.fissionsfr.Fuel getSelectedOverFuel(){
-        return ((MenuComponentOverFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
+    public planner.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(){
+        return ((MenuComponentOverSFRFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
     }
-    public IrradiatorRecipe getSelectedIrradiatorRecipe(){
-        return ((MenuComponentIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
+    public planner.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(){
+        return ((MenuComponentSFRIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
+    }
+    public planner.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(){
+        return ((MenuComponentOverMSRFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
+    }
+    public planner.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(){
+        return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
     }
     public void recalculate(){
         multiblock.recalculate();
@@ -241,10 +268,18 @@ public class MenuEdit extends Menu{
         Block blok = template.newInstance(x, y, z);
         if(multiblock instanceof OverhaulSFR){
             if(((planner.multiblock.overhaul.fissionsfr.Block)blok).isFuelCell()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)blok).fuel = getSelectedOverFuel();
+                ((planner.multiblock.overhaul.fissionsfr.Block)blok).fuel = getSelectedOverSFRFuel();
             }
             if(((planner.multiblock.overhaul.fissionsfr.Block)blok).isIrradiator()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)blok).recipe = getSelectedIrradiatorRecipe();
+                ((planner.multiblock.overhaul.fissionsfr.Block)blok).recipe = getSelectedSFRIrradiatorRecipe();
+            }
+        }
+        if(multiblock instanceof OverhaulMSR){
+            if(((planner.multiblock.overhaul.fissionmsr.Block)blok).isFuelVessel()){
+                ((planner.multiblock.overhaul.fissionmsr.Block)blok).fuel = getSelectedOverMSRFuel();
+            }
+            if(((planner.multiblock.overhaul.fissionmsr.Block)blok).isIrradiator()){
+                ((planner.multiblock.overhaul.fissionmsr.Block)blok).recipe = getSelectedMSRIrradiatorRecipe();
             }
         }
         multiblock.action(new SetblockAction(x,y,z,blok));
@@ -276,10 +311,18 @@ public class MenuEdit extends Menu{
         }
         if(set.block!=null&&multiblock instanceof OverhaulSFR){
             if(((planner.multiblock.overhaul.fissionsfr.Block)set.block).isFuelCell()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverFuel();
+                ((planner.multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel();
             }
             if(((planner.multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)set.block).recipe = getSelectedIrradiatorRecipe();
+                ((planner.multiblock.overhaul.fissionsfr.Block)set.block).recipe = getSelectedSFRIrradiatorRecipe();
+            }
+        }
+        if(set.block!=null&&multiblock instanceof OverhaulMSR){
+            if(((planner.multiblock.overhaul.fissionmsr.Block)set.block).isFuelVessel()){
+                ((planner.multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel();
+            }
+            if(((planner.multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
+                ((planner.multiblock.overhaul.fissionmsr.Block)set.block).recipe = getSelectedMSRIrradiatorRecipe();
             }
         }
         multiblock.action(set);
@@ -289,7 +332,8 @@ public class MenuEdit extends Menu{
         return b.hasRules()&&b.calculateRules(multiblock);
     }
     public void select(int x1, int y1, int z1, int x2, int y2, int z2){
-        if(!Core.isShiftPressed()){
+        if(!Core.isControlPressed()){
+            selection.clear();
             if(x1==x2&&y1==y2&&z1==z2)return;
         }
         ArrayList<int[]> is = new ArrayList<>();
@@ -316,7 +360,7 @@ public class MenuEdit extends Menu{
         deselect(is);
     }
     public void select(ArrayList<int[]> is){
-        if(!Core.isShiftPressed()){
+        if(!Core.isControlPressed()){
             selection.clear();
         }
         for(int[] i : is){
@@ -325,7 +369,7 @@ public class MenuEdit extends Menu{
         }
     }
     public void deselect(ArrayList<int[]> is){
-        if(!Core.isShiftPressed()){
+        if(!Core.isControlPressed()){
             selection.clear();
             return;
         }
@@ -355,11 +399,29 @@ public class MenuEdit extends Menu{
             }
             select(is);
         }
+        if(multiblock instanceof OverhaulMSR){
+            OverhaulMSR omsr = (OverhaulMSR) multiblock;
+            OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
+            ArrayList<int[]> is = new ArrayList<>();
+            for(Block b : c.blocks){
+                is.add(new int[]{b.x,b.y,b.z});
+            }
+            select(is);
+        }
     }
     public void deselectCluster(int x, int y, int z){
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
+            ArrayList<int[]> is = new ArrayList<>();
+            for(Block b : c.blocks){
+                is.add(new int[]{b.x,b.y,b.z});
+            }
+            deselect(is);
+        }
+        if(multiblock instanceof OverhaulMSR){
+            OverhaulMSR omsr = (OverhaulMSR) multiblock;
+            OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
             ArrayList<int[]> is = new ArrayList<>();
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});

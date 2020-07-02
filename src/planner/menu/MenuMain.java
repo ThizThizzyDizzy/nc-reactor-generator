@@ -179,7 +179,7 @@ public class MenuMain extends Menu{
                         }
                         try(FileOutputStream stream = new FileOutputStream(file)){
                             Config header = Config.newConfig();
-                            header.set("version", (byte)1);
+                            header.set("version", NCPFFile.SAVE_VERSION);
                             header.set("count", ncpf.multiblocks.size());
                             Config meta = Config.newConfig();
                             for(String key : ncpf.metadata.keySet()){

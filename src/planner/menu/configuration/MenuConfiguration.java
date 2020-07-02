@@ -77,7 +77,7 @@ public class MenuConfiguration extends Menu{
                         }
                         try(FileOutputStream stream = new FileOutputStream(file)){
                             Config header = Config.newConfig();
-                            header.set("version", (byte)1);
+                            header.set("version", NCPFFile.SAVE_VERSION);
                             header.set("count", 0);
                             header.save(stream);
                             Core.configuration.save(stream);

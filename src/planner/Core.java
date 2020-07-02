@@ -25,6 +25,7 @@ import org.lwjgl.opengl.GL13;
 import planner.configuration.Configuration;
 import planner.multiblock.Multiblock;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
@@ -60,6 +61,7 @@ public class Core extends Renderer2D{
         Configuration.configurations.get(0).impose(configuration);
         multiblockTypes.add(new UnderhaulSFR());
         multiblockTypes.add(new OverhaulSFR());
+        multiblockTypes.add(new OverhaulMSR());
         resetMetadata();
     }
     public static void resetMetadata(){
@@ -243,13 +245,13 @@ public class Core extends Renderer2D{
     public static BufferedImage getImage(String texture){
         try{
             if(new File("nbproject").exists()){
-                return ImageIO.read(new File("src\\textures\\"+texture.replace("/", "\\")+".png"));
+                return ImageIO.read(new File("src/textures/"+texture+".png"));
             }else{
                 JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
                 Enumeration enumEntries = jar.entries();
                 while(enumEntries.hasMoreElements()){
                     JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals("textures/"+texture.replace("\\", "/")+".png")){
+                    if(file.getName().equals("textures/"+texture+".png")){
                         return ImageIO.read(jar.getInputStream(file));
                     }
                 }
@@ -263,13 +265,13 @@ public class Core extends Renderer2D{
     public static InputStream getInputStream(String path){
         try{
             if(new File("nbproject").exists()){
-                return new FileInputStream(new File("src\\"+path.replace("/", "\\")));
+                return new FileInputStream(new File("src/"+path.replace("/", "/")));
             }else{
                 JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
                 Enumeration enumEntries = jar.entries();
                 while(enumEntries.hasMoreElements()){
                     JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals(path.replace("\\", "/"))){
+                    if(file.getName().equals(path.replace("/", "/"))){
                         return jar.getInputStream(file);
                     }
                 }
@@ -282,6 +284,7 @@ public class Core extends Renderer2D{
     }
     private static final HashMap<BufferedImage, Integer> imgs = new HashMap<>();
     public static int getTexture(BufferedImage image){
+        if(image==null)return -1;
         if(!imgs.containsKey(image)){
             imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image));
         }

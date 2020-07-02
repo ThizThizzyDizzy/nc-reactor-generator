@@ -20,10 +20,10 @@ import planner.configuration.Configuration;
 import planner.configuration.PartialConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
 import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
-import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.multiblock.Multiblock;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
@@ -509,6 +509,726 @@ public class FileReader{
         });// .ncpf version 1
         formats.add(new FormatReader(){
             @Override
+            public boolean formatMatches(InputStream in){
+                try{
+                    Config header = Config.newConfig();
+                    header.load(in);
+                    in.close();
+                    return header.get("version", (byte)0)==(byte)2;
+                }catch(Throwable t){
+                    return false;
+                }
+            }
+            HashMap<planner.configuration.underhaul.fissionsfr.PlacementRule, Byte> underhaulPostLoadMap = new HashMap<>();
+            HashMap<planner.configuration.overhaul.fissionsfr.PlacementRule, Byte> overhaulSFRPostLoadMap = new HashMap<>();
+            HashMap<planner.configuration.overhaul.fissionmsr.PlacementRule, Byte> overhaulMSRPostLoadMap = new HashMap<>();
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                try{
+                    NCPFFile ncpf = new NCPFFile();
+                    Config header = Config.newConfig();
+                    header.load(in);
+                    int multiblocks = header.get("count");
+                    if(header.hasProperty("metadata")){
+                        Config metadata = header.get("metadata");
+                        for(String key : metadata.properties()){
+                            ncpf.metadata.put(key, metadata.get(key));
+                        }
+                    }
+                    Config config = Config.newConfig();
+                    config.load(in);
+                    boolean partial = config.get("partial");
+                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"));
+                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"));
+                    //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
+                    if(config.hasProperty("underhaul")){
+                        ncpf.configuration.underhaul = new UnderhaulConfiguration();
+                        Config underhaul = config.get("underhaul");
+                        if(underhaul.hasProperty("fissionSFR")){
+                            ncpf.configuration.underhaul.fissionSFR = new planner.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
+                            Config fissionSFR = underhaul.get("fissionSFR");
+                            ncpf.configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                            ncpf.configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                            ncpf.configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
+                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
+                            ncpf.configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
+                            ConfigList blocks = fissionSFR.get("blocks");
+                            underhaulPostLoadMap.clear();
+                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                                Config blockCfg = (Config)bit.next();
+                                planner.configuration.underhaul.fissionsfr.Block block = new planner.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
+                                block.active = blockCfg.get("active");
+                                block.cooling = blockCfg.get("cooling", 0);
+                                block.fuelCell = blockCfg.get("fuelCell", false);
+                                block.moderator = blockCfg.get("moderator", false);
+                                if(blockCfg.hasProperty("texture")){
+                                    ConfigNumberList texture = blockCfg.get("texture");
+                                    int size = (int) texture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("rules")){
+                                    ConfigList rules = blockCfg.get("rules");
+                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                        Config ruleCfg = (Config)rit.next();
+                                        block.rules.add(readUnderRule(ruleCfg));
+                                    }
+                                }
+                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
+                            }
+                            for(planner.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
+                                byte index = underhaulPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
+                                }
+                            }
+                            ConfigList fuels = fissionSFR.get("fuels");
+                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                                Config fuelCfg = (Config)fit.next();
+                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new planner.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
+                            }
+                        }
+                    }
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Overhaul Configuration">
+                    if(config.hasProperty("overhaul")){
+                        ncpf.configuration.overhaul = new OverhaulConfiguration();
+                        Config overhaul = config.get("overhaul");
+                        //<editor-fold defaultstate="collapsed" desc="Fission SFR Configuration">
+                        if(overhaul.hasProperty("fissionSFR")){
+                            ncpf.configuration.overhaul.fissionSFR = new planner.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
+                            Config fissionSFR = overhaul.get("fissionSFR");
+                            ncpf.configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                            ncpf.configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                            ncpf.configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                            ncpf.configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
+                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
+                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
+                            ConfigList blocks = fissionSFR.get("blocks");
+                            overhaulSFRPostLoadMap.clear();
+                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                                Config blockCfg = (Config)bit.next();
+                                planner.configuration.overhaul.fissionsfr.Block block = new planner.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
+                                block.cooling = blockCfg.get("cooling", 0);
+                                block.cluster = blockCfg.get("cluster", false);
+                                block.createCluster = blockCfg.get("createCluster", false);
+                                block.conductor = blockCfg.get("conductor", false);
+                                block.fuelCell = blockCfg.get("fuelCell", false);
+                                block.reflector = blockCfg.get("reflector", false);
+                                block.irradiator = blockCfg.get("irradiator", false);
+                                block.moderator = blockCfg.get("moderator", false);
+                                block.activeModerator = blockCfg.get("activeModerator", false);
+                                block.shield = blockCfg.get("shield", false);
+                                if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                                if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                                if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                                if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                                block.blocksLOS = blockCfg.get("blocksLOS", false);
+                                block.functional = blockCfg.get("functional");
+                                if(blockCfg.hasProperty("texture")){
+                                    ConfigNumberList texture = blockCfg.get("texture");
+                                    int size = (int) texture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("rules")){
+                                    ConfigList rules = blockCfg.get("rules");
+                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                        Config ruleCfg = (Config)rit.next();
+                                        block.rules.add(readOverSFRRule(ruleCfg));
+                                    }
+                                }
+                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
+                            }
+                            for(planner.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
+                                byte index = overhaulSFRPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
+                                }
+                            }
+                            ConfigList fuels = fissionSFR.get("fuels");
+                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                                Config fuelCfg = (Config)fit.next();
+                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new planner.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                            }
+                            ConfigList sources = fissionSFR.get("sources");
+                            for(Iterator sit = sources.iterator(); sit.hasNext();){
+                                Config sourceCfg = (Config)sit.next();
+                                ncpf.configuration.overhaul.fissionSFR.sources.add(new planner.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                            }
+                            ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
+                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                                Config irradiatorRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                            }
+                            ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
+                            for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
+                                Config coolantRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new planner.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
+                            }
+                        }
+//</editor-fold>
+                        //<editor-fold defaultstate="collapsed" desc="Fission MSR Configuration">
+                        if(overhaul.hasProperty("fissionMSR")){
+                            ncpf.configuration.overhaul.fissionMSR = new planner.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
+                            Config fissionMSR = overhaul.get("fissionMSR");
+                            ncpf.configuration.overhaul.fissionMSR.minSize = fissionMSR.get("minSize");
+                            ncpf.configuration.overhaul.fissionMSR.maxSize = fissionMSR.get("maxSize");
+                            ncpf.configuration.overhaul.fissionMSR.neutronReach = fissionMSR.get("neutronReach");
+                            ncpf.configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = fissionMSR.get("coolingEfficiencyLeniency");
+                            ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyMult = fissionMSR.get("sparsityPenaltyMult");
+                            ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = fissionMSR.get("sparsityPenaltyThreshold");
+                            ConfigList blocks = fissionMSR.get("blocks");
+                            overhaulMSRPostLoadMap.clear();
+                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                                Config blockCfg = (Config)bit.next();
+                                planner.configuration.overhaul.fissionmsr.Block block = new planner.configuration.overhaul.fissionmsr.Block(blockCfg.get("name"));
+                                block.cooling = blockCfg.get("cooling", 0);
+                                block.input = blockCfg.get("input");
+                                block.output = blockCfg.get("output");
+                                block.cluster = blockCfg.get("cluster", false);
+                                block.createCluster = blockCfg.get("createCluster", false);
+                                block.conductor = blockCfg.get("conductor", false);
+                                block.fuelVessel = blockCfg.get("fuelVessel", false);
+                                block.reflector = blockCfg.get("reflector", false);
+                                block.irradiator = blockCfg.get("irradiator", false);
+                                block.moderator = blockCfg.get("moderator", false);
+                                block.activeModerator = blockCfg.get("activeModerator", false);
+                                block.shield = blockCfg.get("shield", false);
+                                if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                                if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                                if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                                if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                                block.blocksLOS = blockCfg.get("blocksLOS", false);
+                                block.functional = blockCfg.get("functional");
+                                if(blockCfg.hasProperty("texture")){
+                                    ConfigNumberList texture = blockCfg.get("texture");
+                                    int size = (int) texture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("rules")){
+                                    ConfigList rules = blockCfg.get("rules");
+                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                        Config ruleCfg = (Config)rit.next();
+                                        block.rules.add(readOverMSRRule(ruleCfg));
+                                    }
+                                }
+                                ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
+                            }
+                            for(planner.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
+                                byte index = overhaulMSRPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL)rule.ruleType=planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN)rule.ruleType=planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.overhaul.fissionMSR.blocks.get(index-1);
+                                }
+                            }
+                            ConfigList fuels = fissionMSR.get("fuels");
+                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                                Config fuelCfg = (Config)fit.next();
+                                ncpf.configuration.overhaul.fissionMSR.fuels.add(new planner.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                            }
+                            ConfigList sources = fissionMSR.get("sources");
+                            for(Iterator sit = sources.iterator(); sit.hasNext();){
+                                Config sourceCfg = (Config)sit.next();
+                                ncpf.configuration.overhaul.fissionMSR.sources.add(new planner.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                            }
+                            ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
+                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                                Config irradiatorRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                            }
+                        }
+//</editor-fold>
+                    }
+//</editor-fold>
+                    for(int i = 0; i<multiblocks; i++){
+                        Config data = Config.newConfig();
+                        data.load(in);
+                        Multiblock multiblock;
+                        int id = data.get("id");
+                        switch(id){
+                            case 0:
+                                ConfigNumberList size = data.get("size");
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
+                                boolean compact = data.get("compact");
+                                ConfigNumberList blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<underhaulSFR.getX(); x++){
+                                        for(int y = 0; y<underhaulSFR.getY(); y++){
+                                            for(int z = 0; z<underhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0)underhaulSFR.blocks[x][y][z] = new planner.multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        underhaulSFR.blocks[x][y][z] = new planner.multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
+                                    }
+                                }
+                                multiblock = underhaulSFR;
+                                break;
+                            case 1:
+                                size = data.get("size");
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                compact = data.get("compact");
+                                blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<overhaulSFR.getX(); x++){
+                                        for(int y = 0; y<overhaulSFR.getY(); y++){
+                                            for(int z = 0; z<overhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0){
+                                                    overhaulSFR.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
+                                                }
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        overhaulSFR.blocks[x][y][z] = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
+                                    }
+                                }
+                                ConfigNumberList fuels = data.get("fuels");
+                                ConfigNumberList sources = data.get("sources");
+                                ConfigNumberList irradiatorRecipes = data.get("irradiatorRecipes");
+                                int fuelIndex = 0;
+                                int sourceIndex = 0;
+                                int recipeIndex = 0;
+                                for(planner.multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
+                                    if(block.template.fuelCell){
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
+                                        fuelIndex++;
+                                        int sid = (int) sources.get(sourceIndex);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
+                                        sourceIndex++;
+                                    }
+                                    if(block.template.irradiator){
+                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                                        if(rid>0)block.recipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
+                                        recipeIndex++;
+                                    }
+                                }
+                                multiblock = overhaulSFR;
+                                break;
+                            case 2:
+                                size = data.get("size");
+                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                compact = data.get("compact");
+                                blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<overhaulMSR.getX(); x++){
+                                        for(int y = 0; y<overhaulMSR.getY(); y++){
+                                            for(int z = 0; z<overhaulMSR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0){
+                                                    overhaulMSR.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1));
+                                                }
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        overhaulMSR.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1));
+                                    }
+                                }
+                                fuels = data.get("fuels");
+                                sources = data.get("sources");
+                                irradiatorRecipes = data.get("irradiatorRecipes");
+                                fuelIndex = 0;
+                                sourceIndex = 0;
+                                recipeIndex = 0;
+                                for(planner.multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
+                                    if(block.template.fuelVessel){
+                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.fuels.get((int)fuels.get(fuelIndex));
+                                        fuelIndex++;
+                                        int sid = (int) sources.get(sourceIndex);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.sources.get(sid-1);
+                                        sourceIndex++;
+                                    }
+                                    if(block.template.irradiator){
+                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                                        if(rid>0)block.recipe = ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.get(rid-1);
+                                        recipeIndex++;
+                                    }
+                                }
+                                multiblock = overhaulMSR;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
+                        }
+                        if(data.hasProperty("metadata")){
+                            Config metadata = data.get("metadata");
+                            for(String key : metadata.properties()){
+                                multiblock.metadata.put(key, metadata.get(key));
+                            }
+                        }
+                        ncpf.multiblocks.add(multiblock);
+                    }
+                    in.close();
+                    return ncpf;
+                }catch(IOException ex){
+                    throw new RuntimeException(ex);
+                }
+            }
+            private planner.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
+                planner.configuration.underhaul.fissionsfr.PlacementRule rule = new planner.configuration.underhaul.fissionsfr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 3:
+                        rule.ruleType = planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = planner.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
+                        break;
+                    case 5:
+                        rule.ruleType = planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readUnderRule(rulC));
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = planner.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readUnderRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private planner.configuration.overhaul.fissionsfr.PlacementRule readOverSFRRule(Config ruleCfg){
+                planner.configuration.overhaul.fissionsfr.PlacementRule rule = new planner.configuration.overhaul.fissionsfr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
+                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 3:
+                        rule.ruleType = planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = planner.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
+                        break;
+                    case 5:
+                        rule.ruleType = planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverSFRRule(rulC));
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = planner.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverSFRRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private planner.configuration.overhaul.fissionmsr.PlacementRule readOverMSRRule(Config ruleCfg){
+                planner.configuration.overhaul.fissionmsr.PlacementRule rule = new planner.configuration.overhaul.fissionmsr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN;
+                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL;
+                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
+                                break;
+                            case 3:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
+                                break;
+                            case 4:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 3:
+                        rule.ruleType = planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
+                                break;
+                            case 3:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
+                                break;
+                            case 4:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = planner.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.NO_PANCAKES;
+                        break;
+                    case 5:
+                        rule.ruleType = planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverMSRRule(rulC));
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = planner.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverMSRRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+        });// .ncpf version 2
+        formats.add(new FormatReader(){
+            @Override
             public boolean formatMatches(InputStream in){//There's probably a better way of detecting the format...
                 try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
                     String line;
@@ -719,6 +1439,7 @@ public class FileReader{
                     while((line = reader.readLine())!=null)s+=line+"\n";
                     ncpf.configuration = new Configuration(null, null);
                     ncpf.configuration.overhaul = new OverhaulConfiguration();
+                    //<editor-fold defaultstate="collapsed" desc="Fission SFR">
                     ncpf.configuration.overhaul.fissionSFR = new planner.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
                     ncpf.configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = getInt("fission_cooling_efficiency_leniency");
                     ncpf.configuration.overhaul.fissionSFR.minSize = getInt("fission_min_size");
@@ -847,27 +1568,159 @@ public class FileReader{
                     ncpf.configuration.overhaul.fissionSFR.blocks.add(planner.configuration.overhaul.fissionsfr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", (int) shieldHeat[0], (float) shieldEff[0]));
                     double[] irrHeat = getDoubles("fission_irradiator_heat_per_flux");
                     double[] irrEff = getDoubles("fission_irradiator_efficiency");
-                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Recipe 1", (float)irrEff[0], (float)irrHeat[0]));
-                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Recipe 2", (float)irrEff[1], (float)irrHeat[1]));
-                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Recipe 3", (float)irrEff[2], (float)irrHeat[2]));
+                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Thorium to Protactinium-Enriched Thorium", (float)irrEff[0], (float)irrHeat[0]));
+                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Protactinium-Enriched Thorium to Protactinium-233", (float)irrEff[1], (float)irrHeat[1]));
+                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Bismuth Dust to Polonium Dust", (float)irrEff[2], (float)irrHeat[2]));
                     ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new planner.configuration.overhaul.fissionsfr.CoolantRecipe("Water to High Pressure Steam", "Water", "High Pressure Steam", 64, 4));
                     ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new planner.configuration.overhaul.fissionsfr.CoolantRecipe("Preheated Water to High Pressure Steam", "Preheated Water", "High Pressure Steam", 32, 4));
                     ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new planner.configuration.overhaul.fissionsfr.CoolantRecipe("IC2 Coolant to Hot IC2 Coolant", "IC2 Coolant", "Hot IC2 Coolant", 160, 1));
-                    addFuels(ncpf, fuelTimeMult, "thorium", null, "TBU Oxide", "TBU Nitride", "TBU-Zirconium Alloy", null);
-                    addFuels(ncpf, fuelTimeMult, "uranium", null, "LEU-233 Oxide", "LEU-233 Nitride", "LEU-233-Zirconium Alloy", null, null, "HEU-233 Oxide", "HEU-233 Nitride", "HEU-233-Zirconium Alloy", null, null, "LEU-235 Oxide", "LEU-235 Nitride", "LEU-235-Zirconium Alloy", null, null, "HEU-235 Oxide", "HEU-235 Nitride", "HEU-235-Zirconium Alloy", null);
-                    addFuels(ncpf, fuelTimeMult, "neptunium", null, "LEN-236 Oxide", "LEN-236 Nitride", "LEN-236-Zirconium Alloy", null, null, "HEN-236 Oxide", "HEN-236 Nitride", "HEN-236-Zirconium Alloy", null);
-                    addFuels(ncpf, fuelTimeMult, "plutonium", null, "LEP-239 Oxide", "LEP-239 Nitride", "LEP-239-Zirconium Alloy", null, null, "HEP-239 Oxide", "HEP-239 Nitride", "HEP-239-Zirconium Alloy", null, null, "LEP-241 Oxide", "LEP-241 Nitride", "LEP-241-Zirconium Alloy", null, null, "HEP-241 Oxide", "HEP-241 Nitride", "HEP-241-Zirconium Alloy", null);
-                    addFuels(ncpf, fuelTimeMult, "mixed", null, "MOX-239", "MNI-239", "MZA-239", null, null, "MOX-241", "MNI-241", "MZA-241", null);
-                    addFuels(ncpf, fuelTimeMult, "americium", null, "LEA-242 Oxide", "LEA-242 Nitride", "LEA-242-Zirconium Alloy", null, null, "HEA-242 Oxide", "HEA-242 Nitride", "HEA-242-Zirconium Alloy", null);
-                    addFuels(ncpf, fuelTimeMult, "curium", null, "LECm-243 Oxide", "LECm-243 Nitride", "LECm-243-Zirconium Alloy", null, null, "HECm-243 Oxide", "HECm-243 Nitride", "HECm-243-Zirconium Alloy", null, null, "LECm-245 Oxide", "LECm-245 Nitride", "LECm-245-Zirconium Alloy", null, null, "HECm-245 Oxide", "HECm-245 Nitride", "HECm-245-Zirconium Alloy", null, null, "LECm-247 Oxide", "LECm-247 Nitride", "LECm-247-Zirconium Alloy", null, null, "HECm-247 Oxide", "HECm-247 Nitride", "HECm-247-Zirconium Alloy", null);
-                    addFuels(ncpf, fuelTimeMult, "berkelium", null, "LEB-248 Oxide", "LEB-248 Nitride", "LEB-248-Zirconium Alloy", null, null, "HEB-248 Oxide", "HEB-248 Nitride", "HEB-248-Zirconium Alloy", null);
-                    addFuels(ncpf, fuelTimeMult, "californium", null, "LECf-249 Oxide", "LECf-249 Nitride", "LECf-249-Zirconium Alloy", null, null, "HECf-249 Oxide", "HECf-249 Nitride", "HECf-249-Zirconium Alloy", null, null, "LECf-251 Oxide", "LECf-251 Nitride", "LECf-251-Zirconium Alloy", null, null, "HECf-251 Oxide", "HECf-251 Nitride", "HECf-251-Zirconium Alloy", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "thorium", null, "TBU Oxide", "TBU Nitride", "TBU-Zirconium Alloy", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "uranium", null, "LEU-233 Oxide", "LEU-233 Nitride", "LEU-233-Zirconium Alloy", null, null, "HEU-233 Oxide", "HEU-233 Nitride", "HEU-233-Zirconium Alloy", null, null, "LEU-235 Oxide", "LEU-235 Nitride", "LEU-235-Zirconium Alloy", null, null, "HEU-235 Oxide", "HEU-235 Nitride", "HEU-235-Zirconium Alloy", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "neptunium", null, "LEN-236 Oxide", "LEN-236 Nitride", "LEN-236-Zirconium Alloy", null, null, "HEN-236 Oxide", "HEN-236 Nitride", "HEN-236-Zirconium Alloy", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "plutonium", null, "LEP-239 Oxide", "LEP-239 Nitride", "LEP-239-Zirconium Alloy", null, null, "HEP-239 Oxide", "HEP-239 Nitride", "HEP-239-Zirconium Alloy", null, null, "LEP-241 Oxide", "LEP-241 Nitride", "LEP-241-Zirconium Alloy", null, null, "HEP-241 Oxide", "HEP-241 Nitride", "HEP-241-Zirconium Alloy", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "mixed", null, "MOX-239", "MNI-239", "MZA-239", null, null, "MOX-241", "MNI-241", "MZA-241", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "americium", null, "LEA-242 Oxide", "LEA-242 Nitride", "LEA-242-Zirconium Alloy", null, null, "HEA-242 Oxide", "HEA-242 Nitride", "HEA-242-Zirconium Alloy", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "curium", null, "LECm-243 Oxide", "LECm-243 Nitride", "LECm-243-Zirconium Alloy", null, null, "HECm-243 Oxide", "HECm-243 Nitride", "HECm-243-Zirconium Alloy", null, null, "LECm-245 Oxide", "LECm-245 Nitride", "LECm-245-Zirconium Alloy", null, null, "HECm-245 Oxide", "HECm-245 Nitride", "HECm-245-Zirconium Alloy", null, null, "LECm-247 Oxide", "LECm-247 Nitride", "LECm-247-Zirconium Alloy", null, null, "HECm-247 Oxide", "HECm-247 Nitride", "HECm-247-Zirconium Alloy", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "berkelium", null, "LEB-248 Oxide", "LEB-248 Nitride", "LEB-248-Zirconium Alloy", null, null, "HEB-248 Oxide", "HEB-248 Nitride", "HEB-248-Zirconium Alloy", null);
+                    addSFRFuels(ncpf, fuelTimeMult, "californium", null, "LECf-249 Oxide", "LECf-249 Nitride", "LECf-249-Zirconium Alloy", null, null, "HECf-249 Oxide", "HECf-249 Nitride", "HECf-249-Zirconium Alloy", null, null, "LECf-251 Oxide", "LECf-251 Nitride", "LECf-251-Zirconium Alloy", null, null, "HECf-251 Oxide", "HECf-251 Nitride", "HECf-251-Zirconium Alloy", null);
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Fission MSR">
+                    ncpf.configuration.overhaul.fissionMSR = new planner.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
+                    ncpf.configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = getInt("fission_cooling_efficiency_leniency");
+                    ncpf.configuration.overhaul.fissionMSR.minSize = getInt("fission_min_size");
+                    ncpf.configuration.overhaul.fissionMSR.maxSize = getInt("fission_max_size");
+                    ncpf.configuration.overhaul.fissionMSR.neutronReach = getInt("fission_neutron_reach");
+                    ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyMult = (float) sparsity[0];
+                    ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = (float) sparsity[1];
+                    ncpf.configuration.overhaul.fissionMSR.sources.add(new planner.configuration.overhaul.fissionmsr.Source("Ra-Be", (float) sourceEfficiency[0]));
+                    ncpf.configuration.overhaul.fissionMSR.sources.add(new planner.configuration.overhaul.fissionmsr.Source("Po-Be", (float) sourceEfficiency[1]));
+                    ncpf.configuration.overhaul.fissionMSR.sources.add(new planner.configuration.overhaul.fissionmsr.Source("Cf-252", (float) sourceEfficiency[2]));
+                    coolingRates = getInts("fission_heater_cooling_rate");
+                    rules = getStrings("fission_heater_rule");
+                    planner.configuration.overhaul.fissionmsr.Block mstandard = planner.configuration.overhaul.fissionmsr.Block.heater("Standard Coolant Heater", coolingRates[0], "Eutectic NaK Alloy", "overhaul/msr/standard");
+                    planner.configuration.overhaul.fissionmsr.Block miron = planner.configuration.overhaul.fissionmsr.Block.heater("Iron Coolant Heater", coolingRates[1], "Eutectic NaK-Iron Mixture", "overhaul/msr/iron");
+                    planner.configuration.overhaul.fissionmsr.Block mredstone = planner.configuration.overhaul.fissionmsr.Block.heater("Redstone Coolant Heater", coolingRates[2], "Eutectic NaK-Redstone Mixture", "overhaul/msr/redstone");
+                    planner.configuration.overhaul.fissionmsr.Block mquartz = planner.configuration.overhaul.fissionmsr.Block.heater("Quartz Coolant Heater", coolingRates[3], "Eutectic NaK-Quartz Mixture", "overhaul/msr/quartz");
+                    planner.configuration.overhaul.fissionmsr.Block mobsidian = planner.configuration.overhaul.fissionmsr.Block.heater("Obsidian Coolant Heater", coolingRates[4], "Eutectic NaK-Obsidian Mixture", "overhaul/msr/obsidian");
+                    planner.configuration.overhaul.fissionmsr.Block mnetherBrick = planner.configuration.overhaul.fissionmsr.Block.heater("Nether Brick Coolant Heater", coolingRates[5], "Eutectic NaK-Nether Brick Mixture", "overhaul/msr/nether brick");
+                    planner.configuration.overhaul.fissionmsr.Block mglowstone = planner.configuration.overhaul.fissionmsr.Block.heater("Glowstone Coolant Heater", coolingRates[6], "Eutectic NaK-Glowstone Mixture", "overhaul/msr/glowstone");
+                    planner.configuration.overhaul.fissionmsr.Block mlapis = planner.configuration.overhaul.fissionmsr.Block.heater("Lapis Coolant Heater", coolingRates[7], "Eutectic NaK-Lapis Mixture", "overhaul/msr/lapis");
+                    planner.configuration.overhaul.fissionmsr.Block mgold = planner.configuration.overhaul.fissionmsr.Block.heater("Gold Coolant Heater", coolingRates[8], "Eutectic NaK-Gold Mixture", "overhaul/msr/gold");
+                    planner.configuration.overhaul.fissionmsr.Block mprismarine = planner.configuration.overhaul.fissionmsr.Block.heater("Prismarine Coolant Heater", coolingRates[9], "Eutectic NaK-Prismarine Mixture", "overhaul/msr/prismarine");
+                    planner.configuration.overhaul.fissionmsr.Block mslime = planner.configuration.overhaul.fissionmsr.Block.heater("Slime Coolant Heater", coolingRates[10], "Eutectic NaK-Slime Mixture", "overhaul/msr/slime");
+                    planner.configuration.overhaul.fissionmsr.Block mendStone = planner.configuration.overhaul.fissionmsr.Block.heater("End Stone Coolant Heater", coolingRates[11], "Eutectic NaK-End Stone Mixture", "overhaul/msr/end stone");
+                    planner.configuration.overhaul.fissionmsr.Block mPurpur = planner.configuration.overhaul.fissionmsr.Block.heater("Purpur Coolant Heater", coolingRates[12], "Eutectic NaK-Purpur Mixture", "overhaul/msr/purpur");
+                    planner.configuration.overhaul.fissionmsr.Block mDiamond = planner.configuration.overhaul.fissionmsr.Block.heater("Diamond Coolant Heater", coolingRates[13], "Eutectic NaK-Diamond Mixture", "overhaul/msr/diamond");
+                    planner.configuration.overhaul.fissionmsr.Block mEmerald = planner.configuration.overhaul.fissionmsr.Block.heater("Emerald Coolant Heater", coolingRates[14], "Eutectic NaK-Emerald Mixture", "overhaul/msr/emerald");
+                    planner.configuration.overhaul.fissionmsr.Block mCopper = planner.configuration.overhaul.fissionmsr.Block.heater("Copper Coolant Heater", coolingRates[15], "Eutectic NaK-Copper Mixture", "overhaul/msr/copper");
+                    planner.configuration.overhaul.fissionmsr.Block mTin = planner.configuration.overhaul.fissionmsr.Block.heater("Tin Coolant Heater", coolingRates[16], "Eutectic NaK-Tin Mixture", "overhaul/msr/tin");
+                    planner.configuration.overhaul.fissionmsr.Block mLead = planner.configuration.overhaul.fissionmsr.Block.heater("Lead Coolant Heater", coolingRates[17], "Eutectic NaK-Lead Mixture", "overhaul/msr/lead");
+                    planner.configuration.overhaul.fissionmsr.Block mBoron = planner.configuration.overhaul.fissionmsr.Block.heater("Boron Coolant Heater", coolingRates[18], "Eutectic NaK-Boron Mixture", "overhaul/msr/boron");
+                    planner.configuration.overhaul.fissionmsr.Block mLithium = planner.configuration.overhaul.fissionmsr.Block.heater("Lithium Coolant Heater", coolingRates[19], "Eutectic NaK-Lithium Mixture", "overhaul/msr/lithium");
+                    planner.configuration.overhaul.fissionmsr.Block mMagnesium = planner.configuration.overhaul.fissionmsr.Block.heater("Magnesium Coolant Heater", coolingRates[20], "Eutectic NaK-Magnesium Mixture", "overhaul/msr/magnesium");
+                    planner.configuration.overhaul.fissionmsr.Block mManganese = planner.configuration.overhaul.fissionmsr.Block.heater("Manganese Coolant Heater", coolingRates[21], "Eutectic NaK-Manganese Mixture", "overhaul/msr/manganese");
+                    planner.configuration.overhaul.fissionmsr.Block mAluminum = planner.configuration.overhaul.fissionmsr.Block.heater("Aluminum Coolant Heater", coolingRates[22], "Eutectic NaK-Aluminum Mixture", "overhaul/msr/aluminum");
+                    planner.configuration.overhaul.fissionmsr.Block mSilver = planner.configuration.overhaul.fissionmsr.Block.heater("Silver Coolant Heater", coolingRates[23], "Eutectic NaK-Silver Mixture", "overhaul/msr/silver");
+                    planner.configuration.overhaul.fissionmsr.Block mFluorite = planner.configuration.overhaul.fissionmsr.Block.heater("Fluorite Coolant Heater", coolingRates[24], "Eutectic NaK-Fluorite Mixture", "overhaul/msr/fluorite");
+                    planner.configuration.overhaul.fissionmsr.Block mVilliaumite = planner.configuration.overhaul.fissionmsr.Block.heater("Villiaumite Coolant Heater", coolingRates[25], "Eutectic NaK-Villiaumite Mixture", "overhaul/msr/villiaumite");
+                    planner.configuration.overhaul.fissionmsr.Block mCarobbiite = planner.configuration.overhaul.fissionmsr.Block.heater("Carobbiite Coolant Heater", coolingRates[26], "Eutectic NaK-Carobbiite Mixture", "overhaul/msr/carobbiite");
+                    planner.configuration.overhaul.fissionmsr.Block mArsenic = planner.configuration.overhaul.fissionmsr.Block.heater("Arsenic Coolant Heater", coolingRates[27], "Eutectic NaK-Arsenic Mixture", "overhaul/msr/arsenic");
+                    planner.configuration.overhaul.fissionmsr.Block mNitrogen = planner.configuration.overhaul.fissionmsr.Block.heater("Liquid Nitrogen Coolant Heater", coolingRates[28], "Eutectic NaK-Nitrogen Mixture", "overhaul/msr/nitrogen");
+                    planner.configuration.overhaul.fissionmsr.Block mHelium = planner.configuration.overhaul.fissionmsr.Block.heater("Liquid Helium Coolant Heater", coolingRates[29], "Eutectic NaK-Helium Mixture", "overhaul/msr/helium");
+                    planner.configuration.overhaul.fissionmsr.Block mEnderium = planner.configuration.overhaul.fissionmsr.Block.heater("Enderium Coolant Heater", coolingRates[30], "Eutectic NaK-Enderium Mixture", "overhaul/msr/enderium");
+                    planner.configuration.overhaul.fissionmsr.Block mCryotheum = planner.configuration.overhaul.fissionmsr.Block.heater("Cryotheum Coolant Heater", coolingRates[31], "Eutectic NaK-Cryotheum Mixture", "overhaul/msr/cryotheum");
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.vessel("Fuel Vessel", "overhaul/msr/vessel"));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.irradiator("Neutron Irradiator", "overhaul/irradiator"));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.conductor("Conductor", "overhaul/conductor"));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mstandard);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(miron);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mredstone);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mquartz);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mobsidian);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mnetherBrick);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mglowstone);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mlapis);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mgold);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mprismarine);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mslime);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mendStone);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mPurpur);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mDiamond);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mEmerald);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mCopper);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mTin);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mLead);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mBoron);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mLithium);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mMagnesium);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mManganese);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mAluminum);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mSilver);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mFluorite);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mVilliaumite);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mCarobbiite);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mArsenic);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mNitrogen);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mHelium);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mEnderium);
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mCryotheum);
+                    mstandard.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[0]));
+                    miron.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[1]));
+                    mredstone.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[2]));
+                    mquartz.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[3]));
+                    mobsidian.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[4]));
+                    mnetherBrick.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[5]));
+                    mglowstone.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[6]));
+                    mlapis.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[7]));
+                    mgold.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[8]));
+                    mprismarine.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[9]));
+                    mslime.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[10]));
+                    mendStone.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[11]));
+                    mPurpur.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[12]));
+                    mDiamond.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[13]));
+                    mEmerald.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[14]));
+                    mCopper.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[15]));
+                    mTin.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[16]));
+                    mLead.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[17]));
+                    mBoron.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[18]));
+                    mLithium.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[19]));
+                    mMagnesium.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[20]));
+                    mManganese.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[21]));
+                    mAluminum.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[22]));
+                    mSilver.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[23]));
+                    mFluorite.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[24]));
+                    mVilliaumite.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[25]));
+                    mCarobbiite.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[26]));
+                    mArsenic.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[27]));
+                    mNitrogen.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[28]));
+                    mHelium.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[29]));
+                    mEnderium.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[30]));
+                    mCryotheum.rules.add(planner.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[31]));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.moderator("Graphite Moderator", "overhaul/graphite", fluxFac[0], (float) modEff[0]));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.moderator("Beryllium Moderator", "overhaul/beryllium", fluxFac[1], (float) modEff[1]));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.moderator("Heavy Water Moderator", "overhaul/heavy water", fluxFac[2], (float) modEff[2]));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.reflector("Beryllium-Carbon Reflector", "overhaul/beryllium-carbon", (float) refEff[0], (float) refRef[0]));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.reflector("Lead-Steel Reflector", "overhaul/lead-steel", (float) refEff[1], (float) refRef[1]));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", (int) shieldHeat[0], (float) shieldEff[0]));
+                    ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe("Thorium to Protactinium-Enriched Thorium", (float)irrEff[0], (float)irrHeat[0]));
+                    ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe("Protactinium-Enriched Thorium to Protactinium-233", (float)irrEff[1], (float)irrHeat[1]));
+                    ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe("Bismuth Dust to Polonium Dust", (float)irrEff[2], (float)irrHeat[2]));
+                    addMSRFuels(ncpf, fuelTimeMult, "thorium", null, null, null, null, "TBU Fluoride");
+                    addMSRFuels(ncpf, fuelTimeMult, "uranium", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-233 Fluoride", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-235 Fluoride");
+                    addMSRFuels(ncpf, fuelTimeMult, "neptunium", null, null, null, null, "LEN-236 Fluoride", null, null, null, null, "HEN-236 Fluoride");
+                    addMSRFuels(ncpf, fuelTimeMult, "plutonium", null, null, null, null, "LEP-239 Fluoride", null, null, null, null, "HEP-239 Fluoride", null, null, null, null, "LEP-241 Fluoride", null, null, null, null, "HEP-241 Fluoride");
+                    addMSRFuels(ncpf, fuelTimeMult, "mixed", null, null, null, null, "MF4-239", null, null, null, null, "MF4-241");
+                    addMSRFuels(ncpf, fuelTimeMult, "americium", null, null, null, null, "LEA-242 Fluoride", null, null, null, null, "HEA-242 Fluoride");
+                    addMSRFuels(ncpf, fuelTimeMult, "curium", null, null, null, null, "LECm-243 Fluoride", null, null, null, null, "HECm-243 Fluoride", null, null, null, null, "LECm-245 Fluoride", null, null, null, null, "HECm-245 Fluoride", null, null, null, null, "LECm-247 Fluoride", null, null, null, null, "HECm-247 Fluoride");
+                    addMSRFuels(ncpf, fuelTimeMult, "berkelium", null, null, null, null, "LEB-248 Fluoride", null, null, null, null, "HEB-248 Fluoride");
+                    addMSRFuels(ncpf, fuelTimeMult, "californium", null, null, null, null, "LECf-249 Fluoride", null, null, null, null, "HECf-249 Fluoride", null, null, null, null, "LECf-251 Fluoride", null, null, null, null, "HECf-251 Fluoride");
+//</editor-fold>
                     return ncpf;
                 }catch(IOException ex){
                     throw new RuntimeException(ex);
                 }
             }
-            private void addFuels(NCPFFile ncpf, double timeMult, String baseName, String... fuelNames){
+            private void addSFRFuels(NCPFFile ncpf, double timeMult, String baseName, String... fuelNames){
                 int[] time = getInts("fission_"+baseName+"_fuel_time");
                 int[] heat = getInts("fission_"+baseName+"_heat_generation");
                 double[] efficiency = getDoubles("fission_"+baseName+"_efficiency");
@@ -876,6 +1729,17 @@ public class FileReader{
                 for(int i = 0; i<fuelNames.length; i++){
                     if(fuelNames[i]==null)continue;
                     ncpf.configuration.overhaul.fissionSFR.fuels.add(new planner.configuration.overhaul.fissionsfr.Fuel(fuelNames[i], (float)efficiency[i], heat[i], (int)(time[i]*timeMult), criticality[i], selfPriming[i]));
+                }
+            }
+            private void addMSRFuels(NCPFFile ncpf, double timeMult, String baseName, String... fuelNames){
+                int[] time = getInts("fission_"+baseName+"_fuel_time");
+                int[] heat = getInts("fission_"+baseName+"_heat_generation");
+                double[] efficiency = getDoubles("fission_"+baseName+"_efficiency");
+                int[] criticality = getInts("fission_"+baseName+"_criticality");
+                boolean[] selfPriming = getBooleans("fission_"+baseName+"_self_priming");
+                for(int i = 0; i<fuelNames.length; i++){
+                    if(fuelNames[i]==null)continue;
+                    ncpf.configuration.overhaul.fissionMSR.fuels.add(new planner.configuration.overhaul.fissionmsr.Fuel(fuelNames[i], (float)efficiency[i], heat[i], (int)(time[i]*timeMult), criticality[i], selfPriming[i]));
                 }
             }
             private double getDouble(String name){
@@ -1056,6 +1920,10 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    if(name.startsWith("[F4]"))return false;//that's an MSR!
+                }
                 return major==2&&minor==0&&build>=1&&build<=6;
             }
             @Override
@@ -1155,7 +2023,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.0.1-2.0.6
+        });// hellrage SFR .json 2.0.1-2.0.6
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
@@ -1164,6 +2032,10 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    if(name.startsWith("[F4]"))return false;//that's an MSR!
+                }
                 return major==2&&minor==0&&build>=7&&build<=29;
             }
             @Override
@@ -1281,7 +2153,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.0.7-2.0.29
+        });// hellrage SFR .json 2.0.7-2.0.29
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
@@ -1290,6 +2162,10 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    if(name.startsWith("[F4]"))return false;//that's an MSR!
+                }
                 return major==2&&minor==0&&build==30;
             }
             @Override
@@ -1412,7 +2288,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.0.30
+        });// hellrage SFR .json 2.0.30
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
@@ -1421,6 +2297,10 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    if(name.startsWith("[F4]"))return false;//that's an MSR!
+                }
                 return major==2&&minor==0&&build==31;
             }
             @Override
@@ -1537,7 +2417,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.0.31
+        });// hellrage SFR .json 2.0.31
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
@@ -1546,6 +2426,10 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    if(name.startsWith("[F4]"))return false;//that's an MSR!
+                }
                 return major==2&&minor==0&&build>=32&&build<=37;
             }
             @Override
@@ -1661,7 +2545,7 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.0.32-2.0.37
+        });// hellrage SFR .json 2.0.32-2.0.37
         formats.add(new FormatReader(){
             @Override
             public boolean formatMatches(InputStream in){
@@ -1671,6 +2555,11 @@ public class FileReader{
                 int major = saveVersion.getInt("Major");
                 int minor = saveVersion.getInt("Minor");
                 int build = saveVersion.getInt("Build");
+                JSONObject data = hellrage.getJSONObject("Data");
+                JSON.JSONObject fuelCells = data.getJSONObject("FuelCells");
+                for(String name : fuelCells.keySet()){
+                    if(name.startsWith("[F4]"))return false;//that's an MSR!
+                }
                 return major==2&&minor==1&&build>=1;//&&build<=7;
             }
             @Override
@@ -1769,10 +2658,10 @@ public class FileReader{
                 if(irradiator==null)throw new IllegalArgumentException("Unknown block: Irradiator");
                 JSON.JSONObject irradiators = data.getJSONObject("Irradiators");
                 for(String name : irradiators.keySet()){
-                    IrradiatorRecipe irrecipe = null;
+                    planner.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = null;
                     try{
                         JSON.JSONObject recipe = JSON.parse(name);
-                        for(IrradiatorRecipe irr : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
+                        for(planner.configuration.overhaul.fissionsfr.IrradiatorRecipe irr : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
                             if(irr.heat==recipe.getFloat("HeatPerFlux")&&irr.efficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
                         }
                     }catch(IOException ex){
@@ -1832,7 +2721,793 @@ public class FileReader{
                 file.multiblocks.add(sfr);
                 return file;
             }
-        });// hellrage .json 2.1.1-2.1.7 (present)
+        });// hellrage SFR .json 2.1.1-2.1.7 (present)
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    if(!name.startsWith("[F4]"))return false;//that's not an MSR!
+                }
+                return major==2&&minor==0&&build>=1&&build<=6;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                String dimS = hellrage.getString("InteriorDimensions");
+                String[] dims = dimS.split(",");
+                OverhaulMSR msr = new OverhaulMSR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, conductor);
+                }
+                planner.configuration.overhaul.fissionmsr.Block vessel = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.fuelVessel)vessel = blok;
+                }
+                if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean source = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionmsr.Source src = null;
+                    float highest = 0;
+                    for(planner.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                        if(scr.efficiency>highest){
+                            src = scr;
+                            highest = src.efficiency;
+                        }
+                    }
+                    if(src==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = fuelVessels.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, vessel);
+                        msr.getBlock(x, y, z).fuel = fuel;
+                        if(source)msr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(msr);
+                return file;
+            }
+        });// hellrage MSR .json 2.0.1-2.0.6
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    if(!name.startsWith("[F4]"))return false;//that's not an MSR!
+                }
+                return major==2&&minor==0&&build>=7&&build<=29;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                String dimS = hellrage.getString("InteriorDimensions");
+                String[] dims = dimS.split(",");
+                OverhaulMSR msr = new OverhaulMSR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, conductor);
+                }
+                planner.configuration.overhaul.fissionmsr.Block reflector = null;
+                float best = 0;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.reflector&&blok.reflectivity>best){
+                        reflector = blok;
+                        best = blok.reflectivity;
+                    }
+                }
+                if(reflector==null)throw new IllegalArgumentException("Unknown block: Reflector");
+                JSON.JSONArray reflectors = hellrage.getJSONArray("Reflectors");
+                for(Object blok : reflectors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, reflector);
+                }
+                planner.configuration.overhaul.fissionmsr.Block vessel = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.fuelVessel)vessel = blok;
+                }
+                if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean source = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionmsr.Source src = null;
+                    float highest = 0;
+                    for(planner.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                        if(scr.efficiency>highest){
+                            src = scr;
+                            highest = src.efficiency;
+                        }
+                    }
+                    if(src==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = fuelVessels.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, vessel);
+                        msr.getBlock(x, y, z).fuel = fuel;
+                        if(source)msr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(msr);
+                return file;
+            }
+        });// hellrage MSR .json 2.0.7-2.0.29
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    if(!name.startsWith("[F4]"))return false;//that's not an MSR!
+                }
+                return major==2&&minor==0&&build==30;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                String dimS = hellrage.getString("InteriorDimensions");
+                String[] dims = dimS.split(",");
+                OverhaulMSR msr = new OverhaulMSR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, conductor);
+                }
+                planner.configuration.overhaul.fissionmsr.Block reflector = null;
+                float best = 0;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.reflector&&blok.reflectivity>best){
+                        reflector = blok;
+                        best = blok.reflectivity;
+                    }
+                }
+                if(reflector==null)throw new IllegalArgumentException("Unknown block: Reflector");
+                JSON.JSONArray reflectors = hellrage.getJSONArray("Reflectors");
+                for(Object blok : reflectors){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0])-1;
+                    int y = Integer.parseInt(blockLoc[1])-1;
+                    int z = Integer.parseInt(blockLoc[2])-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, reflector);
+                }
+                planner.configuration.overhaul.fissionmsr.Block vessel = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.fuelVessel)vessel = blok;
+                }
+                if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionmsr.Source src = null;
+                    if(hasSource){
+                        String sourceName = fuelSettings[2];
+                        for(planner.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                            if(scr.name.equalsIgnoreCase(sourceName))src = scr;
+                        }
+                        if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
+                    }
+                    JSON.JSONArray array = fuelVessels.getJSONArray(name);
+                    for(Object blok : array){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, vessel);
+                        msr.getBlock(x, y, z).fuel = fuel;
+                        if(hasSource)msr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(msr);
+                return file;
+            }
+        });// hellrage MSR .json 2.0.30
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    if(!name.startsWith("[F4]"))return false;//that's not an MSR!
+                }
+                return major==2&&minor==0&&build==31;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
+                OverhaulMSR msr = new OverhaulMSR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, conductor);
+                }
+                planner.configuration.overhaul.fissionmsr.Block reflector = null;
+                float best = 0;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.reflector&&blok.reflectivity>best){
+                        reflector = blok;
+                        best = blok.reflectivity;
+                    }
+                }
+                if(reflector==null)throw new IllegalArgumentException("Unknown block: Reflector");
+                JSON.JSONArray reflectors = hellrage.getJSONArray("Reflectors");
+                for(Object blok : reflectors){
+                    JSONObject blockLoc = (JSONObject) blok;
+                    int x = blockLoc.getInt("X")-1;
+                    int y = blockLoc.getInt("Y")-1;
+                    int z = blockLoc.getInt("Z")-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, reflector);
+                }
+                planner.configuration.overhaul.fissionmsr.Block vessel = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.fuelVessel)vessel = blok;
+                }
+                if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionmsr.Source src = null;
+                    if(hasSource){
+                        String sourceName = fuelSettings[2];
+                        for(planner.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                            if(scr.name.equalsIgnoreCase(sourceName))src = scr;
+                        }
+                        if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
+                    }
+                    JSON.JSONArray array = fuelVessels.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, vessel);
+                        msr.getBlock(x, y, z).fuel = fuel;
+                        if(hasSource)msr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(msr);
+                return file;
+            }
+        });// hellrage MSR .json 2.0.31
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    if(!name.startsWith("[F4]"))return false;//that's not an MSR!
+                }
+                return major==2&&minor==0&&build>=32&&build<=37;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
+                OverhaulMSR msr = new OverhaulMSR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, conductor);
+                }
+                JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
+                for(String name : reflectors.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = reflectors.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block vessel = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.fuelVessel)vessel = blok;
+                }
+                if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
+                JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionmsr.Source src = null;
+                    if(hasSource){
+                        String sourceName = fuelSettings[2];
+                        for(planner.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                            if(scr.name.equalsIgnoreCase(sourceName))src = scr;
+                        }
+                        if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
+                    }
+                    JSON.JSONArray array = fuelVessels.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, vessel);
+                        msr.getBlock(x, y, z).fuel = fuel;
+                        if(hasSource)msr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(msr);
+                return file;
+            }
+        });// hellrage MSR .json 2.0.32-2.0.37
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                if(true)return true;
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
+                int major = saveVersion.getInt("Major");
+                int minor = saveVersion.getInt("Minor");
+                int build = saveVersion.getInt("Build");
+                JSONObject data = hellrage.getJSONObject("Data");
+                JSON.JSONObject fuelVessels = data.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    if(!name.startsWith("[F4]"))return false;//that's not an MSR!
+                }
+                return major==2&&minor==1&&build>=1;//&&build<=7;
+            }
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                JSONObject hellrage = JSON.parse(in);
+                JSONObject data = hellrage.getJSONObject("Data");
+                JSONObject dims = data.getJSONObject("InteriorDimensions");
+                OverhaulMSR msr = new OverhaulMSR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
+                for(String name : heatSinks.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = heatSinks.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject moderators = data.getJSONObject("Moderators");
+                for(String name : moderators.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = moderators.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block conductor = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
+                }
+                if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
+                JSON.JSONArray conductors = data.getJSONArray("Conductors");
+                for(Object blok : conductors){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                    msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, conductor);
+                }
+                JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
+                for(String name : reflectors.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = reflectors.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
+                for(String name : neutronShields.keySet()){
+                    planner.configuration.overhaul.fissionmsr.Block block = null;
+                    for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                        if(blok.name.toLowerCase().replace(" ", "").replace("neutronshield", "").replace("shield", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    }
+                    if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                    JSON.JSONArray array = neutronShields.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, block);
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block irradiator = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.irradiator)irradiator = blok;
+                }
+                if(irradiator==null)throw new IllegalArgumentException("Unknown block: Irradiator");
+                JSON.JSONObject irradiators = data.getJSONObject("Irradiators");
+                for(String name : irradiators.keySet()){
+                    planner.configuration.overhaul.fissionmsr.IrradiatorRecipe irrecipe = null;
+                    try{
+                        JSON.JSONObject recipe = JSON.parse(name);
+                        for(planner.configuration.overhaul.fissionmsr.IrradiatorRecipe irr : Core.configuration.overhaul.fissionMSR.irradiatorRecipes){
+                            if(irr.heat==recipe.getFloat("HeatPerFlux")&&irr.efficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
+                        }
+                    }catch(IOException ex){
+                        throw new IllegalArgumentException("Invalid irradiator recipe: "+name);
+                    }
+                    JSON.JSONArray array = irradiators.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, irradiator);
+                        msr.getBlock(x, y, z).recipe = irrecipe;
+                    }
+                }
+                planner.configuration.overhaul.fissionmsr.Block vessel = null;
+                for(planner.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                    if(blok.fuelVessel)vessel = blok;
+                }
+                if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
+                JSON.JSONObject fuelVessels = data.getJSONObject("FuelVessels");
+                for(String name : fuelVessels.keySet()){
+                    String[] fuelSettings = name.split(";");
+                    String fuelName = fuelSettings[0];
+                    boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
+                    if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
+                    if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
+                    planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    }
+                    if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
+                    planner.configuration.overhaul.fissionmsr.Source src = null;
+                    if(hasSource){
+                        String sourceName = fuelSettings[2];
+                        if(sourceName.equals("Self"))hasSource = false;
+                        else{
+                            for(planner.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                                if(scr.name.equalsIgnoreCase(sourceName))src = scr;
+                            }
+                            if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
+                        }
+                    }
+                    JSON.JSONArray array = fuelVessels.getJSONArray(name);
+                    for(Object blok : array){
+                        JSONObject blockLoc = (JSONObject) blok;
+                        int x = blockLoc.getInt("X")-1;
+                        int y = blockLoc.getInt("Y")-1;
+                        int z = blockLoc.getInt("Z")-1;
+                        msr.blocks[x][y][z] = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, vessel);
+                        msr.getBlock(x, y, z).fuel = fuel;
+                        if(hasSource)msr.getBlock(x, y, z).source = src;
+                    }
+                }
+                NCPFFile file = new NCPFFile();
+                file.multiblocks.add(msr);
+                return file;
+            }
+        });// hellrage MSR .json 2.1.1-2.1.7 (present)
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){

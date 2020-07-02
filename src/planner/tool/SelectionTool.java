@@ -43,8 +43,6 @@ public class SelectionTool extends EditorTool{
                 Renderer2D.drawRect(x+w*minX, y+w*(minZ+border), x+w*(border+minX), y+w*(maxZ+1-border), 0);//left
                 Renderer2D.drawRect(x+w*(maxX+1-border), y+w*(minZ+border), x+w*(maxX+1), y+w*(maxZ+1-border), 0);//right
             }
-        }else if(Core.isControlPressed()){
-        }else if(Core.isAltPressed()){
         }
         if(rightDragEnd!=null&&rightDragStart!=null){
             float border = 1/8f;
@@ -59,8 +57,6 @@ public class SelectionTool extends EditorTool{
                 Renderer2D.drawRect(x+w*minX, y+w*(minZ+border), x+w*(border+minX), y+w*(maxZ+1-border), 0);//left
                 Renderer2D.drawRect(x+w*(maxX+1-border), y+w*(minZ+border), x+w*(maxX+1), y+w*(maxZ+1-border), 0);//right
             }
-        }else if(Core.isControlPressed()){
-        }else if(Core.isAltPressed()){
         }
         Core.applyWhite();
     }
@@ -71,7 +67,10 @@ public class SelectionTool extends EditorTool{
     }
     @Override
     public void mousePressed(int x, int y, int z, int button){
-        if(Core.isControlPressed()){
+        if(!Core.isControlPressed()){
+            editor.selection.clear();
+        }
+        if(Core.isShiftPressed()){
             if(button==0)editor.selectGroup(x,y,z);
             if(button==1)editor.deselectGroup(x,y,z);
             return;

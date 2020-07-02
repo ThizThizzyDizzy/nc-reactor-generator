@@ -1,4 +1,10 @@
 package planner.configuration.overhaul.fissionsfr;
+import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
+import planner.configuration.overhaul.fissionsfr.Block;
+import planner.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
+import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
+import planner.configuration.overhaul.fissionsfr.Fuel;
+import planner.configuration.overhaul.fissionsfr.Source;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;

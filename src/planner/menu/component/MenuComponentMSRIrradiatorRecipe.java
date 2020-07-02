@@ -1,11 +1,11 @@
 package planner.menu.component;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
+import planner.configuration.overhaul.fissionmsr.IrradiatorRecipe;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentIrradiatorRecipe extends MenuComponent{
+public class MenuComponentMSRIrradiatorRecipe extends MenuComponent{
     public final IrradiatorRecipe recipe;
-    public MenuComponentIrradiatorRecipe(IrradiatorRecipe recipe){
+    public MenuComponentMSRIrradiatorRecipe(IrradiatorRecipe recipe){
         super(0, 0, 0, 0);
         color = Core.theme.getButtonColor();
         selectedColor = Core.theme.getSelectedMultiblockColor();

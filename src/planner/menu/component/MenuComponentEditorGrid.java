@@ -3,8 +3,10 @@ import planner.Core;
 import planner.menu.MenuEdit;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
-import planner.multiblock.action.SourceAction;
+import planner.multiblock.action.SFRSourceAction;
+import planner.multiblock.action.MSRSourceAction;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -150,7 +152,17 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     index--;
                     if(index>=Core.configuration.overhaul.fissionSFR.sources.size())index = 0;
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.sources.size()-1;
-                    multiblock.action(new SourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.sources.get(index)));
+                    multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.sources.get(index)));
+                }
+                editor.recalculate();
+            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()){
+                planner.multiblock.overhaul.fissionmsr.Block b = (planner.multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
+                if(b!=null){
+                    int index = Core.configuration.overhaul.fissionMSR.sources.indexOf(b.source);
+                    index--;
+                    if(index>=Core.configuration.overhaul.fissionMSR.sources.size())index = 0;
+                    if(index<-1)index = Core.configuration.overhaul.fissionMSR.sources.size()-1;
+                    multiblock.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.sources.get(index)));
                 }
                 editor.recalculate();
             }else{

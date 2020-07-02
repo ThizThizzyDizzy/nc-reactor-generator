@@ -1,4 +1,8 @@
 package planner.configuration.overhaul.fissionsfr;
+import planner.configuration.overhaul.fissionsfr.Block;
+import planner.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
+import planner.configuration.overhaul.fissionsfr.PlacementRule;
+import planner.configuration.overhaul.fissionsfr.RuleContainer;
 import planner.multiblock.Axis;
 import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.config2.Config;

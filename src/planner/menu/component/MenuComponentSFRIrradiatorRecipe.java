@@ -1,16 +1,16 @@
 package planner.menu.component;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.Fuel;
+import planner.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentOverFuel extends MenuComponent{
-    public final Fuel fuel;
-    public MenuComponentOverFuel(Fuel fuel){
+public class MenuComponentSFRIrradiatorRecipe extends MenuComponent{
+    public final IrradiatorRecipe recipe;
+    public MenuComponentSFRIrradiatorRecipe(IrradiatorRecipe recipe){
         super(0, 0, 0, 0);
         color = Core.theme.getButtonColor();
         selectedColor = Core.theme.getSelectedMultiblockColor();
         foregroundColor = Core.theme.getTextColor();
-        this.fuel = fuel;
+        this.recipe = recipe;
     }
     @Override
     public void render(){
@@ -20,10 +20,10 @@ public class MenuComponentOverFuel extends MenuComponent{
         drawText();
     }
     public void drawText(){
-        double textLength = FontManager.getLengthForStringWithHeight(fuel.name, height);
+        double textLength = FontManager.getLengthForStringWithHeight(recipe.name, height);
         double scale = Math.min(1, width/textLength);
         double textHeight = (int)(height*scale)-1;
-        drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, fuel.name);
+        drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.name);
     }
     @Override
     public boolean mouseWheelChange(int wheelChange){

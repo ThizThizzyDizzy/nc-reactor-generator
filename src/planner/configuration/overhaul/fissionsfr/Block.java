@@ -1,4 +1,8 @@
 package planner.configuration.overhaul.fissionsfr;
+import planner.configuration.overhaul.fissionsfr.Block;
+import planner.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
+import planner.configuration.overhaul.fissionsfr.PlacementRule;
+import planner.configuration.overhaul.fissionsfr.RuleContainer;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import planner.Core;
@@ -13,7 +17,7 @@ public class Block extends RuleContainer{
         for(PlacementRule r : rules){
             block.rules.add(r);
         }
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         block.functional = true;
         block.cluster = true;
         return block;
@@ -24,7 +28,7 @@ public class Block extends RuleContainer{
         block.activeModerator = true;
         block.flux = flux;
         block.efficiency = efficiency;
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         block.functional = true;
         return block;
     }
@@ -35,7 +39,7 @@ public class Block extends RuleContainer{
         block.reflectivity = reflectivity;
         block.functional = true;
         block.blocksLOS = true;
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public static Block shield(String name, String texture, int heatPerFlux, float efficiency){
@@ -47,7 +51,7 @@ public class Block extends RuleContainer{
         block.createCluster = true;
         block.heatMult = heatPerFlux;
         block.efficiency = efficiency;
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public static Block cell(String name, String texture){
@@ -57,7 +61,7 @@ public class Block extends RuleContainer{
         block.createCluster = true;
         block.blocksLOS = true;
         block.functional = true;
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public static Block irradiator(String name, String texture){
@@ -66,13 +70,13 @@ public class Block extends RuleContainer{
         block.createCluster = true;
         block.irradiator = true;
         block.functional = true;
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public static Block conductor(String name, String texture){
         Block block = new Block(name);
         block.cluster = true;//because conductors connect clusters together
-        block.texture = Core.getImage(texture);
+        block.setTexture(Core.getImage(texture));
         return block;
     }
     public String name;

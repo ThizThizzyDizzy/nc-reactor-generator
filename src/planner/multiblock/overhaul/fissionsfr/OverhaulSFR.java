@@ -151,15 +151,12 @@ public class OverhaulSFR extends Multiblock<Block>{
                 + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                 + "Clusters: "+clusters.size()+"\n"
                 + "Total Irradiation: "+totalIrradiation+"\n";
-//                + "Shutdown factor: "+shutdownFactor;
         for(Fuel f : Core.configuration.overhaul.fissionSFR.fuels){
             int i = getFuelCount(f);
             if(i>0)s+="\n"+f.name+": "+i;
         }
-        if(false){//showClusters
-            for(Cluster c : clusters){
-                s+="\n\n"+c.getTooltip();
-            }
+        for(Cluster c : clusters){
+            s+="\n\n"+c.getTooltip();
         }
         return s;
     }

@@ -3,11 +3,11 @@ import planner.configuration.overhaul.fissionsfr.Source;
 import planner.multiblock.Action;
 import planner.multiblock.overhaul.fissionsfr.Block;
 import planner.multiblock.Multiblock;
-public class SourceAction implements Action{
+public class SFRSourceAction implements Action{
     private final Block block;
     private Source was = null;
     private final Source source;
-    public SourceAction(Block block, Source source){
+    public SFRSourceAction(Block block, Source source){
         this.block = block;
         this.source = source;
     }
