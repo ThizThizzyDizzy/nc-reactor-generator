@@ -1990,10 +1990,13 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -2120,10 +2123,13 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -2256,10 +2262,13 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -2386,10 +2395,13 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -2514,10 +2526,13 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -2686,10 +2701,13 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    planner.configuration.overhaul.fissionsfr.Fuel fuel = null;
                     for(planner.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -2799,8 +2817,11 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -2927,8 +2948,11 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -3055,8 +3079,11 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -3177,8 +3204,11 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -3297,8 +3327,11 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
@@ -3461,8 +3494,11 @@ public class FileReader{
                     String[] fuelSettings = name.split(";");
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     planner.configuration.overhaul.fissionmsr.Fuel fuel = null;
+                    for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
+                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    }
+                    if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
                     for(planner.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
                         if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
