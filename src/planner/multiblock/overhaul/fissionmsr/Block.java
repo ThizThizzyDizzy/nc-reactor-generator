@@ -375,4 +375,8 @@ public class Block extends planner.multiblock.Block{
         }
         return false;
     }
+    @Override
+    public boolean canGroup(){
+        return template.cooling>0;
+    }
 }

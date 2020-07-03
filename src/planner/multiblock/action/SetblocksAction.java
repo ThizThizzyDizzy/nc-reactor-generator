@@ -28,7 +28,9 @@ public class SetblocksAction extends Action{
         locations.add(new int[]{x,y,z});
     }
     @Override
-    protected void getAffectedBlocks(ArrayList blocks){
-        blocks.addAll(locations);
+    protected void getAffectedBlocks(Multiblock multiblock, ArrayList blocks){
+        for(int[] loc : locations){
+            blocks.add(multiblock.getBlock(loc[0], loc[1], loc[2]));
+        }
     }
 }

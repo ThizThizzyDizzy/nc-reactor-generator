@@ -434,6 +434,10 @@ public class MenuEdit extends Menu{
     }
     public void selectGroup(int x, int y, int z){
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+        if(g==null){
+            select(0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
+            return;
+        }
         ArrayList<int[]> is = new ArrayList<>();
         for(Block b : g){
             is.add(new int[]{b.x,b.y,b.z});
@@ -442,6 +446,10 @@ public class MenuEdit extends Menu{
     }
     public void deselectGroup(int x, int y, int z){
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+        if(g==null){
+            deselect(0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
+            return;
+        }
         ArrayList<int[]> is = new ArrayList<>();
         for(Block b : g){
             is.add(new int[]{b.x,b.y,b.z});

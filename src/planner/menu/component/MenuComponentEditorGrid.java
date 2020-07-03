@@ -145,7 +145,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
         if(isDown){
-            if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()){
+            if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()){
                 planner.multiblock.overhaul.fissionsfr.Block b = (planner.multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     int index = Core.configuration.overhaul.fissionSFR.sources.indexOf(b.source);
@@ -154,7 +154,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.sources.size()-1;
                     multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.sources.get(index)));
                 }
-            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()){
+            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((planner.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()){
                 planner.multiblock.overhaul.fissionmsr.Block b = (planner.multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     int index = Core.configuration.overhaul.fissionMSR.sources.indexOf(b.source);

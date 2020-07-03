@@ -26,5 +26,7 @@ public class SetCoolantRecipeAction extends Action<OverhaulSFR>{
         editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.coolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
     }
     @Override
-    protected void getAffectedBlocks(ArrayList<Block> blocks){}
+    protected void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<Block> blocks){
+        blocks.addAll(multiblock.getBlocks());
+    }
 }

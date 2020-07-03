@@ -361,7 +361,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         calculate(blox);
     }
     private void recalculate(ActionResult result){
-        List<T> blox = result.getAffectedBlocks();
+        List<T> blox = result.getAffectedGroups();
         clearData(blox);
         if(validate()){
             recalculate();
@@ -369,17 +369,18 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         calculate(blox);
     }
-    public ArrayList<Block> getGroup(Block block){
-        ArrayList<Block> group = new ArrayList<>();
+    public ArrayList<T> getGroup(T block){
+        ArrayList<T> group = new ArrayList<>();
         if(block==null)return group;
+        if(!block.canGroup())return null;
         group.add(block);
         boolean somethingChanged;
         do{
             somethingChanged = false;
-            for(Block blok : getBlocks()){
+            for(T blok : getBlocks()){
                 if(group.contains(blok))continue;
                 boolean req = false;
-                for(Block b : group){
+                for(T b : group){
                     if(b.requires(blok, this)||blok.requires(b, this))req = true;
                 }
                 if(req){
@@ -390,10 +391,12 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }while(somethingChanged);
         return group;
     }
-    public ArrayList<Block> getAffectedGroups(List<Block> blocks){
-        ArrayList<Block> group = new ArrayList<>();
-        for(Block block : blocks){
-            for(Block b : getGroup(block)){
+    public ArrayList<T> getAffectedGroups(List<T> blocks){
+        ArrayList<T> group = new ArrayList<>();
+        for(T block : blocks){
+            ArrayList<T> g = getGroup(block);
+            if(g==null)return getBlocks();
+            for(T b : g){
                 if(!group.contains(b))group.add(b);
             }
         }
