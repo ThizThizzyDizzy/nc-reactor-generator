@@ -60,7 +60,9 @@ public class Core extends Renderer2D{
     static{
         Configuration.configurations.get(0).impose(configuration);
         for(planner.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.blocks){
-            if(b.cooling>0)b.setInternalTexture(Core.getImage("overhaul/"+b.name.toLowerCase().replace(" coolant heater", "").replace("liquid ", "").replace("standard", "water")));
+            if(b.cooling>0&&!b.name.contains("Standard")){
+                b.setInternalTexture(Core.getImage("overhaul/"+b.name.toLowerCase().replace(" coolant heater", "").replace("liquid ", "")));
+            }
         }
         multiblockTypes.add(new UnderhaulSFR());
         multiblockTypes.add(new OverhaulSFR());
