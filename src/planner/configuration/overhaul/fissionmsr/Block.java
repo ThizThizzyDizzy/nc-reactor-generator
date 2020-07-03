@@ -156,4 +156,22 @@ public class Block extends RuleContainer{
         }
         displayTexture = displayImg;
     }
+    public void setInternalTexture(BufferedImage other){
+        int left = Math.max(0,texture.getWidth()*5/16-1);
+        int right = Math.min(texture.getWidth()*11/16, texture.getWidth()-1);
+        int up = Math.max(0,texture.getHeight()*5/16-1);
+        int down = Math.min(texture.getHeight()*11/16, texture.getHeight()-1);
+        BufferedImage displayImg = new BufferedImage(texture.getWidth(), texture.getHeight(), texture.getType());
+        for(int x = 0; x<texture.getWidth(); x++){
+            for(int y = 0; y<texture.getHeight(); y++){
+                if(x>left&&y>up&&x<right&&y<down){
+                    Color col = new Color(other.getRGB(x, y));
+                    displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
+                }else{
+                    displayImg.setRGB(x, y, texture.getRGB(x, y));
+                }
+            }
+        }
+        displayTexture = displayImg;
+    }
 }

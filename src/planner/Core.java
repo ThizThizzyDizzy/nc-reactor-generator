@@ -59,6 +59,9 @@ public class Core extends Renderer2D{
     public static Theme theme = Theme.themes.get(0);
     static{
         Configuration.configurations.get(0).impose(configuration);
+        for(planner.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.blocks){
+            if(b.cooling>0)b.setInternalTexture(Core.getImage("overhaul/"+b.name.toLowerCase().replace(" coolant heater", "").replace("liquid ", "").replace("standard", "water")));
+        }
         multiblockTypes.add(new UnderhaulSFR());
         multiblockTypes.add(new OverhaulSFR());
         multiblockTypes.add(new OverhaulMSR());
