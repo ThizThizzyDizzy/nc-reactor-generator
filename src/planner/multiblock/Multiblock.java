@@ -185,12 +185,12 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         history.clear();
         future.clear();
     }
-    public void clearData(){
-        for(T t : getBlocks()){
+    public void clearData(List<T> blocks){
+        for(T t : blocks){
             t.clearData();
         }
     }
-    public abstract void calculate();
+    public abstract void calculate(List<T> blocks);
     public ArrayList<T> getBlocks(){
         ArrayList<T> blox = new ArrayList<>();
         for(int x = 0; x<getX(); x++){
@@ -314,7 +314,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     protected abstract void save(Configuration configuration, Config config);
     public abstract int getMultiblockID();
     public abstract void convertTo(Configuration to);
-    public abstract void validate();
+    /**
+     * @return true if anything changed
+     */
+    public abstract boolean validate();
     private void updateBlockLocations(){
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
@@ -335,29 +338,36 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public void undo(){
         if(!history.isEmpty()){
             Action a = history.pop();
-            a.undo(this);
+            recalculate(a.undo(this));
             future.push(a);
-            recalculate();
         }
     }
     public void redo(){
         if(!future.isEmpty()){
             Action a = future.pop();
-            a.apply(this);
+            recalculate(a.apply(this));
             history.push(a);
-            recalculate();
         }
     }
     public void action(Action action){
-        action.apply(this);
+        recalculate(action.apply(this));
         future.clear();
         history.push(action);
-        recalculate();
     }
     public void recalculate(){
-        clearData();
+        List<T> blox = getBlocks();
+        clearData(blox);
         validate();
-        calculate();
+        calculate(blox);
+    }
+    private void recalculate(ActionResult result){
+        List<T> blox = result.getAffectedBlocks();
+        clearData(blox);
+        if(validate()){
+            recalculate();
+            return;
+        }
+        calculate(blox);
     }
     public ArrayList<Block> getGroup(Block block){
         ArrayList<Block> group = new ArrayList<>();
@@ -379,5 +389,17 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }while(somethingChanged);
         return group;
+    }
+    public ArrayList<Block> getAffectedGroups(List<Block> blocks){
+        ArrayList<Block> group = new ArrayList<>();
+        for(Block block : blocks){
+            for(Block b : getGroup(block)){
+                if(!group.contains(b))group.add(b);
+            }
+        }
+        return group;
+    }
+    public boolean isEmpty(){
+        return getBlocks().isEmpty();
     }
 }

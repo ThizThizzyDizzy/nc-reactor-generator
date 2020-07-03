@@ -185,7 +185,7 @@ public class Block extends planner.multiblock.Block{
     public boolean requires(planner.multiblock.Block oth, Multiblock mb){
         if(template.cooling==0)return false;
         Block other = (Block) oth;
-        int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y+y)+Math.abs(oth.z+z);
+        int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
         if(totalDist>1)return false;//too far away
         if(hasRules()){
             for(PlacementRule rule : template.rules){

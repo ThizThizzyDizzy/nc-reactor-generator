@@ -154,7 +154,6 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.sources.size()-1;
                     multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.sources.get(index)));
                 }
-                editor.recalculate();
             }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()){
                 planner.multiblock.overhaul.fissionmsr.Block b = (planner.multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
@@ -164,7 +163,6 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     if(index<-1)index = Core.configuration.overhaul.fissionMSR.sources.size()-1;
                     multiblock.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.sources.get(index)));
                 }
-                editor.recalculate();
             }else{
                 editor.getSelectedTool().mousePressed(blockX, layer, blockZ, button);
             }

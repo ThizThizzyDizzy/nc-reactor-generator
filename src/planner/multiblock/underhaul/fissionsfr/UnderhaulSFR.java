@@ -43,8 +43,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return Core.configuration.underhaul.fissionSFR.maxSize;
     }
     @Override
-    public void calculate(){
-        ArrayList<Block> blocks = getBlocks();
+    public void calculate(List<Block> blocks){
         for(Block block : blocks){
             block.calculateCore(this);
         }
@@ -59,7 +58,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
             }
         }while(somethingChanged);
         cooling = 0;
-        for(Block block : blocks){
+        for(Block block : getBlocks()){
             if(block.isFuelCell()){
                 totalHeatMult+=block.heatMult;
                 totalEnergyMult+=block.energyMult;
@@ -142,7 +141,9 @@ public class UnderhaulSFR extends Multiblock<Block>{
         fuel = to.underhaul.fissionSFR.convert(fuel);
     }
     @Override
-    public void validate(){}//nothin' to do
+    public boolean validate(){
+        return false;
+    }
     @Override
     public boolean exists(){
         return Core.configuration.underhaul!=null&&Core.configuration.underhaul.fissionSFR!=null;

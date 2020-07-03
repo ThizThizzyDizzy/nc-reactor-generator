@@ -1,9 +1,10 @@
 package planner.multiblock.action;
+import java.util.ArrayList;
 import planner.configuration.overhaul.fissionmsr.Source;
 import planner.multiblock.Action;
 import planner.multiblock.overhaul.fissionmsr.Block;
 import planner.multiblock.Multiblock;
-public class MSRSourceAction implements Action{
+public class MSRSourceAction extends Action{
     private final Block block;
     private Source was = null;
     private final Source source;
@@ -12,12 +13,16 @@ public class MSRSourceAction implements Action{
         this.source = source;
     }
     @Override
-    public void apply(Multiblock multiblock){
+    public void doApply(Multiblock multiblock){
         was = block.source;
         block.source = source;
     }
     @Override
-    public void undo(Multiblock multiblock){
+    public void doUndo(Multiblock multiblock){
         block.source = was;
+    }
+    @Override
+    protected void getAffectedBlocks(ArrayList blocks){
+        blocks.add(block);
     }
 }

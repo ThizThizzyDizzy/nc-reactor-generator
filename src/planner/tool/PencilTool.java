@@ -48,7 +48,6 @@ public class PencilTool extends EditorTool{
     public void mousePressed(int x, int y, int z, int button){
         Block selected = editor.getSelectedBlock();
         if(button==0||button==1)editor.setblock(x,y,z,button==0?selected:null);
-        editor.recalculate();
         if(button==0){
             leftDragStart = new int[]{x,z};
             leftLayerStart = y;
@@ -75,7 +74,6 @@ public class PencilTool extends EditorTool{
                 raytrace(leftDragStart[0], leftDragStart[1], x, z, (X,Z) -> {
                     editor.setblock(X, y, Z, setTo);
                 });
-                editor.recalculate();
                 leftDragStart = new int[]{x,z};
             }
         }
@@ -90,7 +88,6 @@ public class PencilTool extends EditorTool{
                 raytrace(rightDragStart[0], rightDragStart[1], x, z, (X,Z) -> {
                     editor.setblock(X, y, Z, setTo);
                 }, false);
-                editor.recalculate();
                 rightDragStart = new int[]{x,z};
             }
         }

@@ -1,8 +1,9 @@
 package planner.multiblock.action;
+import java.util.ArrayList;
 import planner.multiblock.Action;
 import planner.multiblock.Block;
 import planner.multiblock.Multiblock;
-public class SetblockAction implements Action{
+public class SetblockAction extends Action{
     private final int x;
     private final int y;
     private final int z;
@@ -15,12 +16,16 @@ public class SetblockAction implements Action{
         this.block = block;
     }
     @Override
-    public void apply(Multiblock multiblock){
+    public void doApply(Multiblock multiblock){
         was = multiblock.blocks[x][y][z];
         multiblock.blocks[x][y][z] = block;
     }
     @Override
-    public void undo(Multiblock multiblock){
+    public void doUndo(Multiblock multiblock){
         multiblock.blocks[x][y][z] = was;
+    }
+    @Override
+    protected void getAffectedBlocks(ArrayList blocks){
+        blocks.add(block);
     }
 }

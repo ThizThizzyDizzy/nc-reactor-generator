@@ -57,6 +57,7 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
     private final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
+    private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", false, true));
     public final ArrayList<int[]> selection = new ArrayList<>();
     private double scale = 4;
     private double minScale = 0.5;
@@ -123,6 +124,9 @@ public class MenuEdit extends Menu{
         editMetadata.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
         });
+        generate.addActionListener((e) -> {
+//            generate();
+        });
         for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
             parts.add(new MenuComponentEditorListBlock(this, availableBlock));
         }
@@ -135,6 +139,7 @@ public class MenuEdit extends Menu{
     @Override
     public void onGUIOpened(){
         editMetadata.label = multiblock.getName();
+        generate.label = multiblock.isEmpty()?"Generate":"Generate Suggestions";
         if(multiblock instanceof UnderhaulSFR){
             underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
         }
@@ -150,7 +155,7 @@ public class MenuEdit extends Menu{
             int layerHeight = multiblock.getZ()*CELL_SIZE+LAYER_GAP;
             multibwauk.add(new planner.menu.component.MenuComponentEditorGrid(column*layerWidth+LAYER_GAP/2, row*layerHeight+LAYER_GAP/2, CELL_SIZE, this, multiblock, y));
         }
-        recalculate();
+        multiblock.recalculate();
     }
     @Override
     public void render(int millisSinceLastTick){
@@ -161,11 +166,12 @@ public class MenuEdit extends Menu{
         parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
         tools.width = partSize;
         parts.x = tools.width+partSize/4;
-        editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
-        tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
+        generate.x = editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
+        generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
+        generate.y = Display.getHeight()-generate.height;
         tools.height = parts.height = (parts.components.size()+5)/partsWide*partSize;
         resize.width = 320;
-        editMetadata.width = multibwauk.width = Display.getWidth()-parts.x-parts.width-resize.width;
+        generate.width = editMetadata.width = multibwauk.width = Display.getWidth()-parts.x-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
         zoomIn.width = zoomOut.width = resize.width/2;
         zoomIn.y = zoomOut.y = resize.height;
@@ -249,9 +255,6 @@ public class MenuEdit extends Menu{
     }
     public planner.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(){
         return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
-    }
-    public void recalculate(){
-        multiblock.recalculate();
     }
     public void setblock(int x, int y, int z, Block template){
         if(hasSelection()&&!isSelected(x, y, z))return;

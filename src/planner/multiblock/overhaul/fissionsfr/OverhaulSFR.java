@@ -55,8 +55,8 @@ public class OverhaulSFR extends Multiblock<Block>{
         return Core.configuration.overhaul.fissionSFR.maxSize;
     }
     @Override
-    public void calculate(){
-        ArrayList<Block> blocks = getBlocks();
+    public void calculate(List<Block> blocks){
+        List<Block> allBlocks = getBlocks();
         for(Block block : blocks){
             if(block.isPrimed())block.propogateNeutronFlux(this);
         }
@@ -76,7 +76,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                 block.efficiency = block.fuel.efficiency*block.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier;
             }
         }
-        for(Block block : blocks){//detect clusters
+        for(Block block : allBlocks){//detect clusters
             Cluster cluster = getCluster(block);
             if(cluster==null)continue;//that's not a cluster!
             if(clusters.contains(cluster))continue;//already know about that one!
@@ -127,7 +127,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
         if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
         functionalBlocks = 0;
-        for(Block block : blocks){
+        for(Block block : allBlocks){
             if(block.isFunctional())functionalBlocks++;
         }
         int volume = getX()*getY()*getZ();
@@ -229,7 +229,8 @@ public class OverhaulSFR extends Multiblock<Block>{
         }
     }
     @Override
-    public void validate(){
+    public boolean validate(){
+        boolean changed = false;
         BLOCKS:for(Block block : getBlocks()){
             if(block.source!=null){
                 for(Direction d : directions){
@@ -245,8 +246,10 @@ public class OverhaulSFR extends Multiblock<Block>{
                     }
                 }
                 block.source = null;
+                changed = true;
             }
         }
+        return changed;
     }
     public Cluster getCluster(Block block){
         if(!block.canCluster())return null;
@@ -310,8 +313,8 @@ public class OverhaulSFR extends Multiblock<Block>{
         }
     }
     @Override
-    public void clearData(){
-        super.clearData();
+    public void clearData(List<Block> blocks){
+        super.clearData(blocks);
         clusters.clear();
         totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = rawOutput = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
     }
