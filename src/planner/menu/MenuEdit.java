@@ -227,7 +227,7 @@ public class MenuEdit extends Menu{
                 }
             }
         }
-        multibwauk.height = Display.getHeight()-multibwauk.y;
+        multibwauk.height = Display.getHeight()-multibwauk.y-generate.height;
         textBox.y = parts.y+parts.height;
         textBox.height = Display.getHeight()-textBox.y;
         super.render(millisSinceLastTick);
