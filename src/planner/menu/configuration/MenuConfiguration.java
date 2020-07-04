@@ -16,7 +16,7 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.underhaul.MenuUnderhaulConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulConfiguration;
-import planner.multiblock.Multiblock;
+import multiblock.Multiblock;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;

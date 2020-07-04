@@ -1,9 +1,9 @@
-package planner.multiblock.action;
+package multiblock.action;
 import java.util.ArrayList;
 import planner.configuration.overhaul.fissionsfr.Source;
-import planner.multiblock.Action;
-import planner.multiblock.overhaul.fissionsfr.Block;
-import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.Action;
+import multiblock.overhaul.fissionsfr.Block;
+import multiblock.overhaul.fissionsfr.OverhaulSFR;
 public class SFRSourceAction extends Action<OverhaulSFR>{
     private final Block block;
     private Source was = null;
@@ -22,7 +22,7 @@ public class SFRSourceAction extends Action<OverhaulSFR>{
         block.source = was;
     }
     @Override
-    protected void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<planner.multiblock.Block> blocks){
+    protected void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<multiblock.Block> blocks){
         blocks.add(multiblock.getBlock(block.x, block.y, block.z));
     }
 }

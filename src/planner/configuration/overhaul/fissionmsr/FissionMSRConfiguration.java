@@ -2,8 +2,8 @@ package planner.configuration.overhaul.fissionmsr;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import planner.multiblock.Multiblock;
-import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.Multiblock;
+import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionMSRConfiguration{
@@ -61,7 +61,7 @@ public class FissionMSRConfiguration{
         Set<IrradiatorRecipe> usedIrradiatorRecipes = new HashSet<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulMSR){
-                for(planner.multiblock.overhaul.fissionmsr.Block b : ((OverhaulMSR)mb).getBlocks()){
+                for(multiblock.overhaul.fissionmsr.Block b : ((OverhaulMSR)mb).getBlocks()){
                     usedBlocks.add(b.template);
                     if(b.fuel!=null)usedFuels.add(b.fuel);
                     if(b.source!=null)usedSources.add(b.source);

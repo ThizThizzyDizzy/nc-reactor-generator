@@ -1,6 +1,6 @@
 package planner.configuration;
 import java.util.ArrayList;
-import planner.multiblock.Multiblock;
+import multiblock.Multiblock;
 public class PartialConfiguration extends Configuration{
     public static PartialConfiguration generate(Configuration configuration, ArrayList<Multiblock> multiblocks){
         PartialConfiguration partial = new PartialConfiguration(configuration.name, configuration.version);

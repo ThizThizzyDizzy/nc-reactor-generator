@@ -1,4 +1,4 @@
-package planner.multiblock;
+package multiblock;
 import simplelibrary.Queue;
 import simplelibrary.opengl.Renderer2D;
 public class MultiblockBit extends Renderer2D{

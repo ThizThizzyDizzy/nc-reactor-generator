@@ -1,9 +1,9 @@
-package planner.multiblock.action;
+package multiblock.action;
 import java.util.ArrayList;
 import planner.configuration.overhaul.fissionmsr.Source;
-import planner.multiblock.Action;
-import planner.multiblock.overhaul.fissionmsr.Block;
-import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.Action;
+import multiblock.overhaul.fissionmsr.Block;
+import multiblock.overhaul.fissionmsr.OverhaulMSR;
 public class MSRSourceAction extends Action<OverhaulMSR>{
     private final Block block;
     private Source was = null;
@@ -22,7 +22,7 @@ public class MSRSourceAction extends Action<OverhaulMSR>{
         block.source = was;
     }
     @Override
-    protected void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<planner.multiblock.Block> blocks){
+    protected void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
         blocks.add(multiblock.getBlock(block.x, block.y, block.z));
     }
 }

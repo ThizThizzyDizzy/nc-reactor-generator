@@ -1,12 +1,12 @@
-package planner.multiblock.overhaul.fissionmsr;
+package multiblock.overhaul.fissionmsr;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import planner.Core;
 import planner.configuration.overhaul.fissionmsr.PlacementRule;
-import planner.multiblock.Direction;
-import planner.multiblock.Multiblock;
+import multiblock.Direction;
+import multiblock.Multiblock;
 import simplelibrary.Queue;
-public class Block extends planner.multiblock.Block{
+public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
@@ -30,11 +30,11 @@ public class Block extends planner.multiblock.Block{
         this.template = template;
     }
     @Override
-    public planner.multiblock.Block newInstance(int x, int y, int z){
+    public multiblock.Block newInstance(int x, int y, int z){
         return new Block(x, y, z, template);
     }
     @Override
-    public void copyProperties(planner.multiblock.Block other){
+    public void copyProperties(multiblock.Block other){
         ((Block)other).fuel = fuel;
         ((Block)other).source = source;
     }
@@ -348,7 +348,7 @@ public class Block extends planner.multiblock.Block{
         return true;
     }
     @Override
-    public boolean matches(planner.multiblock.Block template){
+    public boolean matches(multiblock.Block template){
         if(template==null)return false;
         if(template instanceof Block){
             return ((Block) template).template==this.template;
@@ -356,7 +356,7 @@ public class Block extends planner.multiblock.Block{
         return false;
     }
     @Override
-    public boolean requires(planner.multiblock.Block oth, Multiblock mb){
+    public boolean requires(multiblock.Block oth, Multiblock mb){
         if(template.cooling==0)return false;
         Block other = (Block) oth;
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
@@ -379,8 +379,8 @@ public class Block extends planner.multiblock.Block{
     public boolean canGroup(){
         return template.cooling>0;
     }
-    public planner.multiblock.overhaul.fissionsfr.Block convertToSFR(){
-        planner.multiblock.overhaul.fissionsfr.Block b = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, Core.configuration.overhaul.fissionSFR.convertToSFR(template));
+    public multiblock.overhaul.fissionsfr.Block convertToSFR(){
+        multiblock.overhaul.fissionsfr.Block b = new multiblock.overhaul.fissionsfr.Block(x, y, z, Core.configuration.overhaul.fissionSFR.convertToSFR(template));
         b.fuel = Core.configuration.overhaul.fissionSFR.convertToSFR(fuel);
         b.source = Core.configuration.overhaul.fissionSFR.convertToSFR(source);
         return b;

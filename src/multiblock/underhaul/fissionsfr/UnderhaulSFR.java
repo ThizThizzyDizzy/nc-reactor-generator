@@ -1,10 +1,10 @@
-package planner.multiblock.underhaul.fissionsfr;
+package multiblock.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.List;
 import planner.Core;
 import planner.configuration.Configuration;
 import planner.configuration.underhaul.fissionsfr.Fuel;
-import planner.multiblock.Multiblock;
+import multiblock.Multiblock;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{

@@ -1,7 +1,7 @@
 package planner.menu.component;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.multiblock.Multiblock;
+import multiblock.Multiblock;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblock extends MenuComponent{
     public final Multiblock multiblock;

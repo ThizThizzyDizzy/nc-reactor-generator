@@ -1,8 +1,8 @@
-package planner.multiblock.action;
+package multiblock.action;
 import java.util.ArrayList;
-import planner.multiblock.Action;
-import planner.multiblock.Block;
-import planner.multiblock.Multiblock;
+import multiblock.Action;
+import multiblock.Block;
+import multiblock.Multiblock;
 public class SetblockAction extends Action{
     private final int x;
     private final int y;

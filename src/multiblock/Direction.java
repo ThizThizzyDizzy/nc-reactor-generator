@@ -1,4 +1,4 @@
-package planner.multiblock;
+package multiblock;
 public enum Direction{
     PX(1,0,0),
     PY(0,1,0),

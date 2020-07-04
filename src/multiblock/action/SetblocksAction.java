@@ -1,9 +1,9 @@
-package planner.multiblock.action;
+package multiblock.action;
 import java.util.ArrayList;
 import java.util.HashMap;
-import planner.multiblock.Action;
-import planner.multiblock.Block;
-import planner.multiblock.Multiblock;
+import multiblock.Action;
+import multiblock.Block;
+import multiblock.Multiblock;
 public class SetblocksAction extends Action{
     public final ArrayList<int[]> locations = new ArrayList<>();
     public final Block block;

@@ -1,4 +1,4 @@
-package planner.multiblock.overhaul.fissionsfr;
+package multiblock.overhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -6,9 +6,9 @@ import planner.Core;
 import planner.configuration.Configuration;
 import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.configuration.overhaul.fissionsfr.Fuel;
-import planner.multiblock.Direction;
-import planner.multiblock.Multiblock;
-import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.Direction;
+import multiblock.Multiblock;
+import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulSFR extends Multiblock<Block>{

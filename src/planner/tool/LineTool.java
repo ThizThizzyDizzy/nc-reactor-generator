@@ -2,8 +2,8 @@ package planner.tool;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
-import planner.multiblock.Block;
-import planner.multiblock.action.SetblocksAction;
+import multiblock.Block;
+import multiblock.action.SetblocksAction;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class LineTool extends EditorTool{

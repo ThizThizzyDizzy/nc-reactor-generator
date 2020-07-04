@@ -3,8 +3,8 @@ import planner.configuration.overhaul.fissionsfr.Block;
 import planner.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
 import planner.configuration.overhaul.fissionsfr.PlacementRule;
 import planner.configuration.overhaul.fissionsfr.RuleContainer;
-import planner.multiblock.Axis;
-import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.Axis;
+import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class PlacementRule extends RuleContainer{
@@ -201,11 +201,11 @@ public class PlacementRule extends RuleContainer{
         }
         return "Unknown Rule";
     }
-    public boolean isValid(planner.multiblock.overhaul.fissionsfr.Block block, OverhaulSFR reactor){
+    public boolean isValid(multiblock.overhaul.fissionsfr.Block block, OverhaulSFR reactor){
         int num = 0;
         switch(ruleType){
             case BETWEEN:
-                for(planner.multiblock.overhaul.fissionsfr.Block b : block.getActiveAdjacent(reactor)){
+                for(multiblock.overhaul.fissionsfr.Block b : block.getActiveAdjacent(reactor)){
                     if(b.template==this.block)num++;
                 }
                 return num>=min&&num<=max;
@@ -215,7 +215,7 @@ public class PlacementRule extends RuleContainer{
                         num = 6-block.getAdjacent(reactor).size();
                         break;
                     default:
-                        for(planner.multiblock.overhaul.fissionsfr.Block b : block.getActiveAdjacent(reactor)){
+                        for(multiblock.overhaul.fissionsfr.Block b : block.getActiveAdjacent(reactor)){
                             switch(blockType){
                                 case CASING:
                                     if(b.isCasing())num++;
@@ -248,8 +248,8 @@ public class PlacementRule extends RuleContainer{
                 return num>=min&&num<=max;
             case AXIAL:
                 for(Axis axis : Axis.values()){
-                    planner.multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
-                    planner.multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                    multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                    multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                     if(b1!=null&&b1.template==this.block&&b1.isActive()&&b2!=null&&b2.template==this.block&&b2.isActive())num++;
                 }
                 return num>=min&&num<=max;
@@ -257,15 +257,15 @@ public class PlacementRule extends RuleContainer{
                 switch(blockType){
                     case AIR:
                         for(Axis axis : Axis.values()){
-                            planner.multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
-                            planner.multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                            multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                            multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null&&b2==null)num++;
                         }
                         break;
                     default:
                         for(Axis axis : Axis.values()){
-                            planner.multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
-                            planner.multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                            multiblock.overhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                            multiblock.overhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null||b2==null)continue;
                             if(!b1.isActive()||!b2.isActive())continue;
                             switch(blockType){

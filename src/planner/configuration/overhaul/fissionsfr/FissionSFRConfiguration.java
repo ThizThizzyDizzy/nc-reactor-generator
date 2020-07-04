@@ -8,8 +8,8 @@ import planner.configuration.overhaul.fissionsfr.Source;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import planner.multiblock.Multiblock;
-import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.Multiblock;
+import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration{
@@ -74,7 +74,7 @@ public class FissionSFRConfiguration{
         Set<CoolantRecipe> usedCoolantRecipes = new HashSet<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulSFR){
-                for(planner.multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)mb).getBlocks()){
+                for(multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)mb).getBlocks()){
                     usedBlocks.add(b.template);
                     if(b.fuel!=null)usedFuels.add(b.fuel);
                     if(b.source!=null)usedSources.add(b.source);

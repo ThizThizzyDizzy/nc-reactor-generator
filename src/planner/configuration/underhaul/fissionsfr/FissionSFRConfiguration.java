@@ -2,8 +2,8 @@ package planner.configuration.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import planner.multiblock.Multiblock;
-import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import multiblock.Multiblock;
+import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration{
@@ -47,7 +47,7 @@ public class FissionSFRConfiguration{
         Set<Fuel> usedFuels = new HashSet<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof UnderhaulSFR){
-                for(planner.multiblock.underhaul.fissionsfr.Block b : ((UnderhaulSFR)mb).getBlocks()){
+                for(multiblock.underhaul.fissionsfr.Block b : ((UnderhaulSFR)mb).getBlocks()){
                     usedBlocks.add(b.template);
                 }
                 usedFuels.add(((UnderhaulSFR)mb).fuel);

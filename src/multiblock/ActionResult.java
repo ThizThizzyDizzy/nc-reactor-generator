@@ -1,4 +1,4 @@
-package planner.multiblock;
+package multiblock;
 import java.util.ArrayList;
 public class ActionResult<T extends Multiblock>{
     private ArrayList<Block> blocks = new ArrayList<>();

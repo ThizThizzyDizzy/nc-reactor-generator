@@ -1,11 +1,11 @@
-package planner.multiblock.action;
+package multiblock.action;
 import java.util.ArrayList;
 import planner.Core;
 import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.menu.MenuEdit;
-import planner.multiblock.Action;
-import planner.multiblock.Block;
-import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.Action;
+import multiblock.Block;
+import multiblock.overhaul.fissionsfr.OverhaulSFR;
 public class SetCoolantRecipeAction extends Action<OverhaulSFR>{
     private CoolantRecipe was = null;
     private final MenuEdit editor;

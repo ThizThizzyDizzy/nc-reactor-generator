@@ -1,11 +1,11 @@
-package planner.multiblock.underhaul.fissionsfr;
+package multiblock.underhaul.fissionsfr;
 import java.awt.image.BufferedImage;
 import planner.Core;
 import planner.configuration.underhaul.fissionsfr.PlacementRule;
-import planner.multiblock.Direction;
-import planner.multiblock.Multiblock;
+import multiblock.Direction;
+import multiblock.Multiblock;
 import simplelibrary.Queue;
-public class Block extends planner.multiblock.Block{
+public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
@@ -23,11 +23,11 @@ public class Block extends planner.multiblock.Block{
         this.template = template;
     }
     @Override
-    public planner.multiblock.Block newInstance(int x, int y, int z){
+    public multiblock.Block newInstance(int x, int y, int z){
         return new Block(x, y, z, template);
     }
     @Override
-    public void copyProperties(planner.multiblock.Block other){}
+    public void copyProperties(multiblock.Block other){}
     @Override
     public BufferedImage getBaseTexture(){
         return template.texture;
@@ -174,7 +174,7 @@ public class Block extends planner.multiblock.Block{
         return true;
     }
     @Override
-    public boolean matches(planner.multiblock.Block template){
+    public boolean matches(multiblock.Block template){
         if(template==null)return false;
         if(template instanceof Block){
             return ((Block) template).template==this.template;
@@ -182,7 +182,7 @@ public class Block extends planner.multiblock.Block{
         return false;
     }
     @Override
-    public boolean requires(planner.multiblock.Block oth, Multiblock mb){
+    public boolean requires(multiblock.Block oth, Multiblock mb){
         if(template.cooling==0)return false;
         Block other = (Block) oth;
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);

@@ -1,4 +1,4 @@
-package planner.multiblock;
+package multiblock;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import planner.Core;

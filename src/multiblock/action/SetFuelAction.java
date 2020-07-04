@@ -1,11 +1,11 @@
-package planner.multiblock.action;
+package multiblock.action;
 import java.util.ArrayList;
 import planner.Core;
 import planner.configuration.underhaul.fissionsfr.Fuel;
 import planner.menu.MenuEdit;
-import planner.multiblock.Action;
-import planner.multiblock.Block;
-import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import multiblock.Action;
+import multiblock.Block;
+import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 public class SetFuelAction extends Action<UnderhaulSFR>{
     private Fuel was = null;
     private final MenuEdit editor;

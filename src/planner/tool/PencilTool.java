@@ -2,7 +2,7 @@ package planner.tool;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
-import planner.multiblock.Block;
+import multiblock.Block;
 import simplelibrary.opengl.ImageStash;
 public class PencilTool extends EditorTool{
     public PencilTool(MenuEdit editor){

@@ -1,7 +1,7 @@
 package planner.tool;
 import planner.Core;
 import planner.menu.MenuEdit;
-import planner.multiblock.action.SetblocksAction;
+import multiblock.action.SetblocksAction;
 import simplelibrary.opengl.Renderer2D;
 public class RectangleTool extends EditorTool{
     public RectangleTool(MenuEdit editor){

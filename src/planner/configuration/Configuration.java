@@ -6,7 +6,7 @@ import static planner.Core.getInputStream;
 import planner.configuration.underhaul.UnderhaulConfiguration;
 import planner.configuration.overhaul.OverhaulConfiguration;
 import planner.file.FileReader;
-import planner.multiblock.Multiblock;
+import multiblock.Multiblock;
 import simplelibrary.config2.Config;
 public class Configuration{
     public String name;

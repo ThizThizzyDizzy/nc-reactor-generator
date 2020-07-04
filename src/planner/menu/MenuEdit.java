@@ -22,15 +22,15 @@ import planner.menu.component.MenuComponentOverMSRFuel;
 import planner.menu.component.MenuComponentOverSFRFuel;
 import planner.menu.component.MenuComponentUnderFuel;
 import planner.tool.EditorTool;
-import planner.multiblock.Block;
-import planner.multiblock.Multiblock;
-import planner.multiblock.action.SetCoolantRecipeAction;
-import planner.multiblock.action.SetFuelAction;
-import planner.multiblock.action.SetblockAction;
-import planner.multiblock.action.SetblocksAction;
-import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
-import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
-import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import multiblock.Block;
+import multiblock.Multiblock;
+import multiblock.action.SetCoolantRecipeAction;
+import multiblock.action.SetFuelAction;
+import multiblock.action.SetblockAction;
+import multiblock.action.SetblocksAction;
+import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.tool.LineTool;
 import planner.tool.PencilTool;
 import planner.tool.RectangleTool;
@@ -334,19 +334,19 @@ public class MenuEdit extends Menu{
         }
         Block blok = template.newInstance(x, y, z);
         if(multiblock instanceof OverhaulSFR){
-            if(((planner.multiblock.overhaul.fissionsfr.Block)blok).isFuelCell()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)blok).fuel = getSelectedOverSFRFuel();
+            if(((multiblock.overhaul.fissionsfr.Block)blok).isFuelCell()){
+                ((multiblock.overhaul.fissionsfr.Block)blok).fuel = getSelectedOverSFRFuel();
             }
-            if(((planner.multiblock.overhaul.fissionsfr.Block)blok).isIrradiator()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)blok).recipe = getSelectedSFRIrradiatorRecipe();
+            if(((multiblock.overhaul.fissionsfr.Block)blok).isIrradiator()){
+                ((multiblock.overhaul.fissionsfr.Block)blok).recipe = getSelectedSFRIrradiatorRecipe();
             }
         }
         if(multiblock instanceof OverhaulMSR){
-            if(((planner.multiblock.overhaul.fissionmsr.Block)blok).isFuelVessel()){
-                ((planner.multiblock.overhaul.fissionmsr.Block)blok).fuel = getSelectedOverMSRFuel();
+            if(((multiblock.overhaul.fissionmsr.Block)blok).isFuelVessel()){
+                ((multiblock.overhaul.fissionmsr.Block)blok).fuel = getSelectedOverMSRFuel();
             }
-            if(((planner.multiblock.overhaul.fissionmsr.Block)blok).isIrradiator()){
-                ((planner.multiblock.overhaul.fissionmsr.Block)blok).recipe = getSelectedMSRIrradiatorRecipe();
+            if(((multiblock.overhaul.fissionmsr.Block)blok).isIrradiator()){
+                ((multiblock.overhaul.fissionmsr.Block)blok).recipe = getSelectedMSRIrradiatorRecipe();
             }
         }
         multiblock.action(new SetblockAction(x,y,z,blok));
@@ -381,19 +381,19 @@ public class MenuEdit extends Menu{
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulSFR){
-            if(((planner.multiblock.overhaul.fissionsfr.Block)set.block).isFuelCell()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel();
+            if(((multiblock.overhaul.fissionsfr.Block)set.block).isFuelCell()){
+                ((multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel();
             }
-            if(((planner.multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
-                ((planner.multiblock.overhaul.fissionsfr.Block)set.block).recipe = getSelectedSFRIrradiatorRecipe();
+            if(((multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
+                ((multiblock.overhaul.fissionsfr.Block)set.block).recipe = getSelectedSFRIrradiatorRecipe();
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulMSR){
-            if(((planner.multiblock.overhaul.fissionmsr.Block)set.block).isFuelVessel()){
-                ((planner.multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel();
+            if(((multiblock.overhaul.fissionmsr.Block)set.block).isFuelVessel()){
+                ((multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel();
             }
-            if(((planner.multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
-                ((planner.multiblock.overhaul.fissionmsr.Block)set.block).recipe = getSelectedMSRIrradiatorRecipe();
+            if(((multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
+                ((multiblock.overhaul.fissionmsr.Block)set.block).recipe = getSelectedMSRIrradiatorRecipe();
             }
         }
         multiblock.action(set);

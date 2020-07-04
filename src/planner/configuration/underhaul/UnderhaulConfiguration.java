@@ -1,7 +1,7 @@
 package planner.configuration.underhaul;
 import java.util.ArrayList;
 import planner.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
-import planner.multiblock.Multiblock;
+import multiblock.Multiblock;
 import simplelibrary.config2.Config;
 public class UnderhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;

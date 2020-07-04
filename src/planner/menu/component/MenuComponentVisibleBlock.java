@@ -1,8 +1,8 @@
 package planner.menu.component;
 import java.awt.Color;
 import planner.Core;
-import planner.multiblock.Block;
-import planner.multiblock.Multiblock;
+import multiblock.Block;
+import multiblock.Multiblock;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentVisibleBlock extends MenuComponent{
     public final Multiblock multiblock;

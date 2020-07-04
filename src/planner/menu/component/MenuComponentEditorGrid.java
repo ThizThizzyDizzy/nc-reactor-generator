@@ -1,12 +1,12 @@
 package planner.menu.component;
 import planner.Core;
 import planner.menu.MenuEdit;
-import planner.multiblock.Block;
-import planner.multiblock.Multiblock;
-import planner.multiblock.action.SFRSourceAction;
-import planner.multiblock.action.MSRSourceAction;
-import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
-import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.Block;
+import multiblock.Multiblock;
+import multiblock.action.SFRSourceAction;
+import multiblock.action.MSRSourceAction;
+import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -79,7 +79,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 double border = blockSize/8;
                 if(block!=null){
                     block.render(X, Y, blockSize, blockSize, true);
-                    if((multiblock instanceof OverhaulMSR&&((planner.multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel())||(multiblock instanceof OverhaulSFR&&((planner.multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel())){
+                    if((multiblock instanceof OverhaulMSR&&((multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel())||(multiblock instanceof OverhaulSFR&&((multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel())){
                         Core.applyColor(Core.theme.getSelectionColor(), resonatingAlpha);
                         Renderer2D.drawRect(X, Y, X+blockSize, Y+blockSize, 0);
                     }
@@ -158,8 +158,8 @@ public class MenuComponentEditorGrid extends MenuComponent{
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
         if(isDown){
-            if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()&&!((planner.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
-                planner.multiblock.overhaul.fissionsfr.Block b = (planner.multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
+            if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()&&!((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
+                multiblock.overhaul.fissionsfr.Block b = (multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     int index = Core.configuration.overhaul.fissionSFR.sources.indexOf(b.source);
                     index--;
@@ -167,8 +167,8 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.sources.size()-1;
                     multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.sources.get(index)));
                 }
-            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((planner.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((planner.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()&&!((planner.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
-                planner.multiblock.overhaul.fissionmsr.Block b = (planner.multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
+            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()&&!((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
+                multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     int index = Core.configuration.overhaul.fissionMSR.sources.indexOf(b.source);
                     index--;

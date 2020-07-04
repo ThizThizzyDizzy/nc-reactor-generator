@@ -1,14 +1,14 @@
 package planner.file;
-import common.JSON;
+import planner.JSON;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import planner.multiblock.Multiblock;
-import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
-import planner.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import multiblock.Multiblock;
+import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
 public class FileWriter{
     public static final ArrayList<FormatWriter> formats = new ArrayList<>();
@@ -42,7 +42,7 @@ public class FileWriter{
                         hellrage.set("CompressedReactor", compressedReactor);
                         for(planner.configuration.underhaul.fissionsfr.Block b : ncpf.configuration.underhaul.fissionSFR.blocks){
                             JSON.JSONArray array = new JSON.JSONArray();
-                            for(planner.multiblock.underhaul.fissionsfr.Block block : reactor.getBlocks()){
+                            for(multiblock.underhaul.fissionsfr.Block block : reactor.getBlocks()){
                                 if(block.template==b){
                                     JSON.JSONObject bl = new JSON.JSONObject();
                                     bl.set("X", block.x+1);
@@ -90,7 +90,7 @@ public class FileWriter{
                         for(planner.configuration.overhaul.fissionsfr.Block b : ncpf.configuration.overhaul.fissionSFR.blocks){
                             if(b.cooling>0){
                                 JSON.JSONArray array = new JSON.JSONArray();
-                                for(planner.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){
                                         JSON.JSONObject bl = new JSON.JSONObject();
                                         bl.set("X", block.x+1);
@@ -103,7 +103,7 @@ public class FileWriter{
                             }
                             if(b.moderator&&!b.shield){
                                 JSON.JSONArray array = new JSON.JSONArray();
-                                for(planner.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){
                                         JSON.JSONObject bl = new JSON.JSONObject();
                                         bl.set("X", block.x+1);
@@ -116,7 +116,7 @@ public class FileWriter{
                             }
                             if(b.reflector){
                                 JSON.JSONArray array = new JSON.JSONArray();
-                                for(planner.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){
                                         JSON.JSONObject bl = new JSON.JSONObject();
                                         bl.set("X", block.x+1);
@@ -129,7 +129,7 @@ public class FileWriter{
                             }
                             if(b.shield){
                                 JSON.JSONArray array = new JSON.JSONArray();
-                                for(planner.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){
                                         JSON.JSONObject bl = new JSON.JSONObject();
                                         bl.set("X", block.x+1);
@@ -141,8 +141,8 @@ public class FileWriter{
                                 shields.set(b.name.replace(" ", "").replace("NeutronShield", "").replace("Shield", ""), array);
                             }
                             if(b.fuelCell){
-                                HashMap<String, ArrayList<planner.multiblock.overhaul.fissionsfr.Block>> cells = new HashMap<>();
-                                for(planner.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                HashMap<String, ArrayList<multiblock.overhaul.fissionsfr.Block>> cells = new HashMap<>();
+                                for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){
                                         String name = block.fuel.name;
                                         if(name.endsWith(" Oxide"))name = "[OX]"+name.replace(" Oxide", "");
@@ -154,7 +154,7 @@ public class FileWriter{
                                         if(cells.containsKey(name)){
                                             cells.get(name).add(block);
                                         }else{
-                                            ArrayList<planner.multiblock.overhaul.fissionsfr.Block> blox = new ArrayList<>();
+                                            ArrayList<multiblock.overhaul.fissionsfr.Block> blox = new ArrayList<>();
                                             blox.add(block);
                                             cells.put(name, blox);
                                         }
@@ -162,7 +162,7 @@ public class FileWriter{
                                 }
                                 for(String key : cells.keySet()){
                                     JSON.JSONArray array = new JSON.JSONArray();
-                                    for(planner.multiblock.overhaul.fissionsfr.Block block : cells.get(key)){
+                                    for(multiblock.overhaul.fissionsfr.Block block : cells.get(key)){
                                         JSON.JSONObject bl = new JSON.JSONObject();
                                         bl.set("X", block.x+1);
                                         bl.set("Y", block.y+1);
@@ -173,14 +173,14 @@ public class FileWriter{
                                 }
                             }
                             if(b.irradiator){
-                                HashMap<String, ArrayList<planner.multiblock.overhaul.fissionsfr.Block>> radiators = new HashMap<>();
-                                for(planner.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                HashMap<String, ArrayList<multiblock.overhaul.fissionsfr.Block>> radiators = new HashMap<>();
+                                for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){
                                         String name = "{\\\"HeatPerFlux\\\":"+(block.recipe==null?0:block.recipe.heat)+",\\\"EfficiencyMultiplier\\\":"+(block.recipe==null?0:block.recipe.efficiency)+"}";
                                         if(radiators.containsKey(name)){
                                             radiators.get(name).add(block);
                                         }else{
-                                            ArrayList<planner.multiblock.overhaul.fissionsfr.Block> blox = new ArrayList<>();
+                                            ArrayList<multiblock.overhaul.fissionsfr.Block> blox = new ArrayList<>();
                                             blox.add(block);
                                             radiators.put(name, blox);
                                         }
@@ -188,7 +188,7 @@ public class FileWriter{
                                 }
                                 for(String key : radiators.keySet()){
                                     JSON.JSONArray array = new JSON.JSONArray();
-                                    for(planner.multiblock.overhaul.fissionsfr.Block block : radiators.get(key)){
+                                    for(multiblock.overhaul.fissionsfr.Block block : radiators.get(key)){
                                         JSON.JSONObject bl = new JSON.JSONObject();
                                         bl.set("X", block.x+1);
                                         bl.set("Y", block.y+1);
