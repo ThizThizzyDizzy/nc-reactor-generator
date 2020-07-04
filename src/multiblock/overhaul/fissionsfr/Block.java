@@ -3,11 +3,9 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import planner.Core;
 import planner.configuration.overhaul.fissionsfr.PlacementRule;
-import planner.menu.MenuEdit;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import simplelibrary.Queue;
-import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -214,7 +212,7 @@ public class Block extends multiblock.Block{
                     continue;
                 }
                 if(block.isFuelCell()){
-                    if(flux==0)break;
+                    if(length==0)break;
                     block.neutronFlux+=flux;
                     block.moderatorLines++;
                     block.positionalEfficiency+=efficiency/length;
@@ -222,14 +220,14 @@ public class Block extends multiblock.Block{
                     break;
                 }
                 if(block.isReflector()){
-                    if(flux==0)break;
+                    if(length==0)break;
                     neutronFlux+=flux*2*block.template.reflectivity;
                     positionalEfficiency+=efficiency/length*block.template.efficiency;
                     moderatorLines++;
                     break;
                 }
                 if(block.isIrradiator()){
-                    if(flux==0)break;
+                    if(length==0)break;
                     moderatorLines++;
                     break;
                 }
@@ -241,6 +239,7 @@ public class Block extends multiblock.Block{
         if(!isFuelCellActive())return;
         for(Direction d : directions){
             int flux = 0;
+            int length = 0;
             HashMap<Block, Integer> shieldFluxes = new HashMap<>();
             Queue<Block> toActivate = new Queue<>();
             Queue<Block> toValidate = new Queue<>();
@@ -249,6 +248,7 @@ public class Block extends multiblock.Block{
                 if(block==null)break;
                 boolean skip = false;
                 if(block.isModerator()){
+                    length++;
                     flux+=block.template.flux;
                     if(i==1)toActivate.enqueue(block);
                     toValidate.enqueue(block);
@@ -261,7 +261,7 @@ public class Block extends multiblock.Block{
                 }
                 if(skip)continue;
                 if(block.isFuelCell()){
-                    if(flux==0)break;
+                    if(length==0)break;
                     for(Block b : shieldFluxes.keySet()){
                         b.neutronFlux+=shieldFluxes.get(b);
                     }
@@ -270,7 +270,7 @@ public class Block extends multiblock.Block{
                     break;
                 }
                 if(block.isReflector()){
-                    if(flux==0)break;
+                    if(length==0)break;
                     block.reflectorActive = true;
                     for(Block b : shieldFluxes.keySet()){
                         b.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
@@ -280,7 +280,7 @@ public class Block extends multiblock.Block{
                     break;
                 }
                 if(block.isIrradiator()){
-                    if(flux==0)break;
+                    if(length==0)break;
                     for(Block b : shieldFluxes.keySet()){
                         b.neutronFlux+=shieldFluxes.get(b);
                     }
@@ -379,6 +379,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean canGroup(){
+        if(template.moderator)return false;
         return template.cooling>0;
     }
     public multiblock.overhaul.fissionmsr.Block convertToMSR(){
