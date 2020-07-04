@@ -328,6 +328,7 @@ public class MenuEdit extends Menu{
         }
         if(Core.isControlPressed()){
             if(multiblock.getBlock(x, y, z)!=null&&!Core.isShiftPressed())return;
+            if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).canBeQuickReplaced())return;
             if(multiblock.getBlock(x, y, z)==null||multiblock.getBlock(x, y, z)!=null&&Core.isShiftPressed()){
                 if(!isValid(template, x, y, z))return;
             }
@@ -373,6 +374,8 @@ public class MenuEdit extends Menu{
                     if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock()))it.remove();
                 }else{
                     if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!Core.isShiftPressed()){
+                        it.remove();
+                    }else if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).canBeQuickReplaced()){
                         it.remove();
                     }else if(multiblock.getBlock(b[0], b[1], b[2])==null||multiblock.getBlock(b[0], b[1], b[2])!=null&&Core.isShiftPressed()){
                         if(!isValid(set.block, b[0], b[1], b[2]))it.remove();

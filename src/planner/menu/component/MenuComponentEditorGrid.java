@@ -85,7 +85,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     }
                 }
                 if(Core.isControlPressed()){
-                    if(block==null||Core.isShiftPressed()){
+                    if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
                         if(editor.isValid(editor.getSelectedBlock(), x, layer, z)){
                             editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha);
                         }

@@ -84,4 +84,5 @@ public abstract class Block extends MultiblockBit{
     public abstract boolean matches(Block template);
     public abstract boolean requires(Block other, Multiblock mb);
     public abstract boolean canGroup();
+    public abstract boolean canBeQuickReplaced();
 }

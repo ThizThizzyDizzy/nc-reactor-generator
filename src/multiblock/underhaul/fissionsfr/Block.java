@@ -205,4 +205,8 @@ public class Block extends multiblock.Block{
     public boolean canGroup(){
         return template.cooling>0;
     }
+    @Override
+    public boolean canBeQuickReplaced(){
+        return template.cooling>0;
+    }
 }

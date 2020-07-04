@@ -388,4 +388,8 @@ public class Block extends multiblock.Block{
         b.source = Core.configuration.overhaul.fissionSFR.convertToSFR(source);
         return b;
     }
+    @Override
+    public boolean canBeQuickReplaced(){
+        return template.cooling>0;
+    }
 }
