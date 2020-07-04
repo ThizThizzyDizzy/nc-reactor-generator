@@ -14,7 +14,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -24,6 +23,8 @@ import planner.file.FileWriter;
 import planner.file.FormatWriter;
 import planner.file.NCPFFile;
 import planner.multiblock.Multiblock;
+import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import planner.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
@@ -70,6 +71,7 @@ public class MenuMain extends Menu{
         }
     });
     private MenuComponentMinimalistButton delete = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setForegroundColor(Core.theme.getRed()));
+    private MenuComponentMinimalistButton convertOverhaulMSFR = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Convert SFR <> MSR", true, true).setForegroundColor(Core.theme.getRGB(1, .5f, 0)));
     private boolean forceMetaUpdate = true;
     private MenuComponent metadataPanel = add(new MenuComponent(0, 0, 0, 0){
         MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
@@ -305,6 +307,17 @@ public class MenuMain extends Menu{
             Core.multiblocks.remove(multiblocks.getSelectedIndex());
             onGUIOpened();
         });
+        convertOverhaulMSFR.addActionListener((e) -> {
+            Multiblock selected = getSelectedMultiblock();
+            if(selected instanceof OverhaulSFR){
+                OverhaulMSR msr = ((OverhaulSFR) selected).convertToMSR();
+                Core.multiblocks.set(Core.multiblocks.indexOf(selected), msr);
+            }else if(selected instanceof OverhaulMSR){
+                OverhaulSFR sfr = ((OverhaulMSR) selected).convertToSFR();
+                Core.multiblocks.set(Core.multiblocks.indexOf(selected), sfr);
+            }
+            onGUIOpened();
+        });
         multiblockCancel.addActionListener((e) -> {
             adding = false;
         });
@@ -328,7 +341,7 @@ public class MenuMain extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        editMetadata.x = Display.getWidth()/3;
+        convertOverhaulMSFR.x = editMetadata.x = Display.getWidth()/3;
         importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = Display.getWidth()/12;
         exportMultiblock.x = importFile.width;
         saveFile.x = exportMultiblock.x+exportMultiblock.width;
@@ -346,9 +359,21 @@ public class MenuMain extends Menu{
         addMultiblock.x = Display.getWidth()/3-Display.getHeight()/16;
         addMultiblock.y = Display.getHeight()/16;
         addMultiblock.width = addMultiblock.height = Display.getHeight()/16;
-        delete.height = addMultiblock.height;
+        convertOverhaulMSFR.height = delete.height = addMultiblock.height;
         delete.width = (Display.getWidth()-multiblocks.width)*.8;
+        convertOverhaulMSFR.width = editMetadata.width+settings.width;
         delete.x = Display.getWidth()-delete.width;
+        convertOverhaulMSFR.y = addMultiblock.y;
+        if(getSelectedMultiblock() instanceof OverhaulSFR){
+            convertOverhaulMSFR.enabled = Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
+            convertOverhaulMSFR.label = "Convert to MSR (Hold Control)";
+        }else if(getSelectedMultiblock() instanceof OverhaulMSR){
+            convertOverhaulMSFR.enabled = Core.configuration.overhaul.fissionSFR!=null&&!(adding||metadating)&&Core.isControlPressed();
+            convertOverhaulMSFR.label = "Convert to SFR (Hold Control)";
+        }else{
+            convertOverhaulMSFR.enabled = false;
+            convertOverhaulMSFR.y = -convertOverhaulMSFR.height;
+        }
         delete.y = Display.getHeight()-delete.height;
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);

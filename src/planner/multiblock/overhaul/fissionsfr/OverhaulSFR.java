@@ -8,6 +8,7 @@ import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.configuration.overhaul.fissionsfr.Fuel;
 import planner.multiblock.Direction;
 import planner.multiblock.Multiblock;
+import planner.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulSFR extends Multiblock<Block>{
@@ -264,6 +265,19 @@ public class OverhaulSFR extends Multiblock<Block>{
             if(block.fuel==f)count++;
         }
         return count;
+    }
+    public OverhaulMSR convertToMSR(){
+        OverhaulMSR msr = new OverhaulMSR(getX(), getY(), getZ());
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    Block b = getBlock(x, y, z);
+                    msr.blocks[x][y][z] = b==null?null:b.convertToMSR();
+                }
+            }
+        }
+        msr.metadata.putAll(metadata);
+        return msr;
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();

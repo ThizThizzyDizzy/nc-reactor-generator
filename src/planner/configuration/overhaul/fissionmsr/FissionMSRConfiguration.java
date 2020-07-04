@@ -102,4 +102,25 @@ public class FissionMSRConfiguration{
         }
         throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.toString()+"!");
     }
+    public Block convertToMSR(planner.configuration.overhaul.fissionsfr.Block template){
+        if(template==null)return null;
+        for(Block block : blocks){
+            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase().replace("cell", "vessel").replace("heat sink", "coolant heater")))return block;
+        }
+        throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
+    }
+    public Fuel convertToMSR(planner.configuration.overhaul.fissionsfr.Fuel template){
+        if(template==null)return null;
+        for(Fuel fuel : fuels){
+            if(fuel.name.trim().toLowerCase().startsWith(template.name.trim().toLowerCase().replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return fuel;
+        }
+        throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
+    }
+    public Source convertToMSR(planner.configuration.overhaul.fissionsfr.Source template){
+        if(template==null)return null;
+        for(Source source : sources){
+            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
+        }
+        throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
+    }
 }

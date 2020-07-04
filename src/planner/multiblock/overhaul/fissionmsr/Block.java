@@ -3,11 +3,9 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import planner.Core;
 import planner.configuration.overhaul.fissionmsr.PlacementRule;
-import planner.menu.MenuEdit;
 import planner.multiblock.Direction;
 import planner.multiblock.Multiblock;
 import simplelibrary.Queue;
-import simplelibrary.opengl.Renderer2D;
 public class Block extends planner.multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -380,5 +378,11 @@ public class Block extends planner.multiblock.Block{
     @Override
     public boolean canGroup(){
         return template.cooling>0;
+    }
+    public planner.multiblock.overhaul.fissionsfr.Block convertToSFR(){
+        planner.multiblock.overhaul.fissionsfr.Block b = new planner.multiblock.overhaul.fissionsfr.Block(x, y, z, Core.configuration.overhaul.fissionSFR.convertToSFR(template));
+        b.fuel = Core.configuration.overhaul.fissionSFR.convertToSFR(fuel);
+        b.source = Core.configuration.overhaul.fissionSFR.convertToSFR(source);
+        return b;
     }
 }

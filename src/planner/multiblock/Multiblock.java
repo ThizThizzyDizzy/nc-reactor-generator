@@ -353,10 +353,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
     }
     public void action(Action action){
-        lastBlocks = null;
-        forceRescan = true;
         recalculate(action.apply(this));
-        forceRescan = false;
         future.clear();
         history.push(action);
     }
@@ -367,14 +364,15 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         calculate(blox);
     }
     private void recalculate(ActionResult result){
+        forceRescan = true;
         List<T> blox = result.getAffectedGroups();
-//        System.out.println("RECALCULATE "+blox.size()+"/"+getBlocks().size());
         clearData(blox);
         if(validate()){
             recalculate();
             return;
         }
         calculate(blox);
+        forceRescan = false;
     }
     public ArrayList<T> getGroup(T block){
         ArrayList<T> group = new ArrayList<>();

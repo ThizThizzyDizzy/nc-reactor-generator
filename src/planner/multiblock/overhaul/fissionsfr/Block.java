@@ -381,4 +381,10 @@ public class Block extends planner.multiblock.Block{
     public boolean canGroup(){
         return template.cooling>0;
     }
+    public planner.multiblock.overhaul.fissionmsr.Block convertToMSR(){
+        planner.multiblock.overhaul.fissionmsr.Block b = new planner.multiblock.overhaul.fissionmsr.Block(x, y, z, Core.configuration.overhaul.fissionMSR.convertToMSR(template));
+        b.fuel = Core.configuration.overhaul.fissionMSR.convertToMSR(fuel);
+        b.source = Core.configuration.overhaul.fissionMSR.convertToMSR(source);
+        return b;
+    }
 }

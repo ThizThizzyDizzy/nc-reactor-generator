@@ -1,12 +1,7 @@
 package planner.configuration.overhaul.fissionsfr;
-import planner.configuration.overhaul.fissionsfr.Block;
-import planner.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
-import planner.configuration.overhaul.fissionsfr.PlacementRule;
-import planner.configuration.overhaul.fissionsfr.RuleContainer;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import planner.Core;
-import planner.configuration.Configuration;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
@@ -149,5 +144,9 @@ public class Block extends RuleContainer{
             }
         }
         displayTexture = displayImg;
+    }
+    @Override
+    public String toString(){
+        return name;
     }
 }
