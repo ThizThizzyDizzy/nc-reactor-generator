@@ -1,11 +1,11 @@
 package planner.multiblock;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import org.lwjgl.opengl.GL11;
 import planner.Core;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
-import simplelibrary.opengl.ImageStash;
+import simplelibrary.opengl.Renderer2D;
+import planner.menu.MenuEdit;
 public abstract class Block extends MultiblockBit{
     public int x;
     public int y;
@@ -58,37 +58,21 @@ public abstract class Block extends MultiblockBit{
         if(renderOverlay)renderOverlay(x,y,width,height);
     }
     public abstract void renderOverlay(double x, double y, double width, double height);
+    public void drawCircle(double x, double y, double width, double height, Color color){
+        Core.applyColor(color);
+        Renderer2D.drawRect(x, y, x+width, y+height, MenuEdit.sourceCircle);
+        Core.applyWhite();
+    }
     public void drawOutline(double x, double y, double width, double height, double inset, Color color){
         Core.applyColor(color);
-        inset*=Math.min(width, height);
-        drawRect(x+inset, y+inset, x+width-inset, y+inset+height/16, 0);
-        drawRect(x+inset, y+height-inset-height/16, x+width-inset, y+height-inset, 0);
-        drawRect(x+inset, y+inset+height/16, x+inset+width/16, y+height-inset-height/16, 0);
-        drawRect(x+width-inset-height/16, y+inset+height/16, x+width-inset, y+height-inset-height/16, 0);
-    }
-    public void drawCircle(double x, double y, double innerRadius, double outerRadius, Color color){
-        Core.applyColor(color);
-        int resolution = (int)(2*Math.PI*outerRadius);//an extra *2 to account for wavy surface?
-        ImageStash.instance.bindTexture(0);
-        GL11.glBegin(GL11.GL_QUADS);
-        double angle = 0;
-        for(int i = 0; i<resolution; i++){
-            double inX = x+Math.cos(Math.toRadians(angle-90))*innerRadius;
-            double inY = y+Math.sin(Math.toRadians(angle-90))*innerRadius;
-            GL11.glVertex2d(inX, inY);
-            double outX = x+Math.cos(Math.toRadians(angle-90))*outerRadius;
-            double outY = y+Math.sin(Math.toRadians(angle-90))*outerRadius;
-            GL11.glVertex2d(outX,outY);
-            angle+=(360d/resolution);
-            if(angle>=360)angle-=360;
-            outX = x+Math.cos(Math.toRadians(angle-90))*outerRadius;
-            outY = y+Math.sin(Math.toRadians(angle-90))*outerRadius;
-            GL11.glVertex2d(outX,outY);
-            inX = x+Math.cos(Math.toRadians(angle-90))*innerRadius;
-            inY = y+Math.sin(Math.toRadians(angle-90))*innerRadius;
-            GL11.glVertex2d(inX, inY);
-        }
-        GL11.glEnd();
+        Renderer2D.drawRect(x, y, x+width, y+height, MenuEdit.outlineSquare);
+        Core.applyWhite();
+//        Core.applyColor(color);
+//        inset*=Math.min(width, height);
+//        drawRect(x+inset, y+inset, x+width-inset, y+inset+height/16, 0);
+//        drawRect(x+inset, y+height-inset-height/16, x+width-inset, y+height-inset, 0);
+//        drawRect(x+inset, y+inset+height/16, x+inset+width/16, y+height-inset-height/16, 0);
+//        drawRect(x+width-inset-height/16, y+inset+height/16, x+width-inset, y+height-inset-height/16, 0);
     }
     public Block copy(int x, int y, int z){
         Block b = newInstance(x, y, z);

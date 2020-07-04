@@ -1,8 +1,12 @@
 package planner.menu;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.component.MenuComponentCoolantRecipe;
 import planner.menu.component.MenuComponentEditorListBlock;
@@ -31,6 +35,8 @@ import planner.tool.LineTool;
 import planner.tool.PencilTool;
 import planner.tool.RectangleTool;
 import planner.tool.SelectionTool;
+import simplelibrary.game.Framebuffer;
+import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -65,6 +71,9 @@ public class MenuEdit extends Menu{
     private int CELL_SIZE = (int) (16*scale);
     private int LAYER_GAP = CELL_SIZE/2;
     private int multisPerRow = 0;
+    public static int sourceCircle = -1;
+    public static int outlineSquare = -1;
+    public static boolean delCircle = false;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         if(multiblock instanceof UnderhaulSFR){
@@ -138,6 +147,7 @@ public class MenuEdit extends Menu{
     }
     @Override
     public void onGUIOpened(){
+        delCircle = true;
         editMetadata.label = multiblock.getName();
         generate.label = multiblock.isEmpty()?"Generate":"Generate Suggestions";
         if(multiblock instanceof UnderhaulSFR){
@@ -159,6 +169,57 @@ public class MenuEdit extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
+        if(delCircle&&sourceCircle!=-1){
+            ImageStash.instance.deleteTexture(sourceCircle);
+            sourceCircle = -1;
+        }
+        if(sourceCircle==-1){
+            BufferedImage image = makeImage(CELL_SIZE, (buff) -> {
+                Core.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d), Color.white);
+            }, (img) -> {
+                for(int x = 0; x<img.getWidth(); x++){
+                    for(int y = 0; y<img.getHeight(); y++){
+                        double xOff = x-img.getWidth()/2;
+                        double yOff = y-img.getHeight()/2;
+                        double dist = Math.sqrt(xOff*xOff+yOff*yOff);
+                        if(dist>4/16d*img.getWidth()&&dist<6/16d*img.getWidth()){
+                            img.setRGB(x, y, new Color(1f, 1f, 1f).getRGB());
+                        }else{
+                            img.setRGB(x, y, new Color(0, 0, 0, 0).getRGB());
+                        }
+                    }
+                }
+            });
+            sourceCircle = ImageStash.instance.allocateAndSetupTexture(image);
+        }
+        if(outlineSquare==-1){
+            BufferedImage image = makeImage(32, (buff) -> {
+                Core.applyWhite();
+                double inset = buff.width/32d;
+                drawRect(inset, inset, buff.width-inset, inset+buff.width/16, 0);
+                drawRect(inset, buff.width-inset-buff.width/16, buff.width-inset, buff.width-inset, 0);
+                drawRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16, 0);
+                drawRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16, 0);
+            }, (img) -> {
+                int size = img.getWidth();
+                double inset = size/32;
+                for(int x = 0; x<img.getWidth(); x++){
+                    for(int y = 0; y<img.getHeight(); y++){
+                        double X = x/(double)img.getWidth();
+                        double Y = y/(double)img.getHeight();
+                        boolean isWhite = true;
+                        if(X<1/32d||Y<1/32d||X>31/32d||Y>31/32d)isWhite = false;
+                        if(X>3/32d&&Y>3/32d&&X<29/32d&&Y<29/32d)isWhite = false;
+                        if(isWhite){
+                            img.setRGB(x, y, new Color(1f, 1f, 1f).getRGB());
+                        }else{
+                            img.setRGB(x, y, new Color(0, 0, 0, 0).getRGB());
+                        }
+                    }
+                }
+            });
+            outlineSquare = ImageStash.instance.allocateAndSetupTexture(image);
+        }
         setTooltip("");
         if(multisPerRow!=Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)))){
             onGUIOpened();
@@ -455,5 +516,44 @@ public class MenuEdit extends Menu{
             is.add(new int[]{b.x,b.y,b.z});
         }
         deselect(is);
+    }
+    private final int MAX_SIZE = (int) (maxScale*16);
+    private ByteBuffer bufferer = ImageStash.createDirectByteBuffer(MAX_SIZE*MAX_SIZE*4);
+    private final boolean basejava = true;
+    private BufferedImage makeImage(BufferRenderer r, ImageRenderer r2){
+        return makeImage(MAX_SIZE, r, r2);
+    }
+    private BufferedImage makeImage(int size, BufferRenderer r, ImageRenderer r2){
+        if(basejava){
+            BufferedImage img2 = new BufferedImage(size, size, BufferedImage.TYPE_4BYTE_ABGR);
+            r2.render(img2);
+            return img2;
+        }
+        Framebuffer buff = new Framebuffer(Core.helper, "Randobuffer", size, size);
+        buff.bindRenderTarget2D();
+        r.render(buff);
+        buff.releaseRenderTarget();
+        buff.bindTexture();
+        bufferer.clear();
+        GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bufferer);
+//        GL11.glReadPixels(0, 0, MAX_SIZE, MAX_SIZE, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bufferer);
+//        buff.releaseRenderTarget();
+        ImageStash.instance.deleteBuffer(ImageStash.instance.getBuffer(buff.name));
+        int[] imgRGBData = new int[size*size];
+        byte[] imgData = new byte[size*size*4];
+        bufferer.position(0);
+        bufferer.get(imgData);
+        for(int i=0;i<imgRGBData.length;i++){
+            imgRGBData[i]=((0|imgData[i*4])<<16)+((0|imgData[i*4+1])<<8)+((0|imgData[i*4+2]))+((0|imgData[i*4+2])<<24);//Use RED, GREEN, or BLUE channel (here BLUE) for alpha data
+        }
+        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_4BYTE_ABGR);
+        img.setRGB(0, 0, size, size, imgRGBData, 0, size);
+        return img;
+    }
+    private static interface BufferRenderer{
+        void render(Framebuffer buff);
+    }
+    private static interface ImageRenderer{
+        void render(BufferedImage buff);
     }
 }

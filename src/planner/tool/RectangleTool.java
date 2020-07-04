@@ -31,10 +31,10 @@ public class RectangleTool extends EditorTool{
     @Override
     public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        if(leftDragEnd!=null)foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
+        if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
             if(Y==layer)Renderer2D.drawRect(x+X*blockSize, y+Z*blockSize, x+(X+1)*blockSize, y+(Z+1)*blockSize, texture);
         });
-        if(rightDragEnd!=null)foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
+        if(rightDragEnd!=null&&rightDragStart!=null)foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
             if(Y==layer)Renderer2D.drawRect(x+X*blockSize, y+Z*blockSize, x+(X+1)*blockSize, y+(Z+1)*blockSize, 0);
         });
         Core.applyWhite();
@@ -51,14 +51,14 @@ public class RectangleTool extends EditorTool{
     }
     @Override
     public void mouseReleased(int x, int y, int z, int button){
-        if(button==0){
+        if(button==0&&leftDragStart!=null){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock());
             foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
                 set.add(X, Y, Z);
             });
             editor.setblocks(set);
         }
-        if(button==1){
+        if(button==1&&rightDragStart!=null){
             SetblocksAction set = new SetblocksAction(null);
             foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
                 set.add(X, Y, Z);

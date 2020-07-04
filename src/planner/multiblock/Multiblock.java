@@ -191,17 +191,20 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
     }
     public abstract void calculate(List<T> blocks);
+    private ArrayList<T> lastBlocks = null;
+    private boolean forceRescan = false;
     public ArrayList<T> getBlocks(){
-        ArrayList<T> blox = new ArrayList<>();
+        if(lastBlocks!=null&&!forceRescan)return lastBlocks;
+        lastBlocks = new ArrayList<>();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
                 for(int z = 0; z<getZ(); z++){
                     T b = getBlock(x, y, z);
-                    if(b!=null)blox.add(b);
+                    if(b!=null)lastBlocks.add(b);
                 }
             }
         }
-        return blox;
+        return lastBlocks;
     }
     protected abstract T newCasing(int x, int y, int z);
     public abstract String getTooltip();
@@ -350,7 +353,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
     }
     public void action(Action action){
+        lastBlocks = null;
+        forceRescan = true;
         recalculate(action.apply(this));
+        forceRescan = false;
         future.clear();
         history.push(action);
     }
@@ -362,6 +368,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     private void recalculate(ActionResult result){
         List<T> blox = result.getAffectedGroups();
+//        System.out.println("RECALCULATE "+blox.size()+"/"+getBlocks().size());
         clearData(blox);
         if(validate()){
             recalculate();

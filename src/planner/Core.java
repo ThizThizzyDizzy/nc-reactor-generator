@@ -332,4 +332,28 @@ public class Core extends Renderer2D{
     public static boolean isShiftPressed(){
         return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
     }
+    public static void drawCircle(double x, double y, double innerRadius, double outerRadius, Color color){
+        Core.applyColor(color);
+        int resolution = (int)(2*Math.PI*outerRadius);//an extra *2 to account for wavy surface?
+        ImageStash.instance.bindTexture(0);
+        GL11.glBegin(GL11.GL_QUADS);
+        double angle = 0;
+        for(int i = 0; i<resolution; i++){
+            double inX = x+Math.cos(Math.toRadians(angle-90))*innerRadius;
+            double inY = y+Math.sin(Math.toRadians(angle-90))*innerRadius;
+            GL11.glVertex2d(inX, inY);
+            double outX = x+Math.cos(Math.toRadians(angle-90))*outerRadius;
+            double outY = y+Math.sin(Math.toRadians(angle-90))*outerRadius;
+            GL11.glVertex2d(outX,outY);
+            angle+=(360d/resolution);
+            if(angle>=360)angle-=360;
+            outX = x+Math.cos(Math.toRadians(angle-90))*outerRadius;
+            outY = y+Math.sin(Math.toRadians(angle-90))*outerRadius;
+            GL11.glVertex2d(outX,outY);
+            inX = x+Math.cos(Math.toRadians(angle-90))*innerRadius;
+            inY = y+Math.sin(Math.toRadians(angle-90))*innerRadius;
+            GL11.glVertex2d(inX, inY);
+        }
+        GL11.glEnd();
+    }
 }

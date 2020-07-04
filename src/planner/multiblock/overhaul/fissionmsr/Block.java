@@ -3,9 +3,11 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import planner.Core;
 import planner.configuration.overhaul.fissionmsr.PlacementRule;
+import planner.menu.MenuEdit;
 import planner.multiblock.Direction;
 import planner.multiblock.Multiblock;
 import simplelibrary.Queue;
+import simplelibrary.opengl.Renderer2D;
 public class Block extends planner.multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -327,7 +329,7 @@ public class Block extends planner.multiblock.Block{
             float r = self?0:Math.min(1, -2*fac+2);
             float g = self?0:Math.min(1, fac*2);
             float b = self?1:0;
-            drawCircle(x+width/2, y+height/2, width*(4/16d), width*(6/16d), Core.theme.getRGB(r, g, b));
+            drawCircle(x, y, width, height, Core.theme.getRGB(r, g, b));
         }
     }
     private boolean isInert(){
