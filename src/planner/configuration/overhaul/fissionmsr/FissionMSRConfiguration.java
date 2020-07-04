@@ -105,7 +105,7 @@ public class FissionMSRConfiguration{
     public Block convertToMSR(planner.configuration.overhaul.fissionsfr.Block template){
         if(template==null)return null;
         for(Block block : blocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase().replace("cell", "vessel").replace("heat sink", "coolant heater")))return block;
+            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase().replace("cell", "vessel").replace("water heat", "standard heat").replace("heat sink", "coolant heater")))return block;
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
     }

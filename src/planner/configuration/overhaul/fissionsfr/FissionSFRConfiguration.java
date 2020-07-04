@@ -127,7 +127,7 @@ public class FissionSFRConfiguration{
     public Block convertToSFR(planner.configuration.overhaul.fissionmsr.Block template){
         if(template==null)return null;
         for(Block block : blocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase().replace("vessel", "cell").replace("coolant heater", "heat sink")))return block;
+            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase().replace("vessel", "cell").replace("coolant heater", "heat sink").replace("standard", "water")))return block;
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
     }
