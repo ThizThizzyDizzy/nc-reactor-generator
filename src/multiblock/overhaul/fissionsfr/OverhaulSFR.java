@@ -253,6 +253,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         return changed;
     }
     public Cluster getCluster(Block block){
+        if(block==null)return null;
         if(!block.canCluster())return null;
         for(Cluster cluster : clusters){
             if(cluster.contains(block))return cluster;

@@ -467,6 +467,7 @@ public class MenuEdit extends Menu{
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
+            if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
@@ -476,6 +477,7 @@ public class MenuEdit extends Menu{
         if(multiblock instanceof OverhaulMSR){
             OverhaulMSR omsr = (OverhaulMSR) multiblock;
             OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
+            if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
@@ -487,6 +489,7 @@ public class MenuEdit extends Menu{
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
+            if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
@@ -496,6 +499,7 @@ public class MenuEdit extends Menu{
         if(multiblock instanceof OverhaulMSR){
             OverhaulMSR omsr = (OverhaulMSR) multiblock;
             OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
+            if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
