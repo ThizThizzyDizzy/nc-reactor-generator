@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import simplelibrary.Sys;
 import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.font.FontManager;
+import simplelibrary.game.Framebuffer;
 import simplelibrary.game.GameHelper;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
@@ -52,6 +54,8 @@ public class Core extends Renderer2D{
     public static final float IMG_POW = 2f;
     public static final float IMG_STRAIGHT_FAC = 1.5f;
     public static final float maxYRot = 80f;
+    public static float xRot = 30;
+    public static float yRot = 30;
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
@@ -176,8 +180,6 @@ public class Core extends Renderer2D{
             gui.tick();
         }
     }
-    private static float xRot = 30;
-    private static float yRot = 30;
     public static void render(int millisSinceLastTick){
         applyWhite();
         if(gui.menu instanceof MenuMain){
@@ -355,5 +357,33 @@ public class Core extends Renderer2D{
             GL11.glVertex2d(inX, inY);
         }
         GL11.glEnd();
+    }
+    public static BufferedImage makeImage(int width, int height, BufferRenderer r){
+        ByteBuffer bufferer = ImageStash.createDirectByteBuffer(width*height*4);
+        Framebuffer buff = new Framebuffer(Core.helper, null, width, height);
+        buff.bindRenderTarget2D();
+        r.render(buff);
+        bufferer.clear();
+        GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bufferer);
+        buff.releaseRenderTarget();
+        ImageStash.instance.deleteBuffer(ImageStash.instance.getBuffer(buff.name));
+        ImageStash.instance.deleteTexture(buff.getTexture());
+        int[] imgRGBData = new int[width*height];
+        byte[] imgData = new byte[width*height*4];
+        bufferer.rewind();
+        bufferer.get(imgData);
+        System.out.println();
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        for(int i=0;i<imgRGBData.length;i++){
+            imgRGBData[i]=(f(imgData[i*4])<<16)+(f(imgData[i*4+1])<<8)+(f(imgData[i*4+2]))+(f(imgData[i*4+3])<<24);//DO NOT Use RED, GREEN, or BLUE channel (here BLUE) for alpha data
+        }
+        img.setRGB(0, 0, width, height, imgRGBData, 0, width);
+        return img;
+    }
+    public static interface BufferRenderer{
+        void render(Framebuffer buff);
+    }
+    private static int f(byte imgData){
+        return (imgData+256)&255;
     }
 }

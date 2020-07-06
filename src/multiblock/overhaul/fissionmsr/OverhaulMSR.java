@@ -141,14 +141,15 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public String getTooltip(){
+        float output = 0;
         String outs = "";
         ArrayList<String> outputList = new ArrayList<>(totalOutput.keySet());
         Collections.sort(outputList);
         for(String s : outputList){
-            outs+="\n"+Math.round(totalOutput.get(s))+" mb/t of "+s;
+            output+=totalOutput.get(s);
+            outs+="\n "+Math.round(totalOutput.get(s))+" mb/t of "+s;
         }
-        if(!outs.isEmpty())outs = outs.substring(1);
-        String s = "Total output:\n"+outs+"\n"
+        String s = "Total output: "+Math.round(output)+" mb/t"+outs+"\n"
                 + "Total Heat: "+totalHeat+"H/t\n"
                 + "Total Cooling: "+totalCooling+"H/t\n"
                 + "Net Heat: "+netHeat+"H/t\n"

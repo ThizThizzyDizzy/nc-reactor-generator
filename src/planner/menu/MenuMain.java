@@ -25,6 +25,7 @@ import planner.file.NCPFFile;
 import multiblock.Multiblock;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
@@ -151,6 +152,7 @@ public class MenuMain extends Menu{
     private boolean metadating = false;
     private int metadatingScale = 0;
     private final int metadatingTime = 4;
+    private Queue<PendingWrite> pendingWrites = new Queue<>();
     public MenuMain(GUI gui){
         super(gui, null);
         for(Multiblock m : Core.multiblockTypes){
@@ -272,6 +274,7 @@ public class MenuMain extends Menu{
                 for(FormatWriter writer : FileWriter.formats){
                     FileFilter f = new FileNameExtensionFilter(writer.getDesc(), writer.getExtensions());
                     chooser.addChoosableFileFilter(f);
+                    if(Core.isShiftPressed()&&f.getDescription().contains("PNG"))chooser.setFileFilter(f);
                     filters.put(f, writer);
                 }
                 chooser.addActionListener((event) -> {
@@ -287,7 +290,7 @@ public class MenuMain extends Menu{
                             if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
                             file.delete();
                         }
-                        FileWriter.write(ncpf, file, writer);
+                        pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
                     }
                 });
                 chooser.showSaveDialog(null);
@@ -341,6 +344,9 @@ public class MenuMain extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
+        if(!pendingWrites.isEmpty()){
+            pendingWrites.dequeue().write();
+        }
         convertOverhaulMSFR.x = editMetadata.x = Display.getWidth()/3;
         importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = Display.getWidth()/12;
         exportMultiblock.x = importFile.width;
@@ -425,7 +431,7 @@ public class MenuMain extends Menu{
         for(MenuComponent c : multiblocks.components){
             if(c instanceof MenuComponentMultiblock){
                 if(button==((MenuComponentMultiblock) c).edit){
-                    gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock), MenuTransition.SlideTransition.slideFrom(1, 0), 5));
+                    gui.open(/*new MenuTransition(gui, this, */new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock)/*, MenuTransition.SlideTransition.slideFrom(1, 0), 5)*/);
                 }
             }
         }
@@ -433,5 +439,18 @@ public class MenuMain extends Menu{
     public Multiblock getSelectedMultiblock(){
         if(multiblocks.getSelectedIndex()==-1)return null;
         return ((MenuComponentMultiblock)multiblocks.components.get(multiblocks.getSelectedIndex())).multiblock;
+    }
+    private static class PendingWrite{
+        private final NCPFFile ncpf;
+        private final File file;
+        private final FormatWriter writer;
+        private PendingWrite(NCPFFile ncpf, File file, FormatWriter writer){
+            this.ncpf = ncpf;
+            this.file = file;
+            this.writer = writer;
+        }
+        private void write(){
+            FileWriter.write(ncpf, file, writer);
+        }
     }
 }

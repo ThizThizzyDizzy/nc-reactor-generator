@@ -1,5 +1,4 @@
 package planner.tool;
-import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
 import simplelibrary.opengl.Renderer2D;
@@ -14,17 +13,14 @@ public class SelectionTool extends EditorTool{
     @Override
     public void render(double x, double y, double width, double height){
         Core.applyColor(Core.theme.getTextColor());
-        GL11.glPushMatrix();
-        GL11.glTranslated(x, y, 0);
-        Renderer2D.drawRect(width/10, height/10, width/3, height/6, 0);
-        Renderer2D.drawRect(width/10, height/10, width/6, height/3, 0);
-        Renderer2D.drawRect(width-width/10, height/10, width-width/3, height/6, 0);
-        Renderer2D.drawRect(width-width/10, height/10, width-width/6, height/3, 0);
-        Renderer2D.drawRect(width/10, height-height/10, width/3, height-height/6, 0);
-        Renderer2D.drawRect(width/10, height-height/10, width/6, height-height/3, 0);
-        Renderer2D.drawRect(width-width/10, height-height/10, width-width/3, height-height/6, 0);
-        Renderer2D.drawRect(width-width/10, height-height/10, width-width/6, height-height/3, 0);
-        GL11.glPopMatrix();
+        Renderer2D.drawRect(x+width/10, y+height/10, x+width/3, y+height/6, 0);
+        Renderer2D.drawRect(x+width/10, y+height/10, x+width/6, y+height/3, 0);
+        Renderer2D.drawRect(x+width-width/10, y+height/10, x+width-width/3, y+height/6, 0);
+        Renderer2D.drawRect(x+width-width/10, y+height/10, x+width-width/6, y+height/3, 0);
+        Renderer2D.drawRect(x+width/10, y+height-height/10, x+width/3, y+height-height/6, 0);
+        Renderer2D.drawRect(x+width/10, y+height-height/10, x+width/6, y+height-height/3, 0);
+        Renderer2D.drawRect(x+width-width/10, y+height-height/10, x+width-width/3, y+height-height/6, 0);
+        Renderer2D.drawRect(x+width-width/10, y+height-height/10, x+width-width/6, y+height-height/3, 0);
     }
     @Override
     public void drawGhosts(int layer, double x, double y, double width, double height, int w, int texture){
@@ -68,7 +64,7 @@ public class SelectionTool extends EditorTool{
     @Override
     public void mousePressed(int x, int y, int z, int button){
         if(!Core.isControlPressed()){
-            editor.selection.clear();
+            editor.clearSelection();
         }
         if(Core.isShiftPressed()){
             if(button==0)editor.selectGroup(x,y,z);

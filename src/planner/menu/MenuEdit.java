@@ -1,12 +1,10 @@
 package planner.menu;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.component.MenuComponentCoolantRecipe;
 import planner.menu.component.MenuComponentEditorListBlock;
@@ -24,18 +22,24 @@ import planner.menu.component.MenuComponentUnderFuel;
 import planner.tool.EditorTool;
 import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.action.ClearSelectionAction;
+import multiblock.action.CopyAction;
+import multiblock.action.DeselectAction;
+import multiblock.action.MoveAction;
+import multiblock.action.SelectAction;
 import multiblock.action.SetCoolantRecipeAction;
 import multiblock.action.SetFuelAction;
+import multiblock.action.SetSelectionAction;
 import multiblock.action.SetblockAction;
 import multiblock.action.SetblocksAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.tool.LineTool;
+import planner.tool.MoveTool;
 import planner.tool.PencilTool;
 import planner.tool.RectangleTool;
 import planner.tool.SelectionTool;
-import simplelibrary.game.Framebuffer;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
@@ -43,6 +47,7 @@ import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuEdit extends Menu{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     {
+        editorTools.add(new MoveTool(this));
         editorTools.add(new SelectionTool(this));
         editorTools.add(new PencilTool(this));
         editorTools.add(new LineTool(this));
@@ -143,7 +148,7 @@ public class MenuEdit extends Menu{
         for(EditorTool tool : editorTools){
             tools.add(new MenuComponentEditorTool(tool));
         }
-        tools.setSelectedIndex(1);
+        tools.setSelectedIndex(2);
     }
     @Override
     public void onGUIOpened(){
@@ -171,52 +176,25 @@ public class MenuEdit extends Menu{
     public void render(int millisSinceLastTick){
         if(delCircle&&sourceCircle!=-1){
             ImageStash.instance.deleteTexture(sourceCircle);
+            ImageStash.instance.deleteTexture(outlineSquare);
             sourceCircle = -1;
+            outlineSquare = -1;
+            delCircle = false;
         }
         if(sourceCircle==-1){
-            BufferedImage image = makeImage(CELL_SIZE, (buff) -> {
+            BufferedImage image = Core.makeImage(CELL_SIZE, CELL_SIZE, (buff) -> {
                 Core.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d), Color.white);
-            }, (img) -> {
-                for(int x = 0; x<img.getWidth(); x++){
-                    for(int y = 0; y<img.getHeight(); y++){
-                        double xOff = x-img.getWidth()/2;
-                        double yOff = y-img.getHeight()/2;
-                        double dist = Math.sqrt(xOff*xOff+yOff*yOff);
-                        if(dist>4/16d*img.getWidth()&&dist<6/16d*img.getWidth()){
-                            img.setRGB(x, y, new Color(1f, 1f, 1f).getRGB());
-                        }else{
-                            img.setRGB(x, y, new Color(0, 0, 0, 0).getRGB());
-                        }
-                    }
-                }
             });
             sourceCircle = ImageStash.instance.allocateAndSetupTexture(image);
         }
         if(outlineSquare==-1){
-            BufferedImage image = makeImage(32, (buff) -> {
+            BufferedImage image = Core.makeImage(32, 32, (buff) -> {
                 Core.applyWhite();
                 double inset = buff.width/32d;
                 drawRect(inset, inset, buff.width-inset, inset+buff.width/16, 0);
                 drawRect(inset, buff.width-inset-buff.width/16, buff.width-inset, buff.width-inset, 0);
                 drawRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16, 0);
                 drawRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16, 0);
-            }, (img) -> {
-                int size = img.getWidth();
-                double inset = size/32;
-                for(int x = 0; x<img.getWidth(); x++){
-                    for(int y = 0; y<img.getHeight(); y++){
-                        double X = x/(double)img.getWidth();
-                        double Y = y/(double)img.getHeight();
-                        boolean isWhite = true;
-                        if(X<1/32d||Y<1/32d||X>31/32d||Y>31/32d)isWhite = false;
-                        if(X>3/32d&&Y>3/32d&&X<29/32d&&Y<29/32d)isWhite = false;
-                        if(isWhite){
-                            img.setRGB(x, y, new Color(1f, 1f, 1f).getRGB());
-                        }else{
-                            img.setRGB(x, y, new Color(0, 0, 0, 0).getRGB());
-                        }
-                    }
-                }
             });
             outlineSquare = ImageStash.instance.allocateAndSetupTexture(image);
         }
@@ -355,13 +333,31 @@ public class MenuEdit extends Menu{
     @Override
     public void keyboardEvent(char character, int key, boolean pressed, boolean repeat){
         super.keyboardEvent(character, key, pressed, repeat);
-        if(pressed&&key==Keyboard.KEY_ESCAPE)selection.clear();
-        if(pressed&&Core.isControlPressed()){
-            if(key==Keyboard.KEY_Z){
-                multiblock.undo();
-            }
-            if(key==Keyboard.KEY_Y){
-                multiblock.redo();
+        if(pressed){
+            if(key==Keyboard.KEY_ESCAPE)clearSelection();
+            if(key==Keyboard.KEY_M)tools.setSelectedIndex(0);
+            if(key==Keyboard.KEY_S)tools.setSelectedIndex(1);
+            if(key==Keyboard.KEY_P)tools.setSelectedIndex(2);
+            if(key==Keyboard.KEY_L)tools.setSelectedIndex(3);
+            if(key==Keyboard.KEY_O)tools.setSelectedIndex(4);
+            if(Core.isControlPressed()){
+                if(key==Keyboard.KEY_A){
+                    ArrayList<int[]> sel = new ArrayList<>();
+                    for(int x = 0; x<multiblock.getX(); x++){
+                        for(int y = 0; y<multiblock.getY(); y++){
+                            for(int z = 0; z<multiblock.getZ(); z++){
+                                sel.add(new int[]{x,y,z});
+                            }
+                        }
+                    }
+                    setSelection(sel);
+                }
+                if(key==Keyboard.KEY_Z){
+                    multiblock.undo();
+                }
+                if(key==Keyboard.KEY_Y){
+                    multiblock.redo();
+                }
             }
         }
     }
@@ -406,17 +402,15 @@ public class MenuEdit extends Menu{
         return b.hasRules()&&b.calculateRules(multiblock);
     }
     public void select(int x1, int y1, int z1, int x2, int y2, int z2){
-        if(!Core.isControlPressed()){
-            selection.clear();
-            if(x1==x2&&y1==y2&&z1==z2)return;
+        if(!Core.isControlPressed()&&x1==x2&&y1==y2&&z1==z2){
+            clearSelection();
+            return;
         }
         ArrayList<int[]> is = new ArrayList<>();
         for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
             for(int y = Math.min(y1,y2); y<=Math.max(y1,y2); y++){
                 for(int z = Math.min(z1,z2); z<=Math.max(z1,z2); z++){
                     is.add(new int[]{x,y,z});
-                    if(isSelected(x, y, z))continue;
-                    selection.add(new int[]{x,y,z});
                 }
             }
         }
@@ -434,25 +428,21 @@ public class MenuEdit extends Menu{
         deselect(is);
     }
     public void select(ArrayList<int[]> is){
-        if(!Core.isControlPressed()){
-            selection.clear();
+        if(Core.isControlPressed()){
+            multiblock.action(new SelectAction(this, is));
+        }else{
+            multiblock.action(new SetSelectionAction(this, is));
         }
-        for(int[] i : is){
-            if(isSelected(i[0], i[1], i[2]))continue;
-            selection.add(i);
-        }
+    }
+    public void setSelection(ArrayList<int[]> is){
+        multiblock.action(new SetSelectionAction(this, is));
     }
     public void deselect(ArrayList<int[]> is){
         if(!Core.isControlPressed()){
-            selection.clear();
+            clearSelection();
             return;
         }
-        for(int[] i : is){
-            for(Iterator<int[]> it = selection.iterator(); it.hasNext();){
-                int[] s = it.next();
-                if(s[0]==i[0]&&s[1]==i[1]&&s[2]==i[2])it.remove();
-            }
-        }
+        multiblock.action(new DeselectAction(this, is));
     }
     public boolean isSelected(int x, int y, int z){
         for(int[] s : selection){
@@ -531,43 +521,24 @@ public class MenuEdit extends Menu{
         }
         deselect(is);
     }
-    private final int MAX_SIZE = (int) (maxScale*16);
-    private ByteBuffer bufferer = ImageStash.createDirectByteBuffer(MAX_SIZE*MAX_SIZE*4);
-    private final boolean basejava = true;
-    private BufferedImage makeImage(BufferRenderer r, ImageRenderer r2){
-        return makeImage(MAX_SIZE, r, r2);
+    public void moveSelection(int x, int y, int z){
+        multiblock.action(new MoveAction(this, selection, x, y, z));
     }
-    private BufferedImage makeImage(int size, BufferRenderer r, ImageRenderer r2){
-        if(basejava){
-            BufferedImage img2 = new BufferedImage(size, size, BufferedImage.TYPE_4BYTE_ABGR);
-            r2.render(img2);
-            return img2;
+    public void copySelection(int x, int y, int z){
+        multiblock.action(new CopyAction(this, selection, x, y, z));
+    }
+    public void clearSelection(){
+        multiblock.action(new ClearSelectionAction(this));
+    }
+    public void addSelection(ArrayList<int[]> sel){
+        for(int[] is : selection){
+            for(Iterator<int[]> it = sel.iterator(); it.hasNext();){
+                int[] i = it.next();
+                if(i[0]==is[0]&&i[1]==is[1]&&i[2]==is[2]){
+                    it.remove();
+                }
+            }
         }
-        Framebuffer buff = new Framebuffer(Core.helper, "Randobuffer", size, size);
-        buff.bindRenderTarget2D();
-        r.render(buff);
-        buff.releaseRenderTarget();
-        buff.bindTexture();
-        bufferer.clear();
-        GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bufferer);
-//        GL11.glReadPixels(0, 0, MAX_SIZE, MAX_SIZE, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bufferer);
-//        buff.releaseRenderTarget();
-        ImageStash.instance.deleteBuffer(ImageStash.instance.getBuffer(buff.name));
-        int[] imgRGBData = new int[size*size];
-        byte[] imgData = new byte[size*size*4];
-        bufferer.position(0);
-        bufferer.get(imgData);
-        for(int i=0;i<imgRGBData.length;i++){
-            imgRGBData[i]=((0|imgData[i*4])<<16)+((0|imgData[i*4+1])<<8)+((0|imgData[i*4+2]))+((0|imgData[i*4+2])<<24);//Use RED, GREEN, or BLUE channel (here BLUE) for alpha data
-        }
-        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_4BYTE_ABGR);
-        img.setRGB(0, 0, size, size, imgRGBData, 0, size);
-        return img;
-    }
-    private static interface BufferRenderer{
-        void render(Framebuffer buff);
-    }
-    private static interface ImageRenderer{
-        void render(BufferedImage buff);
+        selection.addAll(sel);
     }
 }

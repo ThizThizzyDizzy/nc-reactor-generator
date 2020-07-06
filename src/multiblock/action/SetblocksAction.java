@@ -4,7 +4,7 @@ import java.util.HashMap;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
-public class SetblocksAction extends Action{
+public class SetblocksAction extends Action<Multiblock>{
     public final ArrayList<int[]> locations = new ArrayList<>();
     public final Block block;
     private final HashMap<int[], Block> was = new HashMap<>();
@@ -28,7 +28,7 @@ public class SetblocksAction extends Action{
         locations.add(new int[]{x,y,z});
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList blocks){
+    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
         for(int[] loc : locations){
             blocks.add(multiblock.getBlock(loc[0], loc[1], loc[2]));
         }

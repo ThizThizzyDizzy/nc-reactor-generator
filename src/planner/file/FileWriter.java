@@ -6,14 +6,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import org.lwjgl.opengl.GL11;
+import planner.Core;
 import simplelibrary.config2.Config;
+import simplelibrary.font.FontManager;
+import simplelibrary.opengl.Renderer2D;
 public class FileWriter{
     public static final ArrayList<FormatWriter> formats = new ArrayList<>();
     static{
-        formats.add(new FormatWriter() {
+        formats.add(new FormatWriter(){
             @Override
             public String getName(){
                 return "Hellrage format";
@@ -224,7 +232,95 @@ public class FileWriter{
                 }
             }
         });
-        formats.add(new FormatWriter() {
+        formats.add(new FormatWriter(){
+            private final int textHeight = 20;
+            private final int borderSize = 16;
+            @Override
+            public String getName(){
+                return "PNG Image";
+            }
+            @Override
+            public String[] getExtensions(){
+                return new String[]{"png"};
+            }
+            @Override
+            public void write(NCPFFile ncpf, OutputStream stream){
+                if(!ncpf.multiblocks.isEmpty()){
+                    if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by Hellrage JSON!");
+                    final Multiblock<Block> multi = ncpf.multiblocks.get(0);
+                    multi.recalculate();
+                    int blSiz = 32;
+                    for(Block b : multi.getBlocks()){
+                        blSiz = Math.max(b.getTexture().getWidth(), blSiz);
+                    }
+                    int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image
+                    final int blockSize = blSiz;
+                    String s = multi.getSaveTooltip();
+                    String[] strs = s.split("\n");
+                    int totalTextHeight = textHeight*strs.length;
+                    double textWidth = 0;
+                    for(int i = 0; i<strs.length; i++){
+                        String str = strs[i];
+                        textWidth = Math.max(textWidth, FontManager.getLengthForStringWithHeight(str, textHeight));
+                    }
+                    final double tW = textWidth+borderSize;
+                    int width = (int) Math.max(textWidth+totalTextHeight,multi.getX()*blockSize+borderSize);
+                    int multisPerRow = Math.max(1, (int)(width/(multi.getX()*blockSize+borderSize)));
+                    int rowCount = (multi.getY()+multisPerRow-1)/multisPerRow;
+                    int height = totalTextHeight+rowCount*(multi.getZ()*blockSize+borderSize)+borderSize/2;
+                    while(rowCount>1&&height>width){
+                        width++;
+                        multisPerRow = Math.max(1, (int)(width/(multi.getX()*blockSize+borderSize)));
+                        rowCount = (multi.getY()+multisPerRow-1)/multisPerRow;
+                        height = totalTextHeight+rowCount*(multi.getZ()*blockSize+borderSize);
+                    }
+                    int mpr = multisPerRow;
+                    try{
+                        ImageIO.write(Core.makeImage(width, height, (buff) -> {
+                            Core.applyColor(Core.theme.getEditorListBorderColor());
+                            Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
+                            Core.applyColor(Core.theme.getTextColor());
+                            for(int i = 0; i<strs.length; i++){
+                                String str = strs[i];
+                                Renderer2D.drawText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str);
+                            }
+                            Core.applyWhite();
+//                            GL11.glEnable(GL11.GL_CULL_FACE);
+                            GL11.glPushMatrix();
+                            GL11.glTranslated(buff.width-totalTextHeight/2, totalTextHeight/2, -1);
+                            GL11.glScaled(1, 1, 0.0001);
+                            GL11.glRotated(45, 1, 0, 0);
+                            GL11.glRotated(45, 0, 1, 0);
+                            double size = Math.max(multi.getX(), Math.max(multi.getY(), multi.getZ()));
+                            GL11.glScaled(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2);
+                            GL11.glScaled(1/size, 1/size, 1/size);
+                            GL11.glTranslated(-multi.getX()/2d, -multi.getY()/2d, -multi.getZ()/2d);
+                            multi.draw3DInOrder();
+                            GL11.glPopMatrix();
+//                            GL11.glDisable(GL11.GL_CULL_FACE);
+                            for(int y = 0; y<multi.getY(); y++){
+                                int column = y%mpr;
+                                int row = y/mpr;
+                                int layerWidth = multi.getX()*blockSize+borderSize;
+                                int layerHeight = multi.getZ()*blockSize+borderSize;
+                                for(int x = 0; x<multi.getX(); x++){
+                                    for(int z = 0; z<multi.getZ(); z++){
+                                        Block b = multi.getBlock(x, y, z);
+                                        if(b!=null)Renderer2D.drawRect(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+(x+1)*blockSize, row*layerHeight+borderSize+(z+1)*blockSize+totalTextHeight, Core.getTexture(b.getTexture()));
+                                    }
+                                }
+                            }
+                        }), "png", stream);
+                        stream.close();
+                    }catch(IOException ex){
+                        throw new RuntimeException(ex);
+                    }
+                }else{
+                    throw new IllegalArgumentException("Cannot export configuration to image!");
+                }
+            }
+        });
+        formats.add(new FormatWriter(){
             @Override
             public String getName(){
                 return "NuclearCraft Planner Format";

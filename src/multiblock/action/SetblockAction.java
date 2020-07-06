@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
-public class SetblockAction extends Action{
+public class SetblockAction extends Action<Multiblock>{
     private final int x;
     private final int y;
     private final int z;
@@ -25,7 +25,7 @@ public class SetblockAction extends Action{
         multiblock.blocks[x][y][z] = was;
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList blocks){
+    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
         blocks.add(multiblock.getBlock(x, y, z));
     }
 }

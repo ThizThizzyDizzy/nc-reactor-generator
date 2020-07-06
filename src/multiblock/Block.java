@@ -79,6 +79,7 @@ public abstract class Block extends MultiblockBit{
         copyProperties(b);
         return b;
     }
+    public abstract boolean isCasing();
     public abstract boolean hasRules();
     public abstract boolean calculateRules(Multiblock multiblock);
     public abstract boolean matches(Block template);
