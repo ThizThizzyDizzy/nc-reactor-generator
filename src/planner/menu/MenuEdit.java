@@ -139,7 +139,7 @@ public class MenuEdit extends Menu{
             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
         });
         generate.addActionListener((e) -> {
-//            generate();
+            gui.open(new MenuGenerator(gui, this, multiblock));
         });
         for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
             parts.add(new MenuComponentEditorListBlock(this, availableBlock));

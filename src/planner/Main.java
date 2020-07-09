@@ -157,40 +157,51 @@ public class Main{
                 extractFile(bit64, nativesDir);
             }
             File simplibVersions = forceDownloadFile("https://www.dropbox.com/s/as5y1ik7gb8gp6k/versions.dat?dl=1", new File("simplib.versions"));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(simplibVersions)));
-            ArrayList<String> versions = new ArrayList<>();
-            HashMap<String, String> simplib = new HashMap<>();
-            String line;
-            while((line = reader.readLine())!=null){
-                if(line.isEmpty())continue;
-                versions.add(line.split("=", 2)[0]);
-                simplib.put(line.split("=", 2)[0], line.split("=", 2)[1]);
-            }
-            reader.close();
-            if(!versions.contains(requiredSimpleLibraryVersion)){
-                System.err.println("Unknown simplelibrary version "+requiredSimpleLibraryVersion+"! Downloading latest version");
-                requiredSimpleLibraryVersion = versions.get(versions.size()-1);
-            }
-            addRequiredLibrary(simplib.get(requiredSimpleLibraryVersion), "Simplelibrary "+requiredSimpleLibraryVersion+".jar", simplelibrarySize);
-            if(requiredSimpleLibraryExtendedVersion!=null){
-                File simpLibExtendedVersions = forceDownloadFile("https://www.dropbox.com/s/7k4ri81to8hc9n2/versions.dat?dl=1", new File("simplibextended.versions"));
-                reader = new BufferedReader(new InputStreamReader(new FileInputStream(simpLibExtendedVersions)));
-                versions = new ArrayList<>();
-                HashMap<String, String> simpLibExtended = new HashMap<>();
+            if(simplibVersions==null){
+                System.err.println("Failed to download Simplelibrary versions file! Skipping...");
+                addRequiredLibrary(null, "Simplelibrary "+requiredSimpleLibraryVersion+".jar", simplelibrarySize);
+            }else{
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(simplibVersions)));
+                ArrayList<String> versions = new ArrayList<>();
+                HashMap<String, String> simplib = new HashMap<>();
+                String line;
                 while((line = reader.readLine())!=null){
                     if(line.isEmpty())continue;
                     versions.add(line.split("=", 2)[0]);
-                    simpLibExtended.put(line.split("=", 2)[0], line.split("=", 2)[1]);
+                    simplib.put(line.split("=", 2)[0], line.split("=", 2)[1]);
                 }
                 reader.close();
-                if(!versions.contains(requiredSimpleLibraryExtendedVersion)){
-                    System.err.println("Unknown Simplelibrary_extended version "+requiredSimpleLibraryExtendedVersion+"! Downloading latest version");
-                    requiredSimpleLibraryExtendedVersion = versions.get(versions.size()-1);
+                if(!versions.contains(requiredSimpleLibraryVersion)){
+                    System.err.println("Unknown simplelibrary version "+requiredSimpleLibraryVersion+"! Downloading latest version");
+                    requiredSimpleLibraryVersion = versions.get(versions.size()-1);
                 }
-                addRequiredLibrary(simpLibExtended.get(requiredSimpleLibraryExtendedVersion), "Simplelibrary_extended "+requiredSimpleLibraryExtendedVersion+".jar", simplelibraryExtendedSize);
-                simpLibExtendedVersions.delete();
+                addRequiredLibrary(simplib.get(requiredSimpleLibraryVersion), "Simplelibrary "+requiredSimpleLibraryVersion+".jar", simplelibrarySize);
+                simplibVersions.delete();
             }
-            simplibVersions.delete();
+            if(requiredSimpleLibraryExtendedVersion!=null){
+                File simpLibExtendedVersions = forceDownloadFile("https://www.dropbox.com/s/7k4ri81to8hc9n2/versions.dat?dl=1", new File("simplibextended.versions"));
+                if(simpLibExtendedVersions==null){
+                    System.err.println("Failed to download Simplelibrary Extended versions file! Skipping...");
+                    addRequiredLibrary(null, "Simplelibrary_extended "+requiredSimpleLibraryExtendedVersion+".jar", simplelibraryExtendedSize);
+                }else{
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(simpLibExtendedVersions)));
+                    ArrayList<String> versions = new ArrayList<>();
+                    HashMap<String, String> simpLibExtended = new HashMap<>();
+                    String line;
+                    while((line = reader.readLine())!=null){
+                        if(line.isEmpty())continue;
+                        versions.add(line.split("=", 2)[0]);
+                        simpLibExtended.put(line.split("=", 2)[0], line.split("=", 2)[1]);
+                    }
+                    reader.close();
+                    if(!versions.contains(requiredSimpleLibraryExtendedVersion)){
+                        System.err.println("Unknown Simplelibrary_extended version "+requiredSimpleLibraryExtendedVersion+"! Downloading latest version");
+                        requiredSimpleLibraryExtendedVersion = versions.get(versions.size()-1);
+                    }
+                    addRequiredLibrary(simpLibExtended.get(requiredSimpleLibraryExtendedVersion), "Simplelibrary_extended "+requiredSimpleLibraryExtendedVersion+".jar", simplelibraryExtendedSize);
+                    simpLibExtendedVersions.delete();
+                }
+            }
             File[] requiredLibs = new File[requiredLibraries.size()];
             int n = 0;
             for(String[] lib : requiredLibraries.keySet()){
