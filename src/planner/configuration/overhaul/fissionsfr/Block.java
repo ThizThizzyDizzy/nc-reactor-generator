@@ -37,7 +37,7 @@ public class Block extends RuleContainer{
         block.setTexture(Core.getImage(texture));
         return block;
     }
-    public static Block shield(String name, String texture, int heatPerFlux, float efficiency){
+    public static Block shield(String name, String texture, String closedTexture, int heatPerFlux, float efficiency){
         Block block = new Block(name);
         block.shield = true;
         block.moderator = true;
@@ -47,6 +47,7 @@ public class Block extends RuleContainer{
         block.heatMult = heatPerFlux;
         block.efficiency = efficiency;
         block.setTexture(Core.getImage(texture));
+        block.setClosedTexture(Core.getImage(closedTexture));
         return block;
     }
     public static Block cell(String name, String texture){
@@ -93,6 +94,8 @@ public class Block extends RuleContainer{
     public boolean functional;
     public BufferedImage texture;
     public BufferedImage displayTexture;
+    public BufferedImage closedTexture;
+    public BufferedImage closedDisplayTexture;
     public Block(String name){
         this.name = name;
     }
@@ -132,6 +135,16 @@ public class Block extends RuleContainer{
             }
             config.set("texture", tex);
         }
+        if(closedTexture!=null&&!partial){
+            ConfigNumberList tex = new ConfigNumberList();
+            tex.add(closedTexture.getWidth());
+            for(int x = 0; x<closedTexture.getWidth(); x++){
+                for(int y = 0; y<closedTexture.getHeight(); y++){
+                    tex.add(closedTexture.getRGB(x, y));
+                }
+            }
+            config.set("closedTexture", tex);
+        }
         return config;
     }
     public void setTexture(BufferedImage image){
@@ -144,6 +157,17 @@ public class Block extends RuleContainer{
             }
         }
         displayTexture = displayImg;
+    }
+    public void setClosedTexture(BufferedImage image){
+        closedTexture = image;
+        BufferedImage displayImg = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        for(int x = 0; x<image.getWidth(); x++){
+            for(int y = 0; y<image.getHeight(); y++){
+                Color col = new Color(image.getRGB(x, y));
+                displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
+            }
+        }
+        closedDisplayTexture = displayImg;
     }
     @Override
     public String toString(){

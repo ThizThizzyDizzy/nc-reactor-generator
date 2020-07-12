@@ -25,6 +25,7 @@ public class Block extends multiblock.Block{
     public boolean shieldActive;
     public float efficiency;
     public boolean inCluster;
+    public boolean closed = false;
     public Block(int x, int y, int z, planner.configuration.overhaul.fissionsfr.Block template){
         super(x, y, z);
         this.template = template;
@@ -40,11 +41,11 @@ public class Block extends multiblock.Block{
     }
     @Override
     public BufferedImage getBaseTexture(){
-        return template.texture;
+        return closed?template.closedTexture:template.texture;
     }
     @Override
     public BufferedImage getTexture(){
-        return template.displayTexture;
+        return closed?template.closedDisplayTexture:template.displayTexture;
     }
     @Override
     public String getName(){

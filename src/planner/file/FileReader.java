@@ -652,6 +652,20 @@ public class FileReader{
                                     }
                                     block.setTexture(image);
                                 }
+                                if(blockCfg.hasProperty("closedTexture")){
+                                    ConfigNumberList closedTexture = blockCfg.get("closedTexture");
+                                    int size = (int) closedTexture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)closedTexture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setClosedTexture(image);
+                                }
                                 if(blockCfg.hasProperty("rules")){
                                     ConfigList rules = blockCfg.get("rules");
                                     for(Iterator rit = rules.iterator(); rit.hasNext();){
@@ -739,6 +753,20 @@ public class FileReader{
                                         }
                                     }
                                     block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("closedTexture")){
+                                    ConfigNumberList closedTexture = blockCfg.get("closedTexture");
+                                    int size = (int) closedTexture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)closedTexture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setClosedTexture(image);
                                 }
                                 if(blockCfg.hasProperty("rules")){
                                     ConfigList rules = blockCfg.get("rules");
@@ -1565,7 +1593,7 @@ public class FileReader{
                     ncpf.configuration.overhaul.fissionSFR.blocks.add(planner.configuration.overhaul.fissionsfr.Block.reflector("Lead-Steel Reflector", "overhaul/lead-steel", (float) refEff[1], (float) refRef[1]));
                     double[] shieldHeat = getDoubles("fission_shield_heat_per_flux");
                     double[] shieldEff = getDoubles("fission_shield_efficiency");
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(planner.configuration.overhaul.fissionsfr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", (int) shieldHeat[0], (float) shieldEff[0]));
+                    ncpf.configuration.overhaul.fissionSFR.blocks.add(planner.configuration.overhaul.fissionsfr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat[0], (float) shieldEff[0]));
                     double[] irrHeat = getDoubles("fission_irradiator_heat_per_flux");
                     double[] irrEff = getDoubles("fission_irradiator_efficiency");
                     ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionsfr.IrradiatorRecipe("Thorium to Protactinium-Enriched Thorium", (float)irrEff[0], (float)irrHeat[0]));
@@ -1701,7 +1729,7 @@ public class FileReader{
                     ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.moderator("Heavy Water Moderator", "overhaul/heavy water", fluxFac[2], (float) modEff[2]));
                     ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.reflector("Beryllium-Carbon Reflector", "overhaul/beryllium-carbon", (float) refEff[0], (float) refRef[0]));
                     ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.reflector("Lead-Steel Reflector", "overhaul/lead-steel", (float) refEff[1], (float) refRef[1]));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", (int) shieldHeat[0], (float) shieldEff[0]));
+                    ncpf.configuration.overhaul.fissionMSR.blocks.add(planner.configuration.overhaul.fissionmsr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat[0], (float) shieldEff[0]));
                     ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe("Thorium to Protactinium-Enriched Thorium", (float)irrEff[0], (float)irrHeat[0]));
                     ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe("Protactinium-Enriched Thorium to Protactinium-233", (float)irrEff[1], (float)irrHeat[1]));
                     ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new planner.configuration.overhaul.fissionmsr.IrradiatorRecipe("Bismuth Dust to Polonium Dust", (float)irrEff[2], (float)irrHeat[2]));
