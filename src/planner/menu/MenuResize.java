@@ -1,4 +1,5 @@
 package planner.menu;
+import java.awt.Color;
 import java.util.ArrayList;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -27,63 +28,71 @@ public class MenuResize extends Menu{
     @Override
     public void onGUIOpened(){
         multibwauk.components.clear();
-        MenuComponentMinimalistButton layerTop = multibwauk.add(new MenuComponentMinimalistButton(0, 0, CELL_SIZE*(multiblock.getX()+4), CELL_SIZE, "+", multiblock.getY()<multiblock.getMaxSize(), true));
         for(int y = 0; y<multiblock.getY(); y++){
             final int layer = y;
-            MenuComponentMinimalistButton del = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE*2+y*(multiblock.getZ()+4)*CELL_SIZE, CELL_SIZE*2, CELL_SIZE*2, "-", multiblock.getY()>multiblock.getMinSize(), true){
+            MenuComponentMinimalistButton insertLayer = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE/2+y*(multiblock.getZ()+5)*CELL_SIZE, CELL_SIZE*(multiblock.getX()+4), CELL_SIZE, "+", multiblock.getY()<multiblock.getMaxSize(), true));
+            MenuComponentMinimalistButton del = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE*2+y*(multiblock.getZ()+5)*CELL_SIZE, CELL_SIZE*2, CELL_SIZE*2, "-", multiblock.getY()>multiblock.getMinSize(), true){
                 @Override
                 public void render(){
                     super.render();
                     if(enabled&&isMouseOver){
-                        addRect(1, 0, 0, .25, x+width, y+height, x+width+CELL_SIZE*multiblock.getX(), (layer+1)*(multiblock.getZ()+4)*CELL_SIZE);
+                        addRect(1, 0, 0, .25, x+width, y+height, x+width+CELL_SIZE*multiblock.getX(), (layer+1)*(multiblock.getZ()+5)*CELL_SIZE);
                     }
                 }
             });
-            MenuComponentMinimalistButton top = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE*2, CELL_SIZE*2+y*(multiblock.getZ()+4)*CELL_SIZE, CELL_SIZE*multiblock.getX(), CELL_SIZE, "+", multiblock.getZ()<multiblock.getMaxSize(), true){
+            MenuComponentMinimalistButton top = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE*2, CELL_SIZE*2+y*(multiblock.getZ()+5)*CELL_SIZE, CELL_SIZE*multiblock.getX(), CELL_SIZE, "+", multiblock.getZ()<multiblock.getMaxSize(), true){
                 @Override
                 public void render(){
                     super.render();
                     if(enabled&&isMouseOver){
                         for(int Y = 0; Y<multiblock.getY(); Y++){
-                            addRect(0, 1, 0, .25, CELL_SIZE*2, CELL_SIZE*2+Y*(multiblock.getZ()+4)*CELL_SIZE+CELL_SIZE, CELL_SIZE*2+CELL_SIZE*multiblock.getX(), CELL_SIZE*4+Y*(multiblock.getZ()+4)*CELL_SIZE);
+                            addRect(0, 1, 0, .25, CELL_SIZE*2, CELL_SIZE*2+Y*(multiblock.getZ()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE*2+CELL_SIZE*multiblock.getX(), CELL_SIZE*4+Y*(multiblock.getZ()+5)*CELL_SIZE);
                         }
                     }
                 }
             });//add top
-            MenuComponentMinimalistButton bottom = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE*2, (y+1)*(multiblock.getZ()+4)*CELL_SIZE, CELL_SIZE*multiblock.getX(), CELL_SIZE, "+", multiblock.getZ()<multiblock.getMaxSize(), true){
+            MenuComponentMinimalistButton bottom = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE*2, (y+1)*(multiblock.getZ()+5)*CELL_SIZE-CELL_SIZE, CELL_SIZE*multiblock.getX(), CELL_SIZE, "+", multiblock.getZ()<multiblock.getMaxSize(), true){
                 @Override
                 public void render(){
                     super.render();
                     if(enabled&&isMouseOver){
                         for(int Y = 0; Y<multiblock.getY(); Y++){
-                            addRect(0, 1, 0, .25, CELL_SIZE*2, (Y+1)*(multiblock.getZ()+4)*CELL_SIZE, CELL_SIZE*2+CELL_SIZE*multiblock.getX(), (Y+1)*(multiblock.getZ()+4)*CELL_SIZE+CELL_SIZE);
+                            addRect(0, 1, 0, .25, CELL_SIZE*2, (Y+1)*(multiblock.getZ()+5)*CELL_SIZE-CELL_SIZE, CELL_SIZE*2+CELL_SIZE*multiblock.getX(), (Y+1)*(multiblock.getZ()+5)*CELL_SIZE);
                         }
                     }
                 }
             });//add bottom
-            MenuComponentMinimalistButton left = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE*3+y*(multiblock.getZ()+4)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getZ(), "+", multiblock.getX()<multiblock.getMaxSize(), true){
+            MenuComponentMinimalistButton left = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE*3+y*(multiblock.getZ()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getZ(), "+", multiblock.getX()<multiblock.getMaxSize(), true){
                 @Override
                 public void render(){
                     super.render();
                     if(enabled&&isMouseOver){
                         for(int Y = 0; Y<multiblock.getY(); Y++){
-                            addRect(0, 1, 0, .25, CELL_SIZE, CELL_SIZE*3+Y*(multiblock.getZ()+4)*CELL_SIZE+CELL_SIZE, CELL_SIZE*2, CELL_SIZE*3+Y*(multiblock.getZ()+4)*CELL_SIZE+CELL_SIZE+CELL_SIZE*multiblock.getZ());
+                            addRect(0, 1, 0, .25, CELL_SIZE, CELL_SIZE*3+Y*(multiblock.getZ()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE*2, CELL_SIZE*3+Y*(multiblock.getZ()+5)*CELL_SIZE+CELL_SIZE+CELL_SIZE*multiblock.getZ());
                         }
                     }
                 }
             });//add left
-            MenuComponentMinimalistButton right = multibwauk.add(new MenuComponentMinimalistButton(multiblock.getX()*CELL_SIZE+CELL_SIZE*2, CELL_SIZE*3+y*(multiblock.getZ()+4)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getZ(), "+", multiblock.getX()<multiblock.getMaxSize(), true){
+            MenuComponentMinimalistButton right = multibwauk.add(new MenuComponentMinimalistButton(multiblock.getX()*CELL_SIZE+CELL_SIZE*2, CELL_SIZE*3+y*(multiblock.getZ()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getZ(), "+", multiblock.getX()<multiblock.getMaxSize(), true){
                 @Override
                 public void render(){
                     super.render();
                     if(enabled&&isMouseOver){
                         for(int Y = 0; Y<multiblock.getY(); Y++){
-                            addRect(0, 1, 0, .25, multiblock.getX()*CELL_SIZE+CELL_SIZE*2, CELL_SIZE*3+Y*(multiblock.getZ()+4)*CELL_SIZE+CELL_SIZE, multiblock.getX()*CELL_SIZE+CELL_SIZE*2+CELL_SIZE, CELL_SIZE*3+Y*(multiblock.getZ()+4)*CELL_SIZE+CELL_SIZE+CELL_SIZE*multiblock.getZ());
+                            addRect(0, 1, 0, .25, multiblock.getX()*CELL_SIZE+CELL_SIZE*2, CELL_SIZE*3+Y*(multiblock.getZ()+5)*CELL_SIZE+CELL_SIZE, multiblock.getX()*CELL_SIZE+CELL_SIZE*2+CELL_SIZE, CELL_SIZE*3+Y*(multiblock.getZ()+5)*CELL_SIZE+CELL_SIZE+CELL_SIZE*multiblock.getZ());
                         }
                     }
                 }
             });//add right
-            del.setForegroundColor(Core.theme.getRed());top.setForegroundColor(Core.theme.getGreen());bottom.setForegroundColor(Core.theme.getGreen());left.setForegroundColor(Core.theme.getGreen());right.setForegroundColor(Core.theme.getGreen());
+            insertLayer.setForegroundColor(Core.theme.getGreen());
+            del.setForegroundColor(Core.theme.getRed());
+            top.setForegroundColor(Core.theme.getGreen());
+            bottom.setForegroundColor(Core.theme.getGreen());
+            left.setForegroundColor(Core.theme.getGreen());
+            right.setForegroundColor(Core.theme.getGreen());
+            insertLayer.addActionListener((e) -> {
+                insertY(layer);
+            });
             del.addActionListener((e) -> {
                 deleteY(layer);
             });
@@ -101,13 +110,13 @@ public class MenuResize extends Menu{
             });
             for(int z = 0; z<multiblock.getZ(); z++){
                 final int row = z;
-                MenuComponentMinimalistButton delRow = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getZ()+4)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, "-", multiblock.getZ()>multiblock.getMinSize(), true){
+                MenuComponentMinimalistButton delRow = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getZ()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, "-", multiblock.getZ()>multiblock.getMinSize(), true){
                     @Override
                     public void render(){
                         super.render();
                         if(enabled&&isMouseOver){
                             for(int Y = 0; Y<multiblock.getY(); Y++){
-                                addRect(1, 0, 0, .25, CELL_SIZE*2, CELL_SIZE*3+(int)((1+row+(Y*(multiblock.getZ()+4)))*CELL_SIZE), CELL_SIZE*2+multiblock.getX()*CELL_SIZE, CELL_SIZE*4+(int)((1+row+(Y*(multiblock.getZ()+4)))*CELL_SIZE));
+                                addRect(1, 0, 0, .25, CELL_SIZE*2, CELL_SIZE*3+(int)((1+row+(Y*(multiblock.getZ()+5)))*CELL_SIZE), CELL_SIZE*2+multiblock.getX()*CELL_SIZE, CELL_SIZE*4+(int)((1+row+(Y*(multiblock.getZ()+5)))*CELL_SIZE));
                             }
                         }
                     }
@@ -119,13 +128,13 @@ public class MenuResize extends Menu{
                 for(int x = 0; x<multiblock.getX(); x++){
                     final int column = x;
                     if(z==0){
-                        MenuComponentMinimalistButton delColumn = multibwauk.add(new MenuComponentMinimalistButton((x+2)*CELL_SIZE, CELL_SIZE*3+y*(multiblock.getZ()+4)*CELL_SIZE, CELL_SIZE, CELL_SIZE, "-", multiblock.getX()>multiblock.getMinSize(), true){
+                        MenuComponentMinimalistButton delColumn = multibwauk.add(new MenuComponentMinimalistButton((x+2)*CELL_SIZE, CELL_SIZE*3+y*(multiblock.getZ()+5)*CELL_SIZE, CELL_SIZE, CELL_SIZE, "-", multiblock.getX()>multiblock.getMinSize(), true){
                             @Override
                             public void render(){
                                 super.render();
                                 if(enabled&&isMouseOver){
                                     for(int Y = 0; Y<multiblock.getY(); Y++){
-                                        addRect(1, 0, 0, .25, (column+2)*CELL_SIZE, CELL_SIZE*4+Y*(multiblock.getZ()+4)*CELL_SIZE, (column+3)*CELL_SIZE, CELL_SIZE*4+Y*(multiblock.getZ()+4)*CELL_SIZE+multiblock.getZ()*CELL_SIZE);
+                                        addRect(1, 0, 0, .25, (column+2)*CELL_SIZE, CELL_SIZE*4+Y*(multiblock.getZ()+5)*CELL_SIZE, (column+3)*CELL_SIZE, CELL_SIZE*4+Y*(multiblock.getZ()+5)*CELL_SIZE+multiblock.getZ()*CELL_SIZE);
                                     }
                                 }
                             }
@@ -135,15 +144,12 @@ public class MenuResize extends Menu{
                             deleteX(column);
                         });
                     }
-                    multibwauk.add(new MenuComponentVisibleBlock((x+2)*CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getZ()+4)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, multiblock, x, y, z));
+                    multibwauk.add(new MenuComponentVisibleBlock((x+2)*CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getZ()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, multiblock, x, y, z));
                 }
             }
         }
-        MenuComponentMinimalistButton layerBottom = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE*2+CELL_SIZE*(multiblock.getY()*(multiblock.getZ()+4)), CELL_SIZE*(multiblock.getX()+4), CELL_SIZE, "+", multiblock.getY()<multiblock.getMaxSize(), true));
-        layerTop.setForegroundColor(Core.theme.getGreen());layerBottom.setForegroundColor(Core.theme.getGreen());
-        layerTop.addActionListener((e) -> {
-            expand(0,-1,0);
-        });
+        MenuComponentMinimalistButton layerBottom = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE+CELL_SIZE*(multiblock.getY()*(multiblock.getZ()+5)), CELL_SIZE*(multiblock.getX()+4), CELL_SIZE, "+", multiblock.getY()<multiblock.getMaxSize(), true));
+        layerBottom.setForegroundColor(Color.GREEN);
         layerBottom.addActionListener((e) -> {
             expand(0,1,0);
         });
@@ -185,6 +191,18 @@ public class MenuResize extends Menu{
     }
     private void deleteZ(int z){
         multiblock.deleteZ(z);
+        onGUIOpened();
+    }
+    private void insertX(int x){
+        multiblock.insertX(x);
+        onGUIOpened();
+    }
+    private void insertY(int y){
+        multiblock.insertY(y);
+        onGUIOpened();
+    }
+    private void insertZ(int z){
+        multiblock.insertZ(z);
         onGUIOpened();
     }
     public static ArrayList<double[]> rects = new ArrayList<>();

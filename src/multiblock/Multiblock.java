@@ -185,6 +185,51 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         history.clear();
         future.clear();
     }
+    public void insertX(int X){
+        if(getX()>=getMaxSize())return;
+        Block[][][] blks = new Block[getX()+1][getY()][getZ()];
+        for(int x = 0; x<blocks.length; x++){
+            for(int y = 0; y<blocks[x].length; y++){
+                for(int z = 0; z<blocks[x][y].length; z++){
+                    blks[(x>=X?1:0)+x][y][z] = blocks[x][y][z];
+                }
+            }
+        }
+        blocks = blks;
+        updateBlockLocations();
+        history.clear();
+        future.clear();
+    }
+    public void insertY(int Y){
+        if(getY()>=getMaxSize())return;
+        Block[][][] blks = new Block[getX()][getY()+1][getZ()];
+        for(int x = 0; x<blocks.length; x++){
+            for(int y = 0; y<blocks[x].length; y++){
+                for(int z = 0; z<blocks[x][y].length; z++){
+                    blks[x][(y>=Y?1:0)+y][z] = blocks[x][y][z];
+                }
+            }
+        }
+        blocks = blks;
+        updateBlockLocations();
+        history.clear();
+        future.clear();
+    }
+    public void insertZ(int Z){
+        if(getZ()>=getMaxSize())return;
+        Block[][][] blks = new Block[getX()][getY()][getZ()+1];
+        for(int x = 0; x<blocks.length; x++){
+            for(int y = 0; y<blocks[x].length; y++){
+                for(int z = 0; z<blocks[x][y].length; z++){
+                    blks[x][y][(z>=Z?1:0)+z] = blocks[x][y][z];
+                }
+            }
+        }
+        blocks = blks;
+        updateBlockLocations();
+        history.clear();
+        future.clear();
+    }
     public void clearData(List<T> blocks){
         for(T t : blocks){
             t.clearData();
