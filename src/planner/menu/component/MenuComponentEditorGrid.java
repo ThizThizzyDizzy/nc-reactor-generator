@@ -3,8 +3,12 @@ import planner.Core;
 import planner.menu.MenuEdit;
 import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.action.MSRAllShieldsAction;
+import multiblock.action.MSRShieldAction;
 import multiblock.action.SFRSourceAction;
 import multiblock.action.MSRSourceAction;
+import multiblock.action.SFRAllShieldsAction;
+import multiblock.action.SFRShieldAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.opengl.Renderer2D;
@@ -175,6 +179,18 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     if(index>=Core.configuration.overhaul.fissionMSR.sources.size())index = 0;
                     if(index<-1)index = Core.configuration.overhaul.fissionMSR.sources.size()-1;
                     multiblock.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.sources.get(index)));
+                }
+            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).template.shield){
+                multiblock.overhaul.fissionsfr.Block b = (multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
+                if(b!=null){
+                    if(Core.isControlPressed())multiblock.action(new SFRAllShieldsAction(!b.closed));
+                    else multiblock.action(new SFRShieldAction(b));
+                }
+            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).template.shield){
+                multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
+                if(b!=null){
+                    if(Core.isControlPressed())multiblock.action(new MSRAllShieldsAction(!b.closed));
+                    else multiblock.action(new MSRShieldAction(b));
                 }
             }else{
                 editor.getSelectedTool().mousePressed(blockX, layer, blockZ, button);

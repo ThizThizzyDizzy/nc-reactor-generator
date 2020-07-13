@@ -98,6 +98,9 @@ public class Block extends multiblock.Block{
                     + "Total heat: "+(neutronFlux*template.heatMult)+"\n"
                     + "Efficiency factor: "+template.efficiency;
         }
+        if(closed){
+            tip+="\nClosed";
+        }
         if(isIrradiator()){
             tip+="\nIrradiator flux: "+neutronFlux+"\n";
             if(recipe!=null){
@@ -156,6 +159,7 @@ public class Block extends multiblock.Block{
         return template.fuelCell;
     }
     public boolean isModerator(){
+        if(closed)return false;
         if(isCasing())return false;
         return template.moderator;
     }
@@ -171,11 +175,12 @@ public class Block extends multiblock.Block{
         return isIrradiator()&&neutronFlux>0;
     }
     public boolean isShield(){
+        if(closed)return false;
         if(isCasing())return false;
         return template.shield;
     }
     public boolean isShieldActive(){
-        return isShield()&&shieldActive;
+        return isShield()&&shieldActive&&moderatorValid;
     }
     public boolean isHeatsink(){
         if(isCasing())return false;

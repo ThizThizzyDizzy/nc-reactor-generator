@@ -335,6 +335,14 @@ public class MenuEdit extends Menu{
         super.keyboardEvent(character, key, pressed, repeat);
         if(pressed){
             if(key==Keyboard.KEY_ESCAPE)clearSelection();
+            if(key==Keyboard.KEY_DELETE){
+                SetblocksAction ac = new SetblocksAction(null);
+                for(int[] i : selection){
+                    ac.add(i[0], i[1], i[2]);
+                }
+                multiblock.action(ac);
+                clearSelection();
+            }
             if(key==Keyboard.KEY_M)tools.setSelectedIndex(0);
             if(key==Keyboard.KEY_S)tools.setSelectedIndex(1);
             if(key==Keyboard.KEY_P)tools.setSelectedIndex(2);
