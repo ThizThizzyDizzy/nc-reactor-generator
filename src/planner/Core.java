@@ -307,14 +307,15 @@ public class Core extends Renderer2D{
         return c;
     }
     public static void setTheme(Theme t){
+        t.onSet();
         theme = t;
         helper.setBackground(theme.getBackgroundColor());
     }
     public static void applyWhite(){
-        applyColor(Color.white);
+        applyColor(theme.getWhite());
     }
     public static void applyWhite(float alpha){
-        applyColor(Color.white, alpha);
+        applyColor(theme.getWhite(), alpha);
     }
     public static void applyColor(Color c){
         GL11.glColor4f(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, c.getAlpha()/255f);

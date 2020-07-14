@@ -7,16 +7,14 @@ public class MenuComponentUnderFuel extends MenuComponent{
     private final Fuel fuel;
     public MenuComponentUnderFuel(Fuel fuel){
         super(0, 0, 0, 0);
-        color = Core.theme.getButtonColor();
-        selectedColor = Core.theme.getSelectedMultiblockColor();
-        foregroundColor = Core.theme.getTextColor();
         this.fuel = fuel;
     }
     @Override
     public void render(){
-        if(isMouseOver&&!isSelected)Core.applyAverageColor(color, selectedColor);
+        if(isMouseOver&&!isSelected)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
+        else Core.applyColor(Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(foregroundColor);
+        Core.applyColor(Core.theme.getTextColor());
         drawText();
     }
     public void drawText(){

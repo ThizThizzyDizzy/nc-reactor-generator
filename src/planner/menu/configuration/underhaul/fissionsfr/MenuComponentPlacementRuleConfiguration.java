@@ -10,7 +10,7 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            Core.applyColor(foregroundColor);
+            Core.applyColor(Core.theme.getTextColor());
             GL11.glBegin(GL11.GL_TRIANGLES);
             GL11.glVertex2d(x+width*.25, y+height*.75);
             GL11.glVertex2d(x+width*.375, y+height*.75);
@@ -33,7 +33,7 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            Core.applyColor(foregroundColor);
+            Core.applyColor(Core.theme.getTextColor());
             GL11.glBegin(GL11.GL_QUADS);
             GL11.glVertex2d(x+width*.1, y+height*.8);
             GL11.glVertex2d(x+width*.2, y+height*.9);
@@ -49,9 +49,6 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
     });
     public MenuComponentPlacementRuleConfiguration(PlacementRule rule){
         super(0, 0, 0, 100);
-        color = Core.theme.getButtonColor();
-        selectedColor = Core.theme.getSelectedMultiblockColor();
-        foregroundColor = Core.theme.getTextColor();
         this.rule = rule;
     }
     @Override
@@ -64,13 +61,13 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
     }
     @Override
     public void render(){
-        if(isMouseOver)Core.applyColor(selectedColor);
-        else Core.applyColor(color);
+        if(isMouseOver)Core.applyColor(Core.theme.getSelectedMultiblockColor());
+        else Core.applyColor(Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void renderForeground(){
-        Core.applyColor(foregroundColor);
+        Core.applyColor(Core.theme.getTextColor());
         drawText(x, y, x+width, y+height/2, rule.toString());
     }
 }

@@ -3,6 +3,7 @@ import java.awt.Color;
 import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentSlider;
 public class MenuComponentMinimalistSlider extends MenuComponentSlider{
+    private final boolean darker;
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled){
         this(x, y, width, height, name, minimum, maximum, initial, enabled, false);
     }
@@ -11,8 +12,7 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     }
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled, boolean darker){
         super(x, y, width, height, minimum, maximum, initial, enabled);
-        color = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
-        foregroundColor = Core.theme.getTextColor();
+        this.darker = darker;
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
@@ -20,8 +20,7 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     }
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, double minimum, double maximum, double initial, int digits, boolean enabled, boolean darker){
         super(x, y, width, height, minimum, maximum, initial, digits, enabled);
-        color = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
-        foregroundColor = Core.theme.getTextColor();
+        this.darker = darker;
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
@@ -50,19 +49,19 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
         if(textInset<0){
             textInset = height/10;
         }
-        Color col = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        Color col = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
         if(enabled){
-            if(isPressed)col = col.darker().darker();
-            else if(isMouseOver)col = col.brighter();
+            if(isPressed)col = col.darker().darker();//TODO .darker()
+            else if(isMouseOver)col = col.brighter();//TODO .brighter()
         }else{
-            col = col.darker().darker();
+            col = col.darker().darker();//TODO .darker()
         }
         col = col.brighter();
-        Core.applyColor(color);
+        Core.applyColor(darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(col);
         drawRect(x+sliderX, y, x+sliderX+sliderHeight, y+sliderHeight, 0);
-        Core.applyColor(foregroundColor);
+        Core.applyColor(Core.theme.getTextColor());
         drawCenteredText(x+textInset, y+sliderHeight+textInset, x+width-textInset, y+height-textInset, name+": "+getValueS());
     }
     @Override

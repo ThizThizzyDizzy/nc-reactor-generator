@@ -28,8 +28,6 @@ public class MenuComponentEditorGrid extends MenuComponent{
     public MenuComponentEditorGrid(int x, int y, int blockSize, MenuEdit editor, Multiblock multiblock, int layer){
         super(x, y, blockSize*multiblock.getX(), blockSize*multiblock.getZ());
         this.multiblock = multiblock;
-        color = Core.theme.getEditorListBorderColor();
-        foregroundColor = Core.theme.getTextColor();
         this.layer = layer;
         this.editor = editor;
         this.blockSize = blockSize;
@@ -58,13 +56,13 @@ public class MenuComponentEditorGrid extends MenuComponent{
             if(mouseover[0]<0||mouseover[1]<0||mouseover[0]>=multiblock.getX()||mouseover[1]>=multiblock.getZ())mouseover = null;
         }
         blockSize = (int) Math.min(width/multiblock.getX(), height/multiblock.getZ());
-        Core.applyColor(color);
+        Core.applyColor(Core.theme.getEditorListBorderColor());
         drawRect(x,y,x+width,y+height,0);
         if(mouseover!=null){
-            Core.applyColor(color.brighter());
+            Core.applyColor(Core.theme.getEditorListBorderColor().brighter());
             drawRect(x+mouseover[0]*blockSize, y+mouseover[1]*blockSize, x+(mouseover[0]+1)*blockSize, y+(mouseover[1]+1)*blockSize, 0);
         }
-        Core.applyColor(foregroundColor);
+        Core.applyColor(Core.theme.getTextColor());
         for(int x = 0; x<=multiblock.getX(); x++){
             double border = blockSize/32d;
             double X = this.x+x*blockSize;
@@ -138,12 +136,12 @@ public class MenuComponentEditorGrid extends MenuComponent{
             double Y = this.y+mouseover[1]*blockSize;
             double border = blockSize/8;
             editor.setTooltip((block==null?"":block.getTooltip()));
-            Core.applyColor(color, .6375f);
+            Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
             drawRect(X, Y, X+border, Y+border, 0);
             drawRect(X+blockSize-border, Y, X+blockSize, Y+border, 0);
             drawRect(X, Y+blockSize-border, X+border, Y+blockSize, 0);
             drawRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize, 0);
-            Core.applyColor(foregroundColor, .6375f);
+            Core.applyColor(Core.theme.getTextColor(), .6375f);
             drawRect(X+border, Y, X+blockSize-border, Y+border, 0);
             drawRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize, 0);
             drawRect(X, Y+border, X+border, Y+blockSize-border, 0);

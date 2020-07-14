@@ -17,6 +17,8 @@ import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.underhaul.MenuUnderhaulConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulConfiguration;
 import multiblock.Multiblock;
+import planner.Theme;
+import planner.menu.component.MenuComponentMinimalistOptionButton;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
@@ -27,6 +29,7 @@ public class MenuConfiguration extends Menu{
     private final MenuComponentMinimalistTextBox version = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, Core.configuration.version, true));
     private final MenuComponentMinimalistButton underhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Underhaul Configuration", Core.configuration.underhaul!=null, true));
     private final MenuComponentMinimalistButton overhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Overhaul Configuration", Core.configuration.overhaul!=null, true));
+    private final MenuComponentMinimalistOptionButton theme = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Theme", true, true, Theme.themes.indexOf(Core.theme), Theme.getThemeS()));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
     private final ArrayList<MenuComponentMinimalistButton> buttons = new ArrayList<>();
     public MenuConfiguration(GUI gui, Menu parent){
@@ -124,8 +127,8 @@ public class MenuConfiguration extends Menu{
             b.height = Display.getHeight()/16;
             b.y = b.height*i;
         }
-        load.width = save.width = underhaul.width = overhaul.width = done.width = Display.getWidth();
-        name.height = version.height = load.height = save.height = underhaul.height = overhaul.height = done.height = Display.getHeight()/16;
+        theme.width = load.width = save.width = underhaul.width = overhaul.width = done.width = Display.getWidth();
+        theme.height = name.height = version.height = load.height = save.height = underhaul.height = overhaul.height = done.height = Display.getHeight()/16;
         name.width = version.width = Display.getWidth()*.75;
         name.x = version.x = Display.getWidth()*.25;
         load.y = load.height*Configuration.configurations.size();
@@ -135,6 +138,14 @@ public class MenuConfiguration extends Menu{
         underhaul.y = version.y+version.height;
         overhaul.y = underhaul.y+underhaul.height;
         done.y = Display.getHeight()-done.height;
+        theme.y = done.y-theme.height;
+        if(Theme.themes.indexOf(Core.theme)!=theme.getIndex()){
+            try{
+                Core.setTheme(Theme.themes.get(theme.getIndex()));
+            }catch(IndexOutOfBoundsException ex){
+                gui.open(new MenuConfiguration(gui, parent));
+            }
+        }
         Core.applyColor(Core.theme.getTextColor());
         drawText(0, name.y, name.x, name.y+name.height, "Name");
         drawText(0, version.y, version.x, version.y+version.height, "Version");

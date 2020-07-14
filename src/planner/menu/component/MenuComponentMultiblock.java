@@ -9,7 +9,7 @@ public class MenuComponentMultiblock extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            Core.applyColor(foregroundColor);
+            Core.applyColor(Core.theme.getTextColor());
             GL11.glBegin(GL11.GL_TRIANGLES);
             GL11.glVertex2d(x+width*.25, y+height*.75);
             GL11.glVertex2d(x+width*.375, y+height*.75);
@@ -30,9 +30,6 @@ public class MenuComponentMultiblock extends MenuComponent{
     });
     public MenuComponentMultiblock(Multiblock multiblock){
         super(0, 0, 0, 100);
-        color = Core.theme.getButtonColor();
-        selectedColor = Core.theme.getSelectedMultiblockColor();
-        foregroundColor = Core.theme.getTextColor();
         this.multiblock = multiblock;
     }
     @Override
@@ -44,12 +41,13 @@ public class MenuComponentMultiblock extends MenuComponent{
     }
     @Override
     public void render(){
-        if(isMouseOver&&!isSelected)Core.applyAverageColor(color, selectedColor);
+        if(isMouseOver&&!isSelected)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
+        else Core.applyColor(Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void renderForeground(){
-        Core.applyColor(foregroundColor);
+        Core.applyColor(Core.theme.getTextColor());
         drawText(x, y, x+width, y+height/4, multiblock.getName());
         drawText(x, y+height/4, x+width, y+height/2, multiblock.getDefinitionName());
     }

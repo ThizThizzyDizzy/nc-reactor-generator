@@ -7,14 +7,14 @@ import simplelibrary.opengl.gui.components.MenuComponentOptionButton;
 public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton{
     private String label;
     private boolean isPressed, isRightPressed;
+    private final boolean darker;
     public MenuComponentMinimalistOptionButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, int startingOption, String... options){
         this(x, y, width, height, label, enabled, useMouseover, false, startingOption, options);
     }
     public MenuComponentMinimalistOptionButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, boolean darker, int startingOption, String... options){
         super(x, y, width, height, label, enabled, useMouseover, startingOption, options);
         this.label = label;
-        color = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
-        foregroundColor = Core.theme.getTextColor();
+        this.darker = darker;
     }
     @Override
     public void mouseEvent(double x, double y, int button, boolean isDown){
@@ -40,7 +40,7 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
     }
     @Override
     public void render(){
-        Color col = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        Color col = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
         if(enabled){
             if(isPressed||isRightPressed)col = col.darker();
             else if(isMouseOver)col = col.brighter();
@@ -49,9 +49,8 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
         }
         Core.applyColor(col);
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(foregroundColor);
+        Core.applyColor(Core.theme.getTextColor());
         drawText();
-        Core.applyColor(color);
     }
     public void drawText(){
         String text = label+": "+getSelectedString();

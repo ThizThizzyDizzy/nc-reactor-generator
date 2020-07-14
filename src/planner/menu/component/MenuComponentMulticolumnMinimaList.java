@@ -6,8 +6,6 @@ import simplelibrary.opengl.gui.components.MenuComponentMulticolumnList;
 public class MenuComponentMulticolumnMinimaList extends MenuComponentMulticolumnList{
     public MenuComponentMulticolumnMinimaList(double x, double y, double width, double height, double columnWidth, double rowHeight, double scrollbarWidth){
         super(x, y, width, height, columnWidth, rowHeight, scrollbarWidth);
-        color = Core.theme.getListColor();
-        foregroundColor = Core.theme.getTextColor();
     }
     @Override
     public void drawUpwardScrollbarButton(double x, double y, double width, double height){
@@ -52,7 +50,7 @@ public class MenuComponentMulticolumnMinimaList extends MenuComponentMulticolumn
     }
     @Override
     public void drawVerticalScrollbarForeground(double x, double y, double width, double height){
-        Core.applyColor(color);
+        Core.applyColor(Core.theme.getListColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
@@ -62,14 +60,14 @@ public class MenuComponentMulticolumnMinimaList extends MenuComponentMulticolumn
     }
     @Override
     public void drawHorizontalScrollbarForeground(double x, double y, double width, double height){
-        Core.applyColor(color);
+        Core.applyColor(Core.theme.getListColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawButton(double x, double y, double width, double height){
-        Core.applyColor(color);
+        Core.applyColor(Core.theme.getListColor());
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(foregroundColor);
+        Core.applyColor(Core.theme.getTextColor());
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2d(x+1, y);
         GL11.glVertex2d(x+1, y+height-1);
