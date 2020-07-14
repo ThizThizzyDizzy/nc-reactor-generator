@@ -42,7 +42,7 @@ public class MenuComponentMultiblock extends MenuComponent{
     @Override
     public void render(){
         if(isMouseOver&&!isSelected)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
-        else Core.applyColor(Core.theme.getButtonColor());
+        else Core.applyColor(isSelected?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
