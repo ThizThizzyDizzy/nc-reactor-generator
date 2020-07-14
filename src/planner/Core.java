@@ -28,6 +28,7 @@ import multiblock.Multiblock;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.Sys;
+import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.font.FontManager;
@@ -170,7 +171,13 @@ public class Core extends Renderer2D{
         gui.open(new MenuMain(gui));
     }
     public static void tickInit() throws LWJGLException{}
-    public static void finalInit() throws LWJGLException{}
+    public static void finalInit() throws LWJGLException{
+        File f = new File("settings.dat").getAbsoluteFile();
+        if(!f.exists())return;
+        Config settings = Config.newConfig(f);
+        settings.load();
+        setTheme(Theme.themes.get(settings.get("theme", 0)));
+    }
     public static void tick(boolean isLastTick){
         if(!isLastTick){
             if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))xRot-=2;
@@ -178,6 +185,11 @@ public class Core extends Renderer2D{
             if(Keyboard.isKeyDown(Keyboard.KEY_UP))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot-2));
             if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot+2));
             gui.tick();
+        }else{
+            File f = new File("settings.dat").getAbsoluteFile();
+            Config settings = Config.newConfig(f);
+            settings.set("theme", Theme.themes.indexOf(theme));
+            settings.save();
         }
     }
     public static void render(int millisSinceLastTick){
