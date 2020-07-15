@@ -17,11 +17,11 @@ public class StandardGenerator extends MultiblockGenerator{
         return "Standard";
     }
     @Override
-    public void populateSettings(MenuComponentMinimaList list){
+    public void addSettings(MenuComponentMinimaList generatorSettings){
         //float change chance
         //bool variable rate
         //bool lock core
         //bool fill air
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

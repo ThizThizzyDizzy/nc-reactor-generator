@@ -124,6 +124,10 @@ public abstract class Theme{
             private Color process(Color c){
                 return new Color(c.getRed(), c.getBlue(), c.getGreen(), c.getAlpha()/16);
             }
+            @Override
+            public Color getFadeout(){
+                return process(themes.get(0).getFadeout());
+            }
         });
         themes.add(new ChangingTheme("???", RandomColorTheme::new));
         themes.add(new SiezureTheme("Disco"));
@@ -171,6 +175,7 @@ public abstract class Theme{
     public abstract Color getRGB(float r, float g, float b);
     public abstract Color getWhite();
     public void onSet(){}
+    public abstract Color getFadeout();
     private static class SolidColorTheme extends Theme{
         private final Color background;
         private final Color color;
@@ -272,6 +277,10 @@ public abstract class Theme{
         public Color getWhite(){
             return white;
         }
+        @Override
+        public Color getFadeout(){
+            return new Color(background.getRed(), background.getGreen(), background.getBlue(), 255*3/4);
+        }
     }
     private static class RandomColorTheme extends Theme{
         private final Color background;
@@ -292,6 +301,7 @@ public abstract class Theme{
         private final Color selection;
         private final Color rgb;
         private final Color white;
+        private final Color fadeout;
         public RandomColorTheme(){
             this("RANDOM");
         }
@@ -315,6 +325,7 @@ public abstract class Theme{
             selection = rand();
             rgb = rand();
             white = rand();
+            fadeout = rand();
         }
         @Override
         public Color getBackgroundColor(){
@@ -391,6 +402,10 @@ public abstract class Theme{
         private Color rand(){
             Random rand = new Random();
             return new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+        }
+        @Override
+        public Color getFadeout(){
+            return fadeout;
         }
     }
     private static class ChangingTheme extends Theme{
@@ -476,6 +491,10 @@ public abstract class Theme{
         @Override
         public Color getWhite(){
             return current.getWhite();
+        }
+        @Override
+        public Color getFadeout(){
+            return current.getFadeout();
         }
     }
     private static class SiezureTheme extends Theme{
@@ -571,6 +590,10 @@ public abstract class Theme{
             if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Color.gray;
             Random rand = new Random();
             return new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+        }
+        @Override
+        public Color getFadeout(){
+            return rand();
         }
     }
     public static Color average(Color c1, Color c2){

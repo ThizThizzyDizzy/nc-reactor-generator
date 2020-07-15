@@ -209,4 +209,8 @@ public class Block extends multiblock.Block{
     public boolean canBeQuickReplaced(){
         return template.cooling>0;
     }
+    @Override
+    public boolean defaultEnabled(){
+        return template.active==null;
+    }
 }

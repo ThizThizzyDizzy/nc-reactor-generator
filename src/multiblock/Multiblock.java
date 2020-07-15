@@ -8,6 +8,7 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.configuration.Configuration;
+import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
@@ -567,4 +568,5 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         s+="\n";
         return s+getTooltip();
     }
+    public abstract void addGeneratorSettings(MenuComponentMinimaList multiblockSettings);
 }

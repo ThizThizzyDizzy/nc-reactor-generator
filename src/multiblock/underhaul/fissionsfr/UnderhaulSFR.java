@@ -1,10 +1,10 @@
 package multiblock.underhaul.fissionsfr;
-import java.util.ArrayList;
 import java.util.List;
 import planner.Core;
 import planner.configuration.Configuration;
 import planner.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.Multiblock;
+import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
@@ -148,4 +148,6 @@ public class UnderhaulSFR extends Multiblock<Block>{
     public boolean exists(){
         return Core.configuration.underhaul!=null&&Core.configuration.underhaul.fissionSFR!=null;
     }
+    @Override
+    public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){}
 }

@@ -9,6 +9,8 @@ import planner.configuration.overhaul.fissionsfr.Fuel;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import planner.menu.component.MenuComponentMinimaList;
+import planner.menu.component.MenuComponentSFRToggleFuel;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulSFR extends Multiblock<Block>{
@@ -279,6 +281,12 @@ public class OverhaulSFR extends Multiblock<Block>{
         }
         msr.metadata.putAll(metadata);
         return msr;
+    }
+    @Override
+    public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
+        for(Fuel f : Core.configuration.overhaul.fissionSFR.fuels){
+            multiblockSettings.add(new MenuComponentSFRToggleFuel(f));
+        }
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();
