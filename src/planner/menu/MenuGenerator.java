@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Multiblock;
 import org.lwjgl.opengl.Display;
+import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMultiblockGenerator;
@@ -23,9 +24,9 @@ public class MenuGenerator extends Menu{
     private final MenuComponentMinimaList generators = add(new MenuComponentMinimaList(0, 0, 0, 0, 32));
     private final MenuComponentMinimaList generatorSettings = add(new MenuComponentMinimaList(0, 0, 0, 0, 32));
     private final MenuComponentMinimaList multiblockSettings = add(new MenuComponentMinimaList(0, 0, 0, 0, 32));
-    private final MenuComponentMinimalistButton blocksHeader = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Blocks", false, false));
-    private final MenuComponentMinimalistButton generatorsHeader = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generators", false, false));
-    private final MenuComponentMinimalistButton settingsHeader = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Settings", false, false));
+    private final MenuComponentLabel blocksHeader = add(new MenuComponentLabel(0, 0, 0, 0, "Blocks", true));
+    private final MenuComponentLabel generatorsHeader = add(new MenuComponentLabel(0, 0, 0, 0, "Generators", true));
+    private final MenuComponentLabel settingsHeader = add(new MenuComponentLabel(0, 0, 0, 0, "Settings", true));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
     private Tab tab = Tab.SETTINGS;
     private final ArrayList<MultiblockGenerator> multiblockGenerators;
@@ -62,7 +63,7 @@ public class MenuGenerator extends Menu{
             blocks.add(new MenuComponentToggleBlock(b));
         }
         generatorSettings.components.clear();
-        getGenerator().addSettings(generatorSettings);
+        getGenerator().addSettings(generatorSettings, multiblock);
         multiblockSettings.components.clear();
         multiblock.addGeneratorSettings(multiblockSettings);
     }

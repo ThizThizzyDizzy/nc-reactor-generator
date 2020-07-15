@@ -1,4 +1,6 @@
 package multiblock.underhaul.fissionsfr;
+import generator.Priority;
+import java.util.ArrayList;
 import java.util.List;
 import planner.Core;
 import planner.configuration.Configuration;
@@ -8,7 +10,7 @@ import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
-    private int netHeat, power, heat, cooling;
+    private int netHeat, power, heat, cooling, cells;
     private float efficiency;
     public Fuel fuel;
     private double heatMult;
@@ -49,7 +51,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         }
         float totalHeatMult = 0;
         float totalEnergyMult = 0;
-        int cells = 0;
+        cells = 0;
         boolean somethingChanged;
         do{
             somethingChanged = false;
@@ -83,7 +85,8 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 + "Total Cooling: "+cooling+"\n"
                 + "Net Heat: "+netHeat+"H/t\n"
                 + "Efficiency: "+percent(efficiency, 0)+"\n"
-                + "Heat multiplier: "+percent(heatMult, 0);
+                + "Heat multiplier: "+percent(heatMult, 0)+"\n"
+                + "Fuel cells: "+cells;
     }
     @Override
     public int getMultiblockID(){
@@ -150,4 +153,48 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){}
+    private boolean isValid(){
+        return power>0;
+    }
+    @Override
+    public void getGenerationPriorities(ArrayList<Priority> priorities){
+        priorities.add(new Priority<UnderhaulSFR>("Valid (>0 output)"){
+            @Override
+            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                if(main.isValid()&&!other.isValid())return 1;
+                if(!main.isValid()&&other.isValid())return -1;
+                return 0;
+            }
+        });
+        priorities.add(new Priority<UnderhaulSFR>("Stability"){
+            @Override
+            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                return Math.max(0, other.heat)-Math.max(0, main.heat);
+            }
+        });
+        priorities.add(new Priority<UnderhaulSFR>("Efficiency"){
+            @Override
+            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                return main.efficiency-other.efficiency;
+            }
+        });
+        priorities.add(new Priority<UnderhaulSFR>("Output"){
+            @Override
+            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                return main.power-other.power;
+            }
+        });
+        priorities.add(new Priority<UnderhaulSFR>("Minimize Heat"){
+            @Override
+            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                return other.heat-main.heat;
+            }
+        });
+        priorities.add(new Priority<UnderhaulSFR>("Fuel usage"){
+            @Override
+            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                return main.cells-other.cells;
+            }
+        });
+    }
 }

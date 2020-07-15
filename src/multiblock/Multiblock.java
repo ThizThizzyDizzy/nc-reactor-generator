@@ -1,4 +1,5 @@
 package multiblock;
+import generator.Priority;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -569,4 +570,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return s+getTooltip();
     }
     public abstract void addGeneratorSettings(MenuComponentMinimaList multiblockSettings);
+    public ArrayList<Priority> getGenerationPriorities(){
+        ArrayList<Priority> priorities = new ArrayList<>();
+        getGenerationPriorities(priorities);
+        return priorities;
+    }
+    public abstract void getGenerationPriorities(ArrayList<Priority> priorities);
 }

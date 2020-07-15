@@ -1,4 +1,5 @@
 package multiblock.overhaul.fissionsfr;
+import generator.Priority;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.configuration.overhaul.fissionsfr.Fuel;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.action.SFRAllShieldsAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentSFRToggleFuel;
@@ -287,6 +289,69 @@ public class OverhaulSFR extends Multiblock<Block>{
         for(Fuel f : Core.configuration.overhaul.fissionSFR.fuels){
             multiblockSettings.add(new MenuComponentSFRToggleFuel(f));
         }
+    }
+    private boolean isValid(){
+        return totalOutput>0;
+    }
+    private int getBadCells(){
+        int badCells = 0;
+        for(Block b : getBlocks()){
+            if(b.isFuelCell()&&!b.isFuelCellActive())badCells++;
+        }
+        return badCells;
+    }
+    private float getShutdownFactor(){
+        action(new SFRAllShieldsAction(true));
+        float offOut = totalOutput;
+        undo();
+        return 1-(offOut/totalOutput);
+    }
+    @Override
+    public void getGenerationPriorities(ArrayList<Priority> priorities){
+        priorities.add(new Priority<OverhaulSFR>("Valid (>0 output)"){
+            @Override
+            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                if(main.isValid()&&!other.isValid())return 1;
+                if(!main.isValid()&&other.isValid())return -1;
+                return 0;
+            }
+        });
+        priorities.add(new Priority<OverhaulSFR>("Minimize Bad Cells"){
+            @Override
+            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                return other.getBadCells()-main.getBadCells();
+            }
+        });
+        priorities.add(new Priority<OverhaulSFR>("Shutdownable"){
+            @Override
+            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                return main.getShutdownFactor()-other.getShutdownFactor();
+            }
+        });
+        priorities.add(new Priority<OverhaulSFR>("Stability"){
+            @Override
+            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
+            }
+        });
+        priorities.add(new Priority<OverhaulSFR>("Efficiency"){
+            @Override
+            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+            }
+        });
+        priorities.add(new Priority<OverhaulSFR>("Output"){
+            @Override
+            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                return main.totalOutput-other.totalOutput;
+            }
+        });
+        priorities.add(new Priority<OverhaulSFR>("Irradiation"){
+            @Override
+            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                return main.totalIrradiation-other.totalIrradiation;
+            }
+        });
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();

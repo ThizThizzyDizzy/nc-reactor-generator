@@ -31,6 +31,7 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
         String lastText = text;
         super.processKeyboard(character, key, pressed, repeat);
         if(filter==INT){
+            if(text.trim().isEmpty())text = "0";
             try{
                 Integer.parseInt(text);
             }catch(NumberFormatException ex){
@@ -38,11 +39,17 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
             }
         }
         if(filter==FLOAT){
+            if(text.trim().isEmpty())text = "0";
             try{
                 Float.parseFloat(text);
             }catch(NumberFormatException ex){
                 text = lastText;
             }
+        }
+        while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
+        if(text.startsWith(".")){
+            while(text.endsWith("0"))text = text.substring(0, text.length()-1);
+            if(text.equals("."))text = "0";
         }
     }
     public MenuComponentMinimalistTextBox setIntFilter(){

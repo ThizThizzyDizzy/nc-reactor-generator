@@ -1,4 +1,5 @@
 package multiblock.overhaul.fissionmsr;
+import generator.Priority;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import planner.configuration.Configuration;
 import planner.configuration.overhaul.fissionmsr.Fuel;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.action.MSRAllShieldsAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.menu.component.MenuComponentMSRToggleFuel;
 import planner.menu.component.MenuComponentMinimaList;
@@ -25,6 +27,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     public int functionalBlocks;
     public float sparsityMult;
     public HashMap<String, Float> totalOutput = new HashMap<>();
+    public float totalTotalOutput;
     public OverhaulMSR(){
         this(7, 5, 7);
     }
@@ -132,7 +135,9 @@ public class OverhaulMSR extends Multiblock<Block>{
         for(Cluster c : clusters){
             for(Block b : c.blocks){
                 if(b.template.cooling>0){
-                    totalOutput.put(b.template.output, (totalOutput.containsKey(b.template.output)?totalOutput.get(b.template.output):0)+c.efficiency*sparsityMult);
+                    float out = c.efficiency*sparsityMult;
+                    totalOutput.put(b.template.output, (totalOutput.containsKey(b.template.output)?totalOutput.get(b.template.output):0)+out);
+                    totalTotalOutput+=out;
                 }
             }
         }
@@ -143,15 +148,13 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public String getTooltip(){
-        float output = 0;
         String outs = "";
         ArrayList<String> outputList = new ArrayList<>(totalOutput.keySet());
         Collections.sort(outputList);
         for(String s : outputList){
-            output+=totalOutput.get(s);
             outs+="\n "+Math.round(totalOutput.get(s))+" mb/t of "+s;
         }
-        String s = "Total output: "+Math.round(output)+" mb/t"+outs+"\n"
+        String s = "Total output: "+Math.round(totalTotalOutput)+" mb/t"+outs+"\n"
                 + "Total Heat: "+totalHeat+"H/t\n"
                 + "Total Cooling: "+totalCooling+"H/t\n"
                 + "Net Heat: "+netHeat+"H/t\n"
@@ -293,6 +296,69 @@ public class OverhaulMSR extends Multiblock<Block>{
             multiblockSettings.add(new MenuComponentMSRToggleFuel(f));
         }
     }
+    private boolean isValid(){
+        return totalTotalOutput>0;
+    }
+    private int getBadVessels(){
+        int badVessels = 0;
+        for(Block b : getBlocks()){
+            if(b.isFuelVessel()&&!b.isFuelVesselActive())badVessels++;
+        }
+        return badVessels;
+    }
+    private float getShutdownFactor(){
+        action(new MSRAllShieldsAction(true));
+        float offOut = totalTotalOutput;
+        undo();
+        return 1-(offOut/totalTotalOutput);
+    }
+    @Override
+    public void getGenerationPriorities(ArrayList<Priority> priorities){
+        priorities.add(new Priority<OverhaulMSR>("Valid (>0 output)"){
+            @Override
+            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                if(main.isValid()&&!other.isValid())return 1;
+                if(!main.isValid()&&other.isValid())return -1;
+                return 0;
+            }
+        });
+        priorities.add(new Priority<OverhaulMSR>("Minimize Bad Vessels"){
+            @Override
+            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                return other.getBadVessels()-main.getBadVessels();
+            }
+        });
+        priorities.add(new Priority<OverhaulMSR>("Shutdownable"){
+            @Override
+            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                return main.getShutdownFactor()-other.getShutdownFactor();
+            }
+        });
+        priorities.add(new Priority<OverhaulMSR>("Stability"){
+            @Override
+            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
+            }
+        });
+        priorities.add(new Priority<OverhaulMSR>("Efficiency"){
+            @Override
+            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+            }
+        });
+        priorities.add(new Priority<OverhaulMSR>("Output"){
+            @Override
+            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                return main.totalTotalOutput-other.totalTotalOutput;
+            }
+        });
+        priorities.add(new Priority<OverhaulMSR>("Irradiation"){
+            @Override
+            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                return main.totalIrradiation-other.totalIrradiation;
+            }
+        });
+    }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();
         public boolean isConnectedToWall = false;
@@ -343,7 +409,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         super.clearData(blocks);
         clusters.clear();
         totalOutput.clear();
-        totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+        totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
     }
     /**
      * Block search algorithm from my Tree Feller for Bukkit.

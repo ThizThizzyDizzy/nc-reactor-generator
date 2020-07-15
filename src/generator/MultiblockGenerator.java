@@ -19,5 +19,5 @@ public abstract class MultiblockGenerator{
         }
         return valid;
     }
-    public abstract void addSettings(MenuComponentMinimaList generatorSettings);
+    public abstract void addSettings(MenuComponentMinimaList generatorSettings, Multiblock multi);
 }
