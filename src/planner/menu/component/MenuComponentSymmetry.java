@@ -1,14 +1,14 @@
 package planner.menu.component;
+import multiblock.symmetry.Symmetry;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.Fuel;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentSFRToggleFuel extends MenuComponent{
-    public final Fuel fuel;
+public class MenuComponentSymmetry extends MenuComponent{
+    public final Symmetry symmetry;
     public boolean enabled = false;
-    public MenuComponentSFRToggleFuel(Fuel fuel){
+    public MenuComponentSymmetry(Symmetry symmetry){
         super(0, 0, 0, 32);
-        this.fuel = fuel;
+        this.symmetry = symmetry;
     }
     @Override
     public void render(){
@@ -19,10 +19,10 @@ public class MenuComponentSFRToggleFuel extends MenuComponent{
         drawText();
     }
     public void drawText(){
-        double textLength = FontManager.getLengthForStringWithHeight(fuel.name, height);
+        double textLength = FontManager.getLengthForStringWithHeight(symmetry.name, height);
         double scale = Math.min(1, width/textLength);
         double textHeight = (int)(height*scale)-1;
-        drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, fuel.name);
+        drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, symmetry.name);
     }
     @Override
     public boolean mouseWheelChange(int wheelChange){

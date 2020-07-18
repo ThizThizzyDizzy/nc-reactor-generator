@@ -9,8 +9,12 @@ import planner.configuration.Configuration;
 import planner.configuration.overhaul.fissionmsr.Fuel;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.MSRAllShieldsAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.ppe.MSRFill;
+import multiblock.symmetry.AxialSymmetry;
+import multiblock.symmetry.Symmetry;
 import planner.menu.component.MenuComponentMSRToggleFuel;
 import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.config2.Config;
@@ -358,6 +362,18 @@ public class OverhaulMSR extends Multiblock<Block>{
                 return main.totalIrradiation-other.totalIrradiation;
             }
         });
+    }
+    @Override
+    public void getSymmetries(ArrayList<Symmetry> symmetries){
+        symmetries.add(AxialSymmetry.X);
+        symmetries.add(AxialSymmetry.Y);
+        symmetries.add(AxialSymmetry.Z);
+    }
+    @Override
+    public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
+        for(planner.configuration.overhaul.fissionmsr.Block b : Core.configuration.overhaul.fissionMSR.blocks){
+            if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new MSRFill(b));
+        }
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();

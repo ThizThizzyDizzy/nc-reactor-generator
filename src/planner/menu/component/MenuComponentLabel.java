@@ -6,7 +6,7 @@ import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentLabel extends MenuComponent{
-    private final String text;
+    public String text;
     private final boolean darker;
     private double textInset = 5;
     private Supplier<Color> textColor = () -> {

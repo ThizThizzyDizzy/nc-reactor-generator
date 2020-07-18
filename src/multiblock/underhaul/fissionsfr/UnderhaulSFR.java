@@ -6,6 +6,10 @@ import planner.Core;
 import planner.configuration.Configuration;
 import planner.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.Multiblock;
+import multiblock.ppe.FillAir;
+import multiblock.ppe.PostProcessingEffect;
+import multiblock.symmetry.AxialSymmetry;
+import multiblock.symmetry.Symmetry;
 import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
@@ -196,5 +200,15 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 return main.cells-other.cells;
             }
         });
+    }
+    @Override
+    public void getSymmetries(ArrayList<Symmetry> symmetries){
+        symmetries.add(AxialSymmetry.X);
+        symmetries.add(AxialSymmetry.Y);
+        symmetries.add(AxialSymmetry.Z);
+    }
+    @Override
+    public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
+        postProcessingEffects.add(new FillAir());
     }
 }

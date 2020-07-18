@@ -1,4 +1,5 @@
 package multiblock;
+import multiblock.ppe.PostProcessingEffect;
 import generator.Priority;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -6,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.configuration.Configuration;
@@ -576,4 +578,16 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return priorities;
     }
     public abstract void getGenerationPriorities(ArrayList<Priority> priorities);
+    public ArrayList<Symmetry> getSymmetries(){
+        ArrayList<Symmetry> symmetries = new ArrayList<>();
+        getSymmetries(symmetries);
+        return symmetries;
+    }
+    public abstract void getSymmetries(ArrayList<Symmetry> symmetries);
+    public ArrayList<PostProcessingEffect> getPostProcessingEffects(){
+        ArrayList<PostProcessingEffect> postProcessingEffects = new ArrayList<>();
+        getPostProcessingEffects(postProcessingEffects);
+        return postProcessingEffects;
+    }
+    public abstract void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects);
 }

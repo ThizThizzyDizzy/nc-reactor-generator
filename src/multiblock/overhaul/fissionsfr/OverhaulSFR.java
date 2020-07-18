@@ -9,8 +9,12 @@ import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.configuration.overhaul.fissionsfr.Fuel;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.SFRAllShieldsAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.ppe.SFRFill;
+import multiblock.symmetry.AxialSymmetry;
+import multiblock.symmetry.Symmetry;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentSFRToggleFuel;
 import simplelibrary.config2.Config;
@@ -352,6 +356,18 @@ public class OverhaulSFR extends Multiblock<Block>{
                 return main.totalIrradiation-other.totalIrradiation;
             }
         });
+    }
+    @Override
+    public void getSymmetries(ArrayList<Symmetry> symmetries){
+        symmetries.add(AxialSymmetry.X);
+        symmetries.add(AxialSymmetry.Y);
+        symmetries.add(AxialSymmetry.Z);
+    }
+    @Override
+    public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
+        for(planner.configuration.overhaul.fissionsfr.Block b : Core.configuration.overhaul.fissionSFR.blocks){
+            if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new SFRFill(b));
+        }
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();

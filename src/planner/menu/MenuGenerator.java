@@ -7,6 +7,7 @@ import org.lwjgl.opengl.Display;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
+import planner.menu.component.MenuComponentMultiblockDisplay;
 import planner.menu.component.MenuComponentMultiblockGenerator;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentToggleBlock;
@@ -28,8 +29,15 @@ public class MenuGenerator extends Menu{
     private final MenuComponentLabel generatorsHeader = add(new MenuComponentLabel(0, 0, 0, 0, "Generators", true));
     private final MenuComponentLabel settingsHeader = add(new MenuComponentLabel(0, 0, 0, 0, "Settings", true));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
+    private final MenuComponentLabel threadsLabel = add(new MenuComponentLabel(0, 0, 0, 64, "No Threads", true));
+    private final MenuComponentMinimalistButton addThread = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Add Thread", true, true));
+    private final MenuComponentMinimalistButton removeThread = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Remove Thread", true, true));
+    private final MenuComponentMinimaList multiblockLists = add(new MenuComponentMinimaList(0, 0, 0, 0, 64));
     private Tab tab = Tab.SETTINGS;
     private final ArrayList<MultiblockGenerator> multiblockGenerators;
+    private MultiblockGenerator generator = null;
+    private int lastIndex;
+    private int threads = 0;
     public MenuGenerator(GUI gui, Menu parent, Multiblock<Block> multiblock){
         super(gui, parent);
         this.multiblock = multiblock;
@@ -41,16 +49,68 @@ public class MenuGenerator extends Menu{
         output.addActionListener((e) -> {
             settings.enabled = true;
             output.enabled = false;
-            tab = Tab.OUTPUT;
+            tab = Tab.GENERATE;
+            generator.refreshSettings();
+            if(threads<=0)threads = 1;
+            threadsLabel.text = threads+" Thread"+(threads==1?"":"s");
         });
         done.addActionListener((e) -> {
+            if(generator!=null)generator.stopAllThreads();
             gui.open(parent);
+        });
+        addThread.addActionListener((e) -> {
+            threads++;
+            threadsLabel.text = threads+" Thread"+(threads==1?"":"s");
+        });
+        removeThread.addActionListener((e) -> {
+            threads--;
+            if(threads<1)threads = 1;
+            threadsLabel.text = threads+" Thread"+(threads==1?"":"s");
         });
         multiblockGenerators = MultiblockGenerator.getGenerators(multiblock);
         for(MultiblockGenerator gen : multiblockGenerators){
             generators.add(new MenuComponentMultiblockGenerator(gen));
         }
         if(!multiblockGenerators.isEmpty())generators.setSelectedIndex(0);
+        generator = multiblockGenerators.get(generators.getSelectedIndex()).newInstance(multiblock);
+        lastIndex = generators.getSelectedIndex();
+    }
+    @Override
+    public void tick(){
+        super.tick();
+        if(generator!=null){
+            if(generator.getActiveThreads()<threads){
+                generator.startThread();
+            }
+            if(generator.getActiveThreads()>threads){
+                generator.stopThread();
+            }
+            ArrayList<Multiblock>[] multiblocks = generator.getMultiblockLists();
+            if(multiblocks.length!=multiblockLists.components.size()){
+                multiblockLists.components.clear();
+                for(ArrayList<Multiblock> mbs : multiblocks){
+                    MenuComponentMulticolumnMinimaList lst = multiblockLists.add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 300, 400, 48));
+                    for(Multiblock mb : mbs){
+                        lst.add(new MenuComponentMultiblockDisplay(mb));
+                    }
+                }
+            }else{
+                for(int i = 0; i<multiblocks.length; i++){
+                    ArrayList<Multiblock> mbs = multiblocks[i];
+                    MenuComponentMulticolumnMinimaList lst = (MenuComponentMulticolumnMinimaList)multiblockLists.components.get(i);
+                    if(mbs.size()!=lst.components.size()){
+                        lst.components.clear();
+                        for(Multiblock mb : mbs){
+                            lst.add(new MenuComponentMultiblockDisplay(mb));
+                        }
+                    }else{
+                        for(int j = 0; j<mbs.size(); j++){
+                            ((MenuComponentMultiblockDisplay)lst.components.get(j)).multiblock = mbs.get(j);
+                        }
+                    }
+                }
+            }
+        }
     }
     @Override
     public void onGUIOpened(){
@@ -63,12 +123,19 @@ public class MenuGenerator extends Menu{
             blocks.add(new MenuComponentToggleBlock(b));
         }
         generatorSettings.components.clear();
-        getGenerator().addSettings(generatorSettings, multiblock);
+        generator.addSettings(generatorSettings, multiblock);
         multiblockSettings.components.clear();
         multiblock.addGeneratorSettings(multiblockSettings);
     }
     @Override
     public void renderBackground(){
+        if(generators.getSelectedIndex()!=lastIndex){
+            int idx = generators.getSelectedIndex();
+            if(idx!=-1){
+                generator = multiblockGenerators.get(generators.getSelectedIndex()).newInstance(multiblock);
+                lastIndex = idx;
+            }
+        }
         for(MenuComponent m : components){
             m.x = m.y = m.width = m.height = -1;
         }
@@ -119,14 +186,31 @@ public class MenuGenerator extends Menu{
                     c.width = multiblockSettings.width-(multiblockSettings.hasVertScrollbar()?multiblockSettings.vertScrollbarWidth:0);
                 }
                 break;
-            case OUTPUT:
+            case GENERATE:
+                threadsLabel.x = 0;
+                threadsLabel.y = 64;
+                threadsLabel.width = Display.getWidth()/3;
+                threadsLabel.height = 48;
+                addThread.x = threadsLabel.width;
+                addThread.y = 64;
+                addThread.width = Display.getWidth()/3;
+                addThread.height = 48;
+                removeThread.x = addThread.x+addThread.width;
+                removeThread.y = 64;
+                removeThread.width = Display.getWidth()-removeThread.x;
+                removeThread.height = 48;
+                multiblockLists.x = 0;
+                multiblockLists.y = threadsLabel.height+settings.height;
+                multiblockLists.width = Display.getWidth();
+                multiblockLists.height = Display.getHeight()-multiblockLists.y;
+                for(MenuComponent m : multiblockLists.components){
+                    m.width = multiblockLists.width;
+                    m.height = 400;
+                }
                 break;
         }
     }
-    private MultiblockGenerator getGenerator(){
-        return multiblockGenerators.get(generators.getSelectedIndex());
-    }
     private static enum Tab{//I don't know why I made an enum for this, but here it is
-        SETTINGS,OUTPUT;
+        SETTINGS,GENERATE;
     }
 }

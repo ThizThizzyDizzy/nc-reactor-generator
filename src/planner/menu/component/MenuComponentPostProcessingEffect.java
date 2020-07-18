@@ -1,14 +1,14 @@
 package planner.menu.component;
+import multiblock.ppe.PostProcessingEffect;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.Fuel;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentSFRToggleFuel extends MenuComponent{
-    public final Fuel fuel;
+public class MenuComponentPostProcessingEffect extends MenuComponent{
+    public final PostProcessingEffect postProcessingEffect;
     public boolean enabled = false;
-    public MenuComponentSFRToggleFuel(Fuel fuel){
+    public MenuComponentPostProcessingEffect(PostProcessingEffect postProcessingEffect){
         super(0, 0, 0, 32);
-        this.fuel = fuel;
+        this.postProcessingEffect = postProcessingEffect;
     }
     @Override
     public void render(){
@@ -19,10 +19,10 @@ public class MenuComponentSFRToggleFuel extends MenuComponent{
         drawText();
     }
     public void drawText(){
-        double textLength = FontManager.getLengthForStringWithHeight(fuel.name, height);
+        double textLength = FontManager.getLengthForStringWithHeight(postProcessingEffect.name, height);
         double scale = Math.min(1, width/textLength);
         double textHeight = (int)(height*scale)-1;
-        drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, fuel.name);
+        drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, postProcessingEffect.name);
     }
     @Override
     public boolean mouseWheelChange(int wheelChange){
