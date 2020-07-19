@@ -1,9 +1,12 @@
 package generator;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.UUID;
+import multiblock.Block;
 import multiblock.Multiblock;
 import planner.menu.component.MenuComponentMinimaList;
 public abstract class MultiblockGenerator{
+    protected Random rand = new Random();
     public static final ArrayList<MultiblockGenerator> generators = new ArrayList<>();
     static{
         generators.add(new StandardGenerator(null));
@@ -30,7 +33,7 @@ public abstract class MultiblockGenerator{
         return valid;
     }
     public abstract void addSettings(MenuComponentMinimaList generatorSettings, Multiblock multi);
-    public abstract void refreshSettings();
+    public abstract void refreshSettings(ArrayList<Block> allowedBlocks);
     public int getActiveThreads(){
         synchronized(threadronyzer){
             return threads.size();
@@ -45,8 +48,13 @@ public abstract class MultiblockGenerator{
             UUID uid = UUID.randomUUID();
             threads.add(uid);
             Thread thread = new Thread(() -> {
-                while(threads.contains(uid)){
-                    tick();
+                try{
+                    while(threads.contains(uid)){
+                        tick();
+                    }
+                }catch(Exception ex){
+                    threads.remove(uid);
+                    throw new RuntimeException(ex);
                 }
             });
             thread.setDaemon(true);
@@ -62,5 +70,9 @@ public abstract class MultiblockGenerator{
         synchronized(threadronyzer){
             threads.clear();
         }
+    }
+    public abstract void importMultiblock(Multiblock<Block> multiblock);
+    public Multiblock getMainMultiblock(){
+        return getMultiblockLists()[0].get(0);
     }
 }

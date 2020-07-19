@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.opengl.Display;
 import planner.Core;
-import planner.configuration.Configuration;
+import multiblock.configuration.Configuration;
 import planner.file.FileReader;
 import planner.file.NCPFFile;
 import planner.menu.MenuTransition;

@@ -5,17 +5,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import planner.Core;
-import planner.configuration.Configuration;
-import planner.configuration.overhaul.fissionmsr.Fuel;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.overhaul.fissionmsr.Fuel;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.MSRAllShieldsAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.MSRFill;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
+import multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe;
+import multiblock.configuration.overhaul.fissionmsr.Source;
 import planner.menu.component.MenuComponentMSRToggleFuel;
+import planner.menu.component.MenuComponentMSRToggleSource;
+import planner.menu.component.MenuComponentMSRToggleIrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
@@ -32,6 +37,8 @@ public class OverhaulMSR extends Multiblock<Block>{
     public float sparsityMult;
     public HashMap<String, Float> totalOutput = new HashMap<>();
     public float totalTotalOutput;
+    public float shutdownFactor;
+    private boolean computingShutdown = false;
     public OverhaulMSR(){
         this(7, 5, 7);
     }
@@ -49,7 +56,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(Core.configuration==null||Core.configuration.overhaul==null||Core.configuration.overhaul.fissionMSR==null)return;
-        for(planner.configuration.overhaul.fissionmsr.Block block : Core.configuration.overhaul.fissionMSR.blocks){
+        for(multiblock.configuration.overhaul.fissionmsr.Block block : Core.configuration.overhaul.fissionMSR.blocks){
             blocks.add(new Block(-1, -1, -1, block));
         }
     }
@@ -62,7 +69,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         return Core.configuration.overhaul.fissionMSR.maxSize;
     }
     @Override
-    public void calculate(List<Block> blocks){
+    public synchronized void calculate(List<Block> blocks){
         List<Block> allBlocks = getBlocks();
         for(Block block : blocks){
             if(block.isPrimed())block.propogateNeutronFlux(this);
@@ -106,7 +113,7 @@ public class OverhaulMSR extends Multiblock<Block>{
                 }
                 if(b.isIrradiatorActive()){
                     cluster.irradiation+=b.neutronFlux;
-                    if(b.recipe!=null)cluster.totalHeat+=b.recipe.heat*b.neutronFlux;
+                    if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.neutronFlux;
                 }
             }
             cluster.efficiency/=fuelCells;
@@ -145,13 +152,14 @@ public class OverhaulMSR extends Multiblock<Block>{
                 }
             }
         }
+        if(!computingShutdown)shutdownFactor = calculateShutdownFactor();
     }
     @Override
     protected Block newCasing(int x, int y, int z){
         return new Block(x, y, z, null);
     }
     @Override
-    public String getTooltip(){
+    public synchronized String getTooltip(){
         String outs = "";
         ArrayList<String> outputList = new ArrayList<>(totalOutput.keySet());
         Collections.sort(outputList);
@@ -166,7 +174,8 @@ public class OverhaulMSR extends Multiblock<Block>{
                 + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
                 + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                 + "Clusters: "+clusters.size()+"\n"
-                + "Total Irradiation: "+totalIrradiation+"\n";
+                + "Total Irradiation: "+totalIrradiation+"\n"
+                + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n";
         for(Fuel f : Core.configuration.overhaul.fissionMSR.fuels){
             int i = getFuelCount(f);
             if(i>0)s+="\n"+f.name+": "+i;
@@ -214,7 +223,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         for(Block block : getBlocks()){
             if(block.template.fuelVessel)fuels.add(configuration.overhaul.fissionMSR.fuels.indexOf(block.fuel));
             if(block.template.fuelVessel)sources.add(configuration.overhaul.fissionMSR.sources.indexOf(block.source)+1);
-            if(block.template.irradiator)irradiatorRecipes.add(configuration.overhaul.fissionMSR.irradiatorRecipes.indexOf(block.recipe)+1);
+            if(block.template.irradiator)irradiatorRecipes.add(configuration.overhaul.fissionMSR.irradiatorRecipes.indexOf(block.irradiatorRecipe)+1);
         }
         config.set("blocks", blox);
         config.set("fuels", fuels);
@@ -239,7 +248,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         for(Block block : getBlocks()){
             if(block.template.fuelVessel)block.fuel = to.overhaul.fissionMSR.convert(block.fuel);
             if(block.template.fuelVessel)block.source = to.overhaul.fissionMSR.convert(block.source);
-            if(block.template.irradiator)block.recipe = to.overhaul.fissionMSR.convert(block.recipe);
+            if(block.template.irradiator)block.irradiatorRecipe = to.overhaul.fissionMSR.convert(block.irradiatorRecipe);
             block.template = to.overhaul.fissionMSR.convert(block.template);
         }
     }
@@ -296,9 +305,46 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
+        fuelToggles.clear();
         for(Fuel f : Core.configuration.overhaul.fissionMSR.fuels){
-            multiblockSettings.add(new MenuComponentMSRToggleFuel(f));
+            MenuComponentMSRToggleFuel toggle = new MenuComponentMSRToggleFuel(f);
+            fuelToggles.put(f, toggle);
+            multiblockSettings.add(toggle);
         }
+        for(Source s : Core.configuration.overhaul.fissionMSR.sources){
+            MenuComponentMSRToggleSource toggle = new MenuComponentMSRToggleSource(s);
+            sourceToggles.put(s, toggle);
+            multiblockSettings.add(toggle);
+        }
+        for(IrradiatorRecipe r : Core.configuration.overhaul.fissionMSR.irradiatorRecipes){
+            MenuComponentMSRToggleIrradiatorRecipe toggle = new MenuComponentMSRToggleIrradiatorRecipe(r);
+            irradiatorRecipeToggles.put(r, toggle);
+            multiblockSettings.add(toggle);
+        }
+    }
+    private HashMap<Fuel, MenuComponentMSRToggleFuel> fuelToggles = new HashMap<>();
+    public ArrayList<Fuel> getValidFuels(){
+        ArrayList<Fuel> validFuels = new ArrayList<>();
+        for(Fuel f :fuelToggles.keySet()){
+            if(fuelToggles.get(f).enabled)validFuels.add(f);
+        }
+        return validFuels;
+    }
+    private HashMap<Source, MenuComponentMSRToggleSource> sourceToggles = new HashMap<>();
+    public ArrayList<Source> getValidSources(){
+        ArrayList<Source> validSources = new ArrayList<>();
+        for(Source s :sourceToggles.keySet()){
+            if(sourceToggles.get(s).enabled)validSources.add(s);
+        }
+        return validSources;
+    }
+    private HashMap<IrradiatorRecipe, MenuComponentMSRToggleIrradiatorRecipe> irradiatorRecipeToggles = new HashMap<>();
+    public ArrayList<IrradiatorRecipe> getValidIrradiatorRecipes(){
+        ArrayList<IrradiatorRecipe> validIrradiatorRecipes = new ArrayList<>();
+        for(IrradiatorRecipe r :irradiatorRecipeToggles.keySet()){
+            if(irradiatorRecipeToggles.get(r).enabled)validIrradiatorRecipes.add(r);
+        }
+        return validIrradiatorRecipes;
     }
     private boolean isValid(){
         return totalTotalOutput>0;
@@ -310,10 +356,12 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
         return badVessels;
     }
-    private float getShutdownFactor(){
+    private float calculateShutdownFactor(){
+        computingShutdown = true;
         action(new MSRAllShieldsAction(true));
         float offOut = totalTotalOutput;
         undo();
+        computingShutdown = false;
         return 1-(offOut/totalTotalOutput);
     }
     @Override
@@ -335,7 +383,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         priorities.add(new Priority<OverhaulMSR>("Shutdownable"){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
-                return main.getShutdownFactor()-other.getShutdownFactor();
+                return main.shutdownFactor-other.shutdownFactor;
             }
         });
         priorities.add(new Priority<OverhaulMSR>("Stability"){
@@ -371,7 +419,8 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-        for(planner.configuration.overhaul.fissionmsr.Block b : Core.configuration.overhaul.fissionMSR.blocks){
+//        postProcessingEffects.add(new ClearInvalid());//TODO fix
+        for(multiblock.configuration.overhaul.fissionmsr.Block b : Core.configuration.overhaul.fissionMSR.blocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new MSRFill(b));
         }
     }
@@ -394,6 +443,7 @@ public class OverhaulMSR extends Multiblock<Block>{
                 }
             }
         }
+        private Cluster(){}
         private boolean isValid(){
             if(!isConnectedToWall)return false;
             for(Block block : blocks){
@@ -419,13 +469,28 @@ public class OverhaulMSR extends Multiblock<Block>{
                 + "Heat Multiplier: "+percent(heatMult, 0)+"\n"
                 + "Cooling penalty mult: "+Math.round(coolingPenaltyMult*10000)/10000d;
         }
+        private Cluster copy(OverhaulMSR newMSR){
+            Cluster copy = new Cluster();
+            for(Block b : blocks){
+                copy.blocks.add(newMSR.getBlock(b.x, b.y, b.z));
+            }
+            copy.isConnectedToWall = isConnectedToWall;
+            copy.efficiency = efficiency;
+            copy.totalHeat = totalHeat;
+            copy.totalCooling = totalCooling;
+            copy.netHeat = netHeat;
+            copy.heatMult = heatMult;
+            copy.coolingPenaltyMult = coolingPenaltyMult;
+            copy.irradiation = irradiation;
+            return copy;
+        }
     }
     @Override
-    public void clearData(List<Block> blocks){
+    public synchronized void clearData(List<Block> blocks){
         super.clearData(blocks);
         clusters.clear();
         totalOutput.clear();
-        totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+        shutdownFactor = totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
     }
     /**
      * Block search algorithm from my Tree Feller for Bukkit.
@@ -515,5 +580,36 @@ public class OverhaulMSR extends Multiblock<Block>{
     @Override
     public boolean exists(){
         return Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionMSR!=null;
+    }
+    @Override
+    public OverhaulMSR blankCopy(){
+        return new OverhaulMSR(getX(), getY(), getZ());
+    }
+    @Override
+    public synchronized OverhaulMSR copy(){
+        OverhaulMSR copy = blankCopy();
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    copy.blocks[x][y][z] = blocks[x][y][z]==null?null:blocks[x][y][z].copy();
+                }
+            }
+        }
+        for(Cluster cluster : clusters){
+            copy.clusters.add(cluster.copy(copy));
+        }
+        copy.totalFuelCells = totalFuelCells;
+        copy.totalCooling = totalCooling;
+        copy.totalHeat = totalHeat;
+        copy.netHeat = netHeat;
+        copy.totalEfficiency = totalEfficiency;
+        copy.totalHeatMult = totalHeatMult;
+        copy.totalIrradiation = totalIrradiation;
+        copy.functionalBlocks = functionalBlocks;
+        copy.sparsityMult = sparsityMult;
+        copy.totalOutput.putAll(totalOutput);
+        copy.totalTotalOutput = totalTotalOutput;
+        copy.shutdownFactor = shutdownFactor;
+        return copy;
     }
 }

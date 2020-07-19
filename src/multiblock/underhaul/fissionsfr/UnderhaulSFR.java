@@ -3,10 +3,10 @@ import generator.Priority;
 import java.util.ArrayList;
 import java.util.List;
 import planner.Core;
-import planner.configuration.Configuration;
-import planner.configuration.underhaul.fissionsfr.Fuel;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.Multiblock;
-import multiblock.ppe.FillAir;
+import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
@@ -36,7 +36,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(Core.configuration==null||Core.configuration.underhaul==null||Core.configuration.underhaul.fissionSFR==null)return;
-        for(planner.configuration.underhaul.fissionsfr.Block block : Core.configuration.underhaul.fissionSFR.blocks){
+        for(multiblock.configuration.underhaul.fissionsfr.Block block : Core.configuration.underhaul.fissionSFR.blocks){
             blocks.add(new Block(-1,-1,-1,block));
         }
     }
@@ -73,10 +73,12 @@ public class UnderhaulSFR extends Multiblock<Block>{
             if(block.isCooler()&&block.isActive())cooling+=block.getCooling();
         }
         this.heatMult = totalHeatMult/cells;
+        if(Double.isNaN(heatMult))heatMult = 0;
         heat = (int) (totalHeatMult*fuel.heat);
         netHeat = heat-cooling;
         power = (int) (totalEnergyMult*fuel.power);
         efficiency = totalEnergyMult/cells;
+        if(Double.isNaN(efficiency))efficiency = 0;
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -173,7 +175,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         priorities.add(new Priority<UnderhaulSFR>("Stability"){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
-                return Math.max(0, other.heat)-Math.max(0, main.heat);
+                return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
             }
         });
         priorities.add(new Priority<UnderhaulSFR>("Efficiency"){
@@ -209,6 +211,29 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-        postProcessingEffects.add(new FillAir());
+//        postProcessingEffects.add(new ClearInvalid());//TODO fix
+    }
+    @Override
+    public UnderhaulSFR blankCopy(){
+        return new UnderhaulSFR(getX(), getY(), getZ(), fuel);
+    }
+    @Override
+    public UnderhaulSFR copy(){
+        UnderhaulSFR copy = blankCopy();
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    copy.blocks[x][y][z] = blocks[x][y][z]==null?null:blocks[x][y][z].copy();
+                }
+            }
+        }
+        copy.netHeat = netHeat;
+        copy.power = power;
+        copy.heat = heat;
+        copy.cooling = cooling;
+        copy.cells = cells;
+        copy.efficiency = efficiency;
+        copy.heatMult = heatMult;
+        return copy;
     }
 }

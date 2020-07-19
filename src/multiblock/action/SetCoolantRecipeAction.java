@@ -1,7 +1,7 @@
 package multiblock.action;
 import java.util.ArrayList;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
+import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.menu.MenuEdit;
 import multiblock.Action;
 import multiblock.Block;

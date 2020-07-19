@@ -1,7 +1,7 @@
 package planner.menu.configuration.underhaul.fissionsfr;
 import org.lwjgl.opengl.Display;
 import planner.Core;
-import planner.configuration.underhaul.fissionsfr.PlacementRule;
+import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistSlider;

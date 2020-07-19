@@ -17,7 +17,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.configuration.PartialConfiguration;
+import multiblock.configuration.PartialConfiguration;
 import planner.file.FileReader;
 import planner.file.FileWriter;
 import planner.file.FormatWriter;

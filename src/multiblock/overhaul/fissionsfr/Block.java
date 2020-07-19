@@ -2,7 +2,7 @@ package multiblock.overhaul.fissionsfr;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.PlacementRule;
+import multiblock.configuration.overhaul.fissionsfr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import simplelibrary.Queue;
@@ -10,10 +10,10 @@ public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
-    public planner.configuration.overhaul.fissionsfr.Block template;
-    public planner.configuration.overhaul.fissionsfr.Fuel fuel;
-    public planner.configuration.overhaul.fissionsfr.Source source;
-    public planner.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe;
+    public multiblock.configuration.overhaul.fissionsfr.Block template;
+    public multiblock.configuration.overhaul.fissionsfr.Fuel fuel;
+    public multiblock.configuration.overhaul.fissionsfr.Source source;
+    public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irradiatorRecipe;
     private boolean hasPropogated = false;
     public int moderatorLines;
     public int neutronFlux;
@@ -26,7 +26,7 @@ public class Block extends multiblock.Block{
     public float efficiency;
     public boolean inCluster;
     public boolean closed = false;
-    public Block(int x, int y, int z, planner.configuration.overhaul.fissionsfr.Block template){
+    public Block(int x, int y, int z, multiblock.configuration.overhaul.fissionsfr.Block template){
         super(x, y, z);
         this.template = template;
     }
@@ -38,6 +38,7 @@ public class Block extends multiblock.Block{
     public void copyProperties(multiblock.Block other){
         ((Block)other).fuel = fuel;
         ((Block)other).source = source;
+        ((Block)other).irradiatorRecipe = irradiatorRecipe;
     }
     @Override
     public BufferedImage getBaseTexture(){
@@ -103,9 +104,9 @@ public class Block extends multiblock.Block{
         }
         if(isIrradiator()){
             tip+="\nIrradiator flux: "+neutronFlux+"\n";
-            if(recipe!=null){
-                tip+="Heat per flux: "+recipe.heat+"\n"
-                        + "Total heat: "+recipe.heat*neutronFlux;
+            if(irradiatorRecipe!=null){
+                tip+="Heat per flux: "+irradiatorRecipe.heat+"\n"
+                        + "Total heat: "+irradiatorRecipe.heat*neutronFlux;
             }
         }
         if(isHeatsink()){
@@ -138,6 +139,10 @@ public class Block extends multiblock.Block{
         if(!isFuelCell())return false;
         return source!=null||fuel.selfPriming;
     }
+    @Override
+    public boolean isCore(){
+        return isModerator()||isFuelCell()||isShield()||isIrradiator()||isReflector();
+    }
     public boolean isCasing(){
         return template==null;
     }
@@ -145,8 +150,9 @@ public class Block extends multiblock.Block{
     public boolean isActive(){
         return isCasing()||isConductor()||isModeratorActive()||isFuelCellActive()||isHeatsinkActive()||isIrradiatorActive()||reflectorActive||isShieldActive();
     }
+    @Override
     public boolean isValid(){
-        return isInert()||isConductor()||isModeratorActive()||moderatorValid||isFuelCellActive()||isHeatsinkActive()||isIrradiatorActive()||reflectorActive||isShieldActive();
+        return isInert()||isActive()||moderatorValid;
     }
     public boolean isModeratorActive(){
         return isModerator()&&moderatorActive&&template.activeModerator;
@@ -397,5 +403,25 @@ public class Block extends multiblock.Block{
     @Override
     public boolean canBeQuickReplaced(){
         return template.cooling>0;
+    }
+    @Override
+    public Block copy(){
+        Block copy = new Block(x, y, z, template);
+        copy.fuel = fuel;
+        copy.source = source;
+        copy.irradiatorRecipe = irradiatorRecipe;
+        copy.hasPropogated = hasPropogated;
+        copy.moderatorLines = moderatorLines;
+        copy.neutronFlux = neutronFlux;
+        copy.positionalEfficiency = positionalEfficiency;
+        copy.moderatorValid = moderatorValid;
+        copy.moderatorActive = moderatorActive;
+        copy.heatsinkValid = heatsinkValid;
+        copy.reflectorActive = reflectorActive;
+        copy.shieldActive = shieldActive;
+        copy.efficiency = efficiency;
+        copy.inCluster = inCluster;
+        copy.closed = closed;
+        return copy;
     }
 }

@@ -3,6 +3,7 @@ import generator.MultiblockGenerator;
 import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.action.GenerateAction;
 import org.lwjgl.opengl.Display;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
@@ -38,8 +39,8 @@ public class MenuGenerator extends Menu{
     private MultiblockGenerator generator = null;
     private int lastIndex;
     private int threads = 0;
-    public MenuGenerator(GUI gui, Menu parent, Multiblock<Block> multiblock){
-        super(gui, parent);
+    public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
+        super(gui, editor);
         this.multiblock = multiblock;
         settings.addActionListener((e) -> {
             settings.enabled = false;
@@ -50,13 +51,21 @@ public class MenuGenerator extends Menu{
             settings.enabled = true;
             output.enabled = false;
             tab = Tab.GENERATE;
-            generator.refreshSettings();
-            if(threads<=0)threads = 1;
+            ArrayList<Block> allowedBlocks = new ArrayList<>();
+            for(MenuComponent c : blocks.components){
+                if(((MenuComponentToggleBlock)c).enabled)allowedBlocks.add(((MenuComponentToggleBlock)c).block);
+            }
+            generator.refreshSettings(allowedBlocks);
+            if(threads<=0){
+                generator.importMultiblock(multiblock);
+                threads = 1;
+            }
             threadsLabel.text = threads+" Thread"+(threads==1?"":"s");
         });
         done.addActionListener((e) -> {
             if(generator!=null)generator.stopAllThreads();
-            gui.open(parent);
+            editor.multiblock.action(new GenerateAction(generator.getMainMultiblock()));
+            gui.open(editor);
         });
         addThread.addActionListener((e) -> {
             threads++;
@@ -89,7 +98,7 @@ public class MenuGenerator extends Menu{
             if(multiblocks.length!=multiblockLists.components.size()){
                 multiblockLists.components.clear();
                 for(ArrayList<Multiblock> mbs : multiblocks){
-                    MenuComponentMulticolumnMinimaList lst = multiblockLists.add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 300, 400, 48));
+                    MenuComponentMulticolumnMinimaList lst = multiblockLists.add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 300, 800, 48));
                     for(Multiblock mb : mbs){
                         lst.add(new MenuComponentMultiblockDisplay(mb));
                     }
@@ -139,22 +148,24 @@ public class MenuGenerator extends Menu{
         for(MenuComponent m : components){
             m.x = m.y = m.width = m.height = -1;
         }
-        settings.width = output.width = Display.getWidth()/2;
-        output.x = settings.width;
+        settings.width = output.width = Display.getWidth()/3;
+        settings.x = Display.getWidth()-settings.width-output.width;
+        output.x = settings.x+settings.width;
         output.y = settings.y = 0;
-        output.height = settings.height = done.height = 64;
-        done.x = 0;
-        done.y = Display.getHeight()-done.height;
-        done.width = Display.getWidth();
+        output.height = settings.height = 64;
         switch(tab){
             case SETTINGS:
+                done.height = 64;
+                done.x = 0;
+                done.y = 0;
+                done.width = Display.getWidth()/4;
                 blocksHeader.x = 0;
                 blocksHeader.y = settings.height;
                 blocksHeader.width = blocks.width = Display.getWidth()/4;
                 blocksHeader.height = settings.height;
                 blocks.x = 0;
                 blocks.y = settings.height*2;
-                blocks.height = Display.getHeight()-blocks.y-done.height;
+                blocks.height = Display.getHeight()-blocks.y;
                 generatorsHeader.x = Display.getWidth()/4;
                 generatorsHeader.y = settings.height;
                 generatorsHeader.width = generators.width = Display.getWidth()/4;
@@ -162,7 +173,7 @@ public class MenuGenerator extends Menu{
                 generators.x = Display.getWidth()/4;
                 generators.y = settings.height*2;
                 generators.width = Display.getWidth()/4;
-                generators.height = Display.getHeight()-generators.y-done.height;
+                generators.height = Display.getHeight()-generators.y;
                 for(MenuComponent c : generators.components){
                     c.width = generators.width-(generators.hasVertScrollbar()?generators.vertScrollbarWidth:0);
                 }
@@ -174,14 +185,14 @@ public class MenuGenerator extends Menu{
                 generatorSettings.width = Display.getWidth()/4;
                 generatorSettings.y = settings.height*2;
                 generatorSettings.width = Display.getWidth()/4;
-                generatorSettings.height = Display.getHeight()-generatorSettings.y-done.height;
+                generatorSettings.height = Display.getHeight()-generatorSettings.y;
                 for(MenuComponent c : generatorSettings.components){
                     c.width = generatorSettings.width-(generatorSettings.hasVertScrollbar()?generatorSettings.vertScrollbarWidth:0);
                 }
                 multiblockSettings.x = Display.getWidth()*3/4;
                 multiblockSettings.y = settings.height*2;
                 multiblockSettings.width = Display.getWidth()/4;
-                multiblockSettings.height = Display.getHeight()-multiblockSettings.y-done.height;
+                multiblockSettings.height = Display.getHeight()-multiblockSettings.y;
                 for(MenuComponent c : multiblockSettings.components){
                     c.width = multiblockSettings.width-(multiblockSettings.hasVertScrollbar()?multiblockSettings.vertScrollbarWidth:0);
                 }
@@ -205,7 +216,7 @@ public class MenuGenerator extends Menu{
                 multiblockLists.height = Display.getHeight()-multiblockLists.y;
                 for(MenuComponent m : multiblockLists.components){
                     m.width = multiblockLists.width;
-                    m.height = 400;
+                    m.height = 800;
                 }
                 break;
         }

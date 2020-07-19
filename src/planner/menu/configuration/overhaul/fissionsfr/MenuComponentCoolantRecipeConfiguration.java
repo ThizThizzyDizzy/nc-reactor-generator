@@ -1,7 +1,7 @@
 package planner.menu.configuration.overhaul.fissionsfr;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
+import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentCoolantRecipeConfiguration extends MenuComponent{

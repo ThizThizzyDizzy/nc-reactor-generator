@@ -83,34 +83,34 @@ public class MenuEdit extends Menu{
         super(gui, parent);
         if(multiblock instanceof UnderhaulSFR){
             add(underFuelOrCoolantRecipe);
-            for(planner.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.fuels){
+            for(multiblock.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.fuels){
                 underFuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
             }
         }
         if(multiblock instanceof OverhaulSFR){
             add(underFuelOrCoolantRecipe);
-            for(planner.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+            for(multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
                 underFuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
             }
             add(overFuel);
-            for(planner.configuration.overhaul.fissionsfr.Fuel fuel : Core.configuration.overhaul.fissionSFR.fuels){
+            for(multiblock.configuration.overhaul.fissionsfr.Fuel fuel : Core.configuration.overhaul.fissionSFR.fuels){
                 overFuel.add(new MenuComponentOverSFRFuel(fuel));
             }
             overFuel.setSelectedIndex(0);
             add(irradiatorRecipe);
-            for(planner.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
+            for(multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
                 irradiatorRecipe.add(new MenuComponentSFRIrradiatorRecipe(recipe));
             }
             irradiatorRecipe.setSelectedIndex(0);
         }
         if(multiblock instanceof OverhaulMSR){
             add(overFuel);
-            for(planner.configuration.overhaul.fissionmsr.Fuel fuel : Core.configuration.overhaul.fissionMSR.fuels){
+            for(multiblock.configuration.overhaul.fissionmsr.Fuel fuel : Core.configuration.overhaul.fissionMSR.fuels){
                 overFuel.add(new MenuComponentOverMSRFuel(fuel));
             }
             overFuel.setSelectedIndex(0);
             add(irradiatorRecipe);
-            for(planner.configuration.overhaul.fissionmsr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionMSR.irradiatorRecipes){
+            for(multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionMSR.irradiatorRecipes){
                 irradiatorRecipe.add(new MenuComponentMSRIrradiatorRecipe(recipe));
             }
             irradiatorRecipe.setSelectedIndex(0);
@@ -154,7 +154,7 @@ public class MenuEdit extends Menu{
     public void onGUIOpened(){
         delCircle = true;
         editMetadata.label = multiblock.getName();
-        generate.label = multiblock.isEmpty()?"Generate":"Generate Suggestions";
+//        generate.label = multiblock.isEmpty()?"Generate":"Generate Suggestions";
         if(multiblock instanceof UnderhaulSFR){
             underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
         }
@@ -252,7 +252,7 @@ public class MenuEdit extends Menu{
         }
         if(multiblock instanceof UnderhaulSFR){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                planner.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.fuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.fuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((UnderhaulSFR)multiblock).fuel!=fuel){
                     multiblock.action(new SetFuelAction(this, fuel));
                 }
@@ -260,7 +260,7 @@ public class MenuEdit extends Menu{
         }
         if(multiblock instanceof OverhaulSFR){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                planner.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.coolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.coolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
                     multiblock.action(new SetCoolantRecipeAction(this, recipe));
                 }
@@ -283,16 +283,16 @@ public class MenuEdit extends Menu{
         if(tools.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorTool) tools.components.get(tools.getSelectedIndex())).tool;
     }
-    public planner.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(){
+    public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(){
         return ((MenuComponentOverSFRFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
     }
-    public planner.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(){
+    public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(){
         return ((MenuComponentSFRIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
     }
-    public planner.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(){
+    public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(){
         return ((MenuComponentOverMSRFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
     }
-    public planner.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(){
+    public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(){
         return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
     }
     public void setblock(int x, int y, int z, Block template){
@@ -317,7 +317,7 @@ public class MenuEdit extends Menu{
                 ((multiblock.overhaul.fissionsfr.Block)blok).fuel = getSelectedOverSFRFuel();
             }
             if(((multiblock.overhaul.fissionsfr.Block)blok).isIrradiator()){
-                ((multiblock.overhaul.fissionsfr.Block)blok).recipe = getSelectedSFRIrradiatorRecipe();
+                ((multiblock.overhaul.fissionsfr.Block)blok).irradiatorRecipe = getSelectedSFRIrradiatorRecipe();
             }
         }
         if(multiblock instanceof OverhaulMSR){
@@ -325,7 +325,7 @@ public class MenuEdit extends Menu{
                 ((multiblock.overhaul.fissionmsr.Block)blok).fuel = getSelectedOverMSRFuel();
             }
             if(((multiblock.overhaul.fissionmsr.Block)blok).isIrradiator()){
-                ((multiblock.overhaul.fissionmsr.Block)blok).recipe = getSelectedMSRIrradiatorRecipe();
+                ((multiblock.overhaul.fissionmsr.Block)blok).irradiatorRecipe = getSelectedMSRIrradiatorRecipe();
             }
         }
         multiblock.action(new SetblockAction(x,y,z,blok));
@@ -392,7 +392,7 @@ public class MenuEdit extends Menu{
                 ((multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel();
             }
             if(((multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
-                ((multiblock.overhaul.fissionsfr.Block)set.block).recipe = getSelectedSFRIrradiatorRecipe();
+                ((multiblock.overhaul.fissionsfr.Block)set.block).irradiatorRecipe = getSelectedSFRIrradiatorRecipe();
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulMSR){
@@ -400,7 +400,7 @@ public class MenuEdit extends Menu{
                 ((multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel();
             }
             if(((multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
-                ((multiblock.overhaul.fissionmsr.Block)set.block).recipe = getSelectedMSRIrradiatorRecipe();
+                ((multiblock.overhaul.fissionmsr.Block)set.block).irradiatorRecipe = getSelectedMSRIrradiatorRecipe();
             }
         }
         multiblock.action(set);

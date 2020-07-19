@@ -1,6 +1,6 @@
 package planner.menu.component;
 import planner.Core;
-import planner.configuration.underhaul.fissionsfr.Fuel;
+import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentUnderFuel extends MenuComponent{

@@ -1,7 +1,7 @@
 package multiblock.action;
 import java.util.ArrayList;
 import planner.Core;
-import planner.configuration.underhaul.fissionsfr.Fuel;
+import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.menu.MenuEdit;
 import multiblock.Action;
 import multiblock.Block;

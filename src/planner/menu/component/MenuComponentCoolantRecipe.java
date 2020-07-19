@@ -1,6 +1,6 @@
 package planner.menu.component;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
+import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentCoolantRecipe extends MenuComponent{

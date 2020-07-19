@@ -1,7 +1,7 @@
 package multiblock.underhaul.fissionsfr;
 import java.awt.image.BufferedImage;
 import planner.Core;
-import planner.configuration.underhaul.fissionsfr.PlacementRule;
+import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import simplelibrary.Queue;
@@ -9,7 +9,7 @@ public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
-    public planner.configuration.underhaul.fissionsfr.Block template;
+    public multiblock.configuration.underhaul.fissionsfr.Block template;
     //fuel cell
     public int adjacentCells, adjacentModerators;
     public float energyMult, heatMult;
@@ -18,7 +18,7 @@ public class Block extends multiblock.Block{
     private boolean moderatorActive;
     //cooler
     private boolean coolerValid;
-    public Block(int x, int y, int z, planner.configuration.underhaul.fissionsfr.Block template){
+    public Block(int x, int y, int z, multiblock.configuration.underhaul.fissionsfr.Block template){
         super(x,y,z);
         this.template = template;
     }
@@ -40,6 +40,10 @@ public class Block extends multiblock.Block{
     public String getName(){
         return template.name;
     }
+    @Override
+    public boolean isCore(){
+        return isFuelCell()||isModerator();
+    }
     public boolean isCasing(){
         return template==null;
     }
@@ -59,11 +63,12 @@ public class Block extends multiblock.Block{
     public boolean isActive(){
         return isCasing()||isFuelCell()||moderatorActive||coolerValid;
     }
+    @Override
     public boolean isValid(){
-        return isCasing()||isFuelCell()||moderatorValid||coolerValid;
+        return isActive()||moderatorValid;
     }
     public int getCooling(){
-        return template.cooling;
+        return template.active==null?template.cooling:(template.cooling*Core.configuration.underhaul.fissionSFR.activeCoolerRate/20);
     }
     @Override
     public void clearData(){
@@ -143,7 +148,7 @@ public class Block extends multiblock.Block{
         if(isModerator())tip+="\nModerator";
         if(isCooler()){
             tip+="\nCooler"
-                    + "\nCooling: "+template.cooling+" H/t";
+                    + "\nCooling: "+getCooling()+" H/t";
             if(template.active!=null)tip+="\nActive ("+template.active+")";
         }
         for(PlacementRule rule : template.rules){
@@ -212,5 +217,17 @@ public class Block extends multiblock.Block{
     @Override
     public boolean defaultEnabled(){
         return template.active==null;
+    }
+    @Override
+    public Block copy(){
+        Block copy = new Block(x, y, z, template);
+        copy.adjacentCells = adjacentCells;
+        copy.adjacentModerators = adjacentModerators;
+        copy.energyMult = energyMult;
+        copy.heatMult = heatMult;
+        copy.moderatorValid = moderatorValid;
+        copy.moderatorActive = moderatorActive;
+        copy.coolerValid = coolerValid;
+        return copy;
     }
 }

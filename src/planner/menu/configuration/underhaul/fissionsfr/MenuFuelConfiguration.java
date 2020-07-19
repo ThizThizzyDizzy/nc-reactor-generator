@@ -1,7 +1,7 @@
 package planner.menu.configuration.underhaul.fissionsfr;
 import org.lwjgl.opengl.Display;
 import planner.Core;
-import planner.configuration.underhaul.fissionsfr.Fuel;
+import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;

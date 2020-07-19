@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.opengl.Display;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.Block;
+import multiblock.configuration.overhaul.fissionsfr.Block;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;

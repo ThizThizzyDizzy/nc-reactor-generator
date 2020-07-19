@@ -48,7 +48,7 @@ public class FileWriter{
                         hellrage.set("SaveVersion", saveVersion);
                         JSON.JSONObject compressedReactor = new JSON.JSONObject();
                         hellrage.set("CompressedReactor", compressedReactor);
-                        for(planner.configuration.underhaul.fissionsfr.Block b : ncpf.configuration.underhaul.fissionSFR.blocks){
+                        for(multiblock.configuration.underhaul.fissionsfr.Block b : ncpf.configuration.underhaul.fissionSFR.blocks){
                             JSON.JSONArray array = new JSON.JSONArray();
                             for(multiblock.underhaul.fissionsfr.Block block : reactor.getBlocks()){
                                 if(block.template==b){
@@ -95,7 +95,7 @@ public class FileWriter{
                         JSON.JSONObject fuelCells = new JSON.JSONObject();
                         JSON.JSONObject irradiators = new JSON.JSONObject();
                         JSON.JSONObject shields = new JSON.JSONObject();
-                        for(planner.configuration.overhaul.fissionsfr.Block b : ncpf.configuration.overhaul.fissionSFR.blocks){
+                        for(multiblock.configuration.overhaul.fissionsfr.Block b : ncpf.configuration.overhaul.fissionSFR.blocks){
                             if(b.cooling>0){
                                 JSON.JSONArray array = new JSON.JSONArray();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
@@ -184,7 +184,7 @@ public class FileWriter{
                                 HashMap<String, ArrayList<multiblock.overhaul.fissionsfr.Block>> radiators = new HashMap<>();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){
-                                        String name = "{\\\"HeatPerFlux\\\":"+(block.recipe==null?0:block.recipe.heat)+",\\\"EfficiencyMultiplier\\\":"+(block.recipe==null?0:block.recipe.efficiency)+"}";
+                                        String name = "{\\\"HeatPerFlux\\\":"+(block.irradiatorRecipe==null?0:block.irradiatorRecipe.heat)+",\\\"EfficiencyMultiplier\\\":"+(block.irradiatorRecipe==null?0:block.irradiatorRecipe.efficiency)+"}";
                                         if(radiators.containsKey(name)){
                                             radiators.get(name).add(block);
                                         }else{

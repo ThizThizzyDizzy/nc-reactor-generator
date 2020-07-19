@@ -2,7 +2,7 @@ package planner.file;
 import java.util.ArrayList;
 import java.util.HashMap;
 import multiblock.Multiblock;
-import planner.configuration.Configuration;
+import multiblock.configuration.Configuration;
 public class NCPFFile{
     public static byte SAVE_VERSION = (byte)2;
     public Configuration configuration;

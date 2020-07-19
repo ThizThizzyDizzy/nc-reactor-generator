@@ -1,7 +1,7 @@
 package planner.menu.configuration.overhaul.fissionsfr;
 import org.lwjgl.opengl.Display;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
+import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;

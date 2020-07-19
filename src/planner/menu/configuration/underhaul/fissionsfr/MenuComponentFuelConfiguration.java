@@ -1,7 +1,7 @@
 package planner.menu.configuration.underhaul.fissionsfr;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.configuration.underhaul.fissionsfr.Fuel;
+import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentFuelConfiguration extends MenuComponent{

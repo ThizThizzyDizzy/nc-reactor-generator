@@ -1,7 +1,7 @@
 package planner.menu.configuration.overhaul.fissionmsr;
 import org.lwjgl.opengl.Display;
 import planner.Core;
-import planner.configuration.overhaul.fissionmsr.Source;
+import multiblock.configuration.overhaul.fissionmsr.Source;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;

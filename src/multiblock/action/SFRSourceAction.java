@@ -1,6 +1,6 @@
 package multiblock.action;
 import java.util.ArrayList;
-import planner.configuration.overhaul.fissionsfr.Source;
+import multiblock.configuration.overhaul.fissionsfr.Source;
 import multiblock.Action;
 import multiblock.overhaul.fissionsfr.Block;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;

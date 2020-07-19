@@ -39,7 +39,6 @@ public abstract class Block extends MultiblockBit{
     }
     public abstract String getName();
     public abstract void clearData();
-    public abstract boolean isActive();
     public <T extends Block> Queue<T> getAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
         for(Direction direction : directions){
@@ -114,6 +113,9 @@ public abstract class Block extends MultiblockBit{
         copyProperties(b);
         return b;
     }
+    public abstract boolean isValid();
+    public abstract boolean isActive();
+    public abstract boolean isCore();
     public abstract boolean isCasing();
     public abstract boolean hasRules();
     public abstract boolean calculateRules(Multiblock multiblock);
@@ -124,4 +126,5 @@ public abstract class Block extends MultiblockBit{
     public boolean defaultEnabled(){
         return true;
     }
+    public abstract Block copy();
 }

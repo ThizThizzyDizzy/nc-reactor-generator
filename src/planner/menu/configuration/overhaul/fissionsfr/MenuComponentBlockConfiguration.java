@@ -2,7 +2,7 @@ package planner.menu.configuration.overhaul.fissionsfr;
 import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.configuration.overhaul.fissionsfr.Block;
+import multiblock.configuration.overhaul.fissionsfr.Block;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentBlockConfiguration extends MenuComponent{

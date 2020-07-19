@@ -4,19 +4,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import planner.Core;
-import planner.configuration.Configuration;
-import planner.configuration.overhaul.fissionsfr.CoolantRecipe;
-import planner.configuration.overhaul.fissionsfr.Fuel;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
+import multiblock.configuration.overhaul.fissionsfr.Fuel;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.SFRAllShieldsAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.SFRFill;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
+import multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe;
+import multiblock.configuration.overhaul.fissionsfr.Source;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentSFRToggleFuel;
+import planner.menu.component.MenuComponentSFRToggleSource;
+import planner.menu.component.MenuComponentSFRToggleIrradiatorRecipe;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulSFR extends Multiblock<Block>{
@@ -33,6 +38,8 @@ public class OverhaulSFR extends Multiblock<Block>{
     public int totalIrradiation;
     public int functionalBlocks;
     public float sparsityMult;
+    public float shutdownFactor;
+    private boolean computingShutdown = false;
     public OverhaulSFR(){
         this(7, 5, 7, Core.configuration.overhaul.fissionSFR.coolantRecipes.get(0));
     }
@@ -51,7 +58,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(Core.configuration==null||Core.configuration.overhaul==null||Core.configuration.overhaul.fissionSFR==null)return;
-        for(planner.configuration.overhaul.fissionsfr.Block block : Core.configuration.overhaul.fissionSFR.blocks){
+        for(multiblock.configuration.overhaul.fissionsfr.Block block : Core.configuration.overhaul.fissionSFR.blocks){
             blocks.add(new Block(-1, -1, -1, block));
         }
     }
@@ -109,7 +116,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                 }
                 if(b.isIrradiatorActive()){
                     cluster.irradiation+=b.neutronFlux;
-                    if(b.recipe!=null)cluster.totalHeat+=b.recipe.heat*b.neutronFlux;
+                    if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.neutronFlux;
                 }
             }
             cluster.efficiency/=fuelCells;
@@ -144,6 +151,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         totalOutput*=sparsityMult;
         totalEfficiency*=sparsityMult;
         totalOutput/=coolantRecipe.heat/coolantRecipe.outputRatio;
+        if(!computingShutdown)shutdownFactor = calculateShutdownFactor();
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -159,7 +167,8 @@ public class OverhaulSFR extends Multiblock<Block>{
                 + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
                 + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                 + "Clusters: "+clusters.size()+"\n"
-                + "Total Irradiation: "+totalIrradiation+"\n";
+                + "Total Irradiation: "+totalIrradiation+"\n"
+                + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n";
         for(Fuel f : Core.configuration.overhaul.fissionSFR.fuels){
             int i = getFuelCount(f);
             if(i>0)s+="\n"+f.name+": "+i;
@@ -207,7 +216,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         for(Block block : getBlocks()){
             if(block.template.fuelCell)fuels.add(configuration.overhaul.fissionSFR.fuels.indexOf(block.fuel));
             if(block.template.fuelCell)sources.add(configuration.overhaul.fissionSFR.sources.indexOf(block.source)+1);
-            if(block.template.irradiator)irradiatorRecipes.add(configuration.overhaul.fissionSFR.irradiatorRecipes.indexOf(block.recipe)+1);
+            if(block.template.irradiator)irradiatorRecipes.add(configuration.overhaul.fissionSFR.irradiatorRecipes.indexOf(block.irradiatorRecipe)+1);
         }
         config.set("blocks", blox);
         config.set("fuels", fuels);
@@ -233,7 +242,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         for(Block block : getBlocks()){
             if(block.template.fuelCell)block.fuel = to.overhaul.fissionSFR.convert(block.fuel);
             if(block.template.fuelCell)block.source = to.overhaul.fissionSFR.convert(block.source);
-            if(block.template.irradiator)block.recipe = to.overhaul.fissionSFR.convert(block.recipe);
+            if(block.template.irradiator)block.irradiatorRecipe = to.overhaul.fissionSFR.convert(block.irradiatorRecipe);
             block.template = to.overhaul.fissionSFR.convert(block.template);
         }
     }
@@ -290,9 +299,46 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
+        fuelToggles.clear();
         for(Fuel f : Core.configuration.overhaul.fissionSFR.fuels){
-            multiblockSettings.add(new MenuComponentSFRToggleFuel(f));
+            MenuComponentSFRToggleFuel toggle = new MenuComponentSFRToggleFuel(f);
+            fuelToggles.put(f, toggle);
+            multiblockSettings.add(toggle);
         }
+        for(Source s : Core.configuration.overhaul.fissionSFR.sources){
+            MenuComponentSFRToggleSource toggle = new MenuComponentSFRToggleSource(s);
+            sourceToggles.put(s, toggle);
+            multiblockSettings.add(toggle);
+        }
+        for(IrradiatorRecipe r : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
+            MenuComponentSFRToggleIrradiatorRecipe toggle = new MenuComponentSFRToggleIrradiatorRecipe(r);
+            irradiatorRecipeToggles.put(r, toggle);
+            multiblockSettings.add(toggle);
+        }
+    }
+    private HashMap<Fuel, MenuComponentSFRToggleFuel> fuelToggles = new HashMap<>();
+    public ArrayList<Fuel> getValidFuels(){
+        ArrayList<Fuel> validFuels = new ArrayList<>();
+        for(Fuel f :fuelToggles.keySet()){
+            if(fuelToggles.get(f).enabled)validFuels.add(f);
+        }
+        return validFuels;
+    }
+    private HashMap<Source, MenuComponentSFRToggleSource> sourceToggles = new HashMap<>();
+    public ArrayList<Source> getValidSources(){
+        ArrayList<Source> validSources = new ArrayList<>();
+        for(Source s :sourceToggles.keySet()){
+            if(sourceToggles.get(s).enabled)validSources.add(s);
+        }
+        return validSources;
+    }
+    private HashMap<IrradiatorRecipe, MenuComponentSFRToggleIrradiatorRecipe> irradiatorRecipeToggles = new HashMap<>();
+    public ArrayList<IrradiatorRecipe> getValidIrradiatorRecipes(){
+        ArrayList<IrradiatorRecipe> validIrradiatorRecipes = new ArrayList<>();
+        for(IrradiatorRecipe r :irradiatorRecipeToggles.keySet()){
+            if(irradiatorRecipeToggles.get(r).enabled)validIrradiatorRecipes.add(r);
+        }
+        return validIrradiatorRecipes;
     }
     private boolean isValid(){
         return totalOutput>0;
@@ -304,10 +350,12 @@ public class OverhaulSFR extends Multiblock<Block>{
         }
         return badCells;
     }
-    private float getShutdownFactor(){
+    private float calculateShutdownFactor(){
+        computingShutdown = true;
         action(new SFRAllShieldsAction(true));
         float offOut = totalOutput;
         undo();
+        computingShutdown = false;
         return 1-(offOut/totalOutput);
     }
     @Override
@@ -329,7 +377,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         priorities.add(new Priority<OverhaulSFR>("Shutdownable"){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                return main.getShutdownFactor()-other.getShutdownFactor();
+                return main.shutdownFactor-other.shutdownFactor;
             }
         });
         priorities.add(new Priority<OverhaulSFR>("Stability"){
@@ -365,7 +413,8 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-        for(planner.configuration.overhaul.fissionsfr.Block b : Core.configuration.overhaul.fissionSFR.blocks){
+//        postProcessingEffects.add(new ClearInvalid());//TODO fix
+        for(multiblock.configuration.overhaul.fissionsfr.Block b : Core.configuration.overhaul.fissionSFR.blocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new SFRFill(b));
         }
     }
@@ -389,6 +438,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                 }
             }
         }
+        private Cluster(){}
         private boolean isValid(){
             if(!isConnectedToWall)return false;
             for(Block block : blocks){
@@ -415,12 +465,28 @@ public class OverhaulSFR extends Multiblock<Block>{
                 + "Heat Multiplier: "+percent(heatMult, 0)+"\n"
                 + "Cooling penalty mult: "+Math.round(coolingPenaltyMult*10000)/10000d;
         }
+        private Cluster copy(OverhaulSFR newSFR){
+            Cluster copy = new Cluster();
+            for(Block b : blocks){
+                copy.blocks.add(newSFR.getBlock(b.x, b.y, b.z));
+            }
+            copy.isConnectedToWall = isConnectedToWall;
+            copy.totalOutput = totalOutput;
+            copy.efficiency = efficiency;
+            copy.totalHeat = totalHeat;
+            copy.totalCooling = totalCooling;
+            copy.netHeat = netHeat;
+            copy.heatMult = heatMult;
+            copy.coolingPenaltyMult = coolingPenaltyMult;
+            copy.irradiation = irradiation;
+            return copy;
+        }
     }
     @Override
     public void clearData(List<Block> blocks){
         super.clearData(blocks);
         clusters.clear();
-        totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = rawOutput = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+        shutdownFactor = totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = rawOutput = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
     }
     /**
      * Block search algorithm from my Tree Feller for Bukkit.
@@ -510,5 +576,36 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     public boolean exists(){
         return Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionSFR!=null;
+    }
+    @Override
+    public OverhaulSFR blankCopy(){
+        return new OverhaulSFR(getX(), getY(), getZ(), coolantRecipe);
+    }
+    @Override
+    public OverhaulSFR copy(){
+        OverhaulSFR copy = blankCopy();
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    copy.blocks[x][y][z] = blocks[x][y][z]==null?null:blocks[x][y][z].copy();
+                }
+            }
+        }
+        for(Cluster cluster : clusters){
+            copy.clusters.add(cluster.copy(copy));
+        }
+        copy.totalFuelCells = totalFuelCells;
+        copy.rawOutput = rawOutput;
+        copy.totalOutput = totalOutput;
+        copy.totalCooling = totalCooling;
+        copy.totalHeat = totalHeat;
+        copy.netHeat = netHeat;
+        copy.totalEfficiency = totalEfficiency;
+        copy.totalHeatMult = totalHeatMult;
+        copy.totalIrradiation = totalIrradiation;
+        copy.functionalBlocks = functionalBlocks;
+        copy.sparsityMult = sparsityMult;
+        copy.shutdownFactor = shutdownFactor;
+        return copy;
     }
 }

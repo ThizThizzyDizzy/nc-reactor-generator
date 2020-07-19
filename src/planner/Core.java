@@ -23,7 +23,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import planner.configuration.Configuration;
+import multiblock.configuration.Configuration;
 import multiblock.Multiblock;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
@@ -64,7 +64,7 @@ public class Core extends Renderer2D{
     public static Theme theme = Theme.themes.get(0);
     static{
         Configuration.configurations.get(0).impose(configuration);
-        for(planner.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.blocks){
+        for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.blocks){
             if(b.cooling>0&&!b.name.contains("Standard")){
                 b.setInternalTexture(Core.getImage("overhaul/"+b.name.toLowerCase().replace(" coolant heater", "").replace("liquid ", "")));
             }

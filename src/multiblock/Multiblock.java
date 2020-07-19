@@ -6,21 +6,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.configuration.Configuration;
+import multiblock.configuration.Configuration;
 import planner.menu.component.MenuComponentMinimaList;
+import simplelibrary.Queue;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
 public abstract class Multiblock<T extends Block> extends MultiblockBit{
+    public long lastChangeTime;
     public Stack<Action> history = new Stack<>();
     public Stack<Action> future = new Stack<>();
+    public Queue<Action> queue = new Queue<>();
     public HashMap<String, String> metadata = new HashMap<>();
     {
         resetMetadata();
+        lastChangeTime = System.nanoTime();
     }
     public void resetMetadata(){
         metadata.clear();
@@ -244,16 +250,16 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     private boolean forceRescan = false;
     public ArrayList<T> getBlocks(){
         if(lastBlocks!=null&&!forceRescan)return lastBlocks;
-        lastBlocks = new ArrayList<>();
+        ArrayList<T> lastBlox = new ArrayList<>();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
                 for(int z = 0; z<getZ(); z++){
                     T b = getBlock(x, y, z);
-                    if(b!=null)lastBlocks.add(b);
+                    if(b!=null)lastBlox.add(b);
                 }
             }
         }
-        return lastBlocks;
+        return lastBlocks = lastBlox;
     }
     protected abstract T newCasing(int x, int y, int z);
     public abstract String getTooltip();
@@ -496,6 +502,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
     }
     public void action(Action action){
+        lastChangeTime = System.nanoTime();
         recalculate(action.apply(this));
         future.clear();
         history.push(action);
@@ -508,7 +515,11 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     private void recalculate(ActionResult result){
         forceRescan = true;
-        List<T> blox = result.getAffectedGroups();
+        recalculate(result.getAffectedGroups());
+        forceRescan = false;
+    }
+    private void recalculate(List<T> blox){
+        forceRescan = true;
         clearData(blox);
         if(validate()){
             recalculate();
@@ -590,4 +601,43 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return postProcessingEffects;
     }
     public abstract void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects);
+    public int getVolume(){
+        return getX()*getY()*getZ();
+    }
+    public void queueAction(Action action){
+        queue.enqueue(action);
+    }
+    public void performActions(){
+        future.clear();
+        ArrayList<T> affected = new ArrayList<>();
+        while(!queue.isEmpty()){
+            Action action = queue.dequeue();
+            ActionResult result = action.apply(this);
+            affected.addAll(result.getAffectedGroups());
+            history.push(action);
+        }
+        Set<T> actual = new HashSet<>();
+        for(T t : affected){
+            T b = getBlock(t.x, t.y, t.z);
+            if(b==null)continue;
+            actual.add(b);
+        }
+        recalculate(new ArrayList<>(actual));
+    }
+    public boolean isBetterThan(Multiblock other, ArrayList<Priority> priorities){
+        for(Priority p : priorities){
+            double result = p.compare(this, other);
+            if(result>0)return true;
+            if(result<0)return false;
+        }
+        return false;
+    }
+    public abstract Multiblock<T> blankCopy();
+    public abstract Multiblock<T> copy();
+    public long nanosSinceLastChange(){
+        return System.nanoTime()-lastChangeTime;
+    }
+    public long millisSinceLastChange(){
+        return nanosSinceLastChange()/1_000_000;
+    }
 }
