@@ -3,7 +3,7 @@ import multiblock.Block;
 import multiblock.Multiblock;
 public class ClearInvalid extends PostProcessingEffect{
     public ClearInvalid(){
-        super("Remove Invalid Blocks", true, false);
+        super("Remove Invalid Blocks", true, true);
     }
     @Override
     public void apply(Multiblock multiblock){

@@ -249,7 +249,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     private ArrayList<T> lastBlocks = null;
     private boolean forceRescan = false;
     public ArrayList<T> getBlocks(){
-        if(lastBlocks!=null&&!forceRescan)return lastBlocks;
+        return getBlocks(false);
+    }
+    public ArrayList<T> getBlocks(boolean rescan){
+        if(lastBlocks!=null&&!rescan&&!forceRescan)return lastBlocks;
         ArrayList<T> lastBlox = new ArrayList<>();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
@@ -580,7 +583,11 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             if(metadata.get(key)!=null)s+=key+": "+metadata.get(key)+"\n";
         }
         s+="\n";
-        return s+getTooltip();
+        String extra = getExtraSaveTooltip();
+        return extra.isEmpty()?(s+getTooltip()):(s+getExtraSaveTooltip()+"\n"+getTooltip());
+    }
+    protected String getExtraSaveTooltip(){
+        return "";
     }
     public abstract void addGeneratorSettings(MenuComponentMinimaList multiblockSettings);
     public ArrayList<Priority> getGenerationPriorities(){

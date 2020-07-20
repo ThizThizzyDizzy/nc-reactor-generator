@@ -9,7 +9,7 @@ public class ActionResult<T extends Multiblock>{
     }
     public ArrayList<Block> getAffectedGroups(){
         if(blocks==null){
-            return multiblock.getBlocks();
+            return multiblock.getBlocks(true);
         }
         return multiblock.getAffectedGroups(blocks);
     }

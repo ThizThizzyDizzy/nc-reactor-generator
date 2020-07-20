@@ -413,7 +413,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-//        postProcessingEffects.add(new ClearInvalid());//TODO fix
+        postProcessingEffects.add(new ClearInvalid());
         for(multiblock.configuration.overhaul.fissionsfr.Block b : Core.configuration.overhaul.fissionSFR.blocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new SFRFill(b));
         }

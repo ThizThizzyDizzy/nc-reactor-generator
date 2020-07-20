@@ -85,6 +85,10 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return new Block(x, y, z, null);
     }
     @Override
+    protected String getExtraSaveTooltip(){
+        return "Fuel: "+fuel.name;
+    }
+    @Override
     public String getTooltip(){
         return "Power Generation: "+power+"RF/t\n"
                 + "Total Heat: "+heat+"\n"
@@ -211,7 +215,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-//        postProcessingEffects.add(new ClearInvalid());//TODO fix
+        postProcessingEffects.add(new ClearInvalid());
     }
     @Override
     public UnderhaulSFR blankCopy(){

@@ -12,12 +12,12 @@ import multiblock.Multiblock;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.MSRAllShieldsAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
-import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.MSRFill;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe;
 import multiblock.configuration.overhaul.fissionmsr.Source;
+import multiblock.ppe.ClearInvalid;
 import planner.menu.component.MenuComponentMSRToggleFuel;
 import planner.menu.component.MenuComponentMSRToggleSource;
 import planner.menu.component.MenuComponentMSRToggleIrradiatorRecipe;
@@ -419,7 +419,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-//        postProcessingEffects.add(new ClearInvalid());//TODO fix
+        postProcessingEffects.add(new ClearInvalid());
         for(multiblock.configuration.overhaul.fissionmsr.Block b : Core.configuration.overhaul.fissionMSR.blocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new MSRFill(b));
         }
