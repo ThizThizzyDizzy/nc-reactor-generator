@@ -218,7 +218,6 @@ public class StandardGenerator extends MultiblockGenerator{
             currentMultiblock.queueAction(new SymmetryAction(symmetry));
         }
         currentMultiblock.performActions();
-        currentMultiblock.recalculate();
         for(PostProcessingEffect effect : settings.postProcessingEffects){
             if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect));
         }

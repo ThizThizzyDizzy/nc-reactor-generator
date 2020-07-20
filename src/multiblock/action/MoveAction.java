@@ -59,7 +59,8 @@ public class MoveAction extends Action<Multiblock>{
     @Override
     protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
         for(int[] loc : selection){
-            blocks.add(multiblock.getBlock(loc[0], loc[1], loc[2]));
+            Block from = multiblock.getBlock(loc[0], loc[1], loc[2]);
+            if(from!=null)blocks.add(from);
             Block to = multiblock.getBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz);
             if(to==null)continue;
             if(!to.isCasing()&&!blocks.contains(to)){

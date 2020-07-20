@@ -73,6 +73,10 @@ public abstract class MultiblockGenerator{
     }
     public abstract void importMultiblock(Multiblock<Block> multiblock);
     public Multiblock getMainMultiblock(){
-        return getMultiblockLists()[0].get(0);
+        ArrayList<Multiblock>[] lists = getMultiblockLists();
+        if(lists.length==0)return null;
+        ArrayList<Multiblock> list = lists[0];
+        if(list.isEmpty())return null;
+        return list.get(0);
     }
 }
