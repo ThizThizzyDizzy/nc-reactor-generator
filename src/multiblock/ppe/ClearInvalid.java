@@ -17,4 +17,8 @@ public class ClearInvalid extends PostProcessingEffect{
             }
         }
     }
+    @Override
+    public boolean defaultEnabled(){
+        return true;
+    }
 }

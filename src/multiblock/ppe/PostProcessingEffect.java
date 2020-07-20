@@ -9,4 +9,7 @@ public abstract class PostProcessingEffect{
         this.postSymmetry = postSymmetry;
     }
     public abstract void apply(Multiblock multiblock);
+    public boolean defaultEnabled(){
+        return false;
+    }
 }

@@ -9,6 +9,7 @@ public class MenuComponentSymmetry extends MenuComponent{
     public MenuComponentSymmetry(Symmetry symmetry){
         super(0, 0, 0, 32);
         this.symmetry = symmetry;
+        enabled = symmetry.defaultEnabled();
     }
     @Override
     public void render(){

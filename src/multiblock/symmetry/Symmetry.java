@@ -6,4 +6,7 @@ public abstract class Symmetry{
         this.name = name;
     }
     public abstract void apply(Multiblock multiblock);
+    public boolean defaultEnabled(){
+        return false;
+    }
 }

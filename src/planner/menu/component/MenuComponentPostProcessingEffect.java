@@ -9,6 +9,7 @@ public class MenuComponentPostProcessingEffect extends MenuComponent{
     public MenuComponentPostProcessingEffect(PostProcessingEffect postProcessingEffect){
         super(0, 0, 0, 32);
         this.postProcessingEffect = postProcessingEffect;
+        enabled = postProcessingEffect.defaultEnabled();
     }
     @Override
     public void render(){
