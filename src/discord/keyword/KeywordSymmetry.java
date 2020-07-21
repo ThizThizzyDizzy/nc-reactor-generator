@@ -7,7 +7,7 @@ public class KeywordSymmetry extends Keyword{
         super("Symmetry");
     }
     @Override
-    public boolean read(String input){
+    public boolean doRead(String input){
         this.symmetry = input;
         return true;
     }

@@ -127,4 +127,5 @@ public abstract class Block extends MultiblockBit{
         return true;
     }
     public abstract Block copy();
+    public abstract boolean isEqual(Block other);
 }

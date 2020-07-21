@@ -4,10 +4,10 @@ import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
 public class SetblockAction extends Action<Multiblock>{
-    private final int x;
-    private final int y;
-    private final int z;
-    private final Block block;
+    public final int x;
+    public final int y;
+    public final int z;
+    public final Block block;
     private Block was = null;
     public SetblockAction(int x, int y, int z, Block block){
         this.x = x;

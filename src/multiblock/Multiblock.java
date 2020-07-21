@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import multiblock.action.SetblockAction;
 import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -652,5 +653,31 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     public long millisSinceLastChange(){
         return nanosSinceLastChange()/1_000_000;
+    }
+    public int count(Object o){
+        if(o instanceof Block){
+            return getBlocks((T)o);
+        }
+        return doCount(o);
+    }
+    protected abstract int doCount(Object o);
+    public int getBlocks(T type){
+        int total = 0;
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    Block block = getBlock(x, y, z);
+                    for(Action a : queue){
+                        if(a instanceof SetblockAction){
+                            SetblockAction set = (SetblockAction)a;
+                            if(set.x==x&&set.y==y&&set.z==z)block = set.block;
+                        }
+                    }
+                    if(block==null)continue;
+                    if(block.isEqual(type))total++;
+                }
+            }
+        }
+        return total;
     }
 }

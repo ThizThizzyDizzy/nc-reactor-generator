@@ -6,7 +6,7 @@ public class KeywordUnderhaul extends Keyword{
         super("Underhaul");
     }
     @Override
-    public boolean read(String input){
+    public boolean doRead(String input){
         return true;
     }
     @Override
@@ -15,7 +15,7 @@ public class KeywordUnderhaul extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "[uU][nN][dD][eE][rR][hH][aA][uU][lL]";
+        return "([pP][rR][eE][ -]?[oO][vV][eE][rR]|[uU][nN][dD][eE][rR])[hH][aA][uU][lL]";
     }
     @Override
     public Keyword newInstance(){

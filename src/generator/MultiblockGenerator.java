@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.UUID;
 import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.Range;
 import planner.menu.component.MenuComponentMinimaList;
 public abstract class MultiblockGenerator{
     protected Random rand = new Random();
@@ -33,7 +34,7 @@ public abstract class MultiblockGenerator{
         return valid;
     }
     public abstract void addSettings(MenuComponentMinimaList generatorSettings, Multiblock multi);
-    public abstract void refreshSettings(ArrayList<Block> allowedBlocks);
+    public abstract void refreshSettings(ArrayList<Range<Block>> allowedBlocks);
     public int getActiveThreads(){
         synchronized(threadronyzer){
             return threads.size();

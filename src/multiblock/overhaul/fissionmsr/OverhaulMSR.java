@@ -9,6 +9,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Fuel;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.Range;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.MSRAllShieldsAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
@@ -323,26 +324,26 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
     }
     private HashMap<Fuel, MenuComponentMSRToggleFuel> fuelToggles = new HashMap<>();
-    public ArrayList<Fuel> getValidFuels(){
-        ArrayList<Fuel> validFuels = new ArrayList<>();
+    public ArrayList<Range<Fuel>> getValidFuels(){
+        ArrayList<Range<Fuel>> validFuels = new ArrayList<>();
         for(Fuel f :fuelToggles.keySet()){
-            if(fuelToggles.get(f).enabled)validFuels.add(f);
+            if(fuelToggles.get(f).enabled)validFuels.add(new Range<>(f,fuelToggles.get(f).min,fuelToggles.get(f).max));
         }
         return validFuels;
     }
     private HashMap<Source, MenuComponentMSRToggleSource> sourceToggles = new HashMap<>();
-    public ArrayList<Source> getValidSources(){
-        ArrayList<Source> validSources = new ArrayList<>();
+    public ArrayList<Range<Source>> getValidSources(){
+        ArrayList<Range<Source>> validSources = new ArrayList<>();
         for(Source s :sourceToggles.keySet()){
-            if(sourceToggles.get(s).enabled)validSources.add(s);
+            if(sourceToggles.get(s).enabled)validSources.add(new Range<>(s,sourceToggles.get(s).min,sourceToggles.get(s).max));
         }
         return validSources;
     }
     private HashMap<IrradiatorRecipe, MenuComponentMSRToggleIrradiatorRecipe> irradiatorRecipeToggles = new HashMap<>();
-    public ArrayList<IrradiatorRecipe> getValidIrradiatorRecipes(){
-        ArrayList<IrradiatorRecipe> validIrradiatorRecipes = new ArrayList<>();
+    public ArrayList<Range<IrradiatorRecipe>> getValidIrradiatorRecipes(){
+        ArrayList<Range<IrradiatorRecipe>> validIrradiatorRecipes = new ArrayList<>();
         for(IrradiatorRecipe r :irradiatorRecipeToggles.keySet()){
-            if(irradiatorRecipeToggles.get(r).enabled)validIrradiatorRecipes.add(r);
+            if(irradiatorRecipeToggles.get(r).enabled)validIrradiatorRecipes.add(new Range<>(r,irradiatorRecipeToggles.get(r).min,irradiatorRecipeToggles.get(r).max));
         }
         return validIrradiatorRecipes;
     }
@@ -617,5 +618,49 @@ public class OverhaulMSR extends Multiblock<Block>{
         copy.totalTotalOutput = totalTotalOutput;
         copy.shutdownFactor = shutdownFactor;
         return copy;
+    }
+    @Override
+    protected int doCount(Object o){
+        int count = 0;
+        if(o instanceof Fuel){
+            Fuel f = (Fuel)o;
+            for(int x = 0; x<getX(); x++){
+                for(int y = 0; y<getY(); y++){
+                    for(int z = 0; z<getZ(); z++){
+                        Block b = getBlock(x, y, z);
+                        if(b==null)continue;
+                        if(b.fuel==f)count++;
+                    }
+                }
+            }
+            return count;
+        }
+        if(o instanceof Source){
+            Source s = (Source)o;
+            for(int x = 0; x<getX(); x++){
+                for(int y = 0; y<getY(); y++){
+                    for(int z = 0; z<getZ(); z++){
+                        Block b = getBlock(x, y, z);
+                        if(b==null)continue;
+                        if(b.source==s)count++;
+                    }
+                }
+            }
+            return count;
+        }
+        if(o instanceof IrradiatorRecipe){
+            IrradiatorRecipe r = (IrradiatorRecipe)o;
+            for(int x = 0; x<getX(); x++){
+                for(int y = 0; y<getY(); y++){
+                    for(int z = 0; z<getZ(); z++){
+                        Block b = getBlock(x, y, z);
+                        if(b==null)continue;
+                        if(b.irradiatorRecipe==r)count++;
+                    }
+                }
+            }
+            return count;
+        }
+        throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in Overhaul MSR!");
     }
 }

@@ -230,4 +230,8 @@ public class Block extends multiblock.Block{
         copy.coolerValid = coolerValid;
         return copy;
     }
+    @Override
+    public boolean isEqual(multiblock.Block other){
+        return other instanceof Block&&((Block)other).template==template;
+    }
 }

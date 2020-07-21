@@ -424,4 +424,8 @@ public class Block extends multiblock.Block{
         copy.closed = closed;
         return copy;
     }
+    @Override
+    public boolean isEqual(multiblock.Block other){
+        return other instanceof Block&&((Block)other).template==template;
+    }
 }

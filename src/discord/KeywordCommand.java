@@ -21,12 +21,14 @@ public abstract class KeywordCommand extends Command{
     static{
         addKeyword(new KeywordCuboid());
         addKeyword(new KeywordCube());
-        addKeyword(new KeywordFuel());
         addKeyword(new KeywordUnderhaul());
         addKeyword(new KeywordOverhaul());
         addKeyword(new KeywordSymmetry());
         addKeyword(new KeywordConfiguration());
         addKeyword(new KeywordPriority());
+        addKeyword(new KeywordMultiblock());
+        addKeyword(new KeywordFuel());
+        addKeyword(new KeywordBlockRange());
     }
     public KeywordCommand(String command){
         super(command);
@@ -74,7 +76,7 @@ public abstract class KeywordCommand extends Command{
             int border = 5;
             int textHeight = 20;
             int width = (int)FontManager.getLengthForStringWithHeight(args, textHeight)+1;
-            BufferedImage image = Bot.makeImage(width+border*2, textHeight+border*2, (buff) -> {
+            BufferedImage image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
                 Core.applyColor(Core.theme.getEditorListBorderColor());
                 Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
                 double x = 5;
@@ -87,6 +89,11 @@ public abstract class KeywordCommand extends Command{
                         Renderer2D.drawText(x, border, width+border, border+textHeight, s);
                         x+=len;
                     }
+                }
+                for(int i = 0; i<words.size(); i++){
+                    Keyword word = words.get(i);
+                    Core.applyColor(Core.theme.getRGB(word.getColor()));
+                    Renderer2D.drawText(border, border+(i+1)*textHeight, width+border, border+(i+2)*textHeight, word.name+" | "+word.input);
                 }
             });
             File debugFile = new File("debug.png");

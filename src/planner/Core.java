@@ -401,6 +401,12 @@ public class Core extends Renderer2D{
         img.setRGB(0, 0, width, height, imgRGBData, 0, width);
         return img;
     }
+    static int wheelChangeScale = Integer.MAX_VALUE;
+    public static int calcWheelChange(int wheelChange){
+        if(wheelChange==0)return wheelChange;
+        wheelChangeScale = Math.min(wheelChangeScale, Math.abs(wheelChange));
+        return wheelChange/wheelChangeScale;
+    }
     public static interface BufferRenderer{
         void render(Framebuffer buff);
     }

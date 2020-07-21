@@ -2,10 +2,15 @@ package discord;
 import java.awt.Color;
 public abstract class Keyword{
     public final String name;
+    public String input;
     public Keyword(String name){
         this.name = name;
     }
-    public abstract boolean read(String input);
+    public boolean read(String input){
+        this.input = input;
+        return doRead(input);
+    }
+    protected abstract boolean doRead(String input);
     public abstract Color getColor();
     public abstract String getRegex();
     public abstract Keyword newInstance();

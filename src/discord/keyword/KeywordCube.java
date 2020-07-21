@@ -23,7 +23,7 @@ public class KeywordCube extends Keyword{
         return new KeywordCube();
     }
     @Override
-    public boolean read(String input){
+    public boolean doRead(String input){
         String[] split = input.split("x");
         int x = Integer.parseInt(split[0]);
         int y = Integer.parseInt(split[1]);

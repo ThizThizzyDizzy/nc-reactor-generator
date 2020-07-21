@@ -23,7 +23,7 @@ public class KeywordCuboid extends Keyword{
         return new KeywordCuboid();
     }
     @Override
-    public boolean read(String input){
+    public boolean doRead(String input){
         String[] split = input.split("x");
         x = Integer.parseInt(split[0]);
         y = Integer.parseInt(split[1]);

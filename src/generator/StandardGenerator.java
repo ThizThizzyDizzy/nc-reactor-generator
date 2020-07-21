@@ -2,6 +2,7 @@ package generator;
 import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.Range;
 import multiblock.action.PostProcessingAction;
 import multiblock.action.SetblockAction;
 import multiblock.action.SymmetryAction;
@@ -127,7 +128,7 @@ public class StandardGenerator extends MultiblockGenerator{
         }
     }
     @Override
-    public void refreshSettings(ArrayList<Block> allowedBlocks){
+    public void refreshSettings(ArrayList<Range<Block>> allowedBlocks){
         settings.refresh(allowedBlocks);
     }
     @Override
@@ -177,9 +178,9 @@ public class StandardGenerator extends MultiblockGenerator{
                         Block b = currentMultiblock.getBlock(x, y, z);
                         if(settings.lockCore&&b!=null&&b.isCore())continue;
                         if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
-                            Block randBlock = settings.allowedBlocks.get(rand.nextInt(settings.allowedBlocks.size()));
-                            if(settings.lockCore&&randBlock.isCore())continue;//nope
-                            currentMultiblock.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(randBlock.newInstance(x, y, z))));
+                            Block randBlock = rand(currentMultiblock, settings.allowedBlocks);
+                            if(randBlock==null||settings.lockCore&&randBlock.isCore())continue;//nope
+                            currentMultiblock.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
                         }
                     }
                 }
@@ -191,9 +192,9 @@ public class StandardGenerator extends MultiblockGenerator{
                 for(int Y = 0; Y<currentMultiblock.getY(); Y++){
                     for(int Z = 0; Z<currentMultiblock.getZ(); Z++){
                         if(settings.fillAir&&currentMultiblock.getBlock(X, Y, Z)==null){
-                            Block randBlock = settings.allowedBlocks.get(rand.nextInt(settings.allowedBlocks.size()));
-                            if(settings.lockCore&&randBlock.isCore())continue;//nope
-                            currentMultiblock.queueAction(new SetblockAction(X, Y, Z, applyMultiblockSpecificSettings(randBlock.newInstance(X, Y, Z))));
+                            Block randBlock = rand(currentMultiblock, settings.allowedBlocks);
+                            if(randBlock==null||settings.lockCore&&randBlock.isCore())continue;//nope
+                            currentMultiblock.queueAction(new SetblockAction(X, Y, Z, applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(X, Y, Z))));
                             continue;
                         }
                         pool.add(new int[]{X,Y,Z});
@@ -205,9 +206,9 @@ public class StandardGenerator extends MultiblockGenerator{
                 int[] pos = pool.remove(rand.nextInt(pool.size()));
                 Block b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
                 if(settings.lockCore&&b!=null&&b.isCore())continue;
-                Block randBlock = settings.allowedBlocks.get(rand.nextInt(settings.allowedBlocks.size()));
-                if(settings.lockCore&&randBlock.isCore())continue;//nope
-                currentMultiblock.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(randBlock.newInstance(pos[0], pos[1], pos[2]))));
+                Block randBlock = rand(currentMultiblock, settings.allowedBlocks);
+                if(randBlock==null||settings.lockCore&&randBlock.isCore())continue;//nope
+                currentMultiblock.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
             }
         }
         currentMultiblock.performActions();
@@ -231,35 +232,31 @@ public class StandardGenerator extends MultiblockGenerator{
             }
         }
     }
-    private Block applyMultiblockSpecificSettings(Block randBlock){
+    private Block applyMultiblockSpecificSettings(Multiblock currentMultiblock, Block randBlock){
         if(multiblock instanceof UnderhaulSFR)return randBlock;//no block-specifics here!
         if(multiblock instanceof OverhaulSFR){
             multiblock.overhaul.fissionsfr.Block block = (multiblock.overhaul.fissionsfr.Block)randBlock;
             if(block.isFuelCell()){
-                ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel> allowedFuels = ((OverhaulSFR)multiblock).getValidFuels();
-                if(allowedFuels.isEmpty())return null;
-                block.fuel = allowedFuels.get(rand.nextInt(allowedFuels.size()));
-                ArrayList<multiblock.configuration.overhaul.fissionsfr.Source> allowedSources = ((OverhaulSFR)multiblock).getValidSources();
-                if(!allowedSources.isEmpty())block.source = allowedSources.get(rand.nextInt(allowedSources.size()));
+                multiblock.configuration.overhaul.fissionsfr.Fuel allowedFuel = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidFuels());
+                if(allowedFuel==null)return null;
+                block.fuel = allowedFuel;
+                block.source = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidSources());
             }
             if(block.isIrradiator()){
-                ArrayList<multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe> allowedIrradiatorRecipes = ((OverhaulSFR)multiblock).getValidIrradiatorRecipes();
-                if(!allowedIrradiatorRecipes.isEmpty())block.irradiatorRecipe = allowedIrradiatorRecipes.get(rand.nextInt(allowedIrradiatorRecipes.size()));
+                block.irradiatorRecipe = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidIrradiatorRecipes());
             }
             return randBlock;
         }
         if(multiblock instanceof OverhaulMSR){
             multiblock.overhaul.fissionmsr.Block block = (multiblock.overhaul.fissionmsr.Block)randBlock;
             if(block.isFuelVessel()){
-                ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel> allowedFuels = ((OverhaulMSR)multiblock).getValidFuels();
-                if(allowedFuels.isEmpty())return null;
-                block.fuel = allowedFuels.get(rand.nextInt(allowedFuels.size()));
-                ArrayList<multiblock.configuration.overhaul.fissionmsr.Source> allowedSources = ((OverhaulMSR)multiblock).getValidSources();
-                if(!allowedSources.isEmpty())block.source = allowedSources.get(rand.nextInt(allowedSources.size()));
+                multiblock.configuration.overhaul.fissionmsr.Fuel allowedFuel = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidFuels());
+                if(allowedFuel==null)return null;
+                block.fuel = allowedFuel;
+                block.source = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidSources());
             }
             if(block.isIrradiator()){
-                ArrayList<multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe> allowedIrradiatorRecipes = ((OverhaulMSR)multiblock).getValidIrradiatorRecipes();
-                if(!allowedIrradiatorRecipes.isEmpty())block.irradiatorRecipe = allowedIrradiatorRecipes.get(rand.nextInt(allowedIrradiatorRecipes.size()));
+                block.irradiatorRecipe = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidIrradiatorRecipes());
             }
             return randBlock;
         }
@@ -297,15 +294,26 @@ public class StandardGenerator extends MultiblockGenerator{
     public void importMultiblock(Multiblock<Block> multiblock){
         finalize(multiblock);
     }
+    private <T extends Object> T rand(Multiblock multiblock, ArrayList<Range<T>> ranges){
+        if(ranges.isEmpty())return null;
+        for(Range<T> range : ranges){
+            if(multiblock.count(range.obj)<range.min)return range.obj;
+        }
+        Range<T> randRange = ranges.get(rand.nextInt(ranges.size()));
+        if(randRange.max!=0&&multiblock.count(randRange.obj)>=randRange.max){
+            return null;
+        }
+        return randRange.obj;
+    }
     private class GeneratorSettings{
         public int finalMultiblocks, workingMultiblocks, timeout;
         public ArrayList<Priority> priorities = new ArrayList<>();
         public ArrayList<Symmetry> symmetries = new ArrayList<>();
         public ArrayList<PostProcessingEffect> postProcessingEffects = new ArrayList<>();
-        public ArrayList<Block> allowedBlocks = new ArrayList<>();
+        public ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
         public float changeChancePercent;
         public boolean variableRate, lockCore, fillAir;
-        public void refresh(ArrayList<Block> allowedBlocks){
+        public void refresh(ArrayList<Range<Block>> allowedBlocks){
             this.allowedBlocks = allowedBlocks;
             finalMultiblocks = 1;//Integer.parseInt(StandardGenerator.this.finalMultiblockCount.text);
             workingMultiblocks = Integer.parseInt(StandardGenerator.this.workingMultiblockCount.text);

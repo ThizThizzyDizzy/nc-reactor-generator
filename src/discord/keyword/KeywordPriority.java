@@ -10,7 +10,7 @@ public class KeywordPriority extends Keyword{
         super("Priority");
     }
     @Override
-    public boolean read(String input){
+    public boolean doRead(String input){
         for(Multiblock m : Core.multiblockTypes){
             ArrayList<Priority.Preset> presets = new ArrayList<>();
             m.getGenerationPriorityPresets(m.getGenerationPriorities(), presets);

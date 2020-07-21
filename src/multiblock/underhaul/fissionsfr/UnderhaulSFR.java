@@ -246,4 +246,8 @@ public class UnderhaulSFR extends Multiblock<Block>{
         copy.heatMult = heatMult;
         return copy;
     }
+    @Override
+    protected int doCount(Object o){
+        throw new IllegalArgumentException("Nothing to count in underhaul!");
+    }
 }

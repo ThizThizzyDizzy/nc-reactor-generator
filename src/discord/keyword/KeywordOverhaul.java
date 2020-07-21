@@ -3,10 +3,10 @@ import discord.Keyword;
 import java.awt.Color;
 public class KeywordOverhaul extends Keyword{
     public KeywordOverhaul(){
-        super("Underhaul");
+        super("Overhaul");
     }
     @Override
-    public boolean read(String input){
+    public boolean doRead(String input){
         return true;
     }
     @Override

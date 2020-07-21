@@ -4,10 +4,10 @@ import java.awt.Color;
 public class KeywordFuel extends Keyword{
     public String fuel;
     public KeywordFuel(){
-        super("Standard Fuel");
+        super("Fuel");
     }
     @Override
-    public boolean read(String input){
+    public boolean doRead(String input){
         this.fuel = input;
         return true;
     }

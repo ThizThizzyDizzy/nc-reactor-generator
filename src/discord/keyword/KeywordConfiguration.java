@@ -7,7 +7,7 @@ public class KeywordConfiguration extends Keyword{
         super("Configuration");
     }
     @Override
-    public boolean read(String input){
+    public boolean doRead(String input){
         for(Configuration c : Configuration.configurations){
             for(String s : c.alternatives){
                 if(input.equalsIgnoreCase(s))return true;

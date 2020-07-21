@@ -3,6 +3,7 @@ import generator.MultiblockGenerator;
 import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.Range;
 import multiblock.action.GenerateAction;
 import org.lwjgl.opengl.Display;
 import planner.menu.component.MenuComponentLabel;
@@ -51,9 +52,10 @@ public class MenuGenerator extends Menu{
             settings.enabled = true;
             output.enabled = false;
             tab = Tab.GENERATE;
-            ArrayList<Block> allowedBlocks = new ArrayList<>();
+            ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
             for(MenuComponent c : blocks.components){
-                if(((MenuComponentToggleBlock)c).enabled)allowedBlocks.add(((MenuComponentToggleBlock)c).block);
+                MenuComponentToggleBlock t = (MenuComponentToggleBlock)c;
+                if(t.enabled)allowedBlocks.add(new Range<>(t.block,t.min,t.max));
             }
             generator.refreshSettings(allowedBlocks);
             if(threads<=0){
