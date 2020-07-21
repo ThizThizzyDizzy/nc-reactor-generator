@@ -1,4 +1,5 @@
 package planner;
+import discord.Bot;
 import java.awt.Color;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.menu.MenuMain;
@@ -27,6 +28,7 @@ import multiblock.configuration.Configuration;
 import multiblock.Multiblock;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import planner.menu.MenuDiscord;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorAdapter;
@@ -98,7 +100,7 @@ public class Core extends Renderer2D{
         }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
         helper = new GameHelper();
         helper.setBackground(theme.getBackgroundColor());
-        helper.setDisplaySize(1200, 700);
+        helper.setDisplaySize(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1));
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
         helper.setFinalInitMethod(Core.class.getDeclaredMethod("finalInit", new Class<?>[0]));
@@ -114,6 +116,7 @@ public class Core extends Renderer2D{
             helper.setAutoExitFullscreen(false);
         }
         helper.setFrameOfView(90);
+        if(Main.isBot)Bot.start(args);
         Sys.initLWJGLGame(new File("errors/"), new ErrorAdapter(){
             @Override
             public void warningError(String message, Throwable error, ErrorCategory catagory){
@@ -168,7 +171,8 @@ public class Core extends Renderer2D{
             }
         });
         gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper);
-        gui.open(new MenuMain(gui));
+        if(Main.isBot)gui.open(new MenuDiscord(gui));
+        else gui.open(new MenuMain(gui));
     }
     public static void tickInit() throws LWJGLException{}
     public static void finalInit() throws LWJGLException{
@@ -190,6 +194,10 @@ public class Core extends Renderer2D{
             Config settings = Config.newConfig(f);
             settings.set("theme", Theme.themes.indexOf(theme));
             settings.save();
+            if(Main.isBot){
+                Bot.stop();
+                System.exit(0);//TODO Shouldn't have to do this! :(
+            }
         }
     }
     public static void render(int millisSinceLastTick){

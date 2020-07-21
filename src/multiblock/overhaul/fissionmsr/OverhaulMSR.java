@@ -26,7 +26,7 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulMSR extends Multiblock<Block>{
     public ArrayList<Cluster> clusters = new ArrayList<>();
-    public int totalFuelCells;
+    public int totalFuelVessels;
     public int totalCooling;
     public int totalHeat;
     public int netHeat;
@@ -84,7 +84,7 @@ public class OverhaulMSR extends Multiblock<Block>{
                 if(block.calculateHeater(this))somethingChanged = true;
             }
         }while(somethingChanged);
-        for(Block block : blocks){//set cell efficiencies
+        for(Block block : blocks){//set vessel efficiencies
             if(block.isFuelVessel()){
                 float criticalityModifier = (float) (1/(1+Math.exp(2*(block.neutronFlux-2*block.fuel.criticality))));
                 block.efficiency = block.fuel.efficiency*block.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier;
@@ -97,10 +97,10 @@ public class OverhaulMSR extends Multiblock<Block>{
             clusters.add(cluster);
         }
         for(Cluster cluster : clusters){
-            int fuelCells = 0;
+            int fuelVessels = 0;
             for(Block b : cluster.blocks){
                 if(b.isFuelVesselActive()){
-                    fuelCells++;
+                    fuelVessels++;
                     cluster.efficiency+=b.efficiency;
                     cluster.totalHeat+=b.moderatorLines*b.fuel.heat;
                     cluster.heatMult+=b.moderatorLines;
@@ -116,24 +116,24 @@ public class OverhaulMSR extends Multiblock<Block>{
                     if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.neutronFlux;
                 }
             }
-            cluster.efficiency/=fuelCells;
-            cluster.heatMult/=fuelCells;
+            cluster.efficiency/=fuelVessels;
+            cluster.heatMult/=fuelVessels;
             if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
             if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
             cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
             if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
             else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+Core.configuration.overhaul.fissionMSR.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
             cluster.efficiency*=cluster.coolingPenaltyMult;
-            totalFuelCells+=fuelCells;
+            totalFuelVessels+=fuelVessels;
             totalCooling+=cluster.totalCooling;
             totalHeat+=cluster.totalHeat;
             netHeat+=cluster.netHeat;
-            totalEfficiency+=cluster.efficiency*fuelCells;
-            totalHeatMult+=cluster.heatMult*fuelCells;
+            totalEfficiency+=cluster.efficiency*fuelVessels;
+            totalHeatMult+=cluster.heatMult*fuelVessels;
             totalIrradiation+=cluster.irradiation;
         }
-        totalEfficiency/=totalFuelCells;
-        totalHeatMult/=totalFuelCells;
+        totalEfficiency/=totalFuelVessels;
+        totalHeatMult/=totalFuelVessels;
         if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
         if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
         functionalBlocks = 0;
@@ -412,6 +412,12 @@ public class OverhaulMSR extends Multiblock<Block>{
         });
     }
     @Override
+    public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
+        presets.add(new Priority.Preset("Efficiency", priorities.get(0), priorities.get(1), priorities.get(2), priorities.get(3), priorities.get(4), priorities.get(5)).addAlternative("Efficient"));
+        presets.add(new Priority.Preset("Output", priorities.get(0), priorities.get(1), priorities.get(2), priorities.get(3), priorities.get(5), priorities.get(4)));
+        presets.add(new Priority.Preset("Irradiation", priorities.get(0), priorities.get(1), priorities.get(2), priorities.get(3), priorities.get(6), priorities.get(4), priorities.get(5)).addAlternative("Irradiate").addAlternative("Irradiator"));
+    }
+    @Override
     public void getSymmetries(ArrayList<Symmetry> symmetries){
         symmetries.add(AxialSymmetry.X);
         symmetries.add(AxialSymmetry.Y);
@@ -490,7 +496,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         super.clearData(blocks);
         clusters.clear();
         totalOutput.clear();
-        shutdownFactor = totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+        shutdownFactor = totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelVessels = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
     }
     /**
      * Block search algorithm from my Tree Feller for Bukkit.
@@ -598,7 +604,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         for(Cluster cluster : clusters){
             copy.clusters.add(cluster.copy(copy));
         }
-        copy.totalFuelCells = totalFuelCells;
+        copy.totalFuelVessels = totalFuelVessels;
         copy.totalCooling = totalCooling;
         copy.totalHeat = totalHeat;
         copy.netHeat = netHeat;

@@ -208,6 +208,12 @@ public class UnderhaulSFR extends Multiblock<Block>{
         });
     }
     @Override
+    public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
+        presets.add(new Priority.Preset("Efficiency", priorities.get(0), priorities.get(1), priorities.get(2), priorities.get(3), priorities.get(4)).addAlternative("Efficient"));
+        presets.add(new Priority.Preset("Output", priorities.get(0), priorities.get(1), priorities.get(3), priorities.get(2), priorities.get(4)));
+        presets.add(new Priority.Preset("Fuel Usage (Breeder)", priorities.get(0), priorities.get(1), priorities.get(5), priorities.get(4), priorities.get(3), priorities.get(2)).addAlternative("Fuel Usage").addAlternative("Speed").addAlternative("Cell Count").addAlternative("Breeder").addAlternative("Fast"));
+    }
+    @Override
     public void getSymmetries(ArrayList<Symmetry> symmetries){
         symmetries.add(AxialSymmetry.X);
         symmetries.add(AxialSymmetry.Y);

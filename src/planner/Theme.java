@@ -176,6 +176,9 @@ public abstract class Theme{
     public abstract Color getWhite();
     public void onSet(){}
     public abstract Color getFadeout();
+    public Color getRGB(Color color){
+        return getRGB(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
+    }
     private static class SolidColorTheme extends Theme{
         private final Color background;
         private final Color color;
@@ -501,6 +504,7 @@ public abstract class Theme{
         private Boolean siezureAllowed = null;
         @Override
         public void onSet(){
+            if(Main.isBot)siezureAllowed = false;
             new Thread(() -> {
                 if(siezureAllowed==null){
                     siezureAllowed = JOptionPane.showConfirmDialog(null, "CONTAINS LOTS OF FLASHING COLORS\nCONTINUE?", "SIEZURE WARNING", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)==JOptionPane.OK_OPTION;

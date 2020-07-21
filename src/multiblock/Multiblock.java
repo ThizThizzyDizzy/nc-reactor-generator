@@ -596,6 +596,12 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return priorities;
     }
     public abstract void getGenerationPriorities(ArrayList<Priority> priorities);
+    public ArrayList<Priority.Preset> getGenerationPriorityPresets(){
+        ArrayList<Priority.Preset> presets = new ArrayList<>();
+        getGenerationPriorityPresets(getGenerationPriorities(), presets);
+        return presets;
+    }
+    public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){};
     public ArrayList<Symmetry> getSymmetries(){
         ArrayList<Symmetry> symmetries = new ArrayList<>();
         getSymmetries(symmetries);

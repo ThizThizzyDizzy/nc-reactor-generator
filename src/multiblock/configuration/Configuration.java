@@ -18,11 +18,12 @@ public class Configuration{
         }).configuration);
         configurations.add(FileReader.read(() -> {
             return getInputStream("configurations/po3.ncpf");
-        }).configuration);
+        }).configuration.addAlternative("PO3"));
         configurations.add(FileReader.read(() -> {
             return getInputStream("configurations/e2e.ncpf");
-        }).configuration);
+        }).configuration.addAlternative("E2E"));
     }
+    public ArrayList<String> alternatives = new ArrayList<>();
     public Configuration(String name, String version){
         this.name = name;
         this.version = version;
@@ -61,5 +62,9 @@ public class Configuration{
             partial.overhaul = new OverhaulConfiguration();
             overhaul.applyPartial(partial.overhaul, multiblocks);
         }
+    }
+    public Configuration addAlternative(String s){
+        alternatives.add(s);
+        return this;
     }
 }

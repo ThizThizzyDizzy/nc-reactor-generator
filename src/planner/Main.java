@@ -1,4 +1,5 @@
 package planner;
+import discord.Bot;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,10 +47,29 @@ public class Main{
     public static final int BIT_UNKNOWN = -1;
     public static final int BIT_32 = 0;
     public static final int BIT_64 = 1;
+    public static boolean isBot = false;
     private static void addRequiredLibrary(String url, String filename, int sizeKB){
         requiredLibraries.put(new String[]{url,filename}, sizeKB);
     }
     public static void main(String[] args) throws NoSuchMethodException, IOException, InterruptedException, URISyntaxException{
+        if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){
+            addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
+            addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);
+            addRequiredLibrary("https://www.dropbox.com/s/5fzv4attffxpn67/commons-collections4-4.1.jar?dl=1", "commons-collections4-4.1.jar", 734);
+            addRequiredLibrary("https://www.dropbox.com/s/w9ca19hm60az7d6/jackson-annotations-2.10.1.jar?dl=1", "jackson-annotations-2.10.1.jar", 67);
+            addRequiredLibrary("https://www.dropbox.com/s/glbpufagd0mpr1c/jackson-core-2.10.1.jar?dl=1", "jackson-core-2.10.1.jar", 341);
+            addRequiredLibrary("https://www.dropbox.com/s/djfkcwgily1xqah/jackson-databind-2.10.1.jar?dl=1", "jackson-databind-2.10.1.jar", 1371);
+            addRequiredLibrary("https://www.dropbox.com/s/dkg097yp0sm1d6l/jna-4.4.0.jar?dl=1", "jna-4.4.0.jar", 1066);
+            addRequiredLibrary("https://www.dropbox.com/s/a9fil1c2z6fkzav/jsr305-3.0.2.jar?dl=1", "jsr305-3.0.2.jar", 20);
+            addRequiredLibrary("https://www.dropbox.com/s/1kcxeldni1vr1il/nv-websocket-client-2.9.jar?dl=1", "nv-websocket-client-2.9.jar", 121);
+            addRequiredLibrary("https://www.dropbox.com/s/y3oztlbymtx9ldw/okhttp-3.13.0.jar?dl=1", "okhttp-3.13.0.jar", 405);
+            addRequiredLibrary("https://www.dropbox.com/s/hom0yvn6htky8nn/okio-1.17.2.jar?dl=1", "okio-1.17.2.jar", 90);
+            addRequiredLibrary("https://www.dropbox.com/s/cv7wico9ry711a1/opus-java-api-1.0.4.jar?dl=1", "opus-java-api-1.0.4.jar", 11);
+            addRequiredLibrary("https://www.dropbox.com/s/lmlh95nonmfmkx5/opus-java-natives-1.0.4.jar?dl=1", "opus-java-natives-1.0.4.jar", 2228);
+            addRequiredLibrary("https://www.dropbox.com/s/1uguzf5hpqzo0qn/slf4j-api-1.7.25.jar?dl=1", "slf4j-api-1.7.25.jar", 41);
+            addRequiredLibrary("https://www.dropbox.com/s/ho0vh24y9cizt9x/trove4j-3.0.3.jar?dl=1", "trove4j-3.0.3.jar", 2465);
+            isBot = true;
+        }
         args = update(args);
         if(args==null){
             return;
@@ -66,7 +86,7 @@ public class Main{
                 System.err.println("Version list URL is empty! assuming latest version.");
             }else{
                 Updater updater = Updater.read(versionListURL, VersionManager.currentVersion, applicationName);
-                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0&&JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
+                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0&&(isBot||JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)){
                     startJava(new String[0], new String[]{"justUpdated"}, updater.update(updater.getLatestDownloadableVersion()));
                     System.exit(0);
                 }
