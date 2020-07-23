@@ -61,6 +61,7 @@ public abstract class MultiblockGenerator{
                     throw new RuntimeException(ex);
                 }
             });
+            thread.setName("Generation Thread "+uid.toString());
             thread.setDaemon(true);
             thread.start();
         }

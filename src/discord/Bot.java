@@ -10,6 +10,8 @@ import discord.keyword.KeywordOverhaul;
 import discord.keyword.KeywordPriority;
 import discord.keyword.KeywordSymmetry;
 import discord.keyword.KeywordUnderhaul;
+import discord.play.PlayBot;
+import discord.play.action.SmoreAction;
 import generator.MultiblockGenerator;
 import generator.Priority;
 import generator.StandardGenerator;
@@ -19,6 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.UUID;
@@ -43,10 +47,12 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -66,11 +72,13 @@ public class Bot extends ListenerAdapter{
     public static boolean debug = false;
     private static ArrayList<String> prefixes = new ArrayList<>();
     private static ArrayList<Long> botChannels = new ArrayList<>();
+    private static ArrayList<Long> playChannels = new ArrayList<>();
     private static ArrayList<Long> dataChannels = new ArrayList<>();
     private static Config config;
     private static int cookies;
     private static JDA jda;
-    private static final ArrayList<Command> commands = new ArrayList<>();
+    private static final ArrayList<Command> botCommands = new ArrayList<>();
+    private static final ArrayList<Command> playCommands = new ArrayList<>();
     private static MultiblockGenerator generator;
     private static Message generatorMessage;
     private static final int batchSize = 100;
@@ -87,7 +95,7 @@ public class Bot extends ListenerAdapter{
 //                event.getChannel().sendMessage("Debug mode **"+(Bot.debug?"Enabled":"Disabled")+"**").queue();
 //            }
 //        });
-        commands.add(new Command("help"){
+        botCommands.add(new Command("help"){
             @Override
             public String getHelpText(){
                 return "Shows this help window";
@@ -100,14 +108,14 @@ public class Bot extends ListenerAdapter{
                     prefx+="`"+s+"`\t";
                 }
                 builder.addField("Prefixes", prefx.trim(), false);
-                for(Command c : commands){
+                for(Command c : botCommands){
                     if(c.isSecret())continue;
                     builder.addField(prefixes.get(0)+c.command, c.getHelpText(), false);
                 }
                 event.getChannel().sendMessage(builder.build()).queue();
             }
         });
-        commands.add(new Command("stop","abort","halt","cancel","finish"){
+        botCommands.add(new Command("stop","abort","halt","cancel","finish"){
             @Override
             public String getHelpText(){
                 return "Stops current generation";
@@ -120,7 +128,7 @@ public class Bot extends ListenerAdapter{
                 }
             }
         });
-        commands.add(new KeywordCommand("generate"){
+        botCommands.add(new KeywordCommand("generate"){
             @Override
             public String getHelpText(){
                 return "**Common generation settings**\n" +
@@ -472,12 +480,94 @@ public class Bot extends ListenerAdapter{
                         generatorMessage = null;
                     });
                     t.setDaemon(true);
+                    t.setName("Discord Bot Generation Thread");
                     t.start();
                 }else{
                     throw new IllegalArgumentException("I don't know how to use the non-standard generators!");
                 }
             }
         });
+        //fun commands
+        playCommands.add(new Command("help"){
+            @Override
+            public String getHelpText(){
+                return "Shows this help window";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                EmbedBuilder builder = createEmbed(jda.getSelfUser().getName()+" Help");
+                String prefx = "";
+                for(String s : Bot.prefixes){
+                    prefx+="`"+s+"`\t";
+                }
+                builder.addField("Prefixes", prefx.trim(), false);
+                for(Command c : playCommands){
+                    if(c.isSecret())continue;
+                    builder.addField(prefixes.get(0)+c.command, c.getHelpText(), false);
+                }
+                event.getChannel().sendMessage(builder.build()).queue();
+            }
+        });
+        playCommands.add(new Command("stop","abort","halt","cancel","finish"){
+            @Override
+            public String getHelpText(){
+                return "Cancels your current action";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                if(PlayBot.actions.containsKey(event.getAuthor().getIdLong())){
+                    PlayBot.actions.get(event.getAuthor().getIdLong()).cancel(event.getChannel());
+                    PlayBot.actions.remove(event.getAuthor().getIdLong());
+                }
+            }
+        });
+        playCommands.add(new Command("smore", "s'more"){
+            @Override
+            public String getHelpText(){
+                return "Mmmm, s'mores";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                PlayBot.action(event, new SmoreAction());
+            }
+        });
+        playCommands.add(new Command("smores", "bal","balance","money"){
+            @Override
+            public String getHelpText(){
+                return "Displays the amount of s'mores currently in your possession";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                event.getChannel().sendMessage(PlayBot.getSmoreCountS(event.getAuthor().getIdLong())).queue();
+            }
+        });
+        playCommands.add(new Command("leaderboard", "smoretop", "baltop", "smorestop", "smoreboard"){
+            @Override
+            public String getHelpText(){
+                return "Displays the top 5 s'more stockpilers";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                ArrayList<Long> smorepilers = new ArrayList<>(PlayBot.smores.keySet());
+                Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(PlayBot.smores.get(o2)-PlayBot.smores.get(o1)));
+                EmbedBuilder builder = createEmbed("S'more leaderboard");
+                String mess = "";
+                for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
+                    mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+PlayBot.getSmoreCountS(smorepilers.get(i));
+                }
+                event.getChannel().sendMessage(builder.addField("Top S'more Stockpilers", mess, false).build()).queue();
+            }
+            private String nick(Member member){
+                String nick = member.getNickname();
+                if(nick!=null)return nick;
+                return member.getUser().getName();
+            }
+        });
+    }
+    @Override
+    public void onGatewayPing(GatewayPingEvent event){
+        super.onGatewayPing(event);
+        PlayBot.save();
     }
     @Override
     public void onReady(ReadyEvent event){
@@ -555,9 +645,11 @@ public class Bot extends ListenerAdapter{
         return builder;
     }
     public static void start(String[] args){
+        PlayBot.load();
         for(int i = 2; i<args.length; i++){
             String arg = args[i];
             if(arg.startsWith("bot"))botChannels.add(Long.parseLong(arg.substring(3)));
+            else if(arg.startsWith("play"))playChannels.add(Long.parseLong(arg.substring(4)));
             else if(arg.startsWith("data"))dataChannels.add(Long.parseLong(arg.substring(4)));
             else prefixes.add(arg);
         }
@@ -576,6 +668,7 @@ public class Bot extends ListenerAdapter{
         }
     }
     public static void stop(){
+        PlayBot.save();
         if(jda!=null)jda.shutdownNow();
     }
     public static void render2D(){
@@ -591,32 +684,61 @@ public class Bot extends ListenerAdapter{
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
         if(event.getAuthor().isBot())return;
         storeReactors(event.getMessage());
-        if(!botChannels.contains(event.getChannel().getIdLong()))return;
-        String command = event.getMessage().getContentRaw();
-        boolean hasPrefix = false;
-        for(String prefix : prefixes){
-            if(command.startsWith(prefix)){
-                command = command.substring(prefix.length());
-                hasPrefix = true;
-                break;
+        if(botChannels.contains(event.getChannel().getIdLong())){
+            String command = event.getMessage().getContentRaw();
+            boolean hasPrefix = false;
+            for(String prefix : prefixes){
+                if(command.startsWith(prefix)){
+                    command = command.substring(prefix.length());
+                    hasPrefix = true;
+                    break;
+                }
             }
-        }
-        if(!hasPrefix)return;
-        try{
-            for(Command cmd : commands){
-                for(String alt : cmd.alternates){
-                    if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
-                        String args = command.substring(alt.length()).trim();
-                        try{
-                            cmd.run(event, args, debug);
-                        }catch(Exception ex){
-                            printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
+            if(!hasPrefix)return;
+            try{
+                for(Command cmd : botCommands){
+                    for(String alt : cmd.alternates){
+                        if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
+                            String args = command.substring(alt.length()).trim();
+                            try{
+                                cmd.run(event, args, debug);
+                            }catch(Exception ex){
+                                printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
+                            }
                         }
                     }
                 }
+            }catch(Exception ex){
+                printErrorMessage(event.getChannel(), "Caught exception loading command!", ex);
             }
-        }catch(Exception ex){
-            printErrorMessage(event.getChannel(), "Caught exception loading command!", ex);
+        }
+        if(playChannels.contains(event.getChannel().getIdLong())){
+            String command = event.getMessage().getContentRaw();
+            boolean hasPrefix = false;
+            for(String prefix : prefixes){
+                if(command.startsWith(prefix)){
+                    command = command.substring(prefix.length());
+                    hasPrefix = true;
+                    break;
+                }
+            }
+            if(!hasPrefix)return;
+            try{
+                for(Command cmd : playCommands){
+                    for(String alt : cmd.alternates){
+                        if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
+                            String args = command.substring(alt.length()).trim();
+                            try{
+                                cmd.run(event, args, debug);
+                            }catch(Exception ex){
+                                printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
+                            }
+                        }
+                    }
+                }
+            }catch(Exception ex){
+                printErrorMessage(event.getChannel(), "Caught exception loading command!", ex);
+            }
         }
     }
     private static void printErrorMessage(TextChannel channel, String message, Exception ex){
