@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
 import multiblock.Block;
 import multiblock.Multiblock;
@@ -125,7 +123,26 @@ public class Bot extends ListenerAdapter{
         commands.add(new KeywordCommand("generate"){
             @Override
             public String getHelpText(){
-                return "¯\\_(ツ)_/¯";
+                return "**Common generation settings**\n" +
+"overhaul - generates an overhaul reactor (Default: underhaul)\n" +
+"XxYxZ - generates a reactor of size XxYxZ (Default: 3x3x3)\n" +
+"<fuel> - generates a reactor using the specified fuel (Default: TBU)\n" +
+"efficiency or efficient - sets efficiency as the main proiority (default)\n" +
+"output - sets output as the main priority\n" +
+"breeder or cell count or fuel usage - sets fuel usage as the main priority (Underhaul only)\n" +
+"irradiator - sets irradiation as the main priority (Overhaul only)\n" +
+"symmetry or symmetrical - applies symmetry to generated reactors\n" +
+"no <block> - blacklists a certain block from being used in generation\n" +
+"e2e - Uses the Enigmatica 2 Expert config\n" +
+"po3 - Uses the Project: Ozone 3 config\n" +
+"**Special Fuels**\n" +
+"Yellorium (Extreme Reactors)\n" +
+"IC2-MOX (IC2)\n" +
+"Enriched Uranium (IC2)\n" +
+"Uranium Ingot (E2E Only)\n" +
+"**Examples of valid commands**\n" +
+"-generate a 3x3x3 PO3 LEU-235 Oxide breeder with symmetry\n" +
+"-generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum";
             }
             @Override
             public void run(GuildMessageReceivedEvent event, ArrayList<Keyword> keywords, boolean debug){
@@ -224,7 +241,7 @@ public class Bot extends ListenerAdapter{
                 FOR:for(Range<String> range : stringRanges){
                     String blockNam = range.obj.toLowerCase();
                     if(blockNam.endsWith("s"))blockNam = blockNam.substring(0, blockNam.length()-1);
-                    blockNam = blockNam.replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heatsink", "").replace(" heat sink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" heater", "").replace(" cell", "").replace(" vessel", "").replace(" reflector", "");
+                    blockNam = blockNam.replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" heater", "").replace(" cell", "").replace(" vessel", "").replace(" reflector", "");
                     for(Block block : availableBlocks){
                         if(block.getName().toLowerCase().replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" heater", "").replace(" cell", "").replace(" vessel", "").replace(" reflector", "").equalsIgnoreCase(blockNam)){
                             blockRanges.add(new Range(block, range.min, range.max));
