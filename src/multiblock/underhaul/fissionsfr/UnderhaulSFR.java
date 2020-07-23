@@ -99,8 +99,8 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public String getTooltip(){
         return "Power Generation: "+power+"RF/t\n"
-                + "Total Heat: "+heat+"\n"
-                + "Total Cooling: "+cooling+"\n"
+                + "Total Heat: "+heat+"H/t\n"
+                + "Total Cooling: "+cooling+"H/t\n"
                 + "Net Heat: "+netHeat+"H/t\n"
                 + "Efficiency: "+percent(efficiency, 0)+"\n"
                 + "Heat multiplier: "+percent(heatMult, 0)+"\n"

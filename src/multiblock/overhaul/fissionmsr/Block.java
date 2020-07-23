@@ -67,7 +67,7 @@ public class Block extends multiblock.Block{
             if(isFuelVesselActive()){
                 tip+="\nAdjacent moderator lines: "+moderatorLines+"\n"
                         + "Heat Multiplier: "+percent(moderatorLines, 0)+"\n"
-                        + "Heat Produced: "+moderatorLines*fuel.heat+" H/t\n"
+                        + "Heat Produced: "+moderatorLines*fuel.heat+"H/t\n"
                         + "Efficiency: "+percent(efficiency, 0)+"\n"
                         + "Positional Efficiency: "+percent(positionalEfficiency, 0)+"\n"
                         + "Total Neutron Flux: "+neutronFlux+"\n"
@@ -96,7 +96,7 @@ public class Block extends multiblock.Block{
             tip+="\nShield "+(shieldActive?"Valid":"Invalid")+"\n"
                     + "Total flux: "+neutronFlux+"\n"
                     + "Heat per flux: "+template.heatMult+"\n"
-                    + "Total heat: "+(neutronFlux*template.heatMult)+"\n"
+                    + "Total heat: "+(neutronFlux*template.heatMult)+"\n H/t"
                     + "Efficiency factor: "+template.efficiency;
         }
         if(closed){
@@ -106,7 +106,7 @@ public class Block extends multiblock.Block{
             tip+="\nIrradiator flux: "+neutronFlux+"\n";
             if(irradiatorRecipe!=null){
                 tip+="Heat per flux: "+irradiatorRecipe.heat+"\n"
-                        + "Total heat: "+irradiatorRecipe.heat*neutronFlux;
+                        + "Total heat: "+irradiatorRecipe.heat*neutronFlux+"H/t";
             }
         }
         if(isHeater()){
@@ -129,7 +129,7 @@ public class Block extends multiblock.Block{
                 + "\nEfficiency: "+template.efficiency;
         if(isIrradiator())tip+="\nIrradiator";
         if(isHeater())tip+="\nHeater"
-                + "\nCooling: "+template.cooling+" H/t";
+                + "\nCooling: "+template.cooling+"H/t";
         for(PlacementRule rule : template.rules){
             tip+="\nRequires "+rule.toString();
         }
