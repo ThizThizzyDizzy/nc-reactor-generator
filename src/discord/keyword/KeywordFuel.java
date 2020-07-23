@@ -21,7 +21,7 @@ public class KeywordFuel extends Keyword{
         if(fuel.toLowerCase().contains("[f4]")){
             fuel = fuel.replaceAll("\\[[fF]4\\]", "")+" Fluoride";
         }
-        fuel = fuel.replace("  ", " ");
+        fuel = fuel.replace("  ", " ").replace(" -", "-").trim();
         return true;
     }
     @Override

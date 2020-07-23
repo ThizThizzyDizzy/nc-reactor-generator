@@ -20,7 +20,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
 import multiblock.Block;
 import multiblock.Multiblock;
@@ -41,15 +46,20 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import planner.Core;
 import planner.Core.BufferRenderer;
+import planner.file.FileReader;
 import planner.file.FileWriter;
 import planner.file.FormatWriter;
 import planner.file.NCPFFile;
 import simplelibrary.CircularStream;
+import simplelibrary.Stack;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -65,6 +75,8 @@ public class Bot extends ListenerAdapter{
     private static final ArrayList<Command> commands = new ArrayList<>();
     private static MultiblockGenerator generator;
     private static Message generatorMessage;
+    private static final int batchSize = 100;
+    public static final HashMap<NCPFFile, String> storedMultiblocks = new HashMap();
     static{
 //        commands.add(new Command("debug"){
 //            @Override
@@ -178,6 +190,9 @@ public class Bot extends ListenerAdapter{
                     }else if(keyword instanceof KeywordFormat){
                         formatStrings.add(((KeywordFormat)keyword).input);
                     }
+                }
+                if(x==0||y==0||z==0){
+                    x = y = z = 3;
                 }
                 if(!(underhaul||overhaul))underhaul = true;
                 if(configuration==null)configuration = Configuration.configurations.get(0);
@@ -314,6 +329,7 @@ public class Bot extends ListenerAdapter{
                 }
                 if(formats.isEmpty()){
                     formats.add(FileWriter.formats.get(0));//hellrage json
+                    formats.add(FileWriter.formats.get(2));//NCPF
                 }
                 formats.add(FileWriter.formats.get(1));//png
                 Multiblock multiblockInstance = multiblock.newInstance(x,y,z);
@@ -378,8 +394,13 @@ public class Bot extends ListenerAdapter{
                     Core.configuration = configuration;
                     Thread t = new Thread(() -> {
                         generator.startThread();
+                        for(NCPFFile file : storedMultiblocks.keySet()){
+                            for(Multiblock m : file.multiblocks){
+                                if(m.getMultiblockID()==generator.multiblock.getMultiblockID())generator.importMultiblock(m);
+                            }
+                        }
                         String configName = Core.configuration.getShortName();
-                        generatorMessage = event.getChannel().sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField("Reactor Details", generator.getMainMultiblockSaveTooltip(), false).build()).complete();
+                        generatorMessage = event.getChannel().sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField("Reactor Details", generator.getMainMultiblockBotTooltip(), false).build()).complete();
                         int time = 0;
                         int interval = 1000;//1 sec
                         int maxTime = 60000;//60 sec
@@ -394,27 +415,39 @@ public class Bot extends ListenerAdapter{
                             time+=interval;
                             if(!generator.isRunning())break;
                             Multiblock main = generator.getMainMultiblock();
-                            generatorMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField("Reactor Details", generator.getMainMultiblockSaveTooltip(), false).build()).queue();
-                            if(main!=null&&main.millisSinceLastChange()>timeout&&main.millisSinceLastChange()<maxTime)break;
+                            generatorMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField("Reactor Details", generator.getMainMultiblockBotTooltip(), false).build()).queue();
+                            if(main!=null&&main.millisSinceLastChange()<maxTime&&main.millisSinceLastChange()>timeout)break;
                         }
                         generator.stopAllThreads();
                         Multiblock finalMultiblock = generator.getMainMultiblock();
                         if(finalMultiblock==null||finalMultiblock.isEmpty()){
                             generatorMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase()+" was generated. :(").build()).queue();
                         }else{
-                            generatorMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField("Reactor Details", finalMultiblock.getSaveTooltip(), false).build()).queue();
+                            generatorMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField("Reactor Details", finalMultiblock.getBotTooltip(), false).build()).queue();
                             NCPFFile ncpf = new NCPFFile();
-                            ncpf.multiblocks.add(finalMultiblock);
-                            ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
+                            String name = UUID.randomUUID().toString();
                             ncpf.metadata.put("Author", "S'plodo-Bot");
-                            ncpf.metadata.put("Name", UUID.randomUUID().toString());
+                            finalMultiblock.metadata.put("Author", "S'plodo-Bot");
+                            ncpf.metadata.put("Name", name);
+                            finalMultiblock.metadata.put("Name", name);
                             GregorianCalendar calendar = new GregorianCalendar();
                             String[] months = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
                             ncpf.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
+                            finalMultiblock.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
+                            ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
+                            finalMultiblock.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
+                            ncpf.multiblocks.add(finalMultiblock);
+                            ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
                             for(FormatWriter writer : formats){
                                 CircularStream stream = new CircularStream(1024*1024);//1MB
-                                event.getChannel().sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getExtensions()[0]).queue();
-                                writer.write(ncpf, stream);
+                                CompletableFuture<Message> submit = event.getChannel().sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getExtensions()[0]).submit();
+                                try{
+                                    writer.write(ncpf, stream);
+                                }catch(Exception ex){
+                                    printErrorMessage(event.getChannel(), "Failed to write file", ex);
+                                    submit.cancel(true);
+                                    stream.close();
+                                }
                             }
                         }
                         generator = null;
@@ -427,6 +460,73 @@ public class Bot extends ListenerAdapter{
                 }
             }
         });
+    }
+    @Override
+    public void onReady(ReadyEvent event){
+        Thread channelRead = new Thread(() -> {
+            int bytes = 0;
+            int totalCount = 0;
+            for(Long id : dataChannels){
+                TextChannel channel = jda.getTextChannelById(id);
+                if(channel==null){
+                    System.err.println("Invalid channel: "+id);
+                    continue;
+                }
+                System.out.println("Reading channel: "+channel.getName());
+                MessageHistory history = channel.getHistoryFromBeginning(batchSize).complete();
+                int count = 0;
+                while(true){
+                    Message last = null;
+                    ArrayList<Message> messages = new ArrayList<>(history.getRetrievedHistory());
+                    Stack<Message> stak = new Stack<>();
+                    for(Message m : messages){
+                        stak.push(m);
+                    }
+                    messages.clear();
+                    while(!stak.isEmpty())messages.add(stak.pop());
+                    for(Message message : messages){
+                        last = message;
+                        storeReactors(message);
+                        for(Attachment att : message.getAttachments()){
+                            if(att.getFileExtension().equalsIgnoreCase("json")){
+                                count++;
+                                System.out.println("Found "+att.getFileName()+" ("+count+")");
+                                bytes+=att.getSize();
+                            }
+                        }
+                    }
+                    if(last==null)break;
+                    if(history.size()<batchSize){
+                        break;
+                    }else{
+                        history = channel.getHistoryAfter(last, batchSize).complete();
+                    }
+                }
+                System.out.println("Finished Reading channel: "+channel.getName()+". Reactors: "+count);
+                totalCount+=count;
+            }
+            System.out.println("Total Reactors: "+totalCount);
+            System.out.println("Total Size: "+bytes);
+        });
+        channelRead.setDaemon(true);
+        channelRead.start();
+    }
+    public void storeReactors(Message message){
+        for(Attachment att : message.getAttachments()){
+            if(att!=null&&att.getFileExtension()!=null&&att.getFileExtension().toLowerCase().contains("png"))continue;
+            try{
+                NCPFFile ncpf = FileReader.read(() -> {
+                    try{
+                        return att.retrieveInputStream().get();
+                    }catch(InterruptedException|ExecutionException ex){
+                        throw new RuntimeException(ex);
+                    }
+                });
+                if(ncpf!=null)storedMultiblocks.put(ncpf, message.getJumpUrl());
+            }catch(Exception ex){
+                System.err.println("Failed to read file: "+att.getFileName());
+            }
+        }
     }
     private static EmbedBuilder createEmbed(String title){
         EmbedBuilder builder = new EmbedBuilder();
@@ -471,6 +571,7 @@ public class Bot extends ListenerAdapter{
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
         if(event.getAuthor().isBot())return;
+        storeReactors(event.getMessage());
         if(!botChannels.contains(event.getChannel().getIdLong()))return;
         String command = event.getMessage().getContentRaw();
         boolean hasPrefix = false;

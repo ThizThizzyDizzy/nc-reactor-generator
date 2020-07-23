@@ -7,6 +7,8 @@ import multiblock.Multiblock;
 import multiblock.Range;
 import planner.menu.component.MenuComponentMinimaList;
 public abstract class MultiblockGenerator{
+    public int iterations = 0;
+    public final Object iterationSynchronizer = new Object();
     protected Random rand = new Random();
     public static final ArrayList<MultiblockGenerator> generators = new ArrayList<>();
     static{
@@ -72,6 +74,7 @@ public abstract class MultiblockGenerator{
         synchronized(threadronyzer){
             threads.clear();
         }
+        System.out.println(iterations+" iterations");
     }
     public abstract void importMultiblock(Multiblock<Block> multiblock);
     public Multiblock getMainMultiblock(){
@@ -87,13 +90,18 @@ public abstract class MultiblockGenerator{
         main.metadata.put("Author", "S'plodo-bot");
         return main.getTooltip();
     }
-    public String getMainMultiblockSaveTooltip(){
+    public String getMainMultiblockBotTooltip(){
         Multiblock main = getMainMultiblock();
         if(main==null)return "";
         main.metadata.put("Author", "S'plodo-bot");
-        return main.getSaveTooltip();
+        return main.getBotTooltip();
     }
     public boolean isRunning(){
         return !threads.isEmpty();
+    }
+    public void countIteration(){
+        synchronized(iterationSynchronizer){
+            iterations++;
+        }
     }
 }

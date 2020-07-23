@@ -93,6 +93,10 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return "Fuel: "+fuel.name;
     }
     @Override
+    protected String getExtraBotTooltip(){
+        return getTooltip();
+    }
+    @Override
     public String getTooltip(){
         return "Power Generation: "+power+"RF/t\n"
                 + "Total Heat: "+heat+"\n"
@@ -257,5 +261,9 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public String getGeneralName(){
         return "Reactor";
+    }
+    @Override
+    public boolean isCompatible(Multiblock<Block> other){
+        return ((UnderhaulSFR)other).fuel==fuel;
     }
 }

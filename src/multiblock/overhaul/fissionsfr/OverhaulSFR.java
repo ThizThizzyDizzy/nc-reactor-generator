@@ -163,7 +163,14 @@ public class OverhaulSFR extends Multiblock<Block>{
         return new Block(x, y, z, null);
     }
     @Override
-    public String getTooltip(){
+    public synchronized String getTooltip(){
+        return tooltip(true);
+    }
+    @Override
+    public String getExtraBotTooltip(){
+        return tooltip(false);
+    }
+    public String tooltip(boolean showClusters){
         String s = "Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
                 + "Total Heat: "+totalHeat+"H/t\n"
                 + "Total Cooling: "+totalCooling+"H/t\n"
@@ -178,8 +185,10 @@ public class OverhaulSFR extends Multiblock<Block>{
             int i = getFuelCount(f);
             if(i>0)s+="\n"+f.name+": "+i;
         }
-        for(Cluster c : clusters){
-            s+="\n\n"+c.getTooltip();
+        if(showClusters){
+            for(Cluster c : clusters){
+                s+="\n\n"+c.getTooltip();
+            }
         }
         return s;
     }
@@ -690,5 +699,9 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     public String getGeneralName(){
         return "Reactor";
+    }
+    @Override
+    public boolean isCompatible(Multiblock<Block> other){
+        return ((OverhaulSFR)other).coolantRecipe==coolantRecipe;
     }
 }

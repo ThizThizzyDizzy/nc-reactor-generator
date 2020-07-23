@@ -32,1231 +32,6 @@ public class FileReader{
     static{
         formats.add(new FormatReader(){
             @Override
-            public boolean formatMatches(InputStream in){
-                try{
-                    Config header = Config.newConfig();
-                    header.load(in);
-                    in.close();
-                    return header.get("version", (byte)0)==(byte)1;
-                }catch(Throwable t){
-                    return false;
-                }
-            }
-            HashMap<multiblock.configuration.underhaul.fissionsfr.PlacementRule, Byte> underhaulPostLoadMap = new HashMap<>();
-            HashMap<multiblock.configuration.overhaul.fissionsfr.PlacementRule, Byte> overhaulPostLoadMap = new HashMap<>();
-            @Override
-            public synchronized NCPFFile read(InputStream in){
-                try{
-                    NCPFFile ncpf = new NCPFFile();
-                    Config header = Config.newConfig();
-                    header.load(in);
-                    int multiblocks = header.get("count");
-                    if(header.hasProperty("metadata")){
-                        Config metadata = header.get("metadata");
-                        for(String key : metadata.properties()){
-                            ncpf.metadata.put(key, metadata.get(key));
-                        }
-                    }
-                    Config config = Config.newConfig();
-                    config.load(in);
-                    boolean partial = config.get("partial");
-                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"));
-                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"));
-                    //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
-                    if(config.hasProperty("underhaul")){
-                        ncpf.configuration.underhaul = new UnderhaulConfiguration();
-                        Config underhaul = config.get("underhaul");
-                        if(underhaul.hasProperty("fissionSFR")){
-                            ncpf.configuration.underhaul.fissionSFR = new multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
-                            Config fissionSFR = underhaul.get("fissionSFR");
-                            ncpf.configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
-                            ncpf.configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
-                            ncpf.configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
-                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
-                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
-                            ncpf.configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
-                            ConfigList blocks = fissionSFR.get("blocks");
-                            underhaulPostLoadMap.clear();
-                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                                Config blockCfg = (Config)bit.next();
-                                multiblock.configuration.underhaul.fissionsfr.Block block = new multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
-                                block.active = blockCfg.get("active");
-                                block.cooling = blockCfg.get("cooling", 0);
-                                block.fuelCell = blockCfg.get("fuelCell", false);
-                                block.moderator = blockCfg.get("moderator", false);
-                                if(blockCfg.hasProperty("texture")){
-                                    ConfigNumberList texture = blockCfg.get("texture");
-                                    int size = (int) texture.get(0);
-                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                                    int index = 1;
-                                    for(int x = 0; x<image.getWidth(); x++){
-                                        for(int y = 0; y<image.getHeight(); y++){
-                                            Color color = new Color((int)texture.get(index));
-                                            image.setRGB(x, y, color.getRGB());
-                                            index++;
-                                        }
-                                    }
-                                    block.setTexture(image);
-                                }
-                                if(blockCfg.hasProperty("rules")){
-                                    ConfigList rules = blockCfg.get("rules");
-                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                                        Config ruleCfg = (Config)rit.next();
-                                        block.rules.add(readUnderRule(ruleCfg));
-                                    }
-                                }
-                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
-                            }
-                            for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
-                                byte index = underhaulPostLoadMap.get(rule);
-                                if(index==0){
-                                    if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                                    if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                                    rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                }else{
-                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
-                                }
-                            }
-                            ConfigList fuels = fissionSFR.get("fuels");
-                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                                Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
-                            }
-                        }
-                    }
-//</editor-fold>
-                    //<editor-fold defaultstate="collapsed" desc="Overhaul Configuration">
-                    if(config.hasProperty("overhaul")){
-                        ncpf.configuration.overhaul = new OverhaulConfiguration();
-                        Config overhaul = config.get("overhaul");
-                        if(overhaul.hasProperty("fissionSFR")){
-                            ncpf.configuration.overhaul.fissionSFR = new multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
-                            Config fissionSFR = overhaul.get("fissionSFR");
-                            ncpf.configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
-                            ncpf.configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
-                            ncpf.configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
-                            ncpf.configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
-                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
-                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
-                            ConfigList blocks = fissionSFR.get("blocks");
-                            overhaulPostLoadMap.clear();
-                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                                Config blockCfg = (Config)bit.next();
-                                multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
-                                block.cooling = blockCfg.get("cooling", 0);
-                                block.cluster = blockCfg.get("cluster", false);
-                                block.createCluster = blockCfg.get("createCluster", false);
-                                block.conductor = blockCfg.get("conductor", false);
-                                block.fuelCell = blockCfg.get("fuelCell", false);
-                                block.reflector = blockCfg.get("reflector", false);
-                                block.irradiator = blockCfg.get("irradiator", false);
-                                block.moderator = blockCfg.get("moderator", false);
-                                block.activeModerator = blockCfg.get("activeModerator", false);
-                                block.shield = blockCfg.get("shield", false);
-                                if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
-                                if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
-                                if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
-                                if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
-                                block.blocksLOS = blockCfg.get("blocksLOS", false);
-                                block.functional = blockCfg.get("functional");
-                                if(blockCfg.hasProperty("texture")){
-                                    ConfigNumberList texture = blockCfg.get("texture");
-                                    int size = (int) texture.get(0);
-                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                                    int index = 1;
-                                    for(int x = 0; x<image.getWidth(); x++){
-                                        for(int y = 0; y<image.getHeight(); y++){
-                                            Color color = new Color((int)texture.get(index));
-                                            image.setRGB(x, y, color.getRGB());
-                                            index++;
-                                        }
-                                    }
-                                    block.setTexture(image);
-                                }
-                                if(blockCfg.hasProperty("rules")){
-                                    ConfigList rules = blockCfg.get("rules");
-                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                                        Config ruleCfg = (Config)rit.next();
-                                        block.rules.add(readOverRule(ruleCfg));
-                                    }
-                                }
-                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
-                            }
-                            for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulPostLoadMap.keySet()){
-                                byte index = overhaulPostLoadMap.get(rule);
-                                if(index==0){
-                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                                    rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
-                                }
-                            }
-                            ConfigList fuels = fissionSFR.get("fuels");
-                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                                Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
-                            }
-                            ConfigList sources = fissionSFR.get("sources");
-                            for(Iterator sit = sources.iterator(); sit.hasNext();){
-                                Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
-                            }
-                            ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
-                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
-                                Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
-                            }
-                            ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
-                            for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
-                                Config coolantRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
-                            }
-                        }
-                    }
-//</editor-fold>
-                    for(int i = 0; i<multiblocks; i++){
-                        Config data = Config.newConfig();
-                        data.load(in);
-                        Multiblock multiblock;
-                        int id = data.get("id");
-                        switch(id){
-                            case 0:
-                                ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
-                                boolean compact = data.get("compact");
-                                ConfigNumberList blocks = data.get("blocks");
-                                if(compact){
-                                    int index = 0;
-                                    for(int x = 0; x<underhaulSFR.getX(); x++){
-                                        for(int y = 0; y<underhaulSFR.getY(); y++){
-                                            for(int z = 0; z<underhaulSFR.getZ(); z++){
-                                                int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.blocks[x][y][z] = new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
-                                                index++;
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    for(int j = 0; j<blocks.size(); j+=4){
-                                        int x = (int) blocks.get(j);
-                                        int y = (int) blocks.get(j+1);
-                                        int z = (int) blocks.get(j+2);
-                                        int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.blocks[x][y][z] = new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
-                                    }
-                                }
-                                multiblock = underhaulSFR;
-                                break;
-                            case 1:
-                                size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
-                                compact = data.get("compact");
-                                blocks = data.get("blocks");
-                                if(compact){
-                                    int index = 0;
-                                    for(int x = 0; x<overhaulSFR.getX(); x++){
-                                        for(int y = 0; y<overhaulSFR.getY(); y++){
-                                            for(int z = 0; z<overhaulSFR.getZ(); z++){
-                                                int bid = (int) blocks.get(index);
-                                                if(bid>0){
-                                                    overhaulSFR.blocks[x][y][z] = new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
-                                                }
-                                                index++;
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    for(int j = 0; j<blocks.size(); j+=4){
-                                        int x = (int) blocks.get(j);
-                                        int y = (int) blocks.get(j+1);
-                                        int z = (int) blocks.get(j+2);
-                                        int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.blocks[x][y][z] = new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
-                                    }
-                                }
-                                ConfigNumberList fuels = data.get("fuels");
-                                ConfigNumberList sources = data.get("sources");
-                                ConfigNumberList irradiatorRecipes = data.get("irradiatorRecipes");
-                                int fuelIndex = 0;
-                                int sourceIndex = 0;
-                                int recipeIndex = 0;
-                                for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
-                                    if(block.template.fuelCell){
-                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
-                                        fuelIndex++;
-                                        int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
-                                        sourceIndex++;
-                                    }
-                                    if(block.template.irradiator){
-                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
-                                        recipeIndex++;
-                                    }
-                                }
-                                multiblock = overhaulSFR;
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
-                        }
-                        if(data.hasProperty("metadata")){
-                            Config metadata = data.get("metadata");
-                            for(String key : metadata.properties()){
-                                multiblock.metadata.put(key, metadata.get(key));
-                            }
-                        }
-                        ncpf.multiblocks.add(multiblock);
-                    }
-                    in.close();
-                    return ncpf;
-                }catch(IOException ex){
-                    throw new RuntimeException(ex);
-                }
-            }
-            private multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
-                multiblock.configuration.underhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
-                byte type = ruleCfg.get("type");
-                switch(type){
-                    case 0:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
-                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 1:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 2:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                        byte blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 3:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                        blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 4:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
-                        break;
-                    case 5:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.OR;
-                        ConfigList rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readUnderRule(rulC));
-                        }
-                        break;
-                    case 6:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AND;
-                        rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readUnderRule(rulC));
-                        }
-                        break;
-                }
-                return rule;
-            }
-            private multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverRule(Config ruleCfg){
-                multiblock.configuration.overhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
-                byte type = ruleCfg.get("type");
-                switch(type){
-                    case 0:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
-                        overhaulPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 1:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                        overhaulPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 2:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                        byte blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                            case 5:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
-                                break;
-                            case 6:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
-                                break;
-                            case 7:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
-                                break;
-                            case 8:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 3:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                        blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                            case 5:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
-                                break;
-                            case 6:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
-                                break;
-                            case 7:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
-                                break;
-                            case 8:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 4:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
-                        break;
-                    case 5:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.OR;
-                        ConfigList rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readOverRule(rulC));
-                        }
-                        break;
-                    case 6:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AND;
-                        rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readOverRule(rulC));
-                        }
-                        break;
-                }
-                return rule;
-            }
-        });// .ncpf version 1
-        formats.add(new FormatReader(){
-            @Override
-            public boolean formatMatches(InputStream in){
-                try{
-                    Config header = Config.newConfig();
-                    header.load(in);
-                    in.close();
-                    return header.get("version", (byte)0)==(byte)2;
-                }catch(Throwable t){
-                    return false;
-                }
-            }
-            HashMap<multiblock.configuration.underhaul.fissionsfr.PlacementRule, Byte> underhaulPostLoadMap = new HashMap<>();
-            HashMap<multiblock.configuration.overhaul.fissionsfr.PlacementRule, Byte> overhaulSFRPostLoadMap = new HashMap<>();
-            HashMap<multiblock.configuration.overhaul.fissionmsr.PlacementRule, Byte> overhaulMSRPostLoadMap = new HashMap<>();
-            @Override
-            public synchronized NCPFFile read(InputStream in){
-                try{
-                    NCPFFile ncpf = new NCPFFile();
-                    Config header = Config.newConfig();
-                    header.load(in);
-                    int multiblocks = header.get("count");
-                    if(header.hasProperty("metadata")){
-                        Config metadata = header.get("metadata");
-                        for(String key : metadata.properties()){
-                            ncpf.metadata.put(key, metadata.get(key));
-                        }
-                    }
-                    Config config = Config.newConfig();
-                    config.load(in);
-                    boolean partial = config.get("partial");
-                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"));
-                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"));
-                    //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
-                    if(config.hasProperty("underhaul")){
-                        ncpf.configuration.underhaul = new UnderhaulConfiguration();
-                        Config underhaul = config.get("underhaul");
-                        if(underhaul.hasProperty("fissionSFR")){
-                            ncpf.configuration.underhaul.fissionSFR = new multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
-                            Config fissionSFR = underhaul.get("fissionSFR");
-                            ncpf.configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
-                            ncpf.configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
-                            ncpf.configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
-                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
-                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
-                            ncpf.configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
-                            ConfigList blocks = fissionSFR.get("blocks");
-                            underhaulPostLoadMap.clear();
-                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                                Config blockCfg = (Config)bit.next();
-                                multiblock.configuration.underhaul.fissionsfr.Block block = new multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
-                                block.active = blockCfg.get("active");
-                                block.cooling = blockCfg.get("cooling", 0);
-                                block.fuelCell = blockCfg.get("fuelCell", false);
-                                block.moderator = blockCfg.get("moderator", false);
-                                if(blockCfg.hasProperty("texture")){
-                                    ConfigNumberList texture = blockCfg.get("texture");
-                                    int size = (int) texture.get(0);
-                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                                    int index = 1;
-                                    for(int x = 0; x<image.getWidth(); x++){
-                                        for(int y = 0; y<image.getHeight(); y++){
-                                            Color color = new Color((int)texture.get(index));
-                                            image.setRGB(x, y, color.getRGB());
-                                            index++;
-                                        }
-                                    }
-                                    block.setTexture(image);
-                                }
-                                if(blockCfg.hasProperty("rules")){
-                                    ConfigList rules = blockCfg.get("rules");
-                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                                        Config ruleCfg = (Config)rit.next();
-                                        block.rules.add(readUnderRule(ruleCfg));
-                                    }
-                                }
-                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
-                            }
-                            for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
-                                byte index = underhaulPostLoadMap.get(rule);
-                                if(index==0){
-                                    if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                                    if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                                    rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                }else{
-                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
-                                }
-                            }
-                            ConfigList fuels = fissionSFR.get("fuels");
-                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                                Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
-                            }
-                        }
-                    }
-//</editor-fold>
-                    //<editor-fold defaultstate="collapsed" desc="Overhaul Configuration">
-                    if(config.hasProperty("overhaul")){
-                        ncpf.configuration.overhaul = new OverhaulConfiguration();
-                        Config overhaul = config.get("overhaul");
-                        //<editor-fold defaultstate="collapsed" desc="Fission SFR Configuration">
-                        if(overhaul.hasProperty("fissionSFR")){
-                            ncpf.configuration.overhaul.fissionSFR = new multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
-                            Config fissionSFR = overhaul.get("fissionSFR");
-                            ncpf.configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
-                            ncpf.configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
-                            ncpf.configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
-                            ncpf.configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
-                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
-                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
-                            ConfigList blocks = fissionSFR.get("blocks");
-                            overhaulSFRPostLoadMap.clear();
-                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                                Config blockCfg = (Config)bit.next();
-                                multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
-                                block.cooling = blockCfg.get("cooling", 0);
-                                block.cluster = blockCfg.get("cluster", false);
-                                block.createCluster = blockCfg.get("createCluster", false);
-                                block.conductor = blockCfg.get("conductor", false);
-                                block.fuelCell = blockCfg.get("fuelCell", false);
-                                block.reflector = blockCfg.get("reflector", false);
-                                block.irradiator = blockCfg.get("irradiator", false);
-                                block.moderator = blockCfg.get("moderator", false);
-                                block.activeModerator = blockCfg.get("activeModerator", false);
-                                block.shield = blockCfg.get("shield", false);
-                                if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
-                                if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
-                                if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
-                                if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
-                                block.blocksLOS = blockCfg.get("blocksLOS", false);
-                                block.functional = blockCfg.get("functional");
-                                if(blockCfg.hasProperty("texture")){
-                                    ConfigNumberList texture = blockCfg.get("texture");
-                                    int size = (int) texture.get(0);
-                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                                    int index = 1;
-                                    for(int x = 0; x<image.getWidth(); x++){
-                                        for(int y = 0; y<image.getHeight(); y++){
-                                            Color color = new Color((int)texture.get(index));
-                                            image.setRGB(x, y, color.getRGB());
-                                            index++;
-                                        }
-                                    }
-                                    block.setTexture(image);
-                                }
-                                if(blockCfg.hasProperty("closedTexture")){
-                                    ConfigNumberList closedTexture = blockCfg.get("closedTexture");
-                                    int size = (int) closedTexture.get(0);
-                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                                    int index = 1;
-                                    for(int x = 0; x<image.getWidth(); x++){
-                                        for(int y = 0; y<image.getHeight(); y++){
-                                            Color color = new Color((int)closedTexture.get(index));
-                                            image.setRGB(x, y, color.getRGB());
-                                            index++;
-                                        }
-                                    }
-                                    block.setClosedTexture(image);
-                                }
-                                if(blockCfg.hasProperty("rules")){
-                                    ConfigList rules = blockCfg.get("rules");
-                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                                        Config ruleCfg = (Config)rit.next();
-                                        block.rules.add(readOverSFRRule(ruleCfg));
-                                    }
-                                }
-                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
-                            }
-                            for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
-                                byte index = overhaulSFRPostLoadMap.get(rule);
-                                if(index==0){
-                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                                    rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
-                                }
-                            }
-                            ConfigList fuels = fissionSFR.get("fuels");
-                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                                Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
-                            }
-                            ConfigList sources = fissionSFR.get("sources");
-                            for(Iterator sit = sources.iterator(); sit.hasNext();){
-                                Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
-                            }
-                            ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
-                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
-                                Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
-                            }
-                            ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
-                            for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
-                                Config coolantRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
-                            }
-                        }
-//</editor-fold>
-                        //<editor-fold defaultstate="collapsed" desc="Fission MSR Configuration">
-                        if(overhaul.hasProperty("fissionMSR")){
-                            ncpf.configuration.overhaul.fissionMSR = new multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
-                            Config fissionMSR = overhaul.get("fissionMSR");
-                            ncpf.configuration.overhaul.fissionMSR.minSize = fissionMSR.get("minSize");
-                            ncpf.configuration.overhaul.fissionMSR.maxSize = fissionMSR.get("maxSize");
-                            ncpf.configuration.overhaul.fissionMSR.neutronReach = fissionMSR.get("neutronReach");
-                            ncpf.configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = fissionMSR.get("coolingEfficiencyLeniency");
-                            ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyMult = fissionMSR.get("sparsityPenaltyMult");
-                            ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = fissionMSR.get("sparsityPenaltyThreshold");
-                            ConfigList blocks = fissionMSR.get("blocks");
-                            overhaulMSRPostLoadMap.clear();
-                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                                Config blockCfg = (Config)bit.next();
-                                multiblock.configuration.overhaul.fissionmsr.Block block = new multiblock.configuration.overhaul.fissionmsr.Block(blockCfg.get("name"));
-                                block.cooling = blockCfg.get("cooling", 0);
-                                block.input = blockCfg.get("input");
-                                block.output = blockCfg.get("output");
-                                block.cluster = blockCfg.get("cluster", false);
-                                block.createCluster = blockCfg.get("createCluster", false);
-                                block.conductor = blockCfg.get("conductor", false);
-                                block.fuelVessel = blockCfg.get("fuelVessel", false);
-                                block.reflector = blockCfg.get("reflector", false);
-                                block.irradiator = blockCfg.get("irradiator", false);
-                                block.moderator = blockCfg.get("moderator", false);
-                                block.activeModerator = blockCfg.get("activeModerator", false);
-                                block.shield = blockCfg.get("shield", false);
-                                if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
-                                if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
-                                if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
-                                if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
-                                block.blocksLOS = blockCfg.get("blocksLOS", false);
-                                block.functional = blockCfg.get("functional");
-                                if(blockCfg.hasProperty("texture")){
-                                    ConfigNumberList texture = blockCfg.get("texture");
-                                    int size = (int) texture.get(0);
-                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                                    int index = 1;
-                                    for(int x = 0; x<image.getWidth(); x++){
-                                        for(int y = 0; y<image.getHeight(); y++){
-                                            Color color = new Color((int)texture.get(index));
-                                            image.setRGB(x, y, color.getRGB());
-                                            index++;
-                                        }
-                                    }
-                                    block.setTexture(image);
-                                }
-                                if(blockCfg.hasProperty("closedTexture")){
-                                    ConfigNumberList closedTexture = blockCfg.get("closedTexture");
-                                    int size = (int) closedTexture.get(0);
-                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                                    int index = 1;
-                                    for(int x = 0; x<image.getWidth(); x++){
-                                        for(int y = 0; y<image.getHeight(); y++){
-                                            Color color = new Color((int)closedTexture.get(index));
-                                            image.setRGB(x, y, color.getRGB());
-                                            index++;
-                                        }
-                                    }
-                                    block.setClosedTexture(image);
-                                }
-                                if(blockCfg.hasProperty("rules")){
-                                    ConfigList rules = blockCfg.get("rules");
-                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                                        Config ruleCfg = (Config)rit.next();
-                                        block.rules.add(readOverMSRRule(ruleCfg));
-                                    }
-                                }
-                                ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
-                            }
-                            for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
-                                byte index = overhaulMSRPostLoadMap.get(rule);
-                                if(index==0){
-                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
-                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
-                                    rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
-                                }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionMSR.blocks.get(index-1);
-                                }
-                            }
-                            ConfigList fuels = fissionMSR.get("fuels");
-                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                                Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionMSR.fuels.add(new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
-                            }
-                            ConfigList sources = fissionMSR.get("sources");
-                            for(Iterator sit = sources.iterator(); sit.hasNext();){
-                                Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionMSR.sources.add(new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
-                            }
-                            ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
-                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
-                                Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
-                            }
-                        }
-//</editor-fold>
-                    }
-//</editor-fold>
-                    for(int i = 0; i<multiblocks; i++){
-                        Config data = Config.newConfig();
-                        data.load(in);
-                        Multiblock multiblock;
-                        int id = data.get("id");
-                        switch(id){
-                            case 0:
-                                ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
-                                boolean compact = data.get("compact");
-                                ConfigNumberList blocks = data.get("blocks");
-                                if(compact){
-                                    int index = 0;
-                                    for(int x = 0; x<underhaulSFR.getX(); x++){
-                                        for(int y = 0; y<underhaulSFR.getY(); y++){
-                                            for(int z = 0; z<underhaulSFR.getZ(); z++){
-                                                int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.blocks[x][y][z] = new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
-                                                index++;
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    for(int j = 0; j<blocks.size(); j+=4){
-                                        int x = (int) blocks.get(j);
-                                        int y = (int) blocks.get(j+1);
-                                        int z = (int) blocks.get(j+2);
-                                        int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.blocks[x][y][z] = new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
-                                    }
-                                }
-                                multiblock = underhaulSFR;
-                                break;
-                            case 1:
-                                size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
-                                compact = data.get("compact");
-                                blocks = data.get("blocks");
-                                if(compact){
-                                    int index = 0;
-                                    for(int x = 0; x<overhaulSFR.getX(); x++){
-                                        for(int y = 0; y<overhaulSFR.getY(); y++){
-                                            for(int z = 0; z<overhaulSFR.getZ(); z++){
-                                                int bid = (int) blocks.get(index);
-                                                if(bid>0){
-                                                    overhaulSFR.blocks[x][y][z] = new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
-                                                }
-                                                index++;
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    for(int j = 0; j<blocks.size(); j+=4){
-                                        int x = (int) blocks.get(j);
-                                        int y = (int) blocks.get(j+1);
-                                        int z = (int) blocks.get(j+2);
-                                        int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.blocks[x][y][z] = new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
-                                    }
-                                }
-                                ConfigNumberList fuels = data.get("fuels");
-                                ConfigNumberList sources = data.get("sources");
-                                ConfigNumberList irradiatorRecipes = data.get("irradiatorRecipes");
-                                int fuelIndex = 0;
-                                int sourceIndex = 0;
-                                int recipeIndex = 0;
-                                for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
-                                    if(block.template.fuelCell){
-                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
-                                        fuelIndex++;
-                                        int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
-                                        sourceIndex++;
-                                    }
-                                    if(block.template.irradiator){
-                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
-                                        recipeIndex++;
-                                    }
-                                }
-                                multiblock = overhaulSFR;
-                                break;
-                            case 2:
-                                size = data.get("size");
-                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
-                                compact = data.get("compact");
-                                blocks = data.get("blocks");
-                                if(compact){
-                                    int index = 0;
-                                    for(int x = 0; x<overhaulMSR.getX(); x++){
-                                        for(int y = 0; y<overhaulMSR.getY(); y++){
-                                            for(int z = 0; z<overhaulMSR.getZ(); z++){
-                                                int bid = (int) blocks.get(index);
-                                                if(bid>0){
-                                                    overhaulMSR.blocks[x][y][z] = new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1));
-                                                }
-                                                index++;
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    for(int j = 0; j<blocks.size(); j+=4){
-                                        int x = (int) blocks.get(j);
-                                        int y = (int) blocks.get(j+1);
-                                        int z = (int) blocks.get(j+2);
-                                        int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.blocks[x][y][z] = new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1));
-                                    }
-                                }
-                                fuels = data.get("fuels");
-                                sources = data.get("sources");
-                                irradiatorRecipes = data.get("irradiatorRecipes");
-                                fuelIndex = 0;
-                                sourceIndex = 0;
-                                recipeIndex = 0;
-                                for(multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
-                                    if(block.template.fuelVessel){
-                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.fuels.get((int)fuels.get(fuelIndex));
-                                        fuelIndex++;
-                                        int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.sources.get(sid-1);
-                                        sourceIndex++;
-                                    }
-                                    if(block.template.irradiator){
-                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.get(rid-1);
-                                        recipeIndex++;
-                                    }
-                                }
-                                multiblock = overhaulMSR;
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
-                        }
-                        if(data.hasProperty("metadata")){
-                            Config metadata = data.get("metadata");
-                            for(String key : metadata.properties()){
-                                multiblock.metadata.put(key, metadata.get(key));
-                            }
-                        }
-                        ncpf.multiblocks.add(multiblock);
-                    }
-                    in.close();
-                    return ncpf;
-                }catch(IOException ex){
-                    throw new RuntimeException(ex);
-                }
-            }
-            private multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
-                multiblock.configuration.underhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
-                byte type = ruleCfg.get("type");
-                switch(type){
-                    case 0:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
-                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 1:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 2:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                        byte blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 3:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                        blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 4:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
-                        break;
-                    case 5:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.OR;
-                        ConfigList rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readUnderRule(rulC));
-                        }
-                        break;
-                    case 6:
-                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AND;
-                        rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readUnderRule(rulC));
-                        }
-                        break;
-                }
-                return rule;
-            }
-            private multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverSFRRule(Config ruleCfg){
-                multiblock.configuration.overhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
-                byte type = ruleCfg.get("type");
-                switch(type){
-                    case 0:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
-                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 1:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 2:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                        byte blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                            case 5:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
-                                break;
-                            case 6:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
-                                break;
-                            case 7:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
-                                break;
-                            case 8:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 3:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                        blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                            case 5:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
-                                break;
-                            case 6:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
-                                break;
-                            case 7:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
-                                break;
-                            case 8:
-                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 4:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
-                        break;
-                    case 5:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.OR;
-                        ConfigList rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readOverSFRRule(rulC));
-                        }
-                        break;
-                    case 6:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AND;
-                        rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readOverSFRRule(rulC));
-                        }
-                        break;
-                }
-                return rule;
-            }
-            private multiblock.configuration.overhaul.fissionmsr.PlacementRule readOverMSRRule(Config ruleCfg){
-                multiblock.configuration.overhaul.fissionmsr.PlacementRule rule = new multiblock.configuration.overhaul.fissionmsr.PlacementRule();
-                byte type = ruleCfg.get("type");
-                switch(type){
-                    case 0:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN;
-                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 1:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL;
-                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 2:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
-                        byte blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                            case 5:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
-                                break;
-                            case 6:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
-                                break;
-                            case 7:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
-                                break;
-                            case 8:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 3:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
-                        blockType = ruleCfg.get("block");
-                        switch(blockType){
-                            case 0:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
-                                break;
-                            case 1:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
-                                break;
-                            case 2:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
-                                break;
-                            case 3:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
-                                break;
-                            case 4:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
-                                break;
-                            case 5:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
-                                break;
-                            case 6:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
-                                break;
-                            case 7:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
-                                break;
-                            case 8:
-                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
-                                break;
-                        }
-                        rule.min = ruleCfg.get("min");
-                        rule.max = ruleCfg.get("max");
-                        break;
-                    case 4:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.NO_PANCAKES;
-                        break;
-                    case 5:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.OR;
-                        ConfigList rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readOverMSRRule(rulC));
-                        }
-                        break;
-                    case 6:
-                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AND;
-                        rules = ruleCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config rulC = (Config)rit.next();
-                            rule.rules.add(readOverMSRRule(rulC));
-                        }
-                        break;
-                }
-                return rule;
-            }
-        });// .ncpf version 2
-        formats.add(new FormatReader(){
-            @Override
             public boolean formatMatches(InputStream in){//There's probably a better way of detecting the format...
                 try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
                     String line;
@@ -3558,6 +2333,1231 @@ public class FileReader{
                 return file;
             }
         });// hellrage MSR .json 2.1.1-2.1.7 (present)
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                try{
+                    Config header = Config.newConfig();
+                    header.load(in);
+                    in.close();
+                    return header.get("version", (byte)0)==(byte)1;
+                }catch(Throwable t){
+                    return false;
+                }
+            }
+            HashMap<multiblock.configuration.underhaul.fissionsfr.PlacementRule, Byte> underhaulPostLoadMap = new HashMap<>();
+            HashMap<multiblock.configuration.overhaul.fissionsfr.PlacementRule, Byte> overhaulPostLoadMap = new HashMap<>();
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                try{
+                    NCPFFile ncpf = new NCPFFile();
+                    Config header = Config.newConfig();
+                    header.load(in);
+                    int multiblocks = header.get("count");
+                    if(header.hasProperty("metadata")){
+                        Config metadata = header.get("metadata");
+                        for(String key : metadata.properties()){
+                            ncpf.metadata.put(key, metadata.get(key));
+                        }
+                    }
+                    Config config = Config.newConfig();
+                    config.load(in);
+                    boolean partial = config.get("partial");
+                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"));
+                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"));
+                    //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
+                    if(config.hasProperty("underhaul")){
+                        ncpf.configuration.underhaul = new UnderhaulConfiguration();
+                        Config underhaul = config.get("underhaul");
+                        if(underhaul.hasProperty("fissionSFR")){
+                            ncpf.configuration.underhaul.fissionSFR = new multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
+                            Config fissionSFR = underhaul.get("fissionSFR");
+                            ncpf.configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                            ncpf.configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                            ncpf.configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
+                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
+                            ncpf.configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
+                            ConfigList blocks = fissionSFR.get("blocks");
+                            underhaulPostLoadMap.clear();
+                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                                Config blockCfg = (Config)bit.next();
+                                multiblock.configuration.underhaul.fissionsfr.Block block = new multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
+                                block.active = blockCfg.get("active");
+                                block.cooling = blockCfg.get("cooling", 0);
+                                block.fuelCell = blockCfg.get("fuelCell", false);
+                                block.moderator = blockCfg.get("moderator", false);
+                                if(blockCfg.hasProperty("texture")){
+                                    ConfigNumberList texture = blockCfg.get("texture");
+                                    int size = (int) texture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("rules")){
+                                    ConfigList rules = blockCfg.get("rules");
+                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                        Config ruleCfg = (Config)rit.next();
+                                        block.rules.add(readUnderRule(ruleCfg));
+                                    }
+                                }
+                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
+                            }
+                            for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
+                                byte index = underhaulPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
+                                }
+                            }
+                            ConfigList fuels = fissionSFR.get("fuels");
+                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                                Config fuelCfg = (Config)fit.next();
+                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
+                            }
+                        }
+                    }
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Overhaul Configuration">
+                    if(config.hasProperty("overhaul")){
+                        ncpf.configuration.overhaul = new OverhaulConfiguration();
+                        Config overhaul = config.get("overhaul");
+                        if(overhaul.hasProperty("fissionSFR")){
+                            ncpf.configuration.overhaul.fissionSFR = new multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
+                            Config fissionSFR = overhaul.get("fissionSFR");
+                            ncpf.configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                            ncpf.configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                            ncpf.configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                            ncpf.configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
+                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
+                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
+                            ConfigList blocks = fissionSFR.get("blocks");
+                            overhaulPostLoadMap.clear();
+                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                                Config blockCfg = (Config)bit.next();
+                                multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
+                                block.cooling = blockCfg.get("cooling", 0);
+                                block.cluster = blockCfg.get("cluster", false);
+                                block.createCluster = blockCfg.get("createCluster", false);
+                                block.conductor = blockCfg.get("conductor", false);
+                                block.fuelCell = blockCfg.get("fuelCell", false);
+                                block.reflector = blockCfg.get("reflector", false);
+                                block.irradiator = blockCfg.get("irradiator", false);
+                                block.moderator = blockCfg.get("moderator", false);
+                                block.activeModerator = blockCfg.get("activeModerator", false);
+                                block.shield = blockCfg.get("shield", false);
+                                if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                                if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                                if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                                if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                                block.blocksLOS = blockCfg.get("blocksLOS", false);
+                                block.functional = blockCfg.get("functional");
+                                if(blockCfg.hasProperty("texture")){
+                                    ConfigNumberList texture = blockCfg.get("texture");
+                                    int size = (int) texture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("rules")){
+                                    ConfigList rules = blockCfg.get("rules");
+                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                        Config ruleCfg = (Config)rit.next();
+                                        block.rules.add(readOverRule(ruleCfg));
+                                    }
+                                }
+                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
+                            }
+                            for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulPostLoadMap.keySet()){
+                                byte index = overhaulPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
+                                }
+                            }
+                            ConfigList fuels = fissionSFR.get("fuels");
+                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                                Config fuelCfg = (Config)fit.next();
+                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                            }
+                            ConfigList sources = fissionSFR.get("sources");
+                            for(Iterator sit = sources.iterator(); sit.hasNext();){
+                                Config sourceCfg = (Config)sit.next();
+                                ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                            }
+                            ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
+                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                                Config irradiatorRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                            }
+                            ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
+                            for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
+                                Config coolantRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
+                            }
+                        }
+                    }
+//</editor-fold>
+                    for(int i = 0; i<multiblocks; i++){
+                        Config data = Config.newConfig();
+                        data.load(in);
+                        Multiblock multiblock;
+                        int id = data.get("id");
+                        switch(id){
+                            case 0:
+                                ConfigNumberList size = data.get("size");
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
+                                boolean compact = data.get("compact");
+                                ConfigNumberList blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<underhaulSFR.getX(); x++){
+                                        for(int y = 0; y<underhaulSFR.getY(); y++){
+                                            for(int z = 0; z<underhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0)underhaulSFR.blocks[x][y][z] = new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        underhaulSFR.blocks[x][y][z] = new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
+                                    }
+                                }
+                                multiblock = underhaulSFR;
+                                break;
+                            case 1:
+                                size = data.get("size");
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                compact = data.get("compact");
+                                blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<overhaulSFR.getX(); x++){
+                                        for(int y = 0; y<overhaulSFR.getY(); y++){
+                                            for(int z = 0; z<overhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0){
+                                                    overhaulSFR.blocks[x][y][z] = new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
+                                                }
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        overhaulSFR.blocks[x][y][z] = new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
+                                    }
+                                }
+                                ConfigNumberList fuels = data.get("fuels");
+                                ConfigNumberList sources = data.get("sources");
+                                ConfigNumberList irradiatorRecipes = data.get("irradiatorRecipes");
+                                int fuelIndex = 0;
+                                int sourceIndex = 0;
+                                int recipeIndex = 0;
+                                for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
+                                    if(block.template.fuelCell){
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
+                                        fuelIndex++;
+                                        int sid = (int) sources.get(sourceIndex);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
+                                        sourceIndex++;
+                                    }
+                                    if(block.template.irradiator){
+                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
+                                        recipeIndex++;
+                                    }
+                                }
+                                multiblock = overhaulSFR;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
+                        }
+                        if(data.hasProperty("metadata")){
+                            Config metadata = data.get("metadata");
+                            for(String key : metadata.properties()){
+                                multiblock.metadata.put(key, metadata.get(key));
+                            }
+                        }
+                        ncpf.multiblocks.add(multiblock);
+                    }
+                    in.close();
+                    return ncpf;
+                }catch(IOException ex){
+                    throw new RuntimeException(ex);
+                }
+            }
+            private multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
+                multiblock.configuration.underhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readUnderRule(rulC));
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readUnderRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverRule(Config ruleCfg){
+                multiblock.configuration.overhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        overhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
+                        overhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverRule(rulC));
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+        });// .ncpf version 1
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                try{
+                    Config header = Config.newConfig();
+                    header.load(in);
+                    in.close();
+                    return header.get("version", (byte)0)==(byte)2;
+                }catch(Throwable t){
+                    return false;
+                }
+            }
+            HashMap<multiblock.configuration.underhaul.fissionsfr.PlacementRule, Byte> underhaulPostLoadMap = new HashMap<>();
+            HashMap<multiblock.configuration.overhaul.fissionsfr.PlacementRule, Byte> overhaulSFRPostLoadMap = new HashMap<>();
+            HashMap<multiblock.configuration.overhaul.fissionmsr.PlacementRule, Byte> overhaulMSRPostLoadMap = new HashMap<>();
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                try{
+                    NCPFFile ncpf = new NCPFFile();
+                    Config header = Config.newConfig();
+                    header.load(in);
+                    int multiblocks = header.get("count");
+                    if(header.hasProperty("metadata")){
+                        Config metadata = header.get("metadata");
+                        for(String key : metadata.properties()){
+                            ncpf.metadata.put(key, metadata.get(key));
+                        }
+                    }
+                    Config config = Config.newConfig();
+                    config.load(in);
+                    boolean partial = config.get("partial");
+                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"));
+                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"));
+                    //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
+                    if(config.hasProperty("underhaul")){
+                        ncpf.configuration.underhaul = new UnderhaulConfiguration();
+                        Config underhaul = config.get("underhaul");
+                        if(underhaul.hasProperty("fissionSFR")){
+                            ncpf.configuration.underhaul.fissionSFR = new multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
+                            Config fissionSFR = underhaul.get("fissionSFR");
+                            ncpf.configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                            ncpf.configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                            ncpf.configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
+                            ncpf.configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
+                            ncpf.configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
+                            ConfigList blocks = fissionSFR.get("blocks");
+                            underhaulPostLoadMap.clear();
+                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                                Config blockCfg = (Config)bit.next();
+                                multiblock.configuration.underhaul.fissionsfr.Block block = new multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
+                                block.active = blockCfg.get("active");
+                                block.cooling = blockCfg.get("cooling", 0);
+                                block.fuelCell = blockCfg.get("fuelCell", false);
+                                block.moderator = blockCfg.get("moderator", false);
+                                if(blockCfg.hasProperty("texture")){
+                                    ConfigNumberList texture = blockCfg.get("texture");
+                                    int size = (int) texture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("rules")){
+                                    ConfigList rules = blockCfg.get("rules");
+                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                        Config ruleCfg = (Config)rit.next();
+                                        block.rules.add(readUnderRule(ruleCfg));
+                                    }
+                                }
+                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
+                            }
+                            for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
+                                byte index = underhaulPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
+                                }
+                            }
+                            ConfigList fuels = fissionSFR.get("fuels");
+                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                                Config fuelCfg = (Config)fit.next();
+                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
+                            }
+                        }
+                    }
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Overhaul Configuration">
+                    if(config.hasProperty("overhaul")){
+                        ncpf.configuration.overhaul = new OverhaulConfiguration();
+                        Config overhaul = config.get("overhaul");
+                        //<editor-fold defaultstate="collapsed" desc="Fission SFR Configuration">
+                        if(overhaul.hasProperty("fissionSFR")){
+                            ncpf.configuration.overhaul.fissionSFR = new multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
+                            Config fissionSFR = overhaul.get("fissionSFR");
+                            ncpf.configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                            ncpf.configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                            ncpf.configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                            ncpf.configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
+                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
+                            ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
+                            ConfigList blocks = fissionSFR.get("blocks");
+                            overhaulSFRPostLoadMap.clear();
+                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                                Config blockCfg = (Config)bit.next();
+                                multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
+                                block.cooling = blockCfg.get("cooling", 0);
+                                block.cluster = blockCfg.get("cluster", false);
+                                block.createCluster = blockCfg.get("createCluster", false);
+                                block.conductor = blockCfg.get("conductor", false);
+                                block.fuelCell = blockCfg.get("fuelCell", false);
+                                block.reflector = blockCfg.get("reflector", false);
+                                block.irradiator = blockCfg.get("irradiator", false);
+                                block.moderator = blockCfg.get("moderator", false);
+                                block.activeModerator = blockCfg.get("activeModerator", false);
+                                block.shield = blockCfg.get("shield", false);
+                                if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                                if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                                if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                                if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                                block.blocksLOS = blockCfg.get("blocksLOS", false);
+                                block.functional = blockCfg.get("functional");
+                                if(blockCfg.hasProperty("texture")){
+                                    ConfigNumberList texture = blockCfg.get("texture");
+                                    int size = (int) texture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("closedTexture")){
+                                    ConfigNumberList closedTexture = blockCfg.get("closedTexture");
+                                    int size = (int) closedTexture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)closedTexture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setClosedTexture(image);
+                                }
+                                if(blockCfg.hasProperty("rules")){
+                                    ConfigList rules = blockCfg.get("rules");
+                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                        Config ruleCfg = (Config)rit.next();
+                                        block.rules.add(readOverSFRRule(ruleCfg));
+                                    }
+                                }
+                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
+                            }
+                            for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
+                                byte index = overhaulSFRPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
+                                }
+                            }
+                            ConfigList fuels = fissionSFR.get("fuels");
+                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                                Config fuelCfg = (Config)fit.next();
+                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                            }
+                            ConfigList sources = fissionSFR.get("sources");
+                            for(Iterator sit = sources.iterator(); sit.hasNext();){
+                                Config sourceCfg = (Config)sit.next();
+                                ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                            }
+                            ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
+                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                                Config irradiatorRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                            }
+                            ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
+                            for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
+                                Config coolantRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
+                            }
+                        }
+//</editor-fold>
+                        //<editor-fold defaultstate="collapsed" desc="Fission MSR Configuration">
+                        if(overhaul.hasProperty("fissionMSR")){
+                            ncpf.configuration.overhaul.fissionMSR = new multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
+                            Config fissionMSR = overhaul.get("fissionMSR");
+                            ncpf.configuration.overhaul.fissionMSR.minSize = fissionMSR.get("minSize");
+                            ncpf.configuration.overhaul.fissionMSR.maxSize = fissionMSR.get("maxSize");
+                            ncpf.configuration.overhaul.fissionMSR.neutronReach = fissionMSR.get("neutronReach");
+                            ncpf.configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = fissionMSR.get("coolingEfficiencyLeniency");
+                            ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyMult = fissionMSR.get("sparsityPenaltyMult");
+                            ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = fissionMSR.get("sparsityPenaltyThreshold");
+                            ConfigList blocks = fissionMSR.get("blocks");
+                            overhaulMSRPostLoadMap.clear();
+                            for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                                Config blockCfg = (Config)bit.next();
+                                multiblock.configuration.overhaul.fissionmsr.Block block = new multiblock.configuration.overhaul.fissionmsr.Block(blockCfg.get("name"));
+                                block.cooling = blockCfg.get("cooling", 0);
+                                block.input = blockCfg.get("input");
+                                block.output = blockCfg.get("output");
+                                block.cluster = blockCfg.get("cluster", false);
+                                block.createCluster = blockCfg.get("createCluster", false);
+                                block.conductor = blockCfg.get("conductor", false);
+                                block.fuelVessel = blockCfg.get("fuelVessel", false);
+                                block.reflector = blockCfg.get("reflector", false);
+                                block.irradiator = blockCfg.get("irradiator", false);
+                                block.moderator = blockCfg.get("moderator", false);
+                                block.activeModerator = blockCfg.get("activeModerator", false);
+                                block.shield = blockCfg.get("shield", false);
+                                if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                                if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                                if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                                if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                                block.blocksLOS = blockCfg.get("blocksLOS", false);
+                                block.functional = blockCfg.get("functional");
+                                if(blockCfg.hasProperty("texture")){
+                                    ConfigNumberList texture = blockCfg.get("texture");
+                                    int size = (int) texture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)texture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setTexture(image);
+                                }
+                                if(blockCfg.hasProperty("closedTexture")){
+                                    ConfigNumberList closedTexture = blockCfg.get("closedTexture");
+                                    int size = (int) closedTexture.get(0);
+                                    BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                    int index = 1;
+                                    for(int x = 0; x<image.getWidth(); x++){
+                                        for(int y = 0; y<image.getHeight(); y++){
+                                            Color color = new Color((int)closedTexture.get(index));
+                                            image.setRGB(x, y, color.getRGB());
+                                            index++;
+                                        }
+                                    }
+                                    block.setClosedTexture(image);
+                                }
+                                if(blockCfg.hasProperty("rules")){
+                                    ConfigList rules = blockCfg.get("rules");
+                                    for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                        Config ruleCfg = (Config)rit.next();
+                                        block.rules.add(readOverMSRRule(ruleCfg));
+                                    }
+                                }
+                                ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
+                            }
+                            for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
+                                byte index = overhaulMSRPostLoadMap.get(rule);
+                                if(index==0){
+                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
+                                    if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                    rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                }else{
+                                    rule.block = ncpf.configuration.overhaul.fissionMSR.blocks.get(index-1);
+                                }
+                            }
+                            ConfigList fuels = fissionMSR.get("fuels");
+                            for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                                Config fuelCfg = (Config)fit.next();
+                                ncpf.configuration.overhaul.fissionMSR.fuels.add(new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                            }
+                            ConfigList sources = fissionMSR.get("sources");
+                            for(Iterator sit = sources.iterator(); sit.hasNext();){
+                                Config sourceCfg = (Config)sit.next();
+                                ncpf.configuration.overhaul.fissionMSR.sources.add(new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                            }
+                            ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
+                            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                                Config irradiatorRecipeCfg = (Config)irit.next();
+                                ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                            }
+                        }
+//</editor-fold>
+                    }
+//</editor-fold>
+                    for(int i = 0; i<multiblocks; i++){
+                        Config data = Config.newConfig();
+                        data.load(in);
+                        Multiblock multiblock;
+                        int id = data.get("id");
+                        switch(id){
+                            case 0:
+                                ConfigNumberList size = data.get("size");
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
+                                boolean compact = data.get("compact");
+                                ConfigNumberList blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<underhaulSFR.getX(); x++){
+                                        for(int y = 0; y<underhaulSFR.getY(); y++){
+                                            for(int z = 0; z<underhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0)underhaulSFR.blocks[x][y][z] = new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        underhaulSFR.blocks[x][y][z] = new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1));
+                                    }
+                                }
+                                multiblock = underhaulSFR;
+                                break;
+                            case 1:
+                                size = data.get("size");
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                compact = data.get("compact");
+                                blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<overhaulSFR.getX(); x++){
+                                        for(int y = 0; y<overhaulSFR.getY(); y++){
+                                            for(int z = 0; z<overhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0){
+                                                    overhaulSFR.blocks[x][y][z] = new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
+                                                }
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        overhaulSFR.blocks[x][y][z] = new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1));
+                                    }
+                                }
+                                ConfigNumberList fuels = data.get("fuels");
+                                ConfigNumberList sources = data.get("sources");
+                                ConfigNumberList irradiatorRecipes = data.get("irradiatorRecipes");
+                                int fuelIndex = 0;
+                                int sourceIndex = 0;
+                                int recipeIndex = 0;
+                                for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
+                                    if(block.template.fuelCell){
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
+                                        fuelIndex++;
+                                        int sid = (int) sources.get(sourceIndex);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
+                                        sourceIndex++;
+                                    }
+                                    if(block.template.irradiator){
+                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
+                                        recipeIndex++;
+                                    }
+                                }
+                                multiblock = overhaulSFR;
+                                break;
+                            case 2:
+                                size = data.get("size");
+                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                compact = data.get("compact");
+                                blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<overhaulMSR.getX(); x++){
+                                        for(int y = 0; y<overhaulMSR.getY(); y++){
+                                            for(int z = 0; z<overhaulMSR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0){
+                                                    overhaulMSR.blocks[x][y][z] = new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1));
+                                                }
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        overhaulMSR.blocks[x][y][z] = new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1));
+                                    }
+                                }
+                                fuels = data.get("fuels");
+                                sources = data.get("sources");
+                                irradiatorRecipes = data.get("irradiatorRecipes");
+                                fuelIndex = 0;
+                                sourceIndex = 0;
+                                recipeIndex = 0;
+                                for(multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
+                                    if(block.template.fuelVessel){
+                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.fuels.get((int)fuels.get(fuelIndex));
+                                        fuelIndex++;
+                                        int sid = (int) sources.get(sourceIndex);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.sources.get(sid-1);
+                                        sourceIndex++;
+                                    }
+                                    if(block.template.irradiator){
+                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.get(rid-1);
+                                        recipeIndex++;
+                                    }
+                                }
+                                multiblock = overhaulMSR;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
+                        }
+                        if(data.hasProperty("metadata")){
+                            Config metadata = data.get("metadata");
+                            for(String key : metadata.properties()){
+                                multiblock.metadata.put(key, metadata.get(key));
+                            }
+                        }
+                        ncpf.multiblocks.add(multiblock);
+                    }
+                    in.close();
+                    return ncpf;
+                }catch(IOException ex){
+                    throw new RuntimeException(ex);
+                }
+            }
+            private multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
+                multiblock.configuration.underhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readUnderRule(rulC));
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readUnderRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverSFRRule(Config ruleCfg){
+                multiblock.configuration.overhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
+                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.NO_PANCAKES;
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverSFRRule(rulC));
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverSFRRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private multiblock.configuration.overhaul.fissionmsr.PlacementRule readOverMSRRule(Config ruleCfg){
+                multiblock.configuration.overhaul.fissionmsr.PlacementRule rule = new multiblock.configuration.overhaul.fissionmsr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN;
+                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL;
+                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.NO_PANCAKES;
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverMSRRule(rulC));
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverMSRRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+        });// .ncpf version 2
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){

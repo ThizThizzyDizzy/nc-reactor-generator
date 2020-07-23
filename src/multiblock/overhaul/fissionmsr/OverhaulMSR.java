@@ -165,11 +165,18 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public synchronized String getTooltip(){
+        return tooltip(true);
+    }
+    @Override
+    public String getExtraBotTooltip(){
+        return tooltip(false);
+    }
+    public String tooltip(boolean showDetails){
         String outs = "";
         ArrayList<String> outputList = new ArrayList<>(totalOutput.keySet());
         Collections.sort(outputList);
         for(String s : outputList){
-            outs+="\n "+Math.round(totalOutput.get(s))+" mb/t of "+s;
+            if(showDetails)outs+="\n "+Math.round(totalOutput.get(s))+" mb/t of "+s;
         }
         String s = "Total output: "+Math.round(totalTotalOutput)+" mb/t"+outs+"\n"
                 + "Total Heat: "+totalHeat+"H/t\n"
@@ -185,8 +192,10 @@ public class OverhaulMSR extends Multiblock<Block>{
             int i = getFuelCount(f);
             if(i>0)s+="\n"+f.name+": "+i;
         }
-        for(Cluster c : clusters){
-            s+="\n\n"+c.getTooltip();
+        if(showDetails){
+            for(Cluster c : clusters){
+                s+="\n\n"+c.getTooltip();
+            }
         }
         return s;
     }
@@ -694,5 +703,9 @@ public class OverhaulMSR extends Multiblock<Block>{
     @Override
     public String getGeneralName(){
         return "Reactor";
+    }
+    @Override
+    public boolean isCompatible(Multiblock<Block> other){
+        return true;
     }
 }

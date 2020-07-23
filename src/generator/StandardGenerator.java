@@ -237,6 +237,7 @@ public class StandardGenerator extends MultiblockGenerator{
                 workingMultiblocks.set(idx, multiblock.blankCopy());
             }
         }
+        countIteration();
     }
     private Block applyMultiblockSpecificSettings(Multiblock currentMultiblock, Block randBlock){
         if(multiblock instanceof UnderhaulSFR)return randBlock;//no block-specifics here!
@@ -298,11 +299,24 @@ public class StandardGenerator extends MultiblockGenerator{
     }
     @Override
     public void importMultiblock(Multiblock<Block> multiblock){
+        if(!multiblock.checkCompatible(this.multiblock))return;
+        for(Range<Block> range : settings.allowedBlocks){
+            for(Block block : multiblock.getBlocks()){
+                if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null));
+            }
+        }
+        ALLOWED:for(Block block : multiblock.getBlocks()){
+            for(Range<Block> range : settings.allowedBlocks){
+                if(range.obj.isEqual(block))continue ALLOWED;
+            }
+            multiblock.action(new SetblockAction(block.x, block.y, block.z, null));
+        }
         finalize(multiblock);
     }
     private <T extends Object> T rand(Multiblock multiblock, ArrayList<Range<T>> ranges){
         if(ranges.isEmpty())return null;
         for(Range<T> range : ranges){
+            if(range.min==0&&range.max==Integer.MAX_VALUE)continue;
             if(multiblock.count(range.obj)<range.min)return range.obj;
         }
         Range<T> randRange = ranges.get(rand.nextInt(ranges.size()));

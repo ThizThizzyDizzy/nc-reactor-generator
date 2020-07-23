@@ -103,7 +103,8 @@ public abstract class KeywordCommand extends Command{
         }catch(IOException ex){
             Logger.getLogger(KeywordCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
-        event.getChannel().sendFile(debugFile, "debug.png").queue();
+        event.getChannel().sendFile(debugFile, "debug.png").complete();
+        debugFile.delete();
         run(event, words, debug);
     }
     public abstract void run(GuildMessageReceivedEvent event, ArrayList<Keyword> keywords, boolean debug);

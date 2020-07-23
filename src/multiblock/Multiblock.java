@@ -588,9 +588,25 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         String extra = getExtraSaveTooltip();
         return extra.isEmpty()?(s+getTooltip()):(s+getExtraSaveTooltip()+"\n"+getTooltip());
     }
+    public String getBotTooltip(){
+        String s = Core.configuration.name+" ("+Core.configuration.version+")\n";
+        for(String key : metadata.keySet()){
+            if(key.equalsIgnoreCase("name")){
+                s+=metadata.get(key)+"\n";
+            }
+        }
+        s+=getDefinitionName()+"\n";
+        for(String key : metadata.keySet()){
+            if(key.equalsIgnoreCase("name"))continue;
+            if(metadata.get(key)!=null)s+=key+": "+metadata.get(key)+"\n";
+        }
+        s+="\n";
+        return s+getExtraBotTooltip();
+    }
     protected String getExtraSaveTooltip(){
         return "";
     }
+    protected abstract String getExtraBotTooltip();
     public abstract void addGeneratorSettings(MenuComponentMinimaList multiblockSettings);
     public ArrayList<Priority> getGenerationPriorities(){
         ArrayList<Priority> priorities = new ArrayList<>();
@@ -685,4 +701,11 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return total;
     }
     public abstract String getGeneralName();
+    protected abstract boolean isCompatible(Multiblock<T> other);
+    public boolean checkCompatible(Multiblock<T> other){
+        if(other.getX()!=getX())return false;
+        if(other.getY()!=getY())return false;
+        if(other.getZ()!=getZ())return false;
+        return isCompatible(other);
+    }
 }
