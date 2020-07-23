@@ -52,6 +52,13 @@ public class Main{
         requiredLibraries.put(new String[]{url,filename}, sizeKB);
     }
     public static void main(String[] args) throws NoSuchMethodException, IOException, InterruptedException, URISyntaxException{
+        
+        if(args.length>=1&&args[0].equals("maybediscord")){
+            if(JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[0] = "discord";
+        }
+        if(args.length>=2&&args[1].equals("maybediscord")){
+            if(JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
+        }
         if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){
             addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
             addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);

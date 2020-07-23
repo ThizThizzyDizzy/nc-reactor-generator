@@ -241,9 +241,9 @@ public class Bot extends ListenerAdapter{
                 FOR:for(Range<String> range : stringRanges){
                     String blockNam = range.obj.toLowerCase();
                     if(blockNam.endsWith("s"))blockNam = blockNam.substring(0, blockNam.length()-1);
-                    blockNam = blockNam.replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" heater", "").replace(" cell", "").replace(" vessel", "").replace(" reflector", "");
+                    blockNam = blockNam.replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" heater", "").replace("fuel ", "").replace(" reflector", "");
                     for(Block block : availableBlocks){
-                        if(block.getName().toLowerCase().replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" heater", "").replace(" cell", "").replace(" vessel", "").replace(" reflector", "").equalsIgnoreCase(blockNam)){
+                        if(block.getName().toLowerCase().replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" heater", "").replace("fuel ", "").replace(" reflector", "").equalsIgnoreCase(blockNam)){
                             blockRanges.add(new Range(block, range.min, range.max));
                             continue FOR;
                         }
@@ -396,7 +396,10 @@ public class Bot extends ListenerAdapter{
                             settings.postProcessingEffects.add(ppe);
                         }
                     }
-                    settings.allowedBlocks.addAll(blockRanges);
+                    for(Range<Block> range : blockRanges){
+                        if(range.min==0&&range.max==0)continue;
+                        settings.allowedBlocks.add(range);
+                    }
                     FOR:for(Block b : availableBlocks){
                         for(Range<Block> range : blockRanges){
                             if(range.obj==b)continue FOR;
@@ -450,9 +453,7 @@ public class Bot extends ListenerAdapter{
                             GregorianCalendar calendar = new GregorianCalendar();
                             String[] months = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
                             ncpf.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
-                            finalMultiblock.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
                             ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
-                            finalMultiblock.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
                             ncpf.multiblocks.add(finalMultiblock);
                             ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
                             for(FormatWriter writer : formats){
@@ -505,6 +506,7 @@ public class Bot extends ListenerAdapter{
                         last = message;
                         storeReactors(message);
                         for(Attachment att : message.getAttachments()){
+                            if(att==null||att.getFileExtension()==null)continue;
                             if(att.getFileExtension().equalsIgnoreCase("json")){
                                 count++;
                                 System.out.println("Found "+att.getFileName()+" ("+count+")");

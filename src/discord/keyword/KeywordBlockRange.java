@@ -13,10 +13,14 @@ public class KeywordBlockRange extends Keyword{
         String truncated = input.replace(" ", "");
         boolean lessThan = false;
         boolean greaterThan = false;
+        boolean atLeast = false;
+        boolean atMost = false;
         boolean exactly = false;
         boolean no = false;
         if(truncated.startsWith("fewerthan")||truncated.startsWith("lessthan"))lessThan = true;
         if(truncated.startsWith("morethan")||truncated.startsWith("greaterthan"))greaterThan = true;
+        if(truncated.startsWith("atleast"))atLeast = true;
+        if(truncated.startsWith("atmost"))atMost = true;
         if(truncated.startsWith("exactly"))exactly = true;
         if(truncated.startsWith("no"))no = true;
         int matches = 0;
@@ -25,7 +29,7 @@ public class KeywordBlockRange extends Keyword{
         if(exactly)matches++;
         if(no)matches++;
         if(matches>1)return false;
-        truncated = truncated.replaceFirst("((fewer|more|less|greater) ?th[ea]n|exactly) ?|(no ?)", "");
+        truncated = truncated.replaceFirst("((fewer|more|less|greater) ?th[ea]n|at ?(least|most)|exactly) ?|(no ?)", "");
         String num1 = "";
         while(!truncated.isEmpty()&&Character.isDigit(truncated.charAt(0))){
             num1+=truncated.charAt(0);
@@ -38,12 +42,16 @@ public class KeywordBlockRange extends Keyword{
             num2+=truncated.charAt(0);
             truncated = truncated.substring(1);
         }
-        block = input.replaceAll(getRegex(), "$7");
+        block = input.replaceAll(getRegex(), "$8");
         int j = num2.isEmpty()?-1:Integer.parseInt(num2);
         if(lessThan){
-            max = i;
+            max = i-1;
         }else if(greaterThan){
+            min = i+1;
+        }else if(atLeast){
             min = i;
+        }else if(atMost){
+            max = i;
         }else if(exactly){
             min = max = i;
         }else if(no){
@@ -60,7 +68,7 @@ public class KeywordBlockRange extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "(((fewer|more|less|greater) ?th[ea]n|exactly) ?)?(no |[<>]?\\d+( ?(to|-) ?\\d+)?) ?(((liquid|fuel|heavy) ?)?[a-z-]{4,}( ?(coolers?|(heat)?(sink|er)s?|moderators?|reflectors?|shields?))?)";
+        return "(((fewer|more|less|greater) ?th[ea]n|at ?(least|most)|exactly) ?)?(no |[<>]?\\d+( ?(to|-) ?\\d+)?) ?(((liquid|fuel|heavy) ?)?[a-z-]{4,}( ?(coolers?|(heat)?(sink|er)s?|moderators?|reflectors?|shields?))?)";
     }
     @Override
     public Keyword newInstance(){
