@@ -26,4 +26,8 @@ public class SmoreAction extends Action{
     public void finish(){
         PlayBot.addSmore(user);
     }
+    @Override
+    public String getAction(){
+        return "cooking a S'more";
+    }
 }

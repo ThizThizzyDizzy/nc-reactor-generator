@@ -33,4 +33,5 @@ public abstract class Action{
         cancelled = true;
         channel.sendMessage(getCanceledMessage()).queue();
     }
+    public abstract String getAction();
 }

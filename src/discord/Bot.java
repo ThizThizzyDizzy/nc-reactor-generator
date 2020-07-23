@@ -12,6 +12,7 @@ import discord.keyword.KeywordSymmetry;
 import discord.keyword.KeywordUnderhaul;
 import discord.play.PlayBot;
 import discord.play.action.SmoreAction;
+import discord.play.action.SmoreLordAction;
 import generator.MultiblockGenerator;
 import generator.Priority;
 import generator.StandardGenerator;
@@ -51,6 +52,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -521,7 +523,7 @@ public class Bot extends ListenerAdapter{
                 }
             }
         });
-        playCommands.add(new Command("smore", "s'more"){
+        playCommands.add(new Command("smore", "s'more", "s’more"){
             @Override
             public String getHelpText(){
                 return "Mmmm, s'mores";
@@ -531,7 +533,47 @@ public class Bot extends ListenerAdapter{
                 PlayBot.action(event, new SmoreAction());
             }
         });
-        playCommands.add(new Command("smores", "bal","balance","money"){
+        playCommands.add(new SecretCommand("moresmore", "mores'more", "mores’more", "doublesmore", "doubles'more", "doubles’more"){
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                event.getChannel().sendMessage("If you tried making two smores at once, your arms would get tired and you'd drop them! You wouldn't want that, would you?").queue();
+            }
+        });
+        playCommands.add(new SecretCommand("foursmore", "fours'more", "fours’more", "quadsmore", "quads'more", "quads’more"){
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                event.getChannel().sendMessage("To make four s'mores at once, you'd need four arms. You don't have four arms.").queue();
+            }
+        });
+        playCommands.add(new SecretCommand("smorelord", "s'morelord", "s’morelord"){
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                for(Role role : event.getGuild().getMember(event.getAuthor()).getRoles()){
+                    if(role.getIdLong()==563124574032756746L){
+                        PlayBot.action(event, new SmoreLordAction());
+                        return;
+                    }
+                }
+                event.getChannel().sendMessage("You need a special S'mengineering degree to even comprehend smorelordship").queue();
+            }
+        });
+        playCommands.add(new SecretCommand("glowshroom"){
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                event.getChannel().sendMessage("You don't see a glowshroom").queue();
+            }
+        });
+        playCommands.add(new SecretCommand("actions"){
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                String actions = "";
+                for(Long key : PlayBot.actions.keySet()){
+                    actions+=nick(event.getGuild().getMemberById(key))+" is "+PlayBot.actions.get(key).getAction()+"\n";
+                }
+                event.getChannel().sendMessage(actions).queue();
+            }
+        });
+        playCommands.add(new Command("smores", "s'mores", "s’mores", "bal","balance","money"){
             @Override
             public String getHelpText(){
                 return "Displays the amount of s'mores currently in your possession";
@@ -541,7 +583,7 @@ public class Bot extends ListenerAdapter{
                 event.getChannel().sendMessage(PlayBot.getSmoreCountS(event.getAuthor().getIdLong())).queue();
             }
         });
-        playCommands.add(new Command("leaderboard", "smoretop", "baltop", "smorestop", "smoreboard"){
+        playCommands.add(new Command("leaderboard", "smoreboard", "s'moreboard", "s’moreboard"){
             @Override
             public String getHelpText(){
                 return "Displays the top 5 s'more stockpilers";
@@ -550,19 +592,19 @@ public class Bot extends ListenerAdapter{
             public void run(GuildMessageReceivedEvent event, String args, boolean debug){
                 ArrayList<Long> smorepilers = new ArrayList<>(PlayBot.smores.keySet());
                 Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(PlayBot.smores.get(o2)-PlayBot.smores.get(o1)));
-                EmbedBuilder builder = createEmbed("S'more leaderboard");
+                EmbedBuilder builder = createEmbed("S'moreboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
-                    mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+PlayBot.getSmoreCountS(smorepilers.get(i));
+                    mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+PlayBot.getSmoreCountS(smorepilers.get(i))+"\n";
                 }
                 event.getChannel().sendMessage(builder.addField("Top S'more Stockpilers", mess, false).build()).queue();
             }
-            private String nick(Member member){
-                String nick = member.getNickname();
-                if(nick!=null)return nick;
-                return member.getUser().getName();
-            }
         });
+    }
+    private static String nick(Member member){
+        String nick = member.getNickname();
+        if(nick!=null)return nick;
+        return member.getUser().getName();
     }
     @Override
     public void onGatewayPing(GatewayPingEvent event){
