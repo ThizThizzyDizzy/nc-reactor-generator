@@ -34,6 +34,6 @@ public class SmoreLordAction extends Action{
     }
     @Override
     public String getAction(){
-        return "Cooking a S'morelord";
+        return "cooking a S'morelord";
     }
 }
