@@ -2,7 +2,7 @@ package discord;
 import java.awt.Color;
 public abstract class Keyword{
     public final String name;
-    public String input;
+    protected String input;
     public Keyword(String name){
         this.name = name;
     }
@@ -14,4 +14,5 @@ public abstract class Keyword{
     public abstract Color getColor();
     public abstract String getRegex();
     public abstract Keyword newInstance();
+    public abstract boolean caseSensitive();
 }

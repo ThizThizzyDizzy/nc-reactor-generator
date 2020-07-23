@@ -36,4 +36,25 @@ public abstract class AxialSymmetry extends Symmetry{
     public AxialSymmetry(String axis){
         super(axis+" Symmetry");
     }
+    public boolean matches(String sym){
+        switch(sym.toLowerCase().replace(" ", "").replace("-", "").replace("symmetry", "").replace("symmetrical", "")){
+            case "x":
+                return this==X;
+            case "y":
+                return this==Y;
+            case "z":
+                return this==Z;
+            case "xy":
+                return this==X||this==Y;
+            case "yz":
+                return this==Y||this==Z;
+            case "xz":
+                return this==X||this==Z;
+            case "xyz":
+                return this==X||this==Y||this==Z;
+            case "":
+                return true;
+        }
+        return false;
+    }
 }

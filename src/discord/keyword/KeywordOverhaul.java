@@ -15,10 +15,14 @@ public class KeywordOverhaul extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "[oO][vV][eE][rR][hH][aA][uU][lL]";
+        return "((?<!pre[ -])(?<!pre)overhaul)";
     }
     @Override
     public Keyword newInstance(){
         return new KeywordOverhaul();
+    }
+    @Override
+    public boolean caseSensitive(){
+        return false;
     }
 }

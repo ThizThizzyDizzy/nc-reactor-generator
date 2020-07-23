@@ -23,18 +23,18 @@ import planner.menu.component.MenuComponentToggle;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class StandardGenerator extends MultiblockGenerator{
 //    private MenuComponentMinimalistTextBox finalMultiblockCount;
-    private MenuComponentMinimalistTextBox workingMultiblockCount;
-    private MenuComponentMinimalistTextBox timeout;
-    private MenuComponentMinimaList prioritiesList;
-    private MenuComponentMinimalistButton moveUp;
-    private MenuComponentMinimalistButton moveDown;
-    private MenuComponentMinimaList symmetriesList;
-    private MenuComponentMinimaList postProcessingEffectsList;
-    private MenuComponentMinimalistTextBox changeChance;
-    private MenuComponentToggle variableRate;
-    private MenuComponentToggle lockCore;
-    private MenuComponentToggle fillAir;
-    private GeneratorSettings settings = new GeneratorSettings();
+    MenuComponentMinimalistTextBox workingMultiblockCount;
+    MenuComponentMinimalistTextBox timeout;
+    MenuComponentMinimaList prioritiesList;
+    MenuComponentMinimalistButton moveUp;
+    MenuComponentMinimalistButton moveDown;
+    MenuComponentMinimaList symmetriesList;
+    MenuComponentMinimaList postProcessingEffectsList;
+    MenuComponentMinimalistTextBox changeChance;
+    MenuComponentToggle variableRate;
+    MenuComponentToggle lockCore;
+    MenuComponentToggle fillAir;
+    private StandardGeneratorSettings settings = new StandardGeneratorSettings(this);
     private final ArrayList<Multiblock> finalMultiblocks = new ArrayList<>();
     private final ArrayList<Multiblock> workingMultiblocks = new ArrayList<>();
     private int index = 0;
@@ -128,8 +128,14 @@ public class StandardGenerator extends MultiblockGenerator{
         }
     }
     @Override
-    public void refreshSettings(ArrayList<Range<Block>> allowedBlocks){
+    public void refreshSettingsFromGUI(ArrayList<Range<Block>> allowedBlocks){
         settings.refresh(allowedBlocks);
+    }
+    @Override
+    public void refreshSettings(Settings settings){
+        if(settings instanceof StandardGeneratorSettings){
+            this.settings.refresh((StandardGeneratorSettings)settings);
+        }else throw new IllegalArgumentException("Passed invalid settings to Standard generator!");
     }
     @Override
     public void tick(){
@@ -304,42 +310,5 @@ public class StandardGenerator extends MultiblockGenerator{
             return null;
         }
         return randRange.obj;
-    }
-    private class GeneratorSettings{
-        public int finalMultiblocks, workingMultiblocks, timeout;
-        public ArrayList<Priority> priorities = new ArrayList<>();
-        public ArrayList<Symmetry> symmetries = new ArrayList<>();
-        public ArrayList<PostProcessingEffect> postProcessingEffects = new ArrayList<>();
-        public ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
-        public float changeChancePercent;
-        public boolean variableRate, lockCore, fillAir;
-        public void refresh(ArrayList<Range<Block>> allowedBlocks){
-            this.allowedBlocks = allowedBlocks;
-            finalMultiblocks = 1;//Integer.parseInt(StandardGenerator.this.finalMultiblockCount.text);
-            workingMultiblocks = Integer.parseInt(StandardGenerator.this.workingMultiblockCount.text);
-            timeout = Integer.parseInt(StandardGenerator.this.timeout.text);
-            ArrayList<Symmetry> newSymmetries = new ArrayList<>();
-            for(MenuComponent comp : symmetriesList.components){
-                if(((MenuComponentSymmetry)comp).enabled)newSymmetries.add(((MenuComponentSymmetry)comp).symmetry);
-            }
-            symmetries = newSymmetries;
-            ArrayList<Priority> newPriorities = new ArrayList<>();
-            for(MenuComponent comp : prioritiesList.components){
-                newPriorities.add(((MenuComponentPriority)comp).priority);
-            }
-            priorities = newPriorities;//to avoid concurrentModification
-            ArrayList<PostProcessingEffect> newEffects = new ArrayList<>();
-            for(MenuComponent comp : postProcessingEffectsList.components){
-                if(((MenuComponentPostProcessingEffect)comp).enabled)newEffects.add(((MenuComponentPostProcessingEffect)comp).postProcessingEffect);
-            }
-            postProcessingEffects = newEffects;
-            changeChancePercent = Float.parseFloat(StandardGenerator.this.changeChance.text);
-            variableRate = StandardGenerator.this.variableRate.enabled;
-            lockCore = StandardGenerator.this.lockCore.enabled;
-            fillAir = StandardGenerator.this.fillAir.enabled;
-        }
-        private float getChangeChance(){
-            return changeChancePercent/100;
-        }
     }
 }

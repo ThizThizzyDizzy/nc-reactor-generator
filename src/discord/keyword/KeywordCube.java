@@ -2,7 +2,7 @@ package discord.keyword;
 import discord.Keyword;
 import java.awt.Color;
 public class KeywordCube extends Keyword{
-    int size;
+    public int size;
     public KeywordCube(){
         super("Square");
     }
@@ -16,7 +16,7 @@ public class KeywordCube extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "\\d+[xX]\\d+";
+        return "\\d+x\\d+";
     }
     @Override
     public Keyword newInstance(){
@@ -30,5 +30,9 @@ public class KeywordCube extends Keyword{
         if(x!=y)return false;
         size = x;
         return true;
+    }
+    @Override
+    public boolean caseSensitive(){
+        return false;
     }
 }

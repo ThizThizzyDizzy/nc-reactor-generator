@@ -67,4 +67,8 @@ public class Configuration{
         alternatives.add(s);
         return this;
     }
+    public String getShortName(){
+        if(alternatives.isEmpty())return null;
+        return alternatives.get(0);
+    }
 }

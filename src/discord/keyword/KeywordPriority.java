@@ -28,10 +28,14 @@ public class KeywordPriority extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "[eE][fF]{2}[iI][cC][iI][eE][nN]([tT]|[cC][yY])|[oO][uU][tT][pP][uU][tT]|[iI][rR]{2}[aA][dD][iI][aA][tT]([eE]|[oO][rR]|[iI][oO][nN])|[fF][uU][eE][lL] ?[uU][sS][aA][gG][eE]|[cC][eE][lL]{2} ?[cC][oO][uU][nN][tT]|([bB][rR][eE]{2}[dD]([eE][rR]|[iI][nN][gG]) ?)?[sS][pP][eE][eE][dD]|[bB][rR][eE]{2}[dD]([eE][rR]|[iI][nN][gG])";
+        return "efficien(t|cy)|output|irradiat(e|or|ion)|fuel ?usage|cell ?count|(breed(er|ing) ?)?speed|breed(er|ing)";
     }
     @Override
     public Keyword newInstance(){
         return new KeywordPriority();
+    }
+    @Override
+    public boolean caseSensitive(){
+        return false;
     }
 }

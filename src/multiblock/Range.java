@@ -8,4 +8,7 @@ public class Range<T>{
         this.min = min;
         this.max = max;
     }
+    public Range(T obj, int min){
+        this(obj, min, Integer.MAX_VALUE);
+    }
 }

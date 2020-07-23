@@ -42,11 +42,11 @@ public class OverhaulSFR extends Multiblock<Block>{
     public float shutdownFactor;
     private boolean computingShutdown = false;
     public OverhaulSFR(){
-        this(7, 5, 7, Core.configuration.overhaul.fissionSFR.coolantRecipes.get(0));
+        this(7, 5, 7, null);
     }
     public OverhaulSFR(int x, int y, int z, CoolantRecipe coolantRecipe){
         super(x, y, z);
-        this.coolantRecipe = coolantRecipe;
+        this.coolantRecipe = coolantRecipe==null?Core.configuration.overhaul.fissionSFR.coolantRecipes.get(0):coolantRecipe;
     }
     @Override
     public String getDefinitionName(){
@@ -55,6 +55,10 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     public OverhaulSFR newInstance(){
         return new OverhaulSFR();
+    }
+    @Override
+    public Multiblock<Block> newInstance(int x, int y, int z){
+        return new OverhaulSFR(x, y, z, null);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
@@ -300,6 +304,9 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
+        if(fuelToggles==null)fuelToggles = new HashMap<>();
+        if(fuelToggles==null)sourceToggles = new HashMap<>();
+        if(fuelToggles==null)irradiatorRecipeToggles = new HashMap<>();
         fuelToggles.clear();
         for(Fuel f : Core.configuration.overhaul.fissionSFR.fuels){
             MenuComponentSFRToggleFuel toggle = new MenuComponentSFRToggleFuel(f);
@@ -317,24 +324,45 @@ public class OverhaulSFR extends Multiblock<Block>{
             multiblockSettings.add(toggle);
         }
     }
-    private HashMap<Fuel, MenuComponentSFRToggleFuel> fuelToggles = new HashMap<>();
+    private HashMap<Fuel, MenuComponentSFRToggleFuel> fuelToggles;
+    public ArrayList<Range<Fuel>> validFuels = new ArrayList<>();
+    public void setValidFuels(ArrayList<Range<Fuel>> fuels){
+        validFuels = fuels;
+    }
     public ArrayList<Range<Fuel>> getValidFuels(){
+        if(fuelToggles==null){
+            return validFuels;
+        }
         ArrayList<Range<Fuel>> validFuels = new ArrayList<>();
         for(Fuel f :fuelToggles.keySet()){
             if(fuelToggles.get(f).enabled)validFuels.add(new Range<>(f,fuelToggles.get(f).min,fuelToggles.get(f).max));
         }
         return validFuels;
     }
-    private HashMap<Source, MenuComponentSFRToggleSource> sourceToggles = new HashMap<>();
+    private HashMap<Source, MenuComponentSFRToggleSource> sourceToggles;
+    public ArrayList<Range<Source>> validSources = new ArrayList<>();
+    public void setValidSources(ArrayList<Range<Source>> sources){
+        validSources = sources;
+    }
     public ArrayList<Range<Source>> getValidSources(){
+        if(sourceToggles==null){
+            return validSources;
+        }
         ArrayList<Range<Source>> validSources = new ArrayList<>();
         for(Source s :sourceToggles.keySet()){
             if(sourceToggles.get(s).enabled)validSources.add(new Range<>(s,sourceToggles.get(s).min,sourceToggles.get(s).max));
         }
         return validSources;
     }
-    private HashMap<IrradiatorRecipe, MenuComponentSFRToggleIrradiatorRecipe> irradiatorRecipeToggles = new HashMap<>();
+    private HashMap<IrradiatorRecipe, MenuComponentSFRToggleIrradiatorRecipe> irradiatorRecipeToggles;
+    public ArrayList<Range<IrradiatorRecipe>> validIrradiatorRecipes = new ArrayList<>();
+    public void setValidIrradiatorRecipes(ArrayList<Range<IrradiatorRecipe>> irradiatorRecipes){
+        validIrradiatorRecipes = irradiatorRecipes;
+    }
     public ArrayList<Range<IrradiatorRecipe>> getValidIrradiatorRecipes(){
+        if(irradiatorRecipeToggles==null){
+            return validIrradiatorRecipes;
+        }
         ArrayList<Range<IrradiatorRecipe>> validIrradiatorRecipes = new ArrayList<>();
         for(IrradiatorRecipe r :irradiatorRecipeToggles.keySet()){
             if(irradiatorRecipeToggles.get(r).enabled)validIrradiatorRecipes.add(new Range<>(r,irradiatorRecipeToggles.get(r).min,irradiatorRecipeToggles.get(r).max));
@@ -658,5 +686,9 @@ public class OverhaulSFR extends Multiblock<Block>{
             return count;
         }
         throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in Overhaul SFR!");
+    }
+    @Override
+    public String getGeneralName(){
+        return "Reactor";
     }
 }

@@ -393,7 +393,6 @@ public class Core extends Renderer2D{
         byte[] imgData = new byte[width*height*4];
         bufferer.rewind();
         bufferer.get(imgData);
-        System.out.println();
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         for(int i=0;i<imgRGBData.length;i++){
             imgRGBData[i]=(f(imgData[i*4])<<16)+(f(imgData[i*4+1])<<8)+(f(imgData[i*4+2]))+(f(imgData[i*4+3])<<24);//DO NOT Use RED, GREEN, or BLUE channel (here BLUE) for alpha data

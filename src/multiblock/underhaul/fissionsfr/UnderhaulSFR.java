@@ -19,11 +19,11 @@ public class UnderhaulSFR extends Multiblock<Block>{
     public Fuel fuel;
     private double heatMult;
     public UnderhaulSFR(){
-        this(7, 5, 7, Core.configuration.underhaul.fissionSFR.fuels.get(0));
+        this(7, 5, 7, null);
     }
     public UnderhaulSFR(int x, int y, int z, Fuel fuel){
         super(x, y, z);
-        this.fuel = fuel;
+        this.fuel = fuel==null?Core.configuration.underhaul.fissionSFR.fuels.get(0):fuel;
     }
     @Override
     public String getDefinitionName(){
@@ -32,6 +32,10 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public UnderhaulSFR newInstance(){
         return new UnderhaulSFR();
+    }
+    @Override
+    public Multiblock<Block> newInstance(int x, int y, int z){
+        return new UnderhaulSFR(x, y, z, null);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
@@ -249,5 +253,9 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     protected int doCount(Object o){
         throw new IllegalArgumentException("Nothing to count in underhaul!");
+    }
+    @Override
+    public String getGeneralName(){
+        return "Reactor";
     }
 }

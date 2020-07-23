@@ -17,10 +17,14 @@ public class KeywordSymmetry extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "([xXyYzZ]{1,3}[ -])?[sS][yY][mM]{2}[eE][tT][rR]([yY]|[iI][cC][aA][lL])";
+        return "([xyz]{1,3}[ -])?symmetr(y|ical)";
     }
     @Override
     public Keyword newInstance(){
         return new KeywordSymmetry();
+    }
+    @Override
+    public boolean caseSensitive(){
+        return false;
     }
 }

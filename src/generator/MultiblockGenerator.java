@@ -14,7 +14,7 @@ public abstract class MultiblockGenerator{
     }
     ArrayList<Priority> priorities;
     private Object threadronyzer = new Object();
-    protected final Multiblock multiblock;
+    public final Multiblock multiblock;
     private ArrayList<UUID> threads = new ArrayList<>();
     public MultiblockGenerator(Multiblock multiblock){
         this.multiblock = multiblock;
@@ -34,7 +34,8 @@ public abstract class MultiblockGenerator{
         return valid;
     }
     public abstract void addSettings(MenuComponentMinimaList generatorSettings, Multiblock multi);
-    public abstract void refreshSettings(ArrayList<Range<Block>> allowedBlocks);
+    public abstract void refreshSettingsFromGUI(ArrayList<Range<Block>> allowedBlocks);
+    public abstract void refreshSettings(Settings settings);
     public int getActiveThreads(){
         synchronized(threadronyzer){
             return threads.size();
@@ -79,5 +80,20 @@ public abstract class MultiblockGenerator{
         ArrayList<Multiblock> list = lists[0];
         if(list.isEmpty())return null;
         return list.get(0);
+    }
+    public String getMainMultiblockTooltip(){
+        Multiblock main = getMainMultiblock();
+        if(main==null)return "";
+        main.metadata.put("Author", "S'plodo-bot");
+        return main.getTooltip();
+    }
+    public String getMainMultiblockSaveTooltip(){
+        Multiblock main = getMainMultiblock();
+        if(main==null)return "";
+        main.metadata.put("Author", "S'plodo-bot");
+        return main.getSaveTooltip();
+    }
+    public boolean isRunning(){
+        return !threads.isEmpty();
     }
 }

@@ -55,9 +55,9 @@ public class MenuGenerator extends Menu{
             ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
             for(MenuComponent c : blocks.components){
                 MenuComponentToggleBlock t = (MenuComponentToggleBlock)c;
-                if(t.enabled)allowedBlocks.add(new Range<>(t.block,t.min,t.max));
+                if(t.enabled)allowedBlocks.add(new Range<>(t.block,t.min,t.max==0?Integer.MAX_VALUE:t.max));
             }
-            generator.refreshSettings(allowedBlocks);
+            generator.refreshSettingsFromGUI(allowedBlocks);
             if(threads<=0){
                 generator.importMultiblock(multiblock);
                 threads = 1;

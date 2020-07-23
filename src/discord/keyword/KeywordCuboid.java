@@ -16,7 +16,7 @@ public class KeywordCuboid extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "\\d+[xX]\\d+[xX]\\d+";
+        return "\\d+x\\d+x\\d+";
     }
     @Override
     public Keyword newInstance(){
@@ -29,5 +29,9 @@ public class KeywordCuboid extends Keyword{
         y = Integer.parseInt(split[1]);
         z = Integer.parseInt(split[2]);
         return true;
+    }
+    @Override
+    public boolean caseSensitive(){
+        return false;
     }
 }

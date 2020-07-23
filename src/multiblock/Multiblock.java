@@ -44,6 +44,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     public abstract String getDefinitionName();
     public abstract Multiblock<T> newInstance();
+    public abstract Multiblock<T> newInstance(int x, int y, int z);
     public abstract void getAvailableBlocks(List<T> blocks);
     public final List<T> getAvailableBlocks(){
         ArrayList<T> list = new ArrayList<>();
@@ -598,8 +599,11 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     public abstract void getGenerationPriorities(ArrayList<Priority> priorities);
     public ArrayList<Priority.Preset> getGenerationPriorityPresets(){
+        return getGenerationPriorityPresets(getGenerationPriorities());
+    }
+    public ArrayList<Priority.Preset> getGenerationPriorityPresets(ArrayList<Priority> priorities){
         ArrayList<Priority.Preset> presets = new ArrayList<>();
-        getGenerationPriorityPresets(getGenerationPriorities(), presets);
+        getGenerationPriorityPresets(priorities, presets);
         return presets;
     }
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){};
@@ -680,4 +684,5 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         return total;
     }
+    public abstract String getGeneralName();
 }

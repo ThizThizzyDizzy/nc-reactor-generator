@@ -25,6 +25,7 @@ public abstract class KeywordCommand extends Command{
         addKeyword(new KeywordOverhaul());
         addKeyword(new KeywordSymmetry());
         addKeyword(new KeywordConfiguration());
+        addKeyword(new KeywordFormat());
         addKeyword(new KeywordPriority());
         addKeyword(new KeywordMultiblock());
         addKeyword(new KeywordFuel());
@@ -40,12 +41,12 @@ public abstract class KeywordCommand extends Command{
     }
     @Override
     public final void run(GuildMessageReceivedEvent event, String args, boolean debug){
-        ArrayList<Object> debugText = new ArrayList<>();
         ArrayList<Keyword> words = new ArrayList<>();
-        String str = args;
+        String str = args.toLowerCase();
         for(String regex : keywordOrder){
             Pattern p = Pattern.compile("(^|\\s|,)"+regex+"(\\s|$|,)");
-            Matcher m = p.matcher(args);
+            String theArgs = (keywords.get(regex).caseSensitive()?args:args.toLowerCase());
+            Matcher m = p.matcher(theArgs);
             int end = 0;
             while(m.find(end)){
                 end = m.end()-1;
@@ -53,15 +54,12 @@ public abstract class KeywordCommand extends Command{
                 String original = m.group().trim();
                 if(!key.read(original))continue;
                 words.add(key);
-//                debugText.add(Core.theme.getRGB(.5f, .5f, .5f));
-//                debugText.add(str.substring(0, str.indexOf(original)));
-//                debugText.add(Core.theme.getRGB(key.getColor()));
-//                debugText.add(original);
             }
             Keyword k = keywords.get(regex).newInstance();
             Color c = k.getColor();
             str = str.replaceAll("(?<!@)"+regex, "@@@@@"+c.getRGB()+"@@@$0@@@@@");
         }
+        ArrayList<Object> debugText = new ArrayList<>();
         String[] strs = str.split("@@@@@");
         for(String s : strs){
             if(s.contains("@@@")){
@@ -72,41 +70,41 @@ public abstract class KeywordCommand extends Command{
                 debugText.add(s);
             }
         }
-        if(debug){
-            int border = 5;
-            int textHeight = 20;
-            int width = (int)FontManager.getLengthForStringWithHeight(args, textHeight)+1;
-            BufferedImage image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
-                Core.applyColor(Core.theme.getEditorListBorderColor());
-                Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
-                double x = 5;
-                for(Object o : debugText){
-                    if(o instanceof Color){
-                        Core.applyColor((Color)o);
-                    }else if(o instanceof String){
-                        String s = (String)o;
-                        double len = FontManager.getLengthForStringWithHeight(s, textHeight);
-                        Renderer2D.drawText(x, border, width+border, border+textHeight, s);
-                        x+=len;
-                    }
-                }
-                for(int i = 0; i<words.size(); i++){
-                    Keyword word = words.get(i);
-                    Core.applyColor(Core.theme.getRGB(word.getColor()));
-                    Renderer2D.drawText(border, border+(i+1)*textHeight, width+border, border+(i+2)*textHeight, word.name+" | "+word.input);
-                }
-            });
-            File debugFile = new File("debug.png");
-            try{
-                ImageIO.write(image, "png", debugFile);
-            }catch(IOException ex){
-                Logger.getLogger(KeywordCommand.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            event.getChannel().sendFile(debugFile, "debug.png").queue();
+        int border = 5;
+        int textHeight = 20;
+        int wide = (int)FontManager.getLengthForStringWithHeight(args, textHeight)+1;
+        for(Keyword w : words){
+            wide = Math.max(wide, (int)FontManager.getLengthForStringWithHeight(w.name+" | "+w.input, textHeight)+1);
         }
+        int width = wide;
+        BufferedImage image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
+            Core.applyColor(Core.theme.getEditorListBorderColor());
+            Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
+            double x = 5;
+            for(Object o : debugText){
+                if(o instanceof Color){
+                    Core.applyColor((Color)o);
+                }else if(o instanceof String){
+                    String s = (String)o;
+                    double len = FontManager.getLengthForStringWithHeight(s, textHeight);
+                    Renderer2D.drawText(x, border, width+border, border+textHeight, s);
+                    x+=len;
+                }
+            }
+            for(int i = 0; i<words.size(); i++){
+                Keyword word = words.get(i);
+                Core.applyColor(Core.theme.getRGB(word.getColor()));
+                Renderer2D.drawText(border, border+(i+1)*textHeight, width+border, border+(i+2)*textHeight, word.name+" | "+word.input);
+            }
+        });
+        File debugFile = new File("debug.png");
+        try{
+            ImageIO.write(image, "png", debugFile);
+        }catch(IOException ex){
+            Logger.getLogger(KeywordCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        event.getChannel().sendFile(debugFile, "debug.png").queue();
         run(event, words, debug);
     }
-    public void run(GuildMessageReceivedEvent event, ArrayList<Keyword> keywords, boolean debug){
-        
-    }
+    public abstract void run(GuildMessageReceivedEvent event, ArrayList<Keyword> keywords, boolean debug);
 }

@@ -9,6 +9,19 @@ public class KeywordFuel extends Keyword{
     @Override
     public boolean doRead(String input){
         this.fuel = input;
+        if(fuel.toLowerCase().contains("[ox]")){
+            fuel = fuel.replaceAll("\\[[oO][xX]\\]", "")+" Oxide";
+        }
+        if(fuel.toLowerCase().contains("[ni]")){
+            fuel = fuel.replaceAll("\\[[nN][iI]\\]", "")+" Nitride";
+        }
+        if(fuel.toLowerCase().contains("[za]")){
+            fuel = fuel.replaceAll("\\[[zZ][aA]\\]", "")+"-Zirconium Alloy";
+        }
+        if(fuel.toLowerCase().contains("[f4]")){
+            fuel = fuel.replaceAll("\\[[fF]4\\]", "")+" Fluoride";
+        }
+        fuel = fuel.replace("  ", " ");
         return true;
     }
     @Override
@@ -17,10 +30,14 @@ public class KeywordFuel extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "([a-zA-Z]+[ -]?\\d{3}\\[[a-zA-Z0-9]+\\]|\\[[a-zA-Z0-9]+\\][a-zA-Z]+[ -]?\\d{3}|([a-zA-Z]+[ -]?\\d{3}|[tT][bB][uU])([ -]?([oO][xX]([iI][dD][eE])?|[nN][iI]([tT][rR][iI][dD][eE])?|([tT][eE][tT][rR][aA])?[fF](4|[lL][uU][oO][rR][iI][dD][eE])|[zZ]([aA]|[iI][rR][cC][oO][nN][iI][uU][mM]([ -]?[aA][lL]{2}[oO][yY])?)))?)([ -]([fF][uU][eE][lL]))?|(([iI][cC]2[ -]?)?([eE][nN][rR][iI][cC][hH][eE][dD] )?[a-zA-Z]+([ -]?([oO][xX]([iI][dD][eE])?|[nN][iI]([tT][rR][iI][dD][eE])?|([tT][eE][tT][rR][aA])?[fF](4|[lL][uU][oO][rR][iI][dD][eE])|[zZ]([aA]|[iI][rR][cC][oO][nN][iI][uU][mM]([ -]?[aA][lL]{2}[oO][yY])?))?)([ -](([nN][uU][cC][lL][eE][aA][rR] )?[fF][uU][eE][lL]|[iI][nN][gG][oO][tT])))|[yY][eE][lL]{2}[oO][rR][iI][uU][mM]|([eE][nN][rR][iI][cC][hH][eE][dD][ -])?[uU][rR][aA][nN][iI][uU][mM]";
+        return "([a-z]+[ -]?\\d{3} ?\\[[a-z0-9]+\\]|\\[[a-z0-9]+\\] ?[a-z]+[ -]?\\d{3}|([a-z]+[ -]?\\d{3}|tbu)([ -]?(ox(ide)?|ni(tride)?|(tetra)?f(4|luoride)|z(a|irconium([ -]?alloy)?)))?)([ -](fuel))?|((ic2[ -]?)?(enriched )?[a-z]+([ -]?(ox(ide)?|ni(tride)?|(tetra)?f(4|luoride)|z(a|irconium([ -]?alloy)?))?)([ -]((nuclear )?fuel|ingot)))|yellorium|(enriched[ -])?uranium";
     }
     @Override
     public Keyword newInstance(){
         return new KeywordFuel();
+    }
+    @Override
+    public boolean caseSensitive(){
+        return false;
     }
 }

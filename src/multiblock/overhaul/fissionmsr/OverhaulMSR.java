@@ -55,6 +55,10 @@ public class OverhaulMSR extends Multiblock<Block>{
         return new OverhaulMSR();
     }
     @Override
+    public Multiblock<Block> newInstance(int x, int y, int z){
+        return new OverhaulMSR(x, y, z);
+    }
+    @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(Core.configuration==null||Core.configuration.overhaul==null||Core.configuration.overhaul.fissionMSR==null)return;
         for(multiblock.configuration.overhaul.fissionmsr.Block block : Core.configuration.overhaul.fissionMSR.blocks){
@@ -306,6 +310,9 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
+        if(fuelToggles==null)fuelToggles = new HashMap<>();
+        if(fuelToggles==null)sourceToggles = new HashMap<>();
+        if(fuelToggles==null)irradiatorRecipeToggles = new HashMap<>();
         fuelToggles.clear();
         for(Fuel f : Core.configuration.overhaul.fissionMSR.fuels){
             MenuComponentMSRToggleFuel toggle = new MenuComponentMSRToggleFuel(f);
@@ -323,24 +330,45 @@ public class OverhaulMSR extends Multiblock<Block>{
             multiblockSettings.add(toggle);
         }
     }
-    private HashMap<Fuel, MenuComponentMSRToggleFuel> fuelToggles = new HashMap<>();
+    private HashMap<Fuel, MenuComponentMSRToggleFuel> fuelToggles;
+    public ArrayList<Range<Fuel>> validFuels = new ArrayList<>();
+    public void setValidFuels(ArrayList<Range<Fuel>> fuels){
+        validFuels = fuels;
+    }
     public ArrayList<Range<Fuel>> getValidFuels(){
+        if(fuelToggles==null){
+            return validFuels;
+        }
         ArrayList<Range<Fuel>> validFuels = new ArrayList<>();
         for(Fuel f :fuelToggles.keySet()){
             if(fuelToggles.get(f).enabled)validFuels.add(new Range<>(f,fuelToggles.get(f).min,fuelToggles.get(f).max));
         }
         return validFuels;
     }
-    private HashMap<Source, MenuComponentMSRToggleSource> sourceToggles = new HashMap<>();
+    private HashMap<Source, MenuComponentMSRToggleSource> sourceToggles;
+    public ArrayList<Range<Source>> validSources = new ArrayList<>();
+    public void setValidSources(ArrayList<Range<Source>> sources){
+        validSources = sources;
+    }
     public ArrayList<Range<Source>> getValidSources(){
+        if(sourceToggles==null){
+            return validSources;
+        }
         ArrayList<Range<Source>> validSources = new ArrayList<>();
         for(Source s :sourceToggles.keySet()){
             if(sourceToggles.get(s).enabled)validSources.add(new Range<>(s,sourceToggles.get(s).min,sourceToggles.get(s).max));
         }
         return validSources;
     }
-    private HashMap<IrradiatorRecipe, MenuComponentMSRToggleIrradiatorRecipe> irradiatorRecipeToggles = new HashMap<>();
+    private HashMap<IrradiatorRecipe, MenuComponentMSRToggleIrradiatorRecipe> irradiatorRecipeToggles;
+    public ArrayList<Range<IrradiatorRecipe>> validIrradiatorRecipes = new ArrayList<>();
+    public void setValidIrradiatorRecipes(ArrayList<Range<IrradiatorRecipe>> irradiatorRecipes){
+        validIrradiatorRecipes = irradiatorRecipes;
+    }
     public ArrayList<Range<IrradiatorRecipe>> getValidIrradiatorRecipes(){
+        if(irradiatorRecipeToggles==null){
+            return validIrradiatorRecipes;
+        }
         ArrayList<Range<IrradiatorRecipe>> validIrradiatorRecipes = new ArrayList<>();
         for(IrradiatorRecipe r :irradiatorRecipeToggles.keySet()){
             if(irradiatorRecipeToggles.get(r).enabled)validIrradiatorRecipes.add(new Range<>(r,irradiatorRecipeToggles.get(r).min,irradiatorRecipeToggles.get(r).max));
@@ -662,5 +690,9 @@ public class OverhaulMSR extends Multiblock<Block>{
             return count;
         }
         throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in Overhaul MSR!");
+    }
+    @Override
+    public String getGeneralName(){
+        return "Reactor";
     }
 }

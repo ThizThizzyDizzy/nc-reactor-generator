@@ -1,4 +1,5 @@
 package planner.file;
+import discord.Bot;
 import planner.JSON;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -6,8 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import multiblock.Block;
 import multiblock.Multiblock;
@@ -276,7 +275,7 @@ public class FileWriter{
                     }
                     int mpr = multisPerRow;
                     try{
-                        ImageIO.write(Core.makeImage(width, height, (buff) -> {
+                        Core.BufferRenderer renderer = (buff) -> {
                             Core.applyColor(Core.theme.getEditorListBorderColor());
                             Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
                             Core.applyColor(Core.theme.getTextColor());
@@ -310,7 +309,9 @@ public class FileWriter{
                                     }
                                 }
                             }
-                        }), "png", stream);
+                        };
+                        if(Bot.isRunning())ImageIO.write(Bot.makeImage(width, height, renderer), "png", stream);
+                        else ImageIO.write(Core.makeImage(width, height, renderer), "png", stream);
                         stream.close();
                     }catch(IOException ex){
                         throw new RuntimeException(ex);
@@ -347,6 +348,11 @@ public class FileWriter{
                 ncpf.configuration.save(stream);
                 for(Multiblock m : ncpf.multiblocks){
                     m.save(ncpf.configuration, stream);
+                }
+                try{
+                    stream.close();
+                }catch(IOException ex){
+                    throw new RuntimeException(ex);
                 }
             }
         });
