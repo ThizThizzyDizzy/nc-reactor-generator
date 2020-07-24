@@ -98,7 +98,7 @@ public class Bot extends ListenerAdapter{
 //                event.getChannel().sendMessage("Debug mode **"+(Bot.debug?"Enabled":"Disabled")+"**").queue();
 //            }
 //        });
-        botCommands.add(new Command("help", "smelp", "s'melp", "s’melp"){
+        botCommands.add(new Command("help"){
             @Override
             public String getHelpText(){
                 return "Shows this help window";
@@ -491,7 +491,7 @@ public class Bot extends ListenerAdapter{
             }
         });
         //fun commands
-        playCommands.add(new Command("help"){
+        playCommands.add(new Command("help", "smelp", "s'melp", "s’melp"){
             @Override
             public String getHelpText(){
                 return "Shows this help window";
