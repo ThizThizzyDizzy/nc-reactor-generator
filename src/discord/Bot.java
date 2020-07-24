@@ -23,9 +23,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -54,6 +54,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -97,7 +98,7 @@ public class Bot extends ListenerAdapter{
 //                event.getChannel().sendMessage("Debug mode **"+(Bot.debug?"Enabled":"Disabled")+"**").queue();
 //            }
 //        });
-        botCommands.add(new Command("help"){
+        botCommands.add(new Command("help", "smelp", "s'melp", "s’melp"){
             @Override
             public String getHelpText(){
                 return "Shows this help window";
@@ -533,10 +534,124 @@ public class Bot extends ListenerAdapter{
                 PlayBot.action(event, new SmoreAction());
             }
         });
+        playCommands.add(new Command("give", "send", "pay"){
+            @Override
+            public String getHelpText(){
+                return "Give someone your s'mores!";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                args = args.trim();
+                if(args.isEmpty()){
+                    event.getChannel().sendMessage("You give nobody nothing.").queue();
+                    return;
+                }
+                long have = PlayBot.getSmoreCount(event.getAuthor().getIdLong());
+                if(have<=0){
+                    event.getChannel().sendMessage("You don't have any s'mores!").queue();
+                    return;
+                }
+                String[] argses = args.split(" ");
+                if(argses.length==1){
+                    try{
+                        long amt = Long.parseLong(argses[0]);
+                        if(have<amt)event.getChannel().sendMessage("You don't have "+amt+" s'more"+(amt==1?"":"s")+"!").queue();
+                        else event.getChannel().sendMessage("You try to give nobody "+amt+" s'more"+(amt==1?"":"s")+", but nobody doesn't respond.").queue();
+                    }catch(Exception ex){
+                        event.getChannel().sendMessage("You try to give `"+argses[0].replace("`", "\\`")+"` nothing, but nothing happens.").queue();
+                    }
+                    return;
+                }
+                String target = argses[0];
+                long targetID = 0;
+                if(target.startsWith("<@")&&target.endsWith(">")){
+                    if(target.contains("!"))target = target.substring(1);
+                    try{
+                        targetID = Long.parseLong(target.substring(2, target.length()-1));
+                    }catch(Exception ex){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
+                }else{
+                    event.getChannel().sendMessage("Who?").queue();
+                    return;
+                }
+                User targetUser;
+                try{
+                    targetUser = jda.getUserById(targetID);
+                    if(targetUser==null){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
+                }catch(Exception ex){
+                    event.getChannel().sendMessage("Who?").queue();
+                    return;
+                }
+                long amt = 0;
+                try{
+                    amt = Long.parseLong(argses[1]);
+                }catch(Exception ex){
+                    event.getChannel().sendMessage("How many?").queue();
+                    return;
+                }
+                if(have<amt){
+                    event.getChannel().sendMessage("You don't have "+amt+" s'more"+(amt==1?"":"s")+"!").queue();
+                    return;
+                }
+                if(amt<0){
+                    event.getChannel().sendMessage("You can't give negative s'mores!").queue();
+                    return;
+                }
+                if(amt==0){
+                    event.getChannel().sendMessage("Nothing happens.").queue();
+                    return;
+                }
+                event.getChannel().sendMessage("You gave "+nick(event.getGuild().getMember(targetUser))+" "+amt+" smore"+(amt==1?"":"s")+".").queue();
+                PlayBot.removeSmores(event.getAuthor(), amt);
+                PlayBot.addSmores(targetUser, amt);
+            }
+        });
+        playCommands.add(new Command("eat", "nom"){
+            @Override
+            public String getHelpText(){
+                return "Yummy!";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                long have = PlayBot.getSmoreCount(event.getAuthor().getIdLong());
+                if(have<=0){
+                    event.getChannel().sendMessage("You don't have any s'mores!").queue();
+                    return;
+                }
+                long eat = 1;
+                try{
+                    eat = Long.parseLong(args.trim());
+                }catch(NumberFormatException __){}
+                if(have<eat){
+                    event.getChannel().sendMessage("You don't have "+eat+" s'more"+(eat==1?"":"s")+"!").queue();
+                    return;
+                }
+                if(eat<0){
+                    event.getChannel().sendMessage("You can't eat negative s'mores!").queue();
+                    return;
+                }
+                if(eat==0){
+                    event.getChannel().sendMessage("You eat nothing. Nothing happens.").queue();
+                    return;
+                }
+                if(eat>255){
+                    event.getChannel().sendMessage("You can't eat more than 255 s'mores in a single *byte*!").queue();
+                    return;
+                }
+                String[] noms = {" Nom nom nom.", " Tasty!", " Yum!"};
+                event.getChannel().sendMessage("You eat "+eat+" smore"+(eat==1?"":"s")+"."+noms[new Random().nextInt(noms.length)]).queue();
+                PlayBot.removeSmores(event.getAuthor(), eat);
+            }
+        });
         playCommands.add(new SecretCommand("moresmore", "mores'more", "mores’more", "doublesmore", "doubles'more", "doubles’more"){
             @Override
             public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                event.getChannel().sendMessage("If you tried making two smores at once, your arms would get tired and you'd drop them! You wouldn't want that, would you?").queue();
+                event.getChannel().sendMessage("If you tried making two s'mores at once, your arms would get tired and you'd drop them! You wouldn't want that, would you?").queue();
             }
         });
         playCommands.add(new SecretCommand("foursmore", "fours'more", "fours’more", "quadsmore", "quads'more", "quads’more"){
@@ -550,6 +665,10 @@ public class Bot extends ListenerAdapter{
             public void run(GuildMessageReceivedEvent event, String args, boolean debug){
                 for(Role role : event.getGuild().getMember(event.getAuthor()).getRoles()){
                     if(role.getIdLong()==563124574032756746L){
+                        if(PlayBot.getSmoreCount(event.getAuthor().getIdLong())<0){
+                            event.getChannel().sendMessage("You try to make a s'morelord, but you are stopped by the S'more bank. They want the S'mores you owe them.").queue();
+                            return;
+                        }
                         PlayBot.action(event, new SmoreLordAction());
                         return;
                     }
@@ -600,11 +719,28 @@ public class Bot extends ListenerAdapter{
                 event.getChannel().sendMessage(builder.addField("Top S'more Stockpilers", mess, false).build()).queue();
             }
         });
+        playCommands.add(new SecretCommand("snoreboard", "s'noreboard", "s’noreboard"){
+            @Override
+            public String getHelpText(){
+                return "Displays the bottom 5 s'more stockpilers";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                ArrayList<Long> smorepilers = new ArrayList<>(PlayBot.smores.keySet());
+                Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(PlayBot.smores.get(o1)-PlayBot.smores.get(o2)));
+                EmbedBuilder builder = createEmbed("Snoreboard");
+                String mess = "";
+                for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
+                    mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+PlayBot.getSmoreCountS(smorepilers.get(i))+"\n";
+                }
+                event.getChannel().sendMessage(builder.addField("Top S'more Debtors", mess, false).build()).queue();
+            }
+        });
     }
     private static String nick(Member member){
-        String nick = member.getNickname();
-        if(nick!=null)return nick;
-        return member.getUser().getName();
+        String name = member.getNickname();
+        if(name==null)name = member.getUser().getName();
+        return "`"+name.replace("`", "")+"`";
     }
     @Override
     public void onGatewayPing(GatewayPingEvent event){

@@ -5,7 +5,7 @@ import java.util.Random;
 import net.dv8tion.jda.api.entities.TextChannel;
 public class SmoreLordAction extends Action{
     public SmoreLordAction(){
-        super((new Random().nextInt(4000*60)+8000*60)*6);//8-12 minutes, * 6 smores
+        super((new Random().nextInt(4000*60)+8000*60)*9);//8-12 minutes, * 9
     }
     @Override
     protected String getBeginMessage(){
