@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import simplelibrary.config2.Config;
 public class PlayBot{
     public static HashMap<Long, Long> smores = new HashMap<>();//MONEY
+    public static HashMap<Long, Long> eaten = new HashMap<>();//MONEY
     public static HashMap<Long, Action> actions = new HashMap<>();
     public static void action(GuildMessageReceivedEvent event, Action action){
         if(actions.containsKey(event.getAuthor().getIdLong())){
@@ -15,8 +16,17 @@ public class PlayBot{
         actions.put(event.getAuthor().getIdLong(), action);
         action.start(event.getAuthor(), event.getChannel());
     }
+    public static long getSmoreCount(long id){
+        return smores.containsKey(id)?smores.get(id):0;
+    }
     public static String getSmoreCountS(long id){
         return "<:smore:493612965195677706> "+getSmoreCount(id);
+    }
+    public static long getEatenCount(long id){
+        return eaten.containsKey(id)?eaten.get(id):0;
+    }
+    public static String getEatenCountS(long id){
+        return "<:smore:493612965195677706> "+getEatenCount(id);
     }
     public static void save(){
         File f = new File("smorebank.dat").getAbsoluteFile();
@@ -26,6 +36,11 @@ public class PlayBot{
             bank.set(id+"", smores.get(id));
         }
         config.set("bank", bank);
+        Config yums = Config.newConfig();
+        for(Long id : eaten.keySet()){
+            yums.set(id+"", eaten.get(id));
+        }
+        config.set("yums", yums);
         config.save();
     }
     public static void load(){
@@ -37,9 +52,10 @@ public class PlayBot{
         for(String key : bank.properties()){
             smores.put(Long.parseLong(key), bank.get(key));
         }
-    }
-    public static long getSmoreCount(long id){
-        return smores.containsKey(id)?smores.get(id):0;
+        Config yums = config.get("yums", Config.newConfig());
+        for(String key : yums.properties()){
+            eaten.put(Long.parseLong(key), yums.get(key));
+        }
     }
     public static void addSmore(User user){
         addSmores(user, 1);
@@ -62,6 +78,15 @@ public class PlayBot{
             smores.put(id, smores.get(id)-count);
         }else{
             smores.put(id, -count);
+        }
+    }
+    public static void eatSmores(User author, long count){
+        removeSmores(author, count);
+        long id = author.getIdLong();
+        if(eaten.containsKey(id)){
+            eaten.put(id, eaten.get(id)+count);
+        }else{
+            eaten.put(id, count);
         }
     }
 }

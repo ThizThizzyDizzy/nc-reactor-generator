@@ -13,6 +13,7 @@ import discord.keyword.KeywordUnderhaul;
 import discord.play.PlayBot;
 import discord.play.action.SmoreAction;
 import discord.play.action.SmoreLordAction;
+import discord.play.action.SnoozeAction;
 import generator.MultiblockGenerator;
 import generator.Priority;
 import generator.StandardGenerator;
@@ -534,10 +535,25 @@ public class Bot extends ListenerAdapter{
                 PlayBot.action(event, new SmoreAction());
             }
         });
+        playCommands.add(new SecretCommand("snore", "snooze", "sleep"){
+            @Override
+            public String getHelpText(){
+                return "ZZzzzz";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                if(PlayBot.actions.containsKey(event.getAuthor().getIdLong())){
+                    PlayBot.actions.get(event.getAuthor().getIdLong()).cancel(event.getChannel());
+                    PlayBot.actions.remove(event.getAuthor().getIdLong());
+                }
+                PlayBot.action(event, new SnoozeAction());
+            }
+        });
         playCommands.add(new Command("give", "send", "pay"){
             @Override
             public String getHelpText(){
-                return "Give someone your s'mores!";
+                return "Give <ping> <amount>\n"
+                        + "Give someone your s'mores!";
             }
             @Override
             public void run(GuildMessageReceivedEvent event, String args, boolean debug){
@@ -573,8 +589,12 @@ public class Bot extends ListenerAdapter{
                         return;
                     }
                 }else{
-                    event.getChannel().sendMessage("Who?").queue();
-                    return;
+                    try{
+                        targetID = Long.parseLong(target);
+                    }catch(Exception ex){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
                 }
                 User targetUser;
                 try{
@@ -645,7 +665,7 @@ public class Bot extends ListenerAdapter{
                 }
                 String[] noms = {" Nom nom nom.", " Tasty!", " Yum!"};
                 event.getChannel().sendMessage("You eat "+eat+" smore"+(eat==1?"":"s")+"."+noms[new Random().nextInt(noms.length)]).queue();
-                PlayBot.removeSmores(event.getAuthor(), eat);
+                PlayBot.eatSmores(event.getAuthor(), eat);
             }
         });
         playCommands.add(new SecretCommand("moresmore", "mores'more", "mores’more", "doublesmore", "doubles'more", "doubles’more"){
@@ -692,7 +712,7 @@ public class Bot extends ListenerAdapter{
                 event.getChannel().sendMessage(actions).queue();
             }
         });
-        playCommands.add(new Command("smores", "s'mores", "s’mores", "bal","balance","money"){
+        playCommands.add(new Command("smores", "s'mores", "s’mores", "bal", "balance", "money"){
             @Override
             public String getHelpText(){
                 return "Displays the amount of s'mores currently in your possession";
@@ -734,6 +754,23 @@ public class Bot extends ListenerAdapter{
                     mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+PlayBot.getSmoreCountS(smorepilers.get(i))+"\n";
                 }
                 event.getChannel().sendMessage(builder.addField("Top S'more Debtors", mess, false).build()).queue();
+            }
+        });
+        playCommands.add(new Command("omnomboard", "nomboard", "yumboard", "eatboard"){
+            @Override
+            public String getHelpText(){
+                return "Displays the top 5 s'more stockpilers";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                ArrayList<Long> smorepilers = new ArrayList<>(PlayBot.eaten.keySet());
+                Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(PlayBot.eaten.get(o2)-PlayBot.eaten.get(o1)));
+                EmbedBuilder builder = createEmbed("Nomboard");
+                String mess = "";
+                for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
+                    mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+PlayBot.getEatenCountS(smorepilers.get(i))+"\n";
+                }
+                event.getChannel().sendMessage(builder.addField("Top S'nomnomnommers", mess, false).build()).queue();
             }
         });
     }
