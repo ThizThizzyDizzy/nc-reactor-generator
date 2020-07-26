@@ -1,6 +1,6 @@
 package discord.play.action;
 import discord.play.Action;
-import discord.play.PlayBot;
+import discord.play.SmoreBot;
 import java.util.Random;
 import net.dv8tion.jda.api.entities.TextChannel;
 public class SmoreLordAction extends Action{
@@ -25,11 +25,11 @@ public class SmoreLordAction extends Action{
     }
     @Override
     public void finish(){
-        PlayBot.addSmores(user, 8);
+        SmoreBot.addSmores(user, 8);
     }
     @Override
     public void cancel(TextChannel channel){
-        PlayBot.addSmores(user, -64);
+        SmoreBot.addSmores(user, -64);
         super.cancel(channel);
     }
     @Override

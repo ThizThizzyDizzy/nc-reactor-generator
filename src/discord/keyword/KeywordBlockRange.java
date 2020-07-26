@@ -68,7 +68,7 @@ public class KeywordBlockRange extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "(((fewer|more|less|greater) ?th[ea]n|at ?(least|most)|exactly) ?)?(no |[<>]?\\d+( ?(to|-) ?\\d+)?) ?(((liquid|fuel|heavy) ?)?[a-z-]{4,}( ?(coolers?|(heat)?(sink|er)s?|moderators?|reflectors?|shields?))?)";
+        return "(((fewer|more|less|greater) ?th[ea]n|at ?(least|most)|exactly) ?)?(no |[<>]?\\d+( ?(to|-) ?\\d+)?) ?(((liquid|fuel|heavy|active) ?)?[a-z-]{4,}( ?(coolers?|(heat)?(sink|er)s?|moderators?|reflectors?|shields?))?)";
     }
     @Override
     public Keyword newInstance(){

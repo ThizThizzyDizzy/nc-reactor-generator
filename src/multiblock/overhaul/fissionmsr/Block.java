@@ -26,6 +26,7 @@ public class Block extends multiblock.Block{
     public float efficiency;
     public boolean inCluster;
     public boolean closed = false;
+    public boolean wasActive;
     public Block(int x, int y, int z, multiblock.configuration.overhaul.fissionmsr.Block template){
         super(x, y, z);
         this.template = template;
@@ -56,7 +57,7 @@ public class Block extends multiblock.Block{
     public void clearData(){
         hasPropogated = false;
         positionalEfficiency = efficiency = moderatorLines = neutronFlux = 0;
-        moderatorValid = moderatorActive = heaterValid = reflectorActive = shieldActive = inCluster = false;
+        wasActive = moderatorValid = moderatorActive = heaterValid = reflectorActive = shieldActive = inCluster = false;
     }
     @Override
     public String getTooltip(){
@@ -251,6 +252,53 @@ public class Block extends multiblock.Block{
             }
         }
     }
+    public void rePropogateNeutronFlux(OverhaulMSR reactor){
+        if(!isFuelVessel())return;
+        if(!wasActive)return;
+        if(hasPropogated)return;
+        hasPropogated = true;
+        for(Direction d : directions){
+            int flux = 0;
+            int length = 0;
+            int nonshields = 0;
+            float efficiency = 0;
+            for(int i = 1; i<=Core.configuration.overhaul.fissionSFR.neutronReach+1; i++){
+                Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
+                if(block==null)break;
+                if(block.isCasing())break;
+                if(block.isModerator()){
+                    flux+=block.template.flux;
+                    efficiency+=block.template.efficiency;
+                    length++;
+                    if(!block.isShield()){
+                        nonshields++;
+                    }
+                    continue;
+                }
+                if(block.isFuelVessel()){
+                    if(length==0||nonshields==0)break;
+                    block.neutronFlux+=flux;
+                    block.moderatorLines++;
+                    block.positionalEfficiency+=efficiency/length;
+                    block.rePropogateNeutronFlux(reactor);
+                    break;
+                }
+                if(block.isReflector()){
+                    if(length==0||nonshields==0)break;
+                    neutronFlux+=flux*2*block.template.reflectivity;
+                    positionalEfficiency+=efficiency/length*block.template.efficiency;
+                    moderatorLines++;
+                    break;
+                }
+                if(block.isIrradiator()){
+                    if(length==0||nonshields==0)break;
+                    moderatorLines++;
+                    break;
+                }
+                break;
+            }
+        }
+    }
     public void postFluxCalc(OverhaulMSR reactor){
         if(!isFuelVesselActive())return;
         for(Direction d : directions){
@@ -280,7 +328,7 @@ public class Block extends multiblock.Block{
                     skip = true;
                 }
                 if(skip)continue;
-                if(block.isFuelVessel()){
+                if(block.isFuelVesselActive()){
                     if(length==0||nonshields==0)break;
                     for(Block b : shieldFluxes.keySet()){
                         b.neutronFlux+=shieldFluxes.get(b);

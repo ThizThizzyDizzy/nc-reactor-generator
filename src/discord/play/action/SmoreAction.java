@@ -1,6 +1,6 @@
 package discord.play.action;
 import discord.play.Action;
-import discord.play.PlayBot;
+import discord.play.SmoreBot;
 import java.util.Random;
 public class SmoreAction extends Action{
     public SmoreAction(){
@@ -24,7 +24,7 @@ public class SmoreAction extends Action{
     }
     @Override
     public void finish(){
-        PlayBot.addSmore(user);
+        SmoreBot.addSmore(user);
     }
     @Override
     public String getAction(){

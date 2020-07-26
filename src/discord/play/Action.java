@@ -17,7 +17,7 @@ public abstract class Action{
             }catch(InterruptedException ex){}
             if(cancelled)return;
             channel.sendMessage(getFinishedMessage()).queue();
-            PlayBot.actions.remove(user.getIdLong());
+            SmoreBot.actions.remove(user.getIdLong());
             finish();
         });
         t.setName(user.getName()+" "+getName()+" Thread");

@@ -25,6 +25,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public Stack<Action> future = new Stack<>();
     public Queue<Action> queue = new Queue<>();
     public HashMap<String, String> metadata = new HashMap<>();
+    public Boolean showDetails = null;//details override
     {
         resetMetadata();
         lastChangeTime = System.nanoTime();

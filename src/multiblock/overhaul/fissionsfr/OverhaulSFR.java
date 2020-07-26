@@ -81,6 +81,23 @@ public class OverhaulSFR extends Multiblock<Block>{
         for(Block block : blocks){
             if(block.isPrimed())block.propogateNeutronFlux(this);
         }
+        int lastActive, nowActive;
+        do{
+            lastActive = 0;
+            for(Block block : blocks){
+                boolean wasActive = block.isFuelCellActive();
+                block.clearData();
+                if(wasActive)lastActive++;
+                block.wasActive = wasActive;
+            }
+            for(Block block : blocks){
+                block.rePropogateNeutronFlux(this);
+            }
+            nowActive = 0;
+            for(Block block : blocks){
+                if(block.isFuelCellActive())nowActive++;
+            }
+        }while(nowActive!=lastActive);
         for(Block block : blocks){
             if(block.isFuelCell())block.postFluxCalc(this);
         }
@@ -170,7 +187,8 @@ public class OverhaulSFR extends Multiblock<Block>{
     public String getExtraBotTooltip(){
         return tooltip(false);
     }
-    public String tooltip(boolean showClusters){
+    public String tooltip(boolean showDetails){
+        if(this.showDetails!=null)showDetails = this.showDetails;
         String s = "Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
                 + "Total Heat: "+totalHeat+"H/t\n"
                 + "Total Cooling: "+totalCooling+"H/t\n"
@@ -185,7 +203,7 @@ public class OverhaulSFR extends Multiblock<Block>{
             int i = getFuelCount(f);
             if(i>0)s+="\n"+f.name+": "+i;
         }
-        if(showClusters){
+        if(showDetails){
             for(Cluster c : clusters){
                 s+="\n\n"+c.getTooltip();
             }

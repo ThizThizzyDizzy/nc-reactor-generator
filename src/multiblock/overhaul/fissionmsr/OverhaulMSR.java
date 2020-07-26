@@ -79,6 +79,23 @@ public class OverhaulMSR extends Multiblock<Block>{
         for(Block block : blocks){
             if(block.isPrimed())block.propogateNeutronFlux(this);
         }
+        int lastActive, nowActive;
+        do{
+            lastActive = 0;
+            for(Block block : blocks){
+                boolean wasActive = block.isFuelVesselActive();
+                block.clearData();
+                if(wasActive)lastActive++;
+                block.wasActive = wasActive;
+            }
+            for(Block block : blocks){
+                block.rePropogateNeutronFlux(this);
+            }
+            nowActive = 0;
+            for(Block block : blocks){
+                if(block.isFuelVesselActive())nowActive++;
+            }
+        }while(nowActive!=lastActive);
         for(Block block : blocks){
             if(block.isFuelVessel())block.postFluxCalc(this);
         }
@@ -172,6 +189,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         return tooltip(false);
     }
     public String tooltip(boolean showDetails){
+        if(this.showDetails!=null)showDetails = this.showDetails;
         String outs = "";
         ArrayList<String> outputList = new ArrayList<>(totalOutput.keySet());
         Collections.sort(outputList);
