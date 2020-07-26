@@ -943,6 +943,7 @@ public class Bot extends ListenerAdapter{
         b.addEventListeners(new Bot());
         try{
             jda = b.build();
+            FileWriter.botRunning = true;
         }catch(LoginException ex){
             Sys.error(ErrorLevel.critical, "Failed to log in!", ex, ErrorCategory.InternetIO);
         }
@@ -950,6 +951,8 @@ public class Bot extends ListenerAdapter{
     public static void stop(){
         SmoreBot.save();
         if(jda!=null)jda.shutdownNow();
+        jda = null;
+        FileWriter.botRunning = false;
     }
     public static void render2D(){
         if(pendingImage!=null){
@@ -960,9 +963,6 @@ public class Bot extends ListenerAdapter{
             }
             pendingImage = null;
         }
-    }
-    public static boolean isRunning(){
-        return jda!=null;
     }
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){

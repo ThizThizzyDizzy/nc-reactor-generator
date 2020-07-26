@@ -19,6 +19,7 @@ import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 public class FileWriter{
     public static final ArrayList<FormatWriter> formats = new ArrayList<>();
+    public static boolean botRunning;
     static{
         formats.add(new FormatWriter(){
             @Override
@@ -310,7 +311,7 @@ public class FileWriter{
                                 }
                             }
                         };
-                        if(Bot.isRunning())ImageIO.write(Bot.makeImage(width, height, renderer), "png", stream);
+                        if(botRunning)ImageIO.write(Bot.makeImage(width, height, renderer), "png", stream);
                         else ImageIO.write(Core.makeImage(width, height, renderer), "png", stream);
                         stream.close();
                     }catch(IOException ex){
