@@ -1,5 +1,8 @@
 package discord.play;
+import discord.play.smivilization.Hut;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -8,6 +11,7 @@ public class SmoreBot{
     public static HashMap<Long, Long> smores = new HashMap<>();//MONEY
     public static HashMap<Long, Long> eaten = new HashMap<>();//MONEY
     public static HashMap<Long, Action> actions = new HashMap<>();
+    public static HashMap<Long, Hut> huts = new HashMap<>();
     public static void action(GuildMessageReceivedEvent event, Action action){
         if(actions.containsKey(event.getAuthor().getIdLong())){
             event.getChannel().sendMessage("You can't do that many things at once!").queue();
@@ -41,6 +45,11 @@ public class SmoreBot{
             yums.set(id+"", eaten.get(id));
         }
         config.set("yums", yums);
+        Config theHuts = Config.newConfig();
+        for(Long id : huts.keySet()){
+            theHuts.set(id+"", huts.get(id).save(Config.newConfig()));
+        }
+        config.set("huts", theHuts);
         config.save();
     }
     public static void load(){
@@ -55,6 +64,10 @@ public class SmoreBot{
         Config yums = config.get("yums", Config.newConfig());
         for(String key : yums.properties()){
             eaten.put(Long.parseLong(key), yums.get(key));
+        }
+        Config theHuts = config.get("huts", Config.newConfig());
+        for(String key : theHuts.properties()){
+            huts.put(Long.parseLong(key), Hut.load(theHuts.get(key, Config.newConfig())));
         }
     }
     public static void addSmore(User user){
@@ -88,5 +101,15 @@ public class SmoreBot{
         }else{
             eaten.put(id, count);
         }
+    }
+    public static int getSmorePlacement(long owner){
+        ArrayList<Long> smorepilers = new ArrayList<>(smores.keySet());
+        Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(smores.get(o2)-smores.get(o1)));
+        return smorepilers.indexOf(owner)+1;
+    }
+    public static int getEatenPlacement(long owner){
+        ArrayList<Long> smorepilers = new ArrayList<>(eaten.keySet());
+        Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(eaten.get(o2)-eaten.get(o1)));
+        return smorepilers.indexOf(owner)+1;
     }
 }

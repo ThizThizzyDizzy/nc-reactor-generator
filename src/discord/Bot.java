@@ -17,6 +17,9 @@ import discord.play.action.SmoreAction;
 import discord.play.action.SmoreLordAction;
 import discord.play.action.SnoozeAction;
 import discord.play.game.Hangman;
+import discord.play.smivilization.Hut;
+import discord.play.smivilization.HutThing;
+import discord.play.smivilization.HutThingColorable;
 import generator.MultiblockGenerator;
 import generator.Priority;
 import generator.StandardGenerator;
@@ -91,7 +94,7 @@ public class Bot extends ListenerAdapter{
     private static final int batchSize = 100;
     public static final HashMap<NCPFFile, String> storedMultiblocks = new HashMap();
     static{
-//        commands.add(new Command("debug"){
+//        botCommands.add(new Command("debug"){
 //            @Override
 //            public String getHelpText(){
 //                return "Toggles Debug Mode";
@@ -110,11 +113,13 @@ public class Bot extends ListenerAdapter{
             @Override
             public void run(GuildMessageReceivedEvent event, String args, boolean debug){
                 EmbedBuilder builder = createEmbed(jda.getSelfUser().getName()+" Help");
-                String prefx = "";
-                for(String s : Bot.prefixes){
-                    prefx+="`"+s+"`\t";
+                if(Bot.prefixes.size()>1){
+                    String prefx = "";
+                    for(String s : Bot.prefixes){
+                        prefx+="`"+s+"`\t";
+                    }
+                    builder.addField("Prefixes", prefx.trim(), false);
                 }
-                builder.addField("Prefixes", prefx.trim(), false);
                 for(Command c : botCommands){
                     if(c.isSecret())continue;
                     builder.addField(prefixes.get(0)+c.command, c.getHelpText(), false);
@@ -511,11 +516,13 @@ public class Bot extends ListenerAdapter{
             @Override
             public void run(GuildMessageReceivedEvent event, String args, boolean debug){
                 EmbedBuilder builder = createEmbed(jda.getSelfUser().getName()+" Help");
-                String prefx = "";
-                for(String s : Bot.prefixes){
-                    prefx+="`"+s+"`\t";
+                if(Bot.prefixes.size()>1){
+                    String prefx = "";
+                    for(String s : Bot.prefixes){
+                        prefx+="`"+s+"`\t";
+                    }
+                    builder.addField("Prefixes", prefx.trim(), false);
                 }
-                builder.addField("Prefixes", prefx.trim(), false);
                 for(Command c : playCommands){
                     if(c.isSecret())continue;
                     builder.addField(prefixes.get(0)+c.command, c.getHelpText(), false);
@@ -694,6 +701,56 @@ public class Bot extends ListenerAdapter{
                 SmoreBot.eaten.put(targetUser.getIdLong(), amt);
             }
         });
+        playCommands.add(new SecretCommand("setsmores"){
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                if(event.getAuthor().getIdLong()!=210445638532333569L)return;//not thiz
+                args = args.trim();
+                if(args.isEmpty()){
+                    return;
+                }
+                String[] argses = args.split(" ");
+                if(argses.length==1){
+                    return;
+                }
+                String target = argses[0];
+                long targetID = 0;
+                if(target.startsWith("<@")&&target.endsWith(">")){
+                    if(target.contains("!"))target = target.substring(1);
+                    try{
+                        targetID = Long.parseLong(target.substring(2, target.length()-1));
+                    }catch(Exception ex){
+                        return;
+                    }
+                }else{
+                    try{
+                        targetID = Long.parseLong(target);
+                    }catch(Exception ex){
+                        return;
+                    }
+                }
+                User targetUser;
+                try{
+                    targetUser = jda.getUserById(targetID);
+                    if(targetUser==null){
+                        return;
+                    }
+                }catch(Exception ex){
+                    return;
+                }
+                long amt = 0;
+                try{
+                    amt = Long.parseLong(argses[1]);
+                }catch(Exception ex){
+                    return;
+                }
+                if(amt<0){
+                    return;
+                }
+                event.getChannel().sendMessage("set "+nick(event.getGuild().getMember(targetUser))+" to "+amt+" smore"+(amt==1?"":"s")+".").queue();
+                SmoreBot.smores.put(targetUser.getIdLong(), amt);
+            }
+        });
         playCommands.add(new Command("eat", "nom"){
             @Override
             public String getHelpText(){
@@ -776,6 +833,16 @@ public class Bot extends ListenerAdapter{
                 event.getChannel().sendMessage(actions).queue();
             }
         });
+        playCommands.add(new Command("noms", "yums", "eated", "eaten", "eats"){
+            @Override
+            public String getHelpText(){
+                return "Displays the amount of s'mores that you have consumed";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                event.getChannel().sendMessage(SmoreBot.getEatenCountS(event.getAuthor().getIdLong())).queue();
+            }
+        });
         playCommands.add(new Command("smores", "s'mores", "s’mores", "bal", "balance", "money"){
             @Override
             public String getHelpText(){
@@ -820,7 +887,7 @@ public class Bot extends ListenerAdapter{
                 event.getChannel().sendMessage(builder.addField("Top S'more Debtors", mess, false).build()).queue();
             }
         });
-        playCommands.add(new Command("omnomboard", "nomboard", "yumboard", "eatboard"){
+        playCommands.add(new Command("omnomboard", "nomboard", "yumboard", "eatboard", "s’nomnomnomboard", "s'nomnomnomboard", "nomnomnomboard", "omnomnomboard"){
             @Override
             public String getHelpText(){
                 return "Displays the top 5 s'nomnomnommers";
@@ -835,6 +902,310 @@ public class Bot extends ListenerAdapter{
                     mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+SmoreBot.getEatenCountS(smorepilers.get(i))+"\n";
                 }
                 event.getChannel().sendMessage(builder.addField("Top S'nomnomnommers", mess, false).build()).queue();
+            }
+        });
+        playCommands.add(new Command("hut", "home", "house"){
+            @Override
+            public String getHelpText(){
+                return "View your or someone else's hut";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                args = args.trim();
+                User targetUser = null;
+                if(args.startsWith("<@")&&args.endsWith(">")){
+                    if(args.contains("!"))args = args.substring(1);
+                    try{
+                        targetUser = jda.getUserById(Long.parseLong(args.substring(2, args.length()-1)));
+                    }catch(Exception ex){}
+                }else{
+                    try{
+                        targetUser = jda.getUserById(Long.parseLong(args));
+                    }catch(Exception ex){}
+                }
+                if(targetUser==null){
+                    long id = event.getAuthor().getIdLong();
+                    if(SmoreBot.huts.containsKey(id)){
+                        Hut hut = SmoreBot.huts.get(id);
+                        hut.sendExteriorImage(event.getChannel());
+                        hut.sendInteriorImage(event.getChannel());
+                    }else{
+                        event.getChannel().sendMessage("You don't have a hut!").queue();
+                    }
+                }else{
+                    long id = targetUser.getIdLong();
+                    if(SmoreBot.huts.containsKey(id)){
+                        Hut hut = SmoreBot.huts.get(id);
+                        hut.sendExteriorImage(event.getChannel());
+                        if(hut.isAllowedInside(event.getAuthor())){
+                            hut.sendInteriorImage(event.getChannel());
+                        }
+                    }else{
+                        event.getChannel().sendMessage("You look for a hut belonging to "+nick(event.getGuild().getMember(targetUser))+", but you don't find one").queue();
+                    }
+                }
+            }
+        });
+        playCommands.add(new Command("store", "shop"){
+            @Override
+            public String getHelpText(){
+                return "Browse the store";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                if(SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
+                    Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                    EmbedBuilder builder = createEmbed("Store");
+                    FOR:for(HutThing thing : Hut.allFurniture){
+                        if(!thing.isSellable())continue;
+                        for(HutThing thing2 : hut.furniture){
+                            if(thing2.equals(thing))continue FOR;
+                        }
+                        for(HutThing required : thing.requires){
+                            boolean has = false;
+                            for(HutThing thing2 : hut.furniture){
+                                if(thing2.equals(required))has = true;
+                            }
+                            if(!has)continue FOR;
+                        }
+                        builder.addField(thing.getName(), smoremoji()+" "+thing.getPrice()+(thing instanceof HutThingColorable?" (Colorable)":""), false);
+                    }
+                    event.getChannel().sendMessage(builder.build()).queue();
+                }else{
+                    event.getChannel().sendMessage(createEmbed("Store").addField("Hut", smoremoji()+" "+Hut.PRICE, false).build()).queue();
+                }
+            }
+        });
+        playCommands.add(new Command("buy", "purchace", "get"){
+            @Override
+            public String getHelpText(){
+                return "Buy something from the store\nTo buy a colored item, use -buy <color> <item name>\nColors must be a hex color (such as #038c3f)";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                long price = -1;
+                Runnable onBuy = null;
+                if(SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
+                    Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                    FOR:for(HutThing thing : Hut.allFurniture){
+                        if(!thing.isSellable())return;
+                        for(HutThing thing2 : hut.furniture){
+                            if(thing2.equals(thing))continue FOR;
+                        }
+                        for(HutThing required : thing.requires){
+                            boolean has = false;
+                            for(HutThing thing2 : hut.furniture){
+                                if(thing2.equals(required))has = true;
+                            }
+                            if(!has)continue FOR;
+                        }
+                        if(args.trim().equalsIgnoreCase(thing.getName())){
+                            price = thing.getPrice();
+                            onBuy = () -> {
+                                event.getChannel().sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
+                                hut.furniture.add(thing.newInstance());
+                            };
+                        }
+                        if(thing instanceof HutThingColorable&&args.contains(" ")){
+                            String[] strs = args.split(" ", 2);
+                            if(strs[1].trim().equalsIgnoreCase(thing.getName())){
+                                Color color = null;
+                                String hex = strs[0];
+                                if(hex.startsWith("#"))hex = hex.substring(1);
+                                if(hex.length()==6){
+                                    String r = hex.substring(0, 2);
+                                    String g = hex.substring(2, 4);
+                                    String b = hex.substring(4, 6);
+                                    try{
+                                        color = new Color(Integer.parseInt(r, 16), Integer.parseInt(g, 16), Integer.parseInt(b, 16));
+                                    }catch(Exception ex){}
+                                }
+                                if(color==null){
+                                    event.getChannel().sendMessage("What color?").queue();
+                                    return;
+                                }
+                                Color c = color;
+                                price = thing.getPrice();
+                                onBuy = () -> {
+                                    event.getChannel().sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
+                                    HutThingColorable colorable = (HutThingColorable)thing.newInstance();
+                                    hut.furniture.add(colorable.setColor(c));
+                                };
+                            }
+                        }
+                    }
+                }else{
+                    if(args.trim().equalsIgnoreCase("hut")){
+                        price = 64;
+                        onBuy = () -> {
+                            event.getChannel().sendMessage("You buy a hut nearby the campfire. It's currently empty, but you can get stuff to put in it.").queue();
+                            SmoreBot.huts.put(event.getAuthor().getIdLong(), new Hut(event.getAuthor().getIdLong()));
+                        };
+                    }
+                }
+                if(onBuy==null){
+                    event.getChannel().sendMessage("That's not for sale!").queue();
+                    return;
+                }
+                if(SmoreBot.getSmoreCount(event.getAuthor().getIdLong())<price){
+                    event.getChannel().sendMessage("You don't have enough s'mores!").queue();
+                    return;
+                }
+                SmoreBot.removeSmores(event.getAuthor(), price);
+                onBuy.run();
+            }
+        });
+        playCommands.add(new Command("sell"){
+            @Override
+            public String getHelpText(){
+                return "Sell something you don't need anymore and get some of the price back";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                long price = -1;
+                Runnable onSell = null;
+                if(SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
+                    if(args.trim().equalsIgnoreCase("hut")){
+                        event.getChannel().sendMessage("You can't sell your hut!").queue();
+                        return;
+                    }
+                    Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                    FOR:for(HutThing thing : hut.furniture){
+                        if(args.trim().equalsIgnoreCase(thing.getName())){
+                            if(!thing.isSellable()){
+                                event.getChannel().sendMessage("That cannot be sold!").queue();
+                                return;
+                            }
+                            for(HutThing thing2 : hut.furniture){
+                                for(HutThing required : thing2.requires){
+                                    if(required.equals(thing)){
+                                        event.getChannel().sendMessage("You can't sell that!").queue();
+                                        return;
+                                    }
+                                }
+                            }
+                            price = thing.getPrice();
+                            onSell = () -> {
+                                event.getChannel().sendMessage("You sell your "+thing.getName()).queue();
+                                hut.furniture.remove(thing);
+                            };
+                        }
+                    }
+                }else{
+                    event.getChannel().sendMessage("You have nothing to sell!").queue();
+                }
+                if(onSell==null){
+                    event.getChannel().sendMessage("You don't have that!").queue();
+                    return;
+                }
+                SmoreBot.addSmores(event.getAuthor(), price/2);
+                onSell.run();
+            }
+        });
+        playCommands.add(new Command("invite"){
+            @Override
+            public String getHelpText(){
+                return "Invite someone into to your hut!";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                if(!SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
+                    event.getChannel().sendMessage("You don't have a hut!").queue();
+                    return;
+                }
+                args = args.trim();
+                if(args.isEmpty()){
+                    event.getChannel().sendMessage("You invite nobody.").queue();
+                    return;
+                }
+                long targetID = 0;
+                if(args.startsWith("<@")&&args.endsWith(">")){
+                    if(args.contains("!"))args = args.substring(1);
+                    try{
+                        targetID = Long.parseLong(args.substring(2, args.length()-1));
+                    }catch(Exception ex){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
+                }else{
+                    try{
+                        targetID = Long.parseLong(args);
+                    }catch(Exception ex){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
+                }
+                User targetUser;
+                try{
+                    targetUser = jda.getUserById(targetID);
+                    if(targetUser==null){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
+                }catch(Exception ex){
+                    event.getChannel().sendMessage("Who?").queue();
+                    return;
+                }
+                Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                if(hut.invited.contains(targetID)){
+                    event.getChannel().sendMessage(nick(event.getGuild().getMember(targetUser))+" is already invited!").queue();
+                    return;
+                }
+                event.getChannel().sendMessage("You invite "+nick(event.getGuild().getMember(targetUser))+" to your hut.").queue();
+                hut.invited.add(targetID);
+            }
+        });
+        playCommands.add(new Command("uninvite", "kick"){
+            @Override
+            public String getHelpText(){
+                return "Retract your invitiation from someone!";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                if(!SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
+                    event.getChannel().sendMessage("You don't have a hut!").queue();
+                    return;
+                }
+                args = args.trim();
+                if(args.isEmpty()){
+                    event.getChannel().sendMessage("Nobody wasn't invited.").queue();
+                    return;
+                }
+                long targetID = 0;
+                if(args.startsWith("<@")&&args.endsWith(">")){
+                    if(args.contains("!"))args = args.substring(1);
+                    try{
+                        targetID = Long.parseLong(args.substring(2, args.length()-1));
+                    }catch(Exception ex){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
+                }else{
+                    try{
+                        targetID = Long.parseLong(args);
+                    }catch(Exception ex){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
+                }
+                User targetUser;
+                try{
+                    targetUser = jda.getUserById(targetID);
+                    if(targetUser==null){
+                        event.getChannel().sendMessage("Who?").queue();
+                        return;
+                    }
+                }catch(Exception ex){
+                    event.getChannel().sendMessage("Who?").queue();
+                    return;
+                }
+                Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                if(!hut.invited.contains(targetID)){
+                    event.getChannel().sendMessage(nick(event.getGuild().getMember(targetUser))+" isn't invited!").queue();
+                    return;
+                }
+                event.getChannel().sendMessage("You rectract your invitation from "+nick(event.getGuild().getMember(targetUser))+" to your hut.").queue();
+                hut.invited.remove(targetID);
             }
         });
     }
@@ -1061,5 +1432,8 @@ public class Bot extends ListenerAdapter{
         }
         if(error!=null)throw error;
         return image;
+    }
+    private static String smoremoji(){
+        return "<:smore:493612965195677706>";
     }
 }
