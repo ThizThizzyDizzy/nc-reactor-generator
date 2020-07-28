@@ -1,13 +1,18 @@
 package discord.play.smivilization;
+import java.awt.Color;
 import java.util.ArrayList;
+import planner.Core;
 import simplelibrary.config2.Config;
+import simplelibrary.opengl.ImageStash;
+import simplelibrary.opengl.Renderer2D;
 public abstract class HutThing{
     private final String texture;
     private final String name;
     private final long price;
-    public final ArrayList<HutThing> requires = new ArrayList<>();
+    private final ArrayList<String> requireS = new ArrayList<>();
+    private final ArrayList<HutThing> requires = new ArrayList<>();
     public HutThing(String name, String textureName, long price){
-        this.texture = "/textures/smivilization/buildings/huts/gliese/"+textureName+".png";
+        this.texture = "/textures/smivilization/buildings/huts/gliese/furniture/"+textureName+".png";
         this.name = name;
         this.price = price;
     }
@@ -32,9 +37,19 @@ public abstract class HutThing{
         return name;
     }
     protected final void require(String thin){
-        for(HutThing thing : Hut.allFurniture){
-            if(thing.name.equalsIgnoreCase(thin))requires.add(thing);
+        requireS.add(thin);
+    }
+    public final void postRequire(){
+        for(String thin : requireS){
+            for(HutThing thing : Hut.allFurniture){
+                if(thing.name.equalsIgnoreCase(thin))requires.add(thing);
+            }
         }
+        requireS.clear();
+    }
+    public ArrayList<HutThing> getRequirements(){
+        postRequire();
+        return requires;
     }
     public boolean isSellable(){
         return price>-1;
@@ -56,4 +71,8 @@ public abstract class HutThing{
         return thing;
     }
     protected void postLoad(Config config){}
+    public void render(int width, int height){
+        Core.applyColor(Color.white);
+        Renderer2D.drawRect(0, 0, width, height, ImageStash.instance.getTexture(getTexture()));
+    }
 }

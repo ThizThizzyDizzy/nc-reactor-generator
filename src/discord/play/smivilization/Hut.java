@@ -23,16 +23,28 @@ public class Hut{
     private final long owner;
     public static final ArrayList<HutThing> allFurniture = new ArrayList<>();
     static{
-        allFurniture.add(new PurpleTriflorice());
-        allFurniture.add(new Table());
+        allFurniture.add(new Lamp());
+        allFurniture.add(new Shelf());
         allFurniture.add(new Couch());
+        allFurniture.add(new Bed());
+        allFurniture.add(new PurpleTriflorice());
+        allFurniture.add(new PuLaptop());
+        allFurniture.add(new Table());
+        allFurniture.add(new Television());
+        allFurniture.add(new CoffeeTable());
+        allFurniture.add(new TomPainting());
         allFurniture.add(new GlowshroomGlowshroomGlowshroomPoster());
+        allFurniture.add(new SmoreRug());
+        for(HutThing thing : allFurniture){
+            thing.postRequire();
+        }
     }
     public ArrayList<Long> invited = new ArrayList<>();
     public ArrayList<HutThing> furniture = new ArrayList<>();
+    public boolean open;
     public Hut(long owner){
         this.owner = owner;
-        if(owner==210340018198151170l){
+        if(owner==210445638532333569l/*210340018198151170l*/){
             furniture.add(new GlowshroomGlowshroomGlowshroomPoster());
         }
     }
@@ -48,6 +60,7 @@ public class Hut{
             furn.add(thing.save(Config.newConfig()));
         }
         config.set("furniture", furn);
+        config.set("open", open);
         return config;
     }
     public static Hut load(Config config){
@@ -60,9 +73,11 @@ public class Hut{
         for(Object c : furn.iterable()){
             hut.furniture.add(HutThing.load((Config)c));
         }
+        hut.open = config.get("open", false);
         return hut;
     }
     public boolean isAllowedInside(User user){
+        if(open)return true;
         return invited.contains(user.getIdLong());
     }
     public void sendImage(TextChannel channel, String name, Core.BufferRenderer renderer){
@@ -89,33 +104,6 @@ public class Hut{
         sendImage(channel, "inside", (buff) -> {
             Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
-            //<editor-fold defaultstate="collapsed" desc="Trophy">
-            HutThing trophy = null;
-            switch(SmoreBot.getSmorePlacement(owner)){
-                case 1:
-                    trophy = new GoldSmore();
-                    break;
-                case 2:
-                    trophy = new SilverSmore();
-                    break;
-                case 3:
-                    trophy = new BronzeSmore();
-                    break;
-            }
-            if(trophy!=null){
-                boolean canFit = true;
-                for(HutThing required : trophy.requires){
-                    boolean has = false;
-                    for(HutThing thing : furn){
-                        if(thing.equals(required))has = true;
-                    }
-                    if(!has)canFit = false;
-                }
-                if(canFit){
-                    furn.add(trophy);
-                }
-            }
-//</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="Nom Trophy">
             HutThing nomTrophy = null;
             switch(SmoreBot.getEatenPlacement(owner)){
@@ -130,8 +118,9 @@ public class Hut{
                     break;
             }
             if(nomTrophy!=null){
+                nomTrophy.postRequire();
                 boolean canFit = true;
-                for(HutThing required : nomTrophy.requires){
+                for(HutThing required : nomTrophy.getRequirements()){
                     boolean has = false;
                     for(HutThing thing : furn){
                         if(thing.equals(required))has = true;
@@ -143,15 +132,40 @@ public class Hut{
                 }
             }
 //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Trophy">
+            HutThing trophy = null;
+            switch(SmoreBot.getSmorePlacement(owner)){
+                case 1:
+                    trophy = new GoldSmore();
+                    break;
+                case 2:
+                    trophy = new SilverSmore();
+                    break;
+                case 3:
+                    trophy = new BronzeSmore();
+                    break;
+            }
+            if(trophy!=null){
+                trophy.postRequire();
+                boolean canFit = true;
+                for(HutThing required : trophy.getRequirements()){
+                    boolean has = false;
+                    for(HutThing thing : furn){
+                        if(thing.equals(required))has = true;
+                    }
+                    if(!has)canFit = false;
+                }
+                if(canFit){
+                    furn.add(trophy);
+                }
+            }
+//</editor-fold>
             Collections.sort(furn, (o1, o2) -> {
                 return o2.getLayer()-o1.getLayer();
             });
             for(HutThing thing : furn){
                 GL11.glColor4d(1, 1, 1, 1);
-                if(thing instanceof HutThingColorable){
-                    Core.applyColor(((HutThingColorable)thing).getColor());
-                }
-                Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture(thing.getTexture()));
+                thing.render(buff.width, buff.height);
             }
         });
     }

@@ -961,7 +961,7 @@ public class Bot extends ListenerAdapter{
                         for(HutThing thing2 : hut.furniture){
                             if(thing2.equals(thing))continue FOR;
                         }
-                        for(HutThing required : thing.requires){
+                        for(HutThing required : thing.getRequirements()){
                             boolean has = false;
                             for(HutThing thing2 : hut.furniture){
                                 if(thing2.equals(required))has = true;
@@ -988,11 +988,11 @@ public class Bot extends ListenerAdapter{
                 if(SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
                     Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
                     FOR:for(HutThing thing : Hut.allFurniture){
-                        if(!thing.isSellable())return;
+                        if(!thing.isSellable())continue;
                         for(HutThing thing2 : hut.furniture){
                             if(thing2.equals(thing))continue FOR;
                         }
-                        for(HutThing required : thing.requires){
+                        for(HutThing required : thing.getRequirements()){
                             boolean has = false;
                             for(HutThing thing2 : hut.furniture){
                                 if(thing2.equals(required))has = true;
@@ -1077,7 +1077,7 @@ public class Bot extends ListenerAdapter{
                                 return;
                             }
                             for(HutThing thing2 : hut.furniture){
-                                for(HutThing required : thing2.requires){
+                                for(HutThing required : thing2.getRequirements()){
                                     if(required.equals(thing)){
                                         event.getChannel().sendMessage("You can't sell that!").queue();
                                         return;
@@ -1206,6 +1206,36 @@ public class Bot extends ListenerAdapter{
                 }
                 event.getChannel().sendMessage("You rectract your invitation from "+nick(event.getGuild().getMember(targetUser))+" to your hut.").queue();
                 hut.invited.remove(targetID);
+            }
+        });
+        playCommands.add(new Command("open"){
+            @Override
+            public String getHelpText(){
+                return "Invite everyone into to your hut!";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                if(!SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
+                    event.getChannel().sendMessage("You don't have a hut!").queue();
+                    return;
+                }
+                SmoreBot.huts.get(event.getAuthor().getIdLong()).open = true;
+                event.getChannel().sendMessage("You open your hut to visitors.").queue();
+            }
+        });
+        playCommands.add(new Command("close"){
+            @Override
+            public String getHelpText(){
+                return "Retract your invitiation from everyone!";
+            }
+            @Override
+            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+                if(!SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
+                    event.getChannel().sendMessage("You don't have a hut!").queue();
+                    return;
+                }
+                SmoreBot.huts.get(event.getAuthor().getIdLong()).open = false;
+                event.getChannel().sendMessage("You close your hut to visitors.").queue();
             }
         });
     }
