@@ -320,7 +320,7 @@ public class StandardGenerator extends MultiblockGenerator{
             if(multiblock.count(range.obj)<range.min)return range.obj;
         }
         Range<T> randRange = ranges.get(rand.nextInt(ranges.size()));
-        if(randRange.max!=0&&multiblock.count(randRange.obj)>=randRange.max){
+        if((randRange.min!=0||randRange.max!=Integer.MAX_VALUE)&&randRange.max!=0&&multiblock.count(randRange.obj)>=randRange.max){
             return null;
         }
         return randRange.obj;

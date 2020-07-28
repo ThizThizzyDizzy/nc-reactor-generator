@@ -124,6 +124,8 @@ public class Bot extends ListenerAdapter{
                     if(c.isSecret())continue;
                     builder.addField(prefixes.get(0)+c.command, c.getHelpText(), false);
                 }
+                builder.addField("File Formats", "JSON files can be opened in Hellrage's Reactor planner (see #useful-links) or Thiz's planner/generator (see footnote)\n"
+                                                +"NCPF files can only be opened in Thiz'z planner/generator (see footnote)", false);
                 event.getChannel().sendMessage(builder.build()).queue();
             }
         });
@@ -254,6 +256,14 @@ public class Bot extends ListenerAdapter{
                 }
                 if(multiblock==null){
                     event.getChannel().sendMessage("Unknown multiblock: `"+fullMultiblockName+"`!").queue();
+                    return;
+                }
+                if(x<multiblock.getMinSize()||y<multiblock.getMinSize()||z<multiblock.getMinSize()){
+                    event.getChannel().sendMessage("Too small! Minimum size: "+multiblock.getMinSize()+"x"+multiblock.getMinSize()+"x"+multiblock.getMinSize()).queue();
+                    return;
+                }
+                if(x>multiblock.getMaxSize()||y>multiblock.getMaxSize()||z>multiblock.getMaxSize()){
+                    event.getChannel().sendMessage("Too big! Maximum size: "+multiblock.getMaxSize()+"x"+multiblock.getMaxSize()+"x"+multiblock.getMaxSize()).queue();
                     return;
                 }
                 ArrayList<Block> availableBlocks = new ArrayList<>();
