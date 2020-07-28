@@ -4,10 +4,10 @@ import java.awt.Color;
 import planner.Core;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
-public class GlowshroomGlowshroomGlowshroomPoster extends HutThing{
+public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
     int frameType = 1;
     public GlowshroomGlowshroomGlowshroomPoster(){
-        super("Glowhsroom Glowshroom Glowshroom Poster", "glowshroom poster", -1);
+        super("Glowhsroom Glowshroom Glowshroom Poster", "glowshroom poster", 210340018198151170l, -1);
     }
     @Override
     public HutThing newInstance(){

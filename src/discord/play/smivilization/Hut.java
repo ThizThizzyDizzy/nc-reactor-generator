@@ -44,7 +44,7 @@ public class Hut{
     public boolean open;
     public Hut(long owner){
         this.owner = owner;
-        if(owner==210445638532333569l/*210340018198151170l*/){
+        if(owner==210340018198151170l){
             furniture.add(new GlowshroomGlowshroomGlowshroomPoster());
         }
     }
@@ -71,7 +71,11 @@ public class Hut{
         }
         ConfigList furn = config.get("furniture", new ConfigList());
         for(Object c : furn.iterable()){
-            hut.furniture.add(HutThing.load((Config)c));
+            HutThing thing = HutThing.load((Config)c);
+            if(thing instanceof HutThingExclusive){
+                if(hut.owner!=((HutThingExclusive)thing).exclusiveOwner)continue;
+            }
+            hut.furniture.add(thing);
         }
         hut.open = config.get("open", false);
         return hut;
