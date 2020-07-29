@@ -521,7 +521,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     private void recalculate(ActionResult result){
         forceRescan = true;
-        recalculate(result.getAffectedGroups());
+        ArrayList<T> affectedGroups = result.getAffectedGroups();
+        recalculate(affectedGroups==null?getBlocks(true):affectedGroups);
         forceRescan = false;
     }
     private void recalculate(List<T> blox){
@@ -648,8 +649,16 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         while(!queue.isEmpty()){
             Action action = queue.dequeue();
             ActionResult result = action.apply(this);
-            affected.addAll(result.getAffectedGroups());
+            ArrayList<T> affectedGroups = result.getAffectedGroups();
+            if(affected!=null){
+                if(affectedGroups==null)affected = null;
+                else affected.addAll(affectedGroups);
+            }
             history.push(action);
+        }
+        if(affected==null){
+            recalculate(getBlocks(true));
+            return;
         }
         Set<T> actual = new HashSet<>();
         for(T t : affected){

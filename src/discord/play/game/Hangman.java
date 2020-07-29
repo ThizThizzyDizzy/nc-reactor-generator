@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
+import multiblock.ppe.ClearInvalid;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -23,12 +24,16 @@ public class Hangman extends Game{
     private final Configuration config;
     private final int maxGuesses;
     private boolean usesActive = false;
-    public Hangman(){
+    private final boolean blind;
+    public Hangman(boolean blind){
         super("Hangman");
         ArrayList<NCPFFile> ncpfs = new ArrayList<>(Bot.storedMultiblocks.keySet());
         NCPFFile ncpf = ncpfs.get(new Random().nextInt(ncpfs.size()));
         ArrayList<Multiblock> multis = new ArrayList<>(ncpf.multiblocks);
         basis = multis.get(new Random().nextInt(multis.size())).copy();
+        basis.recalculate();
+        new ClearInvalid().apply(basis);
+        basis.recalculate();
         this.config = ncpf.configuration;
         basis.metadata.clear();
         current = basis.blankCopy();
@@ -57,11 +62,12 @@ public class Hangman extends Game{
         int total = available.size();
         int possibleBadGuesses = total-unique.size();
         maxGuesses = possibleBadGuesses/2;
+        this.blind = blind;
     }
     @Override
     public void start(GuildMessageReceivedEvent event){
         event.getChannel().sendMessage("Hangman has started!\nCurrent Multiblock: "+basis.getX()+"x"+basis.getY()+"x"+basis.getZ()+" "+basis.getDefinitionName()+"\nYou have "+(maxGuesses-1)+" Incorrect guesses left."+(usesActive?"\nThis reactor has active coolers":"")).queue();
-        exportPng(generateNCPF(current), event.getChannel());
+        if(!blind)exportPng(generateNCPF(current), event.getChannel());
     }
     @Override
     protected void stop(TextChannel channel){
@@ -129,7 +135,7 @@ public class Hangman extends Game{
                 running = false;
                 return;
             }
-            exportPng(generateNCPF(current), event.getChannel());
+            if(!blind)exportPng(generateNCPF(current), event.getChannel());
         }
     }
     private void exportPng(NCPFFile ncpf, TextChannel channel){

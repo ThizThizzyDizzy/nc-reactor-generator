@@ -7,9 +7,12 @@ public class ActionResult<T extends Multiblock>{
         this.multiblock = multiblock;
         this.blocks = blocks;
     }
+    /**
+     * @return null if all blocks were affected
+     */
     public ArrayList<Block> getAffectedGroups(){
         if(blocks==null){
-            return multiblock.getBlocks(true);
+            return null;
         }
         return multiblock.getAffectedGroups(blocks);
     }

@@ -514,7 +514,7 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                PlayBot.play(event, new Hangman());
+                PlayBot.play(event, new Hangman(args.trim().equalsIgnoreCase("blind")));
             }
         });
         //smore commands
@@ -1046,7 +1046,7 @@ public class Bot extends ListenerAdapter{
                     }
                 }else{
                     if(args.trim().equalsIgnoreCase("hut")){
-                        price = 64;
+                        price = Hut.PRICE;
                         onBuy = () -> {
                             event.getChannel().sendMessage("You buy a hut nearby the campfire. It's currently empty, but you can get stuff to put in it.").queue();
                             SmoreBot.huts.put(event.getAuthor().getIdLong(), new Hut(event.getAuthor().getIdLong()));
