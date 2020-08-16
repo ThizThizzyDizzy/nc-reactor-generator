@@ -390,9 +390,11 @@ public class OverhaulTurbine extends Multiblock<Block>{
             float minBladeExpansion = Float.MAX_VALUE;//I HOPE there isn't a 1 billion times expansion coeff.
             float minStatorExpansion = 1;
             int numBlades = 0;
+            int numberOfBlades = 0;
             for(int i = 0; i<blades.length; i++){
                 float exp = blades[i].blade.expansion;
                 if(exp>=1){
+                    numberOfBlades++;
                     numBlades+=bearingDiameter*4*(getX()/2-bearingDiameter/2);
                     minBladeExpansion = Math.min(exp, minBladeExpansion);
                 }
@@ -402,7 +404,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
                 expansionSoFar*=blades[i].blade.expansion;
                 rotorEfficiency+=blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
             }
-            rotorEfficiency/=blades.length;
+            rotorEfficiency/=numberOfBlades;
             maxInput = numBlades*getConfiguration().overhaul.turbine.fluidPerBlade;
             maxUnsafeInput = maxInput*2;
             double effectiveMaxLength;
