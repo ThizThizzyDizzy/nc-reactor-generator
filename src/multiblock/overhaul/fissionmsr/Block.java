@@ -381,7 +381,7 @@ public class Block extends multiblock.Block{
     }
     public boolean canCluster(){
         if(isCasing())return false;
-        return isActive()&&template.cluster;
+        return (isActive()||isInert())&&template.cluster;
     }
     @Override
     public void renderOverlay(double x, double y, double width, double height){
@@ -400,7 +400,7 @@ public class Block extends multiblock.Block{
             drawCircle(x, y, width, height, Core.theme.getRGB(r, g, b));
         }
     }
-    private boolean isInert(){
+    public boolean isInert(){
         if(isCasing())return true;
         return template.cluster&&!template.functional;
     }

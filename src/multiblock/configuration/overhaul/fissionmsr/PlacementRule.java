@@ -1,5 +1,8 @@
 package multiblock.configuration.overhaul.fissionmsr;
+import java.util.ArrayList;
 import multiblock.Axis;
+import multiblock.Direction;
+import multiblock.Vertex;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -8,7 +11,7 @@ public class PlacementRule extends RuleContainer{
         if(str.contains("||")){
             PlacementRule rule = new PlacementRule();
             rule.ruleType = RuleType.OR;
-            for(String sub : str.split("||")){
+            for(String sub : str.split("\\|\\|")){
                 PlacementRule rul = parseNC(configuration, sub.trim());
                 rule.rules.add(rul);
             }
@@ -127,23 +130,28 @@ public class PlacementRule extends RuleContainer{
                 config.set("min", min);
                 config.set("max", max);
                 break;
-            case BETWEEN_GROUP:
+            case VERTEX:
                 config.set("type", (byte)2);
-                config.set("block", (byte)blockType.ordinal());
-                config.set("min", min);
-                config.set("max", max);
+                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
                 break;
-            case AXIAL_GROUP:
+            case BETWEEN_GROUP:
                 config.set("type", (byte)3);
                 config.set("block", (byte)blockType.ordinal());
                 config.set("min", min);
                 config.set("max", max);
                 break;
-            case NO_PANCAKES:
+            case AXIAL_GROUP:
                 config.set("type", (byte)4);
+                config.set("block", (byte)blockType.ordinal());
+                config.set("min", min);
+                config.set("max", max);
+                break;
+            case VERTEX_GROUP:
+                config.set("type", (byte)5);
+                config.set("block", (byte)blockType.ordinal());
                 break;
             case OR:
-                config.set("type", (byte)5);
+                config.set("type", (byte)6);
                 ConfigList ruls = new ConfigList();
                 for(PlacementRule rule : rules){
                     ruls.add(rule.save(configuration));
@@ -151,7 +159,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("rules", ruls);
                 break;
             case AND:
-                config.set("type", (byte)6);
+                config.set("type", (byte)7);
                 ruls = new ConfigList();
                 for(PlacementRule rule : rules){
                     ruls.add(rule.save(configuration));
@@ -180,8 +188,10 @@ public class PlacementRule extends RuleContainer{
                 if(max==6)return "At least "+min+" Axial pairs of "+blockType.name;
                 if(min==max)return "Exactly "+min+" Axial pairs of "+blockType.name;
                 return "Between "+min+" and "+max+" Axial pairs of "+blockType.name;
-            case NO_PANCAKES:
-                return "No Pancakes";
+            case VERTEX:
+                return "Three "+block.name+" at the same vertex";
+            case VERTEX_GROUP:
+                return "Three "+blockType.name+" at the same vertex";
             case AND:
                 String s = "";
                 for(PlacementRule rule : rules){
@@ -294,8 +304,66 @@ public class PlacementRule extends RuleContainer{
                         break;
                 }
                 return num>=min&&num<=max;
-            case NO_PANCAKES:
-                return reactor.getX()>1&&reactor.getY()>1&&reactor.getZ()>1;
+            case VERTEX:
+                ArrayList<Direction> dirs = new ArrayList<>();
+                for(Direction d : Direction.values()){
+                    multiblock.overhaul.fissionmsr.Block b = reactor.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                    if(b.template==this.block)dirs.add(d);
+                }
+                for(Vertex e : Vertex.values()){
+                    boolean missingOne = false;
+                    for(Direction d : e.directions){
+                        if(!dirs.contains(d))missingOne = true;
+                    }
+                    if(!missingOne)return true;
+                }
+                return false;
+            case VERTEX_GROUP:
+                dirs = new ArrayList<>();
+                for(Direction d : Direction.values()){
+                    multiblock.overhaul.fissionmsr.Block b = reactor.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                    switch(blockType){
+                        case AIR:
+                            if(b==null){
+                                dirs.add(d);
+                                continue;
+                            }
+                            break;
+                        case CASING:
+                            if(!b.isCasing())continue;
+                            break;
+                        case CONDUCTOR:
+                            if(!b.isConductor())continue;
+                            break;
+                        case HEATER:
+                            if(!b.isHeater())continue;
+                            break;
+                        case IRRADIATOR:
+                            if(!b.isIrradiator())continue;
+                            break;
+                        case MODERATOR:
+                            if(!b.isModerator())continue;
+                            break;
+                        case REFLECTOR:
+                            if(!b.isReflector())continue;
+                            break;
+                        case SHIELD:
+                            if(!b.isShield())continue;
+                            break;
+                        case VESSEL:
+                            if(!b.isFuelVessel())continue;
+                            break;
+                    }
+                    if(b.template==this.block)dirs.add(d);
+                }
+                for(Vertex e : Vertex.values()){
+                    boolean missingOne = false;
+                    for(Direction d : e.directions){
+                        if(!dirs.contains(d))missingOne = true;
+                    }
+                    if(!missingOne)return true;
+                }
+                return false;
             case AND:
                 for(PlacementRule rule : rules){
                     if(!rule.isValid(block, reactor))return false;
@@ -312,9 +380,10 @@ public class PlacementRule extends RuleContainer{
     public static enum RuleType{
         BETWEEN("Between"),
         AXIAL("Axial"),
+        VERTEX("Vertex"),
         BETWEEN_GROUP("Between (Group)"),
         AXIAL_GROUP("Axial (Group)"),
-        NO_PANCAKES("No Pancakes"),
+        VERTEX_GROUP("Vertex (Group"),
         OR("Or"),
         AND("And");
         private final String name;

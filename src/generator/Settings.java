@@ -1,2 +1,7 @@
 package generator;
-public interface Settings{}
+import java.util.ArrayList;
+import multiblock.Block;
+import multiblock.Range;
+public interface Settings{
+    public ArrayList<Range<Block>> getAllowedBlocks();
+}

@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
 import simplelibrary.opengl.Renderer2D;
+import simplelibrary.opengl.gui.components.MenuComponent;
 public class MoveTool extends EditorTool{
     public MoveTool(MenuEdit editor){
         super(editor);
@@ -58,15 +59,53 @@ public class MoveTool extends EditorTool{
         Core.applyWhite();
     }
     @Override
+    public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        if(leftDragStart!=null&&leftDragEnd!=null){
+            if(!Core.isControlPressed()){
+                for(int[] i : editor.selection){
+                    if(i[2]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[1]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, 0);
+                }
+            }
+            int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
+            for(int[] i : editor.selection){
+                int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
+                if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.multiblock.getX()||j[1]>=editor.multiblock.getY()||j[2]>=editor.multiblock.getZ())continue;
+                Block b = editor.multiblock.getBlock(i[0], i[1], i[2]);
+                if(j[2]==layer)Renderer2D.drawRect(x+j[0]*blockSize, y+j[1]*blockSize, x+(j[0]+1)*blockSize, y+(j[1]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
+            }
+        }
+        Core.applyWhite();
+    }
+    @Override
+    public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        if(leftDragStart!=null&&leftDragEnd!=null){
+            if(!Core.isControlPressed()){
+                for(int[] i : editor.selection){
+                    Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
+                }
+            }
+            int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
+            for(int[] i : editor.selection){
+                int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
+                if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.multiblock.getX()||j[1]>=editor.multiblock.getY()||j[2]>=editor.multiblock.getZ())continue;
+                Block b = editor.multiblock.getBlock(i[0], i[1], i[2]);
+                Renderer2D.drawRect(x+(j[2]-1)*blockSize, y, x+j[2]*blockSize, y+blockSize, b==null?0:Core.getTexture(b.getTexture()));
+            }
+        }
+        Core.applyWhite();
+    }
+    @Override
     public void mouseReset(int button){
         if(button==0)leftDragStart = leftDragEnd = null;
     }
     @Override
-    public void mousePressed(int x, int y, int z, int button){
+    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
         if(button==0)leftDragStart = new int[]{x,y,z};
     }
     @Override
-    public void mouseReleased(int x, int y, int z, int button){
+    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
         if(button==0&&leftDragStart!=null&&leftDragEnd!=null){
             if(Core.isControlPressed())editor.copySelection(leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
             else editor.moveSelection(leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
@@ -74,7 +113,7 @@ public class MoveTool extends EditorTool{
         mouseReset(button);
     }
     @Override
-    public void mouseDragged(int x, int y, int z, int button){
+    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
         if(button==0)leftDragEnd = new int[]{x,y,z};
     }
     @Override

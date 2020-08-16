@@ -1,20 +1,24 @@
 package multiblock.underhaul.fissionsfr;
 import generator.Priority;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import planner.Core;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.Multiblock;
+import multiblock.PartCount;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.PostProcessingEffect;
+import multiblock.ppe.SmartFillUnderhaulSFR;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
+import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
-    private int netHeat, power, heat, cooling, cells;
+    public int netHeat;
+    private int power, heat, cooling, cells;
     private float efficiency;
     public Fuel fuel;
     private double heatMult;
@@ -23,15 +27,17 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     public UnderhaulSFR(int x, int y, int z, Fuel fuel){
         super(x, y, z);
-        this.fuel = fuel==null?Core.configuration.underhaul.fissionSFR.fuels.get(0):fuel;
+        this.fuel = fuel==null?getConfiguration().underhaul.fissionSFR.fuels.get(0):fuel;
     }
     @Override
     public String getDefinitionName(){
         return "Underhaul SFR";
     }
     @Override
-    public UnderhaulSFR newInstance(){
-        return new UnderhaulSFR();
+    public UnderhaulSFR newInstance(Configuration configuration){
+        UnderhaulSFR sfr = new UnderhaulSFR();
+        sfr.setConfiguration(configuration);
+        return sfr;
     }
     @Override
     public Multiblock<Block> newInstance(int x, int y, int z){
@@ -39,18 +45,34 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
-        if(Core.configuration==null||Core.configuration.underhaul==null||Core.configuration.underhaul.fissionSFR==null)return;
-        for(multiblock.configuration.underhaul.fissionsfr.Block block : Core.configuration.underhaul.fissionSFR.blocks){
+        if(getConfiguration()==null||getConfiguration().underhaul==null||getConfiguration().underhaul.fissionSFR==null)return;
+        for(multiblock.configuration.underhaul.fissionsfr.Block block : getConfiguration().underhaul.fissionSFR.blocks){
             blocks.add(new Block(-1,-1,-1,block));
         }
     }
     @Override
-    public int getMinSize(){
-        return Core.configuration.underhaul.fissionSFR.minSize;
+    public int getMinX(){
+        return getConfiguration().underhaul.fissionSFR.minSize;
     }
     @Override
-    public int getMaxSize(){
-        return Core.configuration.underhaul.fissionSFR.maxSize;
+    public int getMinY(){
+        return getConfiguration().underhaul.fissionSFR.minSize;
+    }
+    @Override
+    public int getMinZ(){
+        return getConfiguration().underhaul.fissionSFR.minSize;
+    }
+    @Override
+    public int getMaxX(){
+        return getConfiguration().underhaul.fissionSFR.maxSize;
+    }
+    @Override
+    public int getMaxY(){
+        return getConfiguration().underhaul.fissionSFR.maxSize;
+    }
+    @Override
+    public int getMaxZ(){
+        return getConfiguration().underhaul.fissionSFR.maxSize;
     }
     @Override
     public void calculate(List<Block> blocks){
@@ -111,7 +133,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return 0;
     }
     @Override
-    protected void save(Configuration configuration, Config config){
+    protected void save(NCPFFile ncpf, Configuration configuration, Config config){
         ConfigNumberList size = new ConfigNumberList();
         size.add(getX());
         size.add(getY());
@@ -160,6 +182,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
             block.template = to.underhaul.fissionSFR.convert(block.template);
         }
         fuel = to.underhaul.fissionSFR.convert(fuel);
+        setConfiguration(to);
     }
     @Override
     public boolean validate(){
@@ -167,7 +190,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public boolean exists(){
-        return Core.configuration.underhaul!=null&&Core.configuration.underhaul.fissionSFR!=null;
+        return getConfiguration().underhaul!=null&&getConfiguration().underhaul.fissionSFR!=null;
     }
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){}
@@ -176,7 +199,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<UnderhaulSFR>("Valid (>0 output)"){
+        priorities.add(new Priority<UnderhaulSFR>("Valid (>0 output)", true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 if(main.isValid()&&!other.isValid())return 1;
@@ -184,31 +207,31 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 return 0;
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Stability"){
+        priorities.add(new Priority<UnderhaulSFR>("Stability", false){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Efficiency"){
+        priorities.add(new Priority<UnderhaulSFR>("Efficiency", true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return main.efficiency-other.efficiency;
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Output"){
+        priorities.add(new Priority<UnderhaulSFR>("Output", true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return main.power-other.power;
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Minimize Heat"){
+        priorities.add(new Priority<UnderhaulSFR>("Minimize Heat", false){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return other.heat-main.heat;
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Fuel usage"){
+        priorities.add(new Priority<UnderhaulSFR>("Fuel usage", true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return main.cells-other.cells;
@@ -230,6 +253,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
         postProcessingEffects.add(new ClearInvalid());
+        postProcessingEffects.add(new SmartFillUnderhaulSFR());
     }
     @Override
     public UnderhaulSFR blankCopy(){
@@ -241,7 +265,8 @@ public class UnderhaulSFR extends Multiblock<Block>{
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
                 for(int z = 0; z<getZ(); z++){
-                    copy.blocks[x][y][z] = blocks[x][y][z]==null?null:blocks[x][y][z].copy();
+                    Block get = getBlock(x, y, z);
+                    if(get!=null)copy.setBlockExact(x, y, z, get.copy());
                 }
             }
         }
@@ -256,7 +281,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     protected int doCount(Object o){
-        throw new IllegalArgumentException("Nothing to count in underhaul!");
+        throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in "+getDefinitionName()+"!");
     }
     @Override
     public String getGeneralName(){
@@ -265,5 +290,11 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public boolean isCompatible(Multiblock<Block> other){
         return ((UnderhaulSFR)other).fuel==fuel;
+    }
+    @Override
+    protected void getFluidOutputs(HashMap<String, Double> outputs){}
+    @Override
+    protected void getExtraParts(ArrayList<PartCount> parts){
+        parts.add(new PartCount(null, "Casing", getX()*getZ()*2+getX()*getY()*2+getY()*getZ()*2));
     }
 }

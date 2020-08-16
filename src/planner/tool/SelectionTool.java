@@ -2,6 +2,7 @@ package planner.tool;
 import planner.Core;
 import planner.menu.MenuEdit;
 import simplelibrary.opengl.Renderer2D;
+import simplelibrary.opengl.gui.components.MenuComponent;
 public class SelectionTool extends EditorTool{
     public SelectionTool(MenuEdit editor){
         super(editor);
@@ -57,12 +58,72 @@ public class SelectionTool extends EditorTool{
         Core.applyWhite();
     }
     @Override
+    public void drawCoilGhosts(int layer, double x, double y, double width, double height, int w, int texture){
+        if(leftDragEnd!=null&&leftDragStart!=null){
+            float border = 1/8f;
+            if(layer>=Math.min(leftDragStart[2], leftDragEnd[2])&&layer<=Math.max(leftDragStart[2], leftDragEnd[2])){
+                int minX = Math.min(leftDragStart[0], leftDragEnd[0]);
+                int maxX = Math.max(leftDragStart[0], leftDragEnd[0]);
+                int minY = Math.min(leftDragStart[1], leftDragEnd[1]);
+                int maxY = Math.max(leftDragStart[1], leftDragEnd[1]);
+                Core.applyColor(Core.theme.getSelectionColor(), .5f);
+                Renderer2D.drawRect(x+w*minX, y+w*minY, x+w*(maxX+1), y+w*(maxY+1), 0);
+                Core.applyColor(Core.theme.getSelectionColor());
+                Renderer2D.drawRect(x+w*minX, y+w*minY, x+w*(maxX+1), y+w*(border+minY), 0);//top
+                Renderer2D.drawRect(x+w*minX, y+w*(maxY+1-border), x+w*(maxX+1), y+w*(maxY+1), 0);//bottom
+                Renderer2D.drawRect(x+w*minX, y+w*(minY+border), x+w*(border+minX), y+w*(maxY+1-border), 0);//left
+                Renderer2D.drawRect(x+w*(maxX+1-border), y+w*(minY+border), x+w*(maxX+1), y+w*(maxY+1-border), 0);//right
+            }
+        }
+        if(rightDragEnd!=null&&rightDragStart!=null){
+            float border = 1/8f;
+            if(layer>=Math.min(rightDragStart[2], rightDragEnd[2])&&layer<=Math.max(rightDragStart[2], rightDragEnd[2])){
+                int minX = Math.min(rightDragStart[0], rightDragEnd[0]);
+                int maxX = Math.max(rightDragStart[0], rightDragEnd[0]);
+                int minY = Math.min(rightDragStart[1], rightDragEnd[1]);
+                int maxY = Math.max(rightDragStart[1], rightDragEnd[1]);
+                Core.applyColor(Core.theme.getSelectionColor());
+                Renderer2D.drawRect(x+w*minX, y+w*minY, x+w*(maxX+1), y+w*(border+minY), 0);//top
+                Renderer2D.drawRect(x+w*minX, y+w*(maxY+1-border), x+w*(maxX+1), y+w*(maxY+1), 0);//bottom
+                Renderer2D.drawRect(x+w*minX, y+w*(minY+border), x+w*(border+minX), y+w*(maxY+1-border), 0);//left
+                Renderer2D.drawRect(x+w*(maxX+1-border), y+w*(minY+border), x+w*(maxX+1), y+w*(maxY+1-border), 0);//right
+            }
+        }
+        Core.applyWhite();
+    }
+    @Override
+    public void drawBladeGhosts(double x, double y, double width, double height, int w, int texture){
+        if(leftDragEnd!=null&&leftDragStart!=null){
+            float border = 1/8f;
+            int minZ = Math.min(leftDragStart[2], leftDragEnd[2])-1;
+            int maxZ = Math.max(leftDragStart[2], leftDragEnd[2])-1;
+            Core.applyColor(Core.theme.getSelectionColor(), .5f);
+            Renderer2D.drawRect(x+w*minZ, y, x+w*(maxZ+1), y+w, 0);
+            Core.applyColor(Core.theme.getSelectionColor());
+            Renderer2D.drawRect(x+w*minZ, y, x+w*(border+minZ), y+w, 0);//top
+            Renderer2D.drawRect(x+w*(maxZ+1-border), y, x+w*(maxZ+1), y+w, 0);//bottom
+            Renderer2D.drawRect(x+w*(minZ+border), y, x+w*(maxZ+1-border), y+w*border, 0);//left
+            Renderer2D.drawRect(x+w*(minZ+border), y+w*(1-border), x+w*(maxZ+1-border), y+w, 0);//right
+        }
+        if(rightDragEnd!=null&&rightDragStart!=null){
+            float border = 1/8f;
+            int minZ = Math.min(rightDragStart[2], rightDragEnd[2]);
+            int maxZ = Math.max(rightDragStart[2], rightDragEnd[2]);
+            Core.applyColor(Core.theme.getSelectionColor());
+            Renderer2D.drawRect(x+w*minZ, y, x+w*(border+minZ), y+w, 0);//top
+            Renderer2D.drawRect(x+w*(maxZ+1-border), y, x+w*(maxZ+1), y+w, 0);//bottom
+            Renderer2D.drawRect(x+w*(minZ+border), y, x+w*(maxZ+1-border), y+w*border, 0);//left
+            Renderer2D.drawRect(x+w*(minZ+border), y+w*(1-border), x+w*(maxZ+1-border), y+w, 0);//right
+        }
+        Core.applyWhite();
+    }
+    @Override
     public void mouseReset(int button){
         if(button==0)leftDragStart = leftDragEnd = null;
         if(button==1)rightDragStart = rightDragEnd = null;
     }
     @Override
-    public void mousePressed(int x, int y, int z, int button){
+    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
         if(!Core.isControlPressed()){
             editor.clearSelection();
         }
@@ -80,13 +141,13 @@ public class SelectionTool extends EditorTool{
         if(button==1)rightDragStart = new int[]{x,y,z};
     }
     @Override
-    public void mouseReleased(int x, int y, int z, int button){
+    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
         if(button==0&&leftDragStart!=null)editor.select(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z);
         if(button==1&&rightDragStart!=null)editor.deselect(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z);
         mouseReset(button);
     }
     @Override
-    public void mouseDragged(int x, int y, int z, int button){
+    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
         if(button==0)leftDragEnd = new int[]{x,y,z};
         if(button==1)rightDragEnd = new int[]{x,y,z};
     }

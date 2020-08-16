@@ -3,12 +3,12 @@ import java.util.ArrayList;
 import multiblock.Multiblock;
 public class PartialConfiguration extends Configuration{
     public static PartialConfiguration generate(Configuration configuration, ArrayList<Multiblock> multiblocks){
-        PartialConfiguration partial = new PartialConfiguration(configuration.name, configuration.version);
+        PartialConfiguration partial = new PartialConfiguration(configuration.name, configuration.version, configuration.underhaulVersion);
         configuration.applyPartial(partial, multiblocks);
         return partial;
     }
-    public PartialConfiguration(String name, String version){
-        super(name, version);
+    public PartialConfiguration(String name, String version, String underhaulVersion){
+        super(name, version, underhaulVersion);
     }
     @Override
     public boolean isPartial(){

@@ -3,8 +3,14 @@ import java.util.ArrayList;
 import multiblock.Multiblock;
 public abstract class Priority<T extends Multiblock>{
     public final String name;
-    public Priority(String name){
+    private final boolean core;
+    /**
+     * @param name The priority name
+     * @param core if this priority is to be used when calculating the core
+     */
+    public Priority(String name, boolean core){
         this.name = name;
+        this.core = core;
     }
     @Override
     public String toString(){
@@ -17,6 +23,9 @@ public abstract class Priority<T extends Multiblock>{
         return doCompare(main, other);
     }
     protected abstract double doCompare(T main, T other);
+    public boolean isCore(){
+        return core;
+    }
     public static class Preset{
         public final String name;
         private final ArrayList<Priority> prior = new ArrayList<>();

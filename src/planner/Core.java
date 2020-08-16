@@ -28,6 +28,7 @@ import multiblock.configuration.Configuration;
 import multiblock.Multiblock;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.overhaul.turbine.OverhaulTurbine;
 import planner.menu.MenuDiscord;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
@@ -62,7 +63,7 @@ public class Core extends Renderer2D{
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
-    public static Configuration configuration = new Configuration(null, null);
+    public static Configuration configuration = new Configuration(null, null, null);
     public static Theme theme = Theme.themes.get(0);
     static{
         Configuration.configurations.get(0).impose(configuration);
@@ -74,6 +75,7 @@ public class Core extends Renderer2D{
         multiblockTypes.add(new UnderhaulSFR());
         multiblockTypes.add(new OverhaulSFR());
         multiblockTypes.add(new OverhaulMSR());
+        multiblockTypes.add(new OverhaulTurbine());
         resetMetadata();
     }
     public static void resetMetadata(){

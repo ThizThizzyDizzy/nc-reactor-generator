@@ -191,10 +191,13 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     else multiblock.action(new MSRShieldAction(b));
                 }
             }else{
-                editor.getSelectedTool().mousePressed(blockX, layer, blockZ, button);
+                if(button==2){
+                    editor.setSelectedBlock(multiblock.getBlock(blockX, layer, blockZ));
+                }
+                editor.getSelectedTool().mousePressed(this, blockX, layer, blockZ, button);
             }
         }else{
-            editor.getSelectedTool().mouseReleased(blockX, layer, blockZ, button);
+            editor.getSelectedTool().mouseReleased(this, blockX, layer, blockZ, button);
         }
     }
     @Override
@@ -207,7 +210,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
         if(button!=0&&button!=1)return;
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
-        editor.getSelectedTool().mouseDragged(blockX, layer, blockZ, button);
+        editor.getSelectedTool().mouseDragged(this, blockX, layer, blockZ, button);
     }
     @Override
     public boolean mouseWheelChange(int wheelChange){

@@ -16,7 +16,7 @@ public class SymmetryAction extends Action<Multiblock>{
         for(int x = 0; x<multiblock.getX(); x++){
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
-                    was[x][y][z] = multiblock.blocks[x][y][z];
+                    was[x][y][z] = multiblock.getBlock(x, y, z);
                 }
             }
         }
@@ -27,7 +27,7 @@ public class SymmetryAction extends Action<Multiblock>{
         for(int x = 0; x<multiblock.getX(); x++){
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
-                    multiblock.blocks[x][y][z] = was[x][y][z];
+                    multiblock.setBlockExact(x, y, z, was[x][y][z]);
                 }
             }
         }

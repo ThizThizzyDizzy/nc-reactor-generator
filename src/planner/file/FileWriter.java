@@ -6,10 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.PartCount;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.opengl.GL11;
@@ -255,16 +257,22 @@ public class FileWriter{
                     }
                     int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image
                     final int blockSize = blSiz;
+                    ArrayList<PartCount> parts = multi.getPartsList();
                     String s = multi.getSaveTooltip();
                     String[] strs = s.split("\n");
-                    int totalTextHeight = textHeight*strs.length;
+                    int totalTextHeight = Math.max(textHeight*strs.length,textHeight*parts.size());
                     double textWidth = 0;
                     for(int i = 0; i<strs.length; i++){
                         String str = strs[i];
                         textWidth = Math.max(textWidth, FontManager.getLengthForStringWithHeight(str, textHeight));
                     }
+                    double partsWidth = 0;
+                    for(PartCount c : parts){
+                        partsWidth = Math.max(partsWidth, textHeight+FontManager.getLengthForStringWithHeight(textHeight+c.count+"x "+c.name, textHeight));
+                    }
                     final double tW = textWidth+borderSize;
-                    int width = (int) Math.max(textWidth+totalTextHeight,multi.getX()*blockSize+borderSize);
+                    final double pW = partsWidth+borderSize;
+                    int width = (int) Math.max(textWidth+partsWidth+totalTextHeight,multi.getX()*blockSize+borderSize);
                     int multisPerRow = Math.max(1, (int)(width/(multi.getX()*blockSize+borderSize)));
                     int rowCount = (multi.getY()+multisPerRow-1)/multisPerRow;
                     int height = totalTextHeight+rowCount*(multi.getZ()*blockSize+borderSize)+borderSize/2;
@@ -284,7 +292,16 @@ public class FileWriter{
                                 String str = strs[i];
                                 Renderer2D.drawText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str);
                             }
+                            for(int i = 0; i<parts.size(); i++){
+                                PartCount c = parts.get(i);
+                                Renderer2D.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
+                            }
                             Core.applyWhite();
+                            for(int i = 0; i<parts.size(); i++){
+                                PartCount c = parts.get(i);
+                                int tex = c.getTexture();
+                                if(tex!=-1)Renderer2D.drawRect(tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2, tex);
+                            }
 //                            GL11.glEnable(GL11.GL_CULL_FACE);
                             GL11.glPushMatrix();
                             GL11.glTranslated(buff.width-totalTextHeight/2, totalTextHeight/2, -1);
@@ -348,7 +365,7 @@ public class FileWriter{
                 header.save(stream);
                 ncpf.configuration.save(stream);
                 for(Multiblock m : ncpf.multiblocks){
-                    m.save(ncpf.configuration, stream);
+                    m.save(ncpf, ncpf.configuration, stream);
                 }
                 try{
                     stream.close();

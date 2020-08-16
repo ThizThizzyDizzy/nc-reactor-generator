@@ -1,6 +1,6 @@
 package discord;
 import java.util.ArrayList;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageChannel;
 public abstract class Command{
     public final String command;
     public final ArrayList<String> alternates = new ArrayList<>();
@@ -13,8 +13,8 @@ public abstract class Command{
     public boolean isSecret(){
         return false;
     }
-    public boolean canRun(GuildMessageReceivedEvent event){
+    public boolean canRun(MessageChannel channel){
         return true;
     }
-    public abstract void run(GuildMessageReceivedEvent event, String args, boolean debug);
+    public abstract void run(net.dv8tion.jda.api.entities.User user, MessageChannel channel, String args, boolean debug);
 }

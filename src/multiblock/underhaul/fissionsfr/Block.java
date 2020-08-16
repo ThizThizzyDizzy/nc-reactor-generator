@@ -148,7 +148,7 @@ public class Block extends multiblock.Block{
         if(isModerator())tip+="\nModerator";
         if(isCooler()){
             tip+="\nCooler"
-                    + "\nCooling: "+getCooling()+"H/t";
+                + "\nCooling: "+getCooling()+"H/t";
             if(template.active!=null)tip+="\nActive ("+template.active+")";
         }
         for(PlacementRule rule : template.rules){

@@ -60,7 +60,11 @@ public class MenuPlacementRuleConfiguration extends Menu{
                 min.y = blockType.y+blockType.height;
                 max.y = min.y+min.height;
                 break;
-            case NO_PANCAKES:
+            case VERTEX:
+                block.y = type.height;
+                break;
+            case VERTEX_GROUP:
+                blockType.y = type.height;
                 break;
             case AND:
             case OR:

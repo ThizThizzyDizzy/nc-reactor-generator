@@ -1,13 +1,13 @@
 package discord.play;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageChannel;
 public class PlayBot{
     public static Game currentGame = null;
-    public static void play(GuildMessageReceivedEvent event, Game game){
+    public static void play(MessageChannel channel, Game game){
         if(currentGame!=null){
-            event.getChannel().sendMessage("A game of "+currentGame.getName()+" is already in progress!").queue();
+            channel.sendMessage("A game of "+currentGame.getName()+" is already in progress!").queue();
             return;
         }
         currentGame = game;
-        game.startGame(event);
+        game.startGame(channel);
     }
 }

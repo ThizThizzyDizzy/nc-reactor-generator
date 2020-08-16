@@ -1,13 +1,14 @@
 package discord.play.smivilization;
 import java.awt.Color;
+import java.util.UUID;
 import planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public abstract class HutThingColorable extends HutThing{
     private Color color;
-    public HutThingColorable(String name, String textureName, long price, Color defaultColor){
-        super(name, textureName, price);
+    public HutThingColorable(UUID uuid, Hut hut, String name, String textureName, long price, Color defaultColor){
+        super(uuid, hut, name, textureName, price);
         this.color = defaultColor;
     }
     public HutThingColorable setColor(Color color){

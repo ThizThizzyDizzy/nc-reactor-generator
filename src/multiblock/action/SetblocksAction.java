@@ -14,14 +14,14 @@ public class SetblocksAction extends Action<Multiblock>{
     @Override
     public void doApply(Multiblock multiblock){
         for(int[] loc : locations){
-            was.put(loc, multiblock.blocks[loc[0]][loc[1]][loc[2]]);
-            multiblock.blocks[loc[0]][loc[1]][loc[2]] = block==null?null:block.copy(loc[0], loc[1], loc[2]);
+            was.put(loc, multiblock.getBlock(loc[0], loc[1], loc[2]));
+            multiblock.setBlock(loc[0], loc[1], loc[2], block);
         }
     }
     @Override
     public void doUndo(Multiblock multiblock){
         for(int[] loc : was.keySet()){
-            multiblock.blocks[loc[0]][loc[1]][loc[2]] = was.get(loc);
+            multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
         }
     }
     public void add(int x, int y, int z){

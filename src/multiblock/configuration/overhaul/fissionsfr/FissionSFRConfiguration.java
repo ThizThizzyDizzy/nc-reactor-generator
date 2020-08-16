@@ -1,10 +1,4 @@
 package multiblock.configuration.overhaul.fissionsfr;
-import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
-import multiblock.configuration.overhaul.fissionsfr.Block;
-import multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
-import multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe;
-import multiblock.configuration.overhaul.fissionsfr.Fuel;
-import multiblock.configuration.overhaul.fissionsfr.Source;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;

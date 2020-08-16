@@ -62,4 +62,8 @@ public class StandardGeneratorSettings implements Settings{
     public float getChangeChance(){
         return changeChancePercent/100;
     }
+    @Override
+    public ArrayList<Range<Block>> getAllowedBlocks(){
+        return allowedBlocks;
+    }
 }

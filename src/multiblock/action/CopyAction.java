@@ -48,7 +48,7 @@ public class CopyAction extends Action<Multiblock>{
     @Override
     public void doUndo(Multiblock multiblock){
         for(int[] loc : was.keySet()){
-            multiblock.blocks[loc[0]][loc[1]][loc[2]] = was.get(loc);
+            multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
         }
         editor.selection.clear();
         editor.selection.addAll(selection);

@@ -14,6 +14,7 @@ import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.Configuration;
+import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.Queue;
 import simplelibrary.Stack;
@@ -26,6 +27,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public Queue<Action> queue = new Queue<>();
     public HashMap<String, String> metadata = new HashMap<>();
     public Boolean showDetails = null;//details override
+    private Configuration configuration;
     {
         resetMetadata();
         lastChangeTime = System.nanoTime();
@@ -35,7 +37,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         metadata.put("Name", "");
         metadata.put("Author", "");
     }
-    public Block[][][] blocks;
+    protected Block[][][] blocks;
     public Multiblock(int x, int y, int z){
         blocks = new Block[x][y][z];
     }
@@ -44,7 +46,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return (T) blocks[x][y][z];
     }
     public abstract String getDefinitionName();
-    public abstract Multiblock<T> newInstance();
+    public abstract Multiblock<T> newInstance(Configuration c);
+    public final Multiblock<T> newInstance(){
+        return newInstance(Core.configuration);
+    }
     public abstract Multiblock<T> newInstance(int x, int y, int z);
     public abstract void getAvailableBlocks(List<T> blocks);
     public final List<T> getAvailableBlocks(){
@@ -61,10 +66,17 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public int getZ(){
         return blocks[0][0].length;
     }
-    public abstract int getMinSize();
-    public abstract int getMaxSize();
+    public int getDisplayZ(){
+        return getZ();
+    }
+    public abstract int getMinX();
+    public abstract int getMinY();
+    public abstract int getMinZ();
+    public abstract int getMaxX();
+    public abstract int getMaxY();
+    public abstract int getMaxZ();
     public void expandRight(int i){
-        if(getX()+i>getMaxSize())return;
+        if(getX()+i>getMaxX())return;
         Block[][][] blks = new Block[getX()+i][getY()][getZ()];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -79,7 +91,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void expandLeft(int i){
-        if(getX()+i>getMaxSize())return;
+        if(getX()+i>getMaxX())return;
         Block[][][] blks = new Block[getX()+i][getY()][getZ()];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -94,7 +106,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void expandUp(int i){
-        if(getY()+i>getMaxSize())return;
+        if(getY()+i>getMaxY())return;
         Block[][][] blks = new Block[getX()][getY()+i][getZ()];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -109,7 +121,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void exandDown(int i){
-        if(getY()+i>getMaxSize())return;
+        if(getY()+i>getMaxY())return;
         Block[][][] blks = new Block[getX()][getY()+i][getZ()];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -124,7 +136,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void expandToward(int i){
-        if(getZ()+i>getMaxSize())return;
+        if(getZ()+i>getMaxZ())return;
         Block[][][] blks = new Block[getX()][getY()][getZ()+i];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -139,7 +151,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void expandAway(int i){
-        if(getZ()+i>getMaxSize())return;
+        if(getZ()+i>getMaxZ())return;
         Block[][][] blks = new Block[getX()][getY()][getZ()+i];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -154,7 +166,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void deleteX(int X){
-        if(getX()<=getMinSize())return;
+        if(getX()<=getMinX())return;
         Block[][][] blks = new Block[getX()-1][getY()][getZ()];
         for(int x = 0; x<blks.length; x++){
             for(int y = 0; y<blks[x].length; y++){
@@ -169,7 +181,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void deleteY(int Y){
-        if(getY()<=getMinSize())return;
+        if(getY()<=getMinY())return;
         Block[][][] blks = new Block[getX()][getY()-1][getZ()];
         for(int x = 0; x<blks.length; x++){
             for(int y = 0; y<blks[x].length; y++){
@@ -184,7 +196,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void deleteZ(int Z){
-        if(getZ()<=getMinSize())return;
+        if(getZ()<=getMinZ())return;
         Block[][][] blks = new Block[getX()][getY()][getZ()-1];
         for(int x = 0; x<blks.length; x++){
             for(int y = 0; y<blks[x].length; y++){
@@ -199,7 +211,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void insertX(int X){
-        if(getX()>=getMaxSize())return;
+        if(getX()>=getMaxX())return;
         Block[][][] blks = new Block[getX()+1][getY()][getZ()];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -214,7 +226,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void insertY(int Y){
-        if(getY()>=getMaxSize())return;
+        if(getY()>=getMaxY())return;
         Block[][][] blks = new Block[getX()][getY()+1][getZ()];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -229,7 +241,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         future.clear();
     }
     public void insertZ(int Z){
-        if(getZ()>=getMaxSize())return;
+        if(getZ()>=getMaxZ())return;
         Block[][][] blks = new Block[getX()][getY()][getZ()+1];
         for(int x = 0; x<blocks.length; x++){
             for(int y = 0; y<blocks[x].length; y++){
@@ -251,6 +263,25 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public abstract void calculate(List<T> blocks);
     private ArrayList<T> lastBlocks = null;
     private boolean forceRescan = false;
+    public ArrayList<T> getAbsoluteBlocks(){
+        ArrayList<T> absolute = new ArrayList<>();
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    T b = getBlock(x, y, z);
+                    if(b!=null){
+                        T t = (T)b.copy(x, y, z);
+                        t.x = x;
+                        t.y = y;
+                        t.z = z;
+                        //because blades
+                        absolute.add(t);
+                    }
+                }
+            }
+        }
+        return absolute;
+    }
     public ArrayList<T> getBlocks(){
         return getBlocks(false);
     }
@@ -270,7 +301,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     protected abstract T newCasing(int x, int y, int z);
     public abstract String getTooltip();
     public void draw3D(){
-        ArrayList<T> blocks = getBlocks();
+        ArrayList<T> blocks = getAbsoluteBlocks();
         Collections.sort(blocks, new Comparator<T>() {
             @Override
             public int compare(T o1, T o2){
@@ -284,13 +315,13 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
                 ImageStash.instance.bindTexture(Core.getTexture(block.getBaseTexture()));
                 GL11.glBegin(GL11.GL_QUADS);
             }
-            drawCube(block);
+            drawCube(block, false);
             last = block;
         }
         if(!blocks.isEmpty())GL11.glEnd();
     }
     public void draw3DInOrder(){
-        ArrayList<T> blocks = getBlocks();
+        ArrayList<T> blocks = getAbsoluteBlocks();
         Collections.sort(blocks, new Comparator<T>() {
             @Override
             public int compare(T o1, T o2){
@@ -307,17 +338,17 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
                 ImageStash.instance.bindTexture(Core.getTexture(block.getBaseTexture()));
                 GL11.glBegin(GL11.GL_QUADS);
             }
-            drawCubeInOrder(block);
+            drawCube(block, true);
             last = block;
         }
         if(!blocks.isEmpty())GL11.glEnd();
     }
-    private void drawCube(T block){
+    protected void drawCube(T block, boolean inOrder){
         int x = block.x;
         int y = block.y;
         int z = block.z;
         //xy +z
-        if(z==getZ()-1||getBlock(x, y, z+1)==null){
+        if(!inOrder&&(z==getZ()-1||getBlock(x, y, z+1)==null)){
             GL11.glTexCoord2d(0, 0);
             GL11.glVertex3d(x, y, z+1);
             GL11.glTexCoord2d(0, 1);
@@ -339,7 +370,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             GL11.glVertex3d(x+1, y, z);
         }
         //xz +y
-        if(y==getY()-1||getBlock(x, y+1, z)==null){
+        if(!inOrder&&(y==getY()-1||getBlock(x, y+1, z)==null)){
             GL11.glTexCoord2d(0, 0);
             GL11.glVertex3d(x, y+1, z);
             GL11.glTexCoord2d(0, 1);
@@ -372,7 +403,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             GL11.glVertex3d(x+1, y, z+1);
         }
         //yz -x
-        if(x==0||getBlock(x-1, y, z)==null){
+        if(!inOrder&&(x==0||getBlock(x-1, y, z)==null)){
             GL11.glTexCoord2d(0, 0);
             GL11.glVertex3d(x, y, z);
             GL11.glTexCoord2d(0, 1);
@@ -383,78 +414,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             GL11.glVertex3d(x, y+1, z);
         }
     }
-    private void drawCubeInOrder(T block){
-        int x = block.x;
-        int y = block.y;
-        int z = block.z;
-//        //xy +z
-//        if(z==getZ()-1||getBlock(x, y, z+1)==null){
-//            GL11.glTexCoord2d(0, 0);
-//            GL11.glVertex3d(x, y, z+1);
-//            GL11.glTexCoord2d(0, 1);
-//            GL11.glVertex3d(x+1, y, z+1);
-//            GL11.glTexCoord2d(1, 1);
-//            GL11.glVertex3d(x+1, y+1, z+1);
-//            GL11.glTexCoord2d(1, 0);
-//            GL11.glVertex3d(x, y+1, z+1);
-//        }
-        //xy -z
-        if(z==0||getBlock(x,y,z-1)==null){
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x, y, z);
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x, y+1, z);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x+1, y+1, z);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x+1, y, z);
-        }
-//        //xz +y
-//        if(y==getY()-1||getBlock(x, y+1, z)==null){
-//            GL11.glTexCoord2d(0, 0);
-//            GL11.glVertex3d(x, y+1, z);
-//            GL11.glTexCoord2d(0, 1);
-//            GL11.glVertex3d(x, y+1, z+1);
-//            GL11.glTexCoord2d(1, 1);
-//            GL11.glVertex3d(x+1, y+1, z+1);
-//            GL11.glTexCoord2d(1, 0);
-//            GL11.glVertex3d(x+1, y+1, z);
-//        }
-        //xz -y
-        if(y==0||getBlock(x, y-1, z)==null){
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x, y, z);
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x+1, y, z);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x+1, y, z+1);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x, y, z+1);
-        }
-        //yz +x
-        if(x==getX()-1||getBlock(x+1, y, z)==null){
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x+1, y, z);
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x+1, y+1, z);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x+1, y+1, z+1);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x+1, y, z+1);
-        }
-//        //yz -x
-//        if(x==0||getBlock(x-1, y, z)==null){
-//            GL11.glTexCoord2d(0, 0);
-//            GL11.glVertex3d(x, y, z);
-//            GL11.glTexCoord2d(0, 1);
-//            GL11.glVertex3d(x, y, z+1);
-//            GL11.glTexCoord2d(1, 1);
-//            GL11.glVertex3d(x, y+1, z+1);
-//            GL11.glTexCoord2d(1, 0);
-//            GL11.glVertex3d(x, y+1, z);
-//        }
-    }
-    public final void save(Configuration configuration, OutputStream stream){
+    public final void save(NCPFFile ncpf, Configuration configuration, OutputStream stream){
         Config config = Config.newConfig();
         config.set("id", getMultiblockID());
         Config meta = Config.newConfig();
@@ -466,10 +426,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         if(meta.properties().length>0){
             config.set("metadata", meta);
         }
-        save(configuration, config);
+        save(ncpf, configuration, config);
         config.save(stream);
     }
-    protected abstract void save(Configuration configuration, Config config);
+    protected void save(NCPFFile ncpf, Configuration configuration, Config config){}
     public abstract int getMultiblockID();
     public abstract void convertTo(Configuration to);
     /**
@@ -574,8 +534,11 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public void setBlock(int x, int y, int z, Block block){
         blocks[x][y][z] = block==null?null:block.copy(x, y, z);
     }
+    public void setBlockExact(int x, int y, int z, Block exact){
+        blocks[x][y][z] = exact;
+    }
     public String getSaveTooltip(){
-        String s = Core.configuration.name+" ("+Core.configuration.version+")\n";
+        String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.underhaulVersion:Core.configuration.version)+")\n";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";
@@ -591,7 +554,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return extra.isEmpty()?(s+getTooltip()):(s+getExtraSaveTooltip()+"\n"+getTooltip());
     }
     public String getBotTooltip(){
-        String s = Core.configuration.name+" ("+Core.configuration.version+")\n";
+        String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.underhaulVersion:Core.configuration.version)+")\n";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";
@@ -624,7 +587,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         getGenerationPriorityPresets(priorities, presets);
         return presets;
     }
-    public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){};
+    public abstract void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets);
     public ArrayList<Symmetry> getSymmetries(){
         ArrayList<Symmetry> symmetries = new ArrayList<>();
         getSymmetries(symmetries);
@@ -676,6 +639,15 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         return false;
     }
+    public boolean isCoreBetterThan(Multiblock other, ArrayList<Priority> priorities){
+        for(Priority p : priorities){
+            if(!p.isCore())continue;
+            double result = p.compare(this, other);
+            if(result>0)return true;
+            if(result<0)return false;
+        }
+        return false;
+    }
     public abstract Multiblock<T> blankCopy();
     public abstract Multiblock<T> copy();
     public long nanosSinceLastChange(){
@@ -685,6 +657,24 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return nanosSinceLastChange()/1_000_000;
     }
     public int count(Object o){
+        if(o==null){
+            int total = 0;
+            for(int x = 0; x<getX(); x++){
+                for(int y = 0; y<getY(); y++){
+                    for(int z = 0; z<getZ(); z++){
+                        Block block = getBlock(x, y, z);
+                        for(Action a : queue){
+                            if(a instanceof SetblockAction){
+                                SetblockAction set = (SetblockAction)a;
+                                if(set.x==x&&set.y==y&&set.z==z)block = set.block;
+                            }
+                        }
+                        if(block==null)total++;
+                    }
+                }
+            }
+            return total;
+        }
         if(o instanceof Block){
             return getBlocks((T)o);
         }
@@ -717,5 +707,45 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         if(other.getY()!=getY())return false;
         if(other.getZ()!=getZ())return false;
         return isCompatible(other);
+    }
+    public void setConfiguration(Configuration configuration){
+        this.configuration = configuration;
+    }
+    protected Configuration getConfiguration(){
+        if(configuration==null)return Core.configuration;
+        return configuration;
+    }
+    public final HashMap<String, Double> getFluidOutputs(){
+        HashMap<String, Double> outputs = new HashMap<>();
+        getFluidOutputs(outputs);
+        return outputs;
+    }
+    protected abstract void getFluidOutputs(HashMap<String, Double> outputs);
+    public final ArrayList<PartCount> getPartsList(){
+        ArrayList<PartCount> parts = new ArrayList<>();
+        getMainParts(parts);
+        getExtraParts(parts);
+        Collections.sort(parts);
+        return parts;
+    }
+    protected void getMainParts(ArrayList<PartCount> parts){
+        HashMap<T, Integer> blocks = new HashMap<>();
+        FOR:for(T block : getBlocks(true)){
+            for(T t : blocks.keySet()){
+                if(t.isEqual(block)){
+                    blocks.put(t, blocks.get(t)+1);
+                    continue FOR;
+                }
+            }
+            blocks.put(block, 1);
+        }
+        for(T block : blocks.keySet()){
+            parts.add(new PartCount(block.getTexture(), block.getName(), blocks.get(block)));
+        }
+    }
+    protected abstract void getExtraParts(ArrayList<PartCount> parts);
+    public boolean isValid(Block block, int x, int y, int z){
+        Block b = block.newInstance(x, y, z);
+        return b.hasRules()&&b.calculateRules(this);
     }
 }

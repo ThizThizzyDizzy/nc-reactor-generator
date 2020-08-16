@@ -1,4 +1,5 @@
 package generator;
+import generator.challenger.Challenger;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
@@ -13,8 +14,9 @@ public abstract class MultiblockGenerator{
     public static final ArrayList<MultiblockGenerator> generators = new ArrayList<>();
     static{
         generators.add(new StandardGenerator(null));
+        Challenger.init();
     }
-    ArrayList<Priority> priorities;
+    protected ArrayList<Priority> priorities;
     private Object threadronyzer = new Object();
     public final Multiblock multiblock;
     private ArrayList<UUID> threads = new ArrayList<>();

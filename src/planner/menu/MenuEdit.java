@@ -30,11 +30,17 @@ import multiblock.action.SelectAction;
 import multiblock.action.SetCoolantRecipeAction;
 import multiblock.action.SetFuelAction;
 import multiblock.action.SetSelectionAction;
+import multiblock.action.SetTurbineRecipeAction;
 import multiblock.action.SetblockAction;
 import multiblock.action.SetblocksAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import planner.menu.component.MenuComponentEditorGrid;
+import planner.menu.component.MenuComponentTurbineBladeEditorGrid;
+import planner.menu.component.MenuComponentTurbineCoilEditorGrid;
+import planner.menu.component.MenuComponentTurbineRecipe;
 import planner.tool.LineTool;
 import planner.tool.MoveTool;
 import planner.tool.PencilTool;
@@ -103,6 +109,12 @@ public class MenuEdit extends Menu{
             }
             irradiatorRecipe.setSelectedIndex(0);
         }
+        if(multiblock instanceof OverhaulTurbine){
+            add(underFuelOrCoolantRecipe);
+            for(multiblock.configuration.overhaul.turbine.Recipe recipe : Core.configuration.overhaul.turbine.recipes){
+                underFuelOrCoolantRecipe.add(new MenuComponentTurbineRecipe(recipe));
+            }
+        }
         if(multiblock instanceof OverhaulMSR){
             add(overFuel);
             for(multiblock.configuration.overhaul.fissionmsr.Fuel fuel : Core.configuration.overhaul.fissionMSR.fuels){
@@ -161,14 +173,31 @@ public class MenuEdit extends Menu{
         if(multiblock instanceof OverhaulSFR){
             underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.coolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
         }
-        multisPerRow = Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)));
+        if(multiblock instanceof OverhaulTurbine){
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.turbine.recipes.indexOf(((OverhaulTurbine)multiblock).recipe));
+        }
         multibwauk.components.clear();
-        for(int y = 0; y<multiblock.getY(); y++){
-            int column = y%multisPerRow;
-            int row = y/multisPerRow;
-            int layerWidth = multiblock.getX()*CELL_SIZE+LAYER_GAP;
-            int layerHeight = multiblock.getZ()*CELL_SIZE+LAYER_GAP;
-            multibwauk.add(new planner.menu.component.MenuComponentEditorGrid(column*layerWidth+LAYER_GAP/2, row*layerHeight+LAYER_GAP/2, CELL_SIZE, this, multiblock, y));
+        multisPerRow = Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)));
+        if(multiblock instanceof OverhaulTurbine){
+            int nextY = 0;
+            for(int z = 0; z<2; z++){
+                int column = z%multisPerRow;
+                int row = z/multisPerRow;
+                int layerWidth = multiblock.getX()*CELL_SIZE+LAYER_GAP;
+                int layerHeight = multiblock.getY()*CELL_SIZE+LAYER_GAP;
+                nextY = (row+1)*layerHeight+LAYER_GAP/2;
+                if(z==1)z = multiblock.getZ()-1;//the coils
+                multibwauk.add(new MenuComponentTurbineCoilEditorGrid(column*layerWidth+LAYER_GAP/2, row*layerHeight+LAYER_GAP/2, CELL_SIZE, this, (OverhaulTurbine)multiblock, z));
+            }
+            multibwauk.add(new MenuComponentTurbineBladeEditorGrid(LAYER_GAP/2, nextY, CELL_SIZE, this, (OverhaulTurbine)multiblock));
+        }else{
+            for(int y = 0; y<multiblock.getY(); y++){
+                int column = y%multisPerRow;
+                int row = y/multisPerRow;
+                int layerWidth = multiblock.getX()*CELL_SIZE+LAYER_GAP;
+                int layerHeight = multiblock.getZ()*CELL_SIZE+LAYER_GAP;
+                multibwauk.add(new MenuComponentEditorGrid(column*layerWidth+LAYER_GAP/2, row*layerHeight+LAYER_GAP/2, CELL_SIZE, this, multiblock, y));
+            }
         }
         multiblock.recalculate();
     }
@@ -208,7 +237,7 @@ public class MenuEdit extends Menu{
         generate.x = editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
         generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
         generate.y = Display.getHeight()-generate.height;
-        tools.height = parts.height = (parts.components.size()+5)/partsWide*partSize;
+        tools.height = parts.height = Math.max((parts.components.size()+5)/partsWide,editorTools.size())*partSize;
         resize.width = 320;
         generate.width = editMetadata.width = multibwauk.width = Display.getWidth()-parts.x-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
@@ -266,6 +295,14 @@ public class MenuEdit extends Menu{
                 }
             }
         }
+        if(multiblock instanceof OverhaulTurbine){
+            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
+                multiblock.configuration.overhaul.turbine.Recipe recipe = Core.configuration.overhaul.turbine.recipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                if(((OverhaulTurbine)multiblock).recipe!=recipe){
+                    multiblock.action(new SetTurbineRecipeAction(this, recipe));
+                }
+            }
+        }
         multibwauk.height = Display.getHeight()-multibwauk.y-generate.height;
         textBox.y = parts.y+parts.height;
         textBox.height = Display.getHeight()-textBox.y;
@@ -278,6 +315,13 @@ public class MenuEdit extends Menu{
     public Block getSelectedBlock(){
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
+    }
+    public void setSelectedBlock(Block block){
+        if(block==null)return;
+        for(int i = 0; i<parts.components.size(); i++){
+            MenuComponentEditorListBlock comp = (MenuComponentEditorListBlock)parts.components.get(i);
+            if(comp.block.isEqual(block))parts.setSelectedIndex(i);
+        }
     }
     public EditorTool getSelectedTool(){
         if(tools.getSelectedIndex()==-1)return null;
@@ -406,8 +450,7 @@ public class MenuEdit extends Menu{
         multiblock.action(set);
     }
     public boolean isValid(Block selectedBlock, int x, int layer, int z){
-        Block b = selectedBlock.newInstance(x, layer, z);
-        return b.hasRules()&&b.calculateRules(multiblock);
+        return multiblock.isValid(selectedBlock, x, layer, z);
     }
     public void select(int x1, int y1, int z1, int x2, int y2, int z2){
         if(!Core.isControlPressed()&&x1==x2&&y1==y2&&z1==z2){

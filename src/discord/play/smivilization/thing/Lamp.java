@@ -1,17 +1,19 @@
 package discord.play.smivilization.thing;
+import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
 import java.awt.Color;
+import java.util.UUID;
 import planner.Core;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class Lamp extends HutThing{
     private boolean on = true;
-    public Lamp(){
-        super("Lamp", "lamp", 18);
+    public Lamp(UUID uuid, Hut hut){
+        super(uuid, hut, "Lamp", "lamp", 18);
     }
     @Override
-    public HutThing newInstance(){
-        return new Lamp();
+    public HutThing newInstance(UUID uuid, Hut hut){
+        return new Lamp(uuid, hut);
     }
     @Override
     public void render(int width, int height){

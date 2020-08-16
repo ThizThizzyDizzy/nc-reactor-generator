@@ -25,6 +25,7 @@ import planner.file.NCPFFile;
 import multiblock.Multiblock;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.overhaul.turbine.OverhaulTurbine;
 import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
@@ -73,6 +74,7 @@ public class MenuMain extends Menu{
     });
     private MenuComponentMinimalistButton delete = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setTextColor(() -> {return Core.theme.getRed();}));
     private MenuComponentMinimalistButton convertOverhaulMSFR = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Convert SFR <> MSR", true, true).setTextColor(() -> {return Core.theme.getRGB(1, .5f, 0);}));
+    private MenuComponentMinimalistButton setInputs = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Set Inputs", true, true).setTextColor(() -> {return Core.theme.getRGB(1, 1, 0);}));
     private boolean forceMetaUpdate = true;
     private MenuComponent metadataPanel = add(new MenuComponent(0, 0, 0, 0){
         MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
@@ -153,6 +155,7 @@ public class MenuMain extends Menu{
     private int metadatingScale = 0;
     private final int metadatingTime = 4;
     private Queue<PendingWrite> pendingWrites = new Queue<>();
+    public OverhaulTurbine settingInputs = null;
     public MenuMain(GUI gui){
         super(gui, null);
         for(Multiblock m : Core.multiblockTypes){
@@ -197,7 +200,7 @@ public class MenuMain extends Menu{
                             header.save(stream);
                             ncpf.configuration.save(stream);
                             for(Multiblock m : ncpf.multiblocks){
-                                m.save(ncpf.configuration, stream);
+                                m.save(ncpf, ncpf.configuration, stream);
                             }
                         }catch(IOException ex){
                             JOptionPane.showMessageDialog(null, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
@@ -307,7 +310,13 @@ public class MenuMain extends Menu{
             gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this), MenuTransition.SlideTransition.slideFrom(0, -1), 5));
         });
         delete.addActionListener((e) -> {
-            Core.multiblocks.remove(multiblocks.getSelectedIndex());
+            Multiblock multiblock = Core.multiblocks.get(multiblocks.getSelectedIndex());
+            for(Multiblock m : Core.multiblocks){
+                if(m instanceof OverhaulTurbine){
+                    ((OverhaulTurbine)m).inputs.remove(multiblock);
+                }
+            }
+            Core.multiblocks.remove(multiblock);
             onGUIOpened();
         });
         convertOverhaulMSFR.addActionListener((e) -> {
@@ -320,6 +329,15 @@ public class MenuMain extends Menu{
                 Core.multiblocks.set(Core.multiblocks.indexOf(selected), sfr);
             }
             onGUIOpened();
+        });
+        setInputs.addActionListener((e) -> {
+            if(settingInputs==null){
+                settingInputs = (OverhaulTurbine)getSelectedMultiblock();
+                setInputs.label = "Finish Setting Inputs";
+            }else{
+                settingInputs = null;
+                setInputs.label = "Set Inputs";
+            }
         });
         multiblockCancel.addActionListener((e) -> {
             adding = false;
@@ -344,10 +362,11 @@ public class MenuMain extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
+        if(settingInputs!=null)multiblocks.setSelectedIndex(Core.multiblocks.indexOf(settingInputs));
         if(!pendingWrites.isEmpty()){
             pendingWrites.dequeue().write();
         }
-        convertOverhaulMSFR.x = editMetadata.x = Display.getWidth()/3;
+        convertOverhaulMSFR.x = setInputs.x = editMetadata.x = Display.getWidth()/3;
         importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = Display.getWidth()/12;
         exportMultiblock.x = importFile.width;
         saveFile.x = exportMultiblock.x+exportMultiblock.width;
@@ -365,11 +384,11 @@ public class MenuMain extends Menu{
         addMultiblock.x = Display.getWidth()/3-Display.getHeight()/16;
         addMultiblock.y = Display.getHeight()/16;
         addMultiblock.width = addMultiblock.height = Display.getHeight()/16;
-        convertOverhaulMSFR.height = delete.height = addMultiblock.height;
+        convertOverhaulMSFR.height = setInputs.height = delete.height = addMultiblock.height;
         delete.width = (Display.getWidth()-multiblocks.width)*.8;
-        convertOverhaulMSFR.width = editMetadata.width+settings.width;
+        convertOverhaulMSFR.width = setInputs.width = editMetadata.width+settings.width;
         delete.x = Display.getWidth()-delete.width;
-        convertOverhaulMSFR.y = addMultiblock.y;
+        setInputs.y = convertOverhaulMSFR.y = addMultiblock.y;
         if(getSelectedMultiblock() instanceof OverhaulSFR){
             convertOverhaulMSFR.enabled = Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.label = "Convert to MSR (Hold Control)";
@@ -379,6 +398,12 @@ public class MenuMain extends Menu{
         }else{
             convertOverhaulMSFR.enabled = false;
             convertOverhaulMSFR.y = -convertOverhaulMSFR.height;
+        }
+        if(getSelectedMultiblock() instanceof OverhaulTurbine){
+            setInputs.enabled = true;
+        }else{
+            setInputs.enabled = false;
+            setInputs.y = -setInputs.height;
         }
         delete.y = Display.getHeight()-delete.height;
         addMultiblock.enabled = !(adding||metadating);
@@ -422,7 +447,7 @@ public class MenuMain extends Menu{
     public void refresh(){
         multiblocks.components.clear();
         for(Multiblock multi : Core.multiblocks){
-            multiblocks.add(new MenuComponentMultiblock(multi));
+            multiblocks.add(new MenuComponentMultiblock(this, multi));
         }
         editMetadata.label = Core.metadata.containsKey("Name")?Core.metadata.get("Name"):"";
     }

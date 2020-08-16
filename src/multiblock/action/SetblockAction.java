@@ -17,12 +17,12 @@ public class SetblockAction extends Action<Multiblock>{
     }
     @Override
     public void doApply(Multiblock multiblock){
-        was = multiblock.blocks[x][y][z];
-        multiblock.blocks[x][y][z] = block;
+        was = multiblock.getBlock(x, y, z);
+        multiblock.setBlockExact(x, y, z, block);
     }
     @Override
     public void doUndo(Multiblock multiblock){
-        multiblock.blocks[x][y][z] = was;
+        multiblock.setBlockExact(x, y, z, was);
     }
     @Override
     protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){

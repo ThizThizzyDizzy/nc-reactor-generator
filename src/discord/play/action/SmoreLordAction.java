@@ -2,7 +2,7 @@ package discord.play.action;
 import discord.play.Action;
 import discord.play.SmoreBot;
 import java.util.Random;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
 public class SmoreLordAction extends Action{
     public SmoreLordAction(){
         super((new Random().nextInt(4000*60)+8000*60)*9);//8-12 minutes, * 9
@@ -28,7 +28,7 @@ public class SmoreLordAction extends Action{
         SmoreBot.addSmores(user, 8);
     }
     @Override
-    public void cancel(TextChannel channel){
+    public void cancel(MessageChannel channel){
         SmoreBot.addSmores(user, -64);
         super.cancel(channel);
     }

@@ -2,10 +2,10 @@ package planner.tool;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
-import multiblock.Block;
 import multiblock.action.SetblocksAction;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
+import simplelibrary.opengl.gui.components.MenuComponent;
 public class LineTool extends EditorTool{
     public LineTool(MenuEdit editor){
         super(editor);
@@ -37,17 +37,39 @@ public class LineTool extends EditorTool{
         Core.applyWhite();
     }
     @Override
+    public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        if(leftDragEnd!=null&&leftDragStart!=null)raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
+            if(Z==layer)Renderer2D.drawRect(x+X*blockSize, y+Y*blockSize, x+(X+1)*blockSize, y+(Y+1)*blockSize, texture);
+        });
+        if(rightDragEnd!=null&&rightDragStart!=null)raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
+            if(Z==layer)Renderer2D.drawRect(x+X*blockSize, y+Y*blockSize, x+(X+1)*blockSize, y+(Y+1)*blockSize, 0);
+        });
+        Core.applyWhite();
+    }
+    @Override
+    public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        if(leftDragEnd!=null&&leftDragStart!=null)raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
+            if(X==0&&Y==0)Renderer2D.drawRect(x+(Z-1)*blockSize, y, x+Z*blockSize, y+blockSize, texture);
+        });
+        if(rightDragEnd!=null&&rightDragStart!=null)raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
+            if(X==0&&Y==0)Renderer2D.drawRect(x+(Z-1)*blockSize, y, x+Z*blockSize, y+blockSize, 0);
+        });
+        Core.applyWhite();
+    }
+    @Override
     public void mouseReset(int button){
         if(button==0)leftDragStart = leftDragEnd = null;
         if(button==1)rightDragStart = rightDragEnd = null;
     }
     @Override
-    public void mousePressed(int x, int y, int z, int button){
+    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
         if(button==0)leftDragStart = leftDragEnd = new int[]{x,y,z};
         if(button==1)rightDragStart = leftDragEnd = new int[]{x,y,z};
     }
     @Override
-    public void mouseReleased(int x, int y, int z, int button){
+    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
         if(button==0&&leftDragStart!=null){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock());
             raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
@@ -65,7 +87,7 @@ public class LineTool extends EditorTool{
         mouseReset(button);
     }
     @Override
-    public void mouseDragged(int x, int y, int z, int button){
+    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
         if(button==0)leftDragEnd = new int[]{x,y,z};
         if(button==1)rightDragEnd = new int[]{x,y,z};
     }

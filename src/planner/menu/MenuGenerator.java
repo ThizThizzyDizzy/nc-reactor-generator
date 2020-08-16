@@ -146,6 +146,7 @@ public class MenuGenerator extends Menu{
             if(idx!=-1){
                 generator = multiblockGenerators.get(generators.getSelectedIndex()).newInstance(multiblock);
                 lastIndex = idx;
+                onGUIOpened();
             }
         }
         for(MenuComponent m : components){

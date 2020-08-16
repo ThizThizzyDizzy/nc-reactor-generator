@@ -11,6 +11,7 @@ import simplelibrary.config2.Config;
 public class Configuration{
     public String name;
     public String version;
+    public String underhaulVersion;
     public static ArrayList<Configuration> configurations = new ArrayList<>();
     static{
         configurations.add(FileReader.read(() -> {
@@ -24,9 +25,10 @@ public class Configuration{
         }).configuration.addAlternative("E2E"));
     }
     public ArrayList<String> alternatives = new ArrayList<>();
-    public Configuration(String name, String version){
+    public Configuration(String name, String version, String underhaulVersion){
         this.name = name;
         this.version = version;
+        this.underhaulVersion = underhaulVersion;
     }
     public UnderhaulConfiguration underhaul;
     public OverhaulConfiguration overhaul;
@@ -37,6 +39,7 @@ public class Configuration{
         if(overhaul!=null)config.set("overhaul", overhaul.save(isPartial()));
         if(name!=null)config.set("name", name);
         if(version!=null)config.set("version", version);
+        if(underhaulVersion!=null)config.set("underhaulVersion", underhaulVersion);
         config.save(stream);
     }
     public boolean isPartial(){
@@ -52,6 +55,7 @@ public class Configuration{
         }
         configuration.name = name;
         configuration.version = version;
+        configuration.underhaulVersion = underhaulVersion;
     }
     public void applyPartial(PartialConfiguration partial, ArrayList<Multiblock> multiblocks){
         if(underhaul!=null){

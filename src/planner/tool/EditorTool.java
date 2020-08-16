@@ -1,6 +1,7 @@
 package planner.tool;
 import java.util.ArrayList;
 import planner.menu.MenuEdit;
+import simplelibrary.opengl.gui.components.MenuComponent;
 public abstract class EditorTool{
     public final MenuEdit editor;
     public EditorTool(MenuEdit editor){
@@ -8,29 +9,12 @@ public abstract class EditorTool{
     }
     public abstract void render(double x, double y, double width, double height);
     public abstract void mouseReset(int button);
-    public abstract void mousePressed(int x, int y, int z, int button);
-    public abstract void mouseReleased(int x, int y, int z, int button);
-    public abstract void mouseDragged(int x, int y, int z, int button);
-    public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){}
-    public void raytrace(int fromX, int fromZ, int toX, int toZ, TraceStep step, boolean includeFirst){
-        int xDiff = toX-fromX;
-        int zDiff = toZ-fromZ;
-        double dist = Math.sqrt(Math.pow(fromX-toX, 2)+Math.pow(fromZ-toZ, 2));
-        ArrayList<int[]> steps = new ArrayList<>();
-        if(!includeFirst)steps.add(new int[]{fromX,fromZ});
-        FOR:for(float r = 0; r<1; r+=.25/dist){
-            int x = Math.round(fromX+xDiff*r);
-            int y = Math.round(fromZ+zDiff*r);
-            for(int[] stp : steps){
-                if(x==stp[0]&&y==stp[1])continue FOR;
-            }
-            steps.add(new int[]{x,y});
-            step.step(x, y);
-        }
-    }
-    public void raytrace(int fromX, int fromZ, int toX, int toZ, TraceStep step){
-        raytrace(fromX, fromZ, toX, toZ, step, true);
-    }
+    public abstract void mousePressed(MenuComponent layer, int x, int y, int z, int button);
+    public abstract void mouseReleased(MenuComponent layer, int x, int y, int z, int button);
+    public abstract void mouseDragged(MenuComponent layer, int x, int y, int z, int button);
+    public abstract void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
+    public abstract void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
+    public abstract void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture);
     public abstract boolean isEditTool();
     public static interface TraceStep{
         public void step(int x, int z);
@@ -41,7 +25,7 @@ public abstract class EditorTool{
         int zDiff = toZ-fromZ;
         double dist = Math.sqrt(Math.pow(fromX-toX, 2)+Math.pow(fromY-toY, 2)+Math.pow(fromZ-toZ, 2));
         ArrayList<int[]> steps = new ArrayList<>();
-        if(!includeFirst)steps.add(new int[]{fromX,fromZ});
+        if(!includeFirst)steps.add(new int[]{fromX,fromY,fromZ});
         FOR:for(float r = 0; r<1; r+=.25/dist){
             int x = Math.round(fromX+xDiff*r);
             int y = Math.round(fromY+yDiff*r);

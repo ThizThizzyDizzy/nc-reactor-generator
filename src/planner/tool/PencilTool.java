@@ -4,14 +4,15 @@ import planner.Core;
 import planner.menu.MenuEdit;
 import multiblock.Block;
 import simplelibrary.opengl.ImageStash;
+import simplelibrary.opengl.gui.components.MenuComponent;
 public class PencilTool extends EditorTool{
     public PencilTool(MenuEdit editor){
         super(editor);
     }
     private int[] leftDragStart;
-    private int leftLayerStart = -1;
+    private MenuComponent leftLayerStart = null;
     private int[] rightDragStart;
-    private int rightLayerStart = -1;
+    private MenuComponent rightLayerStart = null;
     @Override
     public void render(double x, double y, double width, double height){
         Core.applyColor(Core.theme.getTextColor());
@@ -37,58 +38,58 @@ public class PencilTool extends EditorTool{
     public void mouseReset(int button){
         if(button==0){
             leftDragStart = null;
-            leftLayerStart = -1;
+            leftLayerStart = null;
         }
         if(button==1){
             rightDragStart = null;
-            rightLayerStart = -1;
+            rightLayerStart = null;
         }
     }
     @Override
-    public void mousePressed(int x, int y, int z, int button){
+    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
         Block selected = editor.getSelectedBlock();
         if(button==0||button==1)editor.setblock(x,y,z,button==0?selected:null);
         if(button==0){
-            leftDragStart = new int[]{x,z};
-            leftLayerStart = y;
+            leftDragStart = new int[]{x,y,z};
+            leftLayerStart = layer;
         }
         if(button==1){
-            rightDragStart = new int[]{x,z};
-            rightLayerStart = y;
+            rightDragStart = new int[]{x,y,z};
+            rightLayerStart = layer;
         }
     }
     @Override
-    public void mouseReleased(int x, int y, int z, int button){
+    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
         mouseReset(button);
     }
     @Override
-    public void mouseDragged(int x, int y, int z, int button){
+    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
         if(button==0){
-            if(y!=leftLayerStart){
-                leftDragStart = new int[]{x,z};
-                leftLayerStart = y;
+            if(layer!=leftLayerStart){
+                leftDragStart = new int[]{x,y,z};
+                leftLayerStart = layer;
             }
             if(leftDragStart!=null){
                 if(leftDragStart[0]==x&&leftDragStart[1]==z)return;
                 Block setTo = editor.getSelectedBlock();
-                raytrace(leftDragStart[0], leftDragStart[1], x, z, (X,Z) -> {
-                    editor.setblock(X, y, Z, setTo);
+                raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
+                    editor.setblock(X, Y, Z, setTo);
                 });
-                leftDragStart = new int[]{x,z};
+                leftDragStart = new int[]{x,y,z};
             }
         }
         if(button==1){
-            if(y!=rightLayerStart){
-                rightDragStart = new int[]{x,z};
-                rightLayerStart = y;
+            if(layer!=rightLayerStart){
+                rightDragStart = new int[]{x,y,z};
+                rightLayerStart = layer;
             }
             if(rightDragStart!=null){
                 if(rightDragStart[0]==x&&rightDragStart[1]==z)return;
                 Block setTo = null;
-                raytrace(rightDragStart[0], rightDragStart[1], x, z, (X,Z) -> {
-                    editor.setblock(X, y, Z, setTo);
+                raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
+                    editor.setblock(X, Y, Z, setTo);
                 }, false);
-                rightDragStart = new int[]{x,z};
+                rightDragStart = new int[]{x,y,z};
             }
         }
     }
@@ -96,4 +97,10 @@ public class PencilTool extends EditorTool{
     public boolean isEditTool(){
         return true;
     }
+    @Override
+    public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){}
+    @Override
+    public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){}
+    @Override
+    public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){}
 }

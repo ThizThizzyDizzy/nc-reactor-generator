@@ -8,6 +8,7 @@ import multiblock.action.SetblockAction;
 import multiblock.action.SymmetryAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.Symmetry;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
@@ -219,7 +220,7 @@ public class StandardGenerator extends MultiblockGenerator{
         }
         currentMultiblock.performActions();
         for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect));
+            if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings));
         }
         for(Symmetry symmetry : settings.symmetries){
             currentMultiblock.queueAction(new SymmetryAction(symmetry));
@@ -227,7 +228,7 @@ public class StandardGenerator extends MultiblockGenerator{
         currentMultiblock.performActions();
         currentMultiblock.recalculate();
         for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect));
+            if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings));
         }
         synchronized(workingMultiblocks.get(idx)){
             Multiblock mult = workingMultiblocks.get(idx);
@@ -267,6 +268,7 @@ public class StandardGenerator extends MultiblockGenerator{
             }
             return randBlock;
         }
+        if(multiblock instanceof OverhaulTurbine)return randBlock;//also no block-specifics!
         throw new IllegalArgumentException("Unknown multiblock: "+multiblock.getDefinitionName());
     }
     private void finalize(Multiblock worst){
@@ -312,6 +314,7 @@ public class StandardGenerator extends MultiblockGenerator{
             multiblock.action(new SetblockAction(block.x, block.y, block.z, null));
         }
         finalize(multiblock);
+        workingMultiblocks.add(multiblock.copy());
     }
     private <T extends Object> T rand(Multiblock multiblock, ArrayList<Range<T>> ranges){
         if(ranges.isEmpty())return null;

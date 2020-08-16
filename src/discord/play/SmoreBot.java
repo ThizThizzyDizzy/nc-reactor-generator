@@ -4,21 +4,21 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import simplelibrary.config2.Config;
 public class SmoreBot{
     public static HashMap<Long, Long> smores = new HashMap<>();//MONEY
     public static HashMap<Long, Long> eaten = new HashMap<>();//MONEY
     public static HashMap<Long, Action> actions = new HashMap<>();
     public static HashMap<Long, Hut> huts = new HashMap<>();
-    public static void action(GuildMessageReceivedEvent event, Action action){
-        if(actions.containsKey(event.getAuthor().getIdLong())){
-            event.getChannel().sendMessage("You can't do that many things at once!").queue();
+    public static void action(User user, MessageChannel channel, Action action){
+        if(actions.containsKey(user.getIdLong())){
+            channel.sendMessage("You can't do that many things at once!").queue();
             return;
         }
-        actions.put(event.getAuthor().getIdLong(), action);
-        action.start(event.getAuthor(), event.getChannel());
+        actions.put(user.getIdLong(), action);
+        action.start(user, channel);
     }
     public static long getSmoreCount(long id){
         return smores.containsKey(id)?smores.get(id):0;

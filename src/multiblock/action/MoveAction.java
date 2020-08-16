@@ -33,7 +33,7 @@ public class MoveAction extends Action<Multiblock>{
         }
         for(int[] loc : selection){
             was.put(loc, multiblock.getBlock(loc[0], loc[1], loc[2]));
-            multiblock.blocks[loc[0]][loc[1]][loc[2]] = null;
+            multiblock.setBlock(loc[0], loc[1], loc[2], null);
         }
         for(int[] loc : selection){
             Block to = multiblock.getBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz);
@@ -51,7 +51,7 @@ public class MoveAction extends Action<Multiblock>{
     @Override
     public void doUndo(Multiblock multiblock){
         for(int[] loc : was.keySet()){
-            multiblock.blocks[loc[0]][loc[1]][loc[2]] = was.get(loc);
+            multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
         }
         editor.selection.clear();
         editor.selection.addAll(selection);

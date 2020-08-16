@@ -27,6 +27,7 @@ public class MenuConfiguration extends Menu{
     private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save Configuration", true, true));
     private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, Core.configuration.name, true));
     private final MenuComponentMinimalistTextBox version = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, Core.configuration.version, true));
+    private final MenuComponentMinimalistTextBox underhaulVersion = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, Core.configuration.underhaulVersion, true));
     private final MenuComponentMinimalistButton underhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Underhaul Configuration", Core.configuration.underhaul!=null, true));
     private final MenuComponentMinimalistButton overhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Overhaul Configuration", Core.configuration.overhaul!=null, true));
     private final MenuComponentMinimalistOptionButton theme = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Theme", true, true, Theme.themes.indexOf(Core.theme), Theme.getThemeS()));
@@ -68,6 +69,7 @@ public class MenuConfiguration extends Menu{
             new Thread(() -> {
                 Core.configuration.name = name.text.trim().isEmpty()?null:name.text;
                 Core.configuration.version = version.text.trim().isEmpty()?null:version.text;
+                Core.configuration.underhaulVersion = underhaulVersion.text.trim().isEmpty()?null:underhaulVersion.text;
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
                 chooser.addActionListener((event) -> {
@@ -108,6 +110,7 @@ public class MenuConfiguration extends Menu{
         overhaul.enabled = Core.configuration.overhaul!=null;
         name.text = Core.configuration.name==null?"":Core.configuration.name;
         version.text = Core.configuration.version==null?"":Core.configuration.version;
+        underhaulVersion.text = Core.configuration.underhaulVersion==null?"":Core.configuration.underhaulVersion;
         for(int i = 0; i<buttons.size(); i++){
             MenuComponentMinimalistButton b = buttons.get(i);
             Configuration c = Configuration.configurations.get(i);
@@ -118,6 +121,7 @@ public class MenuConfiguration extends Menu{
     public void onGUIClosed(){
         Core.configuration.name = name.text.trim().isEmpty()?null:name.text;
         Core.configuration.version = version.text.trim().isEmpty()?null:version.text;
+        Core.configuration.underhaulVersion = underhaulVersion.text.trim().isEmpty()?null:underhaulVersion.text;
     }
     @Override
     public void render(int millisSinceLastTick){
@@ -128,14 +132,15 @@ public class MenuConfiguration extends Menu{
             b.y = b.height*i;
         }
         theme.width = load.width = save.width = underhaul.width = overhaul.width = done.width = Display.getWidth();
-        theme.height = name.height = version.height = load.height = save.height = underhaul.height = overhaul.height = done.height = Display.getHeight()/16;
-        name.width = version.width = Display.getWidth()*.75;
-        name.x = version.x = Display.getWidth()*.25;
+        theme.height = name.height = version.height = underhaulVersion.height = load.height = save.height = underhaul.height = overhaul.height = done.height = Display.getHeight()/16;
+        name.width = version.width = underhaulVersion.width = Display.getWidth()*.75;
+        name.x = version.x = underhaulVersion.x = Display.getWidth()*.25;
         load.y = load.height*Configuration.configurations.size();
         save.y = load.y+load.height;
         name.y = save.y+save.height;
         version.y = name.y+name.height;
-        underhaul.y = version.y+version.height;
+        underhaulVersion.y = version.y+version.height;
+        underhaul.y = underhaulVersion.y+underhaulVersion.height;
         overhaul.y = underhaul.y+underhaul.height;
         done.y = Display.getHeight()-done.height;
         theme.y = done.y-theme.height;
@@ -149,6 +154,7 @@ public class MenuConfiguration extends Menu{
         Core.applyColor(Core.theme.getTextColor());
         drawText(0, name.y, name.x, name.y+name.height, "Name");
         drawText(0, version.y, version.x, version.y+version.height, "Version");
+        drawText(0, underhaulVersion.y, underhaulVersion.x, underhaulVersion.y+underhaulVersion.height, "Underhaul Version");
         super.render(millisSinceLastTick);
     }
 }

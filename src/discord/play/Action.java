@@ -1,5 +1,5 @@
 package discord.play;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 public abstract class Action{
     private final int time;
@@ -8,7 +8,7 @@ public abstract class Action{
     public Action(int time){
         this.time = time;
     }
-    public void start(User user, TextChannel channel){
+    public void start(User user, MessageChannel channel){
         this.user = user;
         channel.sendMessage(getBeginMessage()).queue();
         Thread t = new Thread(() -> {
@@ -29,7 +29,7 @@ public abstract class Action{
     protected abstract String getCanceledMessage();
     protected abstract String getName();
     public abstract void finish();
-    public void cancel(TextChannel channel){
+    public void cancel(MessageChannel channel){
         cancelled = true;
         channel.sendMessage(getCanceledMessage()).queue();
     }

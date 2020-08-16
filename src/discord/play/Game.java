@@ -1,17 +1,17 @@
 package discord.play;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 public abstract class Game{
     private static final int timeout = 60000;
     private long lastUpdate;
     private final String name;
     public boolean running;
-    private TextChannel channel;
+    private MessageChannel channel;
     public Game(String name){
         this.name = name;
     }
-    public final void startGame(GuildMessageReceivedEvent event){
-        channel = event.getChannel();
+    public final void startGame(MessageChannel channel){
+        this.channel = channel;
         update();
         running = true;
         Thread thread = new Thread(() -> {
@@ -28,9 +28,9 @@ public abstract class Game{
         thread.setDaemon(true);
         thread.setName(getName());
         thread.start();
-        start(event);
+        start(channel);
     }
-    protected abstract void start(GuildMessageReceivedEvent event);
+    protected abstract void start(MessageChannel channel);
     public String getName(){
         return name;
     }
@@ -38,9 +38,9 @@ public abstract class Game{
         running = false;
         stop(channel);
     }
-    protected abstract void stop(TextChannel channel);
+    protected abstract void stop(MessageChannel channel);
     protected void update(){
         lastUpdate = System.currentTimeMillis();
     }
-    public abstract void onMessage(GuildMessageReceivedEvent event);
+    public abstract void onMessage(Message message);
 }

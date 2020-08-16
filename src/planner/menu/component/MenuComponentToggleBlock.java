@@ -57,13 +57,17 @@ public class MenuComponentToggleBlock extends MenuComponent{
         int trueWheelChange = Core.calcWheelChange(wheelChange);
         if(isMouseOver&&Core.isControlPressed()){
             if(Core.isShiftPressed()){
-                min+=trueWheelChange;
+                if(trueWheelChange<0&&min+trueWheelChange<max){
+                    min = 0;
+                }else{
+                    min+=trueWheelChange;
+                }
             }else{
                 max+=trueWheelChange;
             }
             if(min<0)min = 0;
             if(max<0)max = 0;
-            if(min>max)min = max;
+            if(min>max&&max!=0)min = max;
         }
         return super.mouseWheelChange(wheelChange);
     }
@@ -80,6 +84,7 @@ public class MenuComponentToggleBlock extends MenuComponent{
     @Override
     public void mouseEvent(int button, boolean pressed, float x, float y, float xChange, float yChange, int wheelChange){
         super.mouseEvent(button, pressed, x, y, xChange, yChange, wheelChange);
-        if(button==0&&pressed)enabled = !enabled;
+        if(button==0&&pressed)enabled = true;
+        if(button==1&&pressed)enabled = false;
     }
 }

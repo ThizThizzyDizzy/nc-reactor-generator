@@ -1,9 +1,13 @@
 package planner.menu.component;
+import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.Multiblock;
+import multiblock.overhaul.turbine.OverhaulTurbine;
+import planner.menu.MenuMain;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblock extends MenuComponent{
+    private final MenuMain main;
     public final Multiblock multiblock;
     public final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, true){
         @Override
@@ -28,8 +32,9 @@ public class MenuComponentMultiblock extends MenuComponent{
             GL11.glEnd();
         }
     });
-    public MenuComponentMultiblock(Multiblock multiblock){
+    public MenuComponentMultiblock(MenuMain main, Multiblock multiblock){
         super(0, 0, 0, 100);
+        this.main = main;
         this.multiblock = multiblock;
     }
     @Override
@@ -41,14 +46,42 @@ public class MenuComponentMultiblock extends MenuComponent{
     }
     @Override
     public void render(){
+        if(main.settingInputs!=null&&!multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.input)){
+            isMouseOver = false;
+        }
         if(isMouseOver&&!isSelected)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
         else Core.applyColor(isSelected?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
+        if(main.getSelectedMultiblock()!=null&&main.getSelectedMultiblock() instanceof OverhaulTurbine&&((OverhaulTurbine)main.getSelectedMultiblock()).inputs.contains(multiblock)){
+            Core.applyColor(Core.theme.getRGB(1, 1, 0), .25f);
+            drawRect(x, y, x+width, y+height, 0);
+        }
+        if(main.settingInputs!=null&&!multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.input)){
+            Core.applyColor(Core.theme.getRGB(0, 0, 0), .25f);
+            drawRect(x, y, x+width, y+height, 0);
+        }
     }
     @Override
     public void renderForeground(){
         Core.applyColor(Core.theme.getTextColor());
         drawText(x, y, x+width, y+height/4, multiblock.getName());
         drawText(x, y+height/4, x+width, y+height/2, multiblock.getDefinitionName());
+    }
+    @Override
+    public void mouseEvent(double x, double y, int button, boolean isDown){
+        super.mouseEvent(x, y, button, isDown);
+        if(button==0&&isDown){
+            if(main.settingInputs!=null){
+                if(multiblock!=main.settingInputs){
+                    if(multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.input)){
+                        if(main.settingInputs.inputs.contains(multiblock)){
+                            main.settingInputs.inputs.remove(multiblock);
+                        }else{
+                            main.settingInputs.inputs.add(multiblock);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

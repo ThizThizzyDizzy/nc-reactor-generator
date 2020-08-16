@@ -55,9 +55,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -65,6 +67,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import planner.Core;
 import planner.Core.BufferRenderer;
@@ -92,6 +95,7 @@ public class Bot extends ListenerAdapter{
     private static MultiblockGenerator generator;
     private static Message generatorMessage;
     private static final int batchSize = 100;
+    private static Guild guild = null;
     public static final HashMap<NCPFFile, String> storedMultiblocks = new HashMap();
     static{
 //        botCommands.add(new Command("debug"){
@@ -100,9 +104,9 @@ public class Bot extends ListenerAdapter{
 //                return "Toggles Debug Mode";
 //            }
 //            @Override
-//            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+//            public void run(MessageChannel channel, String args, boolean debug){
 //                Bot.debug = !Bot.debug;
-//                event.getChannel().sendMessage("Debug mode **"+(Bot.debug?"Enabled":"Disabled")+"**").queue();
+//                channel.sendMessage("Debug mode **"+(Bot.debug?"Enabled":"Disabled")+"**").queue();
 //            }
 //        });
         botCommands.add(new Command("help"){
@@ -111,7 +115,7 @@ public class Bot extends ListenerAdapter{
                 return "Shows this help window";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 EmbedBuilder builder = createEmbed(jda.getSelfUser().getName()+" Help");
                 if(Bot.prefixes.size()>1){
                     String prefx = "";
@@ -126,7 +130,7 @@ public class Bot extends ListenerAdapter{
                 }
                 builder.addField("File Formats", "JSON files can be opened in Hellrage's Reactor planner (see #useful-links) or Thiz's planner/generator (see footnote)\n"
                                                 +"NCPF files can only be opened in Thiz'z planner/generator (see footnote)", false);
-                event.getChannel().sendMessage(builder.build()).queue();
+                channel.sendMessage(builder.build()).queue();
             }
         });
         botCommands.add(new Command("stop","abort","halt","cancel","finish"){
@@ -135,10 +139,10 @@ public class Bot extends ListenerAdapter{
                 return "Stops current generation";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 if(generator!=null)generator.stopAllThreads();
                 else{
-                    event.getChannel().sendMessage("Generator is not running!").queue();
+                    channel.sendMessage("Generator is not running!").queue();
                 }
             }
         });
@@ -167,9 +171,9 @@ public class Bot extends ListenerAdapter{
 "-generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, ArrayList<Keyword> keywords, boolean debug){
+            public void run(MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
                 if(generator!=null){
-                    event.getChannel().sendMessage("Generator is already running!\nUse `"+prefixes.get(0)+"stop` to stop generation").queue();
+                    channel.sendMessage("Generator is already running!\nUse `"+prefixes.get(0)+"stop` to stop generation").queue();
                     return;
                 }
                 boolean underhaul = false;
@@ -189,13 +193,13 @@ public class Bot extends ListenerAdapter{
                         underhaul = true;
                     }else if(keyword instanceof KeywordConfiguration){
                         if(configuration!=null){
-                            event.getChannel().sendMessage("Please choose no more than one configuration!").queue();
+                            channel.sendMessage("Please choose no more than one configuration!").queue();
                             return;
                         }
                         configuration = ((KeywordConfiguration)keyword).config;
                     }else if(keyword instanceof KeywordMultiblock){
                         if(multiblockName!=null){
-                            event.getChannel().sendMessage("Please choose no more than one multiblock type!").queue();
+                            channel.sendMessage("Please choose no more than one multiblock type!").queue();
                             return;
                         }
                         multiblockName = ((KeywordMultiblock)keyword).text;
@@ -204,7 +208,7 @@ public class Bot extends ListenerAdapter{
                         if(x==0&&y==0&&z==0){
                             x = y = z = cube.size;
                         }else{
-                            event.getChannel().sendMessage("You may only choose one size!").queue();
+                            channel.sendMessage("You may only choose one size!").queue();
                             return;
                         }
                     }else if(keyword instanceof KeywordCuboid){
@@ -214,7 +218,7 @@ public class Bot extends ListenerAdapter{
                             y = cuboid.y;
                             z = cuboid.z;
                         }else{
-                            event.getChannel().sendMessage("You may only choose one size!").queue();
+                            channel.sendMessage("You may only choose one size!").queue();
                             return;
                         }
                     }else if(keyword instanceof KeywordBlockRange){
@@ -236,15 +240,15 @@ public class Bot extends ListenerAdapter{
                 if(!(underhaul||overhaul))underhaul = true;
                 if(configuration==null)configuration = Configuration.configurations.get(0);
                 if(underhaul&&overhaul){
-                    event.getChannel().sendMessage("Please choose either `underhaul` or `overhaul`, not both!").queue();
+                    channel.sendMessage("Please choose either `underhaul` or `overhaul`, not both!").queue();
                     return;
                 }
                 if(configuration.underhaul==null&&underhaul){
-                    event.getChannel().sendMessage("`"+configuration.name+" doesn't have an Underhaul configuration!").queue();
+                    channel.sendMessage("`"+configuration.name+" doesn't have an Underhaul configuration!").queue();
                     return;
                 }
                 if(configuration.overhaul==null&&overhaul){
-                    event.getChannel().sendMessage("`"+configuration.name+" doesn't have an Overhaul configuration!").queue();
+                    channel.sendMessage("`"+configuration.name+" doesn't have an Overhaul configuration!").queue();
                     return;
                 }
                 if(multiblockName==null||multiblockName.isEmpty())multiblockName = "SFR";
@@ -252,18 +256,19 @@ public class Bot extends ListenerAdapter{
                 Multiblock multiblock = null;
                 ArrayList<Range<Block>> blockRanges = new ArrayList<>();
                 for(Multiblock m : Core.multiblockTypes){
-                    if(m.getDefinitionName().equalsIgnoreCase(fullMultiblockName))multiblock = m;
+                    if(m.getDefinitionName().equalsIgnoreCase(fullMultiblockName))multiblock = m.newInstance(configuration);
                 }
                 if(multiblock==null){
-                    event.getChannel().sendMessage("Unknown multiblock: `"+fullMultiblockName+"`!").queue();
+                    channel.sendMessage("Unknown multiblock: `"+fullMultiblockName+"`!").queue();
                     return;
                 }
-                if(x<multiblock.getMinSize()||y<multiblock.getMinSize()||z<multiblock.getMinSize()){
-                    event.getChannel().sendMessage("Too small! Minimum size: "+multiblock.getMinSize()+"x"+multiblock.getMinSize()+"x"+multiblock.getMinSize()).queue();
+                if(multiblock.getDefinitionName().contains("Turbine"))z+=2;
+                if(x<multiblock.getMinX()||y<multiblock.getMinY()||z<multiblock.getMinZ()){
+                    channel.sendMessage("Too small! Minimum size: "+multiblock.getMinX()+"x"+multiblock.getMinY()+"x"+multiblock.getMinZ()).queue();
                     return;
                 }
-                if(x>multiblock.getMaxSize()||y>multiblock.getMaxSize()||z>multiblock.getMaxSize()){
-                    event.getChannel().sendMessage("Too big! Maximum size: "+multiblock.getMaxSize()+"x"+multiblock.getMaxSize()+"x"+multiblock.getMaxSize()).queue();
+                if(x>multiblock.getMaxX()||y>multiblock.getMaxY()||z>multiblock.getMaxZ()){
+                    channel.sendMessage("Too big! Maximum size: "+multiblock.getMaxX()+"x"+multiblock.getMaxY()+"x"+multiblock.getMaxZ()).queue();
                     return;
                 }
                 ArrayList<Block> availableBlocks = new ArrayList<>();
@@ -275,7 +280,7 @@ public class Bot extends ListenerAdapter{
                             continue FOR;
                         }
                     }
-                    event.getChannel().sendMessage("Unknown block: `"+range.obj+"`!").queue();
+                    channel.sendMessage("Unknown block: `"+range.obj+"`!").queue();
                     return;
                 }
                 Object fuels = null;
@@ -286,14 +291,14 @@ public class Bot extends ListenerAdapter{
                             for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.fuels){
                                 if(f.name.equalsIgnoreCase(str)){
                                     if(fuel!=null){
-                                        event.getChannel().sendMessage("Underhaul SFRs can only have one fuel!").queue();
+                                        channel.sendMessage("Underhaul SFRs can only have one fuel!").queue();
                                         return;
                                     }
                                     fuel = f;
                                     continue FUEL;
                                 }
                             }
-                            event.getChannel().sendMessage("Unknown fuel: "+str).queue();
+                            channel.sendMessage("Unknown fuel: "+str).queue();
                             return;
                         }
                         if(fuel==null)fuel = configuration.underhaul.fissionSFR.fuels.get(0);
@@ -308,7 +313,7 @@ public class Bot extends ListenerAdapter{
                                     continue FUEL;
                                 }
                             }
-                            event.getChannel().sendMessage("Unknown fuel: "+str).queue();
+                            channel.sendMessage("Unknown fuel: "+str).queue();
                             return;
                         }
                         if(sfrFuels.isEmpty())sfrFuels.add(configuration.overhaul.fissionSFR.fuels.get(0));
@@ -323,7 +328,7 @@ public class Bot extends ListenerAdapter{
                                     continue FUEL;
                                 }
                             }
-                            event.getChannel().sendMessage("Unknown fuel: "+str).queue();
+                            channel.sendMessage("Unknown fuel: "+str).queue();
                             return;
                         }
                         if(msrFuels.isEmpty())msrFuels.add(configuration.overhaul.fissionMSR.fuels.get(0));
@@ -338,7 +343,7 @@ public class Bot extends ListenerAdapter{
                         for(String alternative : preset.alternatives){
                             if(str.equalsIgnoreCase(alternative)){
                                 if(priority!=null){
-                                    event.getChannel().sendMessage("You can only target one priority at a time!\nDownload the generator for more control over generation priorities (see footnote)").queue();
+                                    channel.sendMessage("You can only target one priority at a time!\nDownload the generator for more control over generation priorities (see footnote)").queue();
                                     return;
                                 }
                                 priority = preset;
@@ -447,7 +452,7 @@ public class Bot extends ListenerAdapter{
                             }
                         }
                         String configName = Core.configuration.getShortName();
-                        generatorMessage = event.getChannel().sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField("Reactor Details", generator.getMainMultiblockBotTooltip(), false).build()).complete();
+                        generatorMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField("Reactor Details", generator.getMainMultiblockBotTooltip(), false).build()).complete();
                         int time = 0;
                         int interval = 1000;//1 sec
                         int maxTime = 60000;//60 sec
@@ -456,7 +461,7 @@ public class Bot extends ListenerAdapter{
                             try{
                                 Thread.sleep(interval);
                             }catch(InterruptedException ex){
-                                printErrorMessage(event.getChannel(), "Generation Interrupted!", ex);
+                                printErrorMessage(channel, "Generation Interrupted!", ex);
                                 break;
                             }
                             time+=interval;
@@ -485,11 +490,11 @@ public class Bot extends ListenerAdapter{
                             ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
                             for(FormatWriter writer : formats){
                                 CircularStream stream = new CircularStream(1024*1024);//1MB
-                                CompletableFuture<Message> submit = event.getChannel().sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getExtensions()[0]).submit();
+                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getExtensions()[0]).submit();
                                 try{
                                     writer.write(ncpf, stream);
                                 }catch(Exception ex){
-                                    printErrorMessage(event.getChannel(), "Failed to write file", ex);
+                                    printErrorMessage(channel, "Failed to write file", ex);
                                     submit.cancel(true);
                                     stream.close();
                                 }
@@ -513,8 +518,8 @@ public class Bot extends ListenerAdapter{
                 return "Play some Hangman";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                PlayBot.play(event, new Hangman(args.trim().equalsIgnoreCase("blind")));
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                PlayBot.play(channel, new Hangman(args.trim().equalsIgnoreCase("blind")));
             }
         });
         //smore commands
@@ -524,7 +529,7 @@ public class Bot extends ListenerAdapter{
                 return "Shows this help window";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 EmbedBuilder builder = createEmbed(jda.getSelfUser().getName()+" Help");
                 if(Bot.prefixes.size()>1){
                     String prefx = "";
@@ -537,7 +542,7 @@ public class Bot extends ListenerAdapter{
                     if(c.isSecret())continue;
                     builder.addField(prefixes.get(0)+c.command, c.getHelpText(), false);
                 }
-                event.getChannel().sendMessage(builder.build()).queue();
+                channel.sendMessage(builder.build()).queue();
             }
         });
         playCommands.add(new Command("stop","abort","halt","cancel","finish"){
@@ -546,11 +551,11 @@ public class Bot extends ListenerAdapter{
                 return "Cancels your current action";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(SmoreBot.actions.containsKey(event.getAuthor().getIdLong())){
-                    Action a = SmoreBot.actions.get(event.getAuthor().getIdLong());
-                    a.cancel(event.getChannel());
-                    if(a.cancelled)SmoreBot.actions.remove(event.getAuthor().getIdLong());
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(SmoreBot.actions.containsKey(user.getIdLong())){
+                    Action a = SmoreBot.actions.get(user.getIdLong());
+                    a.cancel(channel);
+                    if(a.cancelled)SmoreBot.actions.remove(user.getIdLong());
                 }
             }
         });
@@ -560,8 +565,8 @@ public class Bot extends ListenerAdapter{
                 return "Mmmm, s'mores";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                SmoreBot.action(event, new SmoreAction());
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                SmoreBot.action(user, channel, new SmoreAction());
             }
         });
         playCommands.add(new SecretCommand("snore", "snooze", "sleep"){
@@ -570,13 +575,13 @@ public class Bot extends ListenerAdapter{
                 return "ZZzzzz";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(SmoreBot.actions.containsKey(event.getAuthor().getIdLong())){
-                    Action a = SmoreBot.actions.get(event.getAuthor().getIdLong());
-                    a.cancel(event.getChannel());
-                    if(a.cancelled)SmoreBot.actions.remove(event.getAuthor().getIdLong());
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(SmoreBot.actions.containsKey(user.getIdLong())){
+                    Action a = SmoreBot.actions.get(user.getIdLong());
+                    a.cancel(channel);
+                    if(a.cancelled)SmoreBot.actions.remove(user.getIdLong());
                 }
-                SmoreBot.action(event, new SnoozeAction());
+                SmoreBot.action(user, channel, new SnoozeAction());
             }
         });
         playCommands.add(new Command("give", "send", "pay"){
@@ -586,25 +591,25 @@ public class Bot extends ListenerAdapter{
                         + "Give someone your s'mores!";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 args = args.trim();
                 if(args.isEmpty()){
-                    event.getChannel().sendMessage("You give nobody nothing.").queue();
+                    channel.sendMessage("You give nobody nothing.").queue();
                     return;
                 }
-                long have = SmoreBot.getSmoreCount(event.getAuthor().getIdLong());
+                long have = SmoreBot.getSmoreCount(user.getIdLong());
                 if(have<=0){
-                    event.getChannel().sendMessage("You don't have any s'mores!").queue();
+                    channel.sendMessage("You don't have any s'mores!").queue();
                     return;
                 }
                 String[] argses = args.split(" ");
                 if(argses.length==1){
                     try{
                         long amt = Long.parseLong(argses[0]);
-                        if(have<amt)event.getChannel().sendMessage("You don't have "+amt+" s'more"+(amt==1?"":"s")+"!").queue();
-                        else event.getChannel().sendMessage("You try to give nobody "+amt+" s'more"+(amt==1?"":"s")+", but nobody doesn't respond.").queue();
+                        if(have<amt)channel.sendMessage("You don't have "+amt+" s'more"+(amt==1?"":"s")+"!").queue();
+                        else channel.sendMessage("You try to give nobody "+amt+" s'more"+(amt==1?"":"s")+", but nobody doesn't respond.").queue();
                     }catch(Exception ex){
-                        event.getChannel().sendMessage("You try to give `"+argses[0].replace("`", "\\`")+"` nothing, but nothing happens.").queue();
+                        channel.sendMessage("You try to give `"+argses[0].replace("`", "\\`")+"` nothing, but nothing happens.").queue();
                     }
                     return;
                 }
@@ -615,14 +620,14 @@ public class Bot extends ListenerAdapter{
                     try{
                         targetID = Long.parseLong(target.substring(2, target.length()-1));
                     }catch(Exception ex){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }else{
                     try{
                         targetID = Long.parseLong(target);
                     }catch(Exception ex){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }
@@ -630,41 +635,41 @@ public class Bot extends ListenerAdapter{
                 try{
                     targetUser = jda.getUserById(targetID);
                     if(targetUser==null){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }catch(Exception ex){
-                    event.getChannel().sendMessage("Who?").queue();
+                    channel.sendMessage("Who?").queue();
                     return;
                 }
                 long amt = 0;
                 try{
                     amt = Long.parseLong(argses[1]);
                 }catch(Exception ex){
-                    event.getChannel().sendMessage("How many?").queue();
+                    channel.sendMessage("How many?").queue();
                     return;
                 }
                 if(have<amt){
-                    event.getChannel().sendMessage("You don't have "+amt+" s'more"+(amt==1?"":"s")+"!").queue();
+                    channel.sendMessage("You don't have "+amt+" s'more"+(amt==1?"":"s")+"!").queue();
                     return;
                 }
                 if(amt<0){
-                    event.getChannel().sendMessage("You can't give negative s'mores!").queue();
+                    channel.sendMessage("You can't give negative s'mores!").queue();
                     return;
                 }
                 if(amt==0){
-                    event.getChannel().sendMessage("Nothing happens.").queue();
+                    channel.sendMessage("Nothing happens.").queue();
                     return;
                 }
-                event.getChannel().sendMessage("You gave "+nick(event.getGuild().getMember(targetUser))+" "+amt+" smore"+(amt==1?"":"s")+".").queue();
-                SmoreBot.removeSmores(event.getAuthor(), amt);
+                channel.sendMessage("You gave "+nick(guild.getMember(targetUser))+" "+amt+" smore"+(amt==1?"":"s")+".").queue();
+                SmoreBot.removeSmores(user, amt);
                 SmoreBot.addSmores(targetUser, amt);
             }
         });
         playCommands.add(new SecretCommand("seteat"){
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(event.getAuthor().getIdLong()!=210445638532333569L)return;//not thiz
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
                     return;
@@ -707,14 +712,14 @@ public class Bot extends ListenerAdapter{
                 if(amt<0){
                     return;
                 }
-                event.getChannel().sendMessage("set "+nick(event.getGuild().getMember(targetUser))+" to "+amt+" eated smore"+(amt==1?"":"s")+".").queue();
+                channel.sendMessage("set "+nick(guild.getMember(targetUser))+" to "+amt+" eated smore"+(amt==1?"":"s")+".").queue();
                 SmoreBot.eaten.put(targetUser.getIdLong(), amt);
             }
         });
         playCommands.add(new SecretCommand("setsmores"){
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(event.getAuthor().getIdLong()!=210445638532333569L)return;//not thiz
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
                     return;
@@ -754,10 +759,7 @@ public class Bot extends ListenerAdapter{
                 }catch(Exception ex){
                     return;
                 }
-                if(amt<0){
-                    return;
-                }
-                event.getChannel().sendMessage("set "+nick(event.getGuild().getMember(targetUser))+" to "+amt+" smore"+(amt==1?"":"s")+".").queue();
+                channel.sendMessage("set "+nick(guild.getMember(targetUser))+" to "+amt+" smore"+(amt==1?"":"s")+".").queue();
                 SmoreBot.smores.put(targetUser.getIdLong(), amt);
             }
         });
@@ -767,10 +769,10 @@ public class Bot extends ListenerAdapter{
                 return "Yummy!";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                long have = SmoreBot.getSmoreCount(event.getAuthor().getIdLong());
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                long have = SmoreBot.getSmoreCount(user.getIdLong());
                 if(have<=0){
-                    event.getChannel().sendMessage("You don't have any s'mores!").queue();
+                    channel.sendMessage("You don't have any s'mores!").queue();
                     return;
                 }
                 long eat = 1;
@@ -778,69 +780,69 @@ public class Bot extends ListenerAdapter{
                     eat = Long.parseLong(args.trim());
                 }catch(NumberFormatException __){}
                 if(have<eat){
-                    event.getChannel().sendMessage("You don't have "+eat+" s'more"+(eat==1?"":"s")+"!").queue();
+                    channel.sendMessage("You don't have "+eat+" s'more"+(eat==1?"":"s")+"!").queue();
                     return;
                 }
                 if(eat<0){
-                    event.getChannel().sendMessage("You can't eat negative s'mores!").queue();
+                    channel.sendMessage("You can't eat negative s'mores!").queue();
                     return;
                 }
                 if(eat==0){
-                    event.getChannel().sendMessage("You eat nothing. Nothing happens.").queue();
+                    channel.sendMessage("You eat nothing. Nothing happens.").queue();
                     return;
                 }
                 if(eat>255){
-                    event.getChannel().sendMessage("You can't eat more than 255 s'mores in a single *byte*!").queue();
+                    channel.sendMessage("You can't eat more than 255 s'mores in a single *byte*!").queue();
                     return;
                 }
                 String[] noms = {" Nom nom nom.", " Tasty!", " Yum!"};
-                event.getChannel().sendMessage("You eat "+eat+" smore"+(eat==1?"":"s")+"."+noms[new Random().nextInt(noms.length)]).queue();
-                SmoreBot.eatSmores(event.getAuthor(), eat);
+                channel.sendMessage("You eat "+eat+" smore"+(eat==1?"":"s")+"."+noms[new Random().nextInt(noms.length)]).queue();
+                SmoreBot.eatSmores(user, eat);
             }
         });
         playCommands.add(new SecretCommand("moresmore", "mores'more", "mores’more", "doublesmore", "doubles'more", "doubles’more"){
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                event.getChannel().sendMessage("If you tried making two s'mores at once, your arms would get tired and you'd drop them! You wouldn't want that, would you?").queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                channel.sendMessage("If you tried making two s'mores at once, your arms would get tired and you'd drop them! You wouldn't want that, would you?").queue();
             }
         });
         playCommands.add(new SecretCommand("foursmore", "fours'more", "fours’more", "quadsmore", "quads'more", "quads’more"){
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                event.getChannel().sendMessage("To make four s'mores at once, you'd need four arms. You don't have four arms.").queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                channel.sendMessage("To make four s'mores at once, you'd need four arms. You don't have four arms.").queue();
             }
         });
         playCommands.add(new SecretCommand("smorelord", "s'morelord", "s’morelord"){
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                for(Role role : event.getGuild().getMember(event.getAuthor()).getRoles()){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                for(Role role : guild.getMember(user).getRoles()){
                     if(role.getIdLong()==563124574032756746L){
-                        if(SmoreBot.getSmoreCount(event.getAuthor().getIdLong())<0){
-                            event.getChannel().sendMessage("You try to make a s'morelord, but you are stopped by the S'more bank. They want the S'mores you owe them.").queue();
+                        if(SmoreBot.getSmoreCount(user.getIdLong())<0){
+                            channel.sendMessage("You try to make a s'morelord, but you are stopped by the S'more bank. They want the S'mores you owe them.").queue();
                             return;
                         }
-                        SmoreBot.action(event, new SmoreLordAction());
+                        SmoreBot.action(user, channel, new SmoreLordAction());
                         return;
                     }
                 }
-                event.getChannel().sendMessage("You need a special S'mengineering degree to even comprehend smorelordship").queue();
+                channel.sendMessage("You need a special S'mengineering degree to even comprehend smorelordship").queue();
             }
         });
         playCommands.add(new SecretCommand("glowshroom"){
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                event.getChannel().sendMessage("You don't see a glowshroom").queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                channel.sendMessage("You don't see a glowshroom").queue();
             }
         });
         playCommands.add(new SecretCommand("actions"){
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 String actions = "";
                 for(Long key : SmoreBot.actions.keySet()){
-                    actions+=nick(event.getGuild().getMemberById(key))+" is "+SmoreBot.actions.get(key).getAction()+"\n";
+                    actions+=nick(guild.getMemberById(key))+" is "+SmoreBot.actions.get(key).getAction()+"\n";
                 }
                 if(actions.isEmpty())return;
-                event.getChannel().sendMessage(actions).queue();
+                channel.sendMessage(actions).queue();
             }
         });
         playCommands.add(new Command("noms", "yums", "eated", "eaten", "eats"){
@@ -849,8 +851,8 @@ public class Bot extends ListenerAdapter{
                 return "Displays the amount of s'mores that you have consumed";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                event.getChannel().sendMessage(SmoreBot.getEatenCountS(event.getAuthor().getIdLong())).queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                channel.sendMessage(SmoreBot.getEatenCountS(user.getIdLong())).queue();
             }
         });
         playCommands.add(new Command("smores", "s'mores", "s’mores", "bal", "balance", "money"){
@@ -859,8 +861,8 @@ public class Bot extends ListenerAdapter{
                 return "Displays the amount of s'mores currently in your possession";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                event.getChannel().sendMessage(SmoreBot.getSmoreCountS(event.getAuthor().getIdLong())).queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                channel.sendMessage(SmoreBot.getSmoreCountS(user.getIdLong())).queue();
             }
         });
         playCommands.add(new Command("smoreboard", "leaderboard", "s'moreboard", "s’moreboard"){
@@ -869,15 +871,15 @@ public class Bot extends ListenerAdapter{
                 return "Displays the top 5 s'more stockpilers";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 ArrayList<Long> smorepilers = new ArrayList<>(SmoreBot.smores.keySet());
                 Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(SmoreBot.smores.get(o2)-SmoreBot.smores.get(o1)));
                 EmbedBuilder builder = createEmbed("S'moreboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
-                    mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
+                    mess+=nick(guild.getMemberById(smorepilers.get(i)))+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
                 }
-                event.getChannel().sendMessage(builder.addField("Top S'more Stockpilers", mess, false).build()).queue();
+                channel.sendMessage(builder.addField("Top S'more Stockpilers", mess, false).build()).queue();
             }
         });
         playCommands.add(new SecretCommand("snoreboard", "s'noreboard", "s’noreboard"){
@@ -886,15 +888,15 @@ public class Bot extends ListenerAdapter{
                 return "Displays the bottom 5 s'more stockpilers";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 ArrayList<Long> smorepilers = new ArrayList<>(SmoreBot.smores.keySet());
                 Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(SmoreBot.smores.get(o1)-SmoreBot.smores.get(o2)));
                 EmbedBuilder builder = createEmbed("Snoreboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
-                    mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
+                    mess+=nick(guild.getMemberById(smorepilers.get(i)))+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
                 }
-                event.getChannel().sendMessage(builder.addField("Top S'more Debtors", mess, false).build()).queue();
+                channel.sendMessage(builder.addField("Top S'more Debtors", mess, false).build()).queue();
             }
         });
         playCommands.add(new Command("omnomboard", "nomboard", "yumboard", "eatboard", "s’nomnomnomboard", "s'nomnomnomboard", "nomnomnomboard", "omnomnomboard"){
@@ -903,15 +905,15 @@ public class Bot extends ListenerAdapter{
                 return "Displays the top 5 s'nomnomnommers";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 ArrayList<Long> smorepilers = new ArrayList<>(SmoreBot.eaten.keySet());
                 Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(SmoreBot.eaten.get(o2)-SmoreBot.eaten.get(o1)));
                 EmbedBuilder builder = createEmbed("Nomboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
-                    mess+=nick(event.getGuild().getMemberById(smorepilers.get(i)))+": "+SmoreBot.getEatenCountS(smorepilers.get(i))+"\n";
+                    mess+=nick(guild.getMemberById(smorepilers.get(i)))+": "+SmoreBot.getEatenCountS(smorepilers.get(i))+"\n";
                 }
-                event.getChannel().sendMessage(builder.addField("Top S'nomnomnommers", mess, false).build()).queue();
+                channel.sendMessage(builder.addField("Top S'nomnomnommers", mess, false).build()).queue();
             }
         });
         playCommands.add(new Command("hut", "home", "house"){
@@ -920,7 +922,7 @@ public class Bot extends ListenerAdapter{
                 return "View your or someone else's hut";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 args = args.trim();
                 User targetUser = null;
                 if(args.startsWith("<@")&&args.endsWith(">")){
@@ -934,24 +936,24 @@ public class Bot extends ListenerAdapter{
                     }catch(Exception ex){}
                 }
                 if(targetUser==null){
-                    long id = event.getAuthor().getIdLong();
+                    long id = user.getIdLong();
                     if(SmoreBot.huts.containsKey(id)){
                         Hut hut = SmoreBot.huts.get(id);
-                        hut.sendExteriorImage(event.getChannel());
-                        hut.sendInteriorImage(event.getChannel());
+                        hut.sendExteriorImage(channel);
+                        hut.sendInteriorImage(channel);
                     }else{
-                        event.getChannel().sendMessage("You don't have a hut!").queue();
+                        channel.sendMessage("You don't have a hut!").queue();
                     }
                 }else{
                     long id = targetUser.getIdLong();
                     if(SmoreBot.huts.containsKey(id)){
                         Hut hut = SmoreBot.huts.get(id);
-                        hut.sendExteriorImage(event.getChannel());
-                        if(hut.isAllowedInside(event.getAuthor())){
-                            hut.sendInteriorImage(event.getChannel());
+                        hut.sendExteriorImage(channel);
+                        if(hut.isAllowedInside(user)){
+                            hut.sendInteriorImage(channel);
                         }
                     }else{
-                        event.getChannel().sendMessage("You look for a hut belonging to "+nick(event.getGuild().getMember(targetUser))+", but you don't find one").queue();
+                        channel.sendMessage("You look for a hut belonging to "+nick(guild.getMember(targetUser))+", but you don't find one").queue();
                     }
                 }
             }
@@ -962,27 +964,20 @@ public class Bot extends ListenerAdapter{
                 return "Browse the store";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
-                    Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(SmoreBot.huts.containsKey(user.getIdLong())){
+                    Hut hut = SmoreBot.huts.get(user.getIdLong());
                     EmbedBuilder builder = createEmbed("Store");
                     FOR:for(HutThing thing : Hut.allFurniture){
                         if(!thing.isSellable())continue;
                         for(HutThing thing2 : hut.furniture){
                             if(thing2.equals(thing))continue FOR;
                         }
-                        for(HutThing required : thing.getRequirements()){
-                            boolean has = false;
-                            for(HutThing thing2 : hut.furniture){
-                                if(thing2.equals(required))has = true;
-                            }
-                            if(!has)continue FOR;
-                        }
                         builder.addField(thing.getName(), smoremoji()+" "+thing.getPrice()+(thing instanceof HutThingColorable?" (Colorable)":""), false);
                     }
-                    event.getChannel().sendMessage(builder.build()).queue();
+                    channel.sendMessage(builder.build()).queue();
                 }else{
-                    event.getChannel().sendMessage(createEmbed("Store").addField("Hut", smoremoji()+" "+Hut.PRICE, false).build()).queue();
+                    channel.sendMessage(createEmbed("Store").addField("Hut", smoremoji()+" "+Hut.PRICE, false).build()).queue();
                 }
             }
         });
@@ -992,28 +987,21 @@ public class Bot extends ListenerAdapter{
                 return "Buy something from the store\nTo buy a colored item, use -buy <color> <item name>\nColors must be a hex color (such as #038c3f)";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 long price = -1;
                 Runnable onBuy = null;
-                if(SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
-                    Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                if(SmoreBot.huts.containsKey(user.getIdLong())){
+                    Hut hut = SmoreBot.huts.get(user.getIdLong());
                     FOR:for(HutThing thing : Hut.allFurniture){
                         if(!thing.isSellable())continue;
                         for(HutThing thing2 : hut.furniture){
                             if(thing2.equals(thing))continue FOR;
                         }
-                        for(HutThing required : thing.getRequirements()){
-                            boolean has = false;
-                            for(HutThing thing2 : hut.furniture){
-                                if(thing2.equals(required))has = true;
-                            }
-                            if(!has)continue FOR;
-                        }
                         if(args.trim().equalsIgnoreCase(thing.getName())){
                             price = thing.getPrice();
                             onBuy = () -> {
-                                event.getChannel().sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
-                                hut.furniture.add(thing.newInstance());
+                                channel.sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
+                                hut.furniture.add(thing.newInstance(UUID.randomUUID(), hut));
                             };
                         }
                         if(thing instanceof HutThingColorable&&args.contains(" ")){
@@ -1031,15 +1019,14 @@ public class Bot extends ListenerAdapter{
                                     }catch(Exception ex){}
                                 }
                                 if(color==null){
-                                    event.getChannel().sendMessage("What color?").queue();
+                                    channel.sendMessage("What color?").queue();
                                     return;
                                 }
                                 Color c = color;
                                 price = thing.getPrice();
                                 onBuy = () -> {
-                                    event.getChannel().sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
-                                    HutThingColorable colorable = (HutThingColorable)thing.newInstance();
-                                    hut.furniture.add(colorable.setColor(c));
+                                    channel.sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
+                                    hut.furniture.add(((HutThingColorable)thing.newInstance(UUID.randomUUID(), hut)).setColor(c));
                                 };
                             }
                         }
@@ -1048,20 +1035,20 @@ public class Bot extends ListenerAdapter{
                     if(args.trim().equalsIgnoreCase("hut")){
                         price = Hut.PRICE;
                         onBuy = () -> {
-                            event.getChannel().sendMessage("You buy a hut nearby the campfire. It's currently empty, but you can get stuff to put in it.").queue();
-                            SmoreBot.huts.put(event.getAuthor().getIdLong(), new Hut(event.getAuthor().getIdLong()));
+                            channel.sendMessage("You buy a hut nearby the campfire. It's currently empty, but you can get stuff to put in it.").queue();
+                            SmoreBot.huts.put(user.getIdLong(), new Hut(user.getIdLong()));
                         };
                     }
                 }
                 if(onBuy==null){
-                    event.getChannel().sendMessage("That's not for sale!").queue();
+                    channel.sendMessage("That's not for sale!").queue();
                     return;
                 }
-                if(SmoreBot.getSmoreCount(event.getAuthor().getIdLong())<price){
-                    event.getChannel().sendMessage("You don't have enough s'mores!").queue();
+                if(SmoreBot.getSmoreCount(user.getIdLong())<price){
+                    channel.sendMessage("You don't have enough s'mores!").queue();
                     return;
                 }
-                SmoreBot.removeSmores(event.getAuthor(), price);
+                SmoreBot.removeSmores(user, price);
                 onBuy.run();
             }
         });
@@ -1071,44 +1058,42 @@ public class Bot extends ListenerAdapter{
                 return "Sell something you don't need anymore and get some of the price back";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
+            public void run(User user, MessageChannel channel, String args, boolean debug){
                 long price = -1;
                 Runnable onSell = null;
-                if(SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
+                if(SmoreBot.huts.containsKey(user.getIdLong())){
                     if(args.trim().equalsIgnoreCase("hut")){
-                        event.getChannel().sendMessage("You can't sell your hut!").queue();
+                        channel.sendMessage("You can't sell your hut!").queue();
                         return;
                     }
-                    Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                    Hut hut = SmoreBot.huts.get(user.getIdLong());
                     FOR:for(HutThing thing : hut.furniture){
                         if(args.trim().equalsIgnoreCase(thing.getName())){
                             if(!thing.isSellable()){
-                                event.getChannel().sendMessage("That cannot be sold!").queue();
+                                channel.sendMessage("That cannot be sold!").queue();
                                 return;
                             }
                             for(HutThing thing2 : hut.furniture){
-                                for(HutThing required : thing2.getRequirements()){
-                                    if(required.equals(thing)){
-                                        event.getChannel().sendMessage("You can't sell that!").queue();
-                                        return;
-                                    }
+                                if(thing2.parent!=null&&thing2.parent.equals(thing.uuid)){
+                                    channel.sendMessage("You can't sell that!").queue();
+                                    return;
                                 }
                             }
                             price = thing.getPrice();
                             onSell = () -> {
-                                event.getChannel().sendMessage("You sell your "+thing.getName()).queue();
+                                channel.sendMessage("You sell your "+thing.getName()).queue();
                                 hut.furniture.remove(thing);
                             };
                         }
                     }
                 }else{
-                    event.getChannel().sendMessage("You have nothing to sell!").queue();
+                    channel.sendMessage("You have nothing to sell!").queue();
                 }
                 if(onSell==null){
-                    event.getChannel().sendMessage("You don't have that!").queue();
+                    channel.sendMessage("You don't have that!").queue();
                     return;
                 }
-                SmoreBot.addSmores(event.getAuthor(), price/2);
+                SmoreBot.addSmores(user, price/2);
                 onSell.run();
             }
         });
@@ -1118,14 +1103,14 @@ public class Bot extends ListenerAdapter{
                 return "Invite someone into to your hut!";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(!SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
-                    event.getChannel().sendMessage("You don't have a hut!").queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(!SmoreBot.huts.containsKey(user.getIdLong())){
+                    channel.sendMessage("You don't have a hut!").queue();
                     return;
                 }
                 args = args.trim();
                 if(args.isEmpty()){
-                    event.getChannel().sendMessage("You invite nobody.").queue();
+                    channel.sendMessage("You invite nobody.").queue();
                     return;
                 }
                 long targetID = 0;
@@ -1134,14 +1119,14 @@ public class Bot extends ListenerAdapter{
                     try{
                         targetID = Long.parseLong(args.substring(2, args.length()-1));
                     }catch(Exception ex){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }else{
                     try{
                         targetID = Long.parseLong(args);
                     }catch(Exception ex){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }
@@ -1149,19 +1134,19 @@ public class Bot extends ListenerAdapter{
                 try{
                     targetUser = jda.getUserById(targetID);
                     if(targetUser==null){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }catch(Exception ex){
-                    event.getChannel().sendMessage("Who?").queue();
+                    channel.sendMessage("Who?").queue();
                     return;
                 }
-                Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                Hut hut = SmoreBot.huts.get(user.getIdLong());
                 if(hut.invited.contains(targetID)){
-                    event.getChannel().sendMessage(nick(event.getGuild().getMember(targetUser))+" is already invited!").queue();
+                    channel.sendMessage(nick(guild.getMember(targetUser))+" is already invited!").queue();
                     return;
                 }
-                event.getChannel().sendMessage("You invite "+nick(event.getGuild().getMember(targetUser))+" to your hut.").queue();
+                channel.sendMessage("You invite "+nick(guild.getMember(targetUser))+" to your hut.").queue();
                 hut.invited.add(targetID);
             }
         });
@@ -1171,14 +1156,14 @@ public class Bot extends ListenerAdapter{
                 return "Retract your invitiation from someone!";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(!SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
-                    event.getChannel().sendMessage("You don't have a hut!").queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(!SmoreBot.huts.containsKey(user.getIdLong())){
+                    channel.sendMessage("You don't have a hut!").queue();
                     return;
                 }
                 args = args.trim();
                 if(args.isEmpty()){
-                    event.getChannel().sendMessage("Nobody wasn't invited.").queue();
+                    channel.sendMessage("Nobody wasn't invited.").queue();
                     return;
                 }
                 long targetID = 0;
@@ -1187,14 +1172,14 @@ public class Bot extends ListenerAdapter{
                     try{
                         targetID = Long.parseLong(args.substring(2, args.length()-1));
                     }catch(Exception ex){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }else{
                     try{
                         targetID = Long.parseLong(args);
                     }catch(Exception ex){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }
@@ -1202,19 +1187,19 @@ public class Bot extends ListenerAdapter{
                 try{
                     targetUser = jda.getUserById(targetID);
                     if(targetUser==null){
-                        event.getChannel().sendMessage("Who?").queue();
+                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }catch(Exception ex){
-                    event.getChannel().sendMessage("Who?").queue();
+                    channel.sendMessage("Who?").queue();
                     return;
                 }
-                Hut hut = SmoreBot.huts.get(event.getAuthor().getIdLong());
+                Hut hut = SmoreBot.huts.get(user.getIdLong());
                 if(!hut.invited.contains(targetID)){
-                    event.getChannel().sendMessage(nick(event.getGuild().getMember(targetUser))+" isn't invited!").queue();
+                    channel.sendMessage(nick(guild.getMember(targetUser))+" isn't invited!").queue();
                     return;
                 }
-                event.getChannel().sendMessage("You rectract your invitation from "+nick(event.getGuild().getMember(targetUser))+" to your hut.").queue();
+                channel.sendMessage("You rectract your invitation from "+nick(guild.getMember(targetUser))+" to your hut.").queue();
                 hut.invited.remove(targetID);
             }
         });
@@ -1224,13 +1209,13 @@ public class Bot extends ListenerAdapter{
                 return "Invite everyone into to your hut!";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(!SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
-                    event.getChannel().sendMessage("You don't have a hut!").queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(!SmoreBot.huts.containsKey(user.getIdLong())){
+                    channel.sendMessage("You don't have a hut!").queue();
                     return;
                 }
-                SmoreBot.huts.get(event.getAuthor().getIdLong()).open = true;
-                event.getChannel().sendMessage("You open your hut to visitors.").queue();
+                SmoreBot.huts.get(user.getIdLong()).open = true;
+                channel.sendMessage("You open your hut to visitors.").queue();
             }
         });
         playCommands.add(new Command("close"){
@@ -1239,13 +1224,13 @@ public class Bot extends ListenerAdapter{
                 return "Retract your invitiation from everyone!";
             }
             @Override
-            public void run(GuildMessageReceivedEvent event, String args, boolean debug){
-                if(!SmoreBot.huts.containsKey(event.getAuthor().getIdLong())){
-                    event.getChannel().sendMessage("You don't have a hut!").queue();
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(!SmoreBot.huts.containsKey(user.getIdLong())){
+                    channel.sendMessage("You don't have a hut!").queue();
                     return;
                 }
-                SmoreBot.huts.get(event.getAuthor().getIdLong()).open = false;
-                event.getChannel().sendMessage("You close your hut to visitors.").queue();
+                SmoreBot.huts.get(user.getIdLong()).open = false;
+                channel.sendMessage("You close your hut to visitors.").queue();
             }
         });
     }
@@ -1377,6 +1362,7 @@ public class Bot extends ListenerAdapter{
     }
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
+        guild = event.getGuild();
         if(event.getAuthor().isBot())return;
         storeReactors(event.getMessage());
         if(botChannels.contains(event.getChannel().getIdLong())){
@@ -1396,7 +1382,7 @@ public class Bot extends ListenerAdapter{
                         if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
                             String args = command.substring(alt.length()).trim();
                             try{
-                                cmd.run(event, args, debug);
+                                cmd.run(event.getAuthor(), event.getChannel(), args, debug);
                             }catch(Exception ex){
                                 printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
                             }
@@ -1409,7 +1395,7 @@ public class Bot extends ListenerAdapter{
         }
         if(playChannels.contains(event.getChannel().getIdLong())){
             if(PlayBot.currentGame!=null){
-                PlayBot.currentGame.onMessage(event);
+                PlayBot.currentGame.onMessage(event.getMessage());
             }
             String command = event.getMessage().getContentRaw();
             boolean hasPrefix = false;
@@ -1427,7 +1413,7 @@ public class Bot extends ListenerAdapter{
                         if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
                             String args = command.substring(alt.length()).trim();
                             try{
-                                cmd.run(event, args, debug);
+                                cmd.run(event.getAuthor(), event.getChannel(), args, debug);
                             }catch(Exception ex){
                                 printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
                             }
@@ -1439,7 +1425,39 @@ public class Bot extends ListenerAdapter{
             }
         }
     }
-    public static void printErrorMessage(TextChannel channel, String message, Exception ex){
+    @Override
+    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event){
+        if(event.getAuthor().getIdLong()!=210445638532333569l)return;//THIZ ONLY
+        if(playChannels.contains(event.getChannel().getIdLong())){
+            String command = event.getMessage().getContentRaw();
+            boolean hasPrefix = false;
+            for(String prefix : prefixes){
+                if(command.startsWith(prefix)){
+                    command = command.substring(prefix.length());
+                    hasPrefix = true;
+                    break;
+                }
+            }
+            if(!hasPrefix)return;
+            try{
+                for(Command cmd : playCommands){
+                    for(String alt : cmd.alternates){
+                        if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
+                            String args = command.substring(alt.length()).trim();
+                            try{
+                                cmd.run(event.getAuthor(), event.getChannel(), args, debug);
+                            }catch(Exception ex){
+                                printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
+                            }
+                        }
+                    }
+                }
+            }catch(Exception ex){
+                printErrorMessage(event.getChannel(), "Caught exception loading command!", ex);
+            }
+        }
+    }
+    public static void printErrorMessage(MessageChannel channel, String message, Exception ex){
         String trace = "";
         StackTraceElement[] stackTrace = ex.getStackTrace();
         for(StackTraceElement e : stackTrace){

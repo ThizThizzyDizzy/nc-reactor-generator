@@ -1,5 +1,4 @@
 package planner;
-import discord.Bot;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,14 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 public class Main{
-    private static String requiredSimpleLibraryVersion = "11.0.0";
-    private static int simplelibrarySize = 560;
-    private static int simplelibraryExtendedSize = 628;
-    /**
-     * Set to "" for latest, otherwise exact version #
-     */
-    private static String requiredSimpleLibraryExtendedVersion = null;
-    private static String versionListURL = "https://www.dropbox.com/s/0jezlrj26wmcurz/versions.txt?dl=1";
+    private static String versionListURL = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt";
     public static final String applicationName = "Nuclearcraft Reactor Generator";
     private static HashMap<String[], Integer> requiredLibraries = new HashMap<>();
     private static int downloadSize = 0;
@@ -59,7 +51,8 @@ public class Main{
         if(args.length>=2&&args[1].equals("maybediscord")){
             if(JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
         }
-        if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){
+        addRequiredLibrary("https://github.com/computerneek/SimpleLibrary/releases/download/11.0.0/SimpleLibrary-11.0.0.jar", "SimpleLibrary-11.0.0.jar", 560);
+        if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){//I'll leave this on dropbox for now. What could possibly go wrong?
             addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
             addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);
             addRequiredLibrary("https://www.dropbox.com/s/5fzv4attffxpn67/commons-collections4-4.1.jar?dl=1", "commons-collections4-4.1.jar", 734);
@@ -99,14 +92,14 @@ public class Main{
                 }
             }
             String[][] nativesPaths = {
-                {"https://dl.dropboxusercontent.com/s/1nt1g7ui7p4eb54/windows32natives.zip?dl=1&token_hash=AAFsOnqBqipIOxc4sNr138FnlZIjHBf-KPwMTNe8F5lqOQ",
-                 "https://dl.dropboxusercontent.com/s/y41peavuls3ptzu/windows64natives.zip?dl=1&token_hash=AAEJ6Ih8HGEsla1tJmIB7R-YBCTC8LVq_D4OFcFWDCEZ5Q"},
-                {"https://dl.dropboxusercontent.com/s/h4z3j2pspuos15l/solaris32natives.zip?dl=1&token_hash=AAEmlE84CzHRTqya3xPN9xRh_1_v0nGccJFp-bfru4jSRw",
-                 "https://dl.dropboxusercontent.com/s/vq3x3n81x0qvc3u/solaris64natives.zip?dl=1&token_hash=AAEyl6swuFIukpTNZjrgv96TGwSnMYxWt0hdQ71_KiqQqw"},
-                {"https://dl.dropboxusercontent.com/s/ljvgoccqz33bcq1/macosx32natives.zip?dl=1&token_hash=AAGezz3pNxqa6Fi_O-xGCZdI2923D7b-ZsrWZ61HlFROYw",
+                {"https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/windows32natives.zip",
+                 "https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/windows64natives.zip"},
+                {"https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/solaris32natives.zip",
+                 "https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/solaris64natives.zip"},
+                {"https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/macosx32natives.zip",
                  null},
-                {"https://dl.dropboxusercontent.com/s/nfv4ra6n68lna9n/linux32natives.zip?dl=1&token_hash=AAGzHZLGp9S4HAjzpzNZp9-YixYw4H56D6_DJ3dG5GDeFA",
-                 "https://dl.dropboxusercontent.com/s/rp6uhdmec7697ty/linux64natives.zip?dl=1&token_hash=AAHl6tcg11VwWr31WtqMUlozabCSpr0LfS5MLS2MpmWnEA"}
+                {"https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/linux32natives.zip",
+                 "https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/linux64natives.zip"}
             };
             String OS = System.getenv("OS");
             int whichOS = OS_UNKNOWN;
@@ -139,20 +132,14 @@ public class Main{
             if((!new File(getLibraryRoot()+"/natives64.zip").exists())&&whichBitDepth==BIT_64){
                 downloadSize += 338;
             }
-            addRequiredLibrary("https://dl.dropboxusercontent.com/s/p7v72lix4gl96co/lwjgl.jar?dl=1&token_hash=AAG5TMAYw0Oq1_xwgVjKoE8FkKXMaWOfpj5cau1UuWKZlA", "lwjgl.jar", 912);
-            addRequiredLibrary("https://dl.dropboxusercontent.com/s/9ylaq5w5vzj1lgi/jinput.jar?dl=1&token_hash=AAHILxU3uc-UU5vXj7N4i5s1huBKYSzKGgKq3MawNJB05w", "jinput.jar", 210);
-            addRequiredLibrary("https://dl.dropboxusercontent.com/s/fog6w5pcxqf4zd9/lwjgl_util.jar?dl=1&token_hash=AAHwYq0uL4zeuTrLoi8EiG_RiUeMDZDsnlm4KYNScpy0Sw", "lwjgl_util.jar", 170);
-            addRequiredLibrary("https://dl.dropboxusercontent.com/s/60en1x8in11leqn/lzma.jar?dl=1&token_hash=AAGUFJwmD9jKmk7j4M53Xr0_6Sisf5RSRW3JAjRgsml4gg", "lzma.jar", 6);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/lwjgl.jar", "lwjgl.jar", 912);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/jinput.jar", "jinput.jar", 210);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/lwjgl_util.jar", "lwjgl_util.jar", 170);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/9cda14783134989483597550b7d1545f06f3a84f/libraries/lzma.jar", "lzma.jar", 6);
             for(String[] lib : requiredLibraries.keySet()){
                 if(!new File(getLibraryRoot()+"/"+lib[1]).exists()){
                     downloadSize+=requiredLibraries.get(lib);
                 }
-            }
-            if(!new File(getLibraryRoot()+"/Simplelibrary "+requiredSimpleLibraryVersion+".jar").exists()){
-                downloadSize+=simplelibrarySize+2;//2 kb for the versions file
-            }
-            if(requiredSimpleLibraryExtendedVersion!=null&&(!new File(getLibraryRoot()+"/Simplelibrary_extended "+requiredSimpleLibraryExtendedVersion+".jar").exists())){
-                downloadSize+=simplelibraryExtendedSize+1;//1 kb for the versions file
             }
             if(downloadSize>0&&!allowDownload){
                 if(JOptionPane.showConfirmDialog(null, applicationName+" has a few dependencies that must be downloaded before play.\nThere is up to about "+(downloadSize>=1000?(downloadSize/1000+"MB"):(downloadSize+" KB"))+" to download.\nDownload them now?", applicationName+" - Dependencies", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)
@@ -182,52 +169,6 @@ public class Main{
             extractFile(bit32, nativesDir);
             if(bit64!=null){
                 extractFile(bit64, nativesDir);
-            }
-            File simplibVersions = forceDownloadFile("https://www.dropbox.com/s/as5y1ik7gb8gp6k/versions.dat?dl=1", new File("simplib.versions"));
-            if(simplibVersions==null){
-                System.err.println("Failed to download Simplelibrary versions file! Skipping...");
-                addRequiredLibrary(null, "Simplelibrary "+requiredSimpleLibraryVersion+".jar", simplelibrarySize);
-            }else{
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(simplibVersions)));
-                ArrayList<String> versions = new ArrayList<>();
-                HashMap<String, String> simplib = new HashMap<>();
-                String line;
-                while((line = reader.readLine())!=null){
-                    if(line.isEmpty())continue;
-                    versions.add(line.split("=", 2)[0]);
-                    simplib.put(line.split("=", 2)[0], line.split("=", 2)[1]);
-                }
-                reader.close();
-                if(!versions.contains(requiredSimpleLibraryVersion)){
-                    System.err.println("Unknown simplelibrary version "+requiredSimpleLibraryVersion+"! Downloading latest version");
-                    requiredSimpleLibraryVersion = versions.get(versions.size()-1);
-                }
-                addRequiredLibrary(simplib.get(requiredSimpleLibraryVersion), "Simplelibrary "+requiredSimpleLibraryVersion+".jar", simplelibrarySize);
-                simplibVersions.delete();
-            }
-            if(requiredSimpleLibraryExtendedVersion!=null){
-                File simpLibExtendedVersions = forceDownloadFile("https://www.dropbox.com/s/7k4ri81to8hc9n2/versions.dat?dl=1", new File("simplibextended.versions"));
-                if(simpLibExtendedVersions==null){
-                    System.err.println("Failed to download Simplelibrary Extended versions file! Skipping...");
-                    addRequiredLibrary(null, "Simplelibrary_extended "+requiredSimpleLibraryExtendedVersion+".jar", simplelibraryExtendedSize);
-                }else{
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(simpLibExtendedVersions)));
-                    ArrayList<String> versions = new ArrayList<>();
-                    HashMap<String, String> simpLibExtended = new HashMap<>();
-                    String line;
-                    while((line = reader.readLine())!=null){
-                        if(line.isEmpty())continue;
-                        versions.add(line.split("=", 2)[0]);
-                        simpLibExtended.put(line.split("=", 2)[0], line.split("=", 2)[1]);
-                    }
-                    reader.close();
-                    if(!versions.contains(requiredSimpleLibraryExtendedVersion)){
-                        System.err.println("Unknown Simplelibrary_extended version "+requiredSimpleLibraryExtendedVersion+"! Downloading latest version");
-                        requiredSimpleLibraryExtendedVersion = versions.get(versions.size()-1);
-                    }
-                    addRequiredLibrary(simpLibExtended.get(requiredSimpleLibraryExtendedVersion), "Simplelibrary_extended "+requiredSimpleLibraryExtendedVersion+".jar", simplelibraryExtendedSize);
-                    simpLibExtendedVersions.delete();
-                }
             }
             File[] requiredLibs = new File[requiredLibraries.size()];
             int n = 0;

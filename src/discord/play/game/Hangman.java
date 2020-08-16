@@ -10,8 +10,7 @@ import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.ppe.ClearInvalid;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import planner.file.FileWriter;
 import planner.file.FormatWriter;
 import planner.file.NCPFFile;
@@ -32,7 +31,7 @@ public class Hangman extends Game{
         ArrayList<Multiblock> multis = new ArrayList<>(ncpf.multiblocks);
         basis = multis.get(new Random().nextInt(multis.size())).copy();
         basis.recalculate();
-        new ClearInvalid().apply(basis);
+        new ClearInvalid().apply(basis, null);
         basis.recalculate();
         this.config = ncpf.configuration;
         basis.metadata.clear();
@@ -65,35 +64,35 @@ public class Hangman extends Game{
         this.blind = blind;
     }
     @Override
-    public void start(GuildMessageReceivedEvent event){
-        event.getChannel().sendMessage("Hangman has started!\nCurrent Multiblock: "+basis.getX()+"x"+basis.getY()+"x"+basis.getZ()+" "+basis.getDefinitionName()+"\nYou have "+(maxGuesses-1)+" Incorrect guesses left."+(usesActive?"\nThis reactor has active coolers":"")).queue();
-        if(!blind)exportPng(generateNCPF(current), event.getChannel());
+    public void start(MessageChannel channel){
+        channel.sendMessage("Hangman has started!\nCurrent Multiblock: "+basis.getX()+"x"+basis.getY()+"x"+basis.getZ()+" "+basis.getDefinitionName()+"\nYou have "+(maxGuesses-1)+" Incorrect guesses left."+(usesActive?"\nThis reactor has active coolers":"")).queue();
+        if(!blind)exportPng(generateNCPF(current), channel);
     }
     @Override
-    protected void stop(TextChannel channel){
+    protected void stop(MessageChannel channel){
         channel.sendMessage("Hangman timed out!").queue();
     }
     @Override
-    public void onMessage(GuildMessageReceivedEvent event){
-        String content = event.getMessage().getContentDisplay().trim().replace(":", "");
+    public void onMessage(Message message){
+        String content = message.getContentDisplay().trim().replace(":", "");
         ArrayList<Block> blocks = new ArrayList<>();
         basis.getAvailableBlocks(blocks);
         for(Block b : blocks){
             if(b.roughMatch(content)){
-                guess(event, b);
+                guess(message.getChannel(), b);
                 return;
             }
         }
     }
-    private void guess(GuildMessageReceivedEvent event, Block b){
+    private void guess(MessageChannel channel, Block b){
         update();
         if(b.getName().toLowerCase().contains("active")&&!usesActive){
-            event.getChannel().sendMessage("This reactor contains no active coolers!").queue();
+            channel.sendMessage("This reactor contains no active coolers!").queue();
             return;
         }
         for(Block bl : guesses){
             if(bl.isEqual(b)){
-                event.getChannel().sendMessage("You already guessed "+b.getName()+"!").queue();
+                channel.sendMessage("You already guessed "+b.getName()+"!").queue();
                 return;
             }
         }
@@ -102,7 +101,7 @@ public class Hangman extends Game{
         boolean valid = false;
         for(Block block : blocks){
             if(block.isEqual(b)){
-                current.blocks[block.x][block.y][block.z] = block.copy();
+                current.setBlock(block.x, block.y, block.z, block);
                 valid = true;
             }
         }
@@ -121,24 +120,24 @@ public class Hangman extends Game{
                 for(Block miss : missed){
                     missing+="\n`"+miss.getName()+"`";
                 }
-                event.getChannel().sendMessage("Game Over!\n"+missing).queue();
-                exportPng(generateNCPF(basis), event.getChannel());
+                channel.sendMessage("Game Over!\n"+missing).queue();
+                exportPng(generateNCPF(basis), channel);
                 running = false;
                 return;
             }
-            event.getChannel().sendMessage("Nope; Try again!\nRemaining guesses: "+(maxGuesses-badGuesses)).queue();
+            channel.sendMessage("Nope; Try again!\nRemaining guesses: "+(maxGuesses-badGuesses)).queue();
         }else{
-            event.getChannel().sendMessage("Correct!").queue();
+            channel.sendMessage("Correct!").queue();
             if(current.getBlocks(true).size()==basis.getBlocks().size()){
-                event.getChannel().sendMessage("You win!\nIncorrect Guesses: "+badGuesses+"/"+(maxGuesses-1)).queue();
-                exportPng(generateNCPF(basis), event.getChannel());
+                channel.sendMessage("You win!\nIncorrect Guesses: "+badGuesses+"/"+(maxGuesses-1)).queue();
+                exportPng(generateNCPF(basis), channel);
                 running = false;
                 return;
             }
-            if(!blind)exportPng(generateNCPF(current), event.getChannel());
+            if(!blind)exportPng(generateNCPF(current), channel);
         }
     }
-    private void exportPng(NCPFFile ncpf, TextChannel channel){
+    private void exportPng(NCPFFile ncpf, MessageChannel channel){
         for(Multiblock m : ncpf.multiblocks){
             m.recalculate();
         }

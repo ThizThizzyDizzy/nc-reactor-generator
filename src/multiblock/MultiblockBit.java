@@ -18,4 +18,8 @@ public class MultiblockBit extends Renderer2D{
         double fac = Math.pow(10, digits);
         return (Math.round(n*fac*100)/Math.round(fac))+"%";
     }
+    protected double round(double n, int digits){
+        double fac = Math.pow(10, digits);
+        return Math.round(n*fac)/Math.round(fac);
+    }
 }

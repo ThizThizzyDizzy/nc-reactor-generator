@@ -139,4 +139,7 @@ public abstract class Block extends MultiblockBit{
         if(blockName.endsWith("s"))blockName = blockName.substring(0, blockName.length()-1);
         return blockNam.equalsIgnoreCase(blockName);
     }
+    public boolean isFullBlock(){
+        return true;
+    }
 }

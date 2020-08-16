@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import planner.Core;
 import simplelibrary.font.FontManager;
@@ -40,7 +41,7 @@ public abstract class KeywordCommand extends Command{
         keywordOrder.add(regex);
     }
     @Override
-    public final void run(GuildMessageReceivedEvent event, String args, boolean debug){
+    public final void run(net.dv8tion.jda.api.entities.User user, MessageChannel channel, String args, boolean debug){
         ArrayList<Keyword> words = new ArrayList<>();
         String str = args.toLowerCase();
         for(String regex : keywordOrder){
@@ -103,9 +104,9 @@ public abstract class KeywordCommand extends Command{
         }catch(IOException ex){
             Logger.getLogger(KeywordCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
-        event.getChannel().sendFile(debugFile, "debug.png").complete();
+        channel.sendFile(debugFile, "debug.png").complete();
         debugFile.delete();
-        run(event, words, debug);
+        run(channel, words, debug);
     }
-    public abstract void run(GuildMessageReceivedEvent event, ArrayList<Keyword> keywords, boolean debug);
+    public abstract void run(MessageChannel channel, ArrayList<Keyword> keywords, boolean debug);
 }
