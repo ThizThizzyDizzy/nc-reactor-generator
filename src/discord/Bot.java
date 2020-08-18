@@ -20,6 +20,7 @@ import discord.play.game.Hangman;
 import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
 import discord.play.smivilization.HutThingColorable;
+import discord.play.smivilization.Placement;
 import generator.MultiblockGenerator;
 import generator.Priority;
 import generator.StandardGenerator;
@@ -906,14 +907,40 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                ArrayList<Long> smorepilers = new ArrayList<>(SmoreBot.eaten.keySet());
-                Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(SmoreBot.eaten.get(o2)-SmoreBot.eaten.get(o1)));
+                ArrayList<Long> snommers = new ArrayList<>(SmoreBot.eaten.keySet());
+                Collections.sort(snommers, (Long o1, Long o2) -> (int)(SmoreBot.eaten.get(o2)-SmoreBot.eaten.get(o1)));
                 EmbedBuilder builder = createEmbed("Nomboard");
                 String mess = "";
-                for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
-                    mess+=nick(guild.getMemberById(smorepilers.get(i)))+": "+SmoreBot.getEatenCountS(smorepilers.get(i))+"\n";
+                for(int i = 0; i<Math.min(5, snommers.size()); i++){
+                    mess+=nick(guild.getMemberById(snommers.get(i)))+": "+SmoreBot.getEatenCountS(snommers.get(i))+"\n";
                 }
                 channel.sendMessage(builder.addField("Top S'nomnomnommers", mess, false).build()).queue();
+            }
+        });
+        playCommands.add(new SecretCommand("hutdump"){
+            @Override
+            public String getHelpText(){
+                return "Get a debug dump of all your hut stuff";
+            }
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(SmoreBot.huts.containsKey(user.getIdLong())){
+                    Hut hut = SmoreBot.huts.get(user.getIdLong());
+                    String mess = "";
+                    for(HutThing thing : hut.getFurniture()){
+                        float scale = hut.getScale(thing.y+thing.getDimY()/2f);
+                        mess+="\n ";
+                        if(thing instanceof HutThingColorable){
+                            Color c = ((HutThingColorable)thing).getColor();
+                            mess+="#"+Integer.toHexString(c.getRed())+Integer.toHexString(c.getGreen())+Integer.toHexString(c.getBlue())+" ";
+                        }
+                        mess+=thing.getName()+" @ ("+thing.x+","+thing.y+","+thing.z+" x"+scale+" | "+thing.uuid+")";
+                        if(thing.parent!=null)mess+="; parent: "+thing.parent;
+                    }
+                    channel.sendMessage(mess.trim()).queue();
+               }else{
+                    channel.sendMessage("You don't have a hut!").queue();
+                }
             }
         });
         playCommands.add(new Command("hut", "home", "house"){
@@ -958,26 +985,214 @@ public class Bot extends ListenerAdapter{
                 }
             }
         });
+        playCommands.add(new SecretCommand("transferhut"){
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                args = args.trim();
+                if(args.isEmpty()){
+                    return;
+                }
+                String[] argses = args.split(" ");
+                if(argses.length==1){
+                    return;
+                }
+                String target1 = argses[0];
+                long target1ID = 0;
+                if(target1.startsWith("<@")&&target1.endsWith(">")){
+                    if(target1.contains("!"))target1 = target1.substring(1);
+                    try{
+                        target1ID = Long.parseLong(target1.substring(2, target1.length()-1));
+                    }catch(Exception ex){
+                        return;
+                    }
+                }else{
+                    try{
+                        target1ID = Long.parseLong(target1);
+                    }catch(Exception ex){
+                        return;
+                    }
+                }
+                User target1User;
+                try{
+                    target1User = jda.getUserById(target1ID);
+                    if(target1User==null){
+                        return;
+                    }
+                }catch(Exception ex){
+                    return;
+                }
+                String target2 = argses[1];
+                long target2ID = 0;
+                if(target2.startsWith("<@")&&target2.endsWith(">")){
+                    if(target2.contains("!"))target2 = target2.substring(1);
+                    try{
+                        target2ID = Long.parseLong(target2.substring(2, target2.length()-1));
+                    }catch(Exception ex){
+                        return;
+                    }
+                }else{
+                    try{
+                        target2ID = Long.parseLong(target2);
+                    }catch(Exception ex){
+                        return;
+                    }
+                }
+                User target2User;
+                try{
+                    target2User = jda.getUserById(target2ID);
+                    if(target2User==null){
+                        return;
+                    }
+                }catch(Exception ex){
+                    return;
+                }
+                target1ID = target1User.getIdLong();
+                target2ID = target2User.getIdLong();
+                if(!SmoreBot.huts.containsKey(target1ID)){
+                    channel.sendMessage(nick(guild.getMember(target1User))+" doesn't have a hut!").queue();
+                    return;
+                }
+                if(SmoreBot.huts.containsKey(target2ID)){
+                    channel.sendMessage(nick(guild.getMember(target2User))+" already has a hut!").queue();
+                    return;
+                }
+                if(SmoreBot.huts.containsKey(target1ID)){
+                    Hut hut = SmoreBot.huts.get(target1ID);
+                    SmoreBot.huts.remove(target1ID);
+                    hut.owner = target2ID;
+                    SmoreBot.huts.put(target2ID, hut);
+                }
+            }
+        });
+        playCommands.add(new Command("move"){
+            @Override
+            public String getHelpText(){
+                return "Move something in your hut";
+            }
+            @Override
+            public void run(User user, MessageChannel channel, String commandArg, boolean debug){
+                String[] args = commandArg.trim().split(" ");
+                if(SmoreBot.huts.containsKey(user.getIdLong())){
+                    Hut hut = SmoreBot.huts.get(user.getIdLong());
+                    if(commandArg.isEmpty()){
+                        channel.sendMessage("Move what?").queue();
+                        return;
+                    }
+                    ArrayList<HutThing> possible = new ArrayList<>();
+                    String chosen = args[0];
+                    LOOP:for(HutThing thing : hut.getFurniture()){
+                        for(int i = 1; i<args.length; i++){
+                            String str = "";
+                            for(int j = 0; j<=i; j++){
+                                str+=args[j]+" ";
+                            }
+                            if(thing.getName().equalsIgnoreCase(str.trim())){
+                                chosen = thing.getName();
+                                String[] newargs = new String[args.length-i];
+                                for(int j = 0; j<newargs.length; j++){
+                                    newargs[j] = args[j+i];
+                                }
+                                args = newargs;
+                                break LOOP;
+                            }
+                        }
+                    }
+                    for(HutThing thing : hut.getFurniture()){
+                        if(thing.getName().equalsIgnoreCase(chosen))possible.add(thing);
+                    }
+                    if(possible.isEmpty()){
+                        channel.sendMessage("You don't have that!").queue();
+                        return;
+                    }
+                    HutThing thingToMove;
+                    String whereTo = null;
+                    if(possible.size()>1){
+                        boolean whichOne = false;
+                        if(args.length==1){
+                            whichOne = true;
+                        }
+                        int idx = 0;
+                        if(!whichOne){
+                            try{
+                                idx = Integer.parseInt(args[1]);
+                            }catch(NumberFormatException ex){
+                                whichOne = true;
+                            }
+                        }
+                        if(idx<1||idx>possible.size())whichOne = true;
+                        if(whichOne){
+                            channel.sendMessage("Which one?").queue();
+                            hut.sendHighlightImage(channel, possible);
+                            return;
+                        }
+                        thingToMove = possible.get(idx-1);
+                        if(args.length>2)whereTo = args[2];
+                    }else{
+                        thingToMove = possible.get(0);
+                        if(args.length>1)whereTo = args[1];
+                    }
+                    for(HutThing thing : hut.getFurniture()){
+                        if(thing.parent!=null&&thing.parent.equals(thingToMove.uuid)){
+                            channel.sendMessage("You can't move that!").queue();
+                            return;
+                        }
+                    }
+                    boolean butWhere = false;
+                    if(whereTo==null){
+                        butWhere = true;
+                    }
+                    ArrayList<Placement> possiblePlacements = hut.getPossiblePlacements(thingToMove);
+                    int idx = 0;
+                    if(!butWhere){
+                        try{
+                            idx = Integer.parseInt(whereTo);
+                        }catch(NumberFormatException ex){
+                            butWhere = true;
+                        }
+                    }
+                    if(idx<1||idx>possiblePlacements.size())butWhere = true;
+                    if(butWhere){
+                        channel.sendMessage("Move it where?").queue();
+                        hut.sendPlacementHighlightImage(channel, thingToMove, possiblePlacements);
+                        return;
+                    }
+                    Placement there = possiblePlacements.get(idx-1);
+                    thingToMove.x = there.x;
+                    thingToMove.y = there.y;
+                    thingToMove.z = there.z;
+                    thingToMove.wall = there.wall;
+                    thingToMove.parent = there.parent;
+                    channel.sendMessage("You move the "+thingToMove.getName()+".").queue();
+                }else{
+                    channel.sendMessage("You don't have a hut!").queue();
+                }
+            }
+        });
         playCommands.add(new Command("store", "shop"){
             @Override
             public String getHelpText(){
-                return "Browse the store";
+                return "Browse the s'tore";
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 if(SmoreBot.huts.containsKey(user.getIdLong())){
-                    Hut hut = SmoreBot.huts.get(user.getIdLong());
-                    EmbedBuilder builder = createEmbed("Store");
+                    EmbedBuilder builder = createEmbed("S'tore");
+                    String names = "";
+                    String prices = "";
+                    String colors = "";
                     FOR:for(HutThing thing : Hut.allFurniture){
                         if(!thing.isSellable())continue;
-                        for(HutThing thing2 : hut.furniture){
-                            if(thing2.equals(thing))continue FOR;
-                        }
-                        builder.addField(thing.getName(), smoremoji()+" "+thing.getPrice()+(thing instanceof HutThingColorable?" (Colorable)":""), false);
+                        names+=thing.getName()+"\n";
+                        prices+=thing.getPrice()+"\n";
+                        colors+=(thing instanceof HutThingColorable?"Colorable":"​​​​​​​")+"\n";
                     }
+                    builder.addField("Item", names, true);
+                    builder.addField(smoremoji(), prices, true);
+                    builder.addField("", colors, true);
                     channel.sendMessage(builder.build()).queue();
                 }else{
-                    channel.sendMessage(createEmbed("Store").addField("Hut", smoremoji()+" "+Hut.PRICE, false).build()).queue();
+                    channel.sendMessage(createEmbed("S'tore").addField("Hut", smoremoji()+" "+Hut.PRICE, false).build()).queue();
                 }
             }
         });
@@ -994,14 +1209,17 @@ public class Bot extends ListenerAdapter{
                     Hut hut = SmoreBot.huts.get(user.getIdLong());
                     FOR:for(HutThing thing : Hut.allFurniture){
                         if(!thing.isSellable())continue;
-                        for(HutThing thing2 : hut.furniture){
-                            if(thing2.equals(thing))continue FOR;
-                        }
+//                        for(HutThing thing2 : hut.getFurniture()){
+//                            if(thing2.isEqual(thing))continue FOR;
+//                        }
                         if(args.trim().equalsIgnoreCase(thing.getName())){
                             price = thing.getPrice();
                             onBuy = () -> {
-                                channel.sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
-                                hut.furniture.add(thing.newInstance(UUID.randomUUID(), hut));
+                                if(hut.add(thing.newInstance(hut))){
+                                    channel.sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
+                                }else{
+                                    channel.sendMessage("There's no space for a "+thing.getName()+" in your hut!").queue();
+                                }
                             };
                         }
                         if(thing instanceof HutThingColorable&&args.contains(" ")){
@@ -1026,7 +1244,7 @@ public class Bot extends ListenerAdapter{
                                 price = thing.getPrice();
                                 onBuy = () -> {
                                     channel.sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
-                                    hut.furniture.add(((HutThingColorable)thing.newInstance(UUID.randomUUID(), hut)).setColor(c));
+                                    hut.add(((HutThingColorable)thing.newInstance(hut)).setColor(c));
                                 };
                             }
                         }
@@ -1058,43 +1276,84 @@ public class Bot extends ListenerAdapter{
                 return "Sell something you don't need anymore and get some of the price back";
             }
             @Override
-            public void run(User user, MessageChannel channel, String args, boolean debug){
-                long price = -1;
-                Runnable onSell = null;
+            public void run(User user, MessageChannel channel, String commandArg, boolean debug){
+                String[] args = commandArg.trim().split(" ");
                 if(SmoreBot.huts.containsKey(user.getIdLong())){
-                    if(args.trim().equalsIgnoreCase("hut")){
+                    if(commandArg.trim().equalsIgnoreCase("hut")){
                         channel.sendMessage("You can't sell your hut!").queue();
                         return;
                     }
                     Hut hut = SmoreBot.huts.get(user.getIdLong());
-                    FOR:for(HutThing thing : hut.furniture){
-                        if(args.trim().equalsIgnoreCase(thing.getName())){
-                            if(!thing.isSellable()){
-                                channel.sendMessage("That cannot be sold!").queue();
-                                return;
+                    if(commandArg.isEmpty()){
+                        channel.sendMessage("Sell what?").queue();
+                        return;
+                    }
+                    ArrayList<HutThing> possible = new ArrayList<>();
+                    String chosen = args[0];
+                    LOOP:for(HutThing thing : hut.getFurniture()){
+                        for(int i = 1; i<args.length; i++){
+                            String str = "";
+                            for(int j = 0; j<=i; j++){
+                                str+=args[j]+" ";
                             }
-                            for(HutThing thing2 : hut.furniture){
-                                if(thing2.parent!=null&&thing2.parent.equals(thing.uuid)){
-                                    channel.sendMessage("You can't sell that!").queue();
-                                    return;
+                            if(thing.getName().equalsIgnoreCase(str.trim())){
+                                chosen = thing.getName();
+                                String[] newargs = new String[args.length-i];
+                                for(int j = 0; j<newargs.length; j++){
+                                    newargs[j] = args[j+i];
                                 }
+                                args = newargs;
+                                break LOOP;
                             }
-                            price = thing.getPrice();
-                            onSell = () -> {
-                                channel.sendMessage("You sell your "+thing.getName()).queue();
-                                hut.furniture.remove(thing);
-                            };
                         }
                     }
+                    for(HutThing thing : hut.getFurniture()){
+                        if(thing.getName().equalsIgnoreCase(chosen))possible.add(thing);
+                    }
+                    if(possible.isEmpty()){
+                        channel.sendMessage("You don't have that!").queue();
+                        return;
+                    }
+                    HutThing thing;
+                    if(possible.size()>1){
+                        boolean whichOne = false;
+                        if(args.length==1){
+                            whichOne = true;
+                        }
+                        int idx = 0;
+                        if(!whichOne){
+                            try{
+                                idx = Integer.parseInt(args[1]);
+                            }catch(NumberFormatException ex){
+                                whichOne = true;
+                            }
+                        }
+                        if(idx<1||idx>possible.size())whichOne = true;
+                        if(whichOne){
+                            channel.sendMessage("Which one?").queue();
+                            hut.sendHighlightImage(channel, possible);
+                            return;
+                        }
+                        thing = possible.get(idx-1);
+                    }else{
+                        thing = possible.get(0);
+                    }
+                    if(!thing.isSellable()){
+                        channel.sendMessage("That cannot be sold!").queue();
+                        return;
+                    }
+                    for(HutThing thing2 : hut.getFurniture()){
+                        if(thing2.parent!=null&&thing2.parent.equals(thing.uuid)){
+                            channel.sendMessage("You can't sell that!").queue();
+                            return;
+                        }
+                    }
+                    SmoreBot.addSmores(user, thing.getPrice()/2);
+                    channel.sendMessage("You sell your "+thing.getName()).queue();
+                    hut.remove(thing);
                 }else{
                     channel.sendMessage("You have nothing to sell!").queue();
                 }
-                if(onSell==null){
-                    channel.sendMessage("You don't have that!").queue();
-                    return;
-                }
-                SmoreBot.addSmores(user, price/2);
-                onSell.run();
             }
         });
         playCommands.add(new Command("invite"){

@@ -302,12 +302,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public abstract String getTooltip();
     public void draw3D(){
         ArrayList<T> blocks = getAbsoluteBlocks();
-        Collections.sort(blocks, new Comparator<T>() {
-            @Override
-            public int compare(T o1, T o2){
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        Collections.sort(blocks, (T o1, T o2) -> o1.getName().compareTo(o2.getName()));
         Block last = null;
         for(T block : blocks){
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
@@ -322,14 +317,11 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     public void draw3DInOrder(){
         ArrayList<T> blocks = getAbsoluteBlocks();
-        Collections.sort(blocks, new Comparator<T>() {
-            @Override
-            public int compare(T o1, T o2){
-                if(o1.y!=o2.y)return o2.y-o1.y;
-                int d1 = o1.x-o1.z;
-                int d2 = o2.x-o2.z;
-                return d1-d2;
-            }
+        Collections.sort(blocks, (T o1, T o2) -> {
+            if(o1.y!=o2.y)return o2.y-o1.y;
+            int d1 = o1.x-o1.z;
+            int d2 = o2.x-o2.z;
+            return d1-d2;
         });
         Block last = null;
         for(T block : blocks){

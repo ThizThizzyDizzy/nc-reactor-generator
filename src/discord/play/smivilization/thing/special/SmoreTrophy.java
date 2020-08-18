@@ -2,11 +2,8 @@ package discord.play.smivilization.thing.special;
 import discord.play.SmoreBot;
 import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
-import java.awt.Color;
+import discord.play.smivilization.Wall;
 import java.util.UUID;
-import planner.Core;
-import simplelibrary.opengl.ImageStash;
-import simplelibrary.opengl.Renderer2D;
 public class SmoreTrophy extends HutThing{
     public SmoreTrophy(UUID uid, Hut hut){
         super(uid, hut, "S'more Trophy", "trophy", -1);
@@ -16,8 +13,7 @@ public class SmoreTrophy extends HutThing{
         return new SmoreTrophy(uuid, hut);
     }
     @Override
-    public void render(int width, int height){
-        Core.applyColor(Color.white);
+    public String getTexture(){
         String type;
         switch(SmoreBot.getSmorePlacement(hut.owner)){
             case 1:
@@ -30,8 +26,41 @@ public class SmoreTrophy extends HutThing{
                 type = "bronze smore";
                 break;
             default:
-                return;
+                type = "no trophy";
+                break;
         }
-        Renderer2D.drawRect(0, 0, width, height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/trophy/"+type+".png"));
+        return "/textures/smivilization/buildings/huts/gliese/furniture/trophy/"+type+".png";
+    }
+    @Override
+    public int[] getDimensions(){
+        return new int[]{1,1,1};
+    }
+    @Override
+    public int[] getDefaultLocation(){
+        return new int[]{4,-1,4};
+    }
+    @Override
+    public Wall getDefaultWall(){
+        return Wall.FLOOR;
+    }
+    @Override
+    public float getRenderWidth(){
+        return 128;
+    }
+    @Override
+    public float getRenderHeight(){
+        return 112;
+    }
+    @Override
+    public float getRenderOriginX(){
+        return 64;
+    }
+    @Override
+    public float getRenderOriginY(){
+        return 76.5f;
+    }
+    @Override
+    public Wall[] getAllowedWalls(){
+        return new Wall[]{Wall.FLOOR};
     }
 }

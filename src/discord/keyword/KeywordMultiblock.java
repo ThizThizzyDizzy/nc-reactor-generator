@@ -17,7 +17,7 @@ public class KeywordMultiblock extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "(sfr|msr|solid[ -]?fueled|molten[ -]?salt)( ?reactor)?|(reactor)";
+        return "turbine|(sfr|msr|solid[ -]?fueled|molten[ -]?salt)( ?reactor)?|(reactor)";
     }
     @Override
     public Keyword newInstance(){

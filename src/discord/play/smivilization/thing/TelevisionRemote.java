@@ -1,58 +1,51 @@
 package discord.play.smivilization.thing;
 import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
-import discord.play.smivilization.PlacementPoint;
 import discord.play.smivilization.Wall;
-import java.util.ArrayList;
 import java.util.UUID;
-public class Shelf extends HutThing{
-    public Shelf(UUID uuid, Hut hut){
-        super(uuid, hut, "Shelf", "shelf", 10);
+public class TelevisionRemote extends HutThing{
+    public TelevisionRemote(UUID uuid, Hut hut){
+        super(uuid, hut, "TV Remote", "tv remote", 4);
         mirrorIf = -1;
     }
     @Override
     public HutThing newInstance(UUID uuid, Hut hut){
-        return new Shelf(uuid, hut);
+        return new TelevisionRemote(uuid, hut);
     }
     @Override
     public int[] getDimensions(){
-        return new int[]{1,8,4};
+        return new int[]{1,1,1};
     }
     @Override
     public int[] getDefaultLocation(){
-        return new int[]{9,2,6};
+        return  new int[]{6,0,0};
     }
     @Override
     public Wall getDefaultWall(){
-        return Wall.RIGHT;
+        return Wall.FLOOR;
     }
     @Override
     public float getRenderWidth(){
-        return 627;
+        return 98;
     }
     @Override
     public float getRenderHeight(){
-        return 718;
+        return 65;
     }
     @Override
     public float getRenderOriginX(){
-        return 345;
+        return 20;
     }
     @Override
     public float getRenderOriginY(){
-        return 280;
+        return 30;
     }
     @Override
     public float getRenderScale(){
-        return 1/1.6552793f;
+        return 1/1.1638198f;
     }
     @Override
     public Wall[] getAllowedWalls(){
-        return new Wall[]{Wall.LEFT,Wall.RIGHT};
-    }
-    @Override
-    public void getPlacementPoints(ArrayList<PlacementPoint> points){
-        addHorizontalPlacementPointGrid(Wall.FLOOR, x, y, z, getDimX(), getDimY(), points);
-        addHorizontalPlacementPointGrid(Wall.FLOOR, x, y, z+2, getDimX(), getDimY(), points);
+        return new Wall[]{Wall.FLOOR};
     }
 }

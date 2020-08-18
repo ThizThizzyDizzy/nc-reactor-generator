@@ -3,8 +3,6 @@ import java.awt.Color;
 import java.util.UUID;
 import planner.Core;
 import simplelibrary.config2.Config;
-import simplelibrary.opengl.ImageStash;
-import simplelibrary.opengl.Renderer2D;
 public abstract class HutThingColorable extends HutThing{
     private Color color;
     public HutThingColorable(UUID uuid, Hut hut, String name, String textureName, long price, Color defaultColor){
@@ -28,8 +26,10 @@ public abstract class HutThingColorable extends HutThing{
         color = new Color(config.get("rgb"));
     }
     @Override
-    public void render(int width, int height){
+    public void draw(double left, double top, double right, double bottom){
         Core.applyColor(getColor());
-        Renderer2D.drawRect(0, 0, width, height, ImageStash.instance.getTexture(getTexture()));
+        super.draw(left, top, right, bottom);
     }
+    @Override
+    public abstract int[] getDimensions();
 }

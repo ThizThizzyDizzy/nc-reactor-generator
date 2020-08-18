@@ -25,7 +25,7 @@ public class KeywordConfiguration extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "po3|e2e";
+        return "po3|e2e|aapn|sf4";
     }
     @Override
     public Keyword newInstance(){

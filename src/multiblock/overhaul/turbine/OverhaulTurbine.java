@@ -387,7 +387,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
             double[] actualExpansion = new double[blades.length];
             double expansionSoFar = 1;
             rotorEfficiency = 0;
-            float minBladeExpansion = Float.MAX_VALUE;//I HOPE there isn't a 1 billion times expansion coeff.
+            float minBladeExpansion = Float.MAX_VALUE;
             float minStatorExpansion = 1;
             int numBlades = 0;
             int numberOfBlades = 0;
@@ -400,7 +400,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
                 }
                 else minStatorExpansion = Math.min(exp, minStatorExpansion);
                 idealExpansion[i] = Math.pow(recipe.coefficient, (i+.5f)/blades.length);
-                actualExpansion[i] = expansionSoFar*Math.sqrt(blades[i].blade.expansion);//TODO actually calculate things
+                actualExpansion[i] = expansionSoFar*Math.sqrt(blades[i].blade.expansion);
                 expansionSoFar*=blades[i].blade.expansion;
                 rotorEfficiency+=blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
             }

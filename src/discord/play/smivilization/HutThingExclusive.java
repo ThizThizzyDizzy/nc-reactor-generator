@@ -1,6 +1,4 @@
-package discord.play.smivilization.thing.special;
-import discord.play.smivilization.Hut;
-import discord.play.smivilization.HutThing;
+package discord.play.smivilization;
 import java.util.UUID;
 public abstract class HutThingExclusive extends HutThing{
     public final long exclusiveOwner;
@@ -8,4 +6,6 @@ public abstract class HutThingExclusive extends HutThing{
         super(uuid, hut, name, textureName, price);
         this.exclusiveOwner = exclusiveOwner;
     }
+    @Override
+    public abstract Wall[] getAllowedWalls();
 }

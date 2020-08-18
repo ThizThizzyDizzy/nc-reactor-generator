@@ -16,7 +16,7 @@ public class Configuration{
     static{
         configurations.add(FileReader.read(() -> {
             return getInputStream("configurations/nuclearcraft.ncpf");
-        }).configuration);
+        }).configuration.addAlternative("").addAlternative("SF4"));
         configurations.add(FileReader.read(() -> {
             return getInputStream("configurations/po3.ncpf");
         }).configuration.addAlternative("PO3"));
@@ -73,6 +73,6 @@ public class Configuration{
     }
     public String getShortName(){
         if(alternatives.isEmpty())return null;
-        return alternatives.get(0);
+        return alternatives.get(0).trim().isEmpty()?null:alternatives.get(0);
     }
 }

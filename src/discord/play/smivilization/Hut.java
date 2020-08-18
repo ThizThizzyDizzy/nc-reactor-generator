@@ -3,16 +3,13 @@ import discord.play.smivilization.thing.*;
 import discord.Bot;
 import discord.play.model.Face;
 import discord.play.model.Model;
-import discord.play.model.OBJLoader;
 import discord.play.smivilization.thing.special.*;
 import java.awt.Color;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -28,10 +25,19 @@ import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class Hut{
     public static long PRICE = 32;
-    public final long owner;
+    /**
+     * Only used to initalize new ones. do not use directly.
+     */
+    private static final SmoreTrophy trophy;
+    /**
+     * Only used to initalize new ones. do not use directly.
+     */
+    private static final EatenSmoreTrophy nomTrophy;
+    public long owner;
     public static final ArrayList<HutThing> allFurniture = new ArrayList<>();
     static{
         allFurniture.add(new Lamp(null, null));
+        allFurniture.add(new LightSwitch(null, null));
         allFurniture.add(new Shelf(null, null));
         allFurniture.add(new Couch(null, null));
         allFurniture.add(new Bed(null, null));
@@ -39,18 +45,31 @@ public class Hut{
         allFurniture.add(new PuLaptop(null, null));
         allFurniture.add(new Table(null, null));
         allFurniture.add(new Television(null, null));
+        allFurniture.add(new TelevisionRemote(null, null));
         allFurniture.add(new CoffeeTable(null, null));
         allFurniture.add(new TomPainting(null, null));
         allFurniture.add(new GlowshroomGlowshroomGlowshroomPoster(null, null));
+        allFurniture.add(new PatreonPoster(null, null));
         allFurniture.add(new SmoreRug(null, null));
+        allFurniture.add(trophy = new SmoreTrophy(null, null));
+        allFurniture.add(nomTrophy = new EatenSmoreTrophy(null, null));
     }
     public ArrayList<Long> invited = new ArrayList<>();
     public ArrayList<HutThing> furniture = new ArrayList<>();
     public boolean open;
     public Hut(long owner){
         this.owner = owner;
-        if(owner==210340018198151170l){
-            furniture.add(new GlowshroomGlowshroomGlowshroomPoster(null, null));
+        addExclusives();
+    }
+    private void addExclusives(){
+        addOnce(trophy.newInstance(this));
+        addOnce(nomTrophy.newInstance(this));
+        for(HutThing thing : allFurniture){
+            if(thing instanceof HutThingExclusive){
+                if(((HutThingExclusive)thing).exclusiveOwner==owner){
+                    addOnce(thing.newInstance(this));
+                }
+            }
         }
     }
     public Config save(Config config){
@@ -70,6 +89,7 @@ public class Hut{
     }
     public static Hut load(Config config){
         Hut hut = new Hut(config.get("owner"));
+        hut.furniture.clear();
         ConfigNumberList inviteds = config.get("invited");
         for(int i = 0; i<inviteds.size(); i++){
             hut.invited.add(inviteds.get(i));
@@ -83,6 +103,7 @@ public class Hut{
             hut.furniture.add(thing);
         }
         hut.open = config.get("open", false);
+        hut.addExclusives();
         return hut;
     }
     public boolean isAllowedInside(User user){
@@ -113,14 +134,10 @@ public class Hut{
         sendImage(channel, "inside", (buff) -> {
             Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
+            Collections.sort(furn);
             for(HutThing thing : furn){
-                GL11.glColor4d(1, 1, 1, 1);
-                thing.render(buff.width, buff.height);
+                thing.render(.25f);
             }
-//            for(PlacementPoint point : getPlacementPoints()){
-//                Core.applyColor(Color.white);
-//                Renderer2D.drawRect(point.vx-2*point.scale, point.vy-2*point.scale, point.vx+2*point.scale, point.vy+2*point.scale, 0);
-//            }
 //            try{
 //                drawa3DModelLikeTotalMagic(8, 0, 5, OBJLoader.loadModel("C:/Users/Thiz/Desktop/untitled.obj"));
 //                drawa3DModelLikeTotalMagic(2, 0, 5, OBJLoader.loadModel("C:/Users/Thiz/Desktop/untitled.obj"));
@@ -129,20 +146,201 @@ public class Hut{
 //            }catch(IOException ex){}
         });
     }
+    public void sendHighlightImage(MessageChannel channel, List<HutThing> highlights){
+        sendImage(channel, "inside", (buff) -> {
+            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/inside.png"));
+            ArrayList<HutThing> furn = new ArrayList<>(furniture);
+            Collections.sort(furn);
+            for(HutThing thing : furn){
+                thing.render(.25f);
+            }
+            for(HutThing thing : furn){
+                float x,y,z;
+                switch(thing.wall){
+                    case FLOOR:
+                        x = thing.x+thing.getDimX()/2f;
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z;
+                        break;
+                    case CIELING:
+                        x = thing.x+thing.getDimX()/2f;
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z+thing.getDimZ();
+                        break;
+                    case BACK:
+                        x = thing.x+thing.getDimX()/2f;
+                        y = thing.y;
+                        z = thing.z+thing.getDimZ()/2f;
+                        break;
+                    case LEFT:
+                        x = thing.x;
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z+thing.getDimZ()/2f;
+                        break;
+                    case RIGHT:
+                        x = thing.x+thing.getDimX();
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z+thing.getDimZ()/2f;
+                        break;
+                    default:
+                        x = thing.x+thing.getDimX()/2f;
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z+thing.getDimZ()/2f;
+                        break;
+                }
+                double[] xy = convertXYZtoXY512(x, y, z);
+                if(highlights.contains(thing)){
+                    Core.drawCircle(xy[0], xy[1], 0, 16, new Color(0,96,192));
+                    Core.drawCircle(xy[0], xy[1], 14, 18, new Color(0,64,128));
+                }
+            }
+            for(HutThing thing : furn){
+                float x,y,z;
+                switch(thing.wall){
+                    case FLOOR:
+                        x = thing.x+thing.getDimX()/2f;
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z;
+                        break;
+                    case CIELING:
+                        x = thing.x+thing.getDimX()/2f;
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z+thing.getDimZ();
+                        break;
+                    case BACK:
+                        x = thing.x+thing.getDimX()/2f;
+                        y = thing.y;
+                        z = thing.z+thing.getDimZ()/2f;
+                        break;
+                    case LEFT:
+                        x = thing.x;
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z+thing.getDimZ()/2f;
+                        break;
+                    case RIGHT:
+                        x = thing.x+thing.getDimX();
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z+thing.getDimZ()/2f;
+                        break;
+                    default:
+                        x = thing.x+thing.getDimX()/2f;
+                        y = thing.y+thing.getDimY()/2f;
+                        z = thing.z+thing.getDimZ()/2f;
+                        break;
+                }
+                double[] xy = convertXYZtoXY512(x, y, z);
+                if(highlights.contains(thing)){
+                    GL11.glColor4d(.05, .05, .05, 1);
+                    int textHeight = 20;
+                    Renderer2D.drawCenteredText(xy[0]-textHeight, xy[1]-textHeight/2, xy[0]+textHeight, xy[1]+textHeight/2, (highlights.indexOf(thing)+1)+"");
+                }
+            }
+        });
+    }
+    public void sendPlacementHighlightImage(MessageChannel channel, HutThing highlightedThing, List<Placement> highlights){
+        sendImage(channel, "inside", (buff) -> {
+            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/inside.png"));
+            ArrayList<HutThing> furn = new ArrayList<>(furniture);
+            Collections.sort(furn);
+            for(HutThing thing : furn){
+                thing.render(.25f);
+            }
+            for(Placement placement : highlights){
+                float x,y,z;
+                switch(placement.wall){
+                    case FLOOR:
+                        x = placement.x+placement.dimX/2f;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z;
+                        break;
+                    case CIELING:
+                        x = placement.x+placement.dimX/2f;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z+1;
+                        break;
+                    case BACK:
+                        x = placement.x+placement.dimX/2f;
+                        y = placement.y;
+                        z = placement.z+placement.dimZ/2f;
+                        break;
+                    case LEFT:
+                        x = placement.x;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z+placement.dimZ/2f;
+                        break;
+                    case RIGHT:
+                        x = placement.x+placement.dimX;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z+placement.dimZ/2f;
+                        break;
+                    default:
+                        x = placement.x+placement.dimX/2f;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z+placement.dimZ/2f;
+                        break;
+                }
+                double[] xy = convertXYZtoXY512(x, y, z);
+                Core.drawCircle(xy[0], xy[1], 0, 16, new Color(0,96,192));
+                Core.drawCircle(xy[0], xy[1], 14, 18, new Color(0,64,128));
+            }
+            for(Placement placement : highlights){
+                float x,y,z;
+                switch(placement.wall){
+                    case FLOOR:
+                        x = placement.x+placement.dimX/2f;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z;
+                        break;
+                    case CIELING:
+                        x = placement.x+placement.dimX/2f;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z+1;
+                        break;
+                    case BACK:
+                        x = placement.x+placement.dimX/2f;
+                        y = placement.y;
+                        z = placement.z+placement.dimZ/2f;
+                        break;
+                    case LEFT:
+                        x = placement.x;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z+placement.dimZ/2f;
+                        break;
+                    case RIGHT:
+                        x = placement.x+placement.dimX;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z+placement.dimZ/2f;
+                        break;
+                    default:
+                        x = placement.x+placement.dimX/2f;
+                        y = placement.y+placement.dimY/2f;
+                        z = placement.z+placement.dimZ/2f;
+                        break;
+                }
+                double[] xy = convertXYZtoXY512(x, y, z);
+                GL11.glColor4d(.05, .05, .05, 1);
+                int textHeight = 20;
+                Renderer2D.drawCenteredText(xy[0]-textHeight, xy[1]-textHeight/2, xy[0]+textHeight, xy[1]+textHeight/2, (highlights.indexOf(placement)+1)+"");
+            }
+        });
+    }
     public ArrayList<PlacementPoint> getPlacementPoints(){
         ArrayList<PlacementPoint> points = new ArrayList<>();
-        addHorizontalPlacementPointGrid2048(0, 0, 0, 10, 10, points, 543, 1336, 1581, 1320, 189, 1978, 1876, 1969);//floor
-        addHorizontalPlacementPointGrid2048(0, 0, 10, 10, 10, points, 567, 258, 1628, 227, 16, 16, 2032, 16);//cieling
-        addBackWallPlacementPointGrid2048(10, 10, 10, 3, 2, 6, 6, points, 600, 340, 1600, 310, 570, 1240, 1580, 1220);//back wall, excluding window
-        addHorizontalPlacementPointGrid2048(3, 10, 4, 4, 1, points, 931, 886, 1258, 887, 931, 886, 1258, 887);//window sill
-        addSideWallPlacementPointGrid2048(10, 10, 0, points, 520, 335, 65, 222, 478, 1273, 42, 1912);//left wall
-        addSideWallPlacementPointGrid2048(10, 10, 0, points, 1683, 305, 2003, 200, 1672, 1282, 2002, 1845);//right wall
+        addHorizontalPlacementPointGrid2048(Wall.FLOOR, 0, 0, 0, 10, 10, points, 543, 1336, 1581, 1320, 189, 1978, 1876, 1969);//floor
+        addHorizontalPlacementPointGrid2048(Wall.CIELING, 0, 0, 9, 10, 10, points, 567, 258, 1628, 227, 16, 16, 2032, 16);//cieling
+        addBackWallPlacementPointGrid2048(Wall.BACK, 10, 10, 0, 3, 2, 6, 6, points, 600, 340, 1600, 310, 570, 1240, 1580, 1220);//back wall, excluding window
+        addHorizontalPlacementPointGrid2048(Wall.FLOOR, 3, -1, 4, 4, 1, points, 931, 886, 1258, 887, 931, 886, 1258, 887);//window sill
+        addSideWallPlacementPointGrid2048(Wall.LEFT, 10, 10, 0, points, 520, 335, 65, 222, 478, 1273, 42, 1912);//left wall
+        addSideWallPlacementPointGrid2048(Wall.RIGHT, 10, 10, 9, points, 1683, 305, 2003, 200, 1672, 1282, 2002, 1845);//right wall
+        for(HutThing thing : getFurniture()){
+            thing.getPlacementPoints(points);
+        }
         return points;
     }
-    private void addHorizontalPlacementPointGrid2048(int xOff, int yOff, int z, int width, int depth, List<PlacementPoint> points, int backLeftX, int backLeftY, int backRightX, int backRightY, int frontLeftX, int frontLeftY, int frontRightX, int frontRightY){
-        addHorizontalPlacementPointGrid512(xOff, yOff, z, width, depth, points, backLeftX/4, backLeftY/4, backRightX/4, backRightY/4, frontLeftX/4, frontLeftY/4, frontRightX/4, frontRightY/4);
+    private void addHorizontalPlacementPointGrid2048(Wall wall, int xOff, int yOff, int z, int width, int depth, List<PlacementPoint> points, int backLeftX, int backLeftY, int backRightX, int backRightY, int frontLeftX, int frontLeftY, int frontRightX, int frontRightY){
+        addHorizontalPlacementPointGrid512(wall, xOff, yOff, z, width, depth, points, backLeftX/4, backLeftY/4, backRightX/4, backRightY/4, frontLeftX/4, frontLeftY/4, frontRightX/4, frontRightY/4);
     }
-    private void addHorizontalPlacementPointGrid512(int xOff, int yOff, int z, int width, int depth, List<PlacementPoint> points, int backLeftX, int backLeftY, int backRightX, int backRightY, int frontLeftX, int frontLeftY, int frontRightX, int frontRightY){
+    private void addHorizontalPlacementPointGrid512(Wall wall, int xOff, int yOff, int z, int width, int depth, List<PlacementPoint> points, int backLeftX, int backLeftY, int backRightX, int backRightY, int frontLeftX, int frontLeftY, int frontRightX, int frontRightY){
         int backSize = backRightX-backLeftX;
         int frontSize = frontRightX-frontLeftX;
         int widthDiff = frontSize-backSize;
@@ -154,7 +352,6 @@ public class Hut{
             float dep = (Y/(float)(depth-1));
             if(Float.isNaN(dep))dep = 0;
             int wide = (int)(backSize+widthDiff*dep);
-            float scale = wide/(float)backSize;
             int left = (int)(backLeftX+(frontLeftX-backLeftX)*dep);
             for(int x = 0; x<width; x++){
                 float wid = (x/(float)(width-1));
@@ -165,20 +362,20 @@ public class Hut{
                 if(Float.isNaN(w))w = 0;
                 float d = deep/((float)depth-1);
                 if(Float.isNaN(d))d = 0;
-                points.add(new PlacementPoint(this, x+xOff, y+yOff, z, (int)(left+x*w), (int)(back+Y*d), scale));
+                points.add(new PlacementPoint(this, wall, x+xOff, y+yOff, z, (int)(left+x*w), (int)(back+Y*d)));
             }
         }
     }
-    private void addBackWallPlacementPointGrid2048(int width, int height, int y, List<PlacementPoint> points, int backLeftX, int backLeftY, int backRightX, int backRightY, int frontLeftX, int frontLeftY, int frontRightX, int frontRightY){
-        addBackWallPlacementPointGrid2048(width, height, y, -1, -1, -1, -1, points, backLeftX, backLeftY, backRightX, backRightY, frontLeftX, frontLeftY, frontRightX, frontRightY);
+    private void addBackWallPlacementPointGrid2048(Wall wall, int width, int height, int y, List<PlacementPoint> points, int backLeftX, int backLeftY, int backRightX, int backRightY, int frontLeftX, int frontLeftY, int frontRightX, int frontRightY){
+        addBackWallPlacementPointGrid2048(wall, width, height, y, -1, -1, -1, -1, points, backLeftX, backLeftY, backRightX, backRightY, frontLeftX, frontLeftY, frontRightX, frontRightY);
     }
-    private void addBackWallPlacementPointGrid512(int width, int height, int y, List<PlacementPoint> points, int topLeftX, int topLeftY, int topRightX, int topRightY, int bottomLeftX, int bottomLeftY, int bottomRightX, int bottomRightY){
-        addBackWallPlacementPointGrid512(width, height, y, -1, -1, -1, -1, points, topLeftX, topLeftY, topRightX, topRightY, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY);
+    private void addBackWallPlacementPointGrid512(Wall wall, int width, int height, int y, List<PlacementPoint> points, int topLeftX, int topLeftY, int topRightX, int topRightY, int bottomLeftX, int bottomLeftY, int bottomRightX, int bottomRightY){
+        addBackWallPlacementPointGrid512(wall, width, height, y, -1, -1, -1, -1, points, topLeftX, topLeftY, topRightX, topRightY, bottomLeftX, bottomLeftY, bottomRightX, bottomRightY);
     }
-    private void addBackWallPlacementPointGrid2048(int width, int height, int y, int excludeX1, int excludeZ1, int excludeX2, int excludeZ2, List<PlacementPoint> points, int topLeftX, int topLeftY, int topRightX, int topRightY, int bottomLeftX, int bottomLeftY, int bottomRightX, int bottomRightY){
-        addBackWallPlacementPointGrid512(width, height, y, excludeX1, excludeZ1, excludeX2, excludeZ2, points, topLeftX/4, topLeftY/4, topRightX/4, topRightY/4, bottomLeftX/4, bottomLeftY/4, bottomRightX/4, bottomRightY/4);
+    private void addBackWallPlacementPointGrid2048(Wall wall, int width, int height, int y, int excludeX1, int excludeZ1, int excludeX2, int excludeZ2, List<PlacementPoint> points, int topLeftX, int topLeftY, int topRightX, int topRightY, int bottomLeftX, int bottomLeftY, int bottomRightX, int bottomRightY){
+        addBackWallPlacementPointGrid512(wall, width, height, y, excludeX1, excludeZ1, excludeX2, excludeZ2, points, topLeftX/4, topLeftY/4, topRightX/4, topRightY/4, bottomLeftX/4, bottomLeftY/4, bottomRightX/4, bottomRightY/4);
     }
-    private void addBackWallPlacementPointGrid512(int width, int height, int y, int excludeX1, int excludeZ1, int excludeX2, int excludeZ2, List<PlacementPoint> points, int topLeftX, int topLeftY, int topRightX, int topRightY, int bottomLeftX, int bottomLeftY, int bottomRightX, int bottomRightY){
+    private void addBackWallPlacementPointGrid512(Wall wall, int width, int height, int y, int excludeX1, int excludeZ1, int excludeX2, int excludeZ2, List<PlacementPoint> points, int topLeftX, int topLeftY, int topRightX, int topRightY, int bottomLeftX, int bottomLeftY, int bottomRightX, int bottomRightY){
         int topSize = topRightX-topLeftX;
         int bottomSize = bottomRightX-bottomLeftX;
         int widthDiff = bottomSize-topSize;
@@ -194,14 +391,14 @@ public class Hut{
                 float wid = (x/(float)(width-1));
                 int high = (int)(leftSize+heightDiff*wid);
                 int top = (int)(topLeftY+(topRightY-topLeftY)*wid);
-                points.add(new PlacementPoint(this, x, y, z, left+x*wide/(width-1), top+z*high/(height-1), 1));
+                points.add(new PlacementPoint(this, wall, x, y, z, left+x*wide/(width-1), top+z*high/(height-1)));
             }
         }
     }
-    private void addSideWallPlacementPointGrid2048(int depth, int height, int x, List<PlacementPoint> points, int topBackX, int topBackY, int topFrontX, int topFrontY, int bottomBackX, int bottomBackY, int bottomFrontX, int bottomFrontY){
-        addSideWallPlacementPointGrid512(depth, height, x, points, topBackX/4, topBackY/4, topFrontX/4, topFrontY/4, bottomBackX/4, bottomBackY/4, bottomFrontX/4, bottomFrontY/4);
+    private void addSideWallPlacementPointGrid2048(Wall wall, int depth, int height, int x, List<PlacementPoint> points, int topBackX, int topBackY, int topFrontX, int topFrontY, int bottomBackX, int bottomBackY, int bottomFrontX, int bottomFrontY){
+        addSideWallPlacementPointGrid512(wall, depth, height, x, points, topBackX/4, topBackY/4, topFrontX/4, topFrontY/4, bottomBackX/4, bottomBackY/4, bottomFrontX/4, bottomFrontY/4);
     }
-    private void addSideWallPlacementPointGrid512(int depth, int height, int x, List<PlacementPoint> points, int topBackX, int topBackY, int topFrontX, int topFrontY, int bottomBackX, int bottomBackY, int bottomFrontX, int bottomFrontY){
+    private void addSideWallPlacementPointGrid512(Wall wall, int depth, int height, int x, List<PlacementPoint> points, int topBackX, int topBackY, int topFrontX, int topFrontY, int bottomBackX, int bottomBackY, int bottomFrontX, int bottomFrontY){
         int topSize = topFrontX-topBackX;
         int bottomSize = bottomFrontX-bottomBackX;
         int depthDiff = bottomSize-topSize;
@@ -216,8 +413,7 @@ public class Hut{
                 float dep = (y/(float)(depth-1));
                 int high = (int)(backSize+heightDiff*dep);
                 int top = (int)(topBackY+(topFrontY-topBackY)*dep);
-                float scale = high/(float)backSize;
-                points.add(new PlacementPoint(this, x, y, z, back+y*deep/(depth-1), top+z*high/(height-1), scale));
+                points.add(new PlacementPoint(this, wall, x, y, z, back+y*deep/(depth-1), top+z*high/(height-1)));
             }
         }
     }
@@ -345,17 +541,50 @@ public class Hut{
         GL11.glColor4f((color.getRed()+total)/255, (color.getGreen()+total)/255, (color.getBlue()+total)/255, 1);
     }
     private void vertex(float x, float y, float z){
-        float[] pos = convertXYZtoXY512(x, y, z);
-        GL11.glVertex2f(pos[0],pos[1]);
+        double[] pos = convertXYZtoXY512(x, y, z);
+        GL11.glVertex2d(pos[0],pos[1]);
     }
-    private float[] convertXYZtoXY512(float x, float y, float z){
-        float[] xy = convertXYZtoXY2048(x, y, z);
-        return new float[]{xy[0]/4,xy[1]/4};
+    public static double[] convertXYZtoXY512(double x, double y, double z){
+        double[] xy = convertXYZtoXY2048(x, y, z);
+        return new double[]{xy[0]/4,xy[1]/4};
     }
-    private float[] convertXYZtoXY2048(float x, float y, float z){
+    public static double[] convertXYZtoXY2048(double x, double y, double z){
         x/=10;
         y/=10;
         z/=10;
+        //xyz are 0-1
+        int[] backTopLeft = {560, 305};
+        int[] backTopRight = {1636, 280};
+        int[] backBottomLeft = {513, 1295};
+        int[] backBottomRight = {1623,1283};
+        int[] frontTopLeft = {-221,0};
+        int[] frontTopRight = {2296,0};
+        int[] frontBottomLeft = {0,2100};
+        int[] frontBottomRight = {2048,2048};
+        int[] topLeftDiff = {frontTopLeft[0]-backTopLeft[0],frontTopLeft[1]-backTopLeft[1]};
+        int[] topRightDiff = {frontTopRight[0]-backTopRight[0],frontTopRight[1]-backTopRight[1]};
+        int[] bottomLeftDiff = {frontBottomLeft[0]-backBottomLeft[0],frontBottomLeft[1]-backBottomLeft[1]};
+        int[] bottomRightDiff = {frontBottomRight[0]-backBottomRight[0],frontBottomRight[1]-backBottomRight[1]};
+        double[] topLeft = {backTopLeft[0]+topLeftDiff[0]*y,backTopLeft[1]+topLeftDiff[1]*y};
+        double[] topRight = {backTopRight[0]+topRightDiff[0]*y,backTopRight[1]+topRightDiff[1]*y};
+        double[] bottomLeft = {backBottomLeft[0]+bottomLeftDiff[0]*y,backBottomLeft[1]+bottomLeftDiff[1]*y};
+        double[] bottomRight = {backBottomRight[0]+bottomRightDiff[0]*y,backBottomRight[1]+bottomRightDiff[1]*y};
+        double leftHeight = Math.abs(topLeft[1]-bottomLeft[1]);//left height at depth
+        double rightHeight = Math.abs(topRight[1]-bottomRight[1]);//right height at depth
+        double bottomWidth = Math.abs(bottomLeft[0]-bottomRight[0]);//bottom width at depth
+        double topWidth = Math.abs(topLeft[0]-topRight[0]);//top width at depth
+        double bottomX = bottomLeft[0]+bottomWidth*x;
+        double topX = topLeft[0]+topWidth*x;
+        double leftY = bottomLeft[1]-leftHeight*z;
+        double rightY = bottomRight[1]-rightHeight*z;
+        double xDiff = topX-bottomX;
+        double yDiff = rightY-leftY;
+        double X = bottomX+xDiff*x;
+        double Y = leftY+yDiff*z;
+        return new double[]{X,Y};
+    }
+    public float getScale(float y){
+        y/=10;
         //xyz are 0-1
         int[] backTopLeft = {560, 305};
         int[] backTopRight = {1636, 280};
@@ -373,18 +602,109 @@ public class Hut{
         float[] topRight = {backTopRight[0]+topRightDiff[0]*y,backTopRight[1]+topRightDiff[1]*y};
         float[] bottomLeft = {backBottomLeft[0]+bottomLeftDiff[0]*y,backBottomLeft[1]+bottomLeftDiff[1]*y};
         float[] bottomRight = {backBottomRight[0]+bottomRightDiff[0]*y,backBottomRight[1]+bottomRightDiff[1]*y};
-        float leftHeight = Math.abs(topLeft[1]-bottomLeft[1]);//left height at depth
-        float rightHeight = Math.abs(topRight[1]-bottomRight[1]);//right height at depth
         float bottomWidth = Math.abs(bottomLeft[0]-bottomRight[0]);//bottom width at depth
         float topWidth = Math.abs(topLeft[0]-topRight[0]);//top width at depth
-        float bottomX = bottomLeft[0]+bottomWidth*x;
-        float topX = topLeft[0]+topWidth*x;
-        float leftY = bottomLeft[1]-leftHeight*z;
-        float rightY = bottomRight[1]-rightHeight*z;
-        float xDiff = topX-bottomX;
-        float yDiff = rightY-leftY;
-        float X = bottomX+xDiff*x;
-        float Y = leftY+yDiff*z;
-        return new float[]{X,Y};
+        float topScale = topWidth/(backTopRight[0]-backTopLeft[0]);
+        float bottomScale = bottomWidth/(backBottomRight[0]-backBottomLeft[0]);
+        return (topScale+bottomScale)/2;
+    }
+    public ArrayList<HutThing> getFurniture(){
+        return new ArrayList<>(furniture);//you shall not modify :3
+    }
+    public boolean add(HutThing thing){
+        ArrayList<Placement> placements = getPossiblePlacements(thing);
+        for(Placement p : placements){
+            int[] loc = thing.getDefaultLocation();
+            if(p.x==loc[0]&&p.y==loc[1]&&p.z==loc[2]){
+                furniture.add(thing);
+                return true;
+            }
+        }
+        if(placements.isEmpty())return false;
+        Placement placement = placements.get(0);
+        thing.x = placement.x;
+        thing.y = placement.y;
+        thing.z = placement.z;
+        thing.wall = placement.wall;
+        thing.parent = placement.parent;
+        furniture.add(thing);
+        return true;
+    }
+    public void remove(HutThing thing){
+        furniture.remove(thing);
+    }
+    private void addOnce(HutThing thing){
+        for(HutThing has : furniture){
+            if(has.isEqual(thing))return;
+        }
+        add(thing);
+    }
+    public ArrayList<Placement> getPossiblePlacements(HutThing thing){
+        ArrayList<HutThing> obstructions = getFurniture();
+        obstructions.remove(thing);
+        for(Iterator<HutThing> it = obstructions.iterator(); it.hasNext();){
+            HutThing obstruction = it.next();
+            if(obstruction.isBackgroundObject()&&thing.isBackgroundObject()&&obstruction.wall!=thing.wall
+                    ||obstruction.isBackgroundObject()&&!thing.isBackgroundObject()
+                    ||thing.isBackgroundObject()&&!obstruction.isBackgroundObject())it.remove();
+        }
+        ArrayList<Placement> possibles = new ArrayList<>();
+        ArrayList<PlacementPoint> points = getPlacementPoints();
+        for(Iterator<PlacementPoint> it = points.iterator(); it.hasNext();){
+            PlacementPoint point = it.next();
+            boolean allowed = false;
+            for(Wall w : thing.getAllowedWalls()){
+                if(w.equals(point.wall))allowed = true;
+            }
+            if(!allowed||point.parent==thing)it.remove();
+        }
+        for(PlacementPoint point : points){
+            possibles.add(new Placement(thing, point));
+        }
+        PLACE:for(Iterator<Placement> it = possibles.iterator(); it.hasNext();){
+            Placement place = it.next();
+            for(int x = place.x; x<place.x+place.dimX; x++){
+                for(int y = place.y; y<place.y+place.dimY; y++){
+                    boolean hasPoint = false;
+                    for(PlacementPoint point : points){
+                        if(point.x==x&&point.y==y&&point.z==place.z&&point.wall==place.wall){
+                            hasPoint = true;
+                        }
+                    }
+                    if(!hasPoint){
+                        it.remove();
+                        continue PLACE;
+                    }
+                    for(int z = place.z; z<place.z+place.dimZ; z++){
+                        int Z = z;
+                        if(place.wall==Wall.CIELING){
+                            Z = place.z-z+place.z;
+                        }
+                        if(thing.getDimX(place.wall)>1&&x>=10){
+                            it.remove();
+                            continue PLACE;
+                        }
+                        if(thing.getDimY(place.wall)>1&&y>=10){
+                            it.remove();
+                            continue PLACE;
+                        }
+                        if(thing.getDimZ(place.wall)>1&&Z>=10){
+                            it.remove();
+                            continue PLACE;
+                        }
+                        for(HutThing obstruction : obstructions){
+                            if(x>=obstruction.x&&x<obstruction.x+obstruction.getDimX(place.wall)
+                                    &&y>=obstruction.y&&y<obstruction.y+obstruction.getDimY(place.wall)
+                                    &&Z>=obstruction.z&&Z<obstruction.z+obstruction.getDimZ(place.wall)){
+                                if(obstruction.uuid==place.parent&&thing.getDimX(place.wall)==1&&thing.getDimY(place.wall)==1&&thing.getDimZ(place.wall)==1)continue;
+                                it.remove();
+                                continue PLACE;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return possibles;
     }
 }
