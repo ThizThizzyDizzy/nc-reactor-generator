@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import multiblock.Block;
@@ -215,6 +214,17 @@ public class FileWriter{
                         data.set("FuelCells", fuelCells);
                         data.set("Irradiators", irradiators);
                         data.set("NeutronShields", shields);
+                        JSON.JSONArray conductors = new JSON.JSONArray();
+                        for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                            if(block.isConductor()||block.isInert()){
+                                JSON.JSONObject bl = new JSON.JSONObject();
+                                bl.set("X", block.x+1);
+                                bl.set("Y", block.y+1);
+                                bl.set("Z", block.z+1);
+                                conductors.add(bl);
+                            }
+                        }
+                        data.set("Conductors", conductors);
                         JSON.JSONObject dims = new JSON.JSONObject();
                         dims.set("X", reactor.getX());
                         dims.set("Y", reactor.getY());

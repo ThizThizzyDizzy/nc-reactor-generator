@@ -825,13 +825,15 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                    String blokLoc = (String) blok;
-                    String[] blockLoc = blokLoc.split(",");
-                    int x = Integer.parseInt(blockLoc[0])-1;
-                    int y = Integer.parseInt(blockLoc[1])-1;
-                    int z = Integer.parseInt(blockLoc[2])-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                    }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
                 for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
@@ -940,13 +942,15 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                    String blokLoc = (String) blok;
-                    String[] blockLoc = blokLoc.split(",");
-                    int x = Integer.parseInt(blockLoc[0])-1;
-                    int y = Integer.parseInt(blockLoc[1])-1;
-                    int z = Integer.parseInt(blockLoc[2])-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                    }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
                 float best = 0;
@@ -1079,13 +1083,15 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                    String blokLoc = (String) blok;
-                    String[] blockLoc = blokLoc.split(",");
-                    int x = Integer.parseInt(blockLoc[0])-1;
-                    int y = Integer.parseInt(blockLoc[1])-1;
-                    int z = Integer.parseInt(blockLoc[2])-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                    }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
                 float best = 0;
@@ -1214,12 +1220,14 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                        JSONObject blockLoc = (JSONObject) blok;
-                        int x = blockLoc.getInt("X")-1;
-                        int y = blockLoc.getInt("Y")-1;
-                        int z = blockLoc.getInt("Z")-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                            JSONObject blockLoc = (JSONObject) blok;
+                            int x = blockLoc.getInt("X")-1;
+                            int y = blockLoc.getInt("Y")-1;
+                            int z = blockLoc.getInt("Z")-1;
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                    }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
                 float best = 0;
@@ -1346,12 +1354,14 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                        JSONObject blockLoc = (JSONObject) blok;
-                        int x = blockLoc.getInt("X")-1;
-                        int y = blockLoc.getInt("Y")-1;
-                        int z = blockLoc.getInt("Z")-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                            JSONObject blockLoc = (JSONObject) blok;
+                            int x = blockLoc.getInt("X")-1;
+                            int y = blockLoc.getInt("Y")-1;
+                            int z = blockLoc.getInt("Z")-1;
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                    }
                 }
                 JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
                 for(String name : reflectors.keySet()){
@@ -1479,12 +1489,14 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = data.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                        JSONObject blockLoc = (JSONObject) blok;
-                        int x = blockLoc.getInt("X")-1;
-                        int y = blockLoc.getInt("Y")-1;
-                        int z = blockLoc.getInt("Z")-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                            JSONObject blockLoc = (JSONObject) blok;
+                            int x = blockLoc.getInt("X")-1;
+                            int y = blockLoc.getInt("Y")-1;
+                            int z = blockLoc.getInt("Z")-1;
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                    }
                 }
                 JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
                 for(String name : reflectors.keySet()){
@@ -1652,13 +1664,15 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                    String blokLoc = (String) blok;
-                    String[] blockLoc = blokLoc.split(",");
-                    int x = Integer.parseInt(blockLoc[0])-1;
-                    int y = Integer.parseInt(blockLoc[1])-1;
-                    int z = Integer.parseInt(blockLoc[2])-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                    }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
                 for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
@@ -1765,13 +1779,15 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                    String blokLoc = (String) blok;
-                    String[] blockLoc = blokLoc.split(",");
-                    int x = Integer.parseInt(blockLoc[0])-1;
-                    int y = Integer.parseInt(blockLoc[1])-1;
-                    int z = Integer.parseInt(blockLoc[2])-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                    }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
                 float best = 0;
@@ -1896,13 +1912,15 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                    String blokLoc = (String) blok;
-                    String[] blockLoc = blokLoc.split(",");
-                    int x = Integer.parseInt(blockLoc[0])-1;
-                    int y = Integer.parseInt(blockLoc[1])-1;
-                    int z = Integer.parseInt(blockLoc[2])-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                        String blokLoc = (String) blok;
+                        String[] blockLoc = blokLoc.split(",");
+                        int x = Integer.parseInt(blockLoc[0])-1;
+                        int y = Integer.parseInt(blockLoc[1])-1;
+                        int z = Integer.parseInt(blockLoc[2])-1;
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                    }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
                 float best = 0;
@@ -2023,12 +2041,14 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                        JSONObject blockLoc = (JSONObject) blok;
-                        int x = blockLoc.getInt("X")-1;
-                        int y = blockLoc.getInt("Y")-1;
-                        int z = blockLoc.getInt("Z")-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                            JSONObject blockLoc = (JSONObject) blok;
+                            int x = blockLoc.getInt("X")-1;
+                            int y = blockLoc.getInt("Y")-1;
+                            int z = blockLoc.getInt("Z")-1;
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                    }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
                 float best = 0;
@@ -2147,12 +2167,14 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                        JSONObject blockLoc = (JSONObject) blok;
-                        int x = blockLoc.getInt("X")-1;
-                        int y = blockLoc.getInt("Y")-1;
-                        int z = blockLoc.getInt("Z")-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                            JSONObject blockLoc = (JSONObject) blok;
+                            int x = blockLoc.getInt("X")-1;
+                            int y = blockLoc.getInt("Y")-1;
+                            int z = blockLoc.getInt("Z")-1;
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                    }
                 }
                 JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
                 for(String name : reflectors.keySet()){
@@ -2272,12 +2294,14 @@ public class FileReader{
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
                 JSON.JSONArray conductors = data.getJSONArray("Conductors");
-                for(Object blok : conductors){
-                        JSONObject blockLoc = (JSONObject) blok;
-                        int x = blockLoc.getInt("X")-1;
-                        int y = blockLoc.getInt("Y")-1;
-                        int z = blockLoc.getInt("Z")-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                if(conductors!=null){
+                    for(Object blok : conductors){
+                            JSONObject blockLoc = (JSONObject) blok;
+                            int x = blockLoc.getInt("X")-1;
+                            int y = blockLoc.getInt("Y")-1;
+                            int z = blockLoc.getInt("Z")-1;
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                    }
                 }
                 JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
                 for(String name : reflectors.keySet()){
