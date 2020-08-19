@@ -37,6 +37,7 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import org.lwjgl.opengl.GL11;
 import planner.menu.component.MenuComponentEditorGrid;
 import planner.menu.component.MenuComponentTurbineBladeEditorGrid;
 import planner.menu.component.MenuComponentTurbineCoilEditorGrid;
@@ -46,12 +47,15 @@ import planner.tool.MoveTool;
 import planner.tool.PencilTool;
 import planner.tool.RectangleTool;
 import planner.tool.SelectionTool;
+import simplelibrary.game.Framebuffer;
 import simplelibrary.opengl.ImageStash;
+import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuEdit extends Menu{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
+    public Framebuffer turbineGraph;
     {
         editorTools.add(new MoveTool(this));
         editorTools.add(new SelectionTool(this));
@@ -306,6 +310,71 @@ public class MenuEdit extends Menu{
         multibwauk.height = Display.getHeight()-multibwauk.y-generate.height;
         textBox.y = parts.y+parts.height;
         textBox.height = Display.getHeight()-textBox.y;
+        if(multiblock instanceof OverhaulTurbine){
+            OverhaulTurbine turbine = (OverhaulTurbine)multiblock;
+            double width = turbine.getDisplayZ()*CELL_SIZE;
+            double height = CELL_SIZE*4;
+            if(turbine.bladesValid){
+                double max = 0;
+                double min = Double.MAX_VALUE;
+                for(double d : turbine.idealExpansion){
+                    max = Math.max(max,d);
+                    min = Math.min(min,d);
+                }
+                for(double d : turbine.actualExpansion){
+                    max = Math.max(max,d);
+                    min = Math.min(min,d);
+                }
+                ImageStash.instance.bindTexture(0);
+                turbineGraph = new Framebuffer(Core.helper, null, (int)width, (int)height);
+                turbineGraph.bindRenderTarget2D();
+                GL11.glColor4d(0, 0, 0, 1);
+                GL11.glBegin(GL11.GL_QUADS);
+                GL11.glVertex2d(0, 0);
+                GL11.glVertex2d(turbineGraph.width, 0);
+                GL11.glVertex2d(turbineGraph.width, turbineGraph.height);
+                GL11.glVertex2d(0, turbineGraph.height);
+                float tint = .75f;
+                for(float eff = 0; eff<=1; eff+=.1){
+                    GL11.glColor4d(tint*Math.max(0,Math.min(1,-Math.abs(3*eff-1.5)+1.5)), tint*Math.max(0,Math.min(1,3*eff-1)), 0, 1);
+                    for(int i = 1; i<turbine.idealExpansion.length; i++){
+                        double prevLowerBound = Math.min(turbine.idealExpansion[i-1]*eff,turbine.idealExpansion[i-1]/eff);
+                        double prevUpperBound = Math.max(turbine.idealExpansion[i-1]*eff,turbine.idealExpansion[i-1]/eff);
+                        double lowerBound = Math.min(turbine.idealExpansion[i]*eff,turbine.idealExpansion[i]/eff);
+                        double upperBound = Math.max(turbine.idealExpansion[i]*eff,turbine.idealExpansion[i]/eff);
+                        if(!Double.isFinite(prevLowerBound))prevLowerBound = min;
+                        if(!Double.isFinite(lowerBound))lowerBound = min;
+                        if(!Double.isFinite(prevUpperBound))prevUpperBound = max;
+                        if(!Double.isFinite(upperBound))upperBound = max;
+                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((prevUpperBound-min)/(max-min)));//upper
+                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((upperBound-min)/(max-min)));
+
+                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((lowerBound-min)/(max-min)));//lower
+                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((prevLowerBound-min)/(max-min)));
+                    }
+                }
+                GL11.glColor4f(0, 0, 1, 1);
+                int thickness = 3;
+                for(int i = 1; i<turbine.idealExpansion.length; i++){
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
+
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
+                }
+                GL11.glColor4f(1, 1, 1, 1);
+                for(int i = 1; i<turbine.actualExpansion.length; i++){
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
+
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
+                }
+                GL11.glEnd();
+                turbineGraph.releaseRenderTarget();
+                Core.applyWhite();
+            }
+        }
         super.render(millisSinceLastTick);
     }
     public void setTooltip(String tooltip){

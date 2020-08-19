@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.overhaul.turbine.OverhaulTurbine;
 public class GenerateAction extends Action<Multiblock>{
     private final Multiblock multiblock;
     private Block[][][] was;
@@ -16,7 +17,9 @@ public class GenerateAction extends Action<Multiblock>{
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
                     was[x][y][z] = multiblock.getBlock(x, y, z);
-                    multiblock.setBlock(x, y, z, this.multiblock.getBlock(x, y, z));
+                    Block block = this.multiblock.getBlock(x, y, z);
+                    if(multiblock instanceof OverhaulTurbine&&block==null)continue;
+                    multiblock.setBlock(x, y, z, block);
                 }
             }
         }

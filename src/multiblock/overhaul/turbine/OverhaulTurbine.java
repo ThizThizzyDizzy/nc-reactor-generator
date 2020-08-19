@@ -24,7 +24,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     static BufferedImage shaftTexture = Core.getImage("overhaul/turbine/shaft");
     public int bearingDiameter;
     public Recipe recipe;
-    private boolean bladesValid;
+    public boolean bladesValid;
     private int bladeCount;//for invalid metering
     public float rotorEfficiency;
     public int maxInput;
@@ -35,6 +35,8 @@ public class OverhaulTurbine extends Multiblock<Block>{
     private double totalFluidEfficiency;
     private long totalOutput,safeOutput,unsafeOutput;
     public ArrayList<Multiblock> inputs = new ArrayList<>();
+    public double[] idealExpansion;
+    public double[] actualExpansion;
     public OverhaulTurbine(){
         this(3, 3, 1, null);
         updateBlockLocations();
@@ -384,8 +386,8 @@ public class OverhaulTurbine extends Multiblock<Block>{
             bladeCount++;
         }
         if(bladesValid){
-            double[] idealExpansion = new double[blades.length];
-            double[] actualExpansion = new double[blades.length];
+            idealExpansion = new double[blades.length];
+            actualExpansion = new double[blades.length];
             double expansionSoFar = 1;
             rotorEfficiency = 0;
             float minBladeExpansion = Float.MAX_VALUE;

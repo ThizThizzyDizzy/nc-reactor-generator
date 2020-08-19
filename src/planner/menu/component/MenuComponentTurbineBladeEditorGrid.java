@@ -1,8 +1,11 @@
 package planner.menu.component;
+import java.awt.Color;
 import planner.Core;
 import planner.menu.MenuEdit;
 import multiblock.Block;
 import multiblock.overhaul.turbine.OverhaulTurbine;
+import org.lwjgl.opengl.GL11;
+import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -17,7 +20,7 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
     private int resonatingTick = 0;
     private float resonatingAlpha = 0;
     public MenuComponentTurbineBladeEditorGrid(int x, int y, int blockSize, MenuEdit editor, OverhaulTurbine multiblock){
-        super(x, y, blockSize*(multiblock.getZ()-2), blockSize);
+        super(x, y, blockSize*(multiblock.getZ()-2), blockSize*7);
         this.multiblock = multiblock;
         this.editor = editor;
         this.blockSize = blockSize;
@@ -47,7 +50,7 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
         }
         blockSize = (int) width/(multiblock.getZ()-2);
         Core.applyColor(Core.theme.getEditorListBorderColor());
-        drawRect(x,y,x+width,y+height,0);
+        drawRect(x,y,x+width,y+blockSize,0);
         if(mouseover!=-1){
             Core.applyColor(Core.theme.getEditorListBorderColor().brighter());
             drawRect(x+(mouseover-1)*blockSize, y, x+mouseover*blockSize, y+blockSize, 0);
@@ -56,13 +59,11 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
         for(int z = 0; z<=multiblock.getZ(); z++){
             double border = blockSize/32d;
             double Z = this.x+z*blockSize;
-            drawRect(Z-(z==0?0:border), y, Z+(z==multiblock.getX()?0:border), y+height, 0);
+            drawRect(Z-(z==0?0:border), y, Z+(z==multiblock.getX()?0:border), y+blockSize, 0);
         }
-//        for(int z = 0; z<=multiblock.getZ(); z++){
-//            double border = blockSize/32d;
-//            double Y = this.y+z*blockSize;
-//            drawRect(x, Y-(z==0?0:border), x+width, Y+(z==multiblock.getZ()?0:border), 0);
-//        }
+        double brdr = blockSize/32d;
+        drawRect(x, y, x+width, y+brdr, 0);
+        drawRect(x, y+blockSize-brdr, x+width, y+blockSize, 0);
         for(int z = 1; z<multiblock.getZ()-1; z++){
             Block block = multiblock.getBlock(multiblock.getX()/2, 0, z);
             double X = this.x+(z-1)*blockSize;
@@ -99,7 +100,7 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
                 }
             }
         }
-        editor.getSelectedTool().drawBladeGhosts(x, y, width, height, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
+        editor.getSelectedTool().drawBladeGhosts(x, y, width, blockSize, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
         if(mouseover!=-1){
             Block block = multiblock.getBlock(multiblock.getX()/2, 0, mouseover);
             double X = this.x+(mouseover-1)*blockSize;
@@ -115,6 +116,35 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
             drawRect(X+border, y+blockSize-border, X+blockSize-border, y+blockSize, 0);
             drawRect(X, y+border, X+border, y+blockSize-border, 0);
             drawRect(X+blockSize-border, y+border, X+blockSize, y+blockSize-border, 0);
+        }
+        if(multiblock.bladesValid){
+            Core.applyWhite();
+            drawRect(x, y+blockSize, x+width, y+blockSize*5, editor.turbineGraph.getTexture());
+            double wideScale = 1;
+            double len = FontManager.getLengthForStringWithHeight("Actual Expansion", blockSize/2);
+            wideScale = Math.min(wideScale, width/len);
+            drawText(x, y+blockSize*5.5, x+width, y+blockSize*(5.5+wideScale/2), "Actual Expansion");
+            Core.applyColor(new Color(31,63,255));
+            drawText(x, y+blockSize*5, x+width, y+blockSize*(5+wideScale/2), "Ideal Expansion");
+            double blockWidth = width/11;
+            float tint = .75f;
+            for(int i = 0; i<10; i++){
+                String text = ">"+i*10+"%";
+                double scale = 1;
+                double slen = FontManager.getLengthForStringWithHeight(text, blockSize)+1;
+                scale = Math.min(scale, blockWidth/slen);
+                if(scale<.25){
+                    text = i*10+"%";
+                    scale = 1;
+                    slen = FontManager.getLengthForStringWithHeight(text, blockSize)+1;
+                    scale = Math.min(scale, blockWidth/slen);
+                }
+                float eff = i/10f;
+                GL11.glColor4d(tint*Math.max(0,Math.min(1,-Math.abs(3*eff-1.5)+1.5)), tint*Math.max(0,Math.min(1,3*eff-1)), 0, 1);
+                drawRect(x+i*blockWidth, y+blockSize*6, x+(i+1)*blockWidth, y+blockSize*7, 0);
+                Core.applyWhite();
+                drawText(x+i*blockWidth, y+blockSize*6, x+(i+1)*blockWidth, y+blockSize*(6+scale), text);
+            }
         }
     }
     @Override

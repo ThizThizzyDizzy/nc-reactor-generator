@@ -256,10 +256,11 @@ public class Bot extends ListenerAdapter{
                     return;
                 }
                 Multiblock multiblock = null;
-                if(multiblockKeyword==null)multiblock = Core.multiblockTypes.get(0).newInstance(configuration);
-                else{
-                    multiblock = multiblockKeyword.getMultiblock(overhaul).newInstance(configuration);
+                if(multiblockKeyword==null){
+                    multiblockKeyword = new KeywordMultiblock();
+                    multiblockKeyword.read("SFR");
                 }
+                multiblock = multiblockKeyword.getMultiblock(overhaul).newInstance(configuration);
                 ArrayList<Range<Block>> blockRanges = new ArrayList<>();
                 if(multiblock==null){
                     channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase()+"`!").queue();
