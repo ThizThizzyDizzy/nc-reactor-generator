@@ -74,18 +74,16 @@ public class PlacementRule extends RuleContainer{
         }
         return rule;
     }
-    public static PlacementRule noPancake(){
+    public static PlacementRule vertex(BlockType block){
         PlacementRule rule = new PlacementRule();
-        rule.ruleType = RuleType.AND;
-        PlacementRule vert = new PlacementRule();
-        vert.ruleType = RuleType.VERTEX_GROUP;
-        vert.blockType = BlockType.CASING;
-        rule.rules.add(vert);
-        PlacementRule exact = new PlacementRule();
-        exact.ruleType = RuleType.BETWEEN;
-        exact.blockType = BlockType.CASING;
-        exact.min = exact.max = 3;
-        rule.rules.add(exact);
+        rule.ruleType = RuleType.VERTEX_GROUP;
+        rule.blockType = block;
+        return rule;
+    }
+    public static PlacementRule vertex(Block block){
+        PlacementRule rule = new PlacementRule();
+        rule.ruleType = RuleType.VERTEX;
+        rule.block = block;
         return rule;
     }
     public Config save(FissionSFRConfiguration configuration){
@@ -278,19 +276,23 @@ public class PlacementRule extends RuleContainer{
                             }
                             break;
                         case CASING:
+                            if(b==null)continue;
                             if(!b.isCasing())continue;
                             break;
                         case COOLER:
+                            if(b==null)continue;
                             if(!b.isCooler())continue;
                             break;
                         case MODERATOR:
+                            if(b==null)continue;
                             if(!b.isModerator())continue;
                             break;
                         case FUEL_CELL:
+                            if(b==null)continue;
                             if(!b.isFuelCell())continue;
                             break;
                     }
-                    if(b.template==this.block)dirs.add(d);
+                    dirs.add(d);
                 }
                 for(Vertex e : Vertex.values()){
                     boolean missingOne = false;

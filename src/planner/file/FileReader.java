@@ -76,7 +76,7 @@ public class FileReader{
                     multiblock.configuration.underhaul.fissionsfr.Block lapis = multiblock.configuration.underhaul.fissionsfr.Block.cooler("Lapis Cooler", coolingRates[5], "underhaul/lapis", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL),multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING));
                     multiblock.configuration.underhaul.fissionsfr.Block diamond = multiblock.configuration.underhaul.fissionsfr.Block.cooler("Diamond Cooler", coolingRates[6], "underhaul/diamond", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, water), multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, quartz));
                     multiblock.configuration.underhaul.fissionsfr.Block helium = multiblock.configuration.underhaul.fissionsfr.Block.cooler("Helium Cooler", coolingRates[7], "underhaul/helium", multiblock.configuration.underhaul.fissionsfr.PlacementRule.exactly(1, redstone), multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING));
-                    multiblock.configuration.underhaul.fissionsfr.Block enderium = multiblock.configuration.underhaul.fissionsfr.Block.cooler("Enderium Cooler", coolingRates[8], "underhaul/enderium", multiblock.configuration.underhaul.fissionsfr.PlacementRule.exactly(3, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING), multiblock.configuration.underhaul.fissionsfr.PlacementRule.noPancake());
+                    multiblock.configuration.underhaul.fissionsfr.Block enderium = multiblock.configuration.underhaul.fissionsfr.Block.cooler("Enderium Cooler", coolingRates[8], "underhaul/enderium", multiblock.configuration.underhaul.fissionsfr.PlacementRule.and(multiblock.configuration.underhaul.fissionsfr.PlacementRule.exactly(3, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING),multiblock.configuration.underhaul.fissionsfr.PlacementRule.vertex(multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING)));
                     multiblock.configuration.underhaul.fissionsfr.Block cryotheum = multiblock.configuration.underhaul.fissionsfr.Block.cooler("Cryotheum Cooler", coolingRates[9], "underhaul/cryotheum", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(2, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL));
                     multiblock.configuration.underhaul.fissionsfr.Block iron = multiblock.configuration.underhaul.fissionsfr.Block.cooler("Iron Cooler", coolingRates[10], "underhaul/iron", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, gold));
                     multiblock.configuration.underhaul.fissionsfr.Block emerald = multiblock.configuration.underhaul.fissionsfr.Block.cooler("Emerald Cooler", coolingRates[11], "underhaul/emerald", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR), multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL));
@@ -94,7 +94,7 @@ public class FileReader{
                     multiblock.configuration.underhaul.fissionsfr.Block activeLapis = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Lapis Cooler", activeCoolingRates[5], "Molten Lapis", "underhaul/lapis", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL),multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING));
                     multiblock.configuration.underhaul.fissionsfr.Block activeDiamond = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Diamond Cooler", activeCoolingRates[6], "Molten Diamond", "underhaul/diamond", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, water), multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, quartz));
                     multiblock.configuration.underhaul.fissionsfr.Block activeHelium = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Helium Cooler", activeCoolingRates[7], "Liquid Helium", "underhaul/helium", multiblock.configuration.underhaul.fissionsfr.PlacementRule.exactly(1, redstone), multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING));
-                    multiblock.configuration.underhaul.fissionsfr.Block activeEnderium = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Enderium Cooler", activeCoolingRates[8], "Resonant Ender", "underhaul/enderium", multiblock.configuration.underhaul.fissionsfr.PlacementRule.exactly(3, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING), multiblock.configuration.underhaul.fissionsfr.PlacementRule.noPancake());
+                    multiblock.configuration.underhaul.fissionsfr.Block activeEnderium = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Enderium Cooler", activeCoolingRates[8], "Resonant Ender", "underhaul/enderium", multiblock.configuration.underhaul.fissionsfr.PlacementRule.and(multiblock.configuration.underhaul.fissionsfr.PlacementRule.exactly(3, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING),multiblock.configuration.underhaul.fissionsfr.PlacementRule.vertex(multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING)));
                     multiblock.configuration.underhaul.fissionsfr.Block activeCryotheum = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Cryotheum Cooler", activeCoolingRates[9], "Gelid Cryotheum", "underhaul/cryotheum", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(2, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL));
                     multiblock.configuration.underhaul.fissionsfr.Block activeIron = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Iron Cooler", activeCoolingRates[10], "Molten Iron", "underhaul/iron", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, gold));
                     multiblock.configuration.underhaul.fissionsfr.Block activeEmerald = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Emerald Cooler", activeCoolingRates[11], "Molten Emerald", "underhaul/emerald", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR), multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL));
@@ -2736,7 +2736,7 @@ public class FileReader{
                         vert.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
                         rule.rules.add(vert);
                         multiblock.configuration.underhaul.fissionsfr.PlacementRule exact = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
-                        exact.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        exact.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                         exact.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
                         exact.min = exact.max = 3;
                         rule.rules.add(exact);
@@ -2853,7 +2853,7 @@ public class FileReader{
                         vert.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
                         rule.rules.add(vert);
                         multiblock.configuration.overhaul.fissionsfr.PlacementRule exact = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
-                        exact.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        exact.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                         exact.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
                         exact.min = exact.max = 3;
                         rule.rules.add(exact);
@@ -3394,7 +3394,7 @@ public class FileReader{
                         vert.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
                         rule.rules.add(vert);
                         multiblock.configuration.underhaul.fissionsfr.PlacementRule exact = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
-                        exact.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        exact.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                         exact.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
                         exact.min = exact.max = 3;
                         rule.rules.add(exact);
@@ -3511,7 +3511,7 @@ public class FileReader{
                         vert.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
                         rule.rules.add(vert);
                         multiblock.configuration.overhaul.fissionsfr.PlacementRule exact = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
-                        exact.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        exact.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                         exact.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
                         exact.min = exact.max = 3;
                         rule.rules.add(exact);
@@ -3628,7 +3628,7 @@ public class FileReader{
                         vert.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
                         rule.rules.add(vert);
                         multiblock.configuration.overhaul.fissionmsr.PlacementRule exact = new multiblock.configuration.overhaul.fissionmsr.PlacementRule();
-                        exact.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN;
+                        exact.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
                         exact.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
                         exact.min = exact.max = 3;
                         rule.rules.add(exact);

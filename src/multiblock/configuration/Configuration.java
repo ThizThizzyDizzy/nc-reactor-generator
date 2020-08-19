@@ -12,6 +12,9 @@ public class Configuration{
     public String name;
     public String version;
     public String underhaulVersion;
+    public String getUnderhaulVersion(){
+        return underhaulVersion==null?version:underhaulVersion;
+    }
     public static ArrayList<Configuration> configurations = new ArrayList<>();
     static{
         configurations.add(FileReader.read(() -> {

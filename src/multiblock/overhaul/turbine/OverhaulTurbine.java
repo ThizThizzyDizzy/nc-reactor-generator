@@ -315,6 +315,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     }
     private void updateBlockLocations(){
         if(bearingDiameter==getX())bearingDiameter-=2;
+        if(bearingDiameter<=0)bearingDiameter+=2;
         Block shaft = new Block(0, null);//internal casing? :O
         Coil bearing = null;
         for(Coil coil : getConfiguration().overhaul.turbine.coils){

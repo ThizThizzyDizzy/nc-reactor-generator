@@ -2,7 +2,7 @@ package discord.play;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 public abstract class Game{
-    private static final int timeout = 60000;
+    private static final int timeout = 300000;
     private long lastUpdate;
     private final String name;
     public boolean running;
@@ -28,9 +28,9 @@ public abstract class Game{
         thread.setDaemon(true);
         thread.setName(getName());
         thread.start();
-        start(channel);
+        running = start(channel);
     }
-    protected abstract void start(MessageChannel channel);
+    protected abstract boolean start(MessageChannel channel);
     public String getName(){
         return name;
     }

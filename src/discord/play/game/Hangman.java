@@ -2,6 +2,7 @@ package discord.play.game;
 import discord.Bot;
 import discord.play.Game;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -24,16 +25,37 @@ public class Hangman extends Game{
     private final int maxGuesses;
     private boolean usesActive = false;
     private final boolean blind;
-    public Hangman(boolean blind){
+    public Hangman(boolean blind, ArrayList<Multiblock> allowedMultiblocks){
         super("Hangman");
+        this.blind = blind;
         ArrayList<NCPFFile> ncpfs = new ArrayList<>(Bot.storedMultiblocks.keySet());
-        NCPFFile ncpf = ncpfs.get(new Random().nextInt(ncpfs.size()));
-        ArrayList<Multiblock> multis = new ArrayList<>(ncpf.multiblocks);
+        ArrayList<Multiblock> multis = new ArrayList<>();
+        HashMap<Multiblock, Configuration> configs = new HashMap<>();
+        for(NCPFFile ncpf : ncpfs){
+            for(Multiblock multi : ncpf.multiblocks){
+                configs.put(multi, ncpf.configuration);
+            }
+            multis.addAll(ncpf.multiblocks);
+        }
+        for(Iterator<Multiblock> it = multis.iterator(); it.hasNext();){
+            Multiblock next = it.next();
+            boolean isAllowed = false;
+            for(Multiblock m : allowedMultiblocks){
+                if(m.getDefinitionName().equals(next.getDefinitionName()))isAllowed = true;
+            }
+            if(!isAllowed)it.remove();
+        }
+        if(multis.isEmpty()){
+            config = null;
+            maxGuesses = 0;
+            return;
+        }
         basis = multis.get(new Random().nextInt(multis.size())).copy();
         basis.recalculate();
         new ClearInvalid().apply(basis, null);
         basis.recalculate();
-        this.config = ncpf.configuration;
+        this.config = configs.get(basis);
+        basis.setConfiguration(config);
         basis.metadata.clear();
         current = basis.blankCopy();
         ArrayList<Block> blocks = basis.getBlocks();
@@ -61,12 +83,16 @@ public class Hangman extends Game{
         int total = available.size();
         int possibleBadGuesses = total-unique.size();
         maxGuesses = possibleBadGuesses/2;
-        this.blind = blind;
     }
     @Override
-    public void start(MessageChannel channel){
+    public boolean start(MessageChannel channel){
+        if(basis==null){
+            channel.sendMessage("No applicable multiblocks found!").queue();
+            return false;
+        }
         channel.sendMessage("Hangman has started!\nCurrent Multiblock: "+basis.getX()+"x"+basis.getY()+"x"+basis.getZ()+" "+basis.getDefinitionName()+"\nYou have "+(maxGuesses-1)+" Incorrect guesses left."+(usesActive?"\nThis reactor has active coolers":"")).queue();
         if(!blind)exportPng(generateNCPF(current), channel);
+        return true;
     }
     @Override
     protected void stop(MessageChannel channel){

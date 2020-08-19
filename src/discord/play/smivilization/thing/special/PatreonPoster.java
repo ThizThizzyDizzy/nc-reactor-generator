@@ -59,6 +59,6 @@ public class PatreonPoster extends HutThingExclusive{
     }
     @Override
     public boolean isBackgroundObject(){
-        return true;
+        return false;
     }
 }

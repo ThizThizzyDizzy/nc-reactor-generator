@@ -1,4 +1,5 @@
 package discord;
+import discord.keyword.KeywordBlind;
 import discord.keyword.KeywordBlockRange;
 import discord.keyword.KeywordConfiguration;
 import discord.keyword.KeywordCube;
@@ -33,7 +34,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -147,7 +150,7 @@ public class Bot extends ListenerAdapter{
                 }
             }
         });
-        botCommands.add(new KeywordCommand("generate"){
+        botCommands.add(new KeywordCommand("generate", "gen"){
             @Override
             public String getHelpText(){
                 return "**Common generation settings**\n" +
@@ -179,7 +182,7 @@ public class Bot extends ListenerAdapter{
                 }
                 boolean underhaul = false;
                 boolean overhaul = false;
-                String multiblockName = null;
+                KeywordMultiblock multiblockKeyword = null;
                 Configuration configuration = null;
                 ArrayList<Range<String>> stringRanges = new ArrayList<>();
                 ArrayList<String> fuelStrings = new ArrayList<>();
@@ -199,11 +202,11 @@ public class Bot extends ListenerAdapter{
                         }
                         configuration = ((KeywordConfiguration)keyword).config;
                     }else if(keyword instanceof KeywordMultiblock){
-                        if(multiblockName!=null){
+                        if(multiblockKeyword!=null){
                             channel.sendMessage("Please choose no more than one multiblock type!").queue();
                             return;
                         }
-                        multiblockName = ((KeywordMultiblock)keyword).text;
+                        multiblockKeyword = (KeywordMultiblock)keyword;
                     }else if(keyword instanceof KeywordCube){
                         KeywordCube cube = (KeywordCube)keyword;
                         if(x==0&&y==0&&z==0){
@@ -252,15 +255,14 @@ public class Bot extends ListenerAdapter{
                     channel.sendMessage("`"+configuration.name+" doesn't have an Overhaul configuration!").queue();
                     return;
                 }
-                if(multiblockName==null||multiblockName.isEmpty())multiblockName = "SFR";
-                String fullMultiblockName = (overhaul?"Overhaul ":"Underhaul ")+multiblockName.toUpperCase();
                 Multiblock multiblock = null;
-                ArrayList<Range<Block>> blockRanges = new ArrayList<>();
-                for(Multiblock m : Core.multiblockTypes){
-                    if(m.getDefinitionName().equalsIgnoreCase(fullMultiblockName))multiblock = m.newInstance(configuration);
+                if(multiblockKeyword==null)multiblock = Core.multiblockTypes.get(0).newInstance(configuration);
+                else{
+                    multiblock = multiblockKeyword.getMultiblock(overhaul).newInstance(configuration);
                 }
+                ArrayList<Range<Block>> blockRanges = new ArrayList<>();
                 if(multiblock==null){
-                    channel.sendMessage("Unknown multiblock: `"+fullMultiblockName+"`!").queue();
+                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase()+"`!").queue();
                     return;
                 }
                 if(multiblock.getDefinitionName().contains("Turbine"))z+=2;
@@ -511,17 +513,72 @@ public class Bot extends ListenerAdapter{
                     throw new IllegalArgumentException("I don't know how to use the non-standard generators!");
                 }
             }
+            @Override
+            public void addKeywords(){
+                addKeyword(new KeywordCuboid());
+                addKeyword(new KeywordCube());
+                addKeyword(new KeywordUnderhaul());
+                addKeyword(new KeywordOverhaul());
+                addKeyword(new KeywordSymmetry());
+                addKeyword(new KeywordConfiguration());
+                addKeyword(new KeywordFormat());
+                addKeyword(new KeywordPriority());
+                addKeyword(new KeywordMultiblock());
+                addKeyword(new KeywordFuel());
+                addKeyword(new KeywordBlockRange());
+            }
         });
         //game commands
-        playCommands.add(new Command("hangman", "reactorhangman"){
+        playCommands.add(new KeywordCommand("hangman", "reactorhangman"){
+            @Override
+            public void addKeywords(){
+                addKeyword(new KeywordUnderhaul());
+                addKeyword(new KeywordOverhaul());
+                addKeyword(new KeywordConfiguration());
+                addKeyword(new KeywordMultiblock());
+                addKeyword(new KeywordBlind());
+            }
+            @Override
+            public void run(MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
+                boolean underhaul = false;
+                boolean overhaul = false;
+                boolean blind = false;
+                ArrayList<KeywordMultiblock> multiKeywords = new ArrayList<>();
+                for(Keyword k :keywords){
+                    if(k instanceof KeywordUnderhaul)underhaul = true;
+                    if(k instanceof KeywordOverhaul)overhaul = true;
+                    if(k instanceof KeywordMultiblock)multiKeywords.add((KeywordMultiblock)k);
+                    if(k instanceof KeywordBlind)blind = true;
+                }
+                if(!underhaul&&!overhaul){
+                    underhaul = overhaul = true;
+                }
+                Set<Multiblock> allowedMultiblocks = new HashSet<>();
+                for(KeywordMultiblock mk : multiKeywords){
+                    if(overhaul==true)allowedMultiblocks.add(mk.getMultiblock(true));
+                    if(underhaul==true)allowedMultiblocks.add(mk.getMultiblock(false));
+                }
+                allowedMultiblocks.remove(null);
+                if(allowedMultiblocks.isEmpty()){
+                    for(Multiblock m : Core.multiblockTypes){
+                        if(m.getDefinitionName().contains("Overhaul")&&overhaul)allowedMultiblocks.add(m);
+                        if(m.getDefinitionName().contains("Underhaul")&&underhaul)allowedMultiblocks.add(m);
+                    }
+                }
+                PlayBot.play(channel, new Hangman(blind, new ArrayList<>(allowedMultiblocks)));
+            }
             @Override
             public String getHelpText(){
                 return "Play some Hangman";
             }
-            @Override
-            public void run(User user, MessageChannel channel, String args, boolean debug){
-                PlayBot.play(channel, new Hangman(args.trim().equalsIgnoreCase("blind")));
-            }
+//            @Override
+//            public String getHelpText(){
+//                return "Play some Hangman";
+//            }
+//            @Override
+//            public void run(User user, MessageChannel channel, String args, boolean debug){
+//                PlayBot.play(channel, new Hangman(args.trim().equalsIgnoreCase("blind")));
+//            }
         });
         //smore commands
         playCommands.add(new Command("help", "smelp", "s'melp", "s’melp"){
@@ -558,6 +615,22 @@ public class Bot extends ListenerAdapter{
                     a.cancel(channel);
                     if(a.cancelled)SmoreBot.actions.remove(user.getIdLong());
                 }
+            }
+        });
+        playCommands.add(new Command("stopgame","abortgame","haltgame","cancelgame","finishgame"){
+            @Override
+            public String getHelpText(){
+                return "stops the currently running game";
+            }
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(PlayBot.currentGame!=null){
+                    PlayBot.currentGame.running = false;
+                    channel.sendMessage(PlayBot.currentGame.getName()+" stopped.").queue();
+                    PlayBot.currentGame = null;
+                    return;
+                }
+                channel.sendMessage("There's no game running!").queue();
             }
         });
         playCommands.add(new Command("smore", "s'more", "s’more"){
@@ -1063,6 +1136,50 @@ public class Bot extends ListenerAdapter{
                     hut.owner = target2ID;
                     SmoreBot.huts.put(target2ID, hut);
                 }
+            }
+        });
+        playCommands.add(new SecretCommand("delete"){
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                args = args.trim();
+                if(args.isEmpty()){
+                    return;
+                }
+                String[] argses = args.split(" ");
+                if(argses.length!=1){
+                    return;
+                }
+                String target = argses[0];
+                long targetID = 0;
+                if(target.startsWith("<@")&&target.endsWith(">")){
+                    if(target.contains("!"))target = target.substring(1);
+                    try{
+                        targetID = Long.parseLong(target.substring(2, target.length()-1));
+                    }catch(Exception ex){
+                        return;
+                    }
+                }else{
+                    try{
+                        targetID = Long.parseLong(target);
+                    }catch(Exception ex){
+                        return;
+                    }
+                }
+                User targetUser;
+                try{
+                    targetUser = jda.getUserById(targetID);
+                    if(targetUser==null){
+                        return;
+                    }
+                }catch(Exception ex){
+                    return;
+                }
+                targetID = targetUser.getIdLong();
+                if(SmoreBot.getSmoreCount(targetID)!=0)throw new NonZeroSmoreException(nick(guild.getMember(targetUser))+" has non-zero s'mores!");
+                if(SmoreBot.getEatenCount(targetID)!=0)throw new NonZeroEatenException(nick(guild.getMember(targetUser))+" has non-zero eaten s'mores!");
+                SmoreBot.smores.remove(targetID);
+                SmoreBot.eaten.remove(targetID);
             }
         });
         playCommands.add(new Command("move"){
@@ -1752,5 +1869,15 @@ public class Bot extends ListenerAdapter{
     }
     private static String smoremoji(){
         return "<:smore:493612965195677706>";
+    }
+    private static class NonZeroSmoreException extends RuntimeException{
+        public NonZeroSmoreException(String message){
+            super(message);
+        }
+    }
+    private static class NonZeroEatenException extends RuntimeException{
+        public NonZeroEatenException(String message){
+            super(message);
+        }
     }
 }

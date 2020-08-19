@@ -1,10 +1,21 @@
 package discord.keyword;
 import discord.Keyword;
 import java.awt.Color;
+import planner.Core;
+import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 public class KeywordMultiblock extends Keyword{
     public String text;
     public KeywordMultiblock(){
         super("Multiblock");
+    }
+    public Multiblock getMultiblock(boolean overhaul){
+        String fullMultiblockName = (overhaul?"Overhaul ":"Underhaul ")+text.toUpperCase();
+        Multiblock multiblock = null;
+        for(Multiblock m : Core.multiblockTypes){
+            if(m.getDefinitionName().equalsIgnoreCase(fullMultiblockName))multiblock = m;
+        }
+        return multiblock;
     }
     @Override
     public boolean doRead(String input){

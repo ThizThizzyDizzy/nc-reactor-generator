@@ -1,5 +1,4 @@
 package discord;
-import discord.keyword.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -12,30 +11,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import planner.Core;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 public abstract class KeywordCommand extends Command{
-    private static HashMap<String, Keyword> keywords = new HashMap<>();
-    private static ArrayList<String> keywordOrder = new ArrayList<>();
-    static{
-        addKeyword(new KeywordCuboid());
-        addKeyword(new KeywordCube());
-        addKeyword(new KeywordUnderhaul());
-        addKeyword(new KeywordOverhaul());
-        addKeyword(new KeywordSymmetry());
-        addKeyword(new KeywordConfiguration());
-        addKeyword(new KeywordFormat());
-        addKeyword(new KeywordPriority());
-        addKeyword(new KeywordMultiblock());
-        addKeyword(new KeywordFuel());
-        addKeyword(new KeywordBlockRange());
+    private HashMap<String, Keyword> keywords = new HashMap<>();
+    private ArrayList<String> keywordOrder = new ArrayList<>();
+    public KeywordCommand(String command, String... alternates){
+        super(command, alternates);
+        addKeywords();
     }
-    public KeywordCommand(String command){
-        super(command);
-    }
-    public static void addKeyword(Keyword keyword){
+    public abstract void addKeywords();
+    public void addKeyword(Keyword keyword){
         String regex = keyword.getRegex();
         keywords.put(regex, keyword);
         keywordOrder.add(regex);
