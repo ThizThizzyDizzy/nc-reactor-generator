@@ -27,3 +27,4 @@
 2.9.4=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v2.9.4/NC-Reactor-Generator-2.9.4.jar
 2.10.0=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v2.10.0/NC-Reactor-Generator-2.10.0.jar
 2.10.1=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v2.10.1/NC-Reactor-Generator-2.10.1.jar
+2.10.2=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v2.10.2/NC-Reactor-Generator-2.10.2.jar
