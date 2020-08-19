@@ -132,12 +132,12 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
                 int I = 9-i;
                 String text = ">"+I*10+"%";
                 double scale = 1;
-                double slen = FontManager.getLengthForStringWithHeight(text, blockSize)+1;
+                double slen = FontManager.getLengthForStringWithHeight(text.length()==2?"0"+text:text, blockSize)+1;
                 scale = Math.min(scale, blockWidth/slen);
                 if(scale<.25){
                     text = I*10+"%";
                     scale = 1;
-                    slen = FontManager.getLengthForStringWithHeight(text, blockSize)+1;
+                    slen = FontManager.getLengthForStringWithHeight(text.length()==2?"0"+text:text, blockSize)+1;
                     scale = Math.min(scale, blockWidth/slen);
                 }
                 float eff = I/10f;
