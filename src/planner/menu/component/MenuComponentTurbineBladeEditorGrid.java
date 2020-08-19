@@ -126,20 +126,21 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
             drawText(x, y+blockSize*5.5, x+width, y+blockSize*(5.5+wideScale/2), "Actual Expansion");
             Core.applyColor(new Color(31,63,255));
             drawText(x, y+blockSize*5, x+width, y+blockSize*(5+wideScale/2), "Ideal Expansion");
-            double blockWidth = width/11;
+            double blockWidth = width/10;
             float tint = .75f;
             for(int i = 0; i<10; i++){
-                String text = ">"+i*10+"%";
+                int I = 9-i;
+                String text = ">"+I*10+"%";
                 double scale = 1;
                 double slen = FontManager.getLengthForStringWithHeight(text, blockSize)+1;
                 scale = Math.min(scale, blockWidth/slen);
                 if(scale<.25){
-                    text = i*10+"%";
+                    text = I*10+"%";
                     scale = 1;
                     slen = FontManager.getLengthForStringWithHeight(text, blockSize)+1;
                     scale = Math.min(scale, blockWidth/slen);
                 }
-                float eff = i/10f;
+                float eff = I/10f;
                 GL11.glColor4d(tint*Math.max(0,Math.min(1,-Math.abs(3*eff-1.5)+1.5)), tint*Math.max(0,Math.min(1,3*eff-1)), 0, 1);
                 drawRect(x+i*blockWidth, y+blockSize*6, x+(i+1)*blockWidth, y+blockSize*7, 0);
                 Core.applyWhite();
