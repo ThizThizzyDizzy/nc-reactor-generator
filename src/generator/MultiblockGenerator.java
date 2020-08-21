@@ -14,6 +14,7 @@ public abstract class MultiblockGenerator{
     public static final ArrayList<MultiblockGenerator> generators = new ArrayList<>();
     static{
         generators.add(new StandardGenerator(null));
+        generators.add(new OverhaulTurbineStandardGenerator(null));
         Challenger.init();
     }
     protected ArrayList<Priority> priorities;

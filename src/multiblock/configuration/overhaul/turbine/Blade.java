@@ -16,12 +16,14 @@ public class Blade{
         Blade blade = new Blade(name);
         blade.efficiency = 0;
         blade.expansion = expansion;
+        blade.stator = true;
         blade.setTexture(Core.getImage(texture));
         return blade;
     }
     public String name;
     public float efficiency;
     public float expansion;
+    public boolean stator = false;
     public BufferedImage texture;
     public BufferedImage displayTexture;
     public Blade(String name){
@@ -32,6 +34,7 @@ public class Blade{
         config.set("name", name);
         config.set("efficiency", efficiency);
         config.set("expansion", expansion);
+        config.set("stator", stator);
         if(texture!=null&&!partial){
             ConfigNumberList tex = new ConfigNumberList();
             tex.add(texture.getWidth());

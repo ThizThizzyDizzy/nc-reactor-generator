@@ -68,8 +68,9 @@ public class MenuComponentBladeConfiguration extends MenuComponent{
     @Override
     public void renderForeground(){
         Core.applyColor(Core.theme.getTextColor());
-        drawText(x, y, x+width, y+height/3, blade.name);
-        if(blade.efficiency>0)drawText(x, y+height/3, x+width, y+height/3*2, "Efficiency: "+blade.efficiency);
-        if(blade.expansion>0)drawText(x, y+height/3*2, x+width, y+height/3*3, "Expansion: "+blade.expansion);
+        drawText(x, y, x+width, y+height/4, blade.name);
+        if(blade.efficiency>0)drawText(x, y+height/4, x+width, y+height/4*2, "Efficiency: "+blade.efficiency);
+        if(blade.expansion>0)drawText(x, y+height/4*2, x+width, y+height/4*3, "Expansion: "+blade.expansion);
+        if(blade.stator)drawText(x, y+height/4*3, x+width, y+height/4*4, "Stator");
     }
 }

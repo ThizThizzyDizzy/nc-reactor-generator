@@ -79,9 +79,17 @@ public class Block extends multiblock.Block{
         String tip = getName();
         if(isBearing())tip+="\nBearing";
         if(isBlade()){
-            tip+="\nBlade"
-                + "\nExpansion Coefficient: "+blade.expansion
-                + "\nEfficiency: "+blade.efficiency;
+            if(blade.stator){
+                tip+="\nStator"
+                    + "\nExpansion Coefficient: "+blade.expansion;
+                if(blade.efficiency>0){
+                    tip+="\nEfficiency: "+blade.efficiency;
+                }
+            }else{
+                tip+="\nBlade"
+                    + "\nExpansion Coefficient: "+blade.expansion
+                    + "\nEfficiency: "+blade.efficiency;
+            }
         }
         if(isConnector())tip+="\nConnector";
         if(isCoil()){
@@ -147,6 +155,7 @@ public class Block extends multiblock.Block{
         Block other = (Block) oth;
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
         if(totalDist>1)return false;//too far away
+        if(isConnector()&&other.isCoil())return true;
         if(hasRules()){
             for(PlacementRule rule : coil.rules){
                 if(ruleHas(rule, other))return true;

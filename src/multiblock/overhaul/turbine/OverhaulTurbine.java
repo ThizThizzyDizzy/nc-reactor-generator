@@ -12,7 +12,7 @@ import multiblock.configuration.overhaul.turbine.Coil;
 import multiblock.configuration.overhaul.turbine.Recipe;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.PostProcessingEffect;
-import multiblock.symmetry.AxialSymmetry;
+import multiblock.symmetry.CoilSymmetry;
 import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -395,13 +395,13 @@ public class OverhaulTurbine extends Multiblock<Block>{
             int numBlades = 0;
             int numberOfBlades = 0;
             for(int i = 0; i<blades.length; i++){
-                float exp = blades[i].blade.expansion;
-                if(exp>=1){
+                if(blades[i].blade.stator){
+                    minStatorExpansion = Math.min(blades[i].blade.expansion, minStatorExpansion);
+                }else{
                     numberOfBlades++;
                     numBlades+=bearingDiameter*4*(getX()/2-bearingDiameter/2);
-                    minBladeExpansion = Math.min(exp, minBladeExpansion);
+                    minBladeExpansion = Math.min(blades[i].blade.expansion, minBladeExpansion);
                 }
-                else minStatorExpansion = Math.min(exp, minStatorExpansion);
                 idealExpansion[i] = Math.pow(recipe.coefficient, (i+.5f)/blades.length);
                 actualExpansion[i] = expansionSoFar*Math.sqrt(blades[i].blade.expansion);
                 expansionSoFar*=blades[i].blade.expansion;
@@ -552,16 +552,37 @@ public class OverhaulTurbine extends Multiblock<Block>{
                 return main.totalFluidEfficiency-other.totalFluidEfficiency;
             }
         });
+        priorities.add(new Priority<OverhaulTurbine>("Total Efficiency", true){
+            @Override
+            protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
+                return main.totalEfficiency-other.totalEfficiency;
+            }
+        });
+        priorities.add(new Priority<OverhaulTurbine>("Rotor Efficiency", true){
+            @Override
+            protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
+                return main.rotorEfficiency-other.rotorEfficiency;
+            }
+        });
+        priorities.add(new Priority<OverhaulTurbine>("Coil Efficiency", true){
+            @Override
+            protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
+                return main.coilEfficiency-other.coilEfficiency;
+            }
+        });
     }
     @Override
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
         presets.add(new Priority.Preset("RF per mb", priorities.get(0), priorities.get(1)));
+        presets.add(new Priority.Preset("Efficiency", priorities.get(0), priorities.get(2)));
+        presets.add(new Priority.Preset("Rotor Efficiency", priorities.get(0), priorities.get(3)));
+        presets.add(new Priority.Preset("Coil Efficiency", priorities.get(0), priorities.get(4)));
     }
     @Override
     public void getSymmetries(ArrayList<Symmetry> symmetries){
-        symmetries.add(AxialSymmetry.X);
-        symmetries.add(AxialSymmetry.Y);
-        symmetries.add(AxialSymmetry.Z);
+        symmetries.add(CoilSymmetry.X);
+        symmetries.add(CoilSymmetry.Y);
+        symmetries.add(CoilSymmetry.Z);
     }
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
@@ -671,7 +692,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         double maxY = y+1;
         double maxZ = z+1;
         if(block.isBlade()){//2 pixels thick, 12 pixels wide
-            if(block.blade.expansion<1){//stator
+            if(block.blade.stator){
                 if(x>getX()/2+bearingDiameter/2||x<getX()/2-bearingDiameter/2){//side
                     minY+=7/16d;
                     maxY-=7/16d;

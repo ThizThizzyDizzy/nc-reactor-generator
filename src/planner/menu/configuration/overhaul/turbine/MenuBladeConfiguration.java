@@ -10,6 +10,7 @@ import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Blade;
 import planner.menu.component.MenuComponentMinimalistButton;
+import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
@@ -18,6 +19,7 @@ public class MenuBladeConfiguration extends Menu{
     private final MenuComponentMinimalistButton texture = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Select Texture", true, true));
     private final MenuComponentMinimalistTextBox efficiency = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
     private final MenuComponentMinimalistTextBox expansion = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
+    private final MenuComponentMinimalistOptionButton stator = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Stator", true, true, 0, "FALSE", "TRUE"));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private final Blade blade;
     private final int numComps = 16;
@@ -54,24 +56,28 @@ public class MenuBladeConfiguration extends Menu{
         name.text = blade.name;
         efficiency.text = blade.efficiency+"";
         expansion.text = blade.expansion+"";
+        stator.setIndex(blade.stator?1:0);
     }
     @Override
     public void onGUIClosed(){
         blade.name = name.text;
         blade.efficiency = Float.parseFloat(efficiency.text);
         blade.expansion = Float.parseFloat(expansion.text);
+        blade.stator = stator.getIndex()==1;
         super.onGUIClosed();
     }
     @Override
     public void render(int millisSinceLastTick){
         drawRect(0, Display.getHeight()/numComps, Display.getHeight()/numComps, Display.getHeight()/numComps*2, Core.getTexture(blade.texture));
+        stator.width = Display.getWidth();
         efficiency.width = expansion.width = Display.getWidth()*.75;
         efficiency.x = expansion.x = Display.getWidth()-efficiency.width;
         name.width = back.width = Display.getWidth();
-        texture.x = texture.height = efficiency.height = expansion.height = name.height = back.height = Display.getHeight()/numComps;
+        texture.x = texture.height = stator.height = efficiency.height = expansion.height = name.height = back.height = Display.getHeight()/numComps;
         texture.width = Display.getWidth()-texture.x;
         texture.y = name.height;
         efficiency.y = texture.y+texture.height;
+        stator.y = expansion.y+expansion.height;
         expansion.y = efficiency.y+efficiency.height;
         back.y = Display.getHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
