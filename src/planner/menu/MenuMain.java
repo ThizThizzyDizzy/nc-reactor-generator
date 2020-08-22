@@ -390,10 +390,10 @@ public class MenuMain extends Menu{
         delete.x = Display.getWidth()-delete.width;
         setInputs.y = convertOverhaulMSFR.y = addMultiblock.y;
         if(getSelectedMultiblock() instanceof OverhaulSFR){
-            convertOverhaulMSFR.enabled = Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
+            convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.label = "Convert to MSR (Hold Control)";
         }else if(getSelectedMultiblock() instanceof OverhaulMSR){
-            convertOverhaulMSFR.enabled = Core.configuration.overhaul.fissionSFR!=null&&!(adding||metadating)&&Core.isControlPressed();
+            convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionSFR!=null&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.label = "Convert to SFR (Hold Control)";
         }else{
             convertOverhaulMSFR.enabled = false;

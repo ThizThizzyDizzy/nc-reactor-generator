@@ -4751,7 +4751,7 @@ public class FileReader{
                     Config header = Config.newConfig();
                     header.load(in);
                     in.close();
-                    return header.get("version", (byte)0)==(byte)3;
+                    return header.get("version", (byte)0)==(byte)4;
                 }catch(Throwable t){
                     return false;
                 }

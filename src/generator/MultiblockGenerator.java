@@ -27,13 +27,16 @@ public abstract class MultiblockGenerator{
     }
     public abstract MultiblockGenerator newInstance(Multiblock multi);
     public abstract ArrayList<Multiblock>[] getMultiblockLists();
-    public abstract Multiblock[] getValidMultiblocks();
+    public abstract Class<? extends Multiblock>[] getValidMultiblocks();
     public abstract String getName();
     public static ArrayList<MultiblockGenerator> getGenerators(Multiblock m){
         ArrayList<MultiblockGenerator> valid = new ArrayList<>();
         for(MultiblockGenerator gen : generators){
-            for(Multiblock mb : gen.getValidMultiblocks()){
-                if(mb.getDefinitionName().equals(m.getDefinitionName()))valid.add(gen);
+            for(Class<? extends Multiblock> c : gen.getValidMultiblocks()){
+                if(c.equals(m.getClass())){
+                    valid.add(gen);
+                    break;
+                }
             }
         }
         return valid;

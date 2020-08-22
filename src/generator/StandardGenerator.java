@@ -47,8 +47,8 @@ public class StandardGenerator extends MultiblockGenerator{
         return new ArrayList[]{(ArrayList)finalMultiblocks.clone(),(ArrayList)workingMultiblocks.clone()};
     }
     @Override
-    public Multiblock[] getValidMultiblocks(){
-        return new Multiblock[]{new UnderhaulSFR(), new OverhaulSFR(), new OverhaulMSR()};
+    public Class<? extends Multiblock>[] getValidMultiblocks(){
+        return new Class[]{UnderhaulSFR.class,OverhaulSFR.class,OverhaulMSR.class};
     }
     @Override
     public String getName(){

@@ -47,8 +47,8 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         return new ArrayList[]{(ArrayList)finalMultiblocks.clone(),(ArrayList)workingMultiblocks.clone()};
     }
     @Override
-    public Multiblock[] getValidMultiblocks(){
-        return new Multiblock[]{new OverhaulTurbine()};
+    public Class<? extends Multiblock>[] getValidMultiblocks(){
+        return new Class[]{OverhaulTurbine.class};
     }
     @Override
     public String getName(){
