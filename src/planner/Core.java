@@ -26,6 +26,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import multiblock.configuration.Configuration;
 import multiblock.Multiblock;
+import multiblock.configuration.TextureManager;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
@@ -53,10 +54,6 @@ public class Core extends Renderer2D{
     public static boolean enableCullFace = true;
     public static final boolean fullscreen = false;
     public static final boolean supportTyping = true;
-    public static boolean SEPARATE_BRIGHT_TEXTURES = true;
-    public static final float IMG_FAC = .003925f;
-    public static final float IMG_POW = 2f;
-    public static final float IMG_STRAIGHT_FAC = 1.5f;
     public static final float maxYRot = 80f;
     public static float xRot = 30;
     public static float yRot = 30;
@@ -69,7 +66,7 @@ public class Core extends Renderer2D{
         Configuration.configurations.get(0).impose(configuration);
         for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.blocks){
             if(b.cooling>0&&!b.name.contains("Standard")){
-                b.setInternalTexture(Core.getImage("overhaul/"+b.name.toLowerCase().replace(" coolant heater", "").replace("liquid ", "")));
+                b.setInternalTexture(TextureManager.getImage("overhaul/"+b.name.toLowerCase().replace(" coolant heater", "").replace("liquid ", "")));
             }
         }
         multiblockTypes.add(new UnderhaulSFR());
@@ -271,46 +268,6 @@ public class Core extends Renderer2D{
             Renderer2D.drawLine(x1, y1-i, x2, y2-i);
         }
     }
-    public static BufferedImage getImage(String texture){
-        try{
-            if(new File("nbproject").exists()){
-                return ImageIO.read(new File("src/textures/"+texture+".png"));
-            }else{
-                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
-                Enumeration enumEntries = jar.entries();
-                while(enumEntries.hasMoreElements()){
-                    JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals("textures/"+texture+".png")){
-                        return ImageIO.read(jar.getInputStream(file));
-                    }
-                }
-            }
-            throw new IllegalArgumentException("Cannot find file: "+texture);
-        }catch(IOException ex){
-            System.err.println("Couldn't read file: "+texture);
-            return new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-        }
-    }
-    public static InputStream getInputStream(String path){
-        try{
-            if(new File("nbproject").exists()){
-                return new FileInputStream(new File("src/"+path.replace("/", "/")));
-            }else{
-                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
-                Enumeration enumEntries = jar.entries();
-                while(enumEntries.hasMoreElements()){
-                    JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals(path.replace("/", "/"))){
-                        return jar.getInputStream(file);
-                    }
-                }
-            }
-            throw new IllegalArgumentException("Cannot find file: "+path);
-        }catch(IOException ex){
-            System.err.println("Couldn't read file: "+path);
-            return null;
-        }
-    }
     private static final HashMap<BufferedImage, Integer> imgs = new HashMap<>();
     public static int getTexture(BufferedImage image){
         if(image==null)return -1;
@@ -318,15 +275,6 @@ public class Core extends Renderer2D{
             imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image));
         }
         return imgs.get(image);
-    }
-    public static int img_convert(int c){
-        if(SEPARATE_BRIGHT_TEXTURES){
-            double f = IMG_FAC*Math.pow(c, IMG_POW);
-            float g = c/255f;
-            double h = f*Math.pow(g, IMG_STRAIGHT_FAC)+c*(1-Math.pow(g, IMG_STRAIGHT_FAC));
-            c = (int)h;
-        }
-        return c;
     }
     public static void setTheme(Theme t){
         t.onSet();

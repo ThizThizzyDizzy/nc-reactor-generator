@@ -1,7 +1,7 @@
 package multiblock.configuration.overhaul.fissionsfr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import planner.Core;
+import multiblock.configuration.TextureManager;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
@@ -12,7 +12,7 @@ public class Block extends RuleContainer{
         for(PlacementRule r : rules){
             block.rules.add(r);
         }
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         block.functional = true;
         block.cluster = true;
         return block;
@@ -23,7 +23,7 @@ public class Block extends RuleContainer{
         block.activeModerator = true;
         block.flux = flux;
         block.efficiency = efficiency;
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         block.functional = true;
         return block;
     }
@@ -34,7 +34,7 @@ public class Block extends RuleContainer{
         block.reflectivity = reflectivity;
         block.functional = true;
         block.blocksLOS = true;
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         return block;
     }
     public static Block shield(String name, String texture, String closedTexture, int heatPerFlux, float efficiency){
@@ -46,8 +46,8 @@ public class Block extends RuleContainer{
         block.createCluster = true;
         block.heatMult = heatPerFlux;
         block.efficiency = efficiency;
-        block.setTexture(Core.getImage(texture));
-        block.setClosedTexture(Core.getImage(closedTexture));
+        block.setTexture(TextureManager.getImage(texture));
+        block.setClosedTexture(TextureManager.getImage(closedTexture));
         return block;
     }
     public static Block cell(String name, String texture){
@@ -57,7 +57,7 @@ public class Block extends RuleContainer{
         block.createCluster = true;
         block.blocksLOS = true;
         block.functional = true;
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         return block;
     }
     public static Block irradiator(String name, String texture){
@@ -66,13 +66,13 @@ public class Block extends RuleContainer{
         block.createCluster = true;
         block.irradiator = true;
         block.functional = true;
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         return block;
     }
     public static Block conductor(String name, String texture){
         Block block = new Block(name);
         block.cluster = true;//because conductors connect clusters together
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         return block;
     }
     public String name;
@@ -153,7 +153,7 @@ public class Block extends RuleContainer{
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){
                 Color col = new Color(image.getRGB(x, y));
-                displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
+                displayImg.setRGB(x, y, new Color(TextureManager.convert(col.getRed()), TextureManager.convert(col.getGreen()), TextureManager.convert(col.getBlue()), col.getAlpha()).getRGB());
             }
         }
         displayTexture = displayImg;
@@ -164,7 +164,7 @@ public class Block extends RuleContainer{
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){
                 Color col = new Color(image.getRGB(x, y));
-                displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
+                displayImg.setRGB(x, y, new Color(TextureManager.convert(col.getRed()), TextureManager.convert(col.getGreen()), TextureManager.convert(col.getBlue()), col.getAlpha()).getRGB());
             }
         }
         closedDisplayTexture = displayImg;

@@ -1,12 +1,20 @@
 package multiblock.configuration;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Objects;
-import static planner.Core.getInputStream;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import planner.file.FileReader;
 import multiblock.Multiblock;
+import planner.Core;
+import planner.Main;
 import simplelibrary.config2.Config;
 public class Configuration{
     public String name;
@@ -77,5 +85,25 @@ public class Configuration{
     public String getShortName(){
         if(alternatives.isEmpty())return null;
         return alternatives.get(0).trim().isEmpty()?null:alternatives.get(0);
+    }
+    public static InputStream getInputStream(String path){
+        try{
+            if(new File("nbproject").exists()){
+                return new FileInputStream(new File("src/"+path.replace("/", "/")));
+            }else{
+                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
+                Enumeration enumEntries = jar.entries();
+                while(enumEntries.hasMoreElements()){
+                    JarEntry file = (JarEntry)enumEntries.nextElement();
+                    if(file.getName().equals(path.replace("/", "/"))){
+                        return jar.getInputStream(file);
+                    }
+                }
+            }
+            throw new IllegalArgumentException("Cannot find file: "+path);
+        }catch(IOException ex){
+            System.err.println("Couldn't read file: "+path);
+            return null;
+        }
     }
 }

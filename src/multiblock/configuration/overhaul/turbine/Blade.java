@@ -1,7 +1,7 @@
 package multiblock.configuration.overhaul.turbine;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import planner.Core;
+import multiblock.configuration.TextureManager;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class Blade{
@@ -9,7 +9,7 @@ public class Blade{
         Blade blade = new Blade(name);
         blade.efficiency = efficiency;
         blade.expansion = expansion;
-        blade.setTexture(Core.getImage(texture));
+        blade.setTexture(TextureManager.getImage(texture));
         return blade;
     }
     public static Blade stator(String name, float expansion, String texture){
@@ -17,7 +17,7 @@ public class Blade{
         blade.efficiency = 0;
         blade.expansion = expansion;
         blade.stator = true;
-        blade.setTexture(Core.getImage(texture));
+        blade.setTexture(TextureManager.getImage(texture));
         return blade;
     }
     public String name;
@@ -53,7 +53,7 @@ public class Blade{
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){
                 Color col = new Color(image.getRGB(x, y));
-                displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
+                displayImg.setRGB(x, y, new Color(TextureManager.convert(col.getRed()), TextureManager.convert(col.getGreen()), TextureManager.convert(col.getBlue()), col.getAlpha()).getRGB());
             }
         }
         displayTexture = displayImg;

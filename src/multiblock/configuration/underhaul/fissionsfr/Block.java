@@ -1,6 +1,7 @@
 package multiblock.configuration.underhaul.fissionsfr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import multiblock.configuration.TextureManager;
 import planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -12,7 +13,7 @@ public class Block extends RuleContainer{
         for(PlacementRule r : rules){
             block.rules.add(r);
         }
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         return block;
     }
     public static Block activeCooler(String name, int cooling, String liquid, String texture, PlacementRule... rules){
@@ -22,19 +23,19 @@ public class Block extends RuleContainer{
         for(PlacementRule r : rules){
             block.rules.add(r);
         }
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         return block;
     }
     public static Block fuelCell(String name, String texture){
         Block block = new Block(name);
         block.fuelCell = true;
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         return block;
     }
     public static Block moderator(String name, String texture){
         Block block = new Block(name);
         block.moderator = true;
-        block.setTexture(Core.getImage(texture));
+        block.setTexture(TextureManager.getImage(texture));
         return block;
     }
     public String name;
@@ -88,7 +89,7 @@ public class Block extends RuleContainer{
                         col = new Color(144, 238, 144);
                     }
                 }
-                displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
+                displayImg.setRGB(x, y, new Color(TextureManager.convert(col.getRed()), TextureManager.convert(col.getGreen()), TextureManager.convert(col.getBlue()), col.getAlpha()).getRGB());
             }
         }
         displayTexture = displayImg;

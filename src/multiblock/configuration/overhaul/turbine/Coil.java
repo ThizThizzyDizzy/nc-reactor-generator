@@ -1,7 +1,7 @@
 package multiblock.configuration.overhaul.turbine;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import planner.Core;
+import multiblock.configuration.TextureManager;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
@@ -9,19 +9,19 @@ public class Coil extends RuleContainer{
     public static Coil coil(String name, float efficiency, String texture){
         Coil coil = new Coil(name);
         coil.efficiency = efficiency;
-        coil.setTexture(Core.getImage(texture));
+        coil.setTexture(TextureManager.getImage(texture));
         return coil;
     }
     public static Coil bearing(String name, String texture){
         Coil coil = new Coil(name);
         coil.bearing = true;
-        coil.setTexture(Core.getImage(texture));
+        coil.setTexture(TextureManager.getImage(texture));
         return coil;
     }
     public static Coil connector(String name, String texture){
         Coil coil = new Coil(name);
         coil.connector = true;
-        coil.setTexture(Core.getImage(texture));
+        coil.setTexture(TextureManager.getImage(texture));
         return coil;
     }
     public String name;
@@ -64,7 +64,7 @@ public class Coil extends RuleContainer{
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){
                 Color col = new Color(image.getRGB(x, y));
-                displayImg.setRGB(x, y, new Color(Core.img_convert(col.getRed()), Core.img_convert(col.getGreen()), Core.img_convert(col.getBlue()), col.getAlpha()).getRGB());
+                displayImg.setRGB(x, y, new Color(TextureManager.convert(col.getRed()), TextureManager.convert(col.getGreen()), TextureManager.convert(col.getBlue()), col.getAlpha()).getRGB());
             }
         }
         displayTexture = displayImg;
