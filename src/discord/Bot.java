@@ -1332,11 +1332,13 @@ public class Bot extends ListenerAdapter{
 //                        }
                         if(args.trim().equalsIgnoreCase(thing.getName())){
                             price = thing.getPrice();
+                            final long pric = price;
                             onBuy = () -> {
                                 if(hut.add(thing.newInstance(hut))){
                                     channel.sendMessage("You buy a "+thing.getName()+" and put it in your hut").queue();
                                 }else{
                                     channel.sendMessage("There's no space for a "+thing.getName()+" in your hut!").queue();
+                                    SmoreBot.addSmores(user, pric);
                                 }
                             };
                         }
