@@ -1327,9 +1327,6 @@ public class Bot extends ListenerAdapter{
                     Hut hut = SmoreBot.huts.get(user.getIdLong());
                     FOR:for(HutThing thing : Hut.allFurniture){
                         if(!thing.isSellable())continue;
-//                        for(HutThing thing2 : hut.getFurniture()){
-//                            if(thing2.isEqual(thing))continue FOR;
-//                        }
                         if(args.trim().equalsIgnoreCase(thing.getName())){
                             price = thing.getPrice();
                             final long pric = price;

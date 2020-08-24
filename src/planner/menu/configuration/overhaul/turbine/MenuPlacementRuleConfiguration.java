@@ -11,8 +11,8 @@ public class MenuPlacementRuleConfiguration extends Menu{
     private final MenuComponentMinimalistOptionButton type = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Type", true, true, 0, PlacementRule.RuleType.getStringList()));
     private final MenuComponentMinimalistOptionButton coilType = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Type", true, true, 0, PlacementRule.CoilType.getStringList()));
     private final MenuComponentMinimalistOptionButton coil = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Coil", true, true, 0, Core.configuration.overhaul.turbine.getCoilStringList()));
-    private final MenuComponentMinimalistSlider min = add(new MenuComponentMinimalistSlider(0, 0, 0, 0, "Minimum", 1, 6, 1, true));
-    private final MenuComponentMinimalistSlider max = add(new MenuComponentMinimalistSlider(0, 0, 0, 0, "Maximum", 1, 6, 6, true));
+    private final MenuComponentMinimalistSlider min = add(new MenuComponentMinimalistSlider(0, 0, 0, 0, "Minimum", 0, 6, 1, true));
+    private final MenuComponentMinimalistSlider max = add(new MenuComponentMinimalistSlider(0, 0, 0, 0, "Maximum", 0, 6, 6, true));
     private final MenuComponentMinimalistButton rules = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Rules", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private final PlacementRule rule;
