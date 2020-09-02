@@ -282,6 +282,8 @@ public class Core extends Renderer2D{
         ByteBuffer bufferer = ImageStash.createDirectByteBuffer(width*height*4);
         Framebuffer buff = new Framebuffer(Core.helper, null, width, height);
         buff.bindRenderTarget2D();
+        GL11.glScaled(1, -1, 1);
+        GL11.glTranslated(0, -buff.height, 0);
         r.render(buff);
         bufferer.clear();
         GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bufferer);
