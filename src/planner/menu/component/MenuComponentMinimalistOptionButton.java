@@ -1,5 +1,6 @@
 package planner.menu.component;
 import java.awt.Color;
+import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
@@ -17,26 +18,22 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
         this.darker = darker;
     }
     @Override
-    public void mouseEvent(double x, double y, int button, boolean isDown){
-        super.mouseEvent(x, y, button, isDown);
-        if(button==0&&isDown==true&&enabled){
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods) {
+        super.onMouseButton(x, y, button, pressed, mods); //To change body of generated methods, choose Tools | Templates.
+        if(pressed&&enabled&&button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             isPressed = true;
-        }else if(button==0&&isDown==false&&isPressed&&enabled){
+        }else if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&!pressed){
             isPressed = false;
         }
-        if(button==1&&isDown==true&&enabled){
+        if(pressed&&enabled&&button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
             isRightPressed = true;
-        }else if(button==1&&isDown==false&&isRightPressed&&enabled){
+        }else if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&!pressed){
             isRightPressed = false;
         }
     }
     @Override
-    public void mouseover(double x, double y, boolean isMouseOver){
-        super.mouseover(x, y, isMouseOver);
-        if(!isMouseOver){
-            isPressed = false;
-            isRightPressed = false;
-        }
+    public void onMouseMovedElsewhere(double x, double y){
+        isPressed = isRightPressed = false;
     }
     @Override
     public void render(){

@@ -1,5 +1,4 @@
 package planner.menu.configuration.underhaul.fissionsfr;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -33,18 +32,18 @@ public class MenuFuelConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        back.width = name.width = Display.getWidth();
-        power.width = heat.width = time.width = Display.getWidth()*.75;
-        power.x = heat.x = time.x = Display.getWidth()*.25;
-        power.height = heat.height = time.height = name.height = back.height = Display.getHeight()/16;
+        back.width = name.width = Core.helper.displayWidth();
+        power.width = heat.width = time.width = Core.helper.displayWidth()*.75;
+        power.x = heat.x = time.x = Core.helper.displayWidth()*.25;
+        power.height = heat.height = time.height = name.height = back.height = Core.helper.displayHeight()/16;
         power.y = name.height;
         heat.y = power.y+power.height;
         time.y = heat.y+heat.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/16, Display.getWidth()*.25, Display.getHeight()/16*2, "Power");
-        drawText(0, Display.getHeight()/16*2, Display.getWidth()*.25, Display.getHeight()/16*3, "Heat");
-        drawText(0, Display.getHeight()/16*3, Display.getWidth()*.25, Display.getHeight()/16*4, "Time");
+        drawText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*2, "Power");
+        drawText(0, Core.helper.displayHeight()/16*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*3, "Heat");
+        drawText(0, Core.helper.displayHeight()/16*3, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*4, "Time");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

@@ -29,7 +29,7 @@ public class Blade{
     public Blade(String name){
         this.name = name;
     }
-    public Config save(TurbineConfiguration configuration, boolean partial){
+    public Config save(boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
         config.set("efficiency", efficiency);

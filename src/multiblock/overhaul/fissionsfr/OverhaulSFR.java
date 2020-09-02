@@ -52,7 +52,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     public OverhaulSFR(int x, int y, int z, CoolantRecipe coolantRecipe){
         super(x, y, z);
-        this.coolantRecipe = coolantRecipe==null?getConfiguration().overhaul.fissionSFR.coolantRecipes.get(0):coolantRecipe;
+        this.coolantRecipe = coolantRecipe==null?getConfiguration().overhaul.fissionSFR.allCoolantRecipes.get(0):coolantRecipe;
     }
     @Override
     public String getDefinitionName(){
@@ -71,7 +71,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.fissionSFR==null)return;
-        for(multiblock.configuration.overhaul.fissionsfr.Block block : getConfiguration().overhaul.fissionSFR.blocks){
+        for(multiblock.configuration.overhaul.fissionsfr.Block block : getConfiguration().overhaul.fissionSFR.allBlocks){
             blocks.add(new Block(-1, -1, -1, block));
         }
     }
@@ -110,6 +110,7 @@ public class OverhaulSFR extends Multiblock<Block>{
             lastActive = 0;
             for(Block block : blocks){
                 boolean wasActive = block.isFuelCellActive();
+                block.hadFlux = block.neutronFlux;
                 block.clearData();
                 if(wasActive)lastActive++;
                 block.wasActive = wasActive;
@@ -120,6 +121,9 @@ public class OverhaulSFR extends Multiblock<Block>{
             nowActive = 0;
             for(Block block : blocks){
                 if(block.isFuelCellActive())nowActive++;
+                if(block.isFuelCell()&&!block.wasActive){
+                    block.neutronFlux = block.hadFlux;
+                }
             }
         }while(nowActive!=lastActive);
         for(Block block : blocks){
@@ -225,7 +229,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                 + "Total Irradiation: "+totalIrradiation+"\n"
                 + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n"
                 + "Rainbow Score: "+percent(rainbowScore, 2)+"\n";//TODO make this (and shutdown factor?) modular
-        for(Fuel f : getConfiguration().overhaul.fissionSFR.fuels){
+        for(Fuel f : getConfiguration().overhaul.fissionSFR.allFuels){
             int i = getFuelCount(f);
             if(i>0)s+="\n"+f.name+": "+i;
         }
@@ -256,7 +260,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                     for(int z = 0; z<getZ(); z++){
                         Block block = getBlock(x, y, z);
                         if(block==null)blox.add(0);
-                        else blox.add(configuration.overhaul.fissionSFR.blocks.indexOf(block.template)+1);
+                        else blox.add(configuration.overhaul.fissionSFR.allBlocks.indexOf(block.template)+1);
                     }
                 }
             }
@@ -265,28 +269,28 @@ public class OverhaulSFR extends Multiblock<Block>{
                 blox.add(block.x);
                 blox.add(block.y);
                 blox.add(block.z);
-                blox.add(configuration.overhaul.fissionSFR.blocks.indexOf(block.template)+1);
+                blox.add(configuration.overhaul.fissionSFR.allBlocks.indexOf(block.template)+1);
             }
         }
         ConfigNumberList fuels = new ConfigNumberList();
         ConfigNumberList sources = new ConfigNumberList();
         ConfigNumberList irradiatorRecipes = new ConfigNumberList();
         for(Block block : getBlocks()){
-            if(block.template.fuelCell)fuels.add(configuration.overhaul.fissionSFR.fuels.indexOf(block.fuel));
-            if(block.template.fuelCell)sources.add(configuration.overhaul.fissionSFR.sources.indexOf(block.source)+1);
-            if(block.template.irradiator)irradiatorRecipes.add(configuration.overhaul.fissionSFR.irradiatorRecipes.indexOf(block.irradiatorRecipe)+1);
+            if(block.template.fuelCell)fuels.add(configuration.overhaul.fissionSFR.allFuels.indexOf(block.fuel));
+            if(block.template.fuelCell)sources.add(configuration.overhaul.fissionSFR.allSources.indexOf(block.source)+1);
+            if(block.template.irradiator)irradiatorRecipes.add(configuration.overhaul.fissionSFR.allIrradiatorRecipes.indexOf(block.irradiatorRecipe)+1);
         }
         config.set("blocks", blox);
         config.set("fuels", fuels);
         config.set("sources", sources);
         config.set("irradiatorRecipes", irradiatorRecipes);
-        config.set("coolantRecipe", (byte)configuration.overhaul.fissionSFR.coolantRecipes.indexOf(coolantRecipe));
+        config.set("coolantRecipe", (byte)configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(coolantRecipe));
     }
     private boolean isCompact(Configuration configuration){
         int blockCount = getBlocks().size();
         int volume = getX()*getY()*getZ();
         int bitsPerDim = logBase(2, Math.max(getX(), Math.max(getY(), getZ())));
-        int bitsPerType = logBase(2, configuration.overhaul.fissionSFR.blocks.size());
+        int bitsPerType = logBase(2, configuration.overhaul.fissionSFR.allBlocks.size());
         int compactBits = bitsPerType*volume;
         int spaciousBits = 4*Math.max(bitsPerDim, bitsPerType)*blockCount;
         return compactBits<spaciousBits;
@@ -363,17 +367,17 @@ public class OverhaulSFR extends Multiblock<Block>{
         if(sourceToggles==null)sourceToggles = new HashMap<>();
         if(irradiatorRecipeToggles==null)irradiatorRecipeToggles = new HashMap<>();
         fuelToggles.clear();
-        for(Fuel f : getConfiguration().overhaul.fissionSFR.fuels){
+        for(Fuel f : getConfiguration().overhaul.fissionSFR.allFuels){
             MenuComponentSFRToggleFuel toggle = new MenuComponentSFRToggleFuel(f);
             fuelToggles.put(f, toggle);
             multiblockSettings.add(toggle);
         }
-        for(Source s : getConfiguration().overhaul.fissionSFR.sources){
+        for(Source s : getConfiguration().overhaul.fissionSFR.allSources){
             MenuComponentSFRToggleSource toggle = new MenuComponentSFRToggleSource(s);
             sourceToggles.put(s, toggle);
             multiblockSettings.add(toggle);
         }
-        for(IrradiatorRecipe r : getConfiguration().overhaul.fissionSFR.irradiatorRecipes){
+        for(IrradiatorRecipe r : getConfiguration().overhaul.fissionSFR.allIrradiatorRecipes){
             MenuComponentSFRToggleIrradiatorRecipe toggle = new MenuComponentSFRToggleIrradiatorRecipe(r);
             irradiatorRecipeToggles.put(r, toggle);
             multiblockSettings.add(toggle);
@@ -513,13 +517,13 @@ public class OverhaulSFR extends Multiblock<Block>{
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
         postProcessingEffects.add(new ClearInvalid());
         if(Challenger.isActive)postProcessingEffects.add(new SmartFillOverhaulSFR());
-        for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.blocks){
+        for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new SFRFill(b));
         }
     }
     private float getRainbowScore(){
         float totalSinks = 0;
-        for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.blocks){
+        for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
             if(b.cooling>0)totalSinks++;
         }
         Set<multiblock.configuration.overhaul.fissionsfr.Block> unique = new HashSet<>();
@@ -780,7 +784,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){
         int sources = 0;
-        for(Source s : getConfiguration().overhaul.fissionSFR.sources){
+        for(Source s : getConfiguration().overhaul.fissionSFR.allSources){
             int num = count(s);
             sources+=num;
             if(num>0)parts.add(new PartCount(null, s.name+" Neutron Source", num));

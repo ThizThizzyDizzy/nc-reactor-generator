@@ -7,14 +7,12 @@ import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistTextBox;
-import planner.menu.configuration.MenuConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.PartialConfiguration;
@@ -198,7 +196,7 @@ public class MenuMain extends Menu{
                                 header.set("metadata", meta);
                             }
                             header.save(stream);
-                            ncpf.configuration.save(stream);
+                            ncpf.configuration.save(null, Config.newConfig()).save(stream);
                             for(Multiblock m : ncpf.multiblocks){
                                 m.save(ncpf, ncpf.configuration, stream);
                             }
@@ -307,7 +305,7 @@ public class MenuMain extends Menu{
             forceMetaUpdate = true;
         });
         settings.addActionListener((e) -> {
-            gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this), MenuTransition.SlideTransition.slideFrom(0, -1), 5));
+            gui.open(new MenuTransition(gui, this, new MenuSettings(gui, this), MenuTransition.SlideTransition.slideFrom(0, -1), 5));
         });
         delete.addActionListener((e) -> {
             Multiblock multiblock = Core.multiblocks.get(multiblocks.getSelectedIndex());
@@ -346,11 +344,11 @@ public class MenuMain extends Menu{
     @Override
     public void renderBackground(){
         Core.applyColor(Core.theme.getHeaderColor());
-        drawRect(0, 0, Display.getWidth(), Display.getHeight()/16, 0);
+        drawRect(0, 0, Core.helper.displayWidth(), Core.helper.displayHeight()/16, 0);
         Core.applyColor(Core.theme.getHeader2Color());
-        drawRect(0, Display.getHeight()/16, Display.getWidth()/3, Display.getHeight()/8, 0);
+        drawRect(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()/3, Core.helper.displayHeight()/8, 0);
         Core.applyColor(Core.theme.getTextColor());
-        drawCenteredText(0, Display.getHeight()/16, Display.getWidth()/3-Display.getHeight()/16, Display.getHeight()/8, "Multiblocks");
+        drawCenteredText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()/3-Core.helper.displayHeight()/16, Core.helper.displayHeight()/8, "Multiblocks");
     }
     @Override
     public void tick(){
@@ -366,28 +364,28 @@ public class MenuMain extends Menu{
         if(!pendingWrites.isEmpty()){
             pendingWrites.dequeue().write();
         }
-        convertOverhaulMSFR.x = setInputs.x = editMetadata.x = Display.getWidth()/3;
-        importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = Display.getWidth()/12;
+        convertOverhaulMSFR.x = setInputs.x = editMetadata.x = Core.helper.displayWidth()/3;
+        importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = Core.helper.displayWidth()/12;
         exportMultiblock.x = importFile.width;
         saveFile.x = exportMultiblock.x+exportMultiblock.width;
         loadFile.x = saveFile.x+saveFile.width;
-        editMetadata.width = Display.getWidth()*2/3-Display.getHeight()/16;
-        importFile.height = exportMultiblock.height = saveFile.height = loadFile.height = editMetadata.height = settings.width = settings.height = Display.getHeight()/16;
-        settings.x = Display.getWidth()-Display.getHeight()/16;
-        multiblocks.y = Display.getHeight()/8;
-        multiblocks.height = Display.getHeight()-multiblocks.y;
-        multiblocks.width = Display.getWidth()/3;
+        editMetadata.width = Core.helper.displayWidth()*2/3-Core.helper.displayHeight()/16;
+        importFile.height = exportMultiblock.height = saveFile.height = loadFile.height = editMetadata.height = settings.width = settings.height = Core.helper.displayHeight()/16;
+        settings.x = Core.helper.displayWidth()-Core.helper.displayHeight()/16;
+        multiblocks.y = Core.helper.displayHeight()/8;
+        multiblocks.height = Core.helper.displayHeight()-multiblocks.y;
+        multiblocks.width = Core.helper.displayWidth()/3;
         for(MenuComponent c : multiblocks.components){
             c.width = multiblocks.width-(multiblocks.hasScrollbar()?multiblocks.vertScrollbarWidth:0);
             ((MenuComponentMultiblock) c).edit.enabled = ((MenuComponentMultiblock) c).multiblock.exists()&&(!(adding||metadating));
         }
-        addMultiblock.x = Display.getWidth()/3-Display.getHeight()/16;
-        addMultiblock.y = Display.getHeight()/16;
-        addMultiblock.width = addMultiblock.height = Display.getHeight()/16;
+        addMultiblock.x = Core.helper.displayWidth()/3-Core.helper.displayHeight()/16;
+        addMultiblock.y = Core.helper.displayHeight()/16;
+        addMultiblock.width = addMultiblock.height = Core.helper.displayHeight()/16;
         convertOverhaulMSFR.height = setInputs.height = delete.height = addMultiblock.height;
-        delete.width = (Display.getWidth()-multiblocks.width)*.8;
+        delete.width = (Core.helper.displayWidth()-multiblocks.width)*.8;
         convertOverhaulMSFR.width = setInputs.width = editMetadata.width+settings.width;
-        delete.x = Display.getWidth()-delete.width;
+        delete.x = Core.helper.displayWidth()-delete.width;
         setInputs.y = convertOverhaulMSFR.y = addMultiblock.y;
         if(getSelectedMultiblock() instanceof OverhaulSFR){
             convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
@@ -405,7 +403,7 @@ public class MenuMain extends Menu{
             setInputs.enabled = false;
             setInputs.y = -setInputs.height;
         }
-        delete.y = Display.getHeight()-delete.height;
+        delete.y = Core.helper.displayHeight()-delete.height;
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);
         settings.enabled = !(adding||metadating);
@@ -418,24 +416,24 @@ public class MenuMain extends Menu{
             b.enabled = adding&&Core.multiblockTypes.get(multiblockButtons.indexOf(b)).exists();
         }
         multiblockCancel.enabled = adding;
-        metadataPanel.width = Display.getWidth()*.75;
-        metadataPanel.height = Display.getHeight()*.75;
-        metadataPanel.x = Display.getWidth()/2-metadataPanel.width/2;
+        metadataPanel.width = Core.helper.displayWidth()*.75;
+        metadataPanel.height = Core.helper.displayHeight()*.75;
+        metadataPanel.x = Core.helper.displayWidth()/2-metadataPanel.width/2;
         double addScale = Math.min(1,Math.max(0,(adding?(addingScale+(millisSinceLastTick/50d)):(addingScale-(millisSinceLastTick/50d)))/addingTime));
-        multiblockCancel.width = Display.getWidth()/3*addScale;
-        multiblockCancel.height = Display.getHeight()/10*addScale;
-        multiblockCancel.x = Display.getWidth()/2-multiblockCancel.width/2;
-        multiblockCancel.y = Display.getHeight()-Display.getHeight()/8*1.5-multiblockCancel.height/2;
+        multiblockCancel.width = Core.helper.displayWidth()/3*addScale;
+        multiblockCancel.height = Core.helper.displayHeight()/10*addScale;
+        multiblockCancel.x = Core.helper.displayWidth()/2-multiblockCancel.width/2;
+        multiblockCancel.y = Core.helper.displayHeight()-Core.helper.displayHeight()/8*1.5-multiblockCancel.height/2;
         for(int i = 0; i<multiblockButtons.size(); i++){
             MenuComponentMinimalistButton button = multiblockButtons.get(i);
-            double midX = Display.getWidth()/(multiblockButtons.size()+1d)*(i+1);
-            double midY = Display.getHeight()/2-multiblockCancel.height;
-            button.width = button.height = Display.getWidth()/multiblockButtons.size()/2*addScale;
+            double midX = Core.helper.displayWidth()/(multiblockButtons.size()+1d)*(i+1);
+            double midY = Core.helper.displayHeight()/2-multiblockCancel.height;
+            button.width = button.height = Core.helper.displayWidth()/multiblockButtons.size()/2*addScale;
             button.x = midX-button.width/2;
             button.y = midY-button.height/2;
         }
         double metadataScale = Math.min(1,Math.max(0,(metadating?(metadatingScale+(millisSinceLastTick/50d)):(metadatingScale-(millisSinceLastTick/50d)))/metadatingTime));
-        metadataPanel.y = Display.getHeight()/2-metadataPanel.height/2-Display.getHeight()*(1-metadataScale);
+        metadataPanel.y = Core.helper.displayHeight()/2-metadataPanel.height/2-Core.helper.displayHeight()*(1-metadataScale);
         super.render(millisSinceLastTick);
         Core.applyColor(Core.theme.getTextColor(), .4f);
         if(getSelectedMultiblock()!=null)drawCenteredText(delete.x, delete.y-45, delete.x+delete.width, delete.y-5, "Use Arrow keys to rotate preview");

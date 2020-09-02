@@ -1,31 +1,35 @@
-package planner.menu.configuration.overhaul.fissionsfr;
+package planner.menu.configuration;
 import multiblock.configuration.Configuration;
 import planner.Core;
-import multiblock.configuration.overhaul.fissionsfr.Block;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
-public class MenuBlocksConfiguration extends Menu{
+public class MenuAddonsConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
-    private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Block", true, true));
+    private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Create New Addon", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private boolean refreshNeeded = false;
-    private final Configuration configuration;
-    public MenuBlocksConfiguration(GUI gui, Menu parent, Configuration configuration){
+    public MenuAddonsConfiguration(GUI gui, Menu parent){
         super(gui, parent);
         add.addActionListener((e) -> {
-            Block b = new Block("New Block");
-            configuration.overhaul.fissionSFR.blocks.add(b);
-            Core.configuration.overhaul.fissionSFR.allBlocks.add(b);
-            gui.open(new MenuBlockConfiguration(gui, this, b));
+            Configuration c = new Configuration("New Addon", null, null);
+            c.addon = true;
+            Core.configuration.addons.add(c);
+            gui.open(new MenuConfiguration(gui, this, c));
         });
         back.addActionListener((e) -> {
             gui.open(parent);
         });
-        this.configuration = configuration;
+    }
+    @Override
+    public void onGUIOpened(){
+        list.components.clear();
+        for(Configuration c : Core.configuration.addons){
+            list.add(new MenuComponentAddonConfiguration(c));
+        }
     }
     @Override
     public void tick(){
@@ -34,13 +38,6 @@ public class MenuBlocksConfiguration extends Menu{
             refreshNeeded = false;
         }
         super.tick();
-    }
-    @Override
-    public void onGUIOpened(){
-        list.components.clear();
-        for(Block b : configuration.overhaul.fissionSFR.blocks){
-            list.add(new MenuComponentBlockConfiguration(b));
-        }
     }
     @Override
     public void render(int millisSinceLastTick){
@@ -58,15 +55,14 @@ public class MenuBlocksConfiguration extends Menu{
     @Override
     public void buttonClicked(MenuComponentButton button){
         for(MenuComponent c : list.components){
-            if(c instanceof MenuComponentBlockConfiguration){
-                if(button==((MenuComponentBlockConfiguration) c).delete){
-                    configuration.overhaul.fissionSFR.blocks.remove(((MenuComponentBlockConfiguration) c).block);
-                    Core.configuration.overhaul.fissionSFR.allBlocks.remove(((MenuComponentBlockConfiguration) c).block);
+            if(c instanceof MenuComponentAddonConfiguration){
+                if(button==((MenuComponentAddonConfiguration) c).delete){
+                    Core.configuration.addons.remove(((MenuComponentAddonConfiguration) c).addon);
                     refreshNeeded = true;
                     return;
                 }
-                if(button==((MenuComponentBlockConfiguration) c).edit){
-                    gui.open(new MenuBlockConfiguration(gui, this, ((MenuComponentBlockConfiguration) c).block));
+                if(button==((MenuComponentAddonConfiguration) c).edit){
+                    gui.open(new MenuConfiguration(gui, this, ((MenuComponentAddonConfiguration) c).addon));
                     return;
                 }
             }

@@ -1,6 +1,5 @@
 package planner.menu;
 import discord.Bot;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
@@ -15,8 +14,8 @@ public class MenuDiscord extends Menu{
     }
     @Override
     public void renderBackground(){
-        exit.width = Display.getWidth();
-        exit.height = Display.getHeight();
+        exit.width = Core.helper.displayWidth();
+        exit.height = Core.helper.displayHeight();
         Bot.render2D();
     }
 }

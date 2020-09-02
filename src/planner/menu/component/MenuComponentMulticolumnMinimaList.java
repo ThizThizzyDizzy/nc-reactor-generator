@@ -1,11 +1,11 @@
 package planner.menu.component;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentMulticolumnList;
 public class MenuComponentMulticolumnMinimaList extends MenuComponentMulticolumnList{
     public MenuComponentMulticolumnMinimaList(double x, double y, double width, double height, double columnWidth, double rowHeight, double scrollbarWidth){
         super(x, y, width, height, columnWidth, rowHeight, scrollbarWidth);
+        setScrollMagnitude(32);setScrollWheelMagnitude(32);
     }
     @Override
     public void drawUpwardScrollbarButton(double x, double y, double width, double height){
@@ -79,14 +79,14 @@ public class MenuComponentMulticolumnMinimaList extends MenuComponentMulticolumn
         GL11.glVertex2d(x+1, y);
         GL11.glEnd();
     }
-    @Override
-    public void persistMouseEvent(int button, boolean pressed, float x, float y){
-        if(button==-1&&Mouse.isButtonDown(0)){
-            button = 0;
-            pressed = true;
-        }
-        super.persistMouseEvent(button, pressed, x, y);
-    }
+//    @Override
+//    public void persistMouseEvent(int button, boolean pressed, float x, float y){
+//        if(button==-1&&Mouse.isButtonDown(0)){
+//            button = 0;
+//            pressed = true;
+//        }
+//        super.persistMouseEvent(button, pressed, x, y);
+//    }
     @Override
     public void renderBackground(){
         setScrollMagnitude(Math.min(width, height)/20);

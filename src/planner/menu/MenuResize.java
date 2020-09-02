@@ -1,6 +1,5 @@
 package planner.menu;
 import java.util.ArrayList;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -156,10 +155,10 @@ public class MenuResize extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        done.width = Display.getWidth()/4;
-        multibwauk.width = done.x = Display.getWidth()-done.width;
+        done.width = Core.helper.displayWidth()/4;
+        multibwauk.width = done.x = Core.helper.displayWidth()-done.width;
         done.height = 64;
-        multibwauk.height = Display.getHeight();
+        multibwauk.height = Core.helper.displayHeight();
         super.render(millisSinceLastTick);
         Core.applyColor(Core.theme.getTextColor());
         drawCenteredText(done.x, done.height, done.x+done.width, done.height+40, multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ());

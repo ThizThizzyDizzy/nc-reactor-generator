@@ -27,7 +27,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     public UnderhaulSFR(int x, int y, int z, Fuel fuel){
         super(x, y, z);
-        this.fuel = fuel==null?getConfiguration().underhaul.fissionSFR.fuels.get(0):fuel;
+        this.fuel = fuel==null?getConfiguration().underhaul.fissionSFR.allFuels.get(0):fuel;
     }
     @Override
     public String getDefinitionName(){
@@ -46,7 +46,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().underhaul==null||getConfiguration().underhaul.fissionSFR==null)return;
-        for(multiblock.configuration.underhaul.fissionsfr.Block block : getConfiguration().underhaul.fissionSFR.blocks){
+        for(multiblock.configuration.underhaul.fissionsfr.Block block : getConfiguration().underhaul.fissionSFR.allBlocks){
             blocks.add(new Block(-1,-1,-1,block));
         }
     }
@@ -139,7 +139,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         size.add(getY());
         size.add(getZ());
         config.set("size", size);
-        config.set("fuel", (byte)configuration.underhaul.fissionSFR.fuels.indexOf(fuel));
+        config.set("fuel", (byte)configuration.underhaul.fissionSFR.allFuels.indexOf(fuel));
         boolean compact = isCompact(configuration);//find perfect compression ratio
         config.set("compact", compact);
         ConfigNumberList blox = new ConfigNumberList();
@@ -149,7 +149,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
                     for(int z = 0; z<getZ(); z++){
                         Block block = getBlock(x, y, z);
                         if(block==null)blox.add(0);
-                        else blox.add(configuration.underhaul.fissionSFR.blocks.indexOf(block.template)+1);
+                        else blox.add(configuration.underhaul.fissionSFR.allBlocks.indexOf(block.template)+1);
                     }
                 }
             }
@@ -158,7 +158,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 blox.add(block.x);
                 blox.add(block.y);
                 blox.add(block.z);
-                blox.add(configuration.underhaul.fissionSFR.blocks.indexOf(block.template)+1);
+                blox.add(configuration.underhaul.fissionSFR.allBlocks.indexOf(block.template)+1);
             }
         }
         config.set("blocks", blox);
@@ -167,7 +167,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         int blockCount = getBlocks().size();
         int volume = getX()*getY()*getZ();
         int bitsPerDim = logBase(2, Math.max(getX(), Math.max(getY(), getZ())));
-        int bitsPerType = logBase(2, configuration.underhaul.fissionSFR.blocks.size());
+        int bitsPerType = logBase(2, configuration.underhaul.fissionSFR.allBlocks.size());
         int compactBits = bitsPerType*volume;
         int spaciousBits = 4*Math.max(bitsPerDim, bitsPerType)*blockCount;
         return compactBits<spaciousBits;

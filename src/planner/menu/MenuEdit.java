@@ -3,8 +3,6 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import planner.menu.component.MenuComponentCoolantRecipe;
 import planner.menu.component.MenuComponentEditorListBlock;
@@ -37,6 +35,7 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.menu.component.MenuComponentEditorGrid;
 import planner.menu.component.MenuComponentTurbineBladeEditorGrid;
@@ -93,40 +92,40 @@ public class MenuEdit extends Menu{
         super(gui, parent);
         if(multiblock instanceof UnderhaulSFR){
             add(underFuelOrCoolantRecipe);
-            for(multiblock.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.fuels){
+            for(multiblock.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.allFuels){
                 underFuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
             }
         }
         if(multiblock instanceof OverhaulSFR){
             add(underFuelOrCoolantRecipe);
-            for(multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+            for(multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
                 underFuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
             }
             add(overFuel);
-            for(multiblock.configuration.overhaul.fissionsfr.Fuel fuel : Core.configuration.overhaul.fissionSFR.fuels){
+            for(multiblock.configuration.overhaul.fissionsfr.Fuel fuel : Core.configuration.overhaul.fissionSFR.allFuels){
                 overFuel.add(new MenuComponentOverSFRFuel(fuel));
             }
             overFuel.setSelectedIndex(0);
             add(irradiatorRecipe);
-            for(multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
+            for(multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionSFR.allIrradiatorRecipes){
                 irradiatorRecipe.add(new MenuComponentSFRIrradiatorRecipe(recipe));
             }
             irradiatorRecipe.setSelectedIndex(0);
         }
         if(multiblock instanceof OverhaulTurbine){
             add(underFuelOrCoolantRecipe);
-            for(multiblock.configuration.overhaul.turbine.Recipe recipe : Core.configuration.overhaul.turbine.recipes){
+            for(multiblock.configuration.overhaul.turbine.Recipe recipe : Core.configuration.overhaul.turbine.allRecipes){
                 underFuelOrCoolantRecipe.add(new MenuComponentTurbineRecipe(recipe));
             }
         }
         if(multiblock instanceof OverhaulMSR){
             add(overFuel);
-            for(multiblock.configuration.overhaul.fissionmsr.Fuel fuel : Core.configuration.overhaul.fissionMSR.fuels){
+            for(multiblock.configuration.overhaul.fissionmsr.Fuel fuel : Core.configuration.overhaul.fissionMSR.allFuels){
                 overFuel.add(new MenuComponentOverMSRFuel(fuel));
             }
             overFuel.setSelectedIndex(0);
             add(irradiatorRecipe);
-            for(multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionMSR.irradiatorRecipes){
+            for(multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionMSR.allIrradiatorRecipes){
                 irradiatorRecipe.add(new MenuComponentMSRIrradiatorRecipe(recipe));
             }
             irradiatorRecipe.setSelectedIndex(0);
@@ -143,12 +142,14 @@ public class MenuEdit extends Menu{
             scale = Math.max(minScale, Math.min(maxScale, scale/1.5));
             CELL_SIZE = (int) (16*scale);
             LAYER_GAP = CELL_SIZE/2;
+            multibwauk.setScrollMagnitude(CELL_SIZE/2);multibwauk.setScrollWheelMagnitude(CELL_SIZE/2);
             onGUIOpened();
         });
         zoomIn.addActionListener((e) -> {
             scale = Math.max(minScale, Math.min(maxScale, scale*1.5));
             CELL_SIZE = (int) (16*scale);
             LAYER_GAP = CELL_SIZE/2;
+            multibwauk.setScrollMagnitude(CELL_SIZE/2);multibwauk.setScrollWheelMagnitude(CELL_SIZE/2);
             onGUIOpened();
         });
         editMetadata.addActionListener((e) -> {
@@ -172,13 +173,13 @@ public class MenuEdit extends Menu{
         editMetadata.label = multiblock.getName();
 //        generate.label = multiblock.isEmpty()?"Generate":"Generate Suggestions";
         if(multiblock instanceof UnderhaulSFR){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
         }
         if(multiblock instanceof OverhaulSFR){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.coolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
         }
         if(multiblock instanceof OverhaulTurbine){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.turbine.recipes.indexOf(((OverhaulTurbine)multiblock).recipe));
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
         }
         multibwauk.components.clear();
         multisPerRow = Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)));
@@ -240,34 +241,34 @@ public class MenuEdit extends Menu{
         parts.x = tools.width+partSize/4;
         generate.x = editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
         generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
-        generate.y = Display.getHeight()-generate.height;
+        generate.y = Core.helper.displayHeight()-generate.height;
         tools.height = parts.height = Math.max((parts.components.size()+5)/partsWide,editorTools.size())*partSize;
         resize.width = 320;
-        generate.width = editMetadata.width = multibwauk.width = Display.getWidth()-parts.x-parts.width-resize.width;
+        generate.width = editMetadata.width = multibwauk.width = Core.helper.displayWidth()-parts.x-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
         zoomIn.width = zoomOut.width = resize.width/2;
         zoomIn.y = zoomOut.y = resize.height;
-        resize.x = Display.getWidth()-resize.width;
+        resize.x = Core.helper.displayWidth()-resize.width;
         zoomIn.x = resize.x;
         zoomOut.x = zoomIn.x+zoomIn.width;
         irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
         underFuelOrCoolantRecipe.y = resize.height*2;
         irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
-        underFuelOrCoolantRecipe.height = Display.getHeight()-resize.height*2;
+        underFuelOrCoolantRecipe.height = Core.helper.displayHeight()-resize.height*2;
         for(MenuComponent c : tools.components){
             c.width = c.height = partSize;
         }
         if(multiblock instanceof OverhaulSFR){
             underFuelOrCoolantRecipe.height = 96;
             irradiatorRecipe.height = 96;
-            irradiatorRecipe.y = Display.getHeight()-irradiatorRecipe.height;
+            irradiatorRecipe.y = Core.helper.displayHeight()-irradiatorRecipe.height;
             overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
             overFuel.height = irradiatorRecipe.y-overFuel.y;
         }
         if(multiblock instanceof OverhaulMSR){
             underFuelOrCoolantRecipe.height = 0;
             irradiatorRecipe.height = 96;
-            irradiatorRecipe.y = Display.getHeight()-irradiatorRecipe.height;
+            irradiatorRecipe.y = Core.helper.displayHeight()-irradiatorRecipe.height;
             overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
             overFuel.height = irradiatorRecipe.y-overFuel.y;
         }
@@ -285,7 +286,7 @@ public class MenuEdit extends Menu{
         }
         if(multiblock instanceof UnderhaulSFR){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.fuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.allFuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((UnderhaulSFR)multiblock).fuel!=fuel){
                     multiblock.action(new SetFuelAction(this, fuel));
                 }
@@ -293,7 +294,7 @@ public class MenuEdit extends Menu{
         }
         if(multiblock instanceof OverhaulSFR){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.coolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
                     multiblock.action(new SetCoolantRecipeAction(this, recipe));
                 }
@@ -301,15 +302,15 @@ public class MenuEdit extends Menu{
         }
         if(multiblock instanceof OverhaulTurbine){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                multiblock.configuration.overhaul.turbine.Recipe recipe = Core.configuration.overhaul.turbine.recipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                multiblock.configuration.overhaul.turbine.Recipe recipe = Core.configuration.overhaul.turbine.allRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((OverhaulTurbine)multiblock).recipe!=recipe){
                     multiblock.action(new SetTurbineRecipeAction(this, recipe));
                 }
             }
         }
-        multibwauk.height = Display.getHeight()-multibwauk.y-generate.height;
+        multibwauk.height = Core.helper.displayHeight()-multibwauk.y-generate.height;
         textBox.y = parts.y+parts.height;
-        textBox.height = Display.getHeight()-textBox.y;
+        textBox.height = Core.helper.displayHeight()-textBox.y;
         if(multiblock instanceof OverhaulTurbine){
             OverhaulTurbine turbine = (OverhaulTurbine)multiblock;
             double width = turbine.getDisplayZ()*CELL_SIZE;
@@ -346,29 +347,29 @@ public class MenuEdit extends Menu{
                         if(!Double.isFinite(lowerBound))lowerBound = min;
                         if(!Double.isFinite(prevUpperBound))prevUpperBound = max;
                         if(!Double.isFinite(upperBound))upperBound = max;
-                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((prevUpperBound-min)/(max-min)));//upper
-                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((upperBound-min)/(max-min)));
+                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((prevUpperBound-min)/(max-min)));//upper
+                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((upperBound-min)/(max-min)));
 
-                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((lowerBound-min)/(max-min)));//lower
-                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((prevLowerBound-min)/(max-min)));
+                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((lowerBound-min)/(max-min)));//lower
+                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((prevLowerBound-min)/(max-min)));
                     }
                 }
                 GL11.glColor4f(0, 0, 1, 1);
                 int thickness = 3;
                 for(int i = 1; i<turbine.idealExpansion.length; i++){
-                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
-                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
 
-                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
-                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), -thickness+turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), -thickness+turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
                 }
                 GL11.glColor4f(1, 1, 1, 1);
                 for(int i = 1; i<turbine.actualExpansion.length; i++){
-                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
-                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
 
-                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
-                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), -thickness+turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), -thickness+turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
                 }
                 GL11.glEnd();
                 turbineGraph.releaseRenderTarget();
@@ -444,11 +445,11 @@ public class MenuEdit extends Menu{
         multiblock.action(new SetblockAction(x,y,z,blok));
     }
     @Override
-    public void keyboardEvent(char character, int key, boolean pressed, boolean repeat){
-        super.keyboardEvent(character, key, pressed, repeat);
-        if(pressed){
-            if(key==Keyboard.KEY_ESCAPE)clearSelection();
-            if(key==Keyboard.KEY_DELETE){
+    public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
+        super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
+        if(isPress){
+            if(key==GLFW.GLFW_KEY_ESCAPE)clearSelection();
+            if(key==GLFW.GLFW_KEY_DELETE){
                 SetblocksAction ac = new SetblocksAction(null);
                 for(int[] i : selection){
                     ac.add(i[0], i[1], i[2]);
@@ -456,13 +457,13 @@ public class MenuEdit extends Menu{
                 multiblock.action(ac);
                 clearSelection();
             }
-            if(key==Keyboard.KEY_M)tools.setSelectedIndex(0);
-            if(key==Keyboard.KEY_S)tools.setSelectedIndex(1);
-            if(key==Keyboard.KEY_P)tools.setSelectedIndex(2);
-            if(key==Keyboard.KEY_L)tools.setSelectedIndex(3);
-            if(key==Keyboard.KEY_O)tools.setSelectedIndex(4);
+            if(key==GLFW.GLFW_KEY_M)tools.setSelectedIndex(0);
+            if(key==GLFW.GLFW_KEY_S)tools.setSelectedIndex(1);
+            if(key==GLFW.GLFW_KEY_P)tools.setSelectedIndex(2);
+            if(key==GLFW.GLFW_KEY_L)tools.setSelectedIndex(3);
+            if(key==GLFW.GLFW_KEY_O)tools.setSelectedIndex(4);
             if(Core.isControlPressed()){
-                if(key==Keyboard.KEY_A){
+                if(key==GLFW.GLFW_KEY_A){
                     ArrayList<int[]> sel = new ArrayList<>();
                     for(int x = 0; x<multiblock.getX(); x++){
                         for(int y = 0; y<multiblock.getY(); y++){
@@ -473,10 +474,10 @@ public class MenuEdit extends Menu{
                     }
                     setSelection(sel);
                 }
-                if(key==Keyboard.KEY_Z){
+                if(key==GLFW.GLFW_KEY_Z){
                     multiblock.undo();
                 }
-                if(key==Keyboard.KEY_Y){
+                if(key==GLFW.GLFW_KEY_Y){
                     multiblock.redo();
                 }
             }

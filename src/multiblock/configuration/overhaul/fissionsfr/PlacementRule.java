@@ -1,8 +1,10 @@
 package multiblock.configuration.overhaul.fissionsfr;
 import java.util.ArrayList;
+import java.util.Locale;
 import multiblock.Axis;
 import multiblock.Direction;
 import multiblock.Vertex;
+import multiblock.configuration.Configuration;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -65,8 +67,8 @@ public class PlacementRule extends RuleContainer{
             if(strs.length!=2||!strs[1].startsWith("sink")){
                 throw new IllegalArgumentException("Unknown rule bit: "+str);
             }
-            for(Block b : configuration.blocks){
-                if(b.name.toLowerCase().contains(strs[0].toLowerCase().replace("_", " "))){
+            for(Block b : configuration.allBlocks){
+                if(b.name.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH).replace("_", " "))){
                     block = b;
                 }
             }
@@ -115,24 +117,36 @@ public class PlacementRule extends RuleContainer{
     public Block block;
     public byte min;
     public byte max;
-    public Config save(FissionSFRConfiguration configuration){
+    public Config save(Configuration parent, FissionSFRConfiguration configuration){
         Config config = Config.newConfig();
+        byte blockIndex = (byte)(configuration.blocks.indexOf(block)+1);
+        if(parent!=null){
+            if(parent.overhaul!=null&&parent.overhaul.fissionSFR!=null){
+                blockIndex+=parent.overhaul.fissionSFR.blocks.size();
+            }
+            for(Configuration addon : parent.addons){
+                if(addon.overhaul!=null&&addon.overhaul.fissionSFR!=null){
+                    if(addon.overhaul.fissionSFR==configuration)break;
+                    else blockIndex+=addon.overhaul.fissionSFR.blocks.size();
+                }
+            }
+        }
         switch(ruleType){
             case BETWEEN:
                 config.set("type", (byte)0);
-                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
+                config.set("block", blockIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case AXIAL:
                 config.set("type", (byte)1);
-                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
+                config.set("block", blockIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case VERTEX:
                 config.set("type", (byte)2);
-                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
+                config.set("block", blockIndex);
                 break;
             case BETWEEN_GROUP:
                 config.set("type", (byte)3);
@@ -154,7 +168,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("type", (byte)6);
                 ConfigList ruls = new ConfigList();
                 for(PlacementRule rule : rules){
-                    ruls.add(rule.save(configuration));
+                    ruls.add(rule.save(parent, configuration));
                 }
                 config.set("rules", ruls);
                 break;
@@ -162,7 +176,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("type", (byte)7);
                 ruls = new ConfigList();
                 for(PlacementRule rule : rules){
-                    ruls.add(rule.save(configuration));
+                    ruls.add(rule.save(parent, configuration));
                 }
                 config.set("rules", ruls);
                 break;

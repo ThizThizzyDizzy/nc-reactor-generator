@@ -1,5 +1,4 @@
 package planner.menu.configuration.overhaul.fissionsfr;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.Source;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -27,14 +26,14 @@ public class MenuSourceConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        back.width = name.width = Display.getWidth();
-        efficiency.width = Display.getWidth()*.75;
-        efficiency.x = Display.getWidth()*.25;
-        efficiency.height = name.height = back.height = Display.getHeight()/16;
+        back.width = name.width = Core.helper.displayWidth();
+        efficiency.width = Core.helper.displayWidth()*.75;
+        efficiency.x = Core.helper.displayWidth()*.25;
+        efficiency.height = name.height = back.height = Core.helper.displayHeight()/16;
         efficiency.y = name.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/16, Display.getWidth()*.25, Display.getHeight()/16*2, "Efficiency");
+        drawText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*2, "Efficiency");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

@@ -37,8 +37,4 @@ public class MenuComponentLabel extends MenuComponent{
         double textHeight = (int)((height-textInset*2)*scale);
         drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
-    @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
-    }
 }

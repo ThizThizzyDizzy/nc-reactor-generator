@@ -1,7 +1,7 @@
 package planner.menu.configuration.underhaul.fissionsfr;
-import org.lwjgl.opengl.Display;
 import multiblock.configuration.underhaul.fissionsfr.RuleContainer;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
+import planner.Core;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
@@ -43,14 +43,14 @@ public class MenuPlacementRulesConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        list.width = Display.getWidth();
-        list.height = Display.getHeight()-back.height-add.height;
+        list.width = Core.helper.displayWidth();
+        list.height = Core.helper.displayHeight()-back.height-add.height;
         for(MenuComponent component : list.components){
             component.width = list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0);
         }
-        add.width = back.width = Display.getWidth();
-        add.height = back.height = Display.getHeight()/16;
-        back.y = Display.getHeight()-back.height;
+        add.width = back.width = Core.helper.displayWidth();
+        add.height = back.height = Core.helper.displayHeight()/16;
+        back.y = Core.helper.displayHeight()-back.height;
         add.y = back.y-add.height;
         super.render(millisSinceLastTick);
     }

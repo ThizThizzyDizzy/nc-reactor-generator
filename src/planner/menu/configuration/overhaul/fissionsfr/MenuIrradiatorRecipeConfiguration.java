@@ -1,5 +1,4 @@
 package planner.menu.configuration.overhaul.fissionsfr;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -30,16 +29,16 @@ public class MenuIrradiatorRecipeConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        back.width = name.width = Display.getWidth();
-        efficiency.width = heat.width = Display.getWidth()*.75;
-        efficiency.x = heat.x = Display.getWidth()*.25;
-        efficiency.height = heat.height = name.height = back.height = Display.getHeight()/16;
+        back.width = name.width = Core.helper.displayWidth();
+        efficiency.width = heat.width = Core.helper.displayWidth()*.75;
+        efficiency.x = heat.x = Core.helper.displayWidth()*.25;
+        efficiency.height = heat.height = name.height = back.height = Core.helper.displayHeight()/16;
         efficiency.y = name.height;
         heat.y = efficiency.y+efficiency.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/16, Display.getWidth()*.25, Display.getHeight()/16*2, "Efficiency");
-        drawText(0, Display.getHeight()/16*2, Display.getWidth()*.25, Display.getHeight()/16*3, "Heat");
+        drawText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*2, "Efficiency");
+        drawText(0, Core.helper.displayHeight()/16*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*3, "Heat");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

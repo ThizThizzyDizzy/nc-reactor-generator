@@ -1,5 +1,5 @@
 package planner.menu.configuration.overhaul.fissionmsr;
-import org.lwjgl.opengl.Display;
+import multiblock.configuration.Configuration;
 import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
@@ -18,19 +18,21 @@ public class MenuFissionMSRConfiguration extends Menu{
     private final MenuComponentMinimalistTextBox sparsityPenaltyMult = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
     private final MenuComponentMinimalistTextBox sparsityPenaltyThreshold = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
-    public MenuFissionMSRConfiguration(GUI gui, Menu parent){
+    private final Configuration configuration;
+    public MenuFissionMSRConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent);
+        this.configuration = configuration;
         blocks.addActionListener((e) -> {
-            gui.open(new MenuBlocksConfiguration(gui, this));
+            gui.open(new MenuBlocksConfiguration(gui, this, configuration));
         });
         fuels.addActionListener((e) -> {
-            gui.open(new MenuFuelsConfiguration(gui, this));
+            gui.open(new MenuFuelsConfiguration(gui, this, configuration));
         });
         sources.addActionListener((e) -> {
-            gui.open(new MenuSourcesConfiguration(gui, this));
+            gui.open(new MenuSourcesConfiguration(gui, this, configuration));
         });
         irradiatorRecipes.addActionListener((e) -> {
-            gui.open(new MenuIrradiatorRecipesConfiguration(gui, this));
+            gui.open(new MenuIrradiatorRecipesConfiguration(gui, this, configuration));
         });
         back.addActionListener((e) -> {
             gui.open(parent);
@@ -38,32 +40,32 @@ public class MenuFissionMSRConfiguration extends Menu{
     }
     @Override
     public void onGUIOpened(){
-        blocks.label = "Blocks ("+Core.configuration.overhaul.fissionMSR.blocks.size()+")";
-        fuels.label = "Fuels ("+Core.configuration.overhaul.fissionMSR.fuels.size()+")";
-        sources.label = "Sources ("+Core.configuration.overhaul.fissionMSR.sources.size()+")";
-        irradiatorRecipes.label = "Irradiator Recipes ("+Core.configuration.overhaul.fissionMSR.irradiatorRecipes.size()+")";
-        minSize.text = Core.configuration.overhaul.fissionMSR.minSize+"";
-        maxSize.text = Core.configuration.overhaul.fissionMSR.maxSize+"";
-        neutronReach.text = Core.configuration.overhaul.fissionMSR.neutronReach+"";
-        coolingEfficiencyLeniency.text = Core.configuration.overhaul.fissionMSR.coolingEfficiencyLeniency+"";
-        sparsityPenaltyMult.text = Core.configuration.overhaul.fissionMSR.sparsityPenaltyMult+"";
-        sparsityPenaltyThreshold.text = Core.configuration.overhaul.fissionMSR.sparsityPenaltyThreshold+"";
+        blocks.label = "Blocks ("+configuration.overhaul.fissionMSR.blocks.size()+")";
+        fuels.label = "Fuels ("+configuration.overhaul.fissionMSR.fuels.size()+")";
+        sources.label = "Sources ("+configuration.overhaul.fissionMSR.sources.size()+")";
+        irradiatorRecipes.label = "Irradiator Recipes ("+configuration.overhaul.fissionMSR.irradiatorRecipes.size()+")";
+        minSize.text = configuration.overhaul.fissionMSR.minSize+"";
+        maxSize.text = configuration.overhaul.fissionMSR.maxSize+"";
+        neutronReach.text = configuration.overhaul.fissionMSR.neutronReach+"";
+        coolingEfficiencyLeniency.text = configuration.overhaul.fissionMSR.coolingEfficiencyLeniency+"";
+        sparsityPenaltyMult.text = configuration.overhaul.fissionMSR.sparsityPenaltyMult+"";
+        sparsityPenaltyThreshold.text = configuration.overhaul.fissionMSR.sparsityPenaltyThreshold+"";
     }
     @Override
     public void onGUIClosed(){
-        Core.configuration.overhaul.fissionMSR.minSize = Integer.parseInt(minSize.text); 
-        Core.configuration.overhaul.fissionMSR.maxSize = Integer.parseInt(maxSize.text);
-        Core.configuration.overhaul.fissionMSR.neutronReach = Integer.parseInt(neutronReach.text);
-        Core.configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = Integer.parseInt(coolingEfficiencyLeniency.text);
-        Core.configuration.overhaul.fissionMSR.sparsityPenaltyMult = Float.parseFloat(sparsityPenaltyMult.text);
-        Core.configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = Float.parseFloat(sparsityPenaltyThreshold.text);
+        configuration.overhaul.fissionMSR.minSize = Integer.parseInt(minSize.text); 
+        configuration.overhaul.fissionMSR.maxSize = Integer.parseInt(maxSize.text);
+        configuration.overhaul.fissionMSR.neutronReach = Integer.parseInt(neutronReach.text);
+        configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = Integer.parseInt(coolingEfficiencyLeniency.text);
+        configuration.overhaul.fissionMSR.sparsityPenaltyMult = Float.parseFloat(sparsityPenaltyMult.text);
+        configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = Float.parseFloat(sparsityPenaltyThreshold.text);
     }
     @Override
     public void render(int millisSinceLastTick){
-        minSize.width = maxSize.width = neutronReach.width = coolingEfficiencyLeniency.width = sparsityPenaltyMult.width = sparsityPenaltyThreshold.width = Display.getWidth()*.75;
-        minSize.x = maxSize.x = neutronReach.x = coolingEfficiencyLeniency.x = sparsityPenaltyMult.x = sparsityPenaltyThreshold.x = Display.getWidth()*.25;
-        blocks.width = fuels.width = sources.width = irradiatorRecipes.width = back.width = Display.getWidth();
-        minSize.height = maxSize.height = neutronReach.height = coolingEfficiencyLeniency.height = sparsityPenaltyMult.height = sparsityPenaltyThreshold.height = blocks.height = fuels.height = sources.height = irradiatorRecipes.height = back.height = Display.getHeight()/16;
+        minSize.width = maxSize.width = neutronReach.width = coolingEfficiencyLeniency.width = sparsityPenaltyMult.width = sparsityPenaltyThreshold.width = Core.helper.displayWidth()*.75;
+        minSize.x = maxSize.x = neutronReach.x = coolingEfficiencyLeniency.x = sparsityPenaltyMult.x = sparsityPenaltyThreshold.x = Core.helper.displayWidth()*.25;
+        blocks.width = fuels.width = sources.width = irradiatorRecipes.width = back.width = Core.helper.displayWidth();
+        minSize.height = maxSize.height = neutronReach.height = coolingEfficiencyLeniency.height = sparsityPenaltyMult.height = sparsityPenaltyThreshold.height = blocks.height = fuels.height = sources.height = irradiatorRecipes.height = back.height = Core.helper.displayHeight()/16;
         fuels.y = blocks.height;
         sources.y = fuels.y+fuels.height;
         irradiatorRecipes.y = sources.y+sources.height;
@@ -73,14 +75,17 @@ public class MenuFissionMSRConfiguration extends Menu{
         coolingEfficiencyLeniency.y = neutronReach.y+neutronReach.height;
         sparsityPenaltyMult.y = coolingEfficiencyLeniency.y+coolingEfficiencyLeniency.height;
         sparsityPenaltyThreshold.y = sparsityPenaltyMult.y+sparsityPenaltyMult.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
+        if(configuration.addon){
+            minSize.y = maxSize.y = neutronReach.y = coolingEfficiencyLeniency.y = sparsityPenaltyMult.y = sparsityPenaltyThreshold.y = -minSize.height;
+        }
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, minSize.y+Display.getHeight()/64, Display.getWidth()*.25, minSize.y+minSize.height-Display.getHeight()/64, "Minimum reactor size");
-        drawText(0, maxSize.y+Display.getHeight()/64, Display.getWidth()*.25, maxSize.y+maxSize.height-Display.getHeight()/64, "Maximum reactor size");
-        drawText(0, neutronReach.y+Display.getHeight()/64, Display.getWidth()*.25, neutronReach.y+neutronReach.height-Display.getHeight()/64, "Neutron reach");
-        drawText(0, coolingEfficiencyLeniency.y+Display.getHeight()/64, Display.getWidth()*.25, coolingEfficiencyLeniency.y+coolingEfficiencyLeniency.height-Display.getHeight()/64, "Cooling Efficiency Leniency");
-        drawText(0, sparsityPenaltyMult.y+Display.getHeight()/64, Display.getWidth()*.25, sparsityPenaltyMult.y+sparsityPenaltyMult.height-Display.getHeight()/64, "Sparsity Penalty Multiplier");
-        drawText(0, sparsityPenaltyThreshold.y+Display.getHeight()/64, Display.getWidth()*.25, sparsityPenaltyThreshold.y+sparsityPenaltyThreshold.height-Display.getHeight()/64, "Sparsity Penalty Threshold");
+        drawText(0, minSize.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, minSize.y+minSize.height-Core.helper.displayHeight()/64, "Minimum reactor size");
+        drawText(0, maxSize.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, maxSize.y+maxSize.height-Core.helper.displayHeight()/64, "Maximum reactor size");
+        drawText(0, neutronReach.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, neutronReach.y+neutronReach.height-Core.helper.displayHeight()/64, "Neutron reach");
+        drawText(0, coolingEfficiencyLeniency.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, coolingEfficiencyLeniency.y+coolingEfficiencyLeniency.height-Core.helper.displayHeight()/64, "Cooling Efficiency Leniency");
+        drawText(0, sparsityPenaltyMult.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, sparsityPenaltyMult.y+sparsityPenaltyMult.height-Core.helper.displayHeight()/64, "Sparsity Penalty Multiplier");
+        drawText(0, sparsityPenaltyThreshold.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, sparsityPenaltyThreshold.y+sparsityPenaltyThreshold.height-Core.helper.displayHeight()/64, "Sparsity Penalty Threshold");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

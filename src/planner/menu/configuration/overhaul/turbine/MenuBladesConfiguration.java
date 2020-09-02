@@ -1,5 +1,5 @@
 package planner.menu.configuration.overhaul.turbine;
-import org.lwjgl.opengl.Display;
+import multiblock.configuration.Configuration;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Blade;
 import planner.menu.component.MenuComponentMinimaList;
@@ -13,21 +13,24 @@ public class MenuBladesConfiguration extends Menu{
     private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Blade", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private boolean refreshNeeded = false;
-    public MenuBladesConfiguration(GUI gui, Menu parent){
+    private final Configuration configuration;
+    public MenuBladesConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent);
         add.addActionListener((e) -> {
             Blade b = new Blade("New Blade");
-            Core.configuration.overhaul.turbine.blades.add(b);
+            configuration.overhaul.turbine.blades.add(b);
+            Core.configuration.overhaul.turbine.allBlades.add(b);
             gui.open(new MenuBladeConfiguration(gui, this, b));
         });
         back.addActionListener((e) -> {
             gui.open(parent);
         });
+        this.configuration = configuration;
     }
     @Override
     public void onGUIOpened(){
         list.components.clear();
-        for(Blade b : Core.configuration.overhaul.turbine.blades){
+        for(Blade b : configuration.overhaul.turbine.blades){
             list.add(new MenuComponentBladeConfiguration(b));
         }
     }
@@ -41,14 +44,14 @@ public class MenuBladesConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        list.width = Display.getWidth();
-        list.height = Display.getHeight()-back.height-add.height;
+        list.width = Core.helper.displayWidth();
+        list.height = Core.helper.displayHeight()-back.height-add.height;
         for(MenuComponent component : list.components){
             component.width = list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0);
         }
-        add.width = back.width = Display.getWidth();
-        add.height = back.height = Display.getHeight()/16;
-        back.y = Display.getHeight()-back.height;
+        add.width = back.width = Core.helper.displayWidth();
+        add.height = back.height = Core.helper.displayHeight()/16;
+        back.y = Core.helper.displayHeight()-back.height;
         add.y = back.y-add.height;
         super.render(millisSinceLastTick);
     }
@@ -57,7 +60,8 @@ public class MenuBladesConfiguration extends Menu{
         for(MenuComponent c : list.components){
             if(c instanceof MenuComponentBladeConfiguration){
                 if(button==((MenuComponentBladeConfiguration) c).delete){
-                    Core.configuration.overhaul.turbine.blades.remove(((MenuComponentBladeConfiguration) c).blade);
+                    configuration.overhaul.turbine.blades.remove(((MenuComponentBladeConfiguration) c).blade);
+                    Core.configuration.overhaul.turbine.allBlades.remove(((MenuComponentBladeConfiguration) c).blade);
                     refreshNeeded = true;
                     return;
                 }

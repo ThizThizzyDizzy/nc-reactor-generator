@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -263,7 +264,7 @@ public class Bot extends ListenerAdapter{
                 multiblock = multiblockKeyword.getMultiblock(overhaul).newInstance(configuration);
                 ArrayList<Range<Block>> blockRanges = new ArrayList<>();
                 if(multiblock==null){
-                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase()+"`!").queue();
+                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase(Locale.ENGLISH)+"`!").queue();
                     return;
                 }
                 if(multiblock.getDefinitionName().contains("Turbine"))z+=2;
@@ -292,7 +293,7 @@ public class Bot extends ListenerAdapter{
                     case 0://underhaul SFR
                         multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
                         FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.fuels){
+                            for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
                                 if(f.name.equalsIgnoreCase(str)){
                                     if(fuel!=null){
                                         channel.sendMessage("Underhaul SFRs can only have one fuel!").queue();
@@ -305,13 +306,13 @@ public class Bot extends ListenerAdapter{
                             channel.sendMessage("Unknown fuel: "+str).queue();
                             return;
                         }
-                        if(fuel==null)fuel = configuration.underhaul.fissionSFR.fuels.get(0);
+                        if(fuel==null)fuel = configuration.underhaul.fissionSFR.allFuels.get(0);
                         fuels = fuel;
                         break;
                     case 1://overhaul SFR
                         ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel> sfrFuels = new ArrayList<>();
                         FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.overhaul.fissionsfr.Fuel f : configuration.overhaul.fissionSFR.fuels){
+                            for(multiblock.configuration.overhaul.fissionsfr.Fuel f : configuration.overhaul.fissionSFR.allFuels){
                                 if(f.name.equalsIgnoreCase(str)){
                                     sfrFuels.add(f);
                                     continue FUEL;
@@ -320,13 +321,13 @@ public class Bot extends ListenerAdapter{
                             channel.sendMessage("Unknown fuel: "+str).queue();
                             return;
                         }
-                        if(sfrFuels.isEmpty())sfrFuels.add(configuration.overhaul.fissionSFR.fuels.get(0));
+                        if(sfrFuels.isEmpty())sfrFuels.add(configuration.overhaul.fissionSFR.allFuels.get(0));
                         fuels = sfrFuels;
                         break;
                     case 2://overhaul MSR
                         ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel> msrFuels = new ArrayList<>();
                         FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.overhaul.fissionmsr.Fuel f : configuration.overhaul.fissionMSR.fuels){
+                            for(multiblock.configuration.overhaul.fissionmsr.Fuel f : configuration.overhaul.fissionMSR.allFuels){
                                 if(f.name.equalsIgnoreCase(str)){
                                     msrFuels.add(f);
                                     continue FUEL;
@@ -335,7 +336,7 @@ public class Bot extends ListenerAdapter{
                             channel.sendMessage("Unknown fuel: "+str).queue();
                             return;
                         }
-                        if(msrFuels.isEmpty())msrFuels.add(configuration.overhaul.fissionMSR.fuels.get(0));
+                        if(msrFuels.isEmpty())msrFuels.add(configuration.overhaul.fissionMSR.allFuels.get(0));
                         fuels = msrFuels;
                         break;
                 }
@@ -373,7 +374,7 @@ public class Bot extends ListenerAdapter{
                 for(String format : formatStrings){
                     for(FormatWriter writer : FileWriter.formats){
                         for(String extention : writer.getExtensions()){
-                            if(format.toLowerCase().contains(extention)){
+                            if(format.toLowerCase(Locale.ENGLISH).contains(extention)){
                                 formats.add(writer);
                                 break;
                             }
@@ -391,7 +392,7 @@ public class Bot extends ListenerAdapter{
                 }
                 if(multiblockInstance instanceof OverhaulSFR){
                     ArrayList<Range<multiblock.configuration.overhaul.fissionsfr.Source>> validSources = new ArrayList<>();
-                    for(multiblock.configuration.overhaul.fissionsfr.Source s : configuration.overhaul.fissionSFR.sources){
+                    for(multiblock.configuration.overhaul.fissionsfr.Source s : configuration.overhaul.fissionSFR.allSources){
                         validSources.add(new Range(s, 0));
                     }
                     ((OverhaulSFR)multiblockInstance).setValidSources(validSources);
@@ -403,7 +404,7 @@ public class Bot extends ListenerAdapter{
                 }
                 if(multiblockInstance instanceof OverhaulMSR){
                     ArrayList<Range<multiblock.configuration.overhaul.fissionmsr.Source>> validSources = new ArrayList<>();
-                    for(multiblock.configuration.overhaul.fissionmsr.Source s : configuration.overhaul.fissionMSR.sources){
+                    for(multiblock.configuration.overhaul.fissionmsr.Source s : configuration.overhaul.fissionMSR.allSources){
                         validSources.add(new Range(s, 0));
                     }
                     ((OverhaulMSR)multiblockInstance).setValidSources(validSources);
@@ -477,7 +478,7 @@ public class Bot extends ListenerAdapter{
                         generator.stopAllThreads();
                         Multiblock finalMultiblock = generator.getMainMultiblock();
                         if(finalMultiblock==null||finalMultiblock.isEmpty()){
-                            generatorMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase()+" was generated. :(").build()).queue();
+                            generatorMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase(Locale.ENGLISH)+" was generated. :(").build()).queue();
                         }else{
                             generatorMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField("Reactor Details", finalMultiblock.getBotTooltip(), false).build()).queue();
                             NCPFFile ncpf = new NCPFFile();
@@ -1674,7 +1675,7 @@ public class Bot extends ListenerAdapter{
     }
     public void storeReactors(Message message){
         for(Attachment att : message.getAttachments()){
-            if(att!=null&&att.getFileExtension()!=null&&att.getFileExtension().toLowerCase().contains("png"))continue;
+            if(att!=null&&att.getFileExtension()!=null&&att.getFileExtension().toLowerCase(Locale.ENGLISH).contains("png"))continue;
             try{
                 NCPFFile ncpf = FileReader.read(() -> {
                     try{

@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import multiblock.Axis;
 import multiblock.Direction;
 import multiblock.Vertex;
+import multiblock.configuration.Configuration;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -86,24 +87,36 @@ public class PlacementRule extends RuleContainer{
         rule.block = block;
         return rule;
     }
-    public Config save(FissionSFRConfiguration configuration){
+    public Config save(Configuration parent, FissionSFRConfiguration configuration){
         Config config = Config.newConfig();
+        byte blockIndex = (byte)(configuration.blocks.indexOf(block)+1);
+        if(parent!=null){
+            if(parent.underhaul!=null&&parent.underhaul.fissionSFR!=null){
+                blockIndex+=parent.underhaul.fissionSFR.blocks.size();
+            }
+            for(Configuration addon : parent.addons){
+                if(addon.underhaul!=null&&addon.underhaul.fissionSFR!=null){
+                    if(addon.underhaul.fissionSFR==configuration)break;
+                    else blockIndex+=addon.underhaul.fissionSFR.blocks.size();
+                }
+            }
+        }
         switch(ruleType){
             case BETWEEN:
                 config.set("type", (byte)0);
-                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
+                config.set("block", blockIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case AXIAL:
                 config.set("type", (byte)1);
-                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
+                config.set("block", blockIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case VERTEX:
                 config.set("type", (byte)2);
-                config.set("block", (byte)(configuration.blocks.indexOf(block)+1));
+                config.set("block", blockIndex);
                 break;
             case BETWEEN_GROUP:
                 config.set("type", (byte)3);
@@ -125,7 +138,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("type", (byte)6);
                 ConfigList ruls = new ConfigList();
                 for(PlacementRule rule : rules){
-                    ruls.add(rule.save(configuration));
+                    ruls.add(rule.save(parent, configuration));
                 }
                 config.set("rules", ruls);
                 break;
@@ -133,7 +146,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("type", (byte)7);
                 ruls = new ConfigList();
                 for(PlacementRule rule : rules){
-                    ruls.add(rule.save(configuration));
+                    ruls.add(rule.save(parent, configuration));
                 }
                 config.set("rules", ruls);
                 break;

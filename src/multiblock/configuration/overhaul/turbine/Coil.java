@@ -1,6 +1,7 @@
 package multiblock.configuration.overhaul.turbine;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -33,7 +34,7 @@ public class Coil extends RuleContainer{
     public Coil(String name){
         this.name = name;
     }
-    public Config save(TurbineConfiguration configuration, boolean partial){
+    public Config save(Configuration parent, TurbineConfiguration configuration, boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
         config.set("efficiency", efficiency);
@@ -42,7 +43,7 @@ public class Coil extends RuleContainer{
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
             for(PlacementRule rule : rules){
-                ruls.add(rule.save(configuration));
+                ruls.add(rule.save(parent, configuration));
             }
             config.set("rules", ruls);
         }

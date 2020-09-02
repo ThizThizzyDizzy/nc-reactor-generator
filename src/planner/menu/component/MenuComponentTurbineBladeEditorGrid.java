@@ -4,6 +4,7 @@ import planner.Core;
 import planner.menu.MenuEdit;
 import multiblock.Block;
 import multiblock.overhaul.turbine.OverhaulTurbine;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
@@ -27,6 +28,12 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
     }
     @Override
     public void tick(){
+        if(!(gui.mouseWereDown.contains(0))){
+            editor.getSelectedTool().mouseReset(0);
+        }
+        if(!(gui.mouseWereDown.contains(1))){
+            editor.getSelectedTool().mouseReset(1);
+        }
         resonatingTick++;
         if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
     }
@@ -38,12 +45,6 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
     }
     @Override
     public void render(){
-        if(!(gui.mouseWereDown.contains(0))){
-            editor.getSelectedTool().mouseReset(0);
-        }
-        if(!(gui.mouseWereDown.contains(1))){
-            editor.getSelectedTool().mouseReset(1);
-        }
         if(!isMouseOver)mouseover = -1;
         if(mouseover!=-1){
             if(mouseover<1||mouseover>=multiblock.getZ()-1)mouseover = -1;
@@ -149,17 +150,27 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
         }
     }
     @Override
-    public void mouseEvent(int button, boolean pressed, float x, float y, float xChange, float yChange, int wheelChange){
-        super.mouseEvent(button, pressed, x, y, xChange, yChange, wheelChange);
-        if(isMouseOver)mouseover = ((int)x/blockSize)+1;
-        else mouseover = -1;
+    public void onMouseMove(double x, double y){
+        super.onMouseMove(x, y);
+        mouseover = ((int)x/blockSize)+1;
+        for(int i : gui.mouseWereDown){
+            mouseDragged(x, y, i);
+        }
     }
     @Override
-    public void mouseEvent(double x, double y, int button, boolean isDown){
-        super.mouseEvent(x, y, button, isDown);
+    public void onMouseMovedElsewhere(double x, double y){
+        super.onMouseMovedElsewhere(x, y);
+        mouseover = -1;
+    }
+    @Override
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(Double.isNaN(x)||Double.isNaN(y)){
+            return;
+        }
         int blockZ = Math.max(1, Math.min(multiblock.getZ()-2, (int) (x/blockSize)+1));
-        if(isDown){
-            if(button==2){
+        if(pressed){
+            if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
                 editor.setSelectedBlock(multiblock.getBlock(multiblock.getX()/2, 0, blockZ));
             }
             editor.getSelectedTool().mousePressed(this, multiblock.getX()/2, 0, blockZ, button);
@@ -167,20 +178,10 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
             editor.getSelectedTool().mouseReleased(this, multiblock.getX()/2, 0, blockZ, button);
         }
     }
-    @Override
-    public void mouseover(double x, double y, boolean isMouseOver){
-        super.mouseover(x, y, isMouseOver);
-    }
-    @Override
     public void mouseDragged(double x, double y, int button){
-        super.mouseDragged(x, y, button);
         if(button!=0&&button!=1)return;
         int blockZ = Math.max(1, Math.min(multiblock.getZ()-2, (int) (x/blockSize)+1));
         editor.getSelectedTool().mouseDragged(this, multiblock.getX()/2, 0, blockZ, button);
-    }
-    @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
     }
     public boolean isSelected(int z){
         return editor.isSelected(multiblock.getX()/2, 0, z);

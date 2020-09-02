@@ -5,7 +5,7 @@ import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.Range;
 import multiblock.action.GenerateAction;
-import org.lwjgl.opengl.Display;
+import planner.Core;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -152,8 +152,8 @@ public class MenuGenerator extends Menu{
         for(MenuComponent m : components){
             m.x = m.y = m.width = m.height = -1;
         }
-        settings.width = output.width = Display.getWidth()/3;
-        settings.x = Display.getWidth()-settings.width-output.width;
+        settings.width = output.width = Core.helper.displayWidth()/3;
+        settings.x = Core.helper.displayWidth()-settings.width-output.width;
         output.x = settings.x+settings.width;
         output.y = settings.y = 0;
         output.height = settings.height = 64;
@@ -162,41 +162,41 @@ public class MenuGenerator extends Menu{
                 done.height = 64;
                 done.x = 0;
                 done.y = 0;
-                done.width = Display.getWidth()/4;
+                done.width = Core.helper.displayWidth()/4;
                 blocksHeader.x = 0;
                 blocksHeader.y = settings.height;
-                blocksHeader.width = blocks.width = Display.getWidth()/4;
+                blocksHeader.width = blocks.width = Core.helper.displayWidth()/4;
                 blocksHeader.height = settings.height;
                 blocks.x = 0;
                 blocks.y = settings.height*2;
-                blocks.height = Display.getHeight()-blocks.y;
-                generatorsHeader.x = Display.getWidth()/4;
+                blocks.height = Core.helper.displayHeight()-blocks.y;
+                generatorsHeader.x = Core.helper.displayWidth()/4;
                 generatorsHeader.y = settings.height;
-                generatorsHeader.width = generators.width = Display.getWidth()/4;
+                generatorsHeader.width = generators.width = Core.helper.displayWidth()/4;
                 generatorsHeader.height = settings.height;
-                generators.x = Display.getWidth()/4;
+                generators.x = Core.helper.displayWidth()/4;
                 generators.y = settings.height*2;
-                generators.width = Display.getWidth()/4;
-                generators.height = Display.getHeight()-generators.y;
+                generators.width = Core.helper.displayWidth()/4;
+                generators.height = Core.helper.displayHeight()-generators.y;
                 for(MenuComponent c : generators.components){
                     c.width = generators.width-(generators.hasVertScrollbar()?generators.vertScrollbarWidth:0);
                 }
-                settingsHeader.x = Display.getWidth()/2;
+                settingsHeader.x = Core.helper.displayWidth()/2;
                 settingsHeader.y = settings.height;
-                settingsHeader.width = Display.getWidth()/2;
+                settingsHeader.width = Core.helper.displayWidth()/2;
                 settingsHeader.height = settings.height;
-                generatorSettings.x = Display.getWidth()/2;
-                generatorSettings.width = Display.getWidth()/4;
+                generatorSettings.x = Core.helper.displayWidth()/2;
+                generatorSettings.width = Core.helper.displayWidth()/4;
                 generatorSettings.y = settings.height*2;
-                generatorSettings.width = Display.getWidth()/4;
-                generatorSettings.height = Display.getHeight()-generatorSettings.y;
+                generatorSettings.width = Core.helper.displayWidth()/4;
+                generatorSettings.height = Core.helper.displayHeight()-generatorSettings.y;
                 for(MenuComponent c : generatorSettings.components){
                     c.width = generatorSettings.width-(generatorSettings.hasVertScrollbar()?generatorSettings.vertScrollbarWidth:0);
                 }
-                multiblockSettings.x = Display.getWidth()*3/4;
+                multiblockSettings.x = Core.helper.displayWidth()*3/4;
                 multiblockSettings.y = settings.height*2;
-                multiblockSettings.width = Display.getWidth()/4;
-                multiblockSettings.height = Display.getHeight()-multiblockSettings.y;
+                multiblockSettings.width = Core.helper.displayWidth()/4;
+                multiblockSettings.height = Core.helper.displayHeight()-multiblockSettings.y;
                 for(MenuComponent c : multiblockSettings.components){
                     c.width = multiblockSettings.width-(multiblockSettings.hasVertScrollbar()?multiblockSettings.vertScrollbarWidth:0);
                 }
@@ -204,20 +204,20 @@ public class MenuGenerator extends Menu{
             case GENERATE:
                 threadsLabel.x = 0;
                 threadsLabel.y = 64;
-                threadsLabel.width = Display.getWidth()/3;
+                threadsLabel.width = Core.helper.displayWidth()/3;
                 threadsLabel.height = 48;
                 addThread.x = threadsLabel.width;
                 addThread.y = 64;
-                addThread.width = Display.getWidth()/3;
+                addThread.width = Core.helper.displayWidth()/3;
                 addThread.height = 48;
                 removeThread.x = addThread.x+addThread.width;
                 removeThread.y = 64;
-                removeThread.width = Display.getWidth()-removeThread.x;
+                removeThread.width = Core.helper.displayWidth()-removeThread.x;
                 removeThread.height = 48;
                 multiblockLists.x = 0;
                 multiblockLists.y = threadsLabel.height+settings.height;
-                multiblockLists.width = Display.getWidth();
-                multiblockLists.height = Display.getHeight()-multiblockLists.y;
+                multiblockLists.width = Core.helper.displayWidth();
+                multiblockLists.height = Core.helper.displayHeight()-multiblockLists.y;
                 for(MenuComponent m : multiblockLists.components){
                     m.width = multiblockLists.width;
                     m.height = 800;

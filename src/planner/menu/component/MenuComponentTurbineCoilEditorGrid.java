@@ -4,6 +4,7 @@ import planner.menu.MenuEdit;
 import multiblock.Block;
 import multiblock.action.SetBearingDiameterAction;
 import multiblock.overhaul.turbine.OverhaulTurbine;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -27,6 +28,12 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
     }
     @Override
     public void tick(){
+        if(!(gui.mouseWereDown.contains(0))){
+            editor.getSelectedTool().mouseReset(0);
+        }
+        if(!(gui.mouseWereDown.contains(1))){
+            editor.getSelectedTool().mouseReset(1);
+        }
         resonatingTick++;
         if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
     }
@@ -38,12 +45,6 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
     }
     @Override
     public void render(){
-        if(!(gui.mouseWereDown.contains(0))){
-            editor.getSelectedTool().mouseReset(0);
-        }
-        if(!(gui.mouseWereDown.contains(1))){
-            editor.getSelectedTool().mouseReset(1);
-        }
         if(!isMouseOver)mouseover = null;
         if(mouseover!=null){
             if(mouseover[0]<0||mouseover[1]<0||mouseover[0]>=multiblock.getX()||mouseover[1]>=multiblock.getY())mouseover = null;
@@ -138,27 +139,37 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
         }
     }
     @Override
-    public void mouseEvent(int button, boolean pressed, float x, float y, float xChange, float yChange, int wheelChange){
-        super.mouseEvent(button, pressed, x, y, xChange, yChange, wheelChange);
-        if(isMouseOver)mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
-        else mouseover = null;
+    public void onMouseMove(double x, double y){
+        super.onMouseMove(x, y);
+        mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
+        for(int i : gui.mouseWereDown){
+            mouseDragged(x, y, i);
+        }
     }
     @Override
-    public void mouseEvent(double x, double y, int button, boolean isDown){
-        super.mouseEvent(x, y, button, isDown);
+    public void onMouseMovedElsewhere(double x, double y){
+        super.onMouseMovedElsewhere(x, y);
+        mouseover = null;
+    }
+    @Override
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(Double.isNaN(x)||Double.isNaN(y)){
+            return;
+        }
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockY = Math.max(0, Math.min(multiblock.getY()-1, (int) (y/blockSize)));
-        if(isDown){
+        if(pressed){
             if(editor.getSelectedBlock() instanceof multiblock.overhaul.turbine.Block){
                 multiblock.overhaul.turbine.Block b = (multiblock.overhaul.turbine.Block)editor.getSelectedBlock();
-                if(b.isBearing()&&button==0){
+                if(b.isBearing()&&button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
                     int dist = Math.min(Math.min(blockX,multiblock.getX()-blockX-1), Math.min(blockY,multiblock.getY()-blockY-1));
                     if(dist==0)return;
                     multiblock.action(new SetBearingDiameterAction(multiblock.getX()-dist*2));
                     return;
                 }
             }
-            if(button==2){
+            if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
                 editor.setSelectedBlock(multiblock.getBlock(blockX, blockY, layer));
             }
             editor.getSelectedTool().mousePressed(this, blockX, blockY, layer, button);
@@ -172,13 +183,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
             editor.getSelectedTool().mouseReleased(this, blockX, blockY, layer, button);
         }
     }
-    @Override
-    public void mouseover(double x, double y, boolean isMouseOver){
-        super.mouseover(x, y, isMouseOver);
-    }
-    @Override
     public void mouseDragged(double x, double y, int button){
-        super.mouseDragged(x, y, button);
         if(button!=0&&button!=1)return;
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockY = Math.max(0, Math.min(multiblock.getY()-1, (int) (y/blockSize)));
@@ -189,10 +194,6 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
             }
         }
         editor.getSelectedTool().mouseDragged(this, blockX, blockY, layer, button);
-    }
-    @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
     }
     public boolean isSelected(int x, int y){
         return editor.isSelected(x,y,layer);

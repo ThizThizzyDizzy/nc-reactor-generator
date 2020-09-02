@@ -2,6 +2,7 @@ package planner.tool;
 import planner.Core;
 import planner.menu.MenuEdit;
 import multiblock.action.SetblocksAction;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class RectangleTool extends EditorTool{
@@ -64,24 +65,24 @@ public class RectangleTool extends EditorTool{
     }
     @Override
     public void mouseReset(int button){
-        if(button==0)leftDragStart = leftDragEnd = null;
-        if(button==1)rightDragStart = rightDragEnd = null;
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = null;
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = rightDragEnd = null;
     }
     @Override
     public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0)leftDragStart = new int[]{x,y,z};
-        if(button==1)rightDragStart = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0&&leftDragStart!=null){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock());
             foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
                 set.add(X, Y, Z);
             });
             editor.setblocks(set);
         }
-        if(button==1&&rightDragStart!=null){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&rightDragStart!=null){
             SetblocksAction set = new SetblocksAction(null);
             foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
                 set.add(X, Y, Z);
@@ -92,8 +93,8 @@ public class RectangleTool extends EditorTool{
     }
     @Override
     public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0)leftDragEnd = new int[]{x,y,z};
-        if(button==1)rightDragEnd = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

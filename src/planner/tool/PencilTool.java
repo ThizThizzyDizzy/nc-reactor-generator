@@ -3,6 +3,7 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
 import multiblock.Block;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class PencilTool extends EditorTool{
@@ -36,11 +37,11 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void mouseReset(int button){
-        if(button==0){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             leftDragStart = null;
             leftLayerStart = null;
         }
-        if(button==1){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
             rightDragStart = null;
             rightLayerStart = null;
         }
@@ -48,12 +49,12 @@ public class PencilTool extends EditorTool{
     @Override
     public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
         Block selected = editor.getSelectedBlock();
-        if(button==0||button==1)editor.setblock(x,y,z,button==0?selected:null);
-        if(button==0){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT||button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.setblock(x,y,z,button==GLFW.GLFW_MOUSE_BUTTON_LEFT?selected:null);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             leftDragStart = new int[]{x,y,z};
             leftLayerStart = layer;
         }
-        if(button==1){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
             rightDragStart = new int[]{x,y,z};
             rightLayerStart = layer;
         }
@@ -64,7 +65,7 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             if(layer!=leftLayerStart){
                 leftDragStart = new int[]{x,y,z};
                 leftLayerStart = layer;
@@ -78,7 +79,7 @@ public class PencilTool extends EditorTool{
                 leftDragStart = new int[]{x,y,z};
             }
         }
-        if(button==1){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
             if(layer!=rightLayerStart){
                 rightDragStart = new int[]{x,y,z};
                 rightLayerStart = layer;

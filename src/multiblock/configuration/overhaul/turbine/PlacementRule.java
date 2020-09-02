@@ -1,8 +1,10 @@
 package multiblock.configuration.overhaul.turbine;
 import java.util.ArrayList;
+import java.util.Locale;
 import multiblock.Axis;
 import multiblock.Direction;
 import multiblock.Edge;
+import multiblock.configuration.Configuration;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -57,9 +59,9 @@ public class PlacementRule extends RuleContainer{
             if(strs.length!=2||!strs[1].startsWith("coil")){
                 throw new IllegalArgumentException("Unknown rule bit: "+str);
             }
-            for(Coil b : configuration.coils){
-                if(b.name.toLowerCase().contains(strs[0].toLowerCase().replace("_", " "))){
-                    coil = b;
+            for(Coil c : configuration.allCoils){
+                if(c.name.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH).replace("_", " "))){
+                    coil = c;
                 }
             }
         }
@@ -107,24 +109,36 @@ public class PlacementRule extends RuleContainer{
     public Coil coil;
     public byte min;
     public byte max;
-    public Config save(TurbineConfiguration configuration){
+    public Config save(Configuration parent, TurbineConfiguration configuration){
         Config config = Config.newConfig();
+        byte coilIndex = (byte)(configuration.coils.indexOf(coil)+1);
+        if(parent!=null){
+            if(parent.overhaul!=null&&parent.overhaul.turbine!=null){
+                coilIndex+=parent.overhaul.turbine.coils.size();
+            }
+            for(Configuration addon : parent.addons){
+                if(addon.overhaul!=null&&addon.overhaul.turbine!=null){
+                    if(addon.overhaul.turbine==configuration)break;
+                    else coilIndex+=addon.overhaul.turbine.coils.size();
+                }
+            }
+        }
         switch(ruleType){
             case BETWEEN:
                 config.set("type", (byte)0);
-                config.set("block", (byte)(configuration.coils.indexOf(coil)+1));
+                config.set("block", coilIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case AXIAL:
                 config.set("type", (byte)1);
-                config.set("block", (byte)(configuration.coils.indexOf(coil)+1));
+                config.set("block", coilIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case EDGE:
                 config.set("type", (byte)2);
-                config.set("block", (byte)(configuration.coils.indexOf(coil)+1));
+                config.set("block", coilIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
@@ -150,7 +164,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("type", (byte)6);
                 ConfigList ruls = new ConfigList();
                 for(PlacementRule rule : rules){
-                    ruls.add(rule.save(configuration));
+                    ruls.add(rule.save(parent, configuration));
                 }
                 config.set("rules", ruls);
                 break;
@@ -158,7 +172,7 @@ public class PlacementRule extends RuleContainer{
                 config.set("type", (byte)7);
                 ruls = new ConfigList();
                 for(PlacementRule rule : rules){
-                    ruls.add(rule.save(configuration));
+                    ruls.add(rule.save(parent, configuration));
                 }
                 config.set("rules", ruls);
                 break;

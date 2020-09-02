@@ -1,5 +1,6 @@
 package planner.menu.component;
 import java.awt.Color;
+import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentSlider;
 public class MenuComponentMinimalistSlider extends MenuComponentSlider{
@@ -35,12 +36,12 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     private double maximum;
     private double value;
     @Override
-    public void mouseEvent(double x, double y, int button, boolean isDown){
-        super.mouseEvent(x, y, button, isDown);
-        if(button==0&&isDown==true&&enabled){
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed&&enabled){
             isPressed = true;
             updateSlider(x);
-        }else if(button==0&&isDown==false&&isPressed&&enabled){
+        }else if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&!pressed){
             isPressed = false;
         }
     }
@@ -65,18 +66,12 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
         drawCenteredText(x+textInset, y+sliderHeight+textInset, x+width-textInset, y+height-textInset, name+": "+getValueS());
     }
     @Override
-    public void mouseover(double x, double y, boolean isMouseOver){
-        super.mouseover(x, y, isMouseOver);
-        if(!isMouseOver){
-            isPressed = false;
-        }
+    public void onMouseMove(double x, double y){
+        if(isPressed)updateSlider(x);
     }
     @Override
-    public void mouseDragged(double x, double y, int button){
-        super.mouseDragged(x, y, button);
-        if(button==0&&enabled){
-            updateSlider(x);
-        }
+    public void onMouseMovedElsewhere(double x, double y){
+        if(isPressed)updateSlider(x);
     }
     private void updateSlider(double x){
         x-=sliderHeight/2;

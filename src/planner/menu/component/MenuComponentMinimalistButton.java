@@ -47,8 +47,4 @@ public class MenuComponentMinimalistButton extends MenuComponentButton{
 //        }
 //        drawCenteredText(x, y+textInset, x+width, y+height-textInset, label);
     }
-    @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
-    }
 }

@@ -1,9 +1,9 @@
 package planner.menu.component;
-import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.Multiblock;
 import multiblock.overhaul.turbine.OverhaulTurbine;
+import org.lwjgl.glfw.GLFW;
 import planner.menu.MenuMain;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblock extends MenuComponent{
@@ -68,9 +68,9 @@ public class MenuComponentMultiblock extends MenuComponent{
         drawText(x, y+height/4, x+width, y+height/2, multiblock.getDefinitionName());
     }
     @Override
-    public void mouseEvent(double x, double y, int button, boolean isDown){
-        super.mouseEvent(x, y, button, isDown);
-        if(button==0&&isDown){
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed){
             if(main.settingInputs!=null){
                 if(multiblock!=main.settingInputs){
                     if(multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.input)){

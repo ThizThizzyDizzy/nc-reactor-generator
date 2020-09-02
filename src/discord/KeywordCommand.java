@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -30,10 +31,10 @@ public abstract class KeywordCommand extends Command{
     @Override
     public final void run(net.dv8tion.jda.api.entities.User user, MessageChannel channel, String args, boolean debug){
         ArrayList<Keyword> words = new ArrayList<>();
-        String str = args.toLowerCase();
+        String str = args.toLowerCase(Locale.ENGLISH);
         for(String regex : keywordOrder){
             Pattern p = Pattern.compile("(^|\\s|,)"+regex+"(\\s|$|,)");
-            String theArgs = (keywords.get(regex).caseSensitive()?args:args.toLowerCase());
+            String theArgs = (keywords.get(regex).caseSensitive()?args:args.toLowerCase(Locale.ENGLISH));
             Matcher m = p.matcher(theArgs);
             int end = 0;
             while(m.find(end)){

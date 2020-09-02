@@ -23,8 +23,4 @@ public class MenuComponentPriority extends MenuComponent{
         double textHeight = (int)(height*scale)-1;
         drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, priority.name);
     }
-    @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
-    }
 }

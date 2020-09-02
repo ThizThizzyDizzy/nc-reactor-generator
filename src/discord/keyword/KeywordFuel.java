@@ -1,6 +1,7 @@
 package discord.keyword;
 import discord.Keyword;
 import java.awt.Color;
+import java.util.Locale;
 public class KeywordFuel extends Keyword{
     public String fuel;
     public KeywordFuel(){
@@ -9,16 +10,16 @@ public class KeywordFuel extends Keyword{
     @Override
     public boolean doRead(String input){
         this.fuel = input;
-        if(fuel.toLowerCase().contains("[ox]")){
+        if(fuel.toLowerCase(Locale.ENGLISH).contains("[ox]")){
             fuel = fuel.replaceAll("\\[[oO][xX]\\]", "")+" Oxide";
         }
-        if(fuel.toLowerCase().contains("[ni]")){
+        if(fuel.toLowerCase(Locale.ENGLISH).contains("[ni]")){
             fuel = fuel.replaceAll("\\[[nN][iI]\\]", "")+" Nitride";
         }
-        if(fuel.toLowerCase().contains("[za]")){
+        if(fuel.toLowerCase(Locale.ENGLISH).contains("[za]")){
             fuel = fuel.replaceAll("\\[[zZ][aA]\\]", "")+"-Zirconium Alloy";
         }
-        if(fuel.toLowerCase().contains("[f4]")){
+        if(fuel.toLowerCase(Locale.ENGLISH).contains("[f4]")){
             fuel = fuel.replaceAll("\\[[fF]4\\]", "")+" Fluoride";
         }
         fuel = fuel.replace("  ", " ").replace(" -", "-").trim();

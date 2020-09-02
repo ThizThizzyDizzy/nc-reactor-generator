@@ -3,25 +3,16 @@ import discord.Bot;
 import java.awt.Color;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.menu.MenuMain;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import javax.imageio.ImageIO;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
+import java.util.Locale;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import multiblock.configuration.Configuration;
@@ -30,19 +21,19 @@ import multiblock.configuration.TextureManager;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
+import org.lwjgl.glfw.GLFW;
 import planner.menu.MenuDiscord;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorLevel;
 import simplelibrary.font.FontManager;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.game.GameHelper;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.components.MenuComponent;
-import simplelibrary.opengl.gui.components.MenuComponentButton;
 import simplelibrary.texture.TexturePack;
 import simplelibrary.texture.TexturePackManager;
 public class Core extends Renderer2D{
@@ -52,8 +43,6 @@ public class Core extends Renderer2D{
     public static boolean debugMode = false;
     public static final boolean is3D = true;
     public static boolean enableCullFace = true;
-    public static final boolean fullscreen = false;
-    public static final boolean supportTyping = true;
     public static final float maxYRot = 80f;
     public static float xRot = 30;
     public static float yRot = 30;
@@ -62,11 +51,16 @@ public class Core extends Renderer2D{
     public static HashMap<String, String> metadata = new HashMap<>();
     public static Configuration configuration = new Configuration(null, null, null);
     public static Theme theme = Theme.themes.get(0);
+    private static long window;
     static{
         Configuration.configurations.get(0).impose(configuration);
-        for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.blocks){
+        for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
             if(b.cooling>0&&!b.name.contains("Standard")){
-                b.setInternalTexture(TextureManager.getImage("overhaul/"+b.name.toLowerCase().replace(" coolant heater", "").replace("liquid ", "")));
+                try{
+                    b.setInternalTexture(TextureManager.getImage("overhaul/"+b.name.toLowerCase(Locale.ENGLISH).replace(" coolant heater", "").replace("liquid ", "")));
+                }catch(Exception ex){
+                    Sys.error(ErrorLevel.warning, "Failed to load internal texture for MSR Block: "+b.name, ex, ErrorCategory.fileIO);
+                }
             }
         }
         multiblockTypes.add(new UnderhaulSFR());
@@ -81,41 +75,21 @@ public class Core extends Renderer2D{
         metadata.put("Author", "");
     }
     public static void main(String[] args) throws NoSuchMethodException{
-        try{
-            for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
-                if("Nimbus".equals(info.getName())){
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
-        try{
-            for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
-                if("Windows".equals(info.getName())){
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
+        System.out.println("Initializing GameHelper");
         helper = new GameHelper();
         helper.setBackground(theme.getBackgroundColor());
         helper.setDisplaySize(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1));
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
         helper.setFinalInitMethod(Core.class.getDeclaredMethod("finalInit", new Class<?>[0]));
-        helper.setMaximumFramerate(60);
         helper.setRenderMethod(Core.class.getDeclaredMethod("render", int.class));
         helper.setTickMethod(Core.class.getDeclaredMethod("tick", boolean.class));
-        helper.setUsesControllers(true);
         helper.setWindowTitle(Main.applicationName+" "+VersionManager.currentVersion);
         helper.setMode(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D);
         helper.setAntiAliasing(4);
-        if(fullscreen){
-            helper.setFullscreen(true);
-            helper.setAutoExitFullscreen(false);
-        }
         helper.setFrameOfView(90);
         if(Main.isBot)Bot.start(args);
+        System.out.println("Starting up...");
         Sys.initLWJGLGame(new File("errors/"), new ErrorAdapter(){
             @Override
             public void warningError(String message, Throwable error, ErrorCategory catagory){
@@ -133,17 +107,14 @@ public class Core extends Renderer2D{
             }
         }, null, helper);
     }
-    public static void renderInit() throws LWJGLException{
-        helper.frame.addWindowListener(new WindowAdapter(){
-            public void windowClosing(WindowEvent e){
-                helper.running = false;
-            }
-        });
+    public static void renderInit(){
+        System.out.println("Loading fonts...");
         FontManager.addFont("/simplelibrary/font");
         FontManager.addFont("/planner/font/high resolution");
         FontManager.addFont("/planner/font/small");
         FontManager.addFont("/planner/font/slim");
         FontManager.setFont("high resolution");
+        System.out.println("Loading render engine...");
         GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -154,9 +125,7 @@ public class Core extends Renderer2D{
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             if(enableCullFace) GL11.glEnable(GL11.GL_CULL_FACE);
         }
-        if(supportTyping){
-            Keyboard.enableRepeatEvents(true);
-        }
+        System.out.println("Creating texture pack manager...");
         new TexturePackManager(null, new TexturePack(){
             @Override
             public InputStream getResourceAsStream(String name){
@@ -169,24 +138,34 @@ public class Core extends Renderer2D{
                 return super.getResourceAsStream(name);
             }
         });
+        System.out.println("Loading GUI...");
         gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper);
         if(Main.isBot)gui.open(new MenuDiscord(gui));
         else gui.open(new MenuMain(gui));
+        System.out.println("Render initialization complete!");
     }
-    public static void tickInit() throws LWJGLException{}
-    public static void finalInit() throws LWJGLException{
+    public static void tickInit(){}
+    public static void finalInit() throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException{
+        System.out.println("Activating GUI...");
+        Field helperWindowField = GameHelper.class.getDeclaredField("window");
+        helperWindowField.setAccessible(true);
+        window = (long)helperWindowField.get(helper);
+        helper.assignGUI(gui);
+        System.out.println("Loading settings...");
         File f = new File("settings.dat").getAbsoluteFile();
         if(!f.exists())return;
         Config settings = Config.newConfig(f);
         settings.load();
+        System.out.println("Loading theme...");
         setTheme(Theme.themes.get(settings.get("theme", 0)));
+        System.out.println("Startup complete!");
     }
     public static void tick(boolean isLastTick){
         if(!isLastTick){
-            if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))xRot-=2;
-            if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))xRot+=2;
-            if(Keyboard.isKeyDown(Keyboard.KEY_UP))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot-2));
-            if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot+2));
+            if(isKeyDown(GLFW.GLFW_KEY_LEFT))xRot-=2;
+            if(isKeyDown(GLFW.GLFW_KEY_RIGHT))xRot+=2;
+            if(isKeyDown(GLFW.GLFW_KEY_UP))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot-2));
+            if(isKeyDown(GLFW.GLFW_KEY_DOWN))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot+2));
             gui.tick();
         }else{
             File f = new File("settings.dat").getAbsoluteFile();
@@ -226,30 +205,6 @@ public class Core extends Renderer2D{
     public static long getFPS(){
         return FPStracker.size()/5;
     }
-    public static double distance(MenuComponent o1, MenuComponent o2){
-        return Math.sqrt(Math.pow((o1.x+o1.width/2)-(o2.x+o2.width/2), 2)+Math.pow((o1.y+o1.height/2)-(o2.y+o2.height/2), 2));
-    }
-    public static double distance(MenuComponent component, double x, double y) {
-        return distance(component, new MenuComponentButton(x, y, 0, 0, "", false));
-    }
-    public static double distance(double x1, double y1, double x2, double y2) {
-        return distance(new MenuComponentButton(x1, y1, 0, 0, "", false), new MenuComponentButton(x2, y2, 0, 0, "", false));
-    }
-    public static boolean isMouseWithinComponent(MenuComponent component){
-        return isClickWithinBounds(Mouse.getX(), Display.getHeight()-Mouse.getY(), component.x, component.y, component.x+component.width, component.y+component.height);
-    }
-    public static boolean isMouseWithinComponent(MenuComponent component, MenuComponent... parents){
-        double x = component.x;
-        double y = component.y;
-        for(MenuComponent c : parents){
-            x+=c.x;
-            y+=c.y;
-        }
-        return isClickWithinBounds(Mouse.getX(), Display.getHeight()-Mouse.getY(), x, y, x+component.width, y+component.height);
-    }
-    public static boolean isPointWithinComponent(double x, double y, MenuComponent component){
-        return isClickWithinBounds(x, y, component.x, component.y, component.x+component.width, component.y+component.height);
-    }
     public static double getValueBetweenTwoValues(double pos1, double val1, double pos2, double val2, double pos){
         if(pos1>pos2){
             return getValueBetweenTwoValues(pos2, val2, pos1, val1, pos);
@@ -258,15 +213,6 @@ public class Core extends Renderer2D{
         double percent = pos/posDiff;
         double valDiff = val2-val1;
         return percent*valDiff+val1;
-    }
-    public static void drawLine(double x1, double y1, double x2, double y2, int width){
-        Renderer2D.drawLine(x1, y1, x2, y2);
-        for(int i = 0; i<width/2; i++){
-            Renderer2D.drawLine(x1+i, y1, x2+i, y2);
-            Renderer2D.drawLine(x1-i, y1, x2-i, y2);
-            Renderer2D.drawLine(x1, y1+i, x2, y2+i);
-            Renderer2D.drawLine(x1, y1-i, x2, y2-i);
-        }
     }
     private static final HashMap<BufferedImage, Integer> imgs = new HashMap<>();
     public static int getTexture(BufferedImage image){
@@ -297,13 +243,16 @@ public class Core extends Renderer2D{
         GL11.glColor4f((c1.getRed()+c2.getRed())/510f, (c1.getGreen()+c2.getGreen())/510f, (c1.getBlue()+c2.getBlue())/510f, (c1.getAlpha()+c2.getAlpha())/510f);
     }
     public static boolean isAltPressed(){
-        return Keyboard.isKeyDown(Keyboard.KEY_LMENU)||Keyboard.isKeyDown(Keyboard.KEY_RMENU);
+        return isKeyDown(GLFW.GLFW_KEY_LEFT_ALT)||isKeyDown(GLFW.GLFW_KEY_RIGHT_ALT);
     }
     public static boolean isControlPressed(){
-        return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)||Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
+        return isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)||isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL);
     }
     public static boolean isShiftPressed(){
-        return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        return isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)||isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT);
+    }
+    public static boolean isKeyDown(int key){
+        return GLFW.glfwGetKey(window, key)==GLFW.GLFW_PRESS;
     }
     public static void drawCircle(double x, double y, double innerRadius, double outerRadius, Color color){
         Core.applyColor(color);
@@ -349,12 +298,6 @@ public class Core extends Renderer2D{
         }
         img.setRGB(0, 0, width, height, imgRGBData, 0, width);
         return img;
-    }
-    static int wheelChangeScale = Integer.MAX_VALUE;
-    public static int calcWheelChange(int wheelChange){
-        if(wheelChange==0)return wheelChange;
-        wheelChangeScale = Math.min(wheelChangeScale, Math.abs(wheelChange));
-        return wheelChange/wheelChangeScale;
     }
     public static interface BufferRenderer{
         void render(Framebuffer buff);

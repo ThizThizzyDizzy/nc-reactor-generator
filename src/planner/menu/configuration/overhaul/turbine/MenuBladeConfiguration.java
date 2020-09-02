@@ -6,7 +6,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Blade;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -68,21 +67,21 @@ public class MenuBladeConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        drawRect(0, Display.getHeight()/numComps, Display.getHeight()/numComps, Display.getHeight()/numComps*2, Core.getTexture(blade.texture));
-        stator.width = Display.getWidth();
-        efficiency.width = expansion.width = Display.getWidth()*.75;
-        efficiency.x = expansion.x = Display.getWidth()-efficiency.width;
-        name.width = back.width = Display.getWidth();
-        texture.x = texture.height = stator.height = efficiency.height = expansion.height = name.height = back.height = Display.getHeight()/numComps;
-        texture.width = Display.getWidth()-texture.x;
+        drawRect(0, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps*2, Core.getTexture(blade.texture));
+        stator.width = Core.helper.displayWidth();
+        efficiency.width = expansion.width = Core.helper.displayWidth()*.75;
+        efficiency.x = expansion.x = Core.helper.displayWidth()-efficiency.width;
+        name.width = back.width = Core.helper.displayWidth();
+        texture.x = texture.height = stator.height = efficiency.height = expansion.height = name.height = back.height = Core.helper.displayHeight()/numComps;
+        texture.width = Core.helper.displayWidth()-texture.x;
         texture.y = name.height;
         efficiency.y = texture.y+texture.height;
         stator.y = expansion.y+expansion.height;
         expansion.y = efficiency.y+efficiency.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/numComps*2, Display.getWidth()*.25, Display.getHeight()/numComps*3, "Efficiency");
-        drawText(0, Display.getHeight()/numComps*3, Display.getWidth()*.25, Display.getHeight()/numComps*4, "Expansion");
+        drawText(0, Core.helper.displayHeight()/numComps*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*3, "Efficiency");
+        drawText(0, Core.helper.displayHeight()/numComps*3, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*4, "Expansion");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

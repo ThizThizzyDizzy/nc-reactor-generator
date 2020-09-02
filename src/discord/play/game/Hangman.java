@@ -4,6 +4,7 @@ import discord.play.Game;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import multiblock.Block;
@@ -61,7 +62,7 @@ public class Hangman extends Game{
         ArrayList<Block> blocks = basis.getBlocks();
         ArrayList<Block> unique = new ArrayList<>();
         for(Block b : blocks){
-            if(b.getName().toLowerCase().contains("active")){
+            if(b.getName().toLowerCase(Locale.ENGLISH).contains("active")){
                 usesActive = true;
             }
         }
@@ -75,7 +76,7 @@ public class Hangman extends Game{
         if(!usesActive){
             for(Iterator<Block> it = available.iterator(); it.hasNext();){
                 Block next = it.next();
-                if(next.getName().toLowerCase().contains("active")){
+                if(next.getName().toLowerCase(Locale.ENGLISH).contains("active")){
                     it.remove();
                 }
             }
@@ -112,7 +113,7 @@ public class Hangman extends Game{
     }
     private void guess(MessageChannel channel, Block b){
         update();
-        if(b.getName().toLowerCase().contains("active")&&!usesActive){
+        if(b.getName().toLowerCase(Locale.ENGLISH).contains("active")&&!usesActive){
             channel.sendMessage("This reactor contains no active coolers!").queue();
             return;
         }

@@ -1,5 +1,6 @@
 package planner.tool;
 import multiblock.Block;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
@@ -98,15 +99,15 @@ public class MoveTool extends EditorTool{
     }
     @Override
     public void mouseReset(int button){
-        if(button==0)leftDragStart = leftDragEnd = null;
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = null;
     }
     @Override
     public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0)leftDragStart = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0&&leftDragStart!=null&&leftDragEnd!=null){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null&&leftDragEnd!=null){
             if(Core.isControlPressed())editor.copySelection(leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
             else editor.moveSelection(leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
         }
@@ -114,7 +115,7 @@ public class MoveTool extends EditorTool{
     }
     @Override
     public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0)leftDragEnd = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

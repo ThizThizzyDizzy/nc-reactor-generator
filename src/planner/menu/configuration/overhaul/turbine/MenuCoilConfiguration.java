@@ -6,7 +6,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Coil;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -72,20 +71,20 @@ public class MenuCoilConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        drawRect(0, Display.getHeight()/numComps, Display.getHeight()/numComps, Display.getHeight()/numComps*2, Core.getTexture(coil.texture));
-        efficiency.width = Display.getWidth()*.75;
-        efficiency.x = Display.getWidth()-efficiency.width;
-        bearing.width = connector.width = name.width = rules.width = back.width = Display.getWidth();
-        texture.x = texture.height = bearing.height = connector.height = efficiency.height = name.height = rules.height = back.height = Display.getHeight()/numComps;
-        texture.width = Display.getWidth()-texture.x;
+        drawRect(0, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps*2, Core.getTexture(coil.texture));
+        efficiency.width = Core.helper.displayWidth()*.75;
+        efficiency.x = Core.helper.displayWidth()-efficiency.width;
+        bearing.width = connector.width = name.width = rules.width = back.width = Core.helper.displayWidth();
+        texture.x = texture.height = bearing.height = connector.height = efficiency.height = name.height = rules.height = back.height = Core.helper.displayHeight()/numComps;
+        texture.width = Core.helper.displayWidth()-texture.x;
         texture.y = name.height;
         efficiency.y = texture.y+texture.height;
         connector.y = efficiency.y+efficiency.height;
         bearing.y = connector.y+connector.height;
         rules.y = bearing.y+bearing.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/numComps*2, Display.getWidth()*.25, Display.getHeight()/numComps*3, "Efficiency");
+        drawText(0, Core.helper.displayHeight()/numComps*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*3, "Efficiency");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

@@ -1,16 +1,43 @@
 package multiblock.configuration.overhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration{
+    public ArrayList<Block> allBlocks = new ArrayList<>();
+    public ArrayList<Fuel> allFuels = new ArrayList<>();
+    public ArrayList<Source> allSources = new ArrayList<>();
+    public ArrayList<IrradiatorRecipe> allIrradiatorRecipes = new ArrayList<>();
+    public ArrayList<CoolantRecipe> allCoolantRecipes = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allBlocks
+     */
+    @Deprecated
     public ArrayList<Block> blocks = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allFuels
+     */
+    @Deprecated
     public ArrayList<Fuel> fuels = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allSources
+     */
+    @Deprecated
     public ArrayList<Source> sources = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allIrradiatorRecipes
+     */
+    @Deprecated
     public ArrayList<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allCoolantRecipes
+     */
+    @Deprecated
     public ArrayList<CoolantRecipe> coolantRecipes = new ArrayList<>();
     public int minSize;
     public int maxSize;
@@ -18,24 +45,26 @@ public class FissionSFRConfiguration{
     public int coolingEfficiencyLeniency;
     public float sparsityPenaltyMult;
     public float sparsityPenaltyThreshold;
-    public String[] getBlockStringList(){
-        String[] strs = new String[blocks.size()];
+    public String[] getAllBlocksStringList(){
+        String[] strs = new String[allBlocks.size()];
         for(int i = 0; i<strs.length; i++){
-            strs[i] = blocks.get(i).name;
+            strs[i] = allBlocks.get(i).name;
         }
         return strs;
     }
-    public Config save(boolean partial){
+    public Config save(Configuration parent, boolean partial){
         Config config = Config.newConfig();
-        config.set("minSize", minSize);
-        config.set("maxSize", maxSize);
-        config.set("neutronReach", neutronReach);
-        config.set("coolingEfficiencyLeniency", coolingEfficiencyLeniency);
-        config.set("sparsityPenaltyMult", sparsityPenaltyMult);
-        config.set("sparsityPenaltyThreshold", sparsityPenaltyThreshold);
+        if(parent==null){
+            config.set("minSize", minSize);
+            config.set("maxSize", maxSize);
+            config.set("neutronReach", neutronReach);
+            config.set("coolingEfficiencyLeniency", coolingEfficiencyLeniency);
+            config.set("sparsityPenaltyMult", sparsityPenaltyMult);
+            config.set("sparsityPenaltyThreshold", sparsityPenaltyThreshold);
+        }
         ConfigList blocks = new ConfigList();
         for(Block block : this.blocks){
-            blocks.add(block.save(this, partial));
+            blocks.add(block.save(parent, this, partial));
         }
         config.set("blocks", blocks);
         ConfigList fuels = new ConfigList();
@@ -121,14 +150,14 @@ public class FissionSFRConfiguration{
     public Block convertToSFR(multiblock.configuration.overhaul.fissionmsr.Block template){
         if(template==null)return null;
         for(Block block : blocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase().replace("vessel", "cell").replace("coolant heater", "heat sink").replace("standard", "water")))return block;
+            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase(Locale.ENGLISH).replace("vessel", "cell").replace("coolant heater", "heat sink").replace("standard", "water")))return block;
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
     }
     public Fuel convertToSFR(multiblock.configuration.overhaul.fissionmsr.Fuel template){
         if(template==null)return null;
         for(Fuel fuel : fuels){
-            if(fuel.name.trim().toLowerCase().startsWith(template.name.trim().toLowerCase().replace(" fluoride", "").replace("mf4", "mox")))return fuel;
+            if(fuel.name.trim().toLowerCase(Locale.ENGLISH).startsWith(template.name.trim().toLowerCase(Locale.ENGLISH).replace(" fluoride", "").replace("mf4", "mox")))return fuel;
         }
         throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
     }

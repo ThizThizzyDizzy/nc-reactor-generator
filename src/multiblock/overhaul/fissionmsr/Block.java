@@ -27,6 +27,8 @@ public class Block extends multiblock.Block{
     public boolean inCluster;
     public boolean closed = false;
     public boolean wasActive;
+    public OverhaulMSR.VesselGroup vesselGroup;//only used when recalculating; doesn't even need to be reset
+    int hadFlux;
     public Block(int x, int y, int z, multiblock.configuration.overhaul.fissionmsr.Block template){
         super(x, y, z);
         this.template = template;
@@ -72,10 +74,10 @@ public class Block extends multiblock.Block{
                         + "Efficiency: "+percent(efficiency, 0)+"\n"
                         + "Positional Efficiency: "+percent(positionalEfficiency, 0)+"\n"
                         + "Total Neutron Flux: "+neutronFlux+"\n"
-                        + "Criticality Factor: "+fuel.criticality;
+                        + "Criticality Factor: "+vesselGroup.criticality;
             }else{
                 tip+="\nTotal Neutron Flux: "+neutronFlux+"\n"
-                        + "Criticality Factor: "+fuel.criticality;
+                        + "Criticality Factor: "+vesselGroup.criticality;
             }
             if(isPrimed()){
                 tip+="\n"
@@ -138,7 +140,10 @@ public class Block extends multiblock.Block{
     }
     public boolean isPrimed(){
         if(!isFuelVessel())return false;
-        return source!=null||fuel.selfPriming;
+        for(Block b : vesselGroup.blocks){
+            if(b.source!=null||b.fuel.selfPriming)return true;
+        }
+        return false;
     }
     @Override
     public boolean isCore(){
@@ -159,7 +164,7 @@ public class Block extends multiblock.Block{
         return isModerator()&&moderatorActive&&template.activeModerator;
     }
     public boolean isFuelVesselActive(){
-        return isFuelVessel()&&neutronFlux>=fuel.criticality;
+        return isFuelVessel()&&neutronFlux>=(vesselGroup==null?fuel.criticality:vesselGroup.criticality);
     }
     public boolean isFuelVessel(){
         if(isCasing())return false;
@@ -207,7 +212,7 @@ public class Block extends multiblock.Block{
     }
     public void propogateNeutronFlux(OverhaulMSR reactor){
         if(!isFuelVessel())return;
-        if(!isPrimed()&&neutronFlux<fuel.criticality)return;
+        if(!isPrimed()&&neutronFlux<vesselGroup.criticality)return;
         if(hasPropogated)return;
         hasPropogated = true;
         for(Direction d : directions){
@@ -230,7 +235,9 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isFuelVessel()){
                     if(length==0||nonshields==0)break;
-                    block.neutronFlux+=flux;
+                    for(Block b : block.vesselGroup.blocks){
+                        b.neutronFlux+=flux;
+                    }
                     block.moderatorLines++;
                     block.positionalEfficiency+=efficiency/length;
                     block.propogateNeutronFlux(reactor);
@@ -238,7 +245,10 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isReflector()){
                     if(length==0||nonshields==0)break;
-                    neutronFlux+=flux*2*block.template.reflectivity;
+                    if(length>Core.configuration.overhaul.fissionMSR.neutronReach/2)break;
+                    for(Block b : vesselGroup.blocks){
+                        b.neutronFlux+=flux*2*block.template.reflectivity;
+                    }
                     positionalEfficiency+=efficiency/length*block.template.efficiency;
                     moderatorLines++;
                     break;
@@ -251,6 +261,7 @@ public class Block extends multiblock.Block{
                 break;
             }
         }
+        for(Block b : vesselGroup.blocks)b.propogateNeutronFlux(reactor);
     }
     public void rePropogateNeutronFlux(OverhaulMSR reactor){
         if(!isFuelVessel())return;
@@ -262,7 +273,7 @@ public class Block extends multiblock.Block{
             int length = 0;
             int nonshields = 0;
             float efficiency = 0;
-            for(int i = 1; i<=Core.configuration.overhaul.fissionSFR.neutronReach+1; i++){
+            for(int i = 1; i<=Core.configuration.overhaul.fissionMSR.neutronReach+1; i++){
                 Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
                 if(block==null)break;
                 if(block.isCasing())break;
@@ -277,7 +288,9 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isFuelVessel()){
                     if(length==0||nonshields==0)break;
-                    block.neutronFlux+=flux;
+                    for(Block b : block.vesselGroup.blocks){
+                        b.neutronFlux+=flux;
+                    }
                     block.moderatorLines++;
                     block.positionalEfficiency+=efficiency/length;
                     block.rePropogateNeutronFlux(reactor);
@@ -285,7 +298,10 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isReflector()){
                     if(length==0||nonshields==0)break;
-                    neutronFlux+=flux*2*block.template.reflectivity;
+                    if(length>Core.configuration.overhaul.fissionMSR.neutronReach/2)break;
+                    for(Block b : vesselGroup.blocks){
+                        b.neutronFlux+=flux*2*block.template.reflectivity;
+                    }
                     positionalEfficiency+=efficiency/length*block.template.efficiency;
                     moderatorLines++;
                     break;
@@ -331,7 +347,9 @@ public class Block extends multiblock.Block{
                 if(block.isFuelVesselActive()){
                     if(length==0||nonshields==0)break;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b);
+                        for(Block blok : b.vesselGroup.blocks){
+                            blok.neutronFlux+=shieldFluxes.get(b);
+                        }
                     }
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
@@ -341,7 +359,13 @@ public class Block extends multiblock.Block{
                     if(length==0||nonshields==0)break;
                     block.reflectorActive = true;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
+                        if(b.vesselGroup==null){    //this is definitely wrong, but I don't feel like figuring it out right now
+                            b.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
+                        }else{
+                            for(Block blok : b.vesselGroup.blocks){
+                                blok.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
+                            }
+                        }
                     }
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
@@ -350,9 +374,13 @@ public class Block extends multiblock.Block{
                 if(block.isIrradiator()){
                     if(length==0||nonshields==0)break;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b);
+                        for(Block blok : b.vesselGroup.blocks){
+                            blok.neutronFlux+=shieldFluxes.get(b);
+                        }
                     }
-                    block.neutronFlux+=flux;
+                    for(Block blok : block.vesselGroup.blocks){
+                        blok.neutronFlux+=flux;
+                    }
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
                     break;

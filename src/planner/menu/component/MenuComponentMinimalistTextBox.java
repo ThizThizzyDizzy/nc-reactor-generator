@@ -30,9 +30,9 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
         }
     }
     @Override
-    public void processKeyboard(char character, int key, boolean pressed, boolean repeat){
+    public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
         String lastText = text;
-        super.processKeyboard(character, key, pressed, repeat);
+        super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
         if(filter==INT){
             if(text.trim().isEmpty())text = "0";
             try{

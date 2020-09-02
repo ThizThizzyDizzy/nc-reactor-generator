@@ -1,5 +1,4 @@
 package planner.menu.configuration.overhaul.fissionmsr;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.overhaul.fissionmsr.Fuel;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -40,21 +39,21 @@ public class MenuFuelConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        back.width = name.width = selfPriming.width = Display.getWidth();
-        efficiency.width = heat.width = time.width = criticality.width = Display.getWidth()*.75;
-        efficiency.x = heat.x = time.x = criticality.x = Display.getWidth()*.25;
-        efficiency.height = heat.height = time.height = criticality.height = selfPriming.height = name.height = back.height = Display.getHeight()/16;
+        back.width = name.width = selfPriming.width = Core.helper.displayWidth();
+        efficiency.width = heat.width = time.width = criticality.width = Core.helper.displayWidth()*.75;
+        efficiency.x = heat.x = time.x = criticality.x = Core.helper.displayWidth()*.25;
+        efficiency.height = heat.height = time.height = criticality.height = selfPriming.height = name.height = back.height = Core.helper.displayHeight()/16;
         efficiency.y = name.height;
         heat.y = efficiency.y+efficiency.height;
         time.y = heat.y+heat.height;
         criticality.y = time.y+time.height;
         selfPriming.y = criticality.y+criticality.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/16, Display.getWidth()*.25, Display.getHeight()/16*2, "Power");
-        drawText(0, Display.getHeight()/16*2, Display.getWidth()*.25, Display.getHeight()/16*3, "Heat");
-        drawText(0, Display.getHeight()/16*3, Display.getWidth()*.25, Display.getHeight()/16*4, "Time");
-        drawText(0, Display.getHeight()/16*4, Display.getWidth()*.25, Display.getHeight()/16*5, "Criticality");
+        drawText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*2, "Power");
+        drawText(0, Core.helper.displayHeight()/16*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*3, "Heat");
+        drawText(0, Core.helper.displayHeight()/16*3, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*4, "Time");
+        drawText(0, Core.helper.displayHeight()/16*4, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*5, "Criticality");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

@@ -23,8 +23,4 @@ public class MenuComponentOverSFRFuel extends MenuComponent{
         double textHeight = (int)(height*scale)-1;
         drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, fuel.name);
     }
-    @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
-    }
 }

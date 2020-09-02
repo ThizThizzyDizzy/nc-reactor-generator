@@ -1,5 +1,6 @@
 package multiblock.symmetry;
 import java.util.ArrayList;
+import java.util.Locale;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.overhaul.turbine.OverhaulTurbine;
@@ -53,7 +54,7 @@ public abstract class CoilSymmetry extends Symmetry{
         super(axis+" Coil Symmetry");
     }
     public boolean matches(String sym){
-        switch(sym.toLowerCase().replace(" ", "").replace("-", "").replace("symmetry", "").replace("symmetrical", "")){
+        switch(sym.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("-", "").replace("symmetry", "").replace("symmetrical", "")){
             case "x":
                 return this==X;
             case "y":

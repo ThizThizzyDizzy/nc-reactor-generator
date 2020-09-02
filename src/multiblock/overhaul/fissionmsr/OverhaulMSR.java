@@ -32,6 +32,7 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulMSR extends Multiblock<Block>{
     public ArrayList<Cluster> clusters = new ArrayList<>();
+    private ArrayList<VesselGroup> vesselGroups = new ArrayList<>();
     public int totalFuelVessels;
     public int totalCooling;
     public int totalHeat;
@@ -69,7 +70,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.fissionMSR==null)return;
-        for(multiblock.configuration.overhaul.fissionmsr.Block block : getConfiguration().overhaul.fissionMSR.blocks){
+        for(multiblock.configuration.overhaul.fissionmsr.Block block : getConfiguration().overhaul.fissionMSR.allBlocks){
             blocks.add(new Block(-1, -1, -1, block));
         }
     }
@@ -100,6 +101,16 @@ public class OverhaulMSR extends Multiblock<Block>{
     @Override
     public synchronized void calculate(List<Block> blocks){
         List<Block> allBlocks = getBlocks();
+        vesselGroups.clear();
+        for(Block b : allBlocks){
+            b.vesselGroup = null;
+        }
+        for(Block block : allBlocks){//detect groups
+            VesselGroup group = getVesselGroup(block);
+            if(group==null)continue;//that's not a vessel group!
+            if(vesselGroups.contains(group))continue;//already know about that one!
+            vesselGroups.add(group);
+        }
         for(Block block : blocks){
             if(block.isPrimed())block.propogateNeutronFlux(this);
         }
@@ -108,6 +119,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             lastActive = 0;
             for(Block block : blocks){
                 boolean wasActive = block.isFuelVesselActive();
+                block.hadFlux = block.neutronFlux;
                 block.clearData();
                 if(wasActive)lastActive++;
                 block.wasActive = wasActive;
@@ -118,6 +130,9 @@ public class OverhaulMSR extends Multiblock<Block>{
             nowActive = 0;
             for(Block block : blocks){
                 if(block.isFuelVesselActive())nowActive++;
+                if(block.isFuelVessel()&&!block.wasActive){
+                    block.neutronFlux = block.hadFlux;
+                }
             }
         }while(nowActive!=lastActive);
         for(Block block : blocks){
@@ -232,7 +247,7 @@ public class OverhaulMSR extends Multiblock<Block>{
                 + "Total Irradiation: "+totalIrradiation+"\n"
                 + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n"
                 + "Rainbow Score: "+percent(rainbowScore, 2)+"\n";//TODO make this (and shutdown factor?) modular
-        for(Fuel f : getConfiguration().overhaul.fissionMSR.fuels){
+        for(Fuel f : getConfiguration().overhaul.fissionMSR.allFuels){
             int i = getFuelCount(f);
             if(i>0)s+="\n"+f.name+": "+i;
         }
@@ -263,7 +278,7 @@ public class OverhaulMSR extends Multiblock<Block>{
                     for(int z = 0; z<getZ(); z++){
                         Block block = getBlock(x, y, z);
                         if(block==null)blox.add(0);
-                        else blox.add(configuration.overhaul.fissionMSR.blocks.indexOf(block.template)+1);
+                        else blox.add(configuration.overhaul.fissionMSR.allBlocks.indexOf(block.template)+1);
                     }
                 }
             }
@@ -272,16 +287,16 @@ public class OverhaulMSR extends Multiblock<Block>{
                 blox.add(block.x);
                 blox.add(block.y);
                 blox.add(block.z);
-                blox.add(configuration.overhaul.fissionMSR.blocks.indexOf(block.template)+1);
+                blox.add(configuration.overhaul.fissionMSR.allBlocks.indexOf(block.template)+1);
             }
         }
         ConfigNumberList fuels = new ConfigNumberList();
         ConfigNumberList sources = new ConfigNumberList();
         ConfigNumberList irradiatorRecipes = new ConfigNumberList();
         for(Block block : getBlocks()){
-            if(block.template.fuelVessel)fuels.add(configuration.overhaul.fissionMSR.fuels.indexOf(block.fuel));
-            if(block.template.fuelVessel)sources.add(configuration.overhaul.fissionMSR.sources.indexOf(block.source)+1);
-            if(block.template.irradiator)irradiatorRecipes.add(configuration.overhaul.fissionMSR.irradiatorRecipes.indexOf(block.irradiatorRecipe)+1);
+            if(block.template.fuelVessel)fuels.add(configuration.overhaul.fissionMSR.allFuels.indexOf(block.fuel));
+            if(block.template.fuelVessel)sources.add(configuration.overhaul.fissionMSR.allSources.indexOf(block.source)+1);
+            if(block.template.irradiator)irradiatorRecipes.add(configuration.overhaul.fissionMSR.allIrradiatorRecipes.indexOf(block.irradiatorRecipe)+1);
         }
         config.set("blocks", blox);
         config.set("fuels", fuels);
@@ -292,7 +307,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         int blockCount = getBlocks().size();
         int volume = getX()*getY()*getZ();
         int bitsPerDim = logBase(2, Math.max(getX(), Math.max(getY(), getZ())));
-        int bitsPerType = logBase(2, configuration.overhaul.fissionMSR.blocks.size());
+        int bitsPerType = logBase(2, configuration.overhaul.fissionMSR.allBlocks.size());
         int compactBits = bitsPerType*volume;
         int spaciousBits = 4*Math.max(bitsPerDim, bitsPerType)*blockCount;
         return compactBits<spaciousBits;
@@ -342,6 +357,14 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
         return new Cluster(block);
     }
+    public VesselGroup getVesselGroup(Block block){
+        if(block==null)return null;
+        if(!block.isFuelVessel())return null;
+        for(VesselGroup vesselGroup : vesselGroups){
+            if(vesselGroup.contains(block))return vesselGroup;
+        }
+        return new VesselGroup(block);
+    }
     private int getFuelCount(Fuel f){
         int count = 0;
         for(Block block : getBlocks()){
@@ -350,7 +373,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         return count;
     }
     public OverhaulSFR convertToSFR(){
-        OverhaulSFR sfr = new OverhaulSFR(getX(), getY(), getZ(), getConfiguration().overhaul.fissionSFR.coolantRecipes.get(0));
+        OverhaulSFR sfr = new OverhaulSFR(getX(), getY(), getZ(), getConfiguration().overhaul.fissionSFR.allCoolantRecipes.get(0));
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
                 for(int z = 0; z<getZ(); z++){
@@ -365,20 +388,22 @@ public class OverhaulMSR extends Multiblock<Block>{
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
         if(fuelToggles==null)fuelToggles = new HashMap<>();
-        if(fuelToggles==null)sourceToggles = new HashMap<>();
-        if(fuelToggles==null)irradiatorRecipeToggles = new HashMap<>();
+        if(sourceToggles==null)sourceToggles = new HashMap<>();
+        if(irradiatorRecipeToggles==null)irradiatorRecipeToggles = new HashMap<>();
         fuelToggles.clear();
-        for(Fuel f : getConfiguration().overhaul.fissionMSR.fuels){
+        for(Fuel f : getConfiguration().overhaul.fissionMSR.allFuels){
             MenuComponentMSRToggleFuel toggle = new MenuComponentMSRToggleFuel(f);
             fuelToggles.put(f, toggle);
             multiblockSettings.add(toggle);
         }
-        for(Source s : getConfiguration().overhaul.fissionMSR.sources){
+        sourceToggles.clear();
+        for(Source s : getConfiguration().overhaul.fissionMSR.allSources){
             MenuComponentMSRToggleSource toggle = new MenuComponentMSRToggleSource(s);
             sourceToggles.put(s, toggle);
             multiblockSettings.add(toggle);
         }
-        for(IrradiatorRecipe r : getConfiguration().overhaul.fissionMSR.irradiatorRecipes){
+        irradiatorRecipeToggles.clear();
+        for(IrradiatorRecipe r : getConfiguration().overhaul.fissionMSR.allIrradiatorRecipes){
             MenuComponentMSRToggleIrradiatorRecipe toggle = new MenuComponentMSRToggleIrradiatorRecipe(r);
             irradiatorRecipeToggles.put(r, toggle);
             multiblockSettings.add(toggle);
@@ -518,13 +543,13 @@ public class OverhaulMSR extends Multiblock<Block>{
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
         postProcessingEffects.add(new ClearInvalid());
         if(Challenger.isActive)postProcessingEffects.add(new SmartFillOverhaulMSR());
-        for(multiblock.configuration.overhaul.fissionmsr.Block b : getConfiguration().overhaul.fissionMSR.blocks){
+        for(multiblock.configuration.overhaul.fissionmsr.Block b : getConfiguration().overhaul.fissionMSR.allBlocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new MSRFill(b));
         }
     }
     private float getRainbowScore(){
         float totalSinks = 0;
-        for(multiblock.configuration.overhaul.fissionmsr.Block b : getConfiguration().overhaul.fissionMSR.blocks){
+        for(multiblock.configuration.overhaul.fissionmsr.Block b : getConfiguration().overhaul.fissionMSR.allBlocks){
             if(b.cooling>0)totalSinks++;
         }
         Set<multiblock.configuration.overhaul.fissionmsr.Block> unique = new HashSet<>();
@@ -548,10 +573,10 @@ public class OverhaulMSR extends Multiblock<Block>{
         public float heatMult, coolingPenaltyMult;
         public int irradiation;
         public Cluster(Block block){
-            blocks.addAll(toList(getClusterBlocks(block, false)));
+            blocks.addAll(toList(getBlocks(block, false)));
             isConnectedToWall = wallCheck(blocks);
             if(!isConnectedToWall){
-                isConnectedToWall = wallCheck(toList(getClusterBlocks(block, true)));
+                isConnectedToWall = wallCheck(toList(getBlocks(block, true)));
             }
             if(isValid()){
                 for(Block b : blocks){
@@ -600,6 +625,169 @@ public class OverhaulMSR extends Multiblock<Block>{
             copy.irradiation = irradiation;
             return copy;
         }
+        /**
+         * Block search algorithm from my Tree Feller for Bukkit.
+         */
+        private HashMap<Integer, ArrayList<Block>> getBlocks(Block start, boolean useConductors){
+            //layer zero
+            HashMap<Integer, ArrayList<Block>>results = new HashMap<>();
+            ArrayList<Block> zero = new ArrayList<>();
+            if(start.canCluster()||(useConductors&&start.isConductor())){
+                zero.add(start);
+            }
+            results.put(0, zero);
+            //all the other layers
+            int maxDistance = getX()*getY()*getZ();//the algorithm requires a max search distance. Rather than changing that, I'll just be lazy and give it a big enough number
+            for(int i = 0; i<maxDistance; i++){
+                ArrayList<Block> layer = new ArrayList<>();
+                ArrayList<Block> lastLayer = new ArrayList<>(results.get(i));
+                if(i==0&&lastLayer.isEmpty()){
+                    lastLayer.add(start);
+                }
+                for(Block block : lastLayer){
+                    FOR:for(int j = 0; j<6; j++){
+                        int dx=0,dy=0,dz=0;
+                        switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
+                            case 0:
+                                dx = -1;
+                                break;
+                            case 1:
+                                dx = 1;
+                                break;
+                            case 2:
+                                dy = -1;
+                                break;
+                            case 3:
+                                dy = 1;
+                                break;
+                            case 4:
+                                dz = -1;
+                                break;
+                            case 5:
+                                dz = 1;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("How did this happen?");
+                        }
+                        Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
+                        if(newBlock==null)continue;
+                        if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
+                            continue;
+                        }
+                        for(Block oldbl : lastLayer){//if(lastLayer.contains(newBlock))continue;//if the new block is on the same layer, ignore
+                            if(oldbl==newBlock){
+                                continue FOR;
+                            }
+                        }
+                        if(i>0){
+                            for(Block oldbl : results.get(i-1)){//if(i>0&&results.get(i-1).contains(newBlock))continue;//if the new block is on the previous layer, ignore
+                                if(oldbl==newBlock){
+                                    continue FOR;
+                                }
+                            }
+                        }
+                        for(Block oldbl : layer){//if(layer.contains(newBlock))continue;//if the new block is on the next layer, but already processed, ignore
+                            if(oldbl==newBlock){
+                                continue FOR;
+                            }
+                        }
+                        layer.add(newBlock);
+                    }
+                }
+                if(layer.isEmpty())break;
+                results.put(i+1, layer);
+            }
+            return results;
+        }
+    }
+    public class VesselGroup{
+        public ArrayList<Block> blocks = new ArrayList<>();
+        public int criticality = 0;
+        public VesselGroup(Block block){
+            blocks.addAll(toList(getBlocks(block)));
+            for(Block b : blocks){
+                criticality+=b.fuel.criticality;
+                b.vesselGroup = this;
+            }
+        }
+        private VesselGroup(){}
+        public boolean contains(Block block){
+            return blocks.contains(block);
+        }
+        /**
+         * Block search algorithm from my Tree Feller for Bukkit.
+         */
+        private HashMap<Integer, ArrayList<Block>> getBlocks(Block start){
+            //layer zero
+            HashMap<Integer, ArrayList<Block>>results = new HashMap<>();
+            ArrayList<Block> zero = new ArrayList<>();
+            if(start.isFuelVessel()){
+                zero.add(start);
+            }
+            results.put(0, zero);
+            //all the other layers
+            int maxDistance = getX()*getY()*getZ();//the algorithm requires a max search distance. Rather than changing that, I'll just be lazy and give it a big enough number
+            for(int i = 0; i<maxDistance; i++){
+                ArrayList<Block> layer = new ArrayList<>();
+                ArrayList<Block> lastLayer = new ArrayList<>(results.get(i));
+                if(i==0&&lastLayer.isEmpty()){
+                    lastLayer.add(start);
+                }
+                for(Block block : lastLayer){
+                    FOR:for(int j = 0; j<6; j++){
+                        int dx=0,dy=0,dz=0;
+                        switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
+                            case 0:
+                                dx = -1;
+                                break;
+                            case 1:
+                                dx = 1;
+                                break;
+                            case 2:
+                                dy = -1;
+                                break;
+                            case 3:
+                                dy = 1;
+                                break;
+                            case 4:
+                                dz = -1;
+                                break;
+                            case 5:
+                                dz = 1;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("How did this happen?");
+                        }
+                        Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
+                        if(newBlock==null)continue;
+                        if(!newBlock.isFuelVessel()||newBlock.fuel!=start.fuel){//that's not part of this bunch
+                            continue;
+                        }
+                        for(Block oldbl : lastLayer){//if(lastLayer.contains(newBlock))continue;//if the new block is on the same layer, ignore
+                            if(oldbl==newBlock){
+                                continue FOR;
+                            }
+                        }
+                        if(i>0){
+                            for(Block oldbl : results.get(i-1)){//if(i>0&&results.get(i-1).contains(newBlock))continue;//if the new block is on the previous layer, ignore
+                                if(oldbl==newBlock){
+                                    continue FOR;
+                                }
+                            }
+                        }
+                        for(Block oldbl : layer){//if(layer.contains(newBlock))continue;//if the new block is on the next layer, but already processed, ignore
+                            if(oldbl==newBlock){
+                                continue FOR;
+                            }
+                        }
+                        layer.add(newBlock);
+                    }
+                }
+                if(layer.isEmpty())break;
+                results.put(i+1, layer);
+            }
+            return results;
+        }
     }
     @Override
     public synchronized void clearData(List<Block> blocks){
@@ -607,80 +795,6 @@ public class OverhaulMSR extends Multiblock<Block>{
         clusters.clear();
         totalOutput.clear();
         rainbowScore = shutdownFactor = totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelVessels = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
-    }
-    /**
-     * Block search algorithm from my Tree Feller for Bukkit.
-     */
-    private HashMap<Integer, ArrayList<Block>> getClusterBlocks(Block start, boolean useConductors){
-        //layer zero
-        HashMap<Integer, ArrayList<Block>>results = new HashMap<>();
-        ArrayList<Block> zero = new ArrayList<>();
-        if(start.canCluster()||(useConductors&&start.isConductor())){
-            zero.add(start);
-        }
-        results.put(0, zero);
-        //all the other layers
-        int maxDistance = getX()*getY()*getZ();//the algorithm requires a max search distance. Rather than changing that, I'll just be lazy and give it a big enough number
-        for(int i = 0; i<maxDistance; i++){
-            ArrayList<Block> layer = new ArrayList<>();
-            ArrayList<Block> lastLayer = new ArrayList<>(results.get(i));
-            if(i==0&&lastLayer.isEmpty()){
-                lastLayer.add(start);
-            }
-            for(Block block : lastLayer){
-                FOR:for(int j = 0; j<6; j++){
-                    int dx=0,dy=0,dz=0;
-                    switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
-                        case 0:
-                            dx = -1;
-                            break;
-                        case 1:
-                            dx = 1;
-                            break;
-                        case 2:
-                            dy = -1;
-                            break;
-                        case 3:
-                            dy = 1;
-                            break;
-                        case 4:
-                            dz = -1;
-                            break;
-                        case 5:
-                            dz = 1;
-                            break;
-                        default:
-                            throw new IllegalArgumentException("How did this happen?");
-                    }
-                    Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
-                    if(newBlock==null)continue;
-                    if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
-                        continue;
-                    }
-                    for(Block oldbl : lastLayer){//if(lastLayer.contains(newBlock))continue;//if the new block is on the same layer, ignore
-                        if(oldbl==newBlock){
-                            continue FOR;
-                        }
-                    }
-                    if(i>0){
-                        for(Block oldbl : results.get(i-1)){//if(i>0&&results.get(i-1).contains(newBlock))continue;//if the new block is on the previous layer, ignore
-                            if(oldbl==newBlock){
-                                continue FOR;
-                            }
-                        }
-                    }
-                    for(Block oldbl : layer){//if(layer.contains(newBlock))continue;//if the new block is on the next layer, but already processed, ignore
-                        if(oldbl==newBlock){
-                            continue FOR;
-                        }
-                    }
-                    layer.add(newBlock);
-                }
-            }
-            if(layer.isEmpty())break;
-            results.put(i+1, layer);
-        }
-        return results;
     }
     /**
      * Converts the tiered search returned by getBlocks into a list of blocks.<br>
@@ -785,7 +899,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){
         int sources = 0;
-        for(Source s : getConfiguration().overhaul.fissionMSR.sources){
+        for(Source s : getConfiguration().overhaul.fissionMSR.allSources){
             int num = count(s);
             sources+=num;
             if(num>0)parts.add(new PartCount(null, s.name+" Neutron Source", num));

@@ -3,7 +3,6 @@ import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import java.util.ArrayList;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.Block;
 import multiblock.Multiblock;
@@ -30,22 +29,22 @@ public class MenuMultiblockMetadata extends Menu{
     }
     @Override
     public void renderBackground(){
-        list.width = Display.getWidth();
-        list.y = Display.getHeight()/16;
-        list.height = Display.getHeight()-Display.getHeight()/8;
+        list.width = Core.helper.displayWidth();
+        list.y = Core.helper.displayHeight()/16;
+        list.height = Core.helper.displayHeight()-Core.helper.displayHeight()/8;
         list.columnWidth = (list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0))/2;
-        done.width = Display.getWidth();
-        done.y = Display.getHeight()-Display.getHeight()/16;
-        done.height = Display.getHeight()/16;
+        done.width = Core.helper.displayWidth();
+        done.y = Core.helper.displayHeight()-Core.helper.displayHeight()/16;
+        done.height = Core.helper.displayHeight()/16;
     }
     @Override
     public void render(int millisSinceLastTick){
         Core.applyColor(Core.theme.getMetadataPanelBackgroundColor());
-        drawRect(0, 0, Display.getWidth(), Display.getHeight(), 0);
+        drawRect(0, 0, Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
         Core.applyColor(Core.theme.getMetadataPanelHeaderColor());
-        drawRect(0, 0, Display.getWidth(), Display.getHeight()/16, 0);
+        drawRect(0, 0, Core.helper.displayWidth(), Core.helper.displayHeight()/16, 0);
         Core.applyColor(Core.theme.getTextColor());
-        drawCenteredText(0, 0, Display.getWidth(), Display.getHeight()/16, "Metadata");
+        drawCenteredText(0, 0, Core.helper.displayWidth(), Core.helper.displayHeight()/16, "Metadata");
         super.render(millisSinceLastTick);
     }
     @Override

@@ -18,12 +18,12 @@ public class SetCoolantRecipeAction extends Action<OverhaulSFR>{
     public void doApply(OverhaulSFR multiblock){
         was = multiblock.coolantRecipe;
         multiblock.coolantRecipe = recipe;
-        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.coolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
+        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
     }
     @Override
     public void doUndo(OverhaulSFR multiblock){
         multiblock.coolantRecipe = was;
-        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.coolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
+        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
     }
     @Override
     protected void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<Block> blocks){

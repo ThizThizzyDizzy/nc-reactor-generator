@@ -1,6 +1,7 @@
 package multiblock.configuration.overhaul.fissionmsr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -108,7 +109,7 @@ public class Block extends RuleContainer{
     public Block(String name){
         this.name = name;
     }
-    public Config save(FissionMSRConfiguration configuration, boolean partial){
+    public Config save(Configuration parent, FissionMSRConfiguration configuration, boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
         if(cooling!=0)config.set("cooling", cooling);
@@ -132,7 +133,7 @@ public class Block extends RuleContainer{
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
             for(PlacementRule rule : rules){
-                ruls.add(rule.save(configuration));
+                ruls.add(rule.save(parent, configuration));
             }
             config.set("rules", ruls);
         }

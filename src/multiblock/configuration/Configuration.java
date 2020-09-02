@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Objects;
@@ -13,16 +12,15 @@ import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import planner.file.FileReader;
 import multiblock.Multiblock;
-import planner.Core;
 import planner.Main;
 import simplelibrary.config2.Config;
+import simplelibrary.config2.ConfigList;
 public class Configuration{
     public String name;
-    public String version;
+    public String overhaulVersion;
     public String underhaulVersion;
-    public String getUnderhaulVersion(){
-        return underhaulVersion==null?version:underhaulVersion;
-    }
+    public boolean addon;
+    public ArrayList<Configuration> addons = new ArrayList<>();
     public static ArrayList<Configuration> configurations = new ArrayList<>();
     static{
         configurations.add(FileReader.read(() -> {
@@ -38,20 +36,31 @@ public class Configuration{
     public ArrayList<String> alternatives = new ArrayList<>();
     public Configuration(String name, String version, String underhaulVersion){
         this.name = name;
-        this.version = version;
+        this.overhaulVersion = version;
         this.underhaulVersion = underhaulVersion;
     }
     public UnderhaulConfiguration underhaul;
     public OverhaulConfiguration overhaul;
-    public void save(OutputStream stream){
-        Config config = Config.newConfig();
+    public Config save(Configuration parent, Config config){
         config.set("partial", isPartial());
-        if(underhaul!=null)config.set("underhaul", underhaul.save(isPartial()));
-        if(overhaul!=null)config.set("overhaul", overhaul.save(isPartial()));
-        if(name!=null)config.set("name", name);
-        if(version!=null)config.set("version", version);
-        if(underhaulVersion!=null)config.set("underhaulVersion", underhaulVersion);
-        config.save(stream);
+        config.set("addon", addon);
+        if(underhaul!=null){
+            config.set("underhaul", underhaul.save(parent, isPartial()));
+            config.set("underhaulVersion", underhaulVersion);
+        }
+        if(overhaul!=null){
+            config.set("overhaul", overhaul.save(parent, isPartial()));
+            config.set("version", overhaulVersion);
+        }
+        config.set("name", name);
+        if(!addons.isEmpty()){
+            ConfigList addns = new ConfigList();
+            for(Configuration cnfg : addons){
+                addns.add(cnfg.save(this, Config.newConfig()));
+            }
+            config.set("addons", addns);
+        }
+        return config;
     }
     public boolean isPartial(){
         return false;
@@ -65,7 +74,7 @@ public class Configuration{
             configuration.overhaul = overhaul;
         }
         configuration.name = name;
-        configuration.version = version;
+        configuration.overhaulVersion = overhaulVersion;
         configuration.underhaulVersion = underhaulVersion;
     }
     public void applyPartial(PartialConfiguration partial, ArrayList<Multiblock> multiblocks){
@@ -105,5 +114,9 @@ public class Configuration{
             System.err.println("Couldn't read file: "+path);
             return null;
         }
+    }
+    @Override
+    public String toString(){
+        return name+" ("+(overhaulVersion==null?underhaulVersion:overhaulVersion)+")";
     }
 }

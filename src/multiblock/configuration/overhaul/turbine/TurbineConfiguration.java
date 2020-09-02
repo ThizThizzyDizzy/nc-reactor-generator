@@ -3,12 +3,28 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class TurbineConfiguration{
+    public ArrayList<Blade> allBlades = new ArrayList<>();
+    public ArrayList<Coil> allCoils = new ArrayList<>();
+    public ArrayList<Recipe> allRecipes = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allBlades
+     */
+    @Deprecated
     public ArrayList<Blade> blades = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allCoils
+     */
+    @Deprecated
     public ArrayList<Coil> coils = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allRecipes
+     */
+    @Deprecated
     public ArrayList<Recipe> recipes = new ArrayList<>();
     public int minWidth;
     public int minLength;
@@ -17,30 +33,32 @@ public class TurbineConfiguration{
     public float throughputEfficiencyLeniency;
     public float throughputFactor;
     public float powerBonus;
-    public String[] getCoilStringList(){
-        String[] strs = new String[coils.size()];
+    public String[] getAllCoilsStringList(){
+        String[] strs = new String[allCoils.size()];
         for(int i = 0; i<strs.length; i++){
-            strs[i] = coils.get(i).name;
+            strs[i] = allCoils.get(i).name;
         }
         return strs;
     }
-    public Config save(boolean partial){
-       Config config = Config.newConfig();
-       config.set("minWidth", minWidth);
-       config.set("minLength", minLength);
-       config.set("maxSize", maxSize);
-       config.set("fluidPerBlade", fluidPerBlade);
-       config.set("throughputEfficiencyLeniency", throughputEfficiencyLeniency);
-       config.set("throughputFactor", throughputFactor);
-       config.set("powerBonus", powerBonus);
+    public Config save(Configuration parent, boolean partial){
+        Config config = Config.newConfig();
+        if(parent==null){
+            config.set("minWidth", minWidth);
+            config.set("minLength", minLength);
+            config.set("maxSize", maxSize);
+            config.set("fluidPerBlade", fluidPerBlade);
+            config.set("throughputEfficiencyLeniency", throughputEfficiencyLeniency);
+            config.set("throughputFactor", throughputFactor);
+            config.set("powerBonus", powerBonus);
+        }
         ConfigList blades = new ConfigList();
         for(Blade blade : this.blades){
-            blades.add(blade.save(this, partial));
+            blades.add(blade.save(partial));
         }
         config.set("blades", blades);
         ConfigList coils = new ConfigList();
         for(Coil coil : this.coils){
-            coils.add(coil.save(this, partial));
+            coils.add(coil.save(parent, this, partial));
         }
         config.set("coils", coils);
         ConfigList recipes = new ConfigList();

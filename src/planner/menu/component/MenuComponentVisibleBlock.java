@@ -32,8 +32,4 @@ public class MenuComponentVisibleBlock extends MenuComponent{
         if(block==null)return;
         block.render(x, y, width, height, false);
     }
-    @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
-    }
 }

@@ -49,7 +49,7 @@ public class FileWriter{
                         hellrage.set("SaveVersion", saveVersion);
                         JSON.JSONObject compressedReactor = new JSON.JSONObject();
                         hellrage.set("CompressedReactor", compressedReactor);
-                        for(multiblock.configuration.underhaul.fissionsfr.Block b : ncpf.configuration.underhaul.fissionSFR.blocks){
+                        for(multiblock.configuration.underhaul.fissionsfr.Block b : ncpf.configuration.underhaul.fissionSFR.allBlocks){
                             JSON.JSONArray array = new JSON.JSONArray();
                             for(multiblock.underhaul.fissionsfr.Block block : reactor.getBlocks()){
                                 if(block.template==b){
@@ -96,7 +96,7 @@ public class FileWriter{
                         JSON.JSONObject fuelCells = new JSON.JSONObject();
                         JSON.JSONObject irradiators = new JSON.JSONObject();
                         JSON.JSONObject shields = new JSON.JSONObject();
-                        for(multiblock.configuration.overhaul.fissionsfr.Block b : ncpf.configuration.overhaul.fissionSFR.blocks){
+                        for(multiblock.configuration.overhaul.fissionsfr.Block b : ncpf.configuration.overhaul.fissionSFR.allBlocks){
                             if(b.cooling>0){
                                 JSON.JSONArray array = new JSON.JSONArray();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
@@ -373,7 +373,7 @@ public class FileWriter{
                     header.set("metadata", meta);
                 }
                 header.save(stream);
-                ncpf.configuration.save(stream);
+                ncpf.configuration.save(null, Config.newConfig()).save(stream);
                 for(Multiblock m : ncpf.multiblocks){
                     m.save(ncpf, ncpf.configuration, stream);
                 }

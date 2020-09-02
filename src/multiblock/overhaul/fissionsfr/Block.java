@@ -27,6 +27,7 @@ public class Block extends multiblock.Block{
     public boolean inCluster;
     public boolean closed = false;
     public boolean wasActive;
+    public int hadFlux;
     public Block(int x, int y, int z, multiblock.configuration.overhaul.fissionsfr.Block template){
         super(x, y, z);
         this.template = template;
@@ -238,6 +239,7 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isReflector()){
                     if(length==0||nonshields==0)break;
+                    if(length>Core.configuration.overhaul.fissionSFR.neutronReach/2)break;
                     neutronFlux+=flux*2*block.template.reflectivity;
                     positionalEfficiency+=efficiency/length*block.template.efficiency;
                     moderatorLines++;
@@ -285,6 +287,7 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isReflector()){
                     if(length==0||nonshields==0)break;
+                    if(length>Core.configuration.overhaul.fissionSFR.neutronReach/2)break;
                     neutronFlux+=flux*2*block.template.reflectivity;
                     positionalEfficiency+=efficiency/length*block.template.efficiency;
                     moderatorLines++;

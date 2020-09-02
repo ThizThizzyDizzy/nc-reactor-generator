@@ -530,7 +530,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         blocks[x][y][z] = exact;
     }
     public String getSaveTooltip(){
-        String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.getUnderhaulVersion():Core.configuration.version)+")\n";
+        String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.underhaulVersion:Core.configuration.overhaulVersion)+")\n";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";
@@ -546,7 +546,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return extra.isEmpty()?(s+getTooltip()):(s+getExtraSaveTooltip()+"\n"+getTooltip());
     }
     public String getBotTooltip(){
-        String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.getUnderhaulVersion():Core.configuration.version)+")\n";
+        String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.underhaulVersion:Core.configuration.overhaulVersion)+")\n";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";

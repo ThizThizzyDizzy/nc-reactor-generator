@@ -2,6 +2,7 @@ package planner.menu.component;
 import java.awt.Color;
 import planner.Core;
 import multiblock.Block;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentToggleBlock extends MenuComponent{
@@ -53,23 +54,24 @@ public class MenuComponentToggleBlock extends MenuComponent{
         }
     }
     @Override
-    public boolean mouseWheelChange(int wheelChange){
-        int trueWheelChange = Core.calcWheelChange(wheelChange);
+    public boolean onMouseScrolled(double x, double y, double dx, double dy){
+        if(super.onMouseScrolled(x, y, dx, dy))return true;
         if(isMouseOver&&Core.isControlPressed()){
             if(Core.isShiftPressed()){
-                if(trueWheelChange<0&&min+trueWheelChange<max){
+                if(dy<0&&min+dy<max){
                     min = 0;
                 }else{
-                    min+=trueWheelChange;
+                    min+=dy;
                 }
             }else{
-                max+=trueWheelChange;
+                max+=dy;
             }
             if(min<0)min = 0;
             if(max<0)max = 0;
             if(min>max&&max!=0)min = max;
+            return true;
         }
-        return super.mouseWheelChange(wheelChange);
+        return false;
     }
     public void drawText(){
         if(enabled)block.render(x, y, width, height, false);
@@ -82,9 +84,9 @@ public class MenuComponentToggleBlock extends MenuComponent{
         drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override
-    public void mouseEvent(int button, boolean pressed, float x, float y, float xChange, float yChange, int wheelChange){
-        super.mouseEvent(button, pressed, x, y, xChange, yChange, wheelChange);
-        if(button==0&&pressed)enabled = true;
-        if(button==1&&pressed)enabled = false;
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed)enabled = true;
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&pressed)enabled = false;
     }
 }

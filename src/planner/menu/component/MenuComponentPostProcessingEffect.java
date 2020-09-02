@@ -1,5 +1,6 @@
 package planner.menu.component;
 import multiblock.ppe.PostProcessingEffect;
+import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -26,13 +27,9 @@ public class MenuComponentPostProcessingEffect extends MenuComponent{
         drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, postProcessingEffect.name);
     }
     @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
-    }
-    @Override
-    public void mouseEvent(int button, boolean pressed, float x, float y, float xChange, float yChange, int wheelChange){
-        super.mouseEvent(button, pressed, x, y, xChange, yChange, wheelChange);
-        if(button==0&&pressed){
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed){
             enabled = !enabled;
         }
     }

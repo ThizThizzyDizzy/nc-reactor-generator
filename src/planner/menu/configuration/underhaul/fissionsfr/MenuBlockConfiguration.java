@@ -6,7 +6,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.Block;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -75,22 +74,22 @@ public class MenuBlockConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        drawRect(0, Display.getHeight()/numComps, Display.getHeight()/numComps, Display.getHeight()/numComps*2, Core.getTexture(block.texture));
-        active.width = cooling.width = Display.getWidth()*.75;
-        active.x = cooling.x = Display.getWidth()-cooling.width;
-        moderator.width = fuelCell.width = name.width = rules.width = back.width = Display.getWidth();
-        texture.x = texture.height = active.height = moderator.height = fuelCell.height = cooling.height = name.height = rules.height = back.height = Display.getHeight()/numComps;
-        texture.width = Display.getWidth()-texture.x;
+        drawRect(0, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps*2, Core.getTexture(block.texture));
+        active.width = cooling.width = Core.helper.displayWidth()*.75;
+        active.x = cooling.x = Core.helper.displayWidth()-cooling.width;
+        moderator.width = fuelCell.width = name.width = rules.width = back.width = Core.helper.displayWidth();
+        texture.x = texture.height = active.height = moderator.height = fuelCell.height = cooling.height = name.height = rules.height = back.height = Core.helper.displayHeight()/numComps;
+        texture.width = Core.helper.displayWidth()-texture.x;
         texture.y = name.height;
         cooling.y = texture.y+texture.height;
         fuelCell.y = cooling.y+cooling.height;
         moderator.y = fuelCell.y+fuelCell.height;
         active.y = moderator.y+moderator.height;
         rules.y = active.y+active.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/numComps*2, Display.getWidth()*.25, Display.getHeight()/numComps*3, "Cooling");
-        drawText(0, Display.getHeight()/numComps*5, Display.getWidth()*.25, Display.getHeight()/numComps*6, "Active");
+        drawText(0, Core.helper.displayHeight()/numComps*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*3, "Cooling");
+        drawText(0, Core.helper.displayHeight()/numComps*5, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*6, "Active");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

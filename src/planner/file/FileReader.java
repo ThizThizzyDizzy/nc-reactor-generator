@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import planner.Core;
 import simplelibrary.config2.Config;
 import multiblock.configuration.Configuration;
@@ -101,39 +102,39 @@ public class FileReader{
                     multiblock.configuration.underhaul.fissionsfr.Block activeCopper = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Copper Cooler", activeCoolingRates[12], "Molten Copper", "underhaul/copper", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, glowstone));
                     multiblock.configuration.underhaul.fissionsfr.Block activeTin = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Tin Cooler", activeCoolingRates[13], "Molten Tin", "underhaul/tin", multiblock.configuration.underhaul.fissionsfr.PlacementRule.axis(lapis));
                     multiblock.configuration.underhaul.fissionsfr.Block activeMagnesium = multiblock.configuration.underhaul.fissionsfr.Block.activeCooler("Active Magnesium Cooler", activeCoolingRates[14], "Molten Magnesium", "underhaul/magnesium", multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING), multiblock.configuration.underhaul.fissionsfr.PlacementRule.atLeast(1, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR));
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(cell);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(water);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(redstone);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(quartz);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(gold);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(glowstone);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(lapis);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(diamond);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(helium);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(enderium);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(cryotheum);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(iron);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(emerald);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(copper);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(tin);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(magnesium);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(graphite);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(beryllium);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeWater);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeRedstone);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeQuartz);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeGold);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeGlowstone);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeLapis);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeDiamond);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeHelium);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeEnderium);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeCryotheum);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeIron);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeEmerald);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeCopper);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeTin);
-                    ncpf.configuration.underhaul.fissionSFR.blocks.add(activeMagnesium);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(cell);ncpf.configuration.underhaul.fissionSFR.blocks.add(cell);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(water);ncpf.configuration.underhaul.fissionSFR.blocks.add(water);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(redstone);ncpf.configuration.underhaul.fissionSFR.blocks.add(redstone);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(quartz);ncpf.configuration.underhaul.fissionSFR.blocks.add(quartz);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(gold);ncpf.configuration.underhaul.fissionSFR.blocks.add(gold);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(glowstone);ncpf.configuration.underhaul.fissionSFR.blocks.add(glowstone);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(lapis);ncpf.configuration.underhaul.fissionSFR.blocks.add(lapis);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(diamond);ncpf.configuration.underhaul.fissionSFR.blocks.add(diamond);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(helium);ncpf.configuration.underhaul.fissionSFR.blocks.add(helium);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(enderium);ncpf.configuration.underhaul.fissionSFR.blocks.add(enderium);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(cryotheum);ncpf.configuration.underhaul.fissionSFR.blocks.add(cryotheum);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(iron);ncpf.configuration.underhaul.fissionSFR.blocks.add(iron);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(emerald);ncpf.configuration.underhaul.fissionSFR.blocks.add(emerald);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(copper);ncpf.configuration.underhaul.fissionSFR.blocks.add(copper);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(tin);ncpf.configuration.underhaul.fissionSFR.blocks.add(tin);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(magnesium);ncpf.configuration.underhaul.fissionSFR.blocks.add(magnesium);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(graphite);ncpf.configuration.underhaul.fissionSFR.blocks.add(graphite);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(beryllium);ncpf.configuration.underhaul.fissionSFR.blocks.add(beryllium);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeWater);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeWater);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeRedstone);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeRedstone);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeQuartz);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeQuartz);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeGold);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeGold);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeGlowstone);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeGlowstone);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeLapis);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeLapis);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeDiamond);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeDiamond);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeHelium);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeHelium);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeEnderium);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeEnderium);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeCryotheum);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeCryotheum);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeIron);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeIron);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeEmerald);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeEmerald);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeCopper);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeCopper);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeTin);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeTin);
+                    ncpf.configuration.underhaul.fissionSFR.allBlocks.add(activeMagnesium);ncpf.configuration.underhaul.fissionSFR.blocks.add(activeMagnesium);
                     addFuels(ncpf, powerMult, heatMult, fuelUseMult, "thorium", "TBU", "TBU Oxide");
                     addFuels(ncpf, powerMult, heatMult, fuelUseMult, "uranium", "LEU-233", "LEU-233 Oxide", "HEU-233", "HEU-233 Oxide", "LEU-235", "LEU-235 Oxide", "HEU-235", "HEU-235 Oxide");
                     addFuels(ncpf, powerMult, heatMult, fuelUseMult, "neptunium", "LEN-236", "LEN-236 Oxide", "HEN-236", "HEN-236 Oxide");
@@ -153,7 +154,8 @@ public class FileReader{
                 double[] power = getDoubles("fission_"+baseName+"_power");
                 double[] heat = getDoubles("fission_"+baseName+"_heat_generation");
                 for(int i = 0; i<fuelNames.length; i++){
-                    ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelNames[i], (float)(power[i]*powerMult), (float)(heat[i]*heatMult), (int)(time[i]/fuelUseMult)));
+                    multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelNames[i], (float)(power[i]*powerMult), (float)(heat[i]*heatMult), (int)(time[i]/fuelUseMult));
+                    ncpf.configuration.underhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.underhaul.fissionSFR.fuels.add(fuel);
                 }
             }
             private double getDouble(String name){
@@ -254,9 +256,12 @@ public class FileReader{
                     ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyMult = (float) sparsity[0];
                     ncpf.configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = (float) sparsity[1];
                     double[] sourceEfficiency = getDoubles("fission_source_efficiency");
-                    ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source("Ra-Be", (float) sourceEfficiency[0]));
-                    ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source("Po-Be", (float) sourceEfficiency[1]));
-                    ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source("Cf-252", (float) sourceEfficiency[2]));
+                    multiblock.configuration.overhaul.fissionsfr.Source rabe = new multiblock.configuration.overhaul.fissionsfr.Source("Ra-Be", (float) sourceEfficiency[0]);
+                    multiblock.configuration.overhaul.fissionsfr.Source pobe = new multiblock.configuration.overhaul.fissionsfr.Source("Po-Be", (float) sourceEfficiency[1]);
+                    multiblock.configuration.overhaul.fissionsfr.Source cf252 = new multiblock.configuration.overhaul.fissionsfr.Source("Cf-252", (float) sourceEfficiency[2]);
+                    ncpf.configuration.overhaul.fissionSFR.allSources.add(rabe);ncpf.configuration.overhaul.fissionSFR.sources.add(rabe);
+                    ncpf.configuration.overhaul.fissionSFR.allSources.add(pobe);ncpf.configuration.overhaul.fissionSFR.sources.add(pobe);
+                    ncpf.configuration.overhaul.fissionSFR.allSources.add(cf252);ncpf.configuration.overhaul.fissionSFR.sources.add(cf252);
                     int[] coolingRates = getInts("fission_sink_cooling_rate");
                     String[] rules = getStrings("fission_sink_rule");
                     multiblock.configuration.overhaul.fissionsfr.Block water = multiblock.configuration.overhaul.fissionsfr.Block.heatsink("Water Heat Sink", coolingRates[0], "overhaul/water");
@@ -291,41 +296,44 @@ public class FileReader{
                     multiblock.configuration.overhaul.fissionsfr.Block helium = multiblock.configuration.overhaul.fissionsfr.Block.heatsink("Liquid Helium Heat Sink", coolingRates[29], "overhaul/helium");
                     multiblock.configuration.overhaul.fissionsfr.Block enderium = multiblock.configuration.overhaul.fissionsfr.Block.heatsink("Enderium Heat Sink", coolingRates[30], "overhaul/enderium");
                     multiblock.configuration.overhaul.fissionsfr.Block cryotheum = multiblock.configuration.overhaul.fissionsfr.Block.heatsink("Cryotheum Heat Sink", coolingRates[31], "overhaul/cryotheum");
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.cell("Fuel Cell", "overhaul/cell"));
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.irradiator("Neutron Irradiator", "overhaul/irradiator"));
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.conductor("Conductor", "overhaul/conductor"));
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(water);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(iron);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(redstone);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(quartz);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(obsidian);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(netherBrick);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(glowstone);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(lapis);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(gold);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(prismarine);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(slime);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(endStone);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(purpur);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(diamond);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(emerald);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(copper);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(tin);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(lead);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(boron);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(lithium);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(magnesium);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(manganese);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(aluminum);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(silver);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(fluorite);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(villiaumite);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(carobbiite);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(arsenic);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(nitrogen);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(helium);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(enderium);
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(cryotheum);
+                    multiblock.configuration.overhaul.fissionsfr.Block cell = multiblock.configuration.overhaul.fissionsfr.Block.cell("Fuel Cell", "overhaul/cell");
+                    multiblock.configuration.overhaul.fissionsfr.Block irradiator = multiblock.configuration.overhaul.fissionsfr.Block.irradiator("Neutron Irradiator", "overhaul/irradiator");
+                    multiblock.configuration.overhaul.fissionsfr.Block conductor = multiblock.configuration.overhaul.fissionsfr.Block.conductor("Conductor", "overhaul/conductor");
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(cell);ncpf.configuration.overhaul.fissionSFR.blocks.add(cell);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(irradiator);ncpf.configuration.overhaul.fissionSFR.blocks.add(irradiator);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(conductor);ncpf.configuration.overhaul.fissionSFR.blocks.add(conductor);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(water);ncpf.configuration.overhaul.fissionSFR.blocks.add(water);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(iron);ncpf.configuration.overhaul.fissionSFR.blocks.add(iron);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(redstone);ncpf.configuration.overhaul.fissionSFR.blocks.add(redstone);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(quartz);ncpf.configuration.overhaul.fissionSFR.blocks.add(quartz);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(obsidian);ncpf.configuration.overhaul.fissionSFR.blocks.add(obsidian);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(netherBrick);ncpf.configuration.overhaul.fissionSFR.blocks.add(netherBrick);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(glowstone);ncpf.configuration.overhaul.fissionSFR.blocks.add(glowstone);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(lapis);ncpf.configuration.overhaul.fissionSFR.blocks.add(lapis);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(gold);ncpf.configuration.overhaul.fissionSFR.blocks.add(gold);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(prismarine);ncpf.configuration.overhaul.fissionSFR.blocks.add(prismarine);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(slime);ncpf.configuration.overhaul.fissionSFR.blocks.add(slime);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(endStone);ncpf.configuration.overhaul.fissionSFR.blocks.add(endStone);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(purpur);ncpf.configuration.overhaul.fissionSFR.blocks.add(purpur);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(diamond);ncpf.configuration.overhaul.fissionSFR.blocks.add(diamond);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(emerald);ncpf.configuration.overhaul.fissionSFR.blocks.add(emerald);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(copper);ncpf.configuration.overhaul.fissionSFR.blocks.add(copper);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(tin);ncpf.configuration.overhaul.fissionSFR.blocks.add(tin);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(lead);ncpf.configuration.overhaul.fissionSFR.blocks.add(lead);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(boron);ncpf.configuration.overhaul.fissionSFR.blocks.add(boron);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(lithium);ncpf.configuration.overhaul.fissionSFR.blocks.add(lithium);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(magnesium);ncpf.configuration.overhaul.fissionSFR.blocks.add(magnesium);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(manganese);ncpf.configuration.overhaul.fissionSFR.blocks.add(manganese);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(aluminum);ncpf.configuration.overhaul.fissionSFR.blocks.add(aluminum);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(silver);ncpf.configuration.overhaul.fissionSFR.blocks.add(silver);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(fluorite);ncpf.configuration.overhaul.fissionSFR.blocks.add(fluorite);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(villiaumite);ncpf.configuration.overhaul.fissionSFR.blocks.add(villiaumite);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(carobbiite);ncpf.configuration.overhaul.fissionSFR.blocks.add(carobbiite);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(arsenic);ncpf.configuration.overhaul.fissionSFR.blocks.add(arsenic);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(nitrogen);ncpf.configuration.overhaul.fissionSFR.blocks.add(nitrogen);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(helium);ncpf.configuration.overhaul.fissionSFR.blocks.add(helium);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(enderium);ncpf.configuration.overhaul.fissionSFR.blocks.add(enderium);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(cryotheum);ncpf.configuration.overhaul.fissionSFR.blocks.add(cryotheum);
                     water.rules.add(multiblock.configuration.overhaul.fissionsfr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionSFR, rules[0]));
                     iron.rules.add(multiblock.configuration.overhaul.fissionsfr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionSFR, rules[1]));
                     redstone.rules.add(multiblock.configuration.overhaul.fissionsfr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionSFR, rules[2]));
@@ -360,24 +368,36 @@ public class FileReader{
                     cryotheum.rules.add(multiblock.configuration.overhaul.fissionsfr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionSFR, rules[31]));
                     int[] fluxFac = getInts("fission_moderator_flux_factor");
                     double[] modEff = getDoubles("fission_moderator_efficiency");
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.moderator("Graphite Moderator", "overhaul/graphite", fluxFac[0], (float) modEff[0]));
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.moderator("Beryllium Moderator", "overhaul/beryllium", fluxFac[1], (float) modEff[1]));
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.moderator("Heavy Water Moderator", "overhaul/heavy water", fluxFac[2], (float) modEff[2]));
+                    multiblock.configuration.overhaul.fissionsfr.Block graphite = multiblock.configuration.overhaul.fissionsfr.Block.moderator("Graphite Moderator", "overhaul/graphite", fluxFac[0], (float) modEff[0]);
+                    multiblock.configuration.overhaul.fissionsfr.Block beryllium = multiblock.configuration.overhaul.fissionsfr.Block.moderator("Beryllium Moderator", "overhaul/beryllium", fluxFac[1], (float) modEff[1]);
+                    multiblock.configuration.overhaul.fissionsfr.Block heavyWater = multiblock.configuration.overhaul.fissionsfr.Block.moderator("Heavy Water Moderator", "overhaul/heavy water", fluxFac[2], (float) modEff[2]);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(graphite);ncpf.configuration.overhaul.fissionSFR.blocks.add(graphite);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(beryllium);ncpf.configuration.overhaul.fissionSFR.blocks.add(beryllium);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(heavyWater);ncpf.configuration.overhaul.fissionSFR.blocks.add(heavyWater);
                     double[] refEff = getDoubles("fission_reflector_efficiency");
                     double[] refRef = getDoubles("fission_reflector_reflectivity");
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.reflector("Beryllium-Carbon Reflector", "overhaul/beryllium-carbon", (float) refEff[0], (float) refRef[0]));
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.reflector("Lead-Steel Reflector", "overhaul/lead-steel", (float) refEff[1], (float) refRef[1]));
+                    multiblock.configuration.overhaul.fissionsfr.Block bec = multiblock.configuration.overhaul.fissionsfr.Block.reflector("Beryllium-Carbon Reflector", "overhaul/beryllium-carbon", (float) refEff[0], (float) refRef[0]);
+                    multiblock.configuration.overhaul.fissionsfr.Block pbs = multiblock.configuration.overhaul.fissionsfr.Block.reflector("Lead-Steel Reflector", "overhaul/lead-steel", (float) refEff[1], (float) refRef[1]);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(bec);ncpf.configuration.overhaul.fissionSFR.blocks.add(bec);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(pbs);ncpf.configuration.overhaul.fissionSFR.blocks.add(pbs);
                     double[] shieldHeat = getDoubles("fission_shield_heat_per_flux");
                     double[] shieldEff = getDoubles("fission_shield_efficiency");
-                    ncpf.configuration.overhaul.fissionSFR.blocks.add(multiblock.configuration.overhaul.fissionsfr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat[0], (float) shieldEff[0]));
+                    multiblock.configuration.overhaul.fissionsfr.Block bag = multiblock.configuration.overhaul.fissionsfr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat[0], (float) shieldEff[0]);
+                    ncpf.configuration.overhaul.fissionSFR.allBlocks.add(bag);ncpf.configuration.overhaul.fissionSFR.blocks.add(bag);
                     double[] irrHeat = getDoubles("fission_irradiator_heat_per_flux");
                     double[] irrEff = getDoubles("fission_irradiator_efficiency");
-                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe("Thorium to Protactinium-Enriched Thorium", (float)irrEff[0], (float)irrHeat[0]));
-                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe("Protactinium-Enriched Thorium to Protactinium-233", (float)irrEff[1], (float)irrHeat[1]));
-                    ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe("Bismuth Dust to Polonium Dust", (float)irrEff[2], (float)irrHeat[2]));
-                    ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe("Water to High Pressure Steam", "Water", "High Pressure Steam", 64, 4));
-                    ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe("Preheated Water to High Pressure Steam", "Preheated Water", "High Pressure Steam", 32, 4));
-                    ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe("IC2 Coolant to Hot IC2 Coolant", "IC2 Coolant", "Hot IC2 Coolant", 160, 1));
+                    multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrec1 = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe("Thorium to Protactinium-Enriched Thorium", (float)irrEff[0], (float)irrHeat[0]);
+                    multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrec2 = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe("Protactinium-Enriched Thorium to Protactinium-233", (float)irrEff[1], (float)irrHeat[1]);
+                    multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrec3 = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe("Bismuth Dust to Polonium Dust", (float)irrEff[2], (float)irrHeat[2]);
+                    multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolant1 = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe("Water to High Pressure Steam", "Water", "High Pressure Steam", 64, 4);
+                    multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolant2 = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe("Preheated Water to High Pressure Steam", "Preheated Water", "High Pressure Steam", 32, 4);
+                    multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolant3 = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe("IC2 Coolant to Hot IC2 Coolant", "IC2 Coolant", "Hot IC2 Coolant", 160, 1);
+                    ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.add(irrec1);ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrec1);
+                    ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.add(irrec2);ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrec2);
+                    ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.add(irrec3);ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrec3);
+                    ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.add(coolant1);ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(coolant1);
+                    ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.add(coolant2);ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(coolant2);
+                    ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.add(coolant3);ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(coolant3);
                     addSFRFuels(ncpf, fuelTimeMult, "thorium", null, "TBU Oxide", "TBU Nitride", "TBU-Zirconium Alloy", null);
                     addSFRFuels(ncpf, fuelTimeMult, "uranium", null, "LEU-233 Oxide", "LEU-233 Nitride", "LEU-233-Zirconium Alloy", null, null, "HEU-233 Oxide", "HEU-233 Nitride", "HEU-233-Zirconium Alloy", null, null, "LEU-235 Oxide", "LEU-235 Nitride", "LEU-235-Zirconium Alloy", null, null, "HEU-235 Oxide", "HEU-235 Nitride", "HEU-235-Zirconium Alloy", null);
                     addSFRFuels(ncpf, fuelTimeMult, "neptunium", null, "LEN-236 Oxide", "LEN-236 Nitride", "LEN-236-Zirconium Alloy", null, null, "HEN-236 Oxide", "HEN-236 Nitride", "HEN-236-Zirconium Alloy", null);
@@ -396,9 +416,12 @@ public class FileReader{
                     ncpf.configuration.overhaul.fissionMSR.neutronReach = getInt("fission_neutron_reach");
                     ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyMult = (float) sparsity[0];
                     ncpf.configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = (float) sparsity[1];
-                    ncpf.configuration.overhaul.fissionMSR.sources.add(new multiblock.configuration.overhaul.fissionmsr.Source("Ra-Be", (float) sourceEfficiency[0]));
-                    ncpf.configuration.overhaul.fissionMSR.sources.add(new multiblock.configuration.overhaul.fissionmsr.Source("Po-Be", (float) sourceEfficiency[1]));
-                    ncpf.configuration.overhaul.fissionMSR.sources.add(new multiblock.configuration.overhaul.fissionmsr.Source("Cf-252", (float) sourceEfficiency[2]));
+                    multiblock.configuration.overhaul.fissionmsr.Source mrabe = new multiblock.configuration.overhaul.fissionmsr.Source("Ra-Be", (float) sourceEfficiency[0]);
+                    multiblock.configuration.overhaul.fissionmsr.Source mpobe = new multiblock.configuration.overhaul.fissionmsr.Source("Po-Be", (float) sourceEfficiency[1]);
+                    multiblock.configuration.overhaul.fissionmsr.Source mcf252 = new multiblock.configuration.overhaul.fissionmsr.Source("Cf-252", (float) sourceEfficiency[2]);
+                    ncpf.configuration.overhaul.fissionMSR.sources.add(mrabe);
+                    ncpf.configuration.overhaul.fissionMSR.sources.add(mpobe);
+                    ncpf.configuration.overhaul.fissionMSR.sources.add(mcf252);
                     coolingRates = getInts("fission_heater_cooling_rate");
                     rules = getStrings("fission_heater_rule");
                     multiblock.configuration.overhaul.fissionmsr.Block mstandard = multiblock.configuration.overhaul.fissionmsr.Block.heater("Standard Coolant Heater", coolingRates[0], "Eutectic NaK Alloy", "overhaul/msr/standard");
@@ -433,41 +456,44 @@ public class FileReader{
                     multiblock.configuration.overhaul.fissionmsr.Block mHelium = multiblock.configuration.overhaul.fissionmsr.Block.heater("Liquid Helium Coolant Heater", coolingRates[29], "Eutectic NaK-Helium Mixture", "overhaul/msr/helium");
                     multiblock.configuration.overhaul.fissionmsr.Block mEnderium = multiblock.configuration.overhaul.fissionmsr.Block.heater("Enderium Coolant Heater", coolingRates[30], "Eutectic NaK-Enderium Mixture", "overhaul/msr/enderium");
                     multiblock.configuration.overhaul.fissionmsr.Block mCryotheum = multiblock.configuration.overhaul.fissionmsr.Block.heater("Cryotheum Coolant Heater", coolingRates[31], "Eutectic NaK-Cryotheum Mixture", "overhaul/msr/cryotheum");
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.vessel("Fuel Vessel", "overhaul/msr/vessel"));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.irradiator("Neutron Irradiator", "overhaul/irradiator"));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.conductor("Conductor", "overhaul/conductor"));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mstandard);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(miron);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mredstone);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mquartz);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mobsidian);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mnetherBrick);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mglowstone);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mlapis);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mgold);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mprismarine);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mslime);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mendStone);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mPurpur);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mDiamond);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mEmerald);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mCopper);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mTin);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mLead);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mBoron);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mLithium);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mMagnesium);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mManganese);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mAluminum);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mSilver);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mFluorite);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mVilliaumite);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mCarobbiite);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mArsenic);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mNitrogen);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mHelium);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mEnderium);
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(mCryotheum);
+                    multiblock.configuration.overhaul.fissionmsr.Block vessel = multiblock.configuration.overhaul.fissionmsr.Block.vessel("Fuel Vessel", "overhaul/msr/vessel");
+                    multiblock.configuration.overhaul.fissionmsr.Block mirradiator = multiblock.configuration.overhaul.fissionmsr.Block.irradiator("Neutron Irradiator", "overhaul/irradiator");
+                    multiblock.configuration.overhaul.fissionmsr.Block mconductor = multiblock.configuration.overhaul.fissionmsr.Block.conductor("Conductor", "overhaul/conductor");
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(vessel);ncpf.configuration.overhaul.fissionMSR.blocks.add(vessel);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mirradiator);ncpf.configuration.overhaul.fissionMSR.blocks.add(mirradiator);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mconductor);ncpf.configuration.overhaul.fissionMSR.blocks.add(mconductor);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mstandard);ncpf.configuration.overhaul.fissionMSR.blocks.add(mstandard);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(miron);ncpf.configuration.overhaul.fissionMSR.blocks.add(miron);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mredstone);ncpf.configuration.overhaul.fissionMSR.blocks.add(mredstone);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mquartz);ncpf.configuration.overhaul.fissionMSR.blocks.add(mquartz);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mobsidian);ncpf.configuration.overhaul.fissionMSR.blocks.add(mobsidian);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mnetherBrick);ncpf.configuration.overhaul.fissionMSR.blocks.add(mnetherBrick);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mglowstone);ncpf.configuration.overhaul.fissionMSR.blocks.add(mglowstone);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mlapis);ncpf.configuration.overhaul.fissionMSR.blocks.add(mlapis);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mgold);ncpf.configuration.overhaul.fissionMSR.blocks.add(mgold);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mprismarine);ncpf.configuration.overhaul.fissionMSR.blocks.add(mprismarine);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mslime);ncpf.configuration.overhaul.fissionMSR.blocks.add(mslime);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mendStone);ncpf.configuration.overhaul.fissionMSR.blocks.add(mendStone);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mPurpur);ncpf.configuration.overhaul.fissionMSR.blocks.add(mPurpur);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mDiamond);ncpf.configuration.overhaul.fissionMSR.blocks.add(mDiamond);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mEmerald);ncpf.configuration.overhaul.fissionMSR.blocks.add(mEmerald);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mCopper);ncpf.configuration.overhaul.fissionMSR.blocks.add(mCopper);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mTin);ncpf.configuration.overhaul.fissionMSR.blocks.add(mTin);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mLead);ncpf.configuration.overhaul.fissionMSR.blocks.add(mLead);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mBoron);ncpf.configuration.overhaul.fissionMSR.blocks.add(mBoron);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mLithium);ncpf.configuration.overhaul.fissionMSR.blocks.add(mLithium);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mMagnesium);ncpf.configuration.overhaul.fissionMSR.blocks.add(mMagnesium);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mManganese);ncpf.configuration.overhaul.fissionMSR.blocks.add(mManganese);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mAluminum);ncpf.configuration.overhaul.fissionMSR.blocks.add(mAluminum);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mSilver);ncpf.configuration.overhaul.fissionMSR.blocks.add(mSilver);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mFluorite);ncpf.configuration.overhaul.fissionMSR.blocks.add(mFluorite);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mVilliaumite);ncpf.configuration.overhaul.fissionMSR.blocks.add(mVilliaumite);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mCarobbiite);ncpf.configuration.overhaul.fissionMSR.blocks.add(mCarobbiite);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mArsenic);ncpf.configuration.overhaul.fissionMSR.blocks.add(mArsenic);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mNitrogen);ncpf.configuration.overhaul.fissionMSR.blocks.add(mNitrogen);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mHelium);ncpf.configuration.overhaul.fissionMSR.blocks.add(mHelium);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mEnderium);ncpf.configuration.overhaul.fissionMSR.blocks.add(mEnderium);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mCryotheum);ncpf.configuration.overhaul.fissionMSR.blocks.add(mCryotheum);
                     mstandard.rules.add(multiblock.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[0]));
                     miron.rules.add(multiblock.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[1]));
                     mredstone.rules.add(multiblock.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[2]));
@@ -500,15 +526,24 @@ public class FileReader{
                     mHelium.rules.add(multiblock.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[29]));
                     mEnderium.rules.add(multiblock.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[30]));
                     mCryotheum.rules.add(multiblock.configuration.overhaul.fissionmsr.PlacementRule.parseNC(ncpf.configuration.overhaul.fissionMSR, rules[31]));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.moderator("Graphite Moderator", "overhaul/graphite", fluxFac[0], (float) modEff[0]));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.moderator("Beryllium Moderator", "overhaul/beryllium", fluxFac[1], (float) modEff[1]));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.moderator("Heavy Water Moderator", "overhaul/heavy water", fluxFac[2], (float) modEff[2]));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.reflector("Beryllium-Carbon Reflector", "overhaul/beryllium-carbon", (float) refEff[0], (float) refRef[0]));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.reflector("Lead-Steel Reflector", "overhaul/lead-steel", (float) refEff[1], (float) refRef[1]));
-                    ncpf.configuration.overhaul.fissionMSR.blocks.add(multiblock.configuration.overhaul.fissionmsr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat[0], (float) shieldEff[0]));
-                    ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe("Thorium to Protactinium-Enriched Thorium", (float)irrEff[0], (float)irrHeat[0]));
-                    ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe("Protactinium-Enriched Thorium to Protactinium-233", (float)irrEff[1], (float)irrHeat[1]));
-                    ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe("Bismuth Dust to Polonium Dust", (float)irrEff[2], (float)irrHeat[2]));
+                    multiblock.configuration.overhaul.fissionmsr.Block mgraphite = multiblock.configuration.overhaul.fissionmsr.Block.moderator("Graphite Moderator", "overhaul/graphite", fluxFac[0], (float) modEff[0]);
+                    multiblock.configuration.overhaul.fissionmsr.Block mberyllium = multiblock.configuration.overhaul.fissionmsr.Block.moderator("Beryllium Moderator", "overhaul/beryllium", fluxFac[1], (float) modEff[1]);
+                    multiblock.configuration.overhaul.fissionmsr.Block mheavyWater = multiblock.configuration.overhaul.fissionmsr.Block.moderator("Heavy Water Moderator", "overhaul/heavy water", fluxFac[2], (float) modEff[2]);
+                    multiblock.configuration.overhaul.fissionmsr.Block mbec = multiblock.configuration.overhaul.fissionmsr.Block.reflector("Beryllium-Carbon Reflector", "overhaul/beryllium-carbon", (float) refEff[0], (float) refRef[0]);
+                    multiblock.configuration.overhaul.fissionmsr.Block mpbs = multiblock.configuration.overhaul.fissionmsr.Block.reflector("Lead-Steel Reflector", "overhaul/lead-steel", (float) refEff[1], (float) refRef[1]);
+                    multiblock.configuration.overhaul.fissionmsr.Block mbag = multiblock.configuration.overhaul.fissionmsr.Block.shield("Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat[0], (float) shieldEff[0]);
+                    multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe mirrec1 = new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe("Thorium to Protactinium-Enriched Thorium", (float)irrEff[0], (float)irrHeat[0]);
+                    multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe mirrec2 = new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe("Protactinium-Enriched Thorium to Protactinium-233", (float)irrEff[1], (float)irrHeat[1]);
+                    multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe mirrec3 = new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe("Bismuth Dust to Polonium Dust", (float)irrEff[2], (float)irrHeat[2]);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mgraphite);ncpf.configuration.overhaul.fissionMSR.blocks.add(mgraphite);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mberyllium);ncpf.configuration.overhaul.fissionMSR.blocks.add(mberyllium);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mheavyWater);ncpf.configuration.overhaul.fissionMSR.blocks.add(mheavyWater);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mbec);ncpf.configuration.overhaul.fissionMSR.blocks.add(mbec);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mpbs);ncpf.configuration.overhaul.fissionMSR.blocks.add(mpbs);
+                    ncpf.configuration.overhaul.fissionMSR.allBlocks.add(mbag);ncpf.configuration.overhaul.fissionMSR.blocks.add(mbag);
+                    ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.add(mirrec1);ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(mirrec1);
+                    ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.add(mirrec2);ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(mirrec2);
+                    ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.add(mirrec3);ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(mirrec3);
                     addMSRFuels(ncpf, fuelTimeMult, "thorium", null, null, null, null, "TBU Fluoride");
                     addMSRFuels(ncpf, fuelTimeMult, "uranium", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-233 Fluoride", null, null, null, null, "LEU-235 Fluoride", null, null, null, null, "HEU-235 Fluoride");
                     addMSRFuels(ncpf, fuelTimeMult, "neptunium", null, null, null, null, "LEN-236 Fluoride", null, null, null, null, "HEN-236 Fluoride");
@@ -534,10 +569,10 @@ public class FileReader{
                     multiblock.configuration.overhaul.turbine.Blade extreme = multiblock.configuration.overhaul.turbine.Blade.blade("Extreme Alloy Rotor Blade", (float)bladeEffs[1], (float)bladeExps[1], "overhaul/turbine/extreme");
                     multiblock.configuration.overhaul.turbine.Blade sic = multiblock.configuration.overhaul.turbine.Blade.blade("SiC-SiC CMC Rotor Blade", (float)bladeEffs[2], (float)bladeExps[2], "overhaul/turbine/sic");
                     multiblock.configuration.overhaul.turbine.Blade stator = multiblock.configuration.overhaul.turbine.Blade.stator("Rotor Stator", (float)getDouble("turbine_stator_expansion"), "overhaul/turbine/stator");
-                    ncpf.configuration.overhaul.turbine.blades.add(steel);
-                    ncpf.configuration.overhaul.turbine.blades.add(extreme);
-                    ncpf.configuration.overhaul.turbine.blades.add(sic);
-                    ncpf.configuration.overhaul.turbine.blades.add(stator);
+                    ncpf.configuration.overhaul.turbine.allBlades.add(steel);ncpf.configuration.overhaul.turbine.blades.add(steel);
+                    ncpf.configuration.overhaul.turbine.allBlades.add(extreme);ncpf.configuration.overhaul.turbine.blades.add(extreme);
+                    ncpf.configuration.overhaul.turbine.allBlades.add(sic);ncpf.configuration.overhaul.turbine.blades.add(sic);
+                    ncpf.configuration.overhaul.turbine.allBlades.add(stator);ncpf.configuration.overhaul.turbine.blades.add(stator);
                     double[] coilEffs = getDoubles("turbine_coil_conductivity");
                     String[] coilRules = getStrings("turbine_coil_rule");
                     multiblock.configuration.overhaul.turbine.Coil cmagnesium = multiblock.configuration.overhaul.turbine.Coil.coil("Magnesium Dynamo Coil", (float)coilEffs[0], "overhaul/turbine/magnesium");
@@ -547,14 +582,15 @@ public class FileReader{
                     multiblock.configuration.overhaul.turbine.Coil ccopper = multiblock.configuration.overhaul.turbine.Coil.coil("Copper Dynamo Coil", (float)coilEffs[4], "overhaul/turbine/copper");
                     multiblock.configuration.overhaul.turbine.Coil csilver = multiblock.configuration.overhaul.turbine.Coil.coil("Silver Dynamo Coil", (float)coilEffs[5], "overhaul/turbine/silver");
                     multiblock.configuration.overhaul.turbine.Coil connector = multiblock.configuration.overhaul.turbine.Coil.connector("Dynamo Coil Connector", "overhaul/turbine/connector");
-                    ncpf.configuration.overhaul.turbine.coils.add(multiblock.configuration.overhaul.turbine.Coil.bearing("Rotor Bearing", "overhaul/turbine/bearing"));
-                    ncpf.configuration.overhaul.turbine.coils.add(cmagnesium);
-                    ncpf.configuration.overhaul.turbine.coils.add(cberyllium);
-                    ncpf.configuration.overhaul.turbine.coils.add(caluminum);
-                    ncpf.configuration.overhaul.turbine.coils.add(cgold);
-                    ncpf.configuration.overhaul.turbine.coils.add(ccopper);
-                    ncpf.configuration.overhaul.turbine.coils.add(csilver);
-                    ncpf.configuration.overhaul.turbine.coils.add(connector);
+                    multiblock.configuration.overhaul.turbine.Coil bearing = multiblock.configuration.overhaul.turbine.Coil.bearing("Rotor Bearing", "overhaul/turbine/bearing");
+                    ncpf.configuration.overhaul.turbine.allCoils.add(bearing);ncpf.configuration.overhaul.turbine.coils.add(bearing);
+                    ncpf.configuration.overhaul.turbine.allCoils.add(cmagnesium);ncpf.configuration.overhaul.turbine.coils.add(cmagnesium);
+                    ncpf.configuration.overhaul.turbine.allCoils.add(cberyllium);ncpf.configuration.overhaul.turbine.coils.add(cberyllium);
+                    ncpf.configuration.overhaul.turbine.allCoils.add(caluminum);ncpf.configuration.overhaul.turbine.coils.add(caluminum);
+                    ncpf.configuration.overhaul.turbine.allCoils.add(cgold);ncpf.configuration.overhaul.turbine.coils.add(cgold);
+                    ncpf.configuration.overhaul.turbine.allCoils.add(ccopper);ncpf.configuration.overhaul.turbine.coils.add(ccopper);
+                    ncpf.configuration.overhaul.turbine.allCoils.add(csilver);ncpf.configuration.overhaul.turbine.coils.add(csilver);
+                    ncpf.configuration.overhaul.turbine.allCoils.add(connector);ncpf.configuration.overhaul.turbine.coils.add(connector);
                     connector.rules.add(multiblock.configuration.overhaul.turbine.PlacementRule.parseNC(ncpf.configuration.overhaul.turbine, getStrings("turbine_connector_rule")[0]));
                     cmagnesium.rules.add(multiblock.configuration.overhaul.turbine.PlacementRule.parseNC(ncpf.configuration.overhaul.turbine, coilRules[0]));
                     cberyllium.rules.add(multiblock.configuration.overhaul.turbine.PlacementRule.parseNC(ncpf.configuration.overhaul.turbine, coilRules[1]));
@@ -564,9 +600,12 @@ public class FileReader{
                     csilver.rules.add(multiblock.configuration.overhaul.turbine.PlacementRule.parseNC(ncpf.configuration.overhaul.turbine, coilRules[5]));
                     double[] rPows = getDoubles("turbine_power_per_mb");
                     double[] rCoeffs = getDoubles("turbine_expansion_level");
-                    ncpf.configuration.overhaul.turbine.recipes.add(new multiblock.configuration.overhaul.turbine.Recipe("High Pressure Steam", "High Pressure Steam", "Exhaust Steam", rPows[0], rCoeffs[0]));
-                    ncpf.configuration.overhaul.turbine.recipes.add(new multiblock.configuration.overhaul.turbine.Recipe("Low Pressure Steam", "Low Pressure Steam", "Low Quality Steam", rPows[1], rCoeffs[1]));
-                    ncpf.configuration.overhaul.turbine.recipes.add(new multiblock.configuration.overhaul.turbine.Recipe("Steam", "Steam", "Low Quality Steam", rPows[2], rCoeffs[2]));
+                    multiblock.configuration.overhaul.turbine.Recipe hps = new multiblock.configuration.overhaul.turbine.Recipe("High Pressure Steam", "High Pressure Steam", "Exhaust Steam", rPows[0], rCoeffs[0]);
+                    multiblock.configuration.overhaul.turbine.Recipe lps = new multiblock.configuration.overhaul.turbine.Recipe("Low Pressure Steam", "Low Pressure Steam", "Low Quality Steam", rPows[1], rCoeffs[1]);
+                    multiblock.configuration.overhaul.turbine.Recipe ste = new multiblock.configuration.overhaul.turbine.Recipe("Steam", "Steam", "Low Quality Steam", rPows[2], rCoeffs[2]);
+                    ncpf.configuration.overhaul.turbine.allRecipes.add(hps);ncpf.configuration.overhaul.turbine.recipes.add(hps);
+                    ncpf.configuration.overhaul.turbine.allRecipes.add(lps);ncpf.configuration.overhaul.turbine.recipes.add(lps);
+                    ncpf.configuration.overhaul.turbine.allRecipes.add(ste);ncpf.configuration.overhaul.turbine.recipes.add(ste);
 //</editor-fold>
                     return ncpf;
                 }catch(IOException ex){
@@ -581,7 +620,8 @@ public class FileReader{
                 boolean[] selfPriming = getBooleans("fission_"+baseName+"_self_priming");
                 for(int i = 0; i<fuelNames.length; i++){
                     if(fuelNames[i]==null)continue;
-                    ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelNames[i], (float)efficiency[i], heat[i], (int)(time[i]*timeMult), criticality[i], selfPriming[i]));
+                    multiblock.configuration.overhaul.fissionsfr.Fuel fuel = new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelNames[i], (float)efficiency[i], heat[i], (int)(time[i]*timeMult), criticality[i], selfPriming[i]);
+                    ncpf.configuration.overhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionSFR.fuels.add(fuel);
                 }
             }
             private void addMSRFuels(NCPFFile ncpf, double timeMult, String baseName, String... fuelNames){
@@ -592,7 +632,8 @@ public class FileReader{
                 boolean[] selfPriming = getBooleans("fission_"+baseName+"_self_priming");
                 for(int i = 0; i<fuelNames.length; i++){
                     if(fuelNames[i]==null)continue;
-                    ncpf.configuration.overhaul.fissionMSR.fuels.add(new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelNames[i], (float)efficiency[i], heat[i], (int)(time[i]*timeMult), criticality[i], selfPriming[i]));
+                    multiblock.configuration.overhaul.fissionmsr.Fuel fuel = new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelNames[i], (float)efficiency[i], heat[i], (int)(time[i]*timeMult), criticality[i], selfPriming[i]);
+                    ncpf.configuration.overhaul.fissionMSR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionMSR.fuels.add(fuel);
                 }
             }
             private double getDouble(String name){
@@ -693,7 +734,7 @@ public class FileReader{
                 JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");
                 String fuelName = usedFuel.getString("Name");
                 multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
-                for(multiblock.configuration.underhaul.fissionsfr.Fuel fool : Core.configuration.underhaul.fissionSFR.fuels){
+                for(multiblock.configuration.underhaul.fissionsfr.Fuel fool : Core.configuration.underhaul.fissionSFR.allFuels){
                     if(fool.name.equalsIgnoreCase(fuelName))fuel = fool;
                 }
                 if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+fuelName);
@@ -703,8 +744,8 @@ public class FileReader{
                     JSONObject ob = (JSONObject) o;
                     String name = ob.keySet().iterator().next();
                     multiblock.configuration.underhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSONArray blocks = ob.getJSONArray(name);
@@ -739,7 +780,7 @@ public class FileReader{
                 JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");
                 String fuelName = usedFuel.getString("Name");
                 multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
-                for(multiblock.configuration.underhaul.fissionsfr.Fuel fool : Core.configuration.underhaul.fissionSFR.fuels){
+                for(multiblock.configuration.underhaul.fissionsfr.Fuel fool : Core.configuration.underhaul.fissionSFR.allFuels){
                     if(fool.name.equalsIgnoreCase(fuelName))fuel = fool;
                 }
                 if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+fuelName);
@@ -747,8 +788,8 @@ public class FileReader{
                 JSON.JSONObject compressedReactor = hellrage.getJSONObject("CompressedReactor");
                 for(String name : compressedReactor.keySet()){
                     multiblock.configuration.underhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSONArray blocks = compressedReactor.getJSONArray(name);
@@ -784,12 +825,12 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.coolantRecipes.get(0));
+                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -805,8 +846,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -820,7 +861,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -836,7 +877,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.fuelCell)cell = blok;
                 }
                 if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
@@ -846,19 +887,19 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionsfr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionsfr.Source src = null;
                     float highest = 0;
-                    for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                    for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.allSources){
                         if(scr.efficiency>highest){
                             src = scr;
                             highest = src.efficiency;
@@ -901,12 +942,12 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.coolantRecipes.get(0));
+                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -922,8 +963,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -937,7 +978,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -954,7 +995,7 @@ public class FileReader{
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
                 float best = 0;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.reflector&&blok.reflectivity>best){
                         reflector = blok;
                         best = blok.reflectivity;
@@ -971,7 +1012,7 @@ public class FileReader{
                     sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.fuelCell)cell = blok;
                 }
                 if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
@@ -981,19 +1022,19 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionsfr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionsfr.Source src = null;
                     float highest = 0;
-                    for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                    for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.allSources){
                         if(scr.efficiency>highest){
                             src = scr;
                             highest = src.efficiency;
@@ -1038,7 +1079,7 @@ public class FileReader{
                 String[] dims = dimS.split(",");
                 String coolantRecipeName = hellrage.getString("CoolantRecipeName").replace("Hight", "High");
                 CoolantRecipe coolantRecipe = null;
-                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
                 }
                 if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
@@ -1046,8 +1087,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -1063,8 +1104,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -1078,7 +1119,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -1095,7 +1136,7 @@ public class FileReader{
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
                 float best = 0;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.reflector&&blok.reflectivity>best){
                         reflector = blok;
                         best = blok.reflectivity;
@@ -1112,7 +1153,7 @@ public class FileReader{
                     sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.fuelCell)cell = blok;
                 }
                 if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
@@ -1122,20 +1163,20 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionsfr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionsfr.Source src = null;
                     if(hasSource){
                         String sourceName = fuelSettings[2];
-                        for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                        for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.allSources){
                             if(scr.name.equalsIgnoreCase(sourceName))src = scr;
                         }
                         if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
@@ -1177,7 +1218,7 @@ public class FileReader{
                 JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
                 String coolantRecipeName = hellrage.getString("CoolantRecipeName").replace("Hight", "High");
                 CoolantRecipe coolantRecipe = null;
-                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
                 }
                 if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
@@ -1185,8 +1226,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -1201,8 +1242,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -1215,7 +1256,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -1231,7 +1272,7 @@ public class FileReader{
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
                 float best = 0;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.reflector&&blok.reflectivity>best){
                         reflector = blok;
                         best = blok.reflectivity;
@@ -1247,7 +1288,7 @@ public class FileReader{
                     sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.fuelCell)cell = blok;
                 }
                 if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
@@ -1257,20 +1298,20 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionsfr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionsfr.Source src = null;
                     if(hasSource){
                         String sourceName = fuelSettings[2];
-                        for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                        for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.allSources){
                             if(scr.name.equalsIgnoreCase(sourceName))src = scr;
                         }
                         if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
@@ -1311,7 +1352,7 @@ public class FileReader{
                 JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
                 String coolantRecipeName = hellrage.getString("CoolantRecipeName");
                 CoolantRecipe coolantRecipe = null;
-                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
                 }
                 if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
@@ -1319,8 +1360,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -1335,8 +1376,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -1349,7 +1390,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -1366,8 +1407,8 @@ public class FileReader{
                 JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
                 for(String name : reflectors.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = reflectors.getJSONArray(name);
@@ -1380,7 +1421,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.fuelCell)cell = blok;
                 }
                 if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
@@ -1390,20 +1431,20 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionsfr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionsfr.Source src = null;
                     if(hasSource){
                         String sourceName = fuelSettings[2];
-                        for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                        for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.allSources){
                             if(scr.name.equalsIgnoreCase(sourceName))src = scr;
                         }
                         if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
@@ -1446,7 +1487,7 @@ public class FileReader{
                 JSONObject dims = data.getJSONObject("InteriorDimensions");
                 String coolantRecipeName = data.getString("CoolantRecipeName");
                 CoolantRecipe coolantRecipe = null;
-                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+                for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
                 }
                 if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
@@ -1454,8 +1495,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -1470,8 +1511,8 @@ public class FileReader{
                 JSON.JSONObject moderators = data.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -1484,7 +1525,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -1501,8 +1542,8 @@ public class FileReader{
                 JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
                 for(String name : reflectors.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = reflectors.getJSONArray(name);
@@ -1517,8 +1558,8 @@ public class FileReader{
                 JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
                 for(String name : neutronShields.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("neutronshield", "").replace("shield", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("neutronshield", "").replace("shield", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = neutronShields.getJSONArray(name);
@@ -1531,7 +1572,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block irradiator = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.irradiator)irradiator = blok;
                 }
                 if(irradiator==null)throw new IllegalArgumentException("Unknown block: Irradiator");
@@ -1540,7 +1581,7 @@ public class FileReader{
                     multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = null;
                     try{
                         JSON.JSONObject recipe = JSON.parse(name);
-                        for(multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irr : Core.configuration.overhaul.fissionSFR.irradiatorRecipes){
+                        for(multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irr : Core.configuration.overhaul.fissionSFR.allIrradiatorRecipes){
                             if(irr.heat==recipe.getFloat("HeatPerFlux")&&irr.efficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
                         }
                     }catch(IOException ex){
@@ -1557,7 +1598,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
-                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.blocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
                     if(blok.fuelCell)cell = blok;
                 }
                 if(cell==null)throw new IllegalArgumentException("Unknown block: Fuel Cell");
@@ -1567,14 +1608,14 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionsfr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
                     if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
                     if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionsfr.Fuel feul : Core.configuration.overhaul.fissionSFR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionsfr.Source src = null;
@@ -1582,7 +1623,7 @@ public class FileReader{
                         String sourceName = fuelSettings[2];
                         if(sourceName.equals("Self"))hasSource = false;
                         else{
-                            for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.sources){
+                            for(multiblock.configuration.overhaul.fissionsfr.Source scr : Core.configuration.overhaul.fissionSFR.allSources){
                                 if(scr.name.equalsIgnoreCase(sourceName))src = scr;
                             }
                             if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
@@ -1627,8 +1668,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase(Locale.ENGLISH).replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -1644,8 +1685,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -1659,7 +1700,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -1675,7 +1716,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
@@ -1685,17 +1726,17 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionmsr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionmsr.Source src = null;
                     float highest = 0;
-                    for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                    for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.allSources){
                         if(scr.efficiency>highest){
                             src = scr;
                             highest = src.efficiency;
@@ -1742,8 +1783,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase(Locale.ENGLISH).replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -1759,8 +1800,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -1774,7 +1815,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -1791,7 +1832,7 @@ public class FileReader{
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
                 float best = 0;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.reflector&&blok.reflectivity>best){
                         reflector = blok;
                         best = blok.reflectivity;
@@ -1808,7 +1849,7 @@ public class FileReader{
                     msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
@@ -1818,17 +1859,17 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean source = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionmsr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionmsr.Source src = null;
                     float highest = 0;
-                    for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                    for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.allSources){
                         if(scr.efficiency>highest){
                             src = scr;
                             highest = src.efficiency;
@@ -1875,8 +1916,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase(Locale.ENGLISH).replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -1892,8 +1933,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -1907,7 +1948,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -1924,7 +1965,7 @@ public class FileReader{
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
                 float best = 0;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.reflector&&blok.reflectivity>best){
                         reflector = blok;
                         best = blok.reflectivity;
@@ -1941,7 +1982,7 @@ public class FileReader{
                     msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
@@ -1951,18 +1992,18 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionmsr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionmsr.Source src = null;
                     if(hasSource){
                         String sourceName = fuelSettings[2];
-                        for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                        for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.allSources){
                             if(scr.name.equalsIgnoreCase(sourceName))src = scr;
                         }
                         if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
@@ -2006,8 +2047,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase(Locale.ENGLISH).replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -2022,8 +2063,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -2036,7 +2077,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -2052,7 +2093,7 @@ public class FileReader{
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
                 float best = 0;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.reflector&&blok.reflectivity>best){
                         reflector = blok;
                         best = blok.reflectivity;
@@ -2068,7 +2109,7 @@ public class FileReader{
                     msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
@@ -2078,18 +2119,18 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionmsr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionmsr.Source src = null;
                     if(hasSource){
                         String sourceName = fuelSettings[2];
-                        for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                        for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.allSources){
                             if(scr.name.equalsIgnoreCase(sourceName))src = scr;
                         }
                         if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
@@ -2132,8 +2173,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase(Locale.ENGLISH).replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -2148,8 +2189,8 @@ public class FileReader{
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -2162,7 +2203,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -2179,8 +2220,8 @@ public class FileReader{
                 JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
                 for(String name : reflectors.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = reflectors.getJSONArray(name);
@@ -2193,7 +2234,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
@@ -2203,18 +2244,18 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionmsr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionmsr.Source src = null;
                     if(hasSource){
                         String sourceName = fuelSettings[2];
-                        for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                        for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.allSources){
                             if(scr.name.equalsIgnoreCase(sourceName))src = scr;
                         }
                         if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
@@ -2259,8 +2300,8 @@ public class FileReader{
                 JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase().replace("water", "standard").replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("coolant", "").replace("heater", "").replace("liquid", "").equalsIgnoreCase(name.toLowerCase(Locale.ENGLISH).replace("water", "standard").replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = heatSinks.getJSONArray(name);
@@ -2275,8 +2316,8 @@ public class FileReader{
                 JSON.JSONObject moderators = data.getJSONObject("Moderators");
                 for(String name : moderators.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = moderators.getJSONArray(name);
@@ -2289,7 +2330,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.name.equalsIgnoreCase("conductor"))conductor = blok;
                 }
                 if(conductor==null)throw new IllegalArgumentException("Unknown block: Conductor");
@@ -2306,8 +2347,8 @@ public class FileReader{
                 JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
                 for(String name : reflectors.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("reflector", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = reflectors.getJSONArray(name);
@@ -2322,8 +2363,8 @@ public class FileReader{
                 JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
                 for(String name : neutronShields.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
-                        if(blok.name.toLowerCase().replace(" ", "").replace("neutronshield", "").replace("shield", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                    for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
+                        if(blok.name.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("neutronshield", "").replace("shield", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
                     }
                     if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
                     JSON.JSONArray array = neutronShields.getJSONArray(name);
@@ -2336,7 +2377,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block irradiator = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.irradiator)irradiator = blok;
                 }
                 if(irradiator==null)throw new IllegalArgumentException("Unknown block: Irradiator");
@@ -2345,7 +2386,7 @@ public class FileReader{
                     multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irrecipe = null;
                     try{
                         JSON.JSONObject recipe = JSON.parse(name);
-                        for(multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irr : Core.configuration.overhaul.fissionMSR.irradiatorRecipes){
+                        for(multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irr : Core.configuration.overhaul.fissionMSR.allIrradiatorRecipes){
                             if(irr.heat==recipe.getFloat("HeatPerFlux")&&irr.efficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
                         }
                     }catch(IOException ex){
@@ -2362,7 +2403,7 @@ public class FileReader{
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
-                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.blocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
                     if(blok.fuelVessel)vessel = blok;
                 }
                 if(vessel==null)throw new IllegalArgumentException("Unknown block: Fuel Vessel");
@@ -2372,12 +2413,12 @@ public class FileReader{
                     String fuelName = fuelSettings[0];
                     boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
                     multiblock.configuration.overhaul.fissionmsr.Fuel fuel = null;
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
                     }
                     if(fuelName.startsWith("[F4]"))fuelName = fuelName.substring(4)+" Fluoride";
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.fuels){
-                        if(feul.name.toLowerCase().replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                    for(multiblock.configuration.overhaul.fissionmsr.Fuel feul : Core.configuration.overhaul.fissionMSR.allFuels){
+                        if(feul.name.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
                     }
                     if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
                     multiblock.configuration.overhaul.fissionmsr.Source src = null;
@@ -2385,7 +2426,7 @@ public class FileReader{
                         String sourceName = fuelSettings[2];
                         if(sourceName.equals("Self"))hasSource = false;
                         else{
-                            for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.sources){
+                            for(multiblock.configuration.overhaul.fissionmsr.Source scr : Core.configuration.overhaul.fissionMSR.allSources){
                                 if(scr.name.equalsIgnoreCase(sourceName))src = scr;
                             }
                             if(src==null)throw new IllegalArgumentException("Unknown source: "+name);
@@ -2437,8 +2478,9 @@ public class FileReader{
                     Config config = Config.newConfig();
                     config.load(in);
                     boolean partial = config.get("partial");
-                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"), null);
-                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"), null);
+                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.hasProperty("overhaul")?config.get("version"):null, config.hasProperty("underhaul")?config.get("version"):null);
+                    else ncpf.configuration = new Configuration(config.get("name"), config.hasProperty("overhaul")?config.get("version"):null, config.hasProperty("underhaul")?config.get("version"):null);
+                    ncpf.configuration.addon = false;
                     //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
                     if(config.hasProperty("underhaul")){
                         ncpf.configuration.underhaul = new UnderhaulConfiguration();
@@ -2482,7 +2524,7 @@ public class FileReader{
                                         block.rules.add(readUnderRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
+                                ncpf.configuration.underhaul.fissionSFR.allBlocks.add(block);ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
                             }
                             for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
                                 byte index = underhaulPostLoadMap.get(rule);
@@ -2491,13 +2533,14 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.underhaul.fissionSFR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
+                                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
+                                ncpf.configuration.underhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.underhaul.fissionSFR.fuels.add(fuel);
                             }
                         }
                     }
@@ -2557,7 +2600,7 @@ public class FileReader{
                                         block.rules.add(readOverRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
+                                ncpf.configuration.overhaul.fissionSFR.allBlocks.add(block);ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
                             }
                             for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulPostLoadMap.keySet()){
                                 byte index = overhaulPostLoadMap.get(rule);
@@ -2566,28 +2609,32 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.overhaul.fissionSFR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                                multiblock.configuration.overhaul.fissionsfr.Fuel fuel = new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                                ncpf.configuration.overhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionSFR.fuels.add(fuel);
                             }
                             ConfigList sources = fissionSFR.get("sources");
                             for(Iterator sit = sources.iterator(); sit.hasNext();){
                                 Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                                multiblock.configuration.overhaul.fissionsfr.Source source = new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                                ncpf.configuration.overhaul.fissionSFR.allSources.add(source);ncpf.configuration.overhaul.fissionSFR.sources.add(source);
                             }
                             ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
                             for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
                                 Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                                multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                                ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.add(irrecipe);ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrecipe);
                             }
                             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
                             for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
                                 Config coolantRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
+                                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio"));
+                                ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
                             }
                         }
                     }
@@ -2600,7 +2647,7 @@ public class FileReader{
                         switch(id){
                             case 0:
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -2609,7 +2656,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -2620,14 +2667,14 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
                                 break;
                             case 1:
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -2637,7 +2684,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -2649,7 +2696,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -2660,15 +2707,15 @@ public class FileReader{
                                 int recipeIndex = 0;
                                 for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
                                     if(block.template.fuelCell){
-                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.allFuels.get((int)fuels.get(fuelIndex));
                                         fuelIndex++;
                                         int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.allSources.get(sid-1);
                                         sourceIndex++;
                                     }
                                     if(block.template.irradiator){
                                         int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
                                 }
@@ -2933,8 +2980,9 @@ public class FileReader{
                     Config config = Config.newConfig();
                     config.load(in);
                     boolean partial = config.get("partial");
-                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"), null);
-                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"), null);
+                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.hasProperty("overhaul")?config.get("version"):null, config.hasProperty("underhaul")?config.get("version"):null);
+                    else ncpf.configuration = new Configuration(config.get("name"), config.hasProperty("overhaul")?config.get("version"):null, config.hasProperty("underhaul")?config.get("version"):null);
+                    ncpf.configuration.addon = false;
                     //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
                     if(config.hasProperty("underhaul")){
                         ncpf.configuration.underhaul = new UnderhaulConfiguration();
@@ -2978,7 +3026,7 @@ public class FileReader{
                                         block.rules.add(readUnderRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
+                                ncpf.configuration.underhaul.fissionSFR.allBlocks.add(block);ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
                             }
                             for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
                                 byte index = underhaulPostLoadMap.get(rule);
@@ -2987,13 +3035,14 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.underhaul.fissionSFR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
+                                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
+                                ncpf.configuration.underhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.underhaul.fissionSFR.fuels.add(fuel);
                             }
                         }
                     }
@@ -3068,7 +3117,7 @@ public class FileReader{
                                         block.rules.add(readOverSFRRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
+                                ncpf.configuration.overhaul.fissionSFR.allBlocks.add(block);ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
                             }
                             for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
                                 byte index = overhaulSFRPostLoadMap.get(rule);
@@ -3077,28 +3126,32 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.overhaul.fissionSFR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                                multiblock.configuration.overhaul.fissionsfr.Fuel fuel = new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                                ncpf.configuration.overhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionSFR.fuels.add(fuel);
                             }
                             ConfigList sources = fissionSFR.get("sources");
                             for(Iterator sit = sources.iterator(); sit.hasNext();){
                                 Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                                multiblock.configuration.overhaul.fissionsfr.Source source = new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                                ncpf.configuration.overhaul.fissionSFR.allSources.add(source);ncpf.configuration.overhaul.fissionSFR.sources.add(source);
                             }
                             ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
                             for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
                                 Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                                multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                                ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.add(irrecipe);ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrecipe);
                             }
                             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
                             for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
                                 Config coolantRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
+                                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio"));
+                                ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
                             }
                         }
 //</editor-fold>
@@ -3170,7 +3223,7 @@ public class FileReader{
                                         block.rules.add(readOverMSRRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
+                                ncpf.configuration.overhaul.fissionMSR.allBlocks.add(block);ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
                             }
                             for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
                                 byte index = overhaulMSRPostLoadMap.get(rule);
@@ -3179,23 +3232,26 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionMSR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.overhaul.fissionMSR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionMSR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionMSR.fuels.add(new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                                multiblock.configuration.overhaul.fissionmsr.Fuel fuel = new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                                ncpf.configuration.overhaul.fissionMSR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionMSR.fuels.add(fuel);
                             }
                             ConfigList sources = fissionMSR.get("sources");
                             for(Iterator sit = sources.iterator(); sit.hasNext();){
                                 Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionMSR.sources.add(new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                                multiblock.configuration.overhaul.fissionmsr.Source source = new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                                ncpf.configuration.overhaul.fissionMSR.allSources.add(source);ncpf.configuration.overhaul.fissionMSR.sources.add(source);
                             }
                             ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
                             for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
                                 Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                               multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                                ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.add(irrecipe);ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(irrecipe);
                             }
                         }
 //</editor-fold>
@@ -3209,7 +3265,7 @@ public class FileReader{
                         switch(id){
                             case 0:
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -3218,7 +3274,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -3229,14 +3285,14 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
                                 break;
                             case 1:
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -3246,7 +3302,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -3258,7 +3314,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -3269,15 +3325,15 @@ public class FileReader{
                                 int recipeIndex = 0;
                                 for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
                                     if(block.template.fuelCell){
-                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.allFuels.get((int)fuels.get(fuelIndex));
                                         fuelIndex++;
                                         int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.allSources.get(sid-1);
                                         sourceIndex++;
                                     }
                                     if(block.template.irradiator){
                                         int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
                                 }
@@ -3295,7 +3351,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -3307,7 +3363,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -3318,15 +3374,15 @@ public class FileReader{
                                 recipeIndex = 0;
                                 for(multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
                                     if(block.template.fuelVessel){
-                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.fuels.get((int)fuels.get(fuelIndex));
+                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.allFuels.get((int)fuels.get(fuelIndex));
                                         fuelIndex++;
                                         int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.sources.get(sid-1);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.allSources.get(sid-1);
                                         sourceIndex++;
                                     }
                                     if(block.template.irradiator){
                                         int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.get(rid-1);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
                                 }
@@ -3711,8 +3767,9 @@ public class FileReader{
                     Config config = Config.newConfig();
                     config.load(in);
                     boolean partial = config.get("partial");
-                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"), config.get("underhaulVersion"));
-                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"), config.get("underhaulVersion"));
+                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.hasProperty("overhaul")?config.get("version"):null, config.hasProperty("overhaul")?config.get("underhaulVersion"):config.get("version"));
+                    else ncpf.configuration = new Configuration(config.get("name"), config.hasProperty("overhaul")?config.get("version"):null, config.hasProperty("overhaul")?config.get("underhaulVersion"):config.get("version"));
+                    ncpf.configuration.addon = false;
                     //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
                     if(config.hasProperty("underhaul")){
                         ncpf.configuration.underhaul = new UnderhaulConfiguration();
@@ -3756,7 +3813,7 @@ public class FileReader{
                                         block.rules.add(readUnderRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
+                                ncpf.configuration.underhaul.fissionSFR.allBlocks.add(block);ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
                             }
                             for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
                                 byte index = underhaulPostLoadMap.get(rule);
@@ -3765,13 +3822,14 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.underhaul.fissionSFR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
+                                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
+                                ncpf.configuration.underhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.underhaul.fissionSFR.fuels.add(fuel);
                             }
                         }
                     }
@@ -3846,7 +3904,7 @@ public class FileReader{
                                         block.rules.add(readOverSFRRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
+                                ncpf.configuration.overhaul.fissionSFR.allBlocks.add(block);ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
                             }
                             for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
                                 byte index = overhaulSFRPostLoadMap.get(rule);
@@ -3855,28 +3913,32 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.overhaul.fissionSFR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                                multiblock.configuration.overhaul.fissionsfr.Fuel fuel = new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                                ncpf.configuration.overhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionSFR.fuels.add(fuel);
                             }
                             ConfigList sources = fissionSFR.get("sources");
                             for(Iterator sit = sources.iterator(); sit.hasNext();){
                                 Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                                multiblock.configuration.overhaul.fissionsfr.Source source = new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                                ncpf.configuration.overhaul.fissionSFR.allSources.add(source);ncpf.configuration.overhaul.fissionSFR.sources.add(source);
                             }
                             ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
                             for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
                                 Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                                multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                                ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.add(irrecipe);ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrecipe);
                             }
                             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
                             for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
                                 Config coolantRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
+                                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio"));
+                                ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
                             }
                         }
 //</editor-fold>
@@ -3948,7 +4010,7 @@ public class FileReader{
                                         block.rules.add(readOverMSRRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
+                                ncpf.configuration.overhaul.fissionMSR.allBlocks.add(block);ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
                             }
                             for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
                                 byte index = overhaulMSRPostLoadMap.get(rule);
@@ -3957,23 +4019,26 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionMSR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.overhaul.fissionMSR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionMSR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionMSR.fuels.add(new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                                multiblock.configuration.overhaul.fissionmsr.Fuel fuel = new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                                ncpf.configuration.overhaul.fissionMSR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionMSR.fuels.add(fuel);
                             }
                             ConfigList sources = fissionMSR.get("sources");
                             for(Iterator sit = sources.iterator(); sit.hasNext();){
                                 Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionMSR.sources.add(new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                                multiblock.configuration.overhaul.fissionmsr.Source source = new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                                ncpf.configuration.overhaul.fissionMSR.allSources.add(source);ncpf.configuration.overhaul.fissionMSR.sources.add(source);
                             }
                             ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
                             for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
                                 Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                                multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                                ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.add(irrecipe);ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(irrecipe);
                             }
                         }
 //</editor-fold>
@@ -4017,7 +4082,7 @@ public class FileReader{
                                         coil.rules.add(readOverTurbineRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.turbine.coils.add(coil);
+                                ncpf.configuration.overhaul.turbine.allCoils.add(coil);ncpf.configuration.overhaul.turbine.coils.add(coil);
                             }
                             ConfigList blades = turbine.get("blades");
                             for(Iterator bit = blades.iterator(); bit.hasNext();){
@@ -4040,7 +4105,7 @@ public class FileReader{
                                     }
                                     blade.setTexture(image);
                                 }
-                                ncpf.configuration.overhaul.turbine.blades.add(blade);
+                                ncpf.configuration.overhaul.turbine.allBlades.add(blade);ncpf.configuration.overhaul.turbine.blades.add(blade);
                             }
                             for(multiblock.configuration.overhaul.turbine.PlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
                                 byte index = overhaulTurbinePostLoadMap.get(rule);
@@ -4049,13 +4114,14 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CASING;
                                 }else{
-                                    rule.coil = ncpf.configuration.overhaul.turbine.coils.get(index-1);
+                                    rule.coil = ncpf.configuration.overhaul.turbine.allCoils.get(index-1);
                                 }
                             }
                             ConfigList recipes = turbine.get("recipes");
                             for(Iterator irit = recipes.iterator(); irit.hasNext();){
                                 Config recipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.turbine.recipes.add(new multiblock.configuration.overhaul.turbine.Recipe(recipeCfg.get("name"), recipeCfg.get("input"), recipeCfg.get("output"), recipeCfg.get("power"), recipeCfg.get("coefficient")));
+                                multiblock.configuration.overhaul.turbine.Recipe recipe = new multiblock.configuration.overhaul.turbine.Recipe(recipeCfg.get("name"), recipeCfg.get("input"), recipeCfg.get("output"), recipeCfg.get("power"), recipeCfg.get("coefficient"));
+                                ncpf.configuration.overhaul.turbine.allRecipes.add(recipe);ncpf.configuration.overhaul.turbine.recipes.add(recipe);
                             }
                         }
 //</editor-fold>
@@ -4070,7 +4136,7 @@ public class FileReader{
                             case 0:
                                 //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -4079,7 +4145,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -4090,7 +4156,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
@@ -4099,7 +4165,7 @@ public class FileReader{
                             case 1:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -4109,7 +4175,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -4121,7 +4187,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -4132,15 +4198,15 @@ public class FileReader{
                                 int recipeIndex = 0;
                                 for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
                                     if(block.template.fuelCell){
-                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.allFuels.get((int)fuels.get(fuelIndex));
                                         fuelIndex++;
                                         int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.allSources.get(sid-1);
                                         sourceIndex++;
                                     }
                                     if(block.template.irradiator){
                                         int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
                                 }
@@ -4160,7 +4226,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -4172,7 +4238,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -4183,15 +4249,15 @@ public class FileReader{
                                 recipeIndex = 0;
                                 for(multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
                                     if(block.template.fuelVessel){
-                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.fuels.get((int)fuels.get(fuelIndex));
+                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.allFuels.get((int)fuels.get(fuelIndex));
                                         fuelIndex++;
                                         int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.sources.get(sid-1);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.allSources.get(sid-1);
                                         sourceIndex++;
                                     }
                                     if(block.template.irradiator){
                                         int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.get(rid-1);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
                                 }
@@ -4201,7 +4267,7 @@ public class FileReader{
                             case 3:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
                                 size = data.get("size");
-                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.recipes.get(data.get("recipe", (byte)-1)));
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
                                 if(data.hasProperty("inputs")){
                                     overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                                     ConfigNumberList inputs = data.get("inputs");
@@ -4216,7 +4282,7 @@ public class FileReader{
                                         for(int y = 0; y<overhaulTurbine.getY(); y++){
                                             int bid = (int) coils.get(index);
                                             if(bid>0){
-                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.coils.get(bid-1)));
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
                                             }
                                             index++;
                                         }
@@ -4227,7 +4293,7 @@ public class FileReader{
                                 for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
                                     int bid = (int) blades.get(index);
                                     if(bid>0){
-                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.blades.get(bid-1)));
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
                                     }
                                     index++;
                                 }
@@ -4778,8 +4844,9 @@ public class FileReader{
                     Config config = Config.newConfig();
                     config.load(in);
                     boolean partial = config.get("partial");
-                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.get("version"), config.get("underhaulVersion"));
-                    else ncpf.configuration = new Configuration(config.get("name"), config.get("version"), config.get("underhaulVersion"));
+                    if(partial)ncpf.configuration = new PartialConfiguration(config.get("name"), config.hasProperty("overhaul")?config.get("version"):null, config.hasProperty("overhaul")?config.get("underhaulVersion"):config.get("version"));
+                    else ncpf.configuration = new Configuration(config.get("name"), config.hasProperty("overhaul")?config.get("version"):null, config.hasProperty("overhaul")?config.get("underhaulVersion"):config.get("version"));
+                    ncpf.configuration.addon = false;
                     //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
                     if(config.hasProperty("underhaul")){
                         ncpf.configuration.underhaul = new UnderhaulConfiguration();
@@ -4823,7 +4890,7 @@ public class FileReader{
                                         block.rules.add(readUnderRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
+                                ncpf.configuration.underhaul.fissionSFR.allBlocks.add(block);ncpf.configuration.underhaul.fissionSFR.blocks.add(block);
                             }
                             for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
                                 byte index = underhaulPostLoadMap.get(rule);
@@ -4832,13 +4899,14 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.underhaul.fissionSFR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.underhaul.fissionSFR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.underhaul.fissionSFR.fuels.add(new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time")));
+                                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
+                                ncpf.configuration.underhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.underhaul.fissionSFR.fuels.add(fuel);
                             }
                         }
                     }
@@ -4913,7 +4981,7 @@ public class FileReader{
                                         block.rules.add(readOverSFRRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
+                                ncpf.configuration.overhaul.fissionSFR.allBlocks.add(block);ncpf.configuration.overhaul.fissionSFR.blocks.add(block);
                             }
                             for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
                                 byte index = overhaulSFRPostLoadMap.get(rule);
@@ -4922,28 +4990,32 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionSFR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.overhaul.fissionSFR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionSFR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionSFR.fuels.add(new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                                multiblock.configuration.overhaul.fissionsfr.Fuel fuel = new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                                ncpf.configuration.overhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionSFR.fuels.add(fuel);
                             }
                             ConfigList sources = fissionSFR.get("sources");
                             for(Iterator sit = sources.iterator(); sit.hasNext();){
                                 Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionSFR.sources.add(new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                                multiblock.configuration.overhaul.fissionsfr.Source source = new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                                ncpf.configuration.overhaul.fissionSFR.allSources.add(source);ncpf.configuration.overhaul.fissionSFR.sources.add(source);
                             }
                             ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
                             for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
                                 Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                                multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                                ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.add(irrecipe);ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrecipe);
                             }
                             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
                             for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
                                 Config coolantRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio")));
+                                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio"));
+                                ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);ncpf.configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
                             }
                         }
 //</editor-fold>
@@ -5015,7 +5087,7 @@ public class FileReader{
                                         block.rules.add(readOverMSRRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
+                                ncpf.configuration.overhaul.fissionMSR.allBlocks.add(block);ncpf.configuration.overhaul.fissionMSR.blocks.add(block);
                             }
                             for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
                                 byte index = overhaulMSRPostLoadMap.get(rule);
@@ -5024,23 +5096,26 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
                                 }else{
-                                    rule.block = ncpf.configuration.overhaul.fissionMSR.blocks.get(index-1);
+                                    rule.block = ncpf.configuration.overhaul.fissionMSR.allBlocks.get(index-1);
                                 }
                             }
                             ConfigList fuels = fissionMSR.get("fuels");
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
-                                ncpf.configuration.overhaul.fissionMSR.fuels.add(new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming")));
+                                multiblock.configuration.overhaul.fissionmsr.Fuel fuel = new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                                ncpf.configuration.overhaul.fissionMSR.allFuels.add(fuel);ncpf.configuration.overhaul.fissionMSR.fuels.add(fuel);
                             }
                             ConfigList sources = fissionMSR.get("sources");
                             for(Iterator sit = sources.iterator(); sit.hasNext();){
                                 Config sourceCfg = (Config)sit.next();
-                                ncpf.configuration.overhaul.fissionMSR.sources.add(new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency")));
+                                multiblock.configuration.overhaul.fissionmsr.Source source = new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                                ncpf.configuration.overhaul.fissionMSR.allSources.add(source);ncpf.configuration.overhaul.fissionMSR.sources.add(source);
                             }
                             ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
                             for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
                                 Config irradiatorRecipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat")));
+                                multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                                ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.add(irrecipe);ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.add(irrecipe);
                             }
                         }
 //</editor-fold>
@@ -5084,7 +5159,7 @@ public class FileReader{
                                         coil.rules.add(readOverTurbineRule(ruleCfg));
                                     }
                                 }
-                                ncpf.configuration.overhaul.turbine.coils.add(coil);
+                                ncpf.configuration.overhaul.turbine.allCoils.add(coil);ncpf.configuration.overhaul.turbine.coils.add(coil);
                             }
                             ConfigList blades = turbine.get("blades");
                             for(Iterator bit = blades.iterator(); bit.hasNext();){
@@ -5107,7 +5182,7 @@ public class FileReader{
                                     }
                                     blade.setTexture(image);
                                 }
-                                ncpf.configuration.overhaul.turbine.blades.add(blade);
+                                ncpf.configuration.overhaul.turbine.allBlades.add(blade);ncpf.configuration.overhaul.turbine.blades.add(blade);
                             }
                             for(multiblock.configuration.overhaul.turbine.PlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
                                 byte index = overhaulTurbinePostLoadMap.get(rule);
@@ -5116,13 +5191,14 @@ public class FileReader{
                                     if(rule.ruleType==multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN_GROUP;
                                     rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CASING;
                                 }else{
-                                    rule.coil = ncpf.configuration.overhaul.turbine.coils.get(index-1);
+                                    rule.coil = ncpf.configuration.overhaul.turbine.allCoils.get(index-1);
                                 }
                             }
                             ConfigList recipes = turbine.get("recipes");
                             for(Iterator irit = recipes.iterator(); irit.hasNext();){
                                 Config recipeCfg = (Config)irit.next();
-                                ncpf.configuration.overhaul.turbine.recipes.add(new multiblock.configuration.overhaul.turbine.Recipe(recipeCfg.get("name"), recipeCfg.get("input"), recipeCfg.get("output"), recipeCfg.get("power"), recipeCfg.get("coefficient")));
+                                multiblock.configuration.overhaul.turbine.Recipe recipe = new multiblock.configuration.overhaul.turbine.Recipe(recipeCfg.get("name"), recipeCfg.get("input"), recipeCfg.get("output"), recipeCfg.get("power"), recipeCfg.get("coefficient"));
+                                ncpf.configuration.overhaul.turbine.allRecipes.add(recipe);ncpf.configuration.overhaul.turbine.recipes.add(recipe);
                             }
                         }
 //</editor-fold>
@@ -5137,7 +5213,7 @@ public class FileReader{
                             case 0:
                                 //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.fuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -5146,7 +5222,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -5157,7 +5233,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.blocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
@@ -5166,7 +5242,7 @@ public class FileReader{
                             case 1:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.coolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -5176,7 +5252,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -5188,7 +5264,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.blocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -5199,15 +5275,15 @@ public class FileReader{
                                 int recipeIndex = 0;
                                 for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
                                     if(block.template.fuelCell){
-                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.fuels.get((int)fuels.get(fuelIndex));
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.allFuels.get((int)fuels.get(fuelIndex));
                                         fuelIndex++;
                                         int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.sources.get(sid-1);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.allSources.get(sid-1);
                                         sourceIndex++;
                                     }
                                     if(block.template.irradiator){
                                         int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.irradiatorRecipes.get(rid-1);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
                                 }
@@ -5227,7 +5303,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -5239,7 +5315,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.blocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -5250,15 +5326,15 @@ public class FileReader{
                                 recipeIndex = 0;
                                 for(multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
                                     if(block.template.fuelVessel){
-                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.fuels.get((int)fuels.get(fuelIndex));
+                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.allFuels.get((int)fuels.get(fuelIndex));
                                         fuelIndex++;
                                         int sid = (int) sources.get(sourceIndex);
-                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.sources.get(sid-1);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.allSources.get(sid-1);
                                         sourceIndex++;
                                     }
                                     if(block.template.irradiator){
                                         int rid = (int) irradiatorRecipes.get(recipeIndex);
-                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.irradiatorRecipes.get(rid-1);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
                                 }
@@ -5268,7 +5344,7 @@ public class FileReader{
                             case 3:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
                                 size = data.get("size");
-                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.recipes.get(data.get("recipe", (byte)-1)));
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
                                 if(data.hasProperty("inputs")){
                                     overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                                     ConfigNumberList inputs = data.get("inputs");
@@ -5283,7 +5359,7 @@ public class FileReader{
                                         for(int y = 0; y<overhaulTurbine.getY(); y++){
                                             int bid = (int) coils.get(index);
                                             if(bid>0){
-                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.coils.get(bid-1)));
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
                                             }
                                             index++;
                                         }
@@ -5294,7 +5370,7 @@ public class FileReader{
                                 for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
                                     int bid = (int) blades.get(index);
                                     if(bid>0){
-                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.blades.get(bid-1)));
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
                                     }
                                     index++;
                                 }
@@ -5811,6 +5887,1465 @@ public class FileReader{
                 return rule;
             }
         });// .ncpf version 4
+        formats.add(new FormatReader(){
+            @Override
+            public boolean formatMatches(InputStream in){
+                try{
+                    Config header = Config.newConfig();
+                    header.load(in);
+                    in.close();
+                    return header.get("version", (byte)0)==(byte)5;
+                }catch(Throwable t){
+                    return false;
+                }
+            }
+            HashMap<multiblock.configuration.underhaul.fissionsfr.PlacementRule, Byte> underhaulPostLoadMap = new HashMap<>();
+            HashMap<multiblock.configuration.overhaul.fissionsfr.PlacementRule, Byte> overhaulSFRPostLoadMap = new HashMap<>();
+            HashMap<multiblock.configuration.overhaul.fissionmsr.PlacementRule, Byte> overhaulMSRPostLoadMap = new HashMap<>();
+            HashMap<multiblock.configuration.overhaul.turbine.PlacementRule, Byte> overhaulTurbinePostLoadMap = new HashMap<>();
+            HashMap<OverhaulTurbine, ArrayList<Integer>> overhaulTurbinePostLoadInputsMap = new HashMap<>();
+            @Override
+            public synchronized NCPFFile read(InputStream in){
+                overhaulTurbinePostLoadInputsMap.clear();
+                try{
+                    NCPFFile ncpf = new NCPFFile();
+                    Config header = Config.newConfig();
+                    header.load(in);
+                    int multiblocks = header.get("count");
+                    if(header.hasProperty("metadata")){
+                        Config metadata = header.get("metadata");
+                        for(String key : metadata.properties()){
+                            ncpf.metadata.put(key, metadata.get(key));
+                        }
+                    }
+                    Config config = Config.newConfig();
+                    config.load(in);
+                    ncpf.configuration = loadConfiguration(config);
+                    for(int i = 0; i<multiblocks; i++){
+                        Config data = Config.newConfig();
+                        data.load(in);
+                        Multiblock multiblock;
+                        int id = data.get("id");
+                        switch(id){
+                            case 0:
+                                //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
+                                ConfigNumberList size = data.get("size");
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                boolean compact = data.get("compact");
+                                ConfigNumberList blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<underhaulSFR.getX(); x++){
+                                        for(int y = 0; y<underhaulSFR.getY(); y++){
+                                            for(int z = 0; z<underhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                    }
+                                }
+                                multiblock = underhaulSFR;
+//</editor-fold>
+                                break;
+                            case 1:
+                                //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
+                                size = data.get("size");
+                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                compact = data.get("compact");
+                                blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<overhaulSFR.getX(); x++){
+                                        for(int y = 0; y<overhaulSFR.getY(); y++){
+                                            for(int z = 0; z<overhaulSFR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0){
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                }
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                    }
+                                }
+                                ConfigNumberList fuels = data.get("fuels");
+                                ConfigNumberList sources = data.get("sources");
+                                ConfigNumberList irradiatorRecipes = data.get("irradiatorRecipes");
+                                int fuelIndex = 0;
+                                int sourceIndex = 0;
+                                int recipeIndex = 0;
+                                for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
+                                    if(block.template.fuelCell){
+                                        block.fuel = ncpf.configuration.overhaul.fissionSFR.allFuels.get((int)fuels.get(fuelIndex));
+                                        fuelIndex++;
+                                        int sid = (int) sources.get(sourceIndex);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionSFR.allSources.get(sid-1);
+                                        sourceIndex++;
+                                    }
+                                    if(block.template.irradiator){
+                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionSFR.allIrradiatorRecipes.get(rid-1);
+                                        recipeIndex++;
+                                    }
+                                }
+                                multiblock = overhaulSFR;
+//</editor-fold>
+                                break;
+                            case 2:
+                                //<editor-fold defaultstate="collapsed" desc="Overhaul MSR">
+                                size = data.get("size");
+                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                compact = data.get("compact");
+                                blocks = data.get("blocks");
+                                if(compact){
+                                    int index = 0;
+                                    for(int x = 0; x<overhaulMSR.getX(); x++){
+                                        for(int y = 0; y<overhaulMSR.getY(); y++){
+                                            for(int z = 0; z<overhaulMSR.getZ(); z++){
+                                                int bid = (int) blocks.get(index);
+                                                if(bid>0){
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                                }
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    for(int j = 0; j<blocks.size(); j+=4){
+                                        int x = (int) blocks.get(j);
+                                        int y = (int) blocks.get(j+1);
+                                        int z = (int) blocks.get(j+2);
+                                        int bid = (int) blocks.get(j+3);
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                    }
+                                }
+                                fuels = data.get("fuels");
+                                sources = data.get("sources");
+                                irradiatorRecipes = data.get("irradiatorRecipes");
+                                fuelIndex = 0;
+                                sourceIndex = 0;
+                                recipeIndex = 0;
+                                for(multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
+                                    if(block.template.fuelVessel){
+                                        block.fuel = ncpf.configuration.overhaul.fissionMSR.allFuels.get((int)fuels.get(fuelIndex));
+                                        fuelIndex++;
+                                        int sid = (int) sources.get(sourceIndex);
+                                        if(sid>0)block.source = ncpf.configuration.overhaul.fissionMSR.allSources.get(sid-1);
+                                        sourceIndex++;
+                                    }
+                                    if(block.template.irradiator){
+                                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                                        if(rid>0)block.irradiatorRecipe = ncpf.configuration.overhaul.fissionMSR.allIrradiatorRecipes.get(rid-1);
+                                        recipeIndex++;
+                                    }
+                                }
+                                multiblock = overhaulMSR;
+//</editor-fold>
+                                break;
+                            case 3:
+                                //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
+                                size = data.get("size");
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
+                                if(data.hasProperty("inputs")){
+                                    overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
+                                    ConfigNumberList inputs = data.get("inputs");
+                                    for(Number number : inputs.iterable()){
+                                        overhaulTurbinePostLoadInputsMap.get(overhaulTurbine).add(number.intValue());
+                                    }
+                                }
+                                ConfigNumberList coils = data.get("coils");
+                                int index = 0;
+                                for(int z = 0; z<2; z++){
+                                    for(int x = 0; x<overhaulTurbine.getX(); x++){
+                                        for(int y = 0; y<overhaulTurbine.getY(); y++){
+                                            int bid = (int) coils.get(index);
+                                            if(bid>0){
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
+                                            }
+                                            index++;
+                                        }
+                                    }
+                                }
+                                ConfigNumberList blades = data.get("blades");
+                                index = 0;
+                                for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
+                                    int bid = (int) blades.get(index);
+                                    if(bid>0){
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
+                                    }
+                                    index++;
+                                }
+                                multiblock = overhaulTurbine;
+//</editor-fold>
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
+                        }
+                        if(data.hasProperty("metadata")){
+                            Config metadata = data.get("metadata");
+                            for(String key : metadata.properties()){
+                                multiblock.metadata.put(key, metadata.get(key));
+                            }
+                        }
+                        ncpf.multiblocks.add(multiblock);
+                    }
+                    for(OverhaulTurbine turbine : overhaulTurbinePostLoadInputsMap.keySet()){
+                        for(int i : overhaulTurbinePostLoadInputsMap.get(turbine)){
+                            turbine.inputs.add(ncpf.multiblocks.get(i));
+                        }
+                    }
+                    in.close();
+                    return ncpf;
+                }catch(IOException ex){
+                    throw new RuntimeException(ex);
+                }
+            }
+            private multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
+                multiblock.configuration.underhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.VERTEX;
+                        underhaulPostLoadMap.put(rule, ruleCfg.get("block"));
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.VERTEX_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readUnderRule(rulC));
+                        }
+                        break;
+                    case 7:
+                        rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readUnderRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverSFRRule(Config ruleCfg){
+                multiblock.configuration.overhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
+                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.VERTEX;
+                        overhaulSFRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.VERTEX_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverSFRRule(rulC));
+                        }
+                        break;
+                    case 7:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverSFRRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private multiblock.configuration.overhaul.fissionmsr.PlacementRule readOverMSRRule(Config ruleCfg){
+                multiblock.configuration.overhaul.fissionmsr.PlacementRule rule = new multiblock.configuration.overhaul.fissionmsr.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN;
+                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL;
+                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.VERTEX;
+                        overhaulMSRPostLoadMap.put(rule, ruleCfg.get("block"));
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.VERTEX_GROUP;
+                        blockType = ruleCfg.get("block");
+                        switch(blockType){
+                            case 0:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                                break;
+                            case 1:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
+                                break;
+                            case 2:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
+                                break;
+                            case 3:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
+                                break;
+                            case 4:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
+                                break;
+                            case 5:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
+                                break;
+                            case 6:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
+                                break;
+                            case 7:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
+                                break;
+                            case 8:
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
+                                break;
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverMSRRule(rulC));
+                        }
+                        break;
+                    case 7:
+                        rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverMSRRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private multiblock.configuration.overhaul.turbine.PlacementRule readOverTurbineRule(Config ruleCfg){
+                multiblock.configuration.overhaul.turbine.PlacementRule rule = new multiblock.configuration.overhaul.turbine.PlacementRule();
+                byte type = ruleCfg.get("type");
+                switch(type){
+                    case 0:
+                        rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN;
+                        overhaulTurbinePostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 1:
+                        rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL;
+                        overhaulTurbinePostLoadMap.put(rule, ruleCfg.get("block"));
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 2:
+                        rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.EDGE;
+                        overhaulTurbinePostLoadMap.put(rule, ruleCfg.get("block"));
+                        break;
+                    case 3:
+                        rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN_GROUP;
+                        byte coilType = ruleCfg.get("block");
+                        switch(coilType){
+                            case 0:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CASING;
+                                break;
+                            case 1:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.COIL;
+                                break;
+                            case 2:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.BEARING;
+                                break;
+                            case 3:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CONNECTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 4:
+                        rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL_GROUP;
+                        coilType = ruleCfg.get("block");
+                        switch(coilType){
+                            case 0:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CASING;
+                                break;
+                            case 1:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.COIL;
+                                break;
+                            case 2:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.BEARING;
+                                break;
+                            case 3:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CONNECTOR;
+                                break;
+                        }
+                        rule.min = ruleCfg.get("min");
+                        rule.max = ruleCfg.get("max");
+                        break;
+                    case 5:
+                        rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.EDGE_GROUP;
+                        coilType = ruleCfg.get("block");
+                        switch(coilType){
+                            case 0:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CASING;
+                                break;
+                            case 1:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.COIL;
+                                break;
+                            case 2:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.BEARING;
+                                break;
+                            case 3:
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CONNECTOR;
+                                break;
+                        }
+                        break;
+                    case 6:
+                        rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.OR;
+                        ConfigList rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverTurbineRule(rulC));
+                        }
+                        break;
+                    case 7:
+                        rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AND;
+                        rules = ruleCfg.get("rules");
+                        for(Iterator rit = rules.iterator(); rit.hasNext();){
+                            Config rulC = (Config)rit.next();
+                            rule.rules.add(readOverTurbineRule(rulC));
+                        }
+                        break;
+                }
+                return rule;
+            }
+            private Configuration loadConfiguration(Config config){
+                boolean partial = config.get("partial");
+                Configuration configuration;
+                if(partial)configuration = new PartialConfiguration(config.get("name"), config.get("version"), config.get("underhaulVersion"));
+                else configuration = new Configuration(config.get("name"), config.get("version"), config.get("underhaulVersion"));
+                configuration.addon = config.get("addon");
+                //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
+                if(config.hasProperty("underhaul")){
+                    configuration.underhaul = new UnderhaulConfiguration();
+                    Config underhaul = config.get("underhaul");
+                    if(underhaul.hasProperty("fissionSFR")){
+                        configuration.underhaul.fissionSFR = new multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
+                        Config fissionSFR = underhaul.get("fissionSFR");
+                        configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                        configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                        configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                        configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
+                        configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
+                        configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
+                        ConfigList blocks = fissionSFR.get("blocks");
+                        underhaulPostLoadMap.clear();
+                        for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.underhaul.fissionsfr.Block block = new multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
+                            block.active = blockCfg.get("active");
+                            block.cooling = blockCfg.get("cooling", 0);
+                            block.fuelCell = blockCfg.get("fuelCell", false);
+                            block.moderator = blockCfg.get("moderator", false);
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setTexture(image);
+                            }
+                            if(blockCfg.hasProperty("rules")){
+                                ConfigList rules = blockCfg.get("rules");
+                                for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                    Config ruleCfg = (Config)rit.next();
+                                    block.rules.add(readUnderRule(ruleCfg));
+                                }
+                            }
+                            configuration.underhaul.fissionSFR.allBlocks.add(block);configuration.underhaul.fissionSFR.blocks.add(block);
+                        }
+                        for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
+                            byte index = underhaulPostLoadMap.get(rule);
+                            if(index==0){
+                                if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                            }else{
+                                rule.block = configuration.underhaul.fissionSFR.allBlocks.get(index-1);
+                            }
+                        }
+                        ConfigList fuels = fissionSFR.get("fuels");
+                        for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                            Config fuelCfg = (Config)fit.next();
+                            multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
+                            configuration.underhaul.fissionSFR.allFuels.add(fuel);configuration.underhaul.fissionSFR.fuels.add(fuel);
+                        }
+                    }
+                }
+//</editor-fold>
+                //<editor-fold defaultstate="collapsed" desc="Overhaul Configuration">
+                if(config.hasProperty("overhaul")){
+                    configuration.overhaul = new OverhaulConfiguration();
+                    Config overhaul = config.get("overhaul");
+                    //<editor-fold defaultstate="collapsed" desc="Fission SFR Configuration">
+                    if(overhaul.hasProperty("fissionSFR")){
+                        configuration.overhaul.fissionSFR = new multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
+                        Config fissionSFR = overhaul.get("fissionSFR");
+                        configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                        configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                        configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                        configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
+                        configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
+                        configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
+                        ConfigList blocks = fissionSFR.get("blocks");
+                        overhaulSFRPostLoadMap.clear();
+                        for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
+                            block.cooling = blockCfg.get("cooling", 0);
+                            block.cluster = blockCfg.get("cluster", false);
+                            block.createCluster = blockCfg.get("createCluster", false);
+                            block.conductor = blockCfg.get("conductor", false);
+                            block.fuelCell = blockCfg.get("fuelCell", false);
+                            block.reflector = blockCfg.get("reflector", false);
+                            block.irradiator = blockCfg.get("irradiator", false);
+                            block.moderator = blockCfg.get("moderator", false);
+                            block.activeModerator = blockCfg.get("activeModerator", false);
+                            block.shield = blockCfg.get("shield", false);
+                            if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                            if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                            if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                            if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                            block.blocksLOS = blockCfg.get("blocksLOS", false);
+                            block.functional = blockCfg.get("functional");
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setTexture(image);
+                            }
+                            if(blockCfg.hasProperty("closedTexture")){
+                                ConfigNumberList closedTexture = blockCfg.get("closedTexture");
+                                int size = (int) closedTexture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)closedTexture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setClosedTexture(image);
+                            }
+                            if(blockCfg.hasProperty("rules")){
+                                ConfigList rules = blockCfg.get("rules");
+                                for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                    Config ruleCfg = (Config)rit.next();
+                                    block.rules.add(readOverSFRRule(ruleCfg));
+                                }
+                            }
+                            configuration.overhaul.fissionSFR.allBlocks.add(block);configuration.overhaul.fissionSFR.blocks.add(block);
+                        }
+                        for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
+                            byte index = overhaulSFRPostLoadMap.get(rule);
+                            if(index==0){
+                                if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                            }else{
+                                rule.block = configuration.overhaul.fissionSFR.allBlocks.get(index-1);
+                            }
+                        }
+                        ConfigList fuels = fissionSFR.get("fuels");
+                        for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                            Config fuelCfg = (Config)fit.next();
+                            multiblock.configuration.overhaul.fissionsfr.Fuel fuel = new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                            configuration.overhaul.fissionSFR.allFuels.add(fuel);configuration.overhaul.fissionSFR.fuels.add(fuel);
+                        }
+                        ConfigList sources = fissionSFR.get("sources");
+                        for(Iterator sit = sources.iterator(); sit.hasNext();){
+                            Config sourceCfg = (Config)sit.next();
+                            multiblock.configuration.overhaul.fissionsfr.Source source = new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                            configuration.overhaul.fissionSFR.allSources.add(source);configuration.overhaul.fissionSFR.sources.add(source);
+                        }
+                        ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
+                        for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                            Config irradiatorRecipeCfg = (Config)irit.next();
+                            multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                            configuration.overhaul.fissionSFR.allIrradiatorRecipes.add(irrecipe);configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrecipe);
+                        }
+                        ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
+                        for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
+                            Config coolantRecipeCfg = (Config)irit.next();
+                            multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio"));
+                            configuration.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
+                        }
+                    }
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Fission MSR Configuration">
+                    if(overhaul.hasProperty("fissionMSR")){
+                        configuration.overhaul.fissionMSR = new multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
+                        Config fissionMSR = overhaul.get("fissionMSR");
+                        configuration.overhaul.fissionMSR.minSize = fissionMSR.get("minSize");
+                        configuration.overhaul.fissionMSR.maxSize = fissionMSR.get("maxSize");
+                        configuration.overhaul.fissionMSR.neutronReach = fissionMSR.get("neutronReach");
+                        configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = fissionMSR.get("coolingEfficiencyLeniency");
+                        configuration.overhaul.fissionMSR.sparsityPenaltyMult = fissionMSR.get("sparsityPenaltyMult");
+                        configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = fissionMSR.get("sparsityPenaltyThreshold");
+                        ConfigList blocks = fissionMSR.get("blocks");
+                        overhaulMSRPostLoadMap.clear();
+                        for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.overhaul.fissionmsr.Block block = new multiblock.configuration.overhaul.fissionmsr.Block(blockCfg.get("name"));
+                            block.cooling = blockCfg.get("cooling", 0);
+                            block.input = blockCfg.get("input");
+                            block.output = blockCfg.get("output");
+                            block.cluster = blockCfg.get("cluster", false);
+                            block.createCluster = blockCfg.get("createCluster", false);
+                            block.conductor = blockCfg.get("conductor", false);
+                            block.fuelVessel = blockCfg.get("fuelVessel", false);
+                            block.reflector = blockCfg.get("reflector", false);
+                            block.irradiator = blockCfg.get("irradiator", false);
+                            block.moderator = blockCfg.get("moderator", false);
+                            block.activeModerator = blockCfg.get("activeModerator", false);
+                            block.shield = blockCfg.get("shield", false);
+                            if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                            if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                            if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                            if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                            block.blocksLOS = blockCfg.get("blocksLOS", false);
+                            block.functional = blockCfg.get("functional");
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setTexture(image);
+                            }
+                            if(blockCfg.hasProperty("closedTexture")){
+                                ConfigNumberList closedTexture = blockCfg.get("closedTexture");
+                                int size = (int) closedTexture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)closedTexture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setClosedTexture(image);
+                            }
+                            if(blockCfg.hasProperty("rules")){
+                                ConfigList rules = blockCfg.get("rules");
+                                for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                    Config ruleCfg = (Config)rit.next();
+                                    block.rules.add(readOverMSRRule(ruleCfg));
+                                }
+                            }
+                            configuration.overhaul.fissionMSR.allBlocks.add(block);configuration.overhaul.fissionMSR.blocks.add(block);
+                        }
+                        for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
+                            byte index = overhaulMSRPostLoadMap.get(rule);
+                            if(index==0){
+                                if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
+                                if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                            }else{
+                                rule.block = configuration.overhaul.fissionMSR.allBlocks.get(index-1);
+                            }
+                        }
+                        ConfigList fuels = fissionMSR.get("fuels");
+                        for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                            Config fuelCfg = (Config)fit.next();
+                            multiblock.configuration.overhaul.fissionmsr.Fuel fuel = new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                            configuration.overhaul.fissionMSR.allFuels.add(fuel);configuration.overhaul.fissionMSR.fuels.add(fuel);
+                        }
+                        ConfigList sources = fissionMSR.get("sources");
+                        for(Iterator sit = sources.iterator(); sit.hasNext();){
+                            Config sourceCfg = (Config)sit.next();
+                            multiblock.configuration.overhaul.fissionmsr.Source source = new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                            configuration.overhaul.fissionMSR.allSources.add(source);configuration.overhaul.fissionMSR.sources.add(source);
+                        }
+                        ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
+                        for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                            Config irradiatorRecipeCfg = (Config)irit.next();
+                            multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                            configuration.overhaul.fissionMSR.allIrradiatorRecipes.add(irrecipe);configuration.overhaul.fissionMSR.irradiatorRecipes.add(irrecipe);
+                        }
+                    }
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Turbine Configuration">
+                    if(overhaul.hasProperty("turbine")){
+                        configuration.overhaul.turbine = new multiblock.configuration.overhaul.turbine.TurbineConfiguration();
+                        Config turbine = overhaul.get("turbine");
+                        configuration.overhaul.turbine.minWidth = turbine.get("minWidth");
+                        configuration.overhaul.turbine.minLength = turbine.get("minLength");
+                        configuration.overhaul.turbine.maxSize = turbine.get("maxSize");
+                        configuration.overhaul.turbine.fluidPerBlade = turbine.get("fluidPerBlade");
+                        configuration.overhaul.turbine.throughputEfficiencyLeniency = turbine.get("throughputEfficiencyLeniency");
+                        configuration.overhaul.turbine.throughputFactor = turbine.get("throughputFactor");
+                        configuration.overhaul.turbine.powerBonus = turbine.get("powerBonus");
+                        ConfigList coils = turbine.get("coils");
+                        overhaulTurbinePostLoadMap.clear();
+                        for(Iterator bit = coils.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.overhaul.turbine.Coil coil = new multiblock.configuration.overhaul.turbine.Coil(blockCfg.get("name"));
+                            coil.bearing = blockCfg.get("bearing", false);
+                            coil.connector = blockCfg.get("connector", false);
+                            coil.efficiency = blockCfg.get("efficiency");
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                coil.setTexture(image);
+                            }
+                            if(blockCfg.hasProperty("rules")){
+                                ConfigList rules = blockCfg.get("rules");
+                                for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                    Config ruleCfg = (Config)rit.next();
+                                    coil.rules.add(readOverTurbineRule(ruleCfg));
+                                }
+                            }
+                            configuration.overhaul.turbine.allCoils.add(coil);configuration.overhaul.turbine.coils.add(coil);
+                        }
+                        ConfigList blades = turbine.get("blades");
+                        for(Iterator bit = blades.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.overhaul.turbine.Blade blade = new multiblock.configuration.overhaul.turbine.Blade(blockCfg.get("name"));
+                            blade.expansion = blockCfg.get("expansion");
+                            blade.efficiency = blockCfg.get("efficiency");
+                            blade.stator = blockCfg.get("stator");
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                blade.setTexture(image);
+                            }
+                            configuration.overhaul.turbine.allBlades.add(blade);configuration.overhaul.turbine.blades.add(blade);
+                        }
+                        for(multiblock.configuration.overhaul.turbine.PlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
+                            byte index = overhaulTurbinePostLoadMap.get(rule);
+                            if(index==0){
+                                if(rule.ruleType==multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL_GROUP;
+                                if(rule.ruleType==multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN_GROUP;
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CASING;
+                            }else{
+                                rule.coil = configuration.overhaul.turbine.allCoils.get(index-1);
+                            }
+                        }
+                        ConfigList recipes = turbine.get("recipes");
+                        for(Iterator irit = recipes.iterator(); irit.hasNext();){
+                            Config recipeCfg = (Config)irit.next();
+                            multiblock.configuration.overhaul.turbine.Recipe recipe = new multiblock.configuration.overhaul.turbine.Recipe(recipeCfg.get("name"), recipeCfg.get("input"), recipeCfg.get("output"), recipeCfg.get("power"), recipeCfg.get("coefficient"));
+                            configuration.overhaul.turbine.allRecipes.add(recipe);configuration.overhaul.turbine.recipes.add(recipe);
+                        }
+                    }
+//</editor-fold>
+                }
+//</editor-fold>
+                if(config.hasProperty("addons")){
+                    ConfigList addons = config.get("addons");
+                    for(int i = 0; i<addons.size(); i++){
+                        configuration.addons.add(loadAddon(configuration, addons.get(i)));
+                    }
+                }
+                return configuration;
+            }
+            private Configuration loadAddon(Configuration parent, Config config){
+                boolean partial = config.get("partial");
+                Configuration configuration;
+                if(partial)configuration = new PartialConfiguration(config.get("name"), config.get("version"), config.get("underhaulVersion"));
+                else configuration = new Configuration(config.get("name"), config.get("version"), config.get("underhaulVersion"));
+                configuration.addon = config.get("addon");
+                //<editor-fold defaultstate="collapsed" desc="Underhaul Configuration">
+                if(config.hasProperty("underhaul")){
+                    configuration.underhaul = new UnderhaulConfiguration();
+                    Config underhaul = config.get("underhaul");
+                    if(underhaul.hasProperty("fissionSFR")){
+                        configuration.underhaul.fissionSFR = new multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
+                        Config fissionSFR = underhaul.get("fissionSFR");
+                        configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                        configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                        configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                        configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
+                        configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
+                        configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
+                        ConfigList blocks = fissionSFR.get("blocks");
+                        underhaulPostLoadMap.clear();
+                        for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.underhaul.fissionsfr.Block block = new multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
+                            block.active = blockCfg.get("active");
+                            block.cooling = blockCfg.get("cooling", 0);
+                            block.fuelCell = blockCfg.get("fuelCell", false);
+                            block.moderator = blockCfg.get("moderator", false);
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setTexture(image);
+                            }
+                            if(blockCfg.hasProperty("rules")){
+                                ConfigList rules = blockCfg.get("rules");
+                                for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                    Config ruleCfg = (Config)rit.next();
+                                    block.rules.add(readUnderRule(ruleCfg));
+                                }
+                            }
+                            parent.underhaul.fissionSFR.allBlocks.add(block);configuration.underhaul.fissionSFR.blocks.add(block);
+                        }
+                        for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
+                            byte index = underhaulPostLoadMap.get(rule);
+                            if(index==0){
+                                if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                if(rule.ruleType==multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                            }else{
+                                rule.block = parent.underhaul.fissionSFR.allBlocks.get(index-1);
+                            }
+                        }
+                        ConfigList fuels = fissionSFR.get("fuels");
+                        for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                            Config fuelCfg = (Config)fit.next();
+                            multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
+                            parent.underhaul.fissionSFR.allFuels.add(fuel);configuration.underhaul.fissionSFR.fuels.add(fuel);
+                        }
+                    }
+                }
+//</editor-fold>
+                //<editor-fold defaultstate="collapsed" desc="Overhaul Configuration">
+                if(config.hasProperty("overhaul")){
+                    configuration.overhaul = new OverhaulConfiguration();
+                    Config overhaul = config.get("overhaul");
+                    //<editor-fold defaultstate="collapsed" desc="Fission SFR Configuration">
+                    if(overhaul.hasProperty("fissionSFR")){
+                        configuration.overhaul.fissionSFR = new multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
+                        Config fissionSFR = overhaul.get("fissionSFR");
+                        configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                        configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                        configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                        configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
+                        configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
+                        configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
+                        ConfigList blocks = fissionSFR.get("blocks");
+                        overhaulSFRPostLoadMap.clear();
+                        for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
+                            block.cooling = blockCfg.get("cooling", 0);
+                            block.cluster = blockCfg.get("cluster", false);
+                            block.createCluster = blockCfg.get("createCluster", false);
+                            block.conductor = blockCfg.get("conductor", false);
+                            block.fuelCell = blockCfg.get("fuelCell", false);
+                            block.reflector = blockCfg.get("reflector", false);
+                            block.irradiator = blockCfg.get("irradiator", false);
+                            block.moderator = blockCfg.get("moderator", false);
+                            block.activeModerator = blockCfg.get("activeModerator", false);
+                            block.shield = blockCfg.get("shield", false);
+                            if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                            if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                            if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                            if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                            block.blocksLOS = blockCfg.get("blocksLOS", false);
+                            block.functional = blockCfg.get("functional");
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setTexture(image);
+                            }
+                            if(blockCfg.hasProperty("closedTexture")){
+                                ConfigNumberList closedTexture = blockCfg.get("closedTexture");
+                                int size = (int) closedTexture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)closedTexture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setClosedTexture(image);
+                            }
+                            if(blockCfg.hasProperty("rules")){
+                                ConfigList rules = blockCfg.get("rules");
+                                for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                    Config ruleCfg = (Config)rit.next();
+                                    block.rules.add(readOverSFRRule(ruleCfg));
+                                }
+                            }
+                            parent.overhaul.fissionSFR.allBlocks.add(block);configuration.overhaul.fissionSFR.blocks.add(block);
+                        }
+                        for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
+                            byte index = overhaulSFRPostLoadMap.get(rule);
+                            if(index==0){
+                                if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
+                                if(rule.ruleType==multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
+                            }else{
+                                rule.block = parent.overhaul.fissionSFR.allBlocks.get(index-1);
+                            }
+                        }
+                        ConfigList fuels = fissionSFR.get("fuels");
+                        for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                            Config fuelCfg = (Config)fit.next();
+                            multiblock.configuration.overhaul.fissionsfr.Fuel fuel = new multiblock.configuration.overhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                            parent.overhaul.fissionSFR.allFuels.add(fuel);configuration.overhaul.fissionSFR.fuels.add(fuel);
+                        }
+                        ConfigList sources = fissionSFR.get("sources");
+                        for(Iterator sit = sources.iterator(); sit.hasNext();){
+                            Config sourceCfg = (Config)sit.next();
+                            multiblock.configuration.overhaul.fissionsfr.Source source = new multiblock.configuration.overhaul.fissionsfr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                            parent.overhaul.fissionSFR.allSources.add(source);configuration.overhaul.fissionSFR.sources.add(source);
+                        }
+                        ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
+                        for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                            Config irradiatorRecipeCfg = (Config)irit.next();
+                            multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                            parent.overhaul.fissionSFR.allIrradiatorRecipes.add(irrecipe);configuration.overhaul.fissionSFR.irradiatorRecipes.add(irrecipe);
+                        }
+                        ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
+                        for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
+                            Config coolantRecipeCfg = (Config)irit.next();
+                            multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("name"), coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.get("outputRatio"));
+                            parent.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
+                        }
+                    }
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Fission MSR Configuration">
+                    if(overhaul.hasProperty("fissionMSR")){
+                        configuration.overhaul.fissionMSR = new multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
+                        Config fissionMSR = overhaul.get("fissionMSR");
+                        configuration.overhaul.fissionMSR.minSize = fissionMSR.get("minSize");
+                        configuration.overhaul.fissionMSR.maxSize = fissionMSR.get("maxSize");
+                        configuration.overhaul.fissionMSR.neutronReach = fissionMSR.get("neutronReach");
+                        configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = fissionMSR.get("coolingEfficiencyLeniency");
+                        configuration.overhaul.fissionMSR.sparsityPenaltyMult = fissionMSR.get("sparsityPenaltyMult");
+                        configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = fissionMSR.get("sparsityPenaltyThreshold");
+                        ConfigList blocks = fissionMSR.get("blocks");
+                        overhaulMSRPostLoadMap.clear();
+                        for(Iterator bit = blocks.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.overhaul.fissionmsr.Block block = new multiblock.configuration.overhaul.fissionmsr.Block(blockCfg.get("name"));
+                            block.cooling = blockCfg.get("cooling", 0);
+                            block.input = blockCfg.get("input");
+                            block.output = blockCfg.get("output");
+                            block.cluster = blockCfg.get("cluster", false);
+                            block.createCluster = blockCfg.get("createCluster", false);
+                            block.conductor = blockCfg.get("conductor", false);
+                            block.fuelVessel = blockCfg.get("fuelVessel", false);
+                            block.reflector = blockCfg.get("reflector", false);
+                            block.irradiator = blockCfg.get("irradiator", false);
+                            block.moderator = blockCfg.get("moderator", false);
+                            block.activeModerator = blockCfg.get("activeModerator", false);
+                            block.shield = blockCfg.get("shield", false);
+                            if(blockCfg.hasProperty("flux"))block.flux = blockCfg.get("flux");
+                            if(blockCfg.hasProperty("efficiency"))block.efficiency = blockCfg.get("efficiency");
+                            if(blockCfg.hasProperty("reflectivity"))block.reflectivity = blockCfg.get("reflectivity");
+                            if(blockCfg.hasProperty("heatMult"))block.heatMult = blockCfg.get("heatMult");
+                            block.blocksLOS = blockCfg.get("blocksLOS", false);
+                            block.functional = blockCfg.get("functional");
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setTexture(image);
+                            }
+                            if(blockCfg.hasProperty("closedTexture")){
+                                ConfigNumberList closedTexture = blockCfg.get("closedTexture");
+                                int size = (int) closedTexture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)closedTexture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                block.setClosedTexture(image);
+                            }
+                            if(blockCfg.hasProperty("rules")){
+                                ConfigList rules = blockCfg.get("rules");
+                                for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                    Config ruleCfg = (Config)rit.next();
+                                    block.rules.add(readOverMSRRule(ruleCfg));
+                                }
+                            }
+                            parent.overhaul.fissionMSR.allBlocks.add(block);configuration.overhaul.fissionMSR.blocks.add(block);
+                        }
+                        for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
+                            byte index = overhaulMSRPostLoadMap.get(rule);
+                            if(index==0){
+                                if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
+                                if(rule.ruleType==multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
+                                rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
+                            }else{
+                                rule.block = parent.overhaul.fissionMSR.allBlocks.get(index-1);
+                            }
+                        }
+                        ConfigList fuels = fissionMSR.get("fuels");
+                        for(Iterator fit = fuels.iterator(); fit.hasNext();){
+                            Config fuelCfg = (Config)fit.next();
+                            multiblock.configuration.overhaul.fissionmsr.Fuel fuel = new multiblock.configuration.overhaul.fissionmsr.Fuel(fuelCfg.get("name"), fuelCfg.get("efficiency"), fuelCfg.get("heat"), fuelCfg.get("time"), fuelCfg.get("criticality"), fuelCfg.get("selfPriming"));
+                            parent.overhaul.fissionMSR.allFuels.add(fuel);configuration.overhaul.fissionMSR.fuels.add(fuel);
+                        }
+                        ConfigList sources = fissionMSR.get("sources");
+                        for(Iterator sit = sources.iterator(); sit.hasNext();){
+                            Config sourceCfg = (Config)sit.next();
+                            multiblock.configuration.overhaul.fissionmsr.Source source = new multiblock.configuration.overhaul.fissionmsr.Source(sourceCfg.get("name"), sourceCfg.get("efficiency"));
+                            parent.overhaul.fissionMSR.allSources.add(source);configuration.overhaul.fissionMSR.sources.add(source);
+                        }
+                        ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
+                        for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
+                            Config irradiatorRecipeCfg = (Config)irit.next();
+                            multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irrecipe = new multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe(irradiatorRecipeCfg.get("name"), irradiatorRecipeCfg.get("efficiency"), irradiatorRecipeCfg.get("heat"));
+                            parent.overhaul.fissionMSR.allIrradiatorRecipes.add(irrecipe);configuration.overhaul.fissionMSR.irradiatorRecipes.add(irrecipe);
+                        }
+                    }
+//</editor-fold>
+                    //<editor-fold defaultstate="collapsed" desc="Turbine Configuration">
+                    if(overhaul.hasProperty("turbine")){
+                        configuration.overhaul.turbine = new multiblock.configuration.overhaul.turbine.TurbineConfiguration();
+                        Config turbine = overhaul.get("turbine");
+                        configuration.overhaul.turbine.minWidth = turbine.get("minWidth");
+                        configuration.overhaul.turbine.minLength = turbine.get("minLength");
+                        configuration.overhaul.turbine.maxSize = turbine.get("maxSize");
+                        configuration.overhaul.turbine.fluidPerBlade = turbine.get("fluidPerBlade");
+                        configuration.overhaul.turbine.throughputEfficiencyLeniency = turbine.get("throughputEfficiencyLeniency");
+                        configuration.overhaul.turbine.throughputFactor = turbine.get("throughputFactor");
+                        configuration.overhaul.turbine.powerBonus = turbine.get("powerBonus");
+                        ConfigList coils = turbine.get("coils");
+                        overhaulTurbinePostLoadMap.clear();
+                        for(Iterator bit = coils.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.overhaul.turbine.Coil coil = new multiblock.configuration.overhaul.turbine.Coil(blockCfg.get("name"));
+                            coil.bearing = blockCfg.get("bearing", false);
+                            coil.connector = blockCfg.get("connector", false);
+                            coil.efficiency = blockCfg.get("efficiency");
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                coil.setTexture(image);
+                            }
+                            if(blockCfg.hasProperty("rules")){
+                                ConfigList rules = blockCfg.get("rules");
+                                for(Iterator rit = rules.iterator(); rit.hasNext();){
+                                    Config ruleCfg = (Config)rit.next();
+                                    coil.rules.add(readOverTurbineRule(ruleCfg));
+                                }
+                            }
+                            parent.overhaul.turbine.allCoils.add(coil);configuration.overhaul.turbine.coils.add(coil);
+                        }
+                        ConfigList blades = turbine.get("blades");
+                        for(Iterator bit = blades.iterator(); bit.hasNext();){
+                            Config blockCfg = (Config)bit.next();
+                            multiblock.configuration.overhaul.turbine.Blade blade = new multiblock.configuration.overhaul.turbine.Blade(blockCfg.get("name"));
+                            blade.expansion = blockCfg.get("expansion");
+                            blade.efficiency = blockCfg.get("efficiency");
+                            blade.stator = blockCfg.get("stator");
+                            if(blockCfg.hasProperty("texture")){
+                                ConfigNumberList texture = blockCfg.get("texture");
+                                int size = (int) texture.get(0);
+                                BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                                int index = 1;
+                                for(int x = 0; x<image.getWidth(); x++){
+                                    for(int y = 0; y<image.getHeight(); y++){
+                                        Color color = new Color((int)texture.get(index));
+                                        image.setRGB(x, y, color.getRGB());
+                                        index++;
+                                    }
+                                }
+                                blade.setTexture(image);
+                            }
+                            parent.overhaul.turbine.allBlades.add(blade);configuration.overhaul.turbine.blades.add(blade);
+                        }
+                        for(multiblock.configuration.overhaul.turbine.PlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
+                            byte index = overhaulTurbinePostLoadMap.get(rule);
+                            if(index==0){
+                                if(rule.ruleType==multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL)rule.ruleType=multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL_GROUP;
+                                if(rule.ruleType==multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN)rule.ruleType=multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN_GROUP;
+                                rule.coilType = multiblock.configuration.overhaul.turbine.PlacementRule.CoilType.CASING;
+                            }else{
+                                rule.coil = parent.overhaul.turbine.allCoils.get(index-1);
+                            }
+                        }
+                        ConfigList recipes = turbine.get("recipes");
+                        for(Iterator irit = recipes.iterator(); irit.hasNext();){
+                            Config recipeCfg = (Config)irit.next();
+                            multiblock.configuration.overhaul.turbine.Recipe recipe = new multiblock.configuration.overhaul.turbine.Recipe(recipeCfg.get("name"), recipeCfg.get("input"), recipeCfg.get("output"), recipeCfg.get("power"), recipeCfg.get("coefficient"));
+                            parent.overhaul.turbine.allRecipes.add(recipe);configuration.overhaul.turbine.recipes.add(recipe);
+                        }
+                    }
+//</editor-fold>
+                }
+//</editor-fold>
+                if(config.hasProperty("addons")){
+                    ConfigList addons = config.get("addons");
+                    for(int i = 0; i<addons.size(); i++){
+                        configuration.addons.add(loadAddon(configuration, addons.get(i)));
+                    }
+                }
+                return configuration;
+            }
+        });// .ncpf version 5
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){

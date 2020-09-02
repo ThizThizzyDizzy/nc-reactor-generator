@@ -1,5 +1,5 @@
 package planner.menu.configuration.overhaul.fissionsfr;
-import org.lwjgl.opengl.Display;
+import multiblock.configuration.Configuration;
 import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.menu.component.MenuComponentMinimaList;
@@ -13,21 +13,24 @@ public class MenuCoolantRecipesConfiguration extends Menu{
     private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Coolant Recipe", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private boolean refreshNeeded = false;
-    public MenuCoolantRecipesConfiguration(GUI gui, Menu parent){
+    private final Configuration configuration;
+    public MenuCoolantRecipesConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent);
         add.addActionListener((e) -> {
             CoolantRecipe b = new CoolantRecipe("New Coolant Recipe", "Input", "Output", 0, 0);
-            Core.configuration.overhaul.fissionSFR.coolantRecipes.add(b);
+            configuration.overhaul.fissionSFR.coolantRecipes.add(b);
+            Core.configuration.overhaul.fissionSFR.allCoolantRecipes.add(b);
             gui.open(new MenuCoolantRecipeConfiguration(gui, this, b));
         });
         back.addActionListener((e) -> {
             gui.open(parent);
         });
+        this.configuration = configuration;
     }
     @Override
     public void onGUIOpened(){
         list.components.clear();
-        for(CoolantRecipe b : Core.configuration.overhaul.fissionSFR.coolantRecipes){
+        for(CoolantRecipe b : configuration.overhaul.fissionSFR.coolantRecipes){
             list.add(new MenuComponentCoolantRecipeConfiguration(b));
         }
     }
@@ -41,14 +44,14 @@ public class MenuCoolantRecipesConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        list.width = Display.getWidth();
-        list.height = Display.getHeight()-back.height-add.height;
+        list.width = Core.helper.displayWidth();
+        list.height = Core.helper.displayHeight()-back.height-add.height;
         for(MenuComponent component : list.components){
             component.width = list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0);
         }
-        add.width = back.width = Display.getWidth();
-        add.height = back.height = Display.getHeight()/16;
-        back.y = Display.getHeight()-back.height;
+        add.width = back.width = Core.helper.displayWidth();
+        add.height = back.height = Core.helper.displayHeight()/16;
+        back.y = Core.helper.displayHeight()-back.height;
         add.y = back.y-add.height;
         super.render(millisSinceLastTick);
     }
@@ -57,7 +60,8 @@ public class MenuCoolantRecipesConfiguration extends Menu{
         for(MenuComponent c : list.components){
             if(c instanceof MenuComponentCoolantRecipeConfiguration){
                 if(button==((MenuComponentCoolantRecipeConfiguration) c).delete){
-                    Core.configuration.overhaul.fissionSFR.coolantRecipes.remove(((MenuComponentCoolantRecipeConfiguration) c).coolantRecipe);
+                    configuration.overhaul.fissionSFR.coolantRecipes.remove(((MenuComponentCoolantRecipeConfiguration) c).coolantRecipe);
+                    Core.configuration.overhaul.fissionSFR.allCoolantRecipes.remove(((MenuComponentCoolantRecipeConfiguration) c).coolantRecipe);
                     refreshNeeded = true;
                     return;
                 }

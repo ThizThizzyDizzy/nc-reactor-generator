@@ -1,39 +1,87 @@
 package planner.menu.configuration.overhaul;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration;
+import multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
+import multiblock.configuration.overhaul.turbine.TurbineConfiguration;
+import planner.Core;
 import planner.menu.configuration.overhaul.fissionsfr.MenuFissionSFRConfiguration;
 import planner.menu.configuration.overhaul.fissionmsr.MenuFissionMSRConfiguration;
-import org.lwjgl.opengl.Display;
-import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.configuration.overhaul.turbine.MenuTurbineConfiguration;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuOverhaulConfiguration extends Menu{
-    private final MenuComponentMinimalistButton fissionSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Solid-Fueled Fission Configuration", Core.configuration.overhaul.fissionSFR!=null, true));
-    private final MenuComponentMinimalistButton fissionMSR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Molten Salt Fission Configuration", Core.configuration.overhaul.fissionMSR!=null, true));
-    private final MenuComponentMinimalistButton turbine = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Turbine Configuration", Core.configuration.overhaul.turbine!=null, true));
+    private final MenuComponentMinimalistButton fissionSFR;
+    private final MenuComponentMinimalistButton fissionMSR;
+    private final MenuComponentMinimalistButton turbine;
+    private final MenuComponentMinimalistButton deleteSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true));
+    private final MenuComponentMinimalistButton deleteMSR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true));
+    private final MenuComponentMinimalistButton deleteTurbine = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
-    public MenuOverhaulConfiguration(GUI gui, Menu parent){
+    private final Configuration configuration;
+    public MenuOverhaulConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent);
+        fissionSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Solid-Fueled Fission Configuration", configuration.overhaul.fissionSFR!=null, true));
+        fissionMSR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Molten Salt Fission Configuration", configuration.overhaul.fissionMSR!=null, true));
+        turbine = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Turbine Configuration", configuration.overhaul.turbine!=null, true));
         fissionSFR.addActionListener((e) -> {
-            gui.open(new MenuFissionSFRConfiguration(gui, this));
+            gui.open(new MenuFissionSFRConfiguration(gui, this, configuration));
         });
         fissionMSR.addActionListener((e) -> {
-            gui.open(new MenuFissionMSRConfiguration(gui, this));
+            gui.open(new MenuFissionMSRConfiguration(gui, this, configuration));
         });
         turbine.addActionListener((e) -> {
-            gui.open(new MenuTurbineConfiguration(gui, this));
+            gui.open(new MenuTurbineConfiguration(gui, this, configuration));
+        });
+        deleteSFR.addActionListener((e) -> {
+            if(configuration.overhaul.fissionSFR==null){
+                configuration.overhaul.fissionSFR = new FissionSFRConfiguration();
+            }else{
+                configuration.overhaul.fissionSFR = null;
+            }
+            onGUIOpened();
+        });
+        deleteMSR.addActionListener((e) -> {
+            if(configuration.overhaul.fissionMSR==null){
+                configuration.overhaul.fissionMSR = new FissionMSRConfiguration();
+            }else{
+                configuration.overhaul.fissionMSR = null;
+            }
+            onGUIOpened();
+        });
+        deleteTurbine.addActionListener((e) -> {
+            if(configuration.overhaul.turbine==null){
+                configuration.overhaul.turbine = new TurbineConfiguration();
+            }else{
+                configuration.overhaul.turbine = null;
+            }
+            onGUIOpened();
         });
         back.addActionListener((e) -> {
             gui.open(parent);
         });
+        this.configuration = configuration;
+    }
+    @Override
+    public void onGUIOpened(){
+        fissionSFR.enabled = configuration.overhaul.fissionSFR!=null;
+        fissionMSR.enabled = configuration.overhaul.fissionMSR!=null;
+        turbine.enabled = configuration.overhaul.turbine!=null;
     }
     @Override
     public void render(int millisSinceLastTick){
-        fissionSFR.width = fissionMSR.width = turbine.width = back.width = Display.getWidth();
-        fissionSFR.height = fissionMSR.height = turbine.height = back.height = Display.getHeight()/16;
-        fissionMSR.y = fissionSFR.height;
-        turbine.y = fissionMSR.y+fissionMSR.height;
-        back.y = Display.getHeight()-back.height;
+        deleteSFR.enabled = deleteMSR.enabled = deleteTurbine.enabled = Core.isShiftPressed();
+        deleteSFR.label = (configuration.overhaul.fissionSFR==null?"Create":"Delete")+" (Shift)";
+        deleteMSR.label = (configuration.overhaul.fissionMSR==null?"Create":"Delete")+" (Shift)";
+        deleteTurbine.label = (configuration.overhaul.turbine==null?"Create":"Delete")+" (Shift)";
+        back.width = Core.helper.displayWidth();
+        fissionSFR.width = fissionMSR.width = turbine.width = Core.helper.displayWidth()*3/4;
+        deleteSFR.width = deleteMSR.width = deleteTurbine.width = Core.helper.displayWidth()/4;
+        deleteSFR.x = deleteMSR.x = deleteTurbine.x = fissionSFR.width;
+        deleteSFR.height = deleteMSR.height = deleteTurbine.height = fissionSFR.height = fissionMSR.height = turbine.height = back.height = Core.helper.displayHeight()/16;
+        deleteMSR.y = fissionMSR.y = fissionSFR.height;
+        deleteTurbine.y = turbine.y = fissionMSR.y+fissionMSR.height;
+        back.y = Core.helper.displayHeight()-back.height;
         super.render(millisSinceLastTick);
     }
 }

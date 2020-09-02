@@ -3,11 +3,22 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration{
+    public ArrayList<Block> allBlocks = new ArrayList<>();
+    public ArrayList<Fuel> allFuels = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allBlocks
+     */
+    @Deprecated
     public ArrayList<Block> blocks = new ArrayList<>();
+    /**
+     * @deprecated You should probably be using allFuels
+     */
+    @Deprecated
     public ArrayList<Fuel> fuels = new ArrayList<>();
     public int minSize;
     public int maxSize;
@@ -15,24 +26,26 @@ public class FissionSFRConfiguration{
     public float moderatorExtraPower;
     public float moderatorExtraHeat;
     public int activeCoolerRate;
-    public String[] getBlockStringList(){
-        String[] strs = new String[blocks.size()];
+    public String[] getAllBlocksStringList(){
+        String[] strs = new String[allBlocks.size()];
         for(int i = 0; i<strs.length; i++){
-            strs[i] = blocks.get(i).name;
+            strs[i] = allBlocks.get(i).name;
         }
         return strs;
     }
-    public Config save(boolean partial){
+    public Config save(Configuration parent, boolean partial){
         Config config = Config.newConfig();
-        config.set("minSize", minSize);
-        config.set("maxSize", maxSize);
-        config.set("neutronReach", neutronReach);
-        config.set("moderatorExtraPower", moderatorExtraPower);
-        config.set("moderatorExtraHeat", moderatorExtraHeat);
-        config.set("activeCoolerRate", activeCoolerRate);
+        if(parent==null){
+            config.set("minSize", minSize);
+            config.set("maxSize", maxSize);
+            config.set("neutronReach", neutronReach);
+            config.set("moderatorExtraPower", moderatorExtraPower);
+            config.set("moderatorExtraHeat", moderatorExtraHeat);
+            config.set("activeCoolerRate", activeCoolerRate);
+        }
         ConfigList blocks = new ConfigList();
         for(Block b : this.blocks){
-            blocks.add(b.save(this, partial));
+            blocks.add(b.save(parent, this, partial));
         }
         config.set("blocks", blocks);
         ConfigList fuels = new ConfigList();

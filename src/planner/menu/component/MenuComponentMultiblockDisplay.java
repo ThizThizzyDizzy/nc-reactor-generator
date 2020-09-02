@@ -2,6 +2,7 @@ package planner.menu.component;
 import java.util.UUID;
 import multiblock.Block;
 import multiblock.Multiblock;
+import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblockDisplay extends MenuComponent{
@@ -56,9 +57,9 @@ public class MenuComponentMultiblockDisplay extends MenuComponent{
         }
     }
     @Override
-    public void mouseEvent(int button, boolean pressed, float x, float y, float xChange, float yChange, int wheelChange){
-        super.mouseEvent(button, pressed, x, y, xChange, yChange, wheelChange);
-        if(button==0&&pressed&&Core.isShiftPressed()){
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed&&Core.isShiftPressed()){
             Multiblock mb = multiblock.copy();
             mb.metadata.put("Name", "Generated-"+UUID.randomUUID().toString());
             Core.multiblocks.add(mb);

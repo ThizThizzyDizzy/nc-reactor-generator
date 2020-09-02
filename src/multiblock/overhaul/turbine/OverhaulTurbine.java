@@ -47,7 +47,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
             throw new IllegalArgumentException("Bearing size is "+(bearingDiameter%2==0?"even":"odd")+"!, but turbine diameter is not!");
         }
         this.bearingDiameter = bearingDiameter;
-        this.recipe = recipe==null?getConfiguration().overhaul.turbine.recipes.get(0):recipe;
+        this.recipe = recipe==null?getConfiguration().overhaul.turbine.allRecipes.get(0):recipe;
         updateBlockLocations();
     }
     @Override
@@ -164,10 +164,10 @@ public class OverhaulTurbine extends Multiblock<Block>{
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.turbine==null)return;
-        for(Blade blade : getConfiguration().overhaul.turbine.blades){
+        for(Blade blade : getConfiguration().overhaul.turbine.allBlades){
             blocks.add(new Block(-1, blade));
         }
-        for(Coil coil : getConfiguration().overhaul.turbine.coils){
+        for(Coil coil : getConfiguration().overhaul.turbine.allCoils){
             blocks.add(new Block(-1, -1, -1, coil));
         }
     }
@@ -320,7 +320,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         if(bearingDiameter<=0)bearingDiameter+=2;
         Block shaft = new Block(0, null);//internal casing? :O
         Coil bearing = null;
-        for(Coil coil : getConfiguration().overhaul.turbine.coils){
+        for(Coil coil : getConfiguration().overhaul.turbine.allCoils){
             if(coil.bearing)bearing = coil;
         }
         int minD = getX()/2-bearingDiameter/2;
@@ -505,7 +505,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         for(int z = 1; z<getZ()-1; z++){
             Block block = getBlock(getX()/2, 0, z);
             if(block==null)blades.add(0);
-            else blades.add(configuration.overhaul.turbine.blades.indexOf(block.blade)+1);
+            else blades.add(configuration.overhaul.turbine.allBlades.indexOf(block.blade)+1);
         }
         config.set("blades", blades);
         ConfigNumberList coils = new ConfigNumberList();
@@ -515,12 +515,12 @@ public class OverhaulTurbine extends Multiblock<Block>{
                 for(int y = 0; y<getY(); y++){
                     Block block = getBlock(x, y, z);
                     if(block==null)coils.add(0);
-                    else coils.add(configuration.overhaul.turbine.coils.indexOf(block.coil)+1);
+                    else coils.add(configuration.overhaul.turbine.allCoils.indexOf(block.coil)+1);
                 }
             }
         }
         config.set("coils", coils);
-        config.set("recipe", (byte)configuration.overhaul.turbine.recipes.indexOf(recipe));
+        config.set("recipe", (byte)configuration.overhaul.turbine.allRecipes.indexOf(recipe));
     }
     @Override
     public void convertTo(Configuration to){

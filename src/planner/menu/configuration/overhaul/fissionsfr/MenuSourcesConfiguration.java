@@ -1,5 +1,5 @@
 package planner.menu.configuration.overhaul.fissionsfr;
-import org.lwjgl.opengl.Display;
+import multiblock.configuration.Configuration;
 import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.Source;
 import planner.menu.component.MenuComponentMinimaList;
@@ -13,21 +13,24 @@ public class MenuSourcesConfiguration extends Menu{
     private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Add Source", true, true));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private boolean refreshNeeded = false;
-    public MenuSourcesConfiguration(GUI gui, Menu parent){
+    private final Configuration configuration;
+    public MenuSourcesConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent);
         add.addActionListener((e) -> {
             Source b = new Source("New Source", 0);
-            Core.configuration.overhaul.fissionSFR.sources.add(b);
+            configuration.overhaul.fissionSFR.sources.add(b);
+            Core.configuration.overhaul.fissionSFR.allSources.add(b);
             gui.open(new MenuSourceConfiguration(gui, this, b));
         });
         back.addActionListener((e) -> {
             gui.open(parent);
         });
+        this.configuration = configuration;
     }
     @Override
     public void onGUIOpened(){
         list.components.clear();
-        for(Source b : Core.configuration.overhaul.fissionSFR.sources){
+        for(Source b : configuration.overhaul.fissionSFR.sources){
             list.add(new MenuComponentSourceConfiguration(b));
         }
     }
@@ -41,14 +44,14 @@ public class MenuSourcesConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        list.width = Display.getWidth();
-        list.height = Display.getHeight()-back.height-add.height;
+        list.width = Core.helper.displayWidth();
+        list.height = Core.helper.displayHeight()-back.height-add.height;
         for(MenuComponent component : list.components){
             component.width = list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0);
         }
-        add.width = back.width = Display.getWidth();
-        add.height = back.height = Display.getHeight()/16;
-        back.y = Display.getHeight()-back.height;
+        add.width = back.width = Core.helper.displayWidth();
+        add.height = back.height = Core.helper.displayHeight()/16;
+        back.y = Core.helper.displayHeight()-back.height;
         add.y = back.y-add.height;
         super.render(millisSinceLastTick);
     }
@@ -57,7 +60,8 @@ public class MenuSourcesConfiguration extends Menu{
         for(MenuComponent c : list.components){
             if(c instanceof MenuComponentSourceConfiguration){
                 if(button==((MenuComponentSourceConfiguration) c).delete){
-                    Core.configuration.overhaul.fissionSFR.sources.remove(((MenuComponentSourceConfiguration) c).source);
+                    configuration.overhaul.fissionSFR.sources.remove(((MenuComponentSourceConfiguration) c).source);
+                    Core.configuration.overhaul.fissionSFR.allSources.remove(((MenuComponentSourceConfiguration) c).source);
                     refreshNeeded = true;
                     return;
                 }

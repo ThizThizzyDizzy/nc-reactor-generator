@@ -1,5 +1,4 @@
 package planner.menu;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import simplelibrary.opengl.gui.GUI;
@@ -55,14 +54,14 @@ public class MenuTransition extends Menu{
         }
         @Override
         public void render(Menu from, Menu to, double ratio, int millisSinceLastTick){
-            double xOff = Display.getWidth()*(slideTo?ratio:(1-ratio))*xDiff;
-            double yOff = Display.getHeight()*(slideTo?ratio:(1-ratio))*yDiff;
+            double xOff = Core.helper.displayWidth()*(slideTo?ratio:(1-ratio))*xDiff;
+            double yOff = Core.helper.displayHeight()*(slideTo?ratio:(1-ratio))*yDiff;
             if(slideTo){
                 to.render(millisSinceLastTick);
                 GL11.glPushMatrix();
                 GL11.glTranslated(xOff, yOff, 0);
                 Core.applyColor(Core.theme.getBackgroundColor());
-                drawRect(0, 0, Display.getWidth(), Display.getHeight(), 0);
+                drawRect(0, 0, Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
                 Core.applyWhite();
                 from.render(millisSinceLastTick);
                 GL11.glPopMatrix();
@@ -71,7 +70,7 @@ public class MenuTransition extends Menu{
                 GL11.glPushMatrix();
                 GL11.glTranslated(xOff, yOff, 0);
                 Core.applyColor(Core.theme.getBackgroundColor());
-                drawRect(0, 0, Display.getWidth(), Display.getHeight(), 0);
+                drawRect(0, 0, Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
                 Core.applyWhite();
                 to.render(millisSinceLastTick);
                 GL11.glPopMatrix();

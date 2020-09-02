@@ -1,5 +1,4 @@
 package planner.menu.configuration.overhaul.turbine;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Recipe;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -36,20 +35,20 @@ public class MenuRecipeConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        back.width = name.width = Display.getWidth();
-        coefficient.width = input.width = output.width = power.width = Display.getWidth()*.75;
-        coefficient.x = input.x = output.x = power.x = Display.getWidth()*.25;
-        coefficient.height = input.height = output.height = power.height = name.height = back.height = Display.getHeight()/16;
+        back.width = name.width = Core.helper.displayWidth();
+        coefficient.width = input.width = output.width = power.width = Core.helper.displayWidth()*.75;
+        coefficient.x = input.x = output.x = power.x = Core.helper.displayWidth()*.25;
+        coefficient.height = input.height = output.height = power.height = name.height = back.height = Core.helper.displayHeight()/16;
         input.y = name.height;
         output.y = input.y+input.height;
         coefficient.y = output.y+output.height;
         power.y = coefficient.y+coefficient.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/16, Display.getWidth()*.25, Display.getHeight()/16*2, "Input");
-        drawText(0, Display.getHeight()/16*2, Display.getWidth()*.25, Display.getHeight()/16*3, "Output");
-        drawText(0, Display.getHeight()/16*3, Display.getWidth()*.25, Display.getHeight()/16*4, "Coefficient");
-        drawText(0, Display.getHeight()/16*4, Display.getWidth()*.25, Display.getHeight()/16*5, "Power");
+        drawText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*2, "Input");
+        drawText(0, Core.helper.displayHeight()/16*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*3, "Output");
+        drawText(0, Core.helper.displayHeight()/16*3, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*4, "Coefficient");
+        drawText(0, Core.helper.displayHeight()/16*4, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*5, "Power");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

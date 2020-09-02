@@ -24,8 +24,4 @@ public class MenuComponentMultiblockGenerator extends MenuComponent{
         double textHeight = (int)(height*scale)-1;
         drawCenteredText(x, y+this.height/2-textHeight/2, x+width, y+this.height/2+textHeight/2, generator.getName());
     }
-    @Override
-    public boolean mouseWheelChange(int wheelChange){
-        return parent.mouseWheelChange(wheelChange);
-    }
 }

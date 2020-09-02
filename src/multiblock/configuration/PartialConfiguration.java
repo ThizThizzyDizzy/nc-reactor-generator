@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import multiblock.Multiblock;
 public class PartialConfiguration extends Configuration{
     public static PartialConfiguration generate(Configuration configuration, ArrayList<Multiblock> multiblocks){
-        PartialConfiguration partial = new PartialConfiguration(configuration.name, configuration.version, configuration.underhaulVersion);
+        PartialConfiguration partial = new PartialConfiguration(configuration.name, configuration.overhaulVersion, configuration.underhaulVersion);
         configuration.applyPartial(partial, multiblocks);
         return partial;
     }

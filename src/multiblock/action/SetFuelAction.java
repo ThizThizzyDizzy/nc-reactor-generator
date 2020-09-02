@@ -18,12 +18,12 @@ public class SetFuelAction extends Action<UnderhaulSFR>{
     public void doApply(UnderhaulSFR multiblock){
         was = multiblock.fuel;
         multiblock.fuel = recipe;
-        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
+        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
     }
     @Override
     public void doUndo(UnderhaulSFR multiblock){
         multiblock.fuel = was;
-        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
+        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
     }
     @Override
     protected void getAffectedBlocks(UnderhaulSFR multiblock, ArrayList<Block> blocks){

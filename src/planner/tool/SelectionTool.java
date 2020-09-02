@@ -1,4 +1,5 @@
 package planner.tool;
+import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.menu.MenuEdit;
 import simplelibrary.opengl.Renderer2D;
@@ -119,8 +120,8 @@ public class SelectionTool extends EditorTool{
     }
     @Override
     public void mouseReset(int button){
-        if(button==0)leftDragStart = leftDragEnd = null;
-        if(button==1)rightDragStart = rightDragEnd = null;
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = null;
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = rightDragEnd = null;
     }
     @Override
     public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
@@ -128,28 +129,28 @@ public class SelectionTool extends EditorTool{
             editor.clearSelection();
         }
         if(Core.isShiftPressed()){
-            if(button==0)editor.selectGroup(x,y,z);
-            if(button==1)editor.deselectGroup(x,y,z);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectGroup(x,y,z);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectGroup(x,y,z);
             return;
         }
         if(Core.isAltPressed()){
-            if(button==0)editor.selectCluster(x,y,z);
-            if(button==1)editor.deselectCluster(x,y,z);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectCluster(x,y,z);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectCluster(x,y,z);
             return;
         }
-        if(button==0)leftDragStart = new int[]{x,y,z};
-        if(button==1)rightDragStart = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0&&leftDragStart!=null)editor.select(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z);
-        if(button==1&&rightDragStart!=null)editor.deselect(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null)editor.select(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&rightDragStart!=null)editor.deselect(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z);
         mouseReset(button);
     }
     @Override
     public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0)leftDragEnd = new int[]{x,y,z};
-        if(button==1)rightDragEnd = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

@@ -1,5 +1,4 @@
 package planner.menu.configuration.overhaul.fissionsfr;
-import org.lwjgl.opengl.Display;
 import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -36,20 +35,20 @@ public class MenuCoolantRecipeConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        back.width = name.width = Display.getWidth();
-        heat.width = input.width = output.width = outputRatio.width = Display.getWidth()*.75;
-        heat.x = input.x = output.x = outputRatio.x = Display.getWidth()*.25;
-        heat.height = input.height = output.height = outputRatio.height = name.height = back.height = Display.getHeight()/16;
+        back.width = name.width = Core.helper.displayWidth();
+        heat.width = input.width = output.width = outputRatio.width = Core.helper.displayWidth()*.75;
+        heat.x = input.x = output.x = outputRatio.x = Core.helper.displayWidth()*.25;
+        heat.height = input.height = output.height = outputRatio.height = name.height = back.height = Core.helper.displayHeight()/16;
         input.y = name.height;
         output.y = input.y+input.height;
         heat.y = output.y+output.height;
         outputRatio.y = heat.y+heat.height;
-        back.y = Display.getHeight()-back.height;
+        back.y = Core.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Display.getHeight()/16, Display.getWidth()*.25, Display.getHeight()/16*2, "Input");
-        drawText(0, Display.getHeight()/16*2, Display.getWidth()*.25, Display.getHeight()/16*3, "Output");
-        drawText(0, Display.getHeight()/16*3, Display.getWidth()*.25, Display.getHeight()/16*4, "Heat");
-        drawText(0, Display.getHeight()/16*4, Display.getWidth()*.25, Display.getHeight()/16*5, "Output Ratio");
+        drawText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*2, "Input");
+        drawText(0, Core.helper.displayHeight()/16*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*3, "Output");
+        drawText(0, Core.helper.displayHeight()/16*3, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*4, "Heat");
+        drawText(0, Core.helper.displayHeight()/16*4, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*5, "Output Ratio");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }
