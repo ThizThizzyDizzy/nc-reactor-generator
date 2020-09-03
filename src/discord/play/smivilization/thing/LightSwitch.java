@@ -9,6 +9,7 @@ public class LightSwitch extends HutThing{
     private boolean on = true;
     public LightSwitch(UUID uuid, Hut hut){
         super(uuid, hut, "Light Switch", "light switch", 2);
+        mirrorIf = 1;
     }
     @Override
     public HutThing newInstance(UUID uuid, Hut hut){
