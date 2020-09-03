@@ -12,7 +12,6 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.Symmetry;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import planner.Core;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;

@@ -17,8 +17,6 @@ import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuGenerator extends Menu{
     private final Multiblock<Block> multiblock;
     private final MenuComponentMinimalistButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Settings", false, true).setTooltip("Modify generator settings\nThis does not stop the generator\nSettings are not applied until you click Generate"));

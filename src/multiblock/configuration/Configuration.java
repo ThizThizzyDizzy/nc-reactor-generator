@@ -10,8 +10,6 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import planner.file.FileReader;

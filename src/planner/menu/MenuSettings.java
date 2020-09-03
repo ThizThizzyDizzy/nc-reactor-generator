@@ -18,7 +18,6 @@ import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.configuration.MenuConfiguration;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
 public class MenuSettings extends Menu{
     private final MenuComponentLabel currentConfig = add(new MenuComponentLabel(0, 0, 0, 0, "Current Configuration", true));
     private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", true, true).setTooltip("Load configuration from a file, replacing the current configuration\nAny existing multiblocks will be converted to the new configuration\nYou can load the following files:\nnuclearcraft.cfg in the game files\nany .ncpf configuration file"));

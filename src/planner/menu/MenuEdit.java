@@ -50,8 +50,6 @@ import simplelibrary.game.Framebuffer;
 import simplelibrary.opengl.ImageStash;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuEdit extends Menu{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     public Framebuffer turbineGraph;

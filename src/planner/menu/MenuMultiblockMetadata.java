@@ -7,8 +7,6 @@ import planner.Core;
 import multiblock.Block;
 import multiblock.Multiblock;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuMultiblockMetadata extends Menu{
     MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
     MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Finish editing metadata"));

@@ -1,5 +1,4 @@
 package planner.menu.configuration.overhaul.turbine;
-import javafx.util.converter.PercentageStringConverter;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Coil;

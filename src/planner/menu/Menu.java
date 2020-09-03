@@ -1,12 +1,9 @@
 package planner.menu;
 import java.util.ArrayList;
 import planner.Core;
-import planner.menu.component.MenuComponentMinimalistScrollable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.components.MenuComponent;
-import simplelibrary.opengl.gui.components.MenuComponentList;
-import simplelibrary.opengl.gui.components.MenuComponentMulticolumnList;
 import simplelibrary.opengl.gui.components.MenuComponentScrollable;
 public class Menu extends simplelibrary.opengl.gui.Menu{
     public int tooltipTime = 15;
@@ -110,8 +107,10 @@ public class Menu extends simplelibrary.opengl.gui.Menu{
         tooltipY = Math.min(tooltipY, Core.helper.displayHeight()-tooltipHeight);
         if(tooltipWidth>Core.helper.displayWidth())tooltipX = 0;
         if(tooltipHeight>Core.helper.displayHeight())tooltipY = 0;
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getTextColor());
         drawRect(tooltipX, tooltipY, tooltipX+tooltipWidth, tooltipY+tooltipHeight, 0);
+        Core.applyColor(Core.theme.getEditorListBorderColor());
+        drawRect(tooltipX+borderWidth, tooltipY+borderWidth, tooltipX+tooltipWidth-borderWidth, tooltipY+tooltipHeight-borderWidth, 0);
         Core.applyColor(Core.theme.getTextColor());
         for(int i = 0; i<tooltips.length; i++){
             String tt = tooltips[i];
@@ -122,9 +121,6 @@ public class Menu extends simplelibrary.opengl.gui.Menu{
     private Iterable<MenuComponent> getComponents(){
         ArrayList<MenuComponent> comps = new ArrayList<>(components);
         for(MenuComponent c : components){
-            if(c instanceof MenuComponentScrollable){
-                if(((MenuComponentScrollable)c).hasHorizScrollbar()||((MenuComponentScrollable)c).hasHorizScrollbar())continue;
-            }
             comps.addAll(c.components);
         }
         return comps;

@@ -8,7 +8,6 @@ import planner.menu.component.MenuComponentVisibleBlock;
 import multiblock.Block;
 import multiblock.Multiblock;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuResize extends Menu{
     private final Multiblock<Block> multiblock;
