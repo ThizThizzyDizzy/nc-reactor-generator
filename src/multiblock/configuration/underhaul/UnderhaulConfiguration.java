@@ -1,5 +1,6 @@
 package multiblock.configuration.underhaul;
 import java.util.ArrayList;
+import java.util.Objects;
 import multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
@@ -18,5 +19,12 @@ public class UnderhaulConfiguration{
             partial.fissionSFR = new FissionSFRConfiguration();
             fissionSFR.applyPartial(partial.fissionSFR, multiblocks);
         }
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof UnderhaulConfiguration){
+            return Objects.equals(fissionSFR, ((UnderhaulConfiguration)obj).fissionSFR);
+        }
+        return super.equals(obj);
     }
 }

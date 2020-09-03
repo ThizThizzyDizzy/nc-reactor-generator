@@ -12,14 +12,14 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 public class MenuCoilConfiguration extends Menu{
-    private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "Name", true));
-    private final MenuComponentMinimalistButton texture = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Select Texture", true, true));
+    private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "Name", true)).setTooltip("The name of this coil. This should never change");
+    private final MenuComponentMinimalistButton texture = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Select Texture", true, true)).setTooltip("Change the texture for this coil");
     private final MenuComponentMinimalistTextBox efficiency = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
     private final MenuComponentMinimalistOptionButton connector = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Connector", true, true, 0, "FALSE", "TRUE"));
     private final MenuComponentMinimalistOptionButton bearing = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Bearing", true, true, 0, "FALSE", "TRUE"));
-    private final MenuComponentMinimalistButton rules = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Placement Rules", true, true));
+    private final MenuComponentMinimalistButton rules = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Placement Rules", true, true).setTooltip("Add, remove, or modify placement rules"));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private final Coil coil;
     private final int numComps = 16;

@@ -104,4 +104,8 @@ public class PencilTool extends EditorTool{
     public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){}
     @Override
     public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){}
+    @Override
+    public String getTooltip(){
+        return "Pencil tool (P)\nUse this tool to draw blocks one at a time\nHold CTRL to only place blocks where they are valid";
+    }
 }

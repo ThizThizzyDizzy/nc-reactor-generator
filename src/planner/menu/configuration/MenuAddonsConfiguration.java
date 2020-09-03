@@ -4,12 +4,12 @@ import planner.Core;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuAddonsConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
-    private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Create New Addon", true, true));
+    private final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Create New Addon", true, true).setTooltip("Creates a new blank addon"));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private boolean refreshNeeded = false;
     public MenuAddonsConfiguration(GUI gui, Menu parent){
@@ -43,7 +43,7 @@ public class MenuAddonsConfiguration extends Menu{
     public void render(int millisSinceLastTick){
         list.width = Core.helper.displayWidth();
         list.height = Core.helper.displayHeight()-back.height-add.height;
-        for(MenuComponent component : list.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent component : list.components){
             component.width = list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0);
         }
         add.width = back.width = Core.helper.displayWidth();
@@ -54,7 +54,7 @@ public class MenuAddonsConfiguration extends Menu{
     }
     @Override
     public void buttonClicked(MenuComponentButton button){
-        for(MenuComponent c : list.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent c : list.components){
             if(c instanceof MenuComponentAddonConfiguration){
                 if(button==((MenuComponentAddonConfiguration) c).delete){
                     Core.configuration.addons.remove(((MenuComponentAddonConfiguration) c).addon);

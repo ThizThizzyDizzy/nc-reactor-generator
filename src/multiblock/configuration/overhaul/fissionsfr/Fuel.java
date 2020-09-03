@@ -1,4 +1,5 @@
 package multiblock.configuration.overhaul.fissionsfr;
+import java.util.Objects;
 import simplelibrary.config2.Config;
 public class Fuel{
     public String name;
@@ -28,5 +29,18 @@ public class Fuel{
     @Override
     public String toString(){
         return name;
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof Fuel){
+            Fuel s = (Fuel)obj;
+            return Objects.equals(name, s.name)
+                    &&efficiency==s.efficiency
+                    &&heat==s.heat
+                    &&time==s.time
+                    &&criticality==s.criticality
+                    &&selfPriming==s.selfPriming;
+        }
+        return false;
     }
 }

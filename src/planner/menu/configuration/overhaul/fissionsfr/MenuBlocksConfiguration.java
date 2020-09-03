@@ -5,7 +5,7 @@ import multiblock.configuration.overhaul.fissionsfr.Block;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuBlocksConfiguration extends Menu{
@@ -46,7 +46,7 @@ public class MenuBlocksConfiguration extends Menu{
     public void render(int millisSinceLastTick){
         list.width = Core.helper.displayWidth();
         list.height = Core.helper.displayHeight()-back.height-add.height;
-        for(MenuComponent component : list.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent component : list.components){
             component.width = list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0);
         }
         add.width = back.width = Core.helper.displayWidth();
@@ -57,7 +57,7 @@ public class MenuBlocksConfiguration extends Menu{
     }
     @Override
     public void buttonClicked(MenuComponentButton button){
-        for(MenuComponent c : list.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent c : list.components){
             if(c instanceof MenuComponentBlockConfiguration){
                 if(button==((MenuComponentBlockConfiguration) c).delete){
                     configuration.overhaul.fissionSFR.blocks.remove(((MenuComponentBlockConfiguration) c).block);

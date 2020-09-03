@@ -1,4 +1,5 @@
 package multiblock.configuration.overhaul.turbine;
+import java.util.Objects;
 import simplelibrary.config2.Config;
 public class Recipe{
     public String name;
@@ -21,5 +22,17 @@ public class Recipe{
         config.set("power", power);
         config.set("coefficient", coefficient);
         return config;
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof Recipe){
+            Recipe r = (Recipe)obj;
+            return Objects.equals(r.name, name)
+                    &&Objects.equals(r.input, input)
+                    &&Objects.equals(r.output, output)
+                    &&r.power==power
+                    &&r.coefficient==coefficient;
+        }
+        return false;
     }
 }

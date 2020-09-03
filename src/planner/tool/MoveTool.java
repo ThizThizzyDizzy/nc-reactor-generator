@@ -121,4 +121,8 @@ public class MoveTool extends EditorTool{
     public boolean isEditTool(){
         return false;
     }
+    @Override
+    public String getTooltip(){
+        return "Move tool (M)\nUse this to move or copy selections\nHold Ctrl to copy selections\nHold Ctrl+Shift to copy selection, and keep the old selection";
+    }
 }

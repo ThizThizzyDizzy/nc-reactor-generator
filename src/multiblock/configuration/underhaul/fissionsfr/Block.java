@@ -1,6 +1,7 @@
 package multiblock.configuration.underhaul.fissionsfr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
 import simplelibrary.config2.Config;
@@ -94,4 +95,55 @@ public class Block extends RuleContainer{
         }
         displayTexture = displayImg;
     }
+    @Override
+    public boolean stillEquals(RuleContainer obj){
+        if(obj!=null&&obj instanceof Block){
+            Block b = (Block)obj;
+            if(!compareImages(texture, b.texture))return false;
+            for(int x = 0; x<texture.getWidth(); x++){
+                for(int y = 0; y<texture.getHeight(); y++){
+                    
+                }
+            }
+            return Objects.equals(name, b.name)
+                    &&cooling==b.cooling
+                    &&fuelCell==b.fuelCell
+                    &&moderator==b.moderator
+                    &&Objects.equals(active, b.active);
+        }
+        return false;
+    }
+    /**
+    * Compares two images pixel by pixel.
+    * 
+    * from https://stackoverflow.com/questions/11006394/is-there-a-simple-way-to-compare-bufferedimage-instances/11006474#11006474
+    *
+    * @param imgA the first image.
+    * @param imgB the second image.
+    * @return whether the images are both the same or not.
+    */
+   public static boolean compareImages(BufferedImage imgA, BufferedImage imgB) {
+       if(imgA==null&&imgB==null)return true;
+       if(imgA==null&&imgB!=null)return false;
+       if(imgA!=null&&imgB==null)return false;
+     // The images must be the same size.
+     if (imgA.getWidth() != imgB.getWidth() || imgA.getHeight() != imgB.getHeight()) {
+       return false;
+     }
+
+     int width  = imgA.getWidth();
+     int height = imgA.getHeight();
+
+     // Loop over every pixel.
+     for (int y = 0; y < height; y++) {
+       for (int x = 0; x < width; x++) {
+         // Compare the pixels for equality.
+         if (imgA.getRGB(x, y) != imgB.getRGB(x, y)) {
+           return false;
+         }
+       }
+     }
+
+     return true;
+   }
 }

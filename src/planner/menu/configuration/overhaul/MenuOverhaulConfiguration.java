@@ -9,21 +9,21 @@ import planner.menu.configuration.overhaul.fissionmsr.MenuFissionMSRConfiguratio
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.configuration.overhaul.turbine.MenuTurbineConfiguration;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 public class MenuOverhaulConfiguration extends Menu{
     private final MenuComponentMinimalistButton fissionSFR;
     private final MenuComponentMinimalistButton fissionMSR;
     private final MenuComponentMinimalistButton turbine;
-    private final MenuComponentMinimalistButton deleteSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true));
-    private final MenuComponentMinimalistButton deleteMSR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true));
-    private final MenuComponentMinimalistButton deleteTurbine = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true));
+    private final MenuComponentMinimalistButton deleteSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true).setTooltip("Delete the Overhaul SFR configuration"));
+    private final MenuComponentMinimalistButton deleteMSR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true).setTooltip("Delete the Overhaul MSR configuration"));
+    private final MenuComponentMinimalistButton deleteTurbine = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true).setTooltip("Delete the Overhaul Turbine configuration"));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private final Configuration configuration;
     public MenuOverhaulConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent);
-        fissionSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Solid-Fueled Fission Configuration", configuration.overhaul.fissionSFR!=null, true));
-        fissionMSR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Molten Salt Fission Configuration", configuration.overhaul.fissionMSR!=null, true));
-        turbine = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Turbine Configuration", configuration.overhaul.turbine!=null, true));
+        fissionSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Solid-Fueled Fission Configuration", configuration.overhaul.fissionSFR!=null, true).setTooltip("Modify the Overhaul SFR configuration"));
+        fissionMSR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Molten Salt Fission Configuration", configuration.overhaul.fissionMSR!=null, true).setTooltip("Modify the Overhaul MSR configuration"));
+        turbine = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Turbine Configuration", configuration.overhaul.turbine!=null, true).setTooltip("Modify the Overhaul Turbine configuration"));
         fissionSFR.addActionListener((e) -> {
             gui.open(new MenuFissionSFRConfiguration(gui, this, configuration));
         });

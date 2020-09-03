@@ -28,7 +28,7 @@ public class MenuComponentAddonConfiguration extends MenuComponent{
             GL11.glVertex2d(x+width*.625, y+height*.25);
             GL11.glEnd();
         }
-    });
+    }.setTooltip("Modify addon"));
     public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, true){
         @Override
         public void renderForeground(){
@@ -46,7 +46,7 @@ public class MenuComponentAddonConfiguration extends MenuComponent{
             GL11.glVertex2d(x+width*.8, y+height*.9);
             GL11.glEnd();
         }
-    });
+    }.setTooltip("Delete addon\nWARNING: This cannot be undone!"));
     public MenuComponentAddonConfiguration(Configuration addon){
         super(0, 0, 0, 100);
         this.addon = addon;

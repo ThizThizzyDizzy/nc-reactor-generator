@@ -2,7 +2,7 @@ package planner.menu;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 public class MenuTransition extends Menu{
     private final Menu from;
     private final Menu to;

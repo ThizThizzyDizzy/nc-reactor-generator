@@ -1,5 +1,6 @@
 package multiblock.configuration.underhaul.fissionsfr;
 import java.util.ArrayList;
+import java.util.Objects;
 import multiblock.Axis;
 import multiblock.Direction;
 import multiblock.Vertex;
@@ -375,4 +376,9 @@ public class PlacementRule extends RuleContainer{
             return strs;
         }
     }
-} 
+    @Override
+    public boolean stillEquals(RuleContainer rc){
+        PlacementRule pr = (PlacementRule)rc;
+        return pr.ruleType==ruleType&&Objects.equals(pr.block,block)&&pr.min==min&&pr.max==max;
+    }
+}

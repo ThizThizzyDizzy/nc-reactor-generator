@@ -740,4 +740,5 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         Block b = block.newInstance(x, y, z);
         return b.hasRules()&&b.calculateRules(this);
     }
+    public abstract String getDescriptionTooltip();
 }

@@ -1,9 +1,10 @@
 package planner.menu.component;
 import java.awt.Color;
 import planner.Core;
+import planner.menu.MenuComponentTooltip;
 import planner.tool.EditorTool;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentEditorTool extends MenuComponent{
+public class MenuComponentEditorTool extends MenuComponent implements MenuComponentTooltip{
     public final EditorTool tool;
     public MenuComponentEditorTool(EditorTool tool){
         super(0, 0, 0, 0);
@@ -45,5 +46,17 @@ public class MenuComponentEditorTool extends MenuComponent{
     }
     public void drawText(){
         tool.render(x, y, width, height);
+    }
+    @Override
+    public String getTooltip(){
+        return tool.getTooltip();
+    }
+    @Override
+    public double getTooltipOffsetX(){
+        return 0;
+    }
+    @Override
+    public double getTooltipOffsetY(){
+        return height;
     }
 }

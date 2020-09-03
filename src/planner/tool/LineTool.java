@@ -96,4 +96,8 @@ public class LineTool extends EditorTool{
     public boolean isEditTool(){
         return true;
     }
+    @Override
+    public String getTooltip(){
+        return "Line tool (L)\nUse this tool to draw blocks in a line through the multiblock\nHold CTRL to only place blocks where they are valid";
+    }
 }

@@ -2,10 +2,11 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
+import planner.menu.MenuComponentTooltip;
 import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.components.MenuComponentOptionButton;
-public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton{
+public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton implements MenuComponentTooltip{
     private String label;
     private boolean isPressed, isRightPressed;
     private final boolean darker;
@@ -55,5 +56,22 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
         double scale = Math.min(1, (width-textInset*2)/textLength);
         double textHeight = (int)((height-textInset*2)*scale)-4;
         drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+    }
+    private String tooltip = null;
+    public MenuComponentMinimalistOptionButton setTooltip(String s){
+        this.tooltip = s;
+        return this;
+    }
+    @Override
+    public String getTooltip(){
+        return tooltip;
+    }
+    @Override
+    public double getTooltipOffsetX(){
+        return 0;
+    }
+    @Override
+    public double getTooltipOffsetY(){
+        return height;
     }
 }

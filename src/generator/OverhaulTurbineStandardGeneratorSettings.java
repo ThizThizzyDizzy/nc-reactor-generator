@@ -40,17 +40,17 @@ public class OverhaulTurbineStandardGeneratorSettings implements Settings{
         workingMultiblocks = Integer.parseInt(generator.workingMultiblockCount.text);
         timeout = Integer.parseInt(generator.timeout.text);
         ArrayList<Symmetry> newSymmetries = new ArrayList<>();
-        for(MenuComponent comp : generator.symmetriesList.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent comp : generator.symmetriesList.components){
             if(((MenuComponentSymmetry)comp).enabled)newSymmetries.add(((MenuComponentSymmetry)comp).symmetry);
         }
         symmetries = newSymmetries;
         ArrayList<Priority> newPriorities = new ArrayList<>();
-        for(MenuComponent comp : generator.prioritiesList.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent comp : generator.prioritiesList.components){
             newPriorities.add(((MenuComponentPriority)comp).priority);
         }
         priorities = newPriorities;//to avoid concurrentModification
         ArrayList<PostProcessingEffect> newEffects = new ArrayList<>();
-        for(MenuComponent comp : generator.postProcessingEffectsList.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent comp : generator.postProcessingEffectsList.components){
             if(((MenuComponentPostProcessingEffect)comp).enabled)newEffects.add(((MenuComponentPostProcessingEffect)comp).postProcessingEffect);
         }
         postProcessingEffects = newEffects;

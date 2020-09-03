@@ -12,10 +12,11 @@ import multiblock.action.SFRShieldAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import org.lwjgl.glfw.GLFW;
+import planner.menu.MenuComponentTooltip;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentEditorGrid extends MenuComponent{
+public class MenuComponentEditorGrid extends MenuComponent implements MenuComponentTooltip{
     private final Multiblock multiblock;
     private final int layer;
     private final MenuEdit editor;
@@ -132,11 +133,9 @@ public class MenuComponentEditorGrid extends MenuComponent{
         }
         editor.getSelectedTool().drawGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
         if(mouseover!=null){
-            Block block = multiblock.getBlock(mouseover[0],layer,mouseover[1]);
             double X = this.x+mouseover[0]*blockSize;
             double Y = this.y+mouseover[1]*blockSize;
             double border = blockSize/8;
-            editor.setTooltip((block==null?"":block.getTooltip()));
             Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
             drawRect(X, Y, X+border, Y+border, 0);
             drawRect(X+blockSize-border, Y, X+blockSize, Y+border, 0);
@@ -219,5 +218,19 @@ public class MenuComponentEditorGrid extends MenuComponent{
     }
     public boolean isSelected(int x, int z){
         return editor.isSelected(x,layer,z);
+    }
+    @Override
+    public String getTooltip(){
+        if(mouseover==null)return null;
+        Block block = multiblock.getBlock(mouseover[0],layer,mouseover[1]);
+        return block==null?null:block.getTooltip();
+    }
+    @Override
+    public double getTooltipOffsetX(){
+        return mouseover!=null?mouseover[0]*blockSize:0;
+    }
+    @Override
+    public double getTooltipOffsetY(){
+        return mouseover!=null?(mouseover[1]+1)*blockSize:height;
     }
 }

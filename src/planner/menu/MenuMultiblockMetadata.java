@@ -7,11 +7,11 @@ import planner.Core;
 import multiblock.Block;
 import multiblock.Multiblock;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuMultiblockMetadata extends Menu{
     MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
-    MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
+    MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Finish editing metadata"));
     private final Multiblock multiblock;
     public MenuMultiblockMetadata(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
@@ -58,7 +58,7 @@ public class MenuMultiblockMetadata extends Menu{
     }
     @Override
     public void tick(){
-        ArrayList<MenuComponent> remove = new ArrayList<>();
+        ArrayList<simplelibrary.opengl.gui.components.MenuComponent> remove = new ArrayList<>();
         boolean add = list.components.isEmpty();
         for(int i = 0; i<list.components.size(); i+=2){
             MenuComponentMinimalistTextBox key = (MenuComponentMinimalistTextBox) list.components.get(i);

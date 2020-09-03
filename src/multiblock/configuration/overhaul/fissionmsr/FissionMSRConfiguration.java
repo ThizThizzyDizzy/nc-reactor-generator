@@ -2,6 +2,7 @@ package multiblock.configuration.overhaul.fissionmsr;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
@@ -146,5 +147,26 @@ public class FissionMSRConfiguration{
             if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
         }
         throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof FissionMSRConfiguration){
+            FissionMSRConfiguration fsfrc = (FissionMSRConfiguration)obj;
+            return Objects.equals(fsfrc.allBlocks, allBlocks)
+                    &&Objects.equals(fsfrc.allFuels, allFuels)
+                    &&Objects.equals(fsfrc.allSources, allSources)
+                    &&Objects.equals(fsfrc.allIrradiatorRecipes, allIrradiatorRecipes)
+                    &&Objects.equals(fsfrc.blocks, blocks)
+                    &&Objects.equals(fsfrc.fuels, fuels)
+                    &&Objects.equals(fsfrc.sources, sources)
+                    &&Objects.equals(fsfrc.irradiatorRecipes, irradiatorRecipes)
+                    &&minSize==fsfrc.minSize
+                    &&maxSize==fsfrc.maxSize
+                    &&neutronReach==fsfrc.neutronReach
+                    &&coolingEfficiencyLeniency==fsfrc.coolingEfficiencyLeniency
+                    &&sparsityPenaltyMult==fsfrc.sparsityPenaltyMult
+                    &&sparsityPenaltyThreshold==fsfrc.sparsityPenaltyThreshold;
+        }
+        return false;
     }
 }

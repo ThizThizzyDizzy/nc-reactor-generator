@@ -18,19 +18,19 @@ import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.configuration.MenuConfiguration;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 public class MenuSettings extends Menu{
     private final MenuComponentLabel currentConfig = add(new MenuComponentLabel(0, 0, 0, 0, "Current Configuration", true));
-    private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", true, true));
-    private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save Configuration", true, true));
-    private final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Modify Configuration", true, true));
-    private final MenuComponentMinimalistOptionButton theme = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Theme", true, true, Theme.themes.indexOf(Core.theme), Theme.getThemeS()));
-    private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
+    private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", true, true).setTooltip("Load configuration from a file, replacing the current configuration\nAny existing multiblocks will be converted to the new configuration\nYou can load the following files:\nnuclearcraft.cfg in the game files\nany .ncpf configuration file"));
+    private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save Configuration", true, true).setTooltip("Save the configuration to a .ncpf file"));
+    private final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Modify Configuration", true, true).setTooltip("Modify the current configuration"));
+    private final MenuComponentMinimalistOptionButton theme = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Theme", true, true, Theme.themes.indexOf(Core.theme), Theme.getThemeS())).setTooltip("Click to cycle through available themes\nRight click to cycle back");
+    private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Close the settings menu"));
     private final ArrayList<MenuComponentMinimalistButton> buttons = new ArrayList<>();
     public MenuSettings(GUI gui, Menu parent){
         super(gui, parent);
         for(Configuration config : Configuration.configurations){
-            MenuComponentMinimalistButton b = new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration: "+config.toString(), true, true);
+            MenuComponentMinimalistButton b = new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration: "+config.toString(), true, true).setTooltip("Replace the current configuration with "+config.toString()+"\nAll multiblocks will be converted to the new configuration");
             b.addActionListener((e) -> {
                 config.impose(Core.configuration);
                 for(Multiblock multi : Core.multiblocks){
@@ -116,7 +116,7 @@ public class MenuSettings extends Menu{
             try{
                 Core.setTheme(Theme.themes.get(theme.getIndex()));
             }catch(IndexOutOfBoundsException ex){
-                gui.open(new MenuSettings(gui, parent));
+                gui.open(new MenuSettings(gui, (Menu)parent));
             }
         }
         super.render(millisSinceLastTick);

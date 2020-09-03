@@ -59,14 +59,14 @@ public class StandardGenerator extends MultiblockGenerator{
 //        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Final Multiblocks", true));
 //        finalMultiblockCount = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "2", true).setIntFilter());
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Working Multiblocks", true));
-        workingMultiblockCount = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "6", true).setIntFilter());
+        workingMultiblockCount = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "6", true).setIntFilter()).setTooltip("This is the number of multiblocks that are actively being worked on\nEvery thread will work on all working multiblocks");
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Timeout (sec)", true));
-        timeout = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "10", true).setIntFilter());
+        timeout = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "10", true).setIntFilter()).setTooltip("If a multiblock hasn't changed for this long, it will be reset\nThis is to avoid running into generation dead-ends");
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Priorities", true));
         prioritiesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, priorities.size()*32, 24){
             @Override
             public void render(int millisSinceLastTick){
-                for(MenuComponent c : components){
+                for(simplelibrary.opengl.gui.components.MenuComponent c : components){
                     c.width = width-(hasVertScrollbar()?vertScrollbarWidth:0);
                 }
                 super.render(millisSinceLastTick);
@@ -83,7 +83,7 @@ public class StandardGenerator extends MultiblockGenerator{
             @Override
             public void render(){}
         });
-        moveUp = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Up", true, true));
+        moveUp = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Up", true, true).setTooltip("Move the selected priority up so it is more important"));
         moveUp.addActionListener((e) -> {
             int index = prioritiesList.getSelectedIndex();
             if(index==-1||index==0)return;
@@ -91,7 +91,7 @@ public class StandardGenerator extends MultiblockGenerator{
             refreshPriorities();
             prioritiesList.setSelectedIndex(index-1);
         });
-        moveDown = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Down", true, true));
+        moveDown = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Down", true, true).setTooltip("Move the selected priority down so it is less important"));
         moveDown.addActionListener((e) -> {
             int index = prioritiesList.getSelectedIndex();
             if(index==-1||index==priorities.size()-1)return;
@@ -101,7 +101,7 @@ public class StandardGenerator extends MultiblockGenerator{
         });
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Generator Settings", true));
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 24, "Change Chance", true));
-        changeChance = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "1", true).setFloatFilter(0f, 100f).setSuffix("%"));
+        changeChance = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "1", true).setFloatFilter(0f, 100f).setSuffix("%")).setTooltip("If variable rate is on: Each iteration, each block in the reactor has an x% chance of changing\nIf variable rate is off: Each iteration, exactly x% of the blocks in the reactor will change (minimum of 1)");
         variableRate = generatorSettings.add(new MenuComponentToggle(0, 0, 0, 32, "Variable Rate", true));
         lockCore = generatorSettings.add(new MenuComponentToggle(0, 0, 0, 32, "Lock Core", false));
         fillAir = generatorSettings.add(new MenuComponentToggle(0, 0, 0, 32, "Fill Air", false));

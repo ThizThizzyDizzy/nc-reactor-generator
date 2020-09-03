@@ -1,4 +1,6 @@
 package multiblock.configuration;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,11 +10,15 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import planner.file.FileReader;
 import multiblock.Multiblock;
 import planner.Main;
+import planner.file.FileWriter;
+import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class Configuration{
@@ -66,16 +72,25 @@ public class Configuration{
         return false;
     }
     public void impose(Configuration configuration){
-        if(Objects.equals(configuration.name, name)){
-            if(underhaul!=null)configuration.underhaul = underhaul;
-            if(overhaul!=null)configuration.overhaul = overhaul;
-        }else{
-            configuration.underhaul = underhaul;
-            configuration.overhaul = overhaul;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        NCPFFile saver = new NCPFFile();
+        saver.configuration = this;
+        FileWriter.write(saver, out, FileWriter.NCPF);
+        try{
+            out.close();
+        }catch(IOException ex){
+            throw new RuntimeException(ex);
         }
-        configuration.name = name;
-        configuration.overhaulVersion = overhaulVersion;
-        configuration.underhaulVersion = underhaulVersion;
+        Configuration fresh = FileReader.read(() -> {
+            return new ByteArrayInputStream(out.toByteArray());
+        }).configuration;
+        configuration.addons = fresh.addons;
+        configuration.alternatives = fresh.alternatives;
+        configuration.name = fresh.name;
+        configuration.overhaul = fresh.overhaul;
+        configuration.overhaulVersion = fresh.overhaulVersion;
+        configuration.underhaul = fresh.underhaul;
+        configuration.underhaulVersion = fresh.underhaulVersion;
     }
     public void applyPartial(PartialConfiguration partial, ArrayList<Multiblock> multiblocks){
         if(underhaul!=null){
@@ -118,5 +133,17 @@ public class Configuration{
     @Override
     public String toString(){
         return name+" ("+(overhaulVersion==null?underhaulVersion:overhaulVersion)+")";
+    }
+    public boolean isConfigurationEqual(Configuration c){
+        if(c==null)return false;
+        return Objects.equals(c.overhaul, overhaul)&&Objects.equals(c.underhaul, underhaul);
+    }
+    public boolean isOverhaulConfigurationEqual(Configuration c){
+        if(c==null)return false;
+        return Objects.equals(c.overhaul, overhaul);
+    }
+    public boolean isUnderhaulConfigurationEqual(Configuration c){
+        if(c==null)return false;
+        return Objects.equals(c.underhaul, underhaul);
     }
 }

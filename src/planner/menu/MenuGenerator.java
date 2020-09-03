@@ -17,12 +17,12 @@ import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuGenerator extends Menu{
     private final Multiblock<Block> multiblock;
-    private final MenuComponentMinimalistButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Settings", false, true));
-    private final MenuComponentMinimalistButton output = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Generate", true, true));
+    private final MenuComponentMinimalistButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Settings", false, true).setTooltip("Modify generator settings\nThis does not stop the generator\nSettings are not applied until you click Generate"));
+    private final MenuComponentMinimalistButton output = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Generate", true, true).setTooltip("Starts generating reactors or applies new settings"));
     private final MenuComponentMulticolumnMinimaList blocks = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 64, 64, 32));
     private final MenuComponentMinimaList generators = add(new MenuComponentMinimaList(0, 0, 0, 0, 32));
     private final MenuComponentMinimaList generatorSettings = add(new MenuComponentMinimaList(0, 0, 0, 0, 32));
@@ -30,10 +30,10 @@ public class MenuGenerator extends Menu{
     private final MenuComponentLabel blocksHeader = add(new MenuComponentLabel(0, 0, 0, 0, "Blocks", true));
     private final MenuComponentLabel generatorsHeader = add(new MenuComponentLabel(0, 0, 0, 0, "Generators", true));
     private final MenuComponentLabel settingsHeader = add(new MenuComponentLabel(0, 0, 0, 0, "Settings", true));
-    private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
+    private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Stop generating reactors and return to the editor screen"));
     private final MenuComponentLabel threadsLabel = add(new MenuComponentLabel(0, 0, 0, 64, "No Threads", true));
-    private final MenuComponentMinimalistButton addThread = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Add Thread", true, true));
-    private final MenuComponentMinimalistButton removeThread = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Remove Thread", true, true));
+    private final MenuComponentMinimalistButton addThread = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Add Thread", true, true).setTooltip("Add another thread to the generator\nMore threads generally means faster generation, but may slow down your computer\nHaving excessive amounts of threads can also slow down generation"));
+    private final MenuComponentMinimalistButton removeThread = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Remove Thread", true, true).setTooltip("Remove a thread from the generator\nMore threads generally means faster generation, but may slow down your computer\nHaving excessive amounts of threads can also slow down generation"));
     private final MenuComponentMinimaList multiblockLists = add(new MenuComponentMinimaList(0, 0, 0, 0, 64));
     private Tab tab = Tab.SETTINGS;
     private final ArrayList<MultiblockGenerator> multiblockGenerators;
@@ -53,7 +53,7 @@ public class MenuGenerator extends Menu{
             output.enabled = false;
             tab = Tab.GENERATE;
             ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
-            for(MenuComponent c : blocks.components){
+            for(simplelibrary.opengl.gui.components.MenuComponent c : blocks.components){
                 MenuComponentToggleBlock t = (MenuComponentToggleBlock)c;
                 if(t.enabled)allowedBlocks.add(new Range<>(t.block,t.min,t.max==0?Integer.MAX_VALUE:t.max));
             }
@@ -149,7 +149,7 @@ public class MenuGenerator extends Menu{
                 onGUIOpened();
             }
         }
-        for(MenuComponent m : components){
+        for(simplelibrary.opengl.gui.components.MenuComponent m : components){
             m.x = m.y = m.width = m.height = -1;
         }
         settings.width = output.width = Core.helper.displayWidth()/3;
@@ -178,7 +178,7 @@ public class MenuGenerator extends Menu{
                 generators.y = settings.height*2;
                 generators.width = Core.helper.displayWidth()/4;
                 generators.height = Core.helper.displayHeight()-generators.y;
-                for(MenuComponent c : generators.components){
+                for(simplelibrary.opengl.gui.components.MenuComponent c : generators.components){
                     c.width = generators.width-(generators.hasVertScrollbar()?generators.vertScrollbarWidth:0);
                 }
                 settingsHeader.x = Core.helper.displayWidth()/2;
@@ -190,14 +190,14 @@ public class MenuGenerator extends Menu{
                 generatorSettings.y = settings.height*2;
                 generatorSettings.width = Core.helper.displayWidth()/4;
                 generatorSettings.height = Core.helper.displayHeight()-generatorSettings.y;
-                for(MenuComponent c : generatorSettings.components){
+                for(simplelibrary.opengl.gui.components.MenuComponent c : generatorSettings.components){
                     c.width = generatorSettings.width-(generatorSettings.hasVertScrollbar()?generatorSettings.vertScrollbarWidth:0);
                 }
                 multiblockSettings.x = Core.helper.displayWidth()*3/4;
                 multiblockSettings.y = settings.height*2;
                 multiblockSettings.width = Core.helper.displayWidth()/4;
                 multiblockSettings.height = Core.helper.displayHeight()-multiblockSettings.y;
-                for(MenuComponent c : multiblockSettings.components){
+                for(simplelibrary.opengl.gui.components.MenuComponent c : multiblockSettings.components){
                     c.width = multiblockSettings.width-(multiblockSettings.hasVertScrollbar()?multiblockSettings.vertScrollbarWidth:0);
                 }
                 break;
@@ -218,7 +218,7 @@ public class MenuGenerator extends Menu{
                 multiblockLists.y = threadsLabel.height+settings.height;
                 multiblockLists.width = Core.helper.displayWidth();
                 multiblockLists.height = Core.helper.displayHeight()-multiblockLists.y;
-                for(MenuComponent m : multiblockLists.components){
+                for(simplelibrary.opengl.gui.components.MenuComponent m : multiblockLists.components){
                     m.width = multiblockLists.width;
                     m.height = 800;
                 }

@@ -27,17 +27,16 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuMain extends Menu{
     private MenuComponentMinimaList multiblocks = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
-    private MenuComponentMinimalistButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true));
-    private MenuComponentMinimalistButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", false, true));
-    private MenuComponentMinimalistButton exportMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true));
-    private MenuComponentMinimalistButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", false, true));
-    private MenuComponentMinimalistButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", false, true));
-    private MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
+    private MenuComponentMinimalistButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true).setTooltip("Add a new multiblock"));
+    private MenuComponentMinimalistButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", false, true).setTooltip("Import all multiblocks from a saved file"));
+    private MenuComponentMinimalistButton exportMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true).setTooltip("Export the selected multiblock to a file"));
+    private MenuComponentMinimalistButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", false, true).setTooltip("Save all multiblocks to a file"));
+    private MenuComponentMinimalistButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", false, true).setTooltip("Load a file, replacing all current multiblocks"));
+    private MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Edit metadata"));
     private MenuComponentMinimalistButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true){
         @Override
         public void drawText(){
@@ -69,14 +68,14 @@ public class MenuMain extends Menu{
             }
             GL11.glEnd();
         }
-    });
-    private MenuComponentMinimalistButton delete = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setTextColor(() -> {return Core.theme.getRed();}));
+    }.setTooltip("Settings"));
+    private MenuComponentMinimalistButton delete = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
     private MenuComponentMinimalistButton convertOverhaulMSFR = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Convert SFR <> MSR", true, true).setTextColor(() -> {return Core.theme.getRGB(1, .5f, 0);}));
-    private MenuComponentMinimalistButton setInputs = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Set Inputs", true, true).setTextColor(() -> {return Core.theme.getRGB(1, 1, 0);}));
+    private MenuComponentMinimalistButton setInputs = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Set Inputs", true, true).setTextColor(() -> {return Core.theme.getRGB(1, 1, 0);}).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
     private boolean forceMetaUpdate = true;
     private MenuComponent metadataPanel = add(new MenuComponent(0, 0, 0, 0){
         MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
-        MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
+        MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Finish editing metadata"));
         {
             done.addActionListener((e) -> {
                 Core.resetMetadata();
@@ -121,7 +120,7 @@ public class MenuMain extends Menu{
                 }
             }
             if(!metadating)return;
-            ArrayList<MenuComponent> remove = new ArrayList<>();
+            ArrayList<simplelibrary.opengl.gui.components.MenuComponent> remove = new ArrayList<>();
             boolean add = list.components.isEmpty();
             for(int i = 0; i<list.components.size(); i+=2){
                 MenuComponentMinimalistTextBox key = (MenuComponentMinimalistTextBox) list.components.get(i);
@@ -157,7 +156,7 @@ public class MenuMain extends Menu{
     public MenuMain(GUI gui){
         super(gui, null);
         for(Multiblock m : Core.multiblockTypes){
-            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true));
+            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true).setTooltip(m.getDescriptionTooltip()));
             button.addActionListener((e) -> {
                 Core.multiblocks.add(m.newInstance());
                 adding = false;
@@ -375,7 +374,7 @@ public class MenuMain extends Menu{
         multiblocks.y = Core.helper.displayHeight()/8;
         multiblocks.height = Core.helper.displayHeight()-multiblocks.y;
         multiblocks.width = Core.helper.displayWidth()/3;
-        for(MenuComponent c : multiblocks.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent c : multiblocks.components){
             c.width = multiblocks.width-(multiblocks.hasScrollbar()?multiblocks.vertScrollbarWidth:0);
             ((MenuComponentMultiblock) c).edit.enabled = ((MenuComponentMultiblock) c).multiblock.exists()&&(!(adding||metadating));
         }
@@ -390,9 +389,11 @@ public class MenuMain extends Menu{
         if(getSelectedMultiblock() instanceof OverhaulSFR){
             convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.label = "Convert to MSR (Hold Control)";
+            convertOverhaulMSFR.setTooltip("Convert the currently selected multiblock to an Overhaul MSR\nWARNING: All fuels will be converted to their Flouride counterparts");
         }else if(getSelectedMultiblock() instanceof OverhaulMSR){
             convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionSFR!=null&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.label = "Convert to SFR (Hold Control)";
+            convertOverhaulMSFR.setTooltip("Convert the currently selected multiblock to an Overhaul SFR\nWARNING: All fuels will be converted to their Oxide counterparts");
         }else{
             convertOverhaulMSFR.enabled = false;
             convertOverhaulMSFR.y = -convertOverhaulMSFR.height;
@@ -451,7 +452,7 @@ public class MenuMain extends Menu{
     }
     @Override
     public void buttonClicked(MenuComponentButton button){
-        for(MenuComponent c : multiblocks.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent c : multiblocks.components){
             if(c instanceof MenuComponentMultiblock){
                 if(button==((MenuComponentMultiblock) c).edit){
                     gui.open(/*new MenuTransition(gui, this, */new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock)/*, MenuTransition.SlideTransition.slideFrom(1, 0), 5)*/);

@@ -1,6 +1,7 @@
 package multiblock.configuration.overhaul.turbine;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
@@ -105,5 +106,25 @@ public class TurbineConfiguration{
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }
         throw new IllegalArgumentException("Failed to find match for recipe "+template.toString()+"!");
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof TurbineConfiguration){
+            TurbineConfiguration fsfrc = (TurbineConfiguration)obj;
+            return Objects.equals(fsfrc.allBlades, allBlades)
+                    &&Objects.equals(fsfrc.allCoils, allCoils)
+                    &&Objects.equals(fsfrc.allRecipes, allRecipes)
+                    &&Objects.equals(fsfrc.blades, blades)
+                    &&Objects.equals(fsfrc.coils, coils)
+                    &&Objects.equals(fsfrc.recipes, recipes)
+                    &&minWidth==fsfrc.minWidth
+                    &&minLength==fsfrc.minLength
+                    &&maxSize==fsfrc.maxSize
+                    &&fluidPerBlade==fsfrc.fluidPerBlade
+                    &&throughputEfficiencyLeniency==fsfrc.throughputEfficiencyLeniency
+                    &&throughputFactor==fsfrc.throughputFactor
+                    &&powerBonus==fsfrc.powerBonus;
+        }
+        return false;
     }
 }

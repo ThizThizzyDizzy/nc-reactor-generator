@@ -19,4 +19,14 @@ public class Fuel{
         config.set("time", time);
         return config;
     }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof Fuel){
+            return name.equals(((Fuel)obj).name)
+                    &&power==((Fuel)obj).power
+                    &&heat==((Fuel)obj).heat
+                    &&time==((Fuel)obj).time;
+        }
+        return super.equals(obj);
+    }
 }

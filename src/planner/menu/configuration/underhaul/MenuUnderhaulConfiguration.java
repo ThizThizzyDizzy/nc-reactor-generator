@@ -5,15 +5,15 @@ import planner.Core;
 import planner.menu.configuration.underhaul.fissionsfr.MenuFissionSFRConfiguration;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 public class MenuUnderhaulConfiguration extends Menu{
     private final MenuComponentMinimalistButton fissionSFR;
-    private final MenuComponentMinimalistButton deleteSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true));
+    private final MenuComponentMinimalistButton deleteSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true).setTooltip("Delete the Underhaul SFR configuration"));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private final Configuration configuration;
     public MenuUnderhaulConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent);
-        fissionSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Solid-Fueled Fission Configuration", configuration.underhaul.fissionSFR!=null, true));
+        fissionSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Solid-Fueled Fission Configuration", configuration.underhaul.fissionSFR!=null, true).setTooltip("Modify the Underhaul SFR configuration"));
         fissionSFR.addActionListener((e) -> {
             gui.open(new MenuFissionSFRConfiguration(gui, this, configuration));
         });

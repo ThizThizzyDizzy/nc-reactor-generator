@@ -3,8 +3,9 @@ import java.awt.Color;
 import planner.Core;
 import planner.menu.MenuEdit;
 import multiblock.Block;
+import planner.menu.MenuComponentTooltip;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentEditorListBlock extends MenuComponent{
+public class MenuComponentEditorListBlock extends MenuComponent implements MenuComponentTooltip{
     private final MenuEdit editor;
     public final Block block;
     public MenuComponentEditorListBlock(MenuEdit editor, Block block){
@@ -34,7 +35,6 @@ public class MenuComponentEditorListBlock extends MenuComponent{
             drawRect(x+width-border, y+border, x+width, y+height-border, 0);
         }
         if(isMouseOver){
-            editor.setTooltip(block.getListTooltip());
             Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
             drawRect(x, y, x+border, y+border, 0);
             drawRect(x+width-border, y, x+width, y+border, 0);
@@ -49,5 +49,17 @@ public class MenuComponentEditorListBlock extends MenuComponent{
     }
     public void drawText(){
         block.render(x, y, width, height, false);
+    }
+    @Override
+    public String getTooltip(){
+        return block.getListTooltip();
+    }
+    @Override
+    public double getTooltipOffsetX(){
+        return 0;
+    }
+    @Override
+    public double getTooltipOffsetY(){
+        return height;
     }
 }

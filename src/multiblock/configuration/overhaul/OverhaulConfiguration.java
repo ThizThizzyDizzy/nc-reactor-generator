@@ -1,5 +1,6 @@
 package multiblock.configuration.overhaul;
 import java.util.ArrayList;
+import java.util.Objects;
 import multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
 import multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration;
 import multiblock.configuration.overhaul.turbine.TurbineConfiguration;
@@ -30,5 +31,14 @@ public class OverhaulConfiguration{
             partial.turbine = new TurbineConfiguration();
             turbine.applyPartial(partial.turbine, multiblocks);
         }
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof OverhaulConfiguration){
+            return Objects.equals(fissionSFR, ((OverhaulConfiguration)obj).fissionSFR)
+                    &&Objects.equals(fissionMSR, ((OverhaulConfiguration)obj).fissionMSR)
+                    &&Objects.equals(turbine, ((OverhaulConfiguration)obj).turbine);
+        }
+        return super.equals(obj);
     }
 }

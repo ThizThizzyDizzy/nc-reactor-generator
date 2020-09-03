@@ -1,4 +1,5 @@
 package multiblock.configuration.overhaul.fissionsfr;
+import java.util.Objects;
 import simplelibrary.config2.Config;
 public class CoolantRecipe{
     public String name;
@@ -21,5 +22,17 @@ public class CoolantRecipe{
         config.set("heat", heat);
         config.set("outputRatio", outputRatio);
         return config;
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof CoolantRecipe){
+            CoolantRecipe r = (CoolantRecipe)obj;
+            return Objects.equals(name, r.name)
+                    &&Objects.equals(input, r.input)
+                    &&Objects.equals(output, r.output)
+                    &&heat==r.heat
+                    &&outputRatio==r.outputRatio;
+        }
+        return false;
     }
 }

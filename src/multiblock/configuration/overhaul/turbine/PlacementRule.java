@@ -1,6 +1,7 @@
 package multiblock.configuration.overhaul.turbine;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 import multiblock.Axis;
 import multiblock.Direction;
 import multiblock.Edge;
@@ -390,5 +391,10 @@ public class PlacementRule extends RuleContainer{
             }
             return strs;
         }
+    }
+    @Override
+    public boolean stillEquals(RuleContainer rc){
+        PlacementRule pr = (PlacementRule)rc;
+        return pr.ruleType==ruleType&&Objects.equals(pr.coil,coil)&&pr.min==min&&pr.max==max;
     }
 }

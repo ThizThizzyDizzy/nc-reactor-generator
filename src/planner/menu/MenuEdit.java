@@ -50,7 +50,7 @@ import simplelibrary.game.Framebuffer;
 import simplelibrary.opengl.ImageStash;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import planner.menu.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuEdit extends Menu{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
@@ -65,19 +65,19 @@ public class MenuEdit extends Menu{
     public final Multiblock multiblock;
     private final int partSize = 48;
     private final int partsWide = 7;
-    private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
+    private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true).setTooltip("Stop editing this multiblock and return to the main menu"));
     private final MenuComponentMulticolumnMinimaList parts = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, partSize, partSize, partSize/2));
     private final MenuComponentMinimalistScrollable multibwauk = add(new MenuComponentMinimalistScrollable(0, 0, 0, 0, 32, 32));
     private final MenuComponentMinimalistButton zoomOut = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom out", true, true));
     private final MenuComponentMinimalistButton zoomIn = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom in", true, true));
-    private final MenuComponentMinimalistButton resize = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Resize", true, true));
+    private final MenuComponentMinimalistButton resize = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Resize", true, true).setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)"));
     public final MenuComponentMinimaList underFuelOrCoolantRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimaList overFuel = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimaList irradiatorRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
-    private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true));
+    private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Modify the multiblock metadata"));
     private final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
-    private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", true, true));
+    private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", true, true).setTooltip("Generate or improve this multiblock"));
     public final ArrayList<int[]> selection = new ArrayList<>();
     private double scale = 4;
     private double minScale = 0.5;
@@ -232,7 +232,7 @@ public class MenuEdit extends Menu{
             });
             outlineSquare = ImageStash.instance.allocateAndSetupTexture(image);
         }
-        setTooltip("");
+        textBox.setText(multiblock.getTooltip());
         if(multisPerRow!=Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)))){
             onGUIOpened();
         }
@@ -255,7 +255,7 @@ public class MenuEdit extends Menu{
         underFuelOrCoolantRecipe.y = resize.height*2;
         irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
         underFuelOrCoolantRecipe.height = Core.helper.displayHeight()-resize.height*2;
-        for(MenuComponent c : tools.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent c : tools.components){
             c.width = c.height = partSize;
         }
         if(multiblock instanceof OverhaulSFR){
@@ -272,15 +272,15 @@ public class MenuEdit extends Menu{
             overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
             overFuel.height = irradiatorRecipe.y-overFuel.y;
         }
-        for(MenuComponent c : underFuelOrCoolantRecipe.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent c : underFuelOrCoolantRecipe.components){
             c.width = underFuelOrCoolantRecipe.width-underFuelOrCoolantRecipe.vertScrollbarWidth;
             c.height = 32;
         }
-        for(MenuComponent c : irradiatorRecipe.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent c : irradiatorRecipe.components){
             c.width = irradiatorRecipe.width-irradiatorRecipe.vertScrollbarWidth;
             c.height = 32;
         }
-        for(MenuComponent c : overFuel.components){
+        for(simplelibrary.opengl.gui.components.MenuComponent c : overFuel.components){
             c.width = overFuel.width-overFuel.vertScrollbarWidth;
             c.height = 32;
         }
@@ -377,10 +377,6 @@ public class MenuEdit extends Menu{
             }
         }
         super.render(millisSinceLastTick);
-    }
-    public void setTooltip(String tooltip){
-        if(!tooltip.isEmpty())tooltip+="\n\n";
-        textBox.setText(tooltip+multiblock.getTooltip());
     }
     public Block getSelectedBlock(){
         if(parts.getSelectedIndex()==-1)return null;

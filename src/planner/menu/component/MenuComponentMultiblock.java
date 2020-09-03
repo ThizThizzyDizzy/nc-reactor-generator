@@ -31,7 +31,7 @@ public class MenuComponentMultiblock extends MenuComponent{
             GL11.glVertex2d(x+width*.625, y+height*.25);
             GL11.glEnd();
         }
-    });
+    }.setTooltip("Modify multiblock"));
     public MenuComponentMultiblock(MenuMain main, Multiblock multiblock){
         super(0, 0, 0, 100);
         this.main = main;

@@ -6,11 +6,12 @@ import multiblock.Block;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import planner.menu.MenuComponentTooltip;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
+public class MenuComponentTurbineBladeEditorGrid extends MenuComponent implements MenuComponentTooltip{
     private final OverhaulTurbine multiblock;
     private final MenuEdit editor;
     private int blockSize;
@@ -103,10 +104,8 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
         }
         editor.getSelectedTool().drawBladeGhosts(x, y, width, blockSize, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
         if(mouseover!=-1){
-            Block block = multiblock.getBlock(multiblock.getX()/2, 0, mouseover);
             double X = this.x+(mouseover-1)*blockSize;
             double border = blockSize/8;
-            editor.setTooltip((block==null?"":block.getTooltip()));
             Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
             drawRect(X, y, X+border, y+border, 0);
             drawRect(X+blockSize-border, y, X+blockSize, y+border, 0);
@@ -185,5 +184,19 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
     }
     public boolean isSelected(int z){
         return editor.isSelected(multiblock.getX()/2, 0, z);
+    }
+    @Override
+    public String getTooltip(){
+        if(mouseover==-1)return null;
+        Block block = multiblock.getBlock(multiblock.getX()/2, 0, mouseover);
+        return block==null?null:block.getTooltip();
+    }
+    @Override
+    public double getTooltipOffsetX(){
+        return mouseover==-1?0:mouseover*blockSize;
+    }
+    @Override
+    public double getTooltipOffsetY(){
+        return mouseover==-1?height:blockSize;
     }
 }

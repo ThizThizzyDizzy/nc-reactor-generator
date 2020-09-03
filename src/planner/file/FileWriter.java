@@ -21,8 +21,9 @@ import simplelibrary.opengl.Renderer2D;
 public class FileWriter{
     public static final ArrayList<FormatWriter> formats = new ArrayList<>();
     public static boolean botRunning;
+    public static FormatWriter NCPF,PNG,HELLRAGE;
     static{
-        formats.add(new FormatWriter(){
+        formats.add(HELLRAGE = new FormatWriter(){
             @Override
             public String getName(){
                 return "Hellrage format";
@@ -244,7 +245,7 @@ public class FileWriter{
                 }
             }
         });
-        formats.add(new FormatWriter(){
+        formats.add(PNG = new FormatWriter(){
             private final int textHeight = 20;
             private final int borderSize = 16;
             @Override
@@ -349,7 +350,7 @@ public class FileWriter{
                 }
             }
         });
-        formats.add(new FormatWriter(){
+        formats.add(NCPF = new FormatWriter(){
             @Override
             public String getName(){
                 return "NuclearCraft Planner Format";

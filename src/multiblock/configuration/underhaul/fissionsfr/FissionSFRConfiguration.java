@@ -1,6 +1,7 @@
 package multiblock.configuration.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
@@ -86,5 +87,22 @@ public class FissionSFRConfiguration{
             if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
         }
         throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof FissionSFRConfiguration){
+            FissionSFRConfiguration fsfrc = (FissionSFRConfiguration)obj;
+            return Objects.equals(fsfrc.allBlocks, allBlocks)
+                    &&Objects.equals(fsfrc.allFuels, allFuels)
+                    &&Objects.equals(fsfrc.blocks, blocks)
+                    &&Objects.equals(fsfrc.fuels, fuels)
+                    &&minSize==fsfrc.minSize
+                    &&maxSize==fsfrc.maxSize
+                    &&neutronReach==fsfrc.neutronReach
+                    &&moderatorExtraPower==fsfrc.moderatorExtraPower
+                    &&moderatorExtraHeat==fsfrc.moderatorExtraHeat
+                    &&activeCoolerRate==fsfrc.activeCoolerRate;
+        }
+        return false;
     }
 }

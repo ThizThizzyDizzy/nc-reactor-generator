@@ -28,7 +28,7 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
             GL11.glVertex2d(x+width*.625, y+height*.25);
             GL11.glEnd();
         }
-    });
+    }.setTooltip("Modify placement rule"));
     public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, true){
         @Override
         public void renderForeground(){
@@ -46,7 +46,7 @@ public class MenuComponentPlacementRuleConfiguration extends MenuComponent{
             GL11.glVertex2d(x+width*.8, y+height*.9);
             GL11.glEnd();
         }
-    });
+    }.setTooltip("Delete placement rule\nWARNING: This cannot be undone!"));
     public MenuComponentPlacementRuleConfiguration(PlacementRule rule){
         super(0, 0, 0, 100);
         this.rule = rule;

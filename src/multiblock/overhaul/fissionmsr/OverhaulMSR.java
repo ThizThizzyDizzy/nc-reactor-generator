@@ -906,4 +906,8 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
         parts.add(new PartCount(null, "Casing", (getX()+2)*(getZ()+2)*2+(getX()+2)*getY()*2+getY()*getZ()*2-1-sources));
     }
+    @Override
+    public String getDescriptionTooltip(){
+        return "Overhaul MSRs are Molten Salt Fission reactors in NuclearCraft: Overhauled";
+    }
 }

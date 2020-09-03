@@ -785,4 +785,8 @@ public class OverhaulTurbine extends Multiblock<Block>{
             GL11.glVertex3d(minX, maxY, minZ);
         }
     }
+    @Override
+    public String getDescriptionTooltip(){
+        return "Overhaul Turbines are Turbines in NuclearCraft: Overhauled\nI bet that was pretty obvious though";
+    }
 }

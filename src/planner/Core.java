@@ -53,16 +53,20 @@ public class Core extends Renderer2D{
     public static Theme theme = Theme.themes.get(0);
     private static long window;
     static{
-        Configuration.configurations.get(0).impose(configuration);
-        for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-            if(b.cooling>0&&!b.name.contains("Standard")){
-                try{
-                    b.setInternalTexture(TextureManager.getImage("overhaul/"+b.name.toLowerCase(Locale.ENGLISH).replace(" coolant heater", "").replace("liquid ", "")));
-                }catch(Exception ex){
-                    Sys.error(ErrorLevel.warning, "Failed to load internal texture for MSR Block: "+b.name, ex, ErrorCategory.fileIO);
+        for(Configuration configuration : Configuration.configurations){
+            if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
+                for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
+                    if(b.cooling>0&&!b.name.contains("Standard")){
+                        try{
+                            b.setInternalTexture(TextureManager.getImage("overhaul/"+b.name.toLowerCase(Locale.ENGLISH).replace(" coolant heater", "").replace("liquid ", "")));
+                        }catch(Exception ex){
+                            Sys.error(ErrorLevel.warning, "Failed to load internal texture for MSR Block: "+b.name, ex, ErrorCategory.fileIO);
+                        }
+                    }
                 }
             }
         }
+        Configuration.configurations.get(0).impose(configuration);
         multiblockTypes.add(new UnderhaulSFR());
         multiblockTypes.add(new OverhaulSFR());
         multiblockTypes.add(new OverhaulMSR());

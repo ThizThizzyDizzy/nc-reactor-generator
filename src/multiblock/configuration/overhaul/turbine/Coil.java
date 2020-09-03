@@ -1,6 +1,7 @@
 package multiblock.configuration.overhaul.turbine;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
 import simplelibrary.config2.Config;
@@ -74,4 +75,47 @@ public class Coil extends RuleContainer{
     public String toString(){
         return name;
     }
+    @Override
+    public boolean stillEquals(RuleContainer rc){
+        Coil c = (Coil)rc;
+        return Objects.equals(name, c.name)
+                &&c.efficiency==efficiency
+                &&c.bearing==bearing
+                &&c.connector==connector
+                &&compareImages(texture, c.texture)
+                &&compareImages(displayTexture, c.displayTexture);
+    }
+    /**
+    * Compares two images pixel by pixel.
+    * 
+    * from https://stackoverflow.com/questions/11006394/is-there-a-simple-way-to-compare-bufferedimage-instances/11006474#11006474
+    *
+    * @param imgA the first image.
+    * @param imgB the second image.
+    * @return whether the images are both the same or not.
+    */
+   public static boolean compareImages(BufferedImage imgA, BufferedImage imgB) {
+       if(imgA==null&&imgB==null)return true;
+       if(imgA==null&&imgB!=null)return false;
+       if(imgA!=null&&imgB==null)return false;
+     // The images must be the same size.
+     if (imgA.getWidth() != imgB.getWidth() || imgA.getHeight() != imgB.getHeight()) {
+       return false;
+     }
+
+     int width  = imgA.getWidth();
+     int height = imgA.getHeight();
+
+     // Loop over every pixel.
+     for (int y = 0; y < height; y++) {
+       for (int x = 0; x < width; x++) {
+         // Compare the pixels for equality.
+         if (imgA.getRGB(x, y) != imgB.getRGB(x, y)) {
+           return false;
+         }
+       }
+     }
+
+     return true;
+   }
 }

@@ -297,4 +297,8 @@ public class UnderhaulSFR extends Multiblock<Block>{
     protected void getExtraParts(ArrayList<PartCount> parts){
         parts.add(new PartCount(null, "Casing", getX()*getZ()*2+getX()*getY()*2+getY()*getZ()*2));
     }
+    @Override
+    public String getDescriptionTooltip(){
+        return "Underhaul SFRs are Solid-Fueled Fission reactors in NuclearCraft\nIf you have blocks called \"Heat Sink\" instead of \"Cooler\", you are playing Overhaul";
+    }
 }

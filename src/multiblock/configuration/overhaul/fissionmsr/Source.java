@@ -1,4 +1,5 @@
 package multiblock.configuration.overhaul.fissionmsr;
+import java.util.Objects;
 import simplelibrary.config2.Config;
 public class Source{
     public String name;
@@ -16,5 +17,14 @@ public class Source{
     @Override
     public String toString(){
         return name;
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj!=null&&obj instanceof Source){
+            Source s = (Source)obj;
+            return Objects.equals(name, s.name)
+                    &&efficiency==s.efficiency;
+        }
+        return false;
     }
 }
