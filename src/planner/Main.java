@@ -62,7 +62,7 @@ public class Main{
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-openal.jar", "lwjgl-openal.jar", 78);
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-opengl.jar", "lwjgl-opengl.jar", 915);
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-stb.jar", "lwjgl-stb.jar", 102);
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl.jar", 540);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl-3.2.3.jar", 540);
             final int OS_UNKNOWN = -1;
             final int OS_WINDOWS = 0;
             final int OS_MACOS = 1;
