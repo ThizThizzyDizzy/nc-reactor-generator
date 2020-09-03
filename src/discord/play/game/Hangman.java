@@ -168,7 +168,7 @@ public class Hangman extends Game{
         for(Multiblock m : ncpf.multiblocks){
             m.recalculate();
         }
-        FormatWriter format = FileWriter.formats.get(1);
+        FormatWriter format = FileWriter.PNG;
         CircularStream stream = new CircularStream(1024*1024);//1MB
         CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), "hangman."+format.getExtensions()[0]).submit();
         try{

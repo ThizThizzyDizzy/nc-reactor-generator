@@ -244,6 +244,49 @@ public class FileWriter{
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
             }
+            @Override
+            public boolean isMultiblockSupported(Multiblock multi){
+                return multi instanceof OverhaulSFR||multi instanceof UnderhaulSFR;
+            }
+        });
+        formats.add(NCPF = new FormatWriter(){
+            @Override
+            public String getName(){
+                return "NuclearCraft Planner Format";
+            }
+            @Override
+            public String[] getExtensions(){
+                return new String[]{"ncpf"};
+            }
+            @Override
+            public void write(NCPFFile ncpf, OutputStream stream){
+                Config header = Config.newConfig();
+                header.set("version", NCPFFile.SAVE_VERSION);
+                header.set("count", ncpf.multiblocks.size());
+                Config meta = Config.newConfig();
+                for(String key : ncpf.metadata.keySet()){
+                    String value = ncpf.metadata.get(key);
+                    if(value.trim().isEmpty())continue;
+                    meta.set(key,value);
+                }
+                if(meta.properties().length>0){
+                    header.set("metadata", meta);
+                }
+                header.save(stream);
+                ncpf.configuration.save(null, Config.newConfig()).save(stream);
+                for(Multiblock m : ncpf.multiblocks){
+                    m.save(ncpf, ncpf.configuration, stream);
+                }
+                try{
+                    stream.close();
+                }catch(IOException ex){
+                    throw new RuntimeException(ex);
+                }
+            }
+            @Override
+            public boolean isMultiblockSupported(Multiblock multi){
+                return true;
+            }
         });
         formats.add(PNG = new FormatWriter(){
             private final int textHeight = 20;
@@ -349,40 +392,9 @@ public class FileWriter{
                     throw new IllegalArgumentException("Cannot export configuration to image!");
                 }
             }
-        });
-        formats.add(NCPF = new FormatWriter(){
             @Override
-            public String getName(){
-                return "NuclearCraft Planner Format";
-            }
-            @Override
-            public String[] getExtensions(){
-                return new String[]{"ncpf"};
-            }
-            @Override
-            public void write(NCPFFile ncpf, OutputStream stream){
-                Config header = Config.newConfig();
-                header.set("version", NCPFFile.SAVE_VERSION);
-                header.set("count", ncpf.multiblocks.size());
-                Config meta = Config.newConfig();
-                for(String key : ncpf.metadata.keySet()){
-                    String value = ncpf.metadata.get(key);
-                    if(value.trim().isEmpty())continue;
-                    meta.set(key,value);
-                }
-                if(meta.properties().length>0){
-                    header.set("metadata", meta);
-                }
-                header.save(stream);
-                ncpf.configuration.save(null, Config.newConfig()).save(stream);
-                for(Multiblock m : ncpf.multiblocks){
-                    m.save(ncpf, ncpf.configuration, stream);
-                }
-                try{
-                    stream.close();
-                }catch(IOException ex){
-                    throw new RuntimeException(ex);
-                }
+            public boolean isMultiblockSupported(Multiblock multi){
+                return true;
             }
         });
     }

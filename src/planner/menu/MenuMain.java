@@ -272,6 +272,7 @@ public class MenuMain extends Menu{
                 chooser.setAcceptAllFileFilterUsed(false);
                 HashMap<FileFilter, FormatWriter> filters = new HashMap<>();
                 for(FormatWriter writer : FileWriter.formats){
+                    if(!writer.isMultiblockSupported(multi))continue;
                     FileFilter f = new FileNameExtensionFilter(writer.getDesc(), writer.getExtensions());
                     chooser.addChoosableFileFilter(f);
                     if(Core.isShiftPressed()&&f.getDescription().contains("PNG"))chooser.setFileFilter(f);

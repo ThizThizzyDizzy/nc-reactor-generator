@@ -1,5 +1,6 @@
 package planner.file;
 import java.io.OutputStream;
+import multiblock.Multiblock;
 public abstract class FormatWriter{
     public abstract String getName();
     public abstract String[] getExtensions();
@@ -9,4 +10,5 @@ public abstract class FormatWriter{
         for(String e : getExtensions())ext+=", ."+e;
         return getName()+(ext.isEmpty()?"":(" ("+ext.substring(2)+")"));
     }
+    public abstract boolean isMultiblockSupported(Multiblock multi);
 }

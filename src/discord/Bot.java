@@ -382,10 +382,10 @@ public class Bot extends ListenerAdapter{
                     }
                 }
                 if(formats.isEmpty()){
-                    formats.add(FileWriter.formats.get(0));//hellrage json
-                    formats.add(FileWriter.formats.get(2));//NCPF
+                    formats.add(FileWriter.HELLRAGE);
+                    formats.add(FileWriter.NCPF);
                 }
-                formats.add(FileWriter.formats.get(1));//png
+                formats.add(FileWriter.PNG);
                 Multiblock multiblockInstance = multiblock.newInstance(x,y,z);
                 if(multiblockInstance instanceof UnderhaulSFR){
                     ((UnderhaulSFR)multiblockInstance).fuel = (Fuel)fuels;
