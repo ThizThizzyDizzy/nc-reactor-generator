@@ -440,7 +440,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     private float calculateShutdownFactor(){
         computingShutdown = true;
-        action(new SFRAllShieldsAction(true));
+        action(new SFRAllShieldsAction(true), true);
         float offOut = totalOutput;
         undo();
         computingShutdown = false;

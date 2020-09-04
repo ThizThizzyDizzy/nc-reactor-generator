@@ -11,12 +11,14 @@ public class SymmetryAction extends Action<Multiblock>{
         this.symmetry = symmetry;
     }
     @Override
-    public void doApply(Multiblock multiblock){
-        was = new Block[multiblock.getX()][multiblock.getY()][multiblock.getZ()];
-        for(int x = 0; x<multiblock.getX(); x++){
-            for(int y = 0; y<multiblock.getY(); y++){
-                for(int z = 0; z<multiblock.getZ(); z++){
-                    was[x][y][z] = multiblock.getBlock(x, y, z);
+    public void doApply(Multiblock multiblock, boolean allowUndo){
+        if(allowUndo){
+            was = new Block[multiblock.getX()][multiblock.getY()][multiblock.getZ()];
+            for(int x = 0; x<multiblock.getX(); x++){
+                for(int y = 0; y<multiblock.getY(); y++){
+                    for(int z = 0; z<multiblock.getZ(); z++){
+                        was[x][y][z] = multiblock.getBlock(x, y, z);
+                    }
                 }
             }
         }

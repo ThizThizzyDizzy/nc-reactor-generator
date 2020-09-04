@@ -170,7 +170,7 @@ public class StandardGenerator extends MultiblockGenerator{
         synchronized(workingMultiblocks){
             if(idx>=workingMultiblocks.size())idx = 0;
             if(!workingMultiblocks.isEmpty()){
-                currentMultiblock = workingMultiblocks.get(idx).copy();
+                currentMultiblock = workingMultiblocks.get(idx).copy();//TODO this is very laggy
             }
             index++;
             if(index>=workingMultiblocks.size())index = 0;
@@ -217,17 +217,17 @@ public class StandardGenerator extends MultiblockGenerator{
                 currentMultiblock.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
             }
         }
-        currentMultiblock.performActions();
+        currentMultiblock.performActions(false);
         for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings));
+            if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), false);
         }
         for(Symmetry symmetry : settings.symmetries){
             currentMultiblock.queueAction(new SymmetryAction(symmetry));
         }
-        currentMultiblock.performActions();
+        currentMultiblock.performActions(false);
         currentMultiblock.recalculate();
         for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings));
+            if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), false);
         }
         synchronized(workingMultiblocks.get(idx)){
             Multiblock mult = workingMultiblocks.get(idx);
@@ -309,14 +309,14 @@ public class StandardGenerator extends MultiblockGenerator{
         if(!multiblock.checkCompatible(this.multiblock))return;
         for(Range<Block> range : settings.allowedBlocks){
             for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
-                if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null));
+                if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), false);
             }
         }
         ALLOWED:for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
             for(Range<Block> range : settings.allowedBlocks){
                 if(range.obj.isEqual(block))continue ALLOWED;
             }
-            multiblock.action(new SetblockAction(block.x, block.y, block.z, null));
+            multiblock.action(new SetblockAction(block.x, block.y, block.z, null), false);
         }
         finalize(multiblock);
         workingMultiblocks.add(multiblock.copy());

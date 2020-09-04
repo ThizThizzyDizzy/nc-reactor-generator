@@ -466,7 +466,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     private float calculateShutdownFactor(){
         computingShutdown = true;
-        action(new MSRAllShieldsAction(true));
+        action(new MSRAllShieldsAction(true), true);
         float offOut = totalTotalOutput;
         undo();
         computingShutdown = false;

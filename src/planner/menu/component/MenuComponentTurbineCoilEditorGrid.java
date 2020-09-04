@@ -164,7 +164,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent implements
                 if(b.isBearing()&&button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
                     int dist = Math.min(Math.min(blockX,multiblock.getX()-blockX-1), Math.min(blockY,multiblock.getY()-blockY-1));
                     if(dist==0)return;
-                    multiblock.action(new SetBearingDiameterAction(multiblock.getX()-dist*2));
+                    multiblock.action(new SetBearingDiameterAction(multiblock.getX()-dist*2), true);
                     return;
                 }
             }

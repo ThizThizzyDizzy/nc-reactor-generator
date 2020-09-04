@@ -12,8 +12,8 @@ public class SetBearingDiameterAction extends Action<OverhaulTurbine>{
         this.newDiameter = newDiameter;
     }
     @Override
-    protected void doApply(OverhaulTurbine multiblock){
-        was.clear();
+    protected void doApply(OverhaulTurbine multiblock, boolean allowUndo){
+        if(allowUndo)was.clear();
         oldDiameter = multiblock.bearingDiameter;
         multiblock.bearingDiameter = newDiameter;
         Block shaft = multiblock.getBlock(multiblock.getX()/2, multiblock.getY()/2, 1);
@@ -23,7 +23,7 @@ public class SetBearingDiameterAction extends Action<OverhaulTurbine>{
         for(int x = 0; x<multiblock.getX(); x++){
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
-                    was.put(new int[]{x,y,z}, multiblock.getBlock(x, y, z));
+                    if(allowUndo)was.put(new int[]{x,y,z}, multiblock.getBlock(x, y, z));
                     if(x>=minD&&y>=minD&&x<=maxD&&y<=maxD)multiblock.setBlockExact(x, y, z, null);
                 }
             }

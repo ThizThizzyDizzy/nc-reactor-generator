@@ -16,8 +16,8 @@ public class SetblockAction extends Action<Multiblock>{
         this.block = block;
     }
     @Override
-    public void doApply(Multiblock multiblock){
-        was = multiblock.getBlock(x, y, z);
+    public void doApply(Multiblock multiblock, boolean allowUndo){
+        if(allowUndo)was = multiblock.getBlock(x, y, z);
         multiblock.setBlockExact(x, y, z, block);
     }
     @Override

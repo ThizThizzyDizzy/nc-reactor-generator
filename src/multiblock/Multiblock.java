@@ -454,15 +454,15 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public void redo(){
         if(!future.isEmpty()){
             Action a = future.pop();
-            recalculate(a.apply(this));
+            recalculate(a.apply(this, true));
             history.push(a);
         }
     }
-    public void action(Action action){
+    public void action(Action action, boolean allowUndo){
         lastChangeTime = System.nanoTime();
-        recalculate(action.apply(this));
+        recalculate(action.apply(this, allowUndo));
         future.clear();
-        history.push(action);
+        if(allowUndo)history.push(action);
     }
     public void recalculate(){
         List<T> blox = getBlocks();
@@ -597,12 +597,12 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public void queueAction(Action action){
         queue.enqueue(action);
     }
-    public void performActions(){
+    public void performActions(boolean allowUndo){
         future.clear();
         ArrayList<T> affected = new ArrayList<>();
         while(!queue.isEmpty()){
             Action action = queue.dequeue();
-            ActionResult result = action.apply(this);
+            ActionResult result = action.apply(this, allowUndo);
             ArrayList<T> affectedGroups = result.getAffectedGroups();
             if(affected!=null){
                 if(affectedGroups==null)affected = null;

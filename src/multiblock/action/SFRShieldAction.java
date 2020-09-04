@@ -10,8 +10,8 @@ public class SFRShieldAction extends Action<OverhaulSFR>{
         this.block = block;
     }
     @Override
-    public void doApply(OverhaulSFR multiblock){
-        was = block.closed;
+    public void doApply(OverhaulSFR multiblock, boolean allowUndo){
+        if(allowUndo)was = block.closed;
         block.closed = !block.closed;
     }
     @Override

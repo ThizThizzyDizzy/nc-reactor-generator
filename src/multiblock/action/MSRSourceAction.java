@@ -13,8 +13,8 @@ public class MSRSourceAction extends Action<OverhaulMSR>{
         this.source = source;
     }
     @Override
-    public void doApply(OverhaulMSR multiblock){
-        was = block.source;
+    public void doApply(OverhaulMSR multiblock, boolean allowUndo){
+        if(allowUndo)was = block.source;
         block.source = source;
     }
     @Override

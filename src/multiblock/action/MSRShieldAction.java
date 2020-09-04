@@ -10,8 +10,8 @@ public class MSRShieldAction extends Action<OverhaulMSR>{
         this.block = block;
     }
     @Override
-    public void doApply(OverhaulMSR multiblock){
-        was = block.closed;
+    public void doApply(OverhaulMSR multiblock, boolean allowUndo){
+        if(allowUndo)was = block.closed;
         block.closed = !block.closed;
     }
     @Override

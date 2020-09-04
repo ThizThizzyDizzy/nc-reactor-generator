@@ -17,6 +17,7 @@ import java.util.Locale;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.UnsupportedLookAndFeelException;
 public class Main{
     private static String versionListURL = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt";
     public static final String applicationName = "Nuclearcraft Reactor Generator";
@@ -25,30 +26,12 @@ public class Main{
     //Download details
     private static int total;
     private static int current;
-    private static JFrame frame;
-    private static JProgressBar bar;
     private static boolean allowDownload = true;
     public static boolean isBot = false;
     private static void addRequiredLibrary(String url, String filename, int sizeKB){
         requiredLibraries.put(new String[]{url,filename}, sizeKB);
     }
-    public static void main(String[] args) throws NoSuchMethodException, IOException, InterruptedException, URISyntaxException{
-        try{
-            for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
-                if("Nimbus".equals(info.getName())){
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
-        try{
-            for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
-                if("Windows".equals(info.getName())){
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
+    public static void main(String[] args){
         try{
             if(args.length>=1&&args[0].equals("maybediscord")){
                 if(JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[0] = "discord";
@@ -57,6 +40,41 @@ public class Main{
                 if(JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
             }
             System.out.println("Initializing...");
+            args = update(args);
+            if(args==null){
+                return;
+            }
+            Core.main(args);
+        }catch(Exception ex){
+            String trace = "";
+            for(StackTraceElement e : ex.getStackTrace()){
+                trace+="\n"+e.toString();
+            }
+            trace = trace.isEmpty()?trace:trace.substring(1);
+            JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread!", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private static String getLibraryRoot(){
+        return "libraries";
+    }
+    private static String[] update(String[] args) throws URISyntaxException, IOException, InterruptedException{
+        ArrayList<String> theargs = new ArrayList<>(Arrays.asList(args));
+        if(args.length<1||!args[0].equals("Skip Dependencies")){
+            setLookAndFeel();
+            JFrame frame;
+            JProgressBar bar;
+            if(versionListURL.isEmpty()){
+                System.err.println("Version list URL is empty! assuming latest version.");
+            }else{
+                System.out.println("Checking for updates...");
+                Updater updater = Updater.read(versionListURL, VersionManager.currentVersion, applicationName);
+                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0&&(isBot||JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)){
+                    System.out.println("Updating...");
+                    startJava(new String[0], new String[]{"justUpdated"}, updater.update(updater.getLatestDownloadableVersion()));
+                    System.exit(0);
+                }
+                System.out.println("Update Check Complete.");
+            }
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-assimp.jar", "lwjgl-assimp.jar", 214);
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-glfw.jar", "lwjgl-glfw.jar", 105);
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-openal.jar", "lwjgl-openal.jar", 78);
@@ -206,38 +224,6 @@ public class Main{
                 addRequiredLibrary("https://www.dropbox.com/s/ho0vh24y9cizt9x/trove4j-3.0.3.jar?dl=1", "trove4j-3.0.3.jar", 2465);
                 isBot = true;
             }
-            args = update(args);
-            if(args==null){
-                return;
-            }
-            Core.main(args);
-        }catch(Exception ex){
-            String trace = "";
-            for(StackTraceElement e : ex.getStackTrace()){
-                trace+="\n"+e.toString();
-            }
-            trace = trace.isEmpty()?trace:trace.substring(1);
-            JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread!", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    private static String getLibraryRoot(){
-        return "libraries";
-    }
-    private static String[] update(String[] args) throws URISyntaxException, IOException, InterruptedException{
-        ArrayList<String> theargs = new ArrayList<>(Arrays.asList(args));
-        if(args.length<1||!args[0].equals("Skip Dependencies")){
-            if(versionListURL.isEmpty()){
-                System.err.println("Version list URL is empty! assuming latest version.");
-            }else{
-                System.out.println("Checking for updates...");
-                Updater updater = Updater.read(versionListURL, VersionManager.currentVersion, applicationName);
-                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0&&(isBot||JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)){
-                    System.out.println("Updating...");
-                    startJava(new String[0], new String[]{"justUpdated"}, updater.update(updater.getLatestDownloadableVersion()));
-                    System.exit(0);
-                }
-                System.out.println("Update Check Complete.");
-            }
             for(String[] lib : requiredLibraries.keySet()){
                 if(!new File(getLibraryRoot()+"/"+lib[1]).exists()){
                     downloadSize+=requiredLibraries.get(lib);
@@ -268,6 +254,7 @@ public class Main{
                 String url = lib[0];
                 String filename = lib[1];
                 requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"/"+filename));
+                bar.setValue(current);
                 n++;
             }
             System.out.println("Finished downloading libraries");
@@ -341,7 +328,6 @@ public class Main{
     }
     private static File downloadFile(String link, File destinationFile){
         current++;
-        bar.setValue(current);
         if(destinationFile.exists()||link==null){
             return destinationFile;
         }
@@ -492,11 +478,31 @@ public class Main{
     public static Process startJava(String[] vmArgs, String[] applicationArgs, File file) throws URISyntaxException, IOException{
         ArrayList<String> params = new ArrayList<>();
         params.add("java");
+        params.add("-XstartOnFirstThread");
         params.addAll(Arrays.asList(vmArgs));
         params.add("-jar");
         params.add(file.getAbsolutePath());
         params.addAll(Arrays.asList(applicationArgs));
         ProcessBuilder builder = new ProcessBuilder(params);
         return builder.start();
+    }
+    public static void setLookAndFeel(){
+        System.out.println("Setting Swing look and feel...");
+        String lookAndFeel = null;
+        for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
+            if("Nimbus".equals(info.getName())){
+                lookAndFeel = info.getClassName();
+                break;
+            }
+        }
+        for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
+            if("Windows".equals(info.getName())){
+                lookAndFeel = info.getClassName();
+                break;
+            }
+        }
+        try{
+            javax.swing.UIManager.setLookAndFeel(lookAndFeel);
+        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|UnsupportedLookAndFeelException ex){}
     }
 }

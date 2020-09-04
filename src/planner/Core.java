@@ -162,6 +162,7 @@ public class Core extends Renderer2D{
         settings.load();
         System.out.println("Loading theme...");
         setTheme(Theme.themes.get(settings.get("theme", 0)));
+        Main.setLookAndFeel();
         System.out.println("Startup complete!");
     }
     public static void tick(boolean isLastTick){

@@ -15,8 +15,8 @@ public class SetCoolantRecipeAction extends Action<OverhaulSFR>{
         this.recipe = recipe;
     }
     @Override
-    public void doApply(OverhaulSFR multiblock){
-        was = multiblock.coolantRecipe;
+    public void doApply(OverhaulSFR multiblock, boolean allowUndo){
+        if(allowUndo)was = multiblock.coolantRecipe;
         multiblock.coolantRecipe = recipe;
         editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
     }

@@ -11,8 +11,8 @@ public class ClearSelectionAction extends Action<Multiblock>{
         this.editor = editor;
     }
     @Override
-    protected void doApply(Multiblock multiblock){
-        was.addAll(editor.selection);
+    protected void doApply(Multiblock multiblock, boolean allowUndo){
+        if(allowUndo)was.addAll(editor.selection);
         editor.selection.clear();
     }
     @Override

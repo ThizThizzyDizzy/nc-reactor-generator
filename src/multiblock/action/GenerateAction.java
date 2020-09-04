@@ -11,12 +11,12 @@ public class GenerateAction extends Action<Multiblock>{
         this.multiblock = multiblock;
     }
     @Override
-    public void doApply(Multiblock multiblock){
-        was = new Block[multiblock.getX()][multiblock.getY()][multiblock.getZ()];
+    public void doApply(Multiblock multiblock, boolean allowUndo){
+        if(allowUndo)was = new Block[multiblock.getX()][multiblock.getY()][multiblock.getZ()];
         for(int x = 0; x<multiblock.getX(); x++){
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
-                    was[x][y][z] = multiblock.getBlock(x, y, z);
+                    if(allowUndo)was[x][y][z] = multiblock.getBlock(x, y, z);
                     Block block = this.multiblock.getBlock(x, y, z);
                     if(multiblock instanceof OverhaulTurbine&&block==null)continue;
                     multiblock.setBlock(x, y, z, block);

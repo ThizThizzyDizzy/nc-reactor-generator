@@ -65,7 +65,7 @@ public class MenuGenerator extends Menu{
         done.addActionListener((e) -> {
             if(generator!=null)generator.stopAllThreads();
             Multiblock generated = generator.getMainMultiblock();
-            if(generated!=null)editor.multiblock.action(new GenerateAction(generated));
+            if(generated!=null)editor.multiblock.action(new GenerateAction(generated), true);
             gui.open(editor);
         });
         addThread.addActionListener((e) -> {

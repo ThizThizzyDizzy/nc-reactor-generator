@@ -18,7 +18,7 @@ public class SelectAction extends Action<Multiblock>{
         this.sel.addAll(sel);
     }
     @Override
-    protected void doApply(Multiblock multiblock){
+    protected void doApply(Multiblock multiblock, boolean allowUndo){
         editor.selection.addAll(sel);
     }
     @Override

@@ -11,10 +11,10 @@ public class MSRAllShieldsAction extends Action<OverhaulMSR>{
         this.close = close;
     }
     @Override
-    public void doApply(OverhaulMSR multiblock){
+    public void doApply(OverhaulMSR multiblock, boolean allowUndo){
         for(Block b : multiblock.getBlocks()){
             if(b.template.shield){
-                was.put(b, b.closed);
+                if(allowUndo)was.put(b, b.closed);
                 b.closed = close;
             }
         }

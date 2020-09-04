@@ -286,7 +286,7 @@ public class MenuEdit extends Menu{
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
                 multiblock.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.allFuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((UnderhaulSFR)multiblock).fuel!=fuel){
-                    multiblock.action(new SetFuelAction(this, fuel));
+                    multiblock.action(new SetFuelAction(this, fuel), true);
                 }
             }
         }
@@ -294,7 +294,7 @@ public class MenuEdit extends Menu{
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
                 multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
-                    multiblock.action(new SetCoolantRecipeAction(this, recipe));
+                    multiblock.action(new SetCoolantRecipeAction(this, recipe), true);
                 }
             }
         }
@@ -302,7 +302,7 @@ public class MenuEdit extends Menu{
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
                 multiblock.configuration.overhaul.turbine.Recipe recipe = Core.configuration.overhaul.turbine.allRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((OverhaulTurbine)multiblock).recipe!=recipe){
-                    multiblock.action(new SetTurbineRecipeAction(this, recipe));
+                    multiblock.action(new SetTurbineRecipeAction(this, recipe), true);
                 }
             }
         }
@@ -409,7 +409,7 @@ public class MenuEdit extends Menu{
             if(Core.isControlPressed()){
                 if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).matches(getSelectedBlock()))return;
             }
-            multiblock.action(new SetblockAction(x,y,z,null));
+            multiblock.action(new SetblockAction(x,y,z,null), true);
             return;
         }
         if(Core.isControlPressed()){
@@ -436,7 +436,7 @@ public class MenuEdit extends Menu{
                 ((multiblock.overhaul.fissionmsr.Block)blok).irradiatorRecipe = getSelectedMSRIrradiatorRecipe();
             }
         }
-        multiblock.action(new SetblockAction(x,y,z,blok));
+        multiblock.action(new SetblockAction(x,y,z,blok), true);
     }
     @Override
     public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
@@ -448,7 +448,7 @@ public class MenuEdit extends Menu{
                 for(int[] i : selection){
                     ac.add(i[0], i[1], i[2]);
                 }
-                multiblock.action(ac);
+                multiblock.action(ac, true);
                 clearSelection();
             }
             if(key==GLFW.GLFW_KEY_M)tools.setSelectedIndex(0);
@@ -511,7 +511,7 @@ public class MenuEdit extends Menu{
                 ((multiblock.overhaul.fissionmsr.Block)set.block).irradiatorRecipe = getSelectedMSRIrradiatorRecipe();
             }
         }
-        multiblock.action(set);
+        multiblock.action(set, true);
     }
     public boolean isValid(Block selectedBlock, int x, int layer, int z){
         return multiblock.isValid(selectedBlock, x, layer, z);
@@ -544,20 +544,20 @@ public class MenuEdit extends Menu{
     }
     public void select(ArrayList<int[]> is){
         if(Core.isControlPressed()){
-            multiblock.action(new SelectAction(this, is));
+            multiblock.action(new SelectAction(this, is), true);
         }else{
-            multiblock.action(new SetSelectionAction(this, is));
+            multiblock.action(new SetSelectionAction(this, is), true);
         }
     }
     public void setSelection(ArrayList<int[]> is){
-        multiblock.action(new SetSelectionAction(this, is));
+        multiblock.action(new SetSelectionAction(this, is), true);
     }
     public void deselect(ArrayList<int[]> is){
         if(!Core.isControlPressed()){
             clearSelection();
             return;
         }
-        multiblock.action(new DeselectAction(this, is));
+        multiblock.action(new DeselectAction(this, is), true);
     }
     public boolean isSelected(int x, int y, int z){
         for(int[] s : selection){
@@ -637,13 +637,13 @@ public class MenuEdit extends Menu{
         deselect(is);
     }
     public void moveSelection(int x, int y, int z){
-        multiblock.action(new MoveAction(this, selection, x, y, z));
+        multiblock.action(new MoveAction(this, selection, x, y, z), true);
     }
     public void copySelection(int x, int y, int z){
-        multiblock.action(new CopyAction(this, selection, x, y, z));
+        multiblock.action(new CopyAction(this, selection, x, y, z), true);
     }
     public void clearSelection(){
-        multiblock.action(new ClearSelectionAction(this));
+        multiblock.action(new ClearSelectionAction(this), true);
     }
     public void addSelection(ArrayList<int[]> sel){
         for(int[] is : selection){

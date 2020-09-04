@@ -21,7 +21,7 @@ public class MoveAction extends Action<Multiblock>{
         this.editor = editor;
     }
     @Override
-    public void doApply(Multiblock multiblock){
+    public void doApply(Multiblock multiblock, boolean allowUndo){
         ArrayList<int[]> movedSelection = new ArrayList<>();
         for(int[] loc : selection){
             int[] movedLoc = new int[]{loc[0]+dx, loc[1]+dy, loc[2]+dz};

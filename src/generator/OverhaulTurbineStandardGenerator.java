@@ -246,17 +246,17 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
                 currentMultiblock.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
             }
         }
-        currentMultiblock.performActions();
+        currentMultiblock.performActions(false);
         for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings));
+            if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), false);
         }
         for(Symmetry symmetry : settings.symmetries){
             currentMultiblock.queueAction(new SymmetryAction(symmetry));
         }
-        currentMultiblock.performActions();
+        currentMultiblock.performActions(false);
         currentMultiblock.recalculate();
         for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings));
+            if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), false);
         }
         currentMultiblock.recalculate();
         synchronized(workingMultiblocks.get(idx)){
@@ -330,17 +330,23 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
     }
     @Override
     public void importMultiblock(Multiblock multiblock){
+        multiblock.convertTo(this.multiblock.getConfiguration());
+        if(multiblock instanceof UnderhaulSFR){
+            multiblock = multiblock.copy();
+            ((UnderhaulSFR)multiblock).fuel = ((UnderhaulSFR)this.multiblock).fuel;
+            multiblock.recalculate();
+        }
         if(!multiblock.checkCompatible(this.multiblock))return;
         for(Range<Block> range : settings.allowedBlocks){
             for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
-                if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null));
+                if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), false);
             }
         }
         ALLOWED:for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
             for(Range<Block> range : settings.allowedBlocks){
                 if(range.obj.isEqual(block))continue ALLOWED;
             }
-            multiblock.action(new SetblockAction(block.x, block.y, block.z, null));
+            multiblock.action(new SetblockAction(block.x, block.y, block.z, null), false);
         }
         finalize(multiblock);
         workingMultiblocks.add(multiblock.copy());

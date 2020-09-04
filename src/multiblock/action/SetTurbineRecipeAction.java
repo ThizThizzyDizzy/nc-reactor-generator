@@ -15,8 +15,8 @@ public class SetTurbineRecipeAction extends Action<OverhaulTurbine>{
         this.recipe = recipe;
     }
     @Override
-    public void doApply(OverhaulTurbine multiblock){
-        was = multiblock.recipe;
+    public void doApply(OverhaulTurbine multiblock, boolean allowUndo){
+        if(allowUndo)was = multiblock.recipe;
         multiblock.recipe = recipe;
         editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
     }

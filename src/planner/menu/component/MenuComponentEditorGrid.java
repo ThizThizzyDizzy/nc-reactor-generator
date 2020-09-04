@@ -177,7 +177,7 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
                     index--;
                     if(index>=Core.configuration.overhaul.fissionSFR.allSources.size())index = 0;
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.allSources.size()-1;
-                    multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.allSources.get(index)));
+                    multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.allSources.get(index)), true);
                 }
             }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()&&!((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
                 multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
@@ -186,19 +186,19 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
                     index--;
                     if(index>=Core.configuration.overhaul.fissionMSR.allSources.size())index = 0;
                     if(index<-1)index = Core.configuration.overhaul.fissionMSR.allSources.size()-1;
-                    multiblock.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.allSources.get(index)));
+                    multiblock.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.allSources.get(index)), true);
                 }
             }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).template.shield){
                 multiblock.overhaul.fissionsfr.Block b = (multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
-                    if(Core.isControlPressed())multiblock.action(new SFRAllShieldsAction(!b.closed));
-                    else multiblock.action(new SFRShieldAction(b));
+                    if(Core.isControlPressed())multiblock.action(new SFRAllShieldsAction(!b.closed), true);
+                    else multiblock.action(new SFRShieldAction(b), true);
                 }
             }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).template.shield){
                 multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
-                    if(Core.isControlPressed())multiblock.action(new MSRAllShieldsAction(!b.closed));
-                    else multiblock.action(new MSRShieldAction(b));
+                    if(Core.isControlPressed())multiblock.action(new MSRAllShieldsAction(!b.closed), true);
+                    else multiblock.action(new MSRShieldAction(b), true);
                 }
             }else{
                 if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){

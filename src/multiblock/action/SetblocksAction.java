@@ -12,9 +12,9 @@ public class SetblocksAction extends Action<Multiblock>{
         this.block = block;
     }
     @Override
-    public void doApply(Multiblock multiblock){
+    public void doApply(Multiblock multiblock, boolean allowUndo){
         for(int[] loc : locations){
-            was.put(loc, multiblock.getBlock(loc[0], loc[1], loc[2]));
+            if(allowUndo)was.put(loc, multiblock.getBlock(loc[0], loc[1], loc[2]));
             multiblock.setBlock(loc[0], loc[1], loc[2], block);
         }
     }

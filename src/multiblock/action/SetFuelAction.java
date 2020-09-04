@@ -15,8 +15,8 @@ public class SetFuelAction extends Action<UnderhaulSFR>{
         this.recipe = recipe;
     }
     @Override
-    public void doApply(UnderhaulSFR multiblock){
-        was = multiblock.fuel;
+    public void doApply(UnderhaulSFR multiblock, boolean allowUndo){
+        if(allowUndo)was = multiblock.fuel;
         multiblock.fuel = recipe;
         editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
     }

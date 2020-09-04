@@ -18,7 +18,7 @@ public class DeselectAction extends Action<Multiblock>{
         this.sel.addAll(sel);
     }
     @Override
-    protected void doApply(Multiblock multiblock){
+    protected void doApply(Multiblock multiblock, boolean allowUndo){
         for(int[] i : sel){
             for (Iterator<int[]> it = editor.selection.iterator(); it.hasNext();) {
                 int[] s = it.next();

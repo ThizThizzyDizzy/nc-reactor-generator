@@ -13,8 +13,8 @@ public class SFRSourceAction extends Action<OverhaulSFR>{
         this.source = source;
     }
     @Override
-    public void doApply(OverhaulSFR multiblock){
-        was = block.source;
+    public void doApply(OverhaulSFR multiblock, boolean allowUndo){
+        if(allowUndo)was = block.source;
         block.source = source;
     }
     @Override
