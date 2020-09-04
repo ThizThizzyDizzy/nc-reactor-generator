@@ -111,8 +111,10 @@ public class OverhaulMSR extends Multiblock<Block>{
             if(vesselGroups.contains(group))continue;//already know about that one!
             vesselGroups.add(group);
         }
-        for(Block block : blocks){
-            if(block.isPrimed())block.propogateNeutronFlux(this);
+        for(VesselGroup group : vesselGroups){
+            if(group.isPrimed()){
+                group.propogateNeutronFlux(this);
+            }
         }
         int lastActive, nowActive;
         do{
@@ -146,9 +148,10 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
         }while(somethingChanged);
         for(VesselGroup group : vesselGroups){
+            group.positionalEfficiency*=6f*group.size()/group.getOpenFaces();
             for(Block block : group.blocks){
                 float criticalityModifier = (float) (1/(1+Math.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
-                block.efficiency = 6*group.size()*(block.fuel.efficiency*group.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier)/group.getOpenFaces();
+                block.efficiency = block.fuel.efficiency*group.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier;
             }
         }
         for(Block block : allBlocks){//detect clusters
@@ -162,7 +165,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             for(Block b : cluster.blocks){
                 if(b.isFuelVesselActive()){
                     fuelVessels++;
-                    cluster.efficiency+=b.efficiency;
+                    cluster.efficiency+=b.efficiency/b.vesselGroup.size();
                     cluster.totalHeat+=6*(b.vesselGroup.moderatorLines*b.fuel.heat)/b.vesselGroup.getOpenFaces();
                     cluster.heatMult+=b.vesselGroup.getHeatMult()/b.vesselGroup.size();
                 }
@@ -793,7 +796,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
             return results;
         }
-        private int size(){
+        int size(){
             return blocks.size();
         }
         private int getOpenFaces(){
@@ -823,6 +826,24 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
         public float getHeatMult(){
             return 6*size()*((float)moderatorLines)/getOpenFaces();
+        }
+        public int getRequiredSources(){
+            return getOpenFaces()/6;
+        }
+        public int getSources(){
+            int sources = 0;
+            for(Block b : blocks){
+                if(b.isPrimed())sources++;
+            }
+            return sources;
+        }
+        public boolean isPrimed(){
+            return getSources()>=getRequiredSources();
+        }
+        private void propogateNeutronFlux(OverhaulMSR msr){
+            for(Block b : blocks){
+                b.propogateNeutronFlux(msr);
+            }
         }
     }
     @Override

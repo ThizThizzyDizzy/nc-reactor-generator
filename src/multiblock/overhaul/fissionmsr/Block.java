@@ -49,7 +49,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public String getName(){
-        return template.name;
+        return template==null?"Casing":template.name;//should never be null, but it is sometimes...?
     }
     @Override
     public void clearData(){
@@ -61,24 +61,34 @@ public class Block extends multiblock.Block{
     public String getTooltip(){
         String tip = getName();
         if(isFuelVessel()){
-            tip+="\nFuel: "+fuel.name+"\n"
-                    + "Fuel Vessel "+(isFuelVesselActive()?"Active":"Inactive");
-            if(isFuelVesselActive()){
-                tip+="\nAdjacent moderator lines: "+vesselGroup.moderatorLines+"\n"
-                        + "Heat Multiplier: "+percent(vesselGroup.getHeatMult(), 0)+"\n"
-                        + "Heat Produced: "+vesselGroup.getHeatMult()*fuel.heat+"H/t\n"
-                        + "Efficiency: "+percent(efficiency, 0)+"\n"
-                        + "Positional Efficiency: "+percent(vesselGroup.positionalEfficiency, 0)+"\n"
-                        + "Total Neutron Flux: "+vesselGroup.neutronFlux+"\n"
-                        + "Criticality Factor: "+vesselGroup.criticality;
+            tip+="\nFuel: "+fuel.name+"\n";
+            if(vesselGroup==null){
+                tip +="Fuel Vessel "+(isFuelVesselActive()?"Active":"Inactive");
             }else{
-                tip+="\nTotal Neutron Flux: "+vesselGroup.neutronFlux+"\n"
-                        + "Criticality Factor: "+vesselGroup.criticality;
+                tip +="Vessel Group "+(isFuelVesselActive()?"Active":"Inactive")+" ("+vesselGroup.size()+" Vessels)";
+                if(isFuelVesselActive()){
+                    tip+="\nAdjacent moderator lines: "+vesselGroup.moderatorLines+"\n"
+                            + "Heat Multiplier: "+percent(vesselGroup.getHeatMult()/vesselGroup.size(), 0)+"\n"
+                            + "Heat Produced: "+vesselGroup.getHeatMult()*fuel.heat+"H/t\n"
+                            + "Efficiency: "+percent(efficiency/vesselGroup.size(), 0)+"\n"
+                            + "Positional Efficiency: "+percent(vesselGroup.positionalEfficiency/vesselGroup.size(), 0)+"\n"
+                            + "Total Neutron Flux: "+vesselGroup.neutronFlux+"\n"
+                            + "Criticality Factor: "+vesselGroup.criticality;
+                }else{
+                    tip+="\nTotal Neutron Flux: "+vesselGroup.neutronFlux+"\n"
+                            + "Criticality Factor: "+vesselGroup.criticality;
+                }
             }
             if(isPrimed()){
                 tip+="\n"
-                        + "Primed\n"
+                        + "Vessel Primed\n"
                         + "Neutron source: "+(source==null?"Self":source.name);
+            }
+            if(vesselGroup!=null){
+                if(vesselGroup.isPrimed()){
+                    tip+="\nVessel Group Primed";
+                }
+                tip+="\nNeutron Sources: "+vesselGroup.getSources()+"/"+vesselGroup.getRequiredSources();
             }
         }
         if(isModerator()){
@@ -136,10 +146,7 @@ public class Block extends multiblock.Block{
     }
     public boolean isPrimed(){
         if(!isFuelVessel())return false;
-        for(Block b : vesselGroup.blocks){
-            if(b.source!=null||b.fuel.selfPriming)return true;
-        }
-        return false;
+        return source!=null||fuel.selfPriming;
     }
     @Override
     public boolean isCore(){
@@ -208,8 +215,8 @@ public class Block extends multiblock.Block{
     }
     public void propogateNeutronFlux(OverhaulMSR reactor){
         if(!isFuelVessel())return;
-        if(!isPrimed()&&vesselGroup.neutronFlux<vesselGroup.criticality)return;
         if(hasPropogated)return;
+        if(!vesselGroup.isPrimed()&&vesselGroup.neutronFlux<vesselGroup.criticality)return;
         hasPropogated = true;
         for(Direction d : directions){
             int flux = 0;
@@ -253,7 +260,6 @@ public class Block extends multiblock.Block{
                 break;
             }
         }
-        for(Block b : vesselGroup.blocks)b.propogateNeutronFlux(reactor);
     }
     public void rePropogateNeutronFlux(OverhaulMSR reactor){
         if(!isFuelVessel())return;
