@@ -429,7 +429,7 @@ public class Bot extends ListenerAdapter{
                     settings.symmetries.addAll(symmetries);
                     ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
                     for(PostProcessingEffect ppe : ppes){
-                        if(ppe instanceof ClearInvalid){
+                        if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
                             settings.postProcessingEffects.add(ppe);
                         }
                     }
