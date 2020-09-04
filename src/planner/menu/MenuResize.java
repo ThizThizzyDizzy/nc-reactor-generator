@@ -101,7 +101,7 @@ public class MenuResize extends Menu{
             });
             for(int z = 0; z<multiblock.getZ(); z++){
                 final int row = z;
-                if(z!=0&&z!=multiblock.getZ()-1){
+                if(z!=0&&z!=multiblock.getZ()-1||!multiblock.getDefinitionName().contains("Turbine")){
                     MenuComponentMinimalistButton delRow = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getZ()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, "-", multiblock.getZ()>multiblock.getMinZ(), true){
                         @Override
                         public void render(){

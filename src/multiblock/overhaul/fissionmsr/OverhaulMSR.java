@@ -117,21 +117,21 @@ public class OverhaulMSR extends Multiblock<Block>{
         int lastActive, nowActive;
         do{
             lastActive = 0;
-            for(Block block : blocks){
-                boolean wasActive = block.isFuelVesselActive();
-                block.hadFlux = block.neutronFlux;
-                block.clearData();
-                if(wasActive)lastActive++;
-                block.wasActive = wasActive;
+            for(VesselGroup group : vesselGroups){
+                boolean wasActive = group.isActive();
+                group.hadFlux = group.neutronFlux;
+                group.clearData();
+                if(wasActive)lastActive+=group.size();
+                group.wasActive = wasActive;
             }
             for(Block block : blocks){
                 block.rePropogateNeutronFlux(this);
             }
             nowActive = 0;
-            for(Block block : blocks){
-                if(block.isFuelVesselActive())nowActive++;
-                if(block.isFuelVessel()&&!block.wasActive){
-                    block.neutronFlux = block.hadFlux;
+            for(VesselGroup group : vesselGroups){
+                if(group.isActive())nowActive+=group.size();
+                if(!group.wasActive){
+                    group.neutronFlux = group.hadFlux;
                 }
             }
         }while(nowActive!=lastActive);
@@ -145,10 +145,10 @@ public class OverhaulMSR extends Multiblock<Block>{
                 if(block.calculateHeater(this))somethingChanged = true;
             }
         }while(somethingChanged);
-        for(Block block : blocks){//set vessel efficiencies
-            if(block.isFuelVessel()){
-                float criticalityModifier = (float) (1/(1+Math.exp(2*(block.neutronFlux-2*block.vesselGroup.criticality))));
-                block.efficiency = block.fuel.efficiency*block.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier;
+        for(VesselGroup group : vesselGroups){
+            for(Block block : group.blocks){
+                float criticalityModifier = (float) (1/(1+Math.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
+                block.efficiency = 6*group.size()*(block.fuel.efficiency*group.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier)/group.getOpenFaces();
             }
         }
         for(Block block : allBlocks){//detect clusters
@@ -163,18 +163,18 @@ public class OverhaulMSR extends Multiblock<Block>{
                 if(b.isFuelVesselActive()){
                     fuelVessels++;
                     cluster.efficiency+=b.efficiency;
-                    cluster.totalHeat+=b.moderatorLines*b.fuel.heat;
-                    cluster.heatMult+=b.moderatorLines;
+                    cluster.totalHeat+=6*(b.vesselGroup.moderatorLines*b.fuel.heat)/b.vesselGroup.getOpenFaces();
+                    cluster.heatMult+=b.vesselGroup.getHeatMult()/b.vesselGroup.size();
                 }
                 if(b.isHeaterActive()){
                     cluster.totalCooling+=b.template.cooling;
                 }
                 if(b.isShieldActive()){
-                    cluster.totalHeat+=b.template.heatMult*b.neutronFlux;
+                    cluster.totalHeat+=b.template.heatMult*b.flux;
                 }
                 if(b.isIrradiatorActive()){
-                    cluster.irradiation+=b.neutronFlux;
-                    if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.neutronFlux;
+                    cluster.irradiation+=b.flux;
+                    if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.flux;
                 }
             }
             cluster.efficiency/=fuelVessels;
@@ -703,6 +703,11 @@ public class OverhaulMSR extends Multiblock<Block>{
     public class VesselGroup{
         public ArrayList<Block> blocks = new ArrayList<>();
         public int criticality = 0;
+        public int neutronFlux = 0;
+        public int moderatorLines;
+        public float positionalEfficiency;
+        public int hadFlux;
+        public boolean wasActive;
         public VesselGroup(Block block){
             blocks.addAll(toList(getBlocks(block)));
             for(Block b : blocks){
@@ -787,6 +792,37 @@ public class OverhaulMSR extends Multiblock<Block>{
                 results.put(i+1, layer);
             }
             return results;
+        }
+        private int size(){
+            return blocks.size();
+        }
+        private int getOpenFaces(){
+            int open = 0;
+            for(Block b1 : blocks){
+                DIRECTION:for(Direction d : directions){
+                    int x = b1.x+d.x;
+                    int y = b1.y+d.y;
+                    int z = b1.z+d.z;
+                    for(Block b2 : blocks){
+                        if(b2.x==x&&b2.y==y&&b2.z==z)continue DIRECTION;
+                    }
+                    open++;
+                }
+            }
+            return open;
+        }
+        private boolean isActive(){
+            return neutronFlux>=criticality;
+        }
+        private void clearData(){
+            for(Block b : blocks)b.clearData();
+            wasActive = false;
+            neutronFlux = 0;
+            positionalEfficiency = 0;
+            moderatorLines = 0;
+        }
+        public float getHeatMult(){
+            return 6*size()*((float)moderatorLines)/getOpenFaces();
         }
     }
     @Override

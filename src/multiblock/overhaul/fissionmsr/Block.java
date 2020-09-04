@@ -15,9 +15,7 @@ public class Block extends multiblock.Block{
     public multiblock.configuration.overhaul.fissionmsr.Source source;
     public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irradiatorRecipe;
     private boolean hasPropogated = false;
-    public int moderatorLines;
-    public int neutronFlux;
-    public float positionalEfficiency;
+    public int flux;
     public boolean moderatorValid = false;
     public boolean moderatorActive = false;
     public boolean heaterValid = false;
@@ -26,9 +24,7 @@ public class Block extends multiblock.Block{
     public float efficiency;
     public boolean inCluster;
     public boolean closed = false;
-    public boolean wasActive;
     public OverhaulMSR.VesselGroup vesselGroup;//only used when recalculating; doesn't even need to be reset
-    int hadFlux;
     public Block(int x, int y, int z, multiblock.configuration.overhaul.fissionmsr.Block template){
         super(x, y, z);
         this.template = template;
@@ -58,8 +54,8 @@ public class Block extends multiblock.Block{
     @Override
     public void clearData(){
         hasPropogated = false;
-        positionalEfficiency = efficiency = moderatorLines = neutronFlux = 0;
-        wasActive = moderatorValid = moderatorActive = heaterValid = reflectorActive = shieldActive = inCluster = false;
+        efficiency = flux = 0;
+        moderatorValid = moderatorActive = heaterValid = reflectorActive = shieldActive = inCluster = false;
     }
     @Override
     public String getTooltip(){
@@ -68,15 +64,15 @@ public class Block extends multiblock.Block{
             tip+="\nFuel: "+fuel.name+"\n"
                     + "Fuel Vessel "+(isFuelVesselActive()?"Active":"Inactive");
             if(isFuelVesselActive()){
-                tip+="\nAdjacent moderator lines: "+moderatorLines+"\n"
-                        + "Heat Multiplier: "+percent(moderatorLines, 0)+"\n"
-                        + "Heat Produced: "+moderatorLines*fuel.heat+"H/t\n"
+                tip+="\nAdjacent moderator lines: "+vesselGroup.moderatorLines+"\n"
+                        + "Heat Multiplier: "+percent(vesselGroup.getHeatMult(), 0)+"\n"
+                        + "Heat Produced: "+vesselGroup.getHeatMult()*fuel.heat+"H/t\n"
                         + "Efficiency: "+percent(efficiency, 0)+"\n"
-                        + "Positional Efficiency: "+percent(positionalEfficiency, 0)+"\n"
-                        + "Total Neutron Flux: "+neutronFlux+"\n"
+                        + "Positional Efficiency: "+percent(vesselGroup.positionalEfficiency, 0)+"\n"
+                        + "Total Neutron Flux: "+vesselGroup.neutronFlux+"\n"
                         + "Criticality Factor: "+vesselGroup.criticality;
             }else{
-                tip+="\nTotal Neutron Flux: "+neutronFlux+"\n"
+                tip+="\nTotal Neutron Flux: "+vesselGroup.neutronFlux+"\n"
                         + "Criticality Factor: "+vesselGroup.criticality;
             }
             if(isPrimed()){
@@ -97,19 +93,19 @@ public class Block extends multiblock.Block{
         }
         if(isShield()){
             tip+="\nShield "+(shieldActive?"Valid":"Invalid")+"\n"
-                    + "Total flux: "+neutronFlux+"\n"
+                    + "Total flux: "+flux+"\n"
                     + "Heat per flux: "+template.heatMult+"\n"
-                    + "Total heat: "+(neutronFlux*template.heatMult)+"\n H/t"
+                    + "Total heat: "+(flux*template.heatMult)+"\n H/t"
                     + "Efficiency factor: "+template.efficiency;
         }
         if(closed){
             tip+="\nClosed";
         }
         if(isIrradiator()){
-            tip+="\nIrradiator flux: "+neutronFlux+"\n";
+            tip+="\nIrradiator flux: "+flux+"\n";
             if(irradiatorRecipe!=null){
                 tip+="Heat per flux: "+irradiatorRecipe.heat+"\n"
-                        + "Total heat: "+irradiatorRecipe.heat*neutronFlux+"H/t";
+                        + "Total heat: "+irradiatorRecipe.heat*flux+"H/t";
             }
         }
         if(isHeater()){
@@ -164,7 +160,7 @@ public class Block extends multiblock.Block{
         return isModerator()&&moderatorActive&&template.activeModerator;
     }
     public boolean isFuelVesselActive(){
-        return isFuelVessel()&&neutronFlux>=(vesselGroup==null?fuel.criticality:vesselGroup.criticality);
+        return isFuelVessel()&&(vesselGroup==null?false:vesselGroup.neutronFlux>=vesselGroup.criticality);
     }
     public boolean isFuelVessel(){
         if(isCasing())return false;
@@ -184,7 +180,7 @@ public class Block extends multiblock.Block{
         return template.irradiator;
     }
     public boolean isIrradiatorActive(){
-        return isIrradiator()&&neutronFlux>0;
+        return isIrradiator()&&flux>0;
     }
     public boolean isShield(){
         if(closed)return false;
@@ -212,7 +208,7 @@ public class Block extends multiblock.Block{
     }
     public void propogateNeutronFlux(OverhaulMSR reactor){
         if(!isFuelVessel())return;
-        if(!isPrimed()&&neutronFlux<vesselGroup.criticality)return;
+        if(!isPrimed()&&vesselGroup.neutronFlux<vesselGroup.criticality)return;
         if(hasPropogated)return;
         hasPropogated = true;
         for(Direction d : directions){
@@ -235,27 +231,23 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isFuelVessel()){
                     if(length==0||nonshields==0)break;
-                    for(Block b : block.vesselGroup.blocks){
-                        b.neutronFlux+=flux;
-                    }
-                    block.moderatorLines++;
-                    block.positionalEfficiency+=efficiency/length;
+                    block.vesselGroup.neutronFlux+=flux;
+                    block.vesselGroup.moderatorLines++;
+                    block.vesselGroup.positionalEfficiency+=efficiency/length;
                     block.propogateNeutronFlux(reactor);
                     break;
                 }
                 if(block.isReflector()){
                     if(length==0||nonshields==0)break;
                     if(length>Core.configuration.overhaul.fissionMSR.neutronReach/2)break;
-                    for(Block b : vesselGroup.blocks){
-                        b.neutronFlux+=flux*2*block.template.reflectivity;
-                    }
-                    positionalEfficiency+=efficiency/length*block.template.efficiency;
-                    moderatorLines++;
+                    vesselGroup.neutronFlux+=flux*2*block.template.reflectivity;
+                    vesselGroup.positionalEfficiency+=efficiency/length*block.template.efficiency;
+                    vesselGroup.moderatorLines++;
                     break;
                 }
                 if(block.isIrradiator()){
                     if(length==0||nonshields==0)break;
-                    moderatorLines++;
+                    vesselGroup.moderatorLines++;
                     break;
                 }
                 break;
@@ -265,7 +257,7 @@ public class Block extends multiblock.Block{
     }
     public void rePropogateNeutronFlux(OverhaulMSR reactor){
         if(!isFuelVessel())return;
-        if(!wasActive)return;
+        if(!vesselGroup.wasActive)return;
         if(hasPropogated)return;
         hasPropogated = true;
         for(Direction d : directions){
@@ -288,27 +280,23 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isFuelVessel()){
                     if(length==0||nonshields==0)break;
-                    for(Block b : block.vesselGroup.blocks){
-                        b.neutronFlux+=flux;
-                    }
-                    block.moderatorLines++;
-                    block.positionalEfficiency+=efficiency/length;
+                    block.vesselGroup.neutronFlux+=flux;
+                    block.vesselGroup.moderatorLines++;
+                    block.vesselGroup.positionalEfficiency+=efficiency/length;
                     block.rePropogateNeutronFlux(reactor);
                     break;
                 }
                 if(block.isReflector()){
                     if(length==0||nonshields==0)break;
                     if(length>Core.configuration.overhaul.fissionMSR.neutronReach/2)break;
-                    for(Block b : vesselGroup.blocks){
-                        b.neutronFlux+=flux*2*block.template.reflectivity;
-                    }
-                    positionalEfficiency+=efficiency/length*block.template.efficiency;
-                    moderatorLines++;
+                    vesselGroup.neutronFlux+=flux*2*block.template.reflectivity;
+                    vesselGroup.positionalEfficiency+=efficiency/length*block.template.efficiency;
+                    vesselGroup.moderatorLines++;
                     break;
                 }
                 if(block.isIrradiator()){
                     if(length==0||nonshields==0)break;
-                    moderatorLines++;
+                    vesselGroup.moderatorLines++;
                     break;
                 }
                 break;
@@ -347,7 +335,7 @@ public class Block extends multiblock.Block{
                 if(block.isFuelVesselActive()){
                     if(length==0||nonshields==0)break;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b);
+                        b.flux+=shieldFluxes.get(b);
                     }
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
@@ -357,7 +345,7 @@ public class Block extends multiblock.Block{
                     if(length==0||nonshields==0)break;
                     block.reflectorActive = true;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
+                        b.flux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
                     }
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
@@ -366,9 +354,9 @@ public class Block extends multiblock.Block{
                 if(block.isIrradiator()){
                     if(length==0||nonshields==0)break;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b);
+                        b.flux+=shieldFluxes.get(b);
                     }
-                    block.neutronFlux+=flux;
+                    block.flux+=flux;
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
                     break;
@@ -483,9 +471,7 @@ public class Block extends multiblock.Block{
         copy.source = source;
         copy.irradiatorRecipe = irradiatorRecipe;
         copy.hasPropogated = hasPropogated;
-        copy.moderatorLines = moderatorLines;
-        copy.neutronFlux = neutronFlux;
-        copy.positionalEfficiency = positionalEfficiency;
+        copy.flux = flux;
         copy.moderatorValid = moderatorValid;
         copy.moderatorActive = moderatorActive;
         copy.heaterValid = heaterValid;
@@ -494,6 +480,7 @@ public class Block extends multiblock.Block{
         copy.efficiency = efficiency;
         copy.inCluster = inCluster;
         copy.closed = closed;
+        //TODO vessel groups on the copy!
         return copy;
     }
     @Override
