@@ -561,6 +561,7 @@ public class MenuEdit extends Menu{
     }
     public boolean isSelected(int x, int y, int z){
         for(int[] s : selection){
+            if(s==null)continue;//THIS SHOULD NEVER HAPPEN but it does anyway
             if(s[0]==x&&s[1]==y&&s[2]==z)return true;
         }
         return false;
