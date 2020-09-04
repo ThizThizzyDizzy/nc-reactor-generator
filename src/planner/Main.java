@@ -39,6 +39,9 @@ public class Main{
             if(args.length>=2&&args[1].equals("maybediscord")){
                 if(JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
             }
+            if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){
+                isBot = true;
+            }
             System.out.println("Initializing...");
             args = update(args);
             if(args==null){
@@ -206,7 +209,7 @@ public class Main{
                     break;
             }
             addRequiredLibrary("https://github.com/computerneek/SimpleLibrary/releases/download/11.1.0pre1/SimpleLibrary.11.1.0pre1.jar", "SimpleLibrary-11.1.0pre1.jar", 560);
-            if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){//I'll leave this on dropbox for now. What could possibly go wrong?
+            if(isBot){//I'll leave this on dropbox for now. What could possibly go wrong?
                 addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
                 addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);
                 addRequiredLibrary("https://www.dropbox.com/s/5fzv4attffxpn67/commons-collections4-4.1.jar?dl=1", "commons-collections4-4.1.jar", 734);
@@ -222,7 +225,6 @@ public class Main{
                 addRequiredLibrary("https://www.dropbox.com/s/lmlh95nonmfmkx5/opus-java-natives-1.0.4.jar?dl=1", "opus-java-natives-1.0.4.jar", 2228);
                 addRequiredLibrary("https://www.dropbox.com/s/1uguzf5hpqzo0qn/slf4j-api-1.7.25.jar?dl=1", "slf4j-api-1.7.25.jar", 41);
                 addRequiredLibrary("https://www.dropbox.com/s/ho0vh24y9cizt9x/trove4j-3.0.3.jar?dl=1", "trove4j-3.0.3.jar", 2465);
-                isBot = true;
             }
             for(String[] lib : requiredLibraries.keySet()){
                 if(!new File(getLibraryRoot()+"/"+lib[1]).exists()){

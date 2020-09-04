@@ -377,7 +377,7 @@ public class FileWriter{
                                 for(int x = 0; x<multi.getX(); x++){
                                     for(int z = 0; z<multi.getZ(); z++){
                                         Block b = multi.getBlock(x, y, z);
-                                        if(b!=null)b.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, true);
+                                        if(b!=null)b.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, false);
                                     }
                                 }
                             }

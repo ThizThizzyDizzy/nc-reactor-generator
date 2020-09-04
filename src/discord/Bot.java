@@ -454,7 +454,13 @@ public class Bot extends ListenerAdapter{
                         synchronized(storedMultiblocks){
                             for(NCPFFile file : storedMultiblocks){
                                 for(Multiblock m : file.multiblocks){
-                                    if(m.getMultiblockID()==generator.multiblock.getMultiblockID())generator.importMultiblock(m);
+                                    if(m.getMultiblockID()==generator.multiblock.getMultiblockID()){
+                                        try{
+                                            generator.importMultiblock(m);
+                                        }catch(Exception ex){
+                                            System.err.println("Failed to import multiblock: "+m.getName());
+                                        }
+                                    }
                                 }
                             }
                         }
