@@ -82,6 +82,11 @@ public class Configuration{
         Configuration fresh = FileReader.read(() -> {
             return new ByteArrayInputStream(out.toByteArray());
         }).configuration;
+        if(fresh.overhaul!=null&&fresh.overhaul.fissionMSR!=null){
+            for(int i = 0; i<fresh.overhaul.fissionMSR.allBlocks.size(); i++){
+                fresh.overhaul.fissionMSR.allBlocks.get(i).displayTexture = overhaul.fissionMSR.allBlocks.get(i).displayTexture;
+            }
+        }
         configuration.addons = fresh.addons;
         configuration.alternatives = fresh.alternatives;
         configuration.name = fresh.name;
