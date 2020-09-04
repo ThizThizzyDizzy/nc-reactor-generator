@@ -347,9 +347,7 @@ public class Block extends multiblock.Block{
                 if(block.isFuelVesselActive()){
                     if(length==0||nonshields==0)break;
                     for(Block b : shieldFluxes.keySet()){
-                        for(Block blok : b.vesselGroup.blocks){
-                            blok.neutronFlux+=shieldFluxes.get(b);
-                        }
+                        b.neutronFlux+=shieldFluxes.get(b);
                     }
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
@@ -359,13 +357,7 @@ public class Block extends multiblock.Block{
                     if(length==0||nonshields==0)break;
                     block.reflectorActive = true;
                     for(Block b : shieldFluxes.keySet()){
-                        if(b.vesselGroup==null){    //this is definitely wrong, but I don't feel like figuring it out right now
-                            b.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
-                        }else{
-                            for(Block blok : b.vesselGroup.blocks){
-                                blok.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
-                            }
-                        }
+                        b.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
                     }
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
@@ -374,13 +366,9 @@ public class Block extends multiblock.Block{
                 if(block.isIrradiator()){
                     if(length==0||nonshields==0)break;
                     for(Block b : shieldFluxes.keySet()){
-                        for(Block blok : b.vesselGroup.blocks){
-                            blok.neutronFlux+=shieldFluxes.get(b);
-                        }
+                        b.neutronFlux+=shieldFluxes.get(b);
                     }
-                    for(Block blok : block.vesselGroup.blocks){
-                        blok.neutronFlux+=flux;
-                    }
+                    block.neutronFlux+=flux;
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
                     break;

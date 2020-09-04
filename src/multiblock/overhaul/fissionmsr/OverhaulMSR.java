@@ -147,7 +147,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         }while(somethingChanged);
         for(Block block : blocks){//set vessel efficiencies
             if(block.isFuelVessel()){
-                float criticalityModifier = (float) (1/(1+Math.exp(2*(block.neutronFlux-2*block.fuel.criticality))));
+                float criticalityModifier = (float) (1/(1+Math.exp(2*(block.neutronFlux-2*block.vesselGroup.criticality))));
                 block.efficiency = block.fuel.efficiency*block.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier;
             }
         }
