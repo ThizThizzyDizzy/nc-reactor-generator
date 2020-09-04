@@ -83,7 +83,7 @@ public abstract class MultiblockGenerator{
         }
         System.out.println(iterations+" iterations");
     }
-    public abstract void importMultiblock(Multiblock<Block> multiblock);
+    public abstract void importMultiblock(Multiblock multiblock);
     public Multiblock getMainMultiblock(){
         ArrayList<Multiblock>[] lists = getMultiblockLists();
         if(lists.length==0)return null;

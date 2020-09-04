@@ -181,27 +181,7 @@ public class MenuMain extends Menu{
                             if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
                             file.delete();
                         }
-                        try(FileOutputStream stream = new FileOutputStream(file)){
-                            Config header = Config.newConfig();
-                            header.set("version", NCPFFile.SAVE_VERSION);
-                            header.set("count", ncpf.multiblocks.size());
-                            Config meta = Config.newConfig();
-                            for(String key : ncpf.metadata.keySet()){
-                                String value = ncpf.metadata.get(key);
-                                if(value.trim().isEmpty())continue;
-                                meta.set(key,value);
-                            }
-                            if(meta.properties().length>0){
-                                header.set("metadata", meta);
-                            }
-                            header.save(stream);
-                            ncpf.configuration.save(null, Config.newConfig()).save(stream);
-                            for(Multiblock m : ncpf.multiblocks){
-                                m.save(ncpf, ncpf.configuration, stream);
-                            }
-                        }catch(IOException ex){
-                            JOptionPane.showMessageDialog(null, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
-                        }
+                        FileWriter.write(ncpf, file, FileWriter.NCPF);
                     }
                 });
                 chooser.showSaveDialog(null);

@@ -112,6 +112,11 @@ public class FissionSFRConfiguration{
         partial.sources.addAll(usedSources);
         partial.irradiatorRecipes.addAll(usedIrradiatorRecipes);
         partial.coolantRecipes.addAll(usedCoolantRecipes);
+        partial.allBlocks.addAll(usedBlocks);
+        partial.allFuels.addAll(usedFuels);
+        partial.allSources.addAll(usedSources);
+        partial.allIrradiatorRecipes.addAll(usedIrradiatorRecipes);
+        partial.allCoolantRecipes.addAll(usedCoolantRecipes);
     }
     public Block convert(Block template){
         if(template==null)return null;

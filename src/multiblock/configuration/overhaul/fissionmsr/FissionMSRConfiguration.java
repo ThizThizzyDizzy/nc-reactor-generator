@@ -98,6 +98,10 @@ public class FissionMSRConfiguration{
         partial.fuels.addAll(usedFuels);
         partial.sources.addAll(usedSources);
         partial.irradiatorRecipes.addAll(usedIrradiatorRecipes);
+        partial.allBlocks.addAll(usedBlocks);
+        partial.allFuels.addAll(usedFuels);
+        partial.allSources.addAll(usedSources);
+        partial.allIrradiatorRecipes.addAll(usedIrradiatorRecipes);
     }
     public Block convert(Block template){
         if(template==null)return null;

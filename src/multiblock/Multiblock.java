@@ -702,7 +702,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public void setConfiguration(Configuration configuration){
         this.configuration = configuration;
     }
-    protected Configuration getConfiguration(){
+    public Configuration getConfiguration(){
         if(configuration==null)return Core.configuration;
         return configuration;
     }

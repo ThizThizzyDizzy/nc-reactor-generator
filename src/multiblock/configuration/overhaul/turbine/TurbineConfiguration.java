@@ -83,8 +83,11 @@ public class TurbineConfiguration{
             }
         }
         partial.blades.addAll(usedBlades);
+        partial.allBlades.addAll(usedBlades);
         partial.coils.addAll(usedCoils);
+        partial.allCoils.addAll(usedCoils);
         partial.recipes.addAll(usedRecipes);
+        partial.allRecipes.addAll(usedRecipes);
     }
     public Blade convert(Blade template){
         if(template==null)return null;

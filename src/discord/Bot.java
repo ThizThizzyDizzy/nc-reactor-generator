@@ -101,7 +101,7 @@ public class Bot extends ListenerAdapter{
     private static Message generatorMessage;
     private static final int batchSize = 100;
     private static Guild guild = null;
-    public static final HashMap<NCPFFile, String> storedMultiblocks = new HashMap();
+    public static final ArrayList<NCPFFile> storedMultiblocks = new ArrayList<>();
     static{
 //        botCommands.add(new Command("debug"){
 //            @Override
@@ -451,13 +451,15 @@ public class Bot extends ListenerAdapter{
                     Core.configuration = configuration;
                     Thread t = new Thread(() -> {
                         generator.startThread();
-                        for(NCPFFile file : storedMultiblocks.keySet()){
-                            for(Multiblock m : file.multiblocks){
-                                if(m.getMultiblockID()==generator.multiblock.getMultiblockID())generator.importMultiblock(m);
+                        synchronized(storedMultiblocks){
+                            for(NCPFFile file : storedMultiblocks){
+                                for(Multiblock m : file.multiblocks){
+                                    if(m.getMultiblockID()==generator.multiblock.getMultiblockID())generator.importMultiblock(m);
+                                }
                             }
                         }
                         String configName = Core.configuration.getShortName();
-                        generatorMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField("Reactor Details", generator.getMainMultiblockBotTooltip(), false).build()).complete();
+                        generatorMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField(generator.multiblock.getGeneralName()+" Details", generator.getMainMultiblockBotTooltip(), false).build()).complete();
                         int time = 0;
                         int interval = 1000;//1 sec
                         int maxTime = 60000;//60 sec
@@ -472,7 +474,7 @@ public class Bot extends ListenerAdapter{
                             time+=interval;
                             if(!generator.isRunning())break;
                             Multiblock main = generator.getMainMultiblock();
-                            generatorMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField("Reactor Details", generator.getMainMultiblockBotTooltip(), false).build()).queue();
+                            generatorMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField(generator.multiblock.getGeneralName()+" Details", generator.getMainMultiblockBotTooltip(), false).build()).queue();
                             if(main!=null&&main.millisSinceLastChange()<maxTime&&main.millisSinceLastChange()>timeout)break;
                         }
                         generator.stopAllThreads();
@@ -480,19 +482,19 @@ public class Bot extends ListenerAdapter{
                         if(finalMultiblock==null||finalMultiblock.isEmpty()){
                             generatorMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase(Locale.ENGLISH)+" was generated. :(").build()).queue();
                         }else{
-                            generatorMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField("Reactor Details", finalMultiblock.getBotTooltip(), false).build()).queue();
+                            generatorMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField(generator.multiblock.getGeneralName()+" Details", finalMultiblock.getBotTooltip(), false).build()).queue();
                             NCPFFile ncpf = new NCPFFile();
                             String name = UUID.randomUUID().toString();
                             ncpf.metadata.put("Author", "S'plodo-Bot");
-                            finalMultiblock.metadata.put("Author", "S'plodo-Bot");
                             ncpf.metadata.put("Name", name);
+                            finalMultiblock.metadata.put("Author", "S'plodo-Bot");
                             finalMultiblock.metadata.put("Name", name);
                             GregorianCalendar calendar = new GregorianCalendar();
                             String[] months = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
                             ncpf.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
                             ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
                             ncpf.multiblocks.add(finalMultiblock);
-                            ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
+                            ncpf.configuration = PartialConfiguration.generate(finalMultiblock.getConfiguration(), ncpf.multiblocks);
                             for(FormatWriter writer : formats){
                                 CircularStream stream = new CircularStream(1024*1024);//1MB
                                 CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getExtensions()[0]).submit();
@@ -531,7 +533,7 @@ public class Bot extends ListenerAdapter{
             }
         });
         //game commands
-        playCommands.add(new KeywordCommand("hangman", "reactorhangman"){
+        playCommands.add(new KeywordCommand("hangman"){
             @Override
             public void addKeywords(){
                 addKeyword(new KeywordUnderhaul());
@@ -1634,46 +1636,38 @@ public class Bot extends ListenerAdapter{
                     continue;
                 }
                 System.out.println("Reading channel: "+channel.getName());
-                MessageHistory history = channel.getHistoryFromBeginning(batchSize).complete();
+                MessageHistory history = channel.getHistory();
+                while(!history.retrievePast(100).complete().isEmpty());
+                System.out.println("Scanning...");
                 int count = 0;
-                while(true){
-                    Message last = null;
-                    ArrayList<Message> messages = new ArrayList<>(history.getRetrievedHistory());
-                    Stack<Message> stak = new Stack<>();
-                    for(Message m : messages){
-                        stak.push(m);
-                    }
-                    messages.clear();
-                    while(!stak.isEmpty())messages.add(stak.pop());
-                    for(Message message : messages){
-                        last = message;
-                        storeReactors(message);
-                        for(Attachment att : message.getAttachments()){
-                            if(att==null||att.getFileExtension()==null)continue;
-                            if(att.getFileExtension().equalsIgnoreCase("json")){
-                                count++;
-                                System.out.println("Found "+att.getFileName()+" ("+count+")");
-                                bytes+=att.getSize();
-                            }
+                ArrayList<Message> messages = new ArrayList<>(history.getRetrievedHistory());
+                Stack<Message> stak = new Stack<>();
+                for(Message m : messages){
+                    stak.push(m);
+                }
+                messages.clear();
+                while(!stak.isEmpty())messages.add(stak.pop());
+                for(Message message : messages){
+                    storeMultiblocks(message);
+                    for(Attachment att : message.getAttachments()){
+                        if(att==null||att.getFileExtension()==null)continue;
+                        if(att.getFileExtension().equalsIgnoreCase("json")){
+                            count++;
+                            System.out.println("Found "+att.getFileName()+" ("+count+")");
+                            bytes+=att.getSize();
                         }
                     }
-                    if(last==null)break;
-                    if(history.size()<batchSize){
-                        break;
-                    }else{
-                        history = channel.getHistoryAfter(last, batchSize).complete();
-                    }
                 }
-                System.out.println("Finished Reading channel: "+channel.getName()+". Reactors: "+count);
+                System.out.println("Finished Reading channel: "+channel.getName()+". Multiblocks: "+count);
                 totalCount+=count;
             }
-            System.out.println("Total Reactors: "+totalCount);
+            System.out.println("Total Multiblocks: "+totalCount);
             System.out.println("Total Size: "+bytes);
         });
         channelRead.setDaemon(true);
         channelRead.start();
     }
-    public void storeReactors(Message message){
+    public void storeMultiblocks(Message message){
         for(Attachment att : message.getAttachments()){
             if(att!=null&&att.getFileExtension()!=null&&att.getFileExtension().toLowerCase(Locale.ENGLISH).contains("png"))continue;
             try{
@@ -1684,7 +1678,13 @@ public class Bot extends ListenerAdapter{
                         throw new RuntimeException(ex);
                     }
                 });
-                if(ncpf!=null)storedMultiblocks.put(ncpf, message.getJumpUrl());
+                if(ncpf!=null){
+                    synchronized(storedMultiblocks){
+                        ncpf.metadata.put("Original Source", message.getJumpUrl());
+                        ncpf.multiblocks.get(0).metadata.put("Original Source", message.getJumpUrl());
+                        storedMultiblocks.add(ncpf);
+                    }
+                }
             }catch(Exception ex){
                 System.err.println("Failed to read file: "+att.getFileName());
             }
@@ -1741,7 +1741,7 @@ public class Bot extends ListenerAdapter{
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
         guild = event.getGuild();
         if(event.getAuthor().isBot())return;
-        storeReactors(event.getMessage());
+        storeMultiblocks(event.getMessage());
         if(botChannels.contains(event.getChannel().getIdLong())){
             String command = event.getMessage().getContentRaw();
             boolean hasPrefix = false;

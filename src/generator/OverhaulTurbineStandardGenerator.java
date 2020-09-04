@@ -329,14 +329,14 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         }
     }
     @Override
-    public void importMultiblock(Multiblock<Block> multiblock){
+    public void importMultiblock(Multiblock multiblock){
         if(!multiblock.checkCompatible(this.multiblock))return;
         for(Range<Block> range : settings.allowedBlocks){
-            for(Block block : multiblock.getBlocks()){
+            for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
                 if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null));
             }
         }
-        ALLOWED:for(Block block : multiblock.getBlocks()){
+        ALLOWED:for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
             for(Range<Block> range : settings.allowedBlocks){
                 if(range.obj.isEqual(block))continue ALLOWED;
             }

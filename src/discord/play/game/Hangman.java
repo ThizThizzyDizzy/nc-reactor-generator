@@ -29,14 +29,15 @@ public class Hangman extends Game{
     public Hangman(boolean blind, ArrayList<Multiblock> allowedMultiblocks){
         super("Hangman");
         this.blind = blind;
-        ArrayList<NCPFFile> ncpfs = new ArrayList<>(Bot.storedMultiblocks.keySet());
         ArrayList<Multiblock> multis = new ArrayList<>();
         HashMap<Multiblock, Configuration> configs = new HashMap<>();
-        for(NCPFFile ncpf : ncpfs){
-            for(Multiblock multi : ncpf.multiblocks){
-                configs.put(multi, ncpf.configuration);
+        synchronized(Bot.storedMultiblocks){
+            for(NCPFFile ncpf : Bot.storedMultiblocks){
+                for(Multiblock multi : ncpf.multiblocks){
+                    configs.put(multi, ncpf.configuration);
+                }
+                multis.addAll(ncpf.multiblocks);
             }
-            multis.addAll(ncpf.multiblocks);
         }
         for(Iterator<Multiblock> it = multis.iterator(); it.hasNext();){
             Multiblock next = it.next();

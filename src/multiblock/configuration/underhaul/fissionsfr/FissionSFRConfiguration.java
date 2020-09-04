@@ -68,7 +68,9 @@ public class FissionSFRConfiguration{
             }
         }
         partial.blocks.addAll(usedBlocks);
+        partial.allBlocks.addAll(usedBlocks);
         partial.fuels.addAll(usedFuels);
+        partial.allFuels.addAll(usedFuels);
         partial.minSize = minSize;
         partial.maxSize = maxSize;
         partial.neutronReach = neutronReach;
