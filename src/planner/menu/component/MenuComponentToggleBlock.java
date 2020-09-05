@@ -74,8 +74,8 @@ public class MenuComponentToggleBlock extends MenuComponent{
         return false;
     }
     public void drawText(){
-        if(enabled)block.render(x, y, width, height, false);
-        else block.renderGrayscale(x, y, width, height, false);
+        if(enabled)block.render(x, y, width, height, false, null);
+        else block.renderGrayscale(x, y, width, height, false, null);
     }
     public void drawText(String text){
         double textLength = FontManager.getLengthForStringWithHeight(text, height);

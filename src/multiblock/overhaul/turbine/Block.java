@@ -68,7 +68,7 @@ public class Block extends multiblock.Block{
         return false;
     }
     @Override
-    public String getTooltip(){
+    public String getTooltip(Multiblock multiblock){
         String tip = getName();
         if(isConnector())tip+="\nConnector "+(isActive()?"Active":"Invalid");
         if(isCoil())tip+="\nCoil "+(isActive()?"Active":"Invalid");
@@ -104,7 +104,7 @@ public class Block extends multiblock.Block{
         return tip;
     }
     @Override
-    public void renderOverlay(double x, double y, double width, double height){
+    public void renderOverlay(double x, double y, double width, double height, Multiblock multiblock){
         if(!isValid()){
             drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
         }

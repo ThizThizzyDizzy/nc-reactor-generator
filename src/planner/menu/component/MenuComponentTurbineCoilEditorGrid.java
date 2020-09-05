@@ -75,12 +75,12 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent implements
                 double Y = this.y+y*blockSize;
                 double border = blockSize/8;
                 if(block!=null){
-                    block.render(X, Y, blockSize, blockSize, true);
+                    block.render(X, Y, blockSize, blockSize, true, multiblock);
                 }
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
                         if(editor.isValid(editor.getSelectedBlock(), x, y, layer)){
-                            editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha);
+                            editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
                         }
                     }
                 }
@@ -201,7 +201,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent implements
     public String getTooltip(){
         if(mouseover==null)return null;
         Block block = multiblock.getBlock(mouseover[0],mouseover[1],layer);
-        return block==null?null:block.getTooltip();
+        return block==null?null:block.getTooltip(multiblock);
     }
     @Override
     public double getTooltipOffsetX(){

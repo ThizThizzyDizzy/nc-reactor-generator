@@ -70,14 +70,7 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent implement
             Block block = multiblock.getBlock(multiblock.getX()/2, 0, z);
             double X = this.x+(z-1)*blockSize;
             if(block!=null){
-                block.render(X, y, blockSize, blockSize, true);
-            }
-            if(Core.isControlPressed()){
-                if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
-                    if(editor.isValid(editor.getSelectedBlock(), multiblock.getX()/2, 0, z)){
-                        editor.getSelectedBlock().render(X, y, blockSize, blockSize, false, resonatingAlpha);
-                    }
-                }
+                block.render(X, y, blockSize, blockSize, true, multiblock);
             }
             if(isSelected(z)){
                 Core.applyColor(Core.theme.getSelectionColor(), .5f);
@@ -189,7 +182,7 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent implement
     public String getTooltip(){
         if(mouseover==-1)return null;
         Block block = multiblock.getBlock(multiblock.getX()/2, 0, mouseover);
-        return block==null?null:block.getTooltip();
+        return block==null?null:block.getTooltip(multiblock);
     }
     @Override
     public double getTooltipOffsetX(){

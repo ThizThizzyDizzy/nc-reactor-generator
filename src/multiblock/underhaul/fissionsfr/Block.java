@@ -124,7 +124,7 @@ public class Block extends multiblock.Block{
         return wasValid!=coolerValid;
     }
     @Override
-    public String getTooltip(){
+    public String getTooltip(Multiblock multiblock){
         String tip = getName();
         if(isFuelCell()){
             tip+="\n"
@@ -157,7 +157,7 @@ public class Block extends multiblock.Block{
         return tip;
     }
     @Override
-    public void renderOverlay(double x, double y, double width, double height){
+    public void renderOverlay(double x, double y, double width, double height, Multiblock multiblock){
         if(!isValid()){
             drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
         }

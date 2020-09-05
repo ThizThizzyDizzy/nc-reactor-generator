@@ -56,12 +56,12 @@ public abstract class Block extends MultiblockBit{
         }
         return adjacent;
     }
-    public abstract String getTooltip();
+    public abstract String getTooltip(Multiblock multiblock);
     public abstract String getListTooltip();
-    public void render(double x, double y, double width, double height, boolean renderOverlay){
-        render(x, y, width, height, renderOverlay, 1);
+    public void render(double x, double y, double width, double height, boolean renderOverlay, Multiblock multiblock){
+        render(x, y, width, height, renderOverlay, 1, multiblock);
     }
-    public void render(double x, double y, double width, double height, boolean renderOverlay, float alpha){
+    public void render(double x, double y, double width, double height, boolean renderOverlay, float alpha, Multiblock multiblock){
         if(getTexture()==null){
             Core.applyColor(Core.theme.getTextColor());
             String text = getName();
@@ -73,12 +73,12 @@ public abstract class Block extends MultiblockBit{
             Core.applyWhite(alpha);
             drawRect(x, y, x+width, y+height, Core.getTexture(getTexture()));
         }
-        if(renderOverlay)renderOverlay(x,y,width,height);
+        if(renderOverlay)renderOverlay(x,y,width,height, multiblock);
     }
-    public void renderGrayscale(double x, double y, double width, double height, boolean renderOverlay){
-        renderGrayscale(x, y, width, height, renderOverlay, 1);
+    public void renderGrayscale(double x, double y, double width, double height, boolean renderOverlay, Multiblock multiblock){
+        renderGrayscale(x, y, width, height, renderOverlay, 1, multiblock);
     }
-    public void renderGrayscale(double x, double y, double width, double height, boolean renderOverlay, float alpha){
+    public void renderGrayscale(double x, double y, double width, double height, boolean renderOverlay, float alpha, Multiblock multiblock){
         if(getGrayscaleTexture()==null){
             Core.applyColor(Core.theme.getTextColor());
             String text = getName();
@@ -90,9 +90,9 @@ public abstract class Block extends MultiblockBit{
             Core.applyWhite(alpha);
             drawRect(x, y, x+width, y+height, Core.getTexture(getGrayscaleTexture()));
         }
-        if(renderOverlay)renderOverlay(x,y,width,height);
+        if(renderOverlay)renderOverlay(x,y,width,height, multiblock);
     }
-    public abstract void renderOverlay(double x, double y, double width, double height);
+    public abstract void renderOverlay(double x, double y, double width, double height, Multiblock multiblock);
     public void drawCircle(double x, double y, double width, double height, Color color){
         Core.applyColor(color);
         Renderer2D.drawRect(x, y, x+width, y+height, MenuEdit.sourceCircle);

@@ -30,6 +30,6 @@ public class MenuComponentVisibleBlock extends MenuComponent{
     public void drawText(){
         Block block = multiblock.getBlock(blockX, blockY, blockZ);
         if(block==null)return;
-        block.render(x, y, width, height, false);
+        block.render(x, y, width, height, false, multiblock);
     }
 }

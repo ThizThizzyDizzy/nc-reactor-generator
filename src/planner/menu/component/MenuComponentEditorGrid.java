@@ -82,7 +82,7 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
                 double Y = this.y+z*blockSize;
                 double border = blockSize/8;
                 if(block!=null){
-                    block.render(X, Y, blockSize, blockSize, true);
+                    block.render(X, Y, blockSize, blockSize, true, multiblock);
                     if((multiblock instanceof OverhaulMSR&&((multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel())||(multiblock instanceof OverhaulSFR&&((multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel())){
                         Core.applyColor(Core.theme.getSelectionColor(), resonatingAlpha);
                         Renderer2D.drawRect(X, Y, X+blockSize, Y+blockSize, 0);
@@ -91,7 +91,7 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
                         if(editor.isValid(editor.getSelectedBlock(), x, layer, z)){
-                            editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha);
+                            editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
                         }
                     }
                 }
@@ -223,7 +223,7 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
     public String getTooltip(){
         if(mouseover==null)return null;
         Block block = multiblock.getBlock(mouseover[0],layer,mouseover[1]);
-        return block==null?null:block.getTooltip();
+        return block==null?null:block.getTooltip(multiblock);
     }
     @Override
     public double getTooltipOffsetX(){

@@ -48,7 +48,7 @@ public class MenuComponentEditorListBlock extends MenuComponent implements MenuC
         }
     }
     public void drawText(){
-        block.render(x, y, width, height, false);
+        block.render(x, y, width, height, false, null);
     }
     @Override
     public String getTooltip(){

@@ -1,4 +1,5 @@
 package multiblock.overhaul.fissionmsr;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import planner.Core;
@@ -6,6 +7,7 @@ import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import simplelibrary.Queue;
+import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -58,7 +60,7 @@ public class Block extends multiblock.Block{
         moderatorValid = moderatorActive = heaterValid = reflectorActive = shieldActive = inCluster = false;
     }
     @Override
-    public String getTooltip(){
+    public String getTooltip(Multiblock multiblock){
         String tip = getName();
         if(isFuelVessel()){
             tip+="\nFuel: "+fuel.name+"\n";
@@ -120,6 +122,15 @@ public class Block extends multiblock.Block{
         }
         if(isHeater()){
             tip+="\nHeater "+(heaterValid?"Valid":"Invalid");
+        }
+        OverhaulMSR.Cluster cluster = ((OverhaulMSR)multiblock).getCluster(this);
+        if(cluster!=null){
+            if(cluster.netHeat>0){
+                tip+="\nCluster is heat-positive!";
+            }
+            if(cluster.coolingPenaltyMult<1){
+                tip+="\nCluster is penalized for overcooling!";
+            }
         }
         return tip;
     }
@@ -394,7 +405,7 @@ public class Block extends multiblock.Block{
         return (isActive()||isInert())&&template.cluster;
     }
     @Override
-    public void renderOverlay(double x, double y, double width, double height){
+    public void renderOverlay(double x, double y, double width, double height, Multiblock multiblock){
         if(!isValid()){
             drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
         }
@@ -408,6 +419,51 @@ public class Block extends multiblock.Block{
             float g = self?0:Math.min(1, fac*2);
             float b = self?1:0;
             drawCircle(x, y, width, height, Core.theme.getRGB(r, g, b));
+        }
+        OverhaulMSR msr = (OverhaulMSR)multiblock;
+        OverhaulMSR.Cluster cluster = msr.getCluster(this);
+        if(cluster!=null){
+            Color color = null;
+            if(cluster.netHeat>0){
+                color = Color.red;
+            }
+            if(cluster.coolingPenaltyMult<1){
+                color = Color.blue;
+            }
+            if(color!=null){
+                Core.applyColor(Core.theme.getRGB(color), .125f);
+                Renderer2D.drawRect(x, y, x+width, y+height, 0);
+                Core.applyColor(Core.theme.getRGB(color), .375f);
+                double border = width/8;
+                boolean top = cluster.contains(this.x, this.y, z-1);
+                boolean right = cluster.contains(this.x+1, this.y, z);
+                boolean bottom = cluster.contains(this.x, this.y, z+1);
+                boolean left = cluster.contains(this.x-1, this.y, z);
+                if(!top||!left||!cluster.contains(this.x-1, this.y, z-1)){//top left
+                    Renderer2D.drawRect(x, y, x+border, y+border, 0);
+                }
+                if(!top){//top
+                    Renderer2D.drawRect(x+border, y, x+width-border, y+border, 0);
+                }
+                if(!top||!right||!cluster.contains(this.x+1, this.y, z-1)){//top right
+                    Renderer2D.drawRect(x+width-border, y, x+width, y+border, 0);
+                }
+                if(!right){//right
+                    Renderer2D.drawRect(x+width-border, y+border, x+width, y+height-border, 0);
+                }
+                if(!bottom||!right||!cluster.contains(this.x+1, this.y, z+1)){//bottom right
+                    Renderer2D.drawRect(x+width-border, y+height-border, x+width, y+height, 0);
+                }
+                if(!bottom){//bottom
+                    Renderer2D.drawRect(x+border, y+height-border, x+width-border, y+height, 0);
+                }
+                if(!bottom||!left||!cluster.contains(this.x-1, this.y, z+1)){//bottom left
+                    Renderer2D.drawRect(x, y+height-border, x+border, y+height, 0);
+                }
+                if(!left){//left
+                    Renderer2D.drawRect(x, y+border, x+border, y+height-border, 0);
+                }
+            }
         }
     }
     public boolean isInert(){

@@ -702,6 +702,12 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
             return results;
         }
+        public boolean contains(int x, int y, int z){
+            for(Block b : blocks){
+                if(b.x==x&&b.y==y&&b.z==z)return true;
+            }
+            return false;
+        }
     }
     public class VesselGroup{
         public ArrayList<Block> blocks = new ArrayList<>();

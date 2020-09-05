@@ -564,6 +564,12 @@ public class OverhaulSFR extends Multiblock<Block>{
         public boolean contains(Block block){
             return blocks.contains(block);
         }
+        public boolean contains(int x, int y, int z){
+            for(Block b : blocks){
+                if(b.x==x&&b.y==y&&b.z==z)return true;
+            }
+            return false;
+        }
         private boolean wallCheck(ArrayList<Block> blocks){
             for(Block block : blocks){
                 if(block.x==0||block.y==0||block.z==0)return true;

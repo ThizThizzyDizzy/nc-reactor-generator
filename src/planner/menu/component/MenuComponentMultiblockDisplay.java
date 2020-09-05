@@ -19,7 +19,7 @@ public class MenuComponentMultiblockDisplay extends MenuComponent{
                     for(int z = 0; z<multiblock.getZ(); z++){
                         Block block = multiblock.getBlock(x, y, z);
                         if(block!=null){
-                            block.render(this.x+x*CELL_SIZE, this.y+y*(multiblock.getZ()+1)*CELL_SIZE+z*CELL_SIZE, CELL_SIZE, CELL_SIZE, true);
+                            block.render(this.x+x*CELL_SIZE, this.y+y*(multiblock.getZ()+1)*CELL_SIZE+z*CELL_SIZE, CELL_SIZE, CELL_SIZE, true, multiblock);
                         }
                     }
                 }
