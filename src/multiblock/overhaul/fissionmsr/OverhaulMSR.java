@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import multiblock.Action;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Fuel;
 import multiblock.Direction;
@@ -28,6 +29,7 @@ import planner.menu.component.MenuComponentMSRToggleFuel;
 import planner.menu.component.MenuComponentMSRToggleSource;
 import planner.menu.component.MenuComponentMSRToggleIrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimaList;
+import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulMSR extends Multiblock<Block>{
@@ -468,11 +470,13 @@ public class OverhaulMSR extends Multiblock<Block>{
         return badVessels;
     }
     private float calculateShutdownFactor(){
+        Stack<Action> copy = future.copy();
         computingShutdown = true;
         action(new MSRAllShieldsAction(true), true);
         float offOut = totalTotalOutput;
         undo();
         computingShutdown = false;
+        future = copy;
         return 1-(offOut/totalTotalOutput);
     }
     @Override

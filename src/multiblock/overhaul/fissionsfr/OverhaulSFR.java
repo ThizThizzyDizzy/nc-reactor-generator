@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import multiblock.Action;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import multiblock.configuration.overhaul.fissionsfr.Fuel;
@@ -28,6 +29,7 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentSFRToggleFuel;
 import planner.menu.component.MenuComponentSFRToggleSource;
 import planner.menu.component.MenuComponentSFRToggleIrradiatorRecipe;
+import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulSFR extends Multiblock<Block>{
@@ -439,11 +441,13 @@ public class OverhaulSFR extends Multiblock<Block>{
         return badCells;
     }
     private float calculateShutdownFactor(){
+        Stack<Action> copy = future.copy();
         computingShutdown = true;
         action(new SFRAllShieldsAction(true), true);
         float offOut = totalOutput;
         undo();
         computingShutdown = false;
+        future = copy;
         return 1-(offOut/totalOutput);
     }
     @Override
