@@ -76,7 +76,6 @@ public class PencilTool extends EditorTool{
                 raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
                     if(X==leftDragStart[0]&&Y==leftDragStart[1]&&Z==leftDragStart[2])return;
                     editor.setblock(X, Y, Z, setTo);
-                    System.out.println("Setblocked");
                 });
                 leftDragStart = new int[]{x,y,z};
             }
@@ -92,7 +91,6 @@ public class PencilTool extends EditorTool{
                 raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
                     if(X==rightDragStart[0]&&Y==rightDragStart[1]&&Z==rightDragStart[2])return;
                     editor.setblock(X, Y, Z, setTo);
-                    System.out.println("Setblocked");
                 }, false);
                 rightDragStart = new int[]{x,y,z};
             }
