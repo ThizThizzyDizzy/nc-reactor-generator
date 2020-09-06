@@ -251,19 +251,19 @@ public class MenuEdit extends Menu{
         zoomIn.x = resize.x;
         zoomOut.x = zoomIn.x+zoomIn.width;
         irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
-        underFuelOrCoolantRecipe.y = resize.height*2;
+        underFuelOrCoolantRecipe.y = resize.height*2+underFuelOrCoolantRecipe.preferredHeight;
         irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
         for(simplelibrary.opengl.gui.components.MenuComponent c : tools.components){
             c.width = c.height = partSize;
         }
         if(multiblock instanceof OverhaulSFR){
-            overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
-            irradiatorRecipe.y = overFuel.y+overFuel.height;
+            overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+overFuel.preferredHeight;
+            irradiatorRecipe.y = overFuel.y+overFuel.height+irradiatorRecipe.preferredHeight;
         }
         if(multiblock instanceof OverhaulMSR){
             underFuelOrCoolantRecipe.x = -5000;
-            overFuel.y = resize.height*2;
-            irradiatorRecipe.y = overFuel.y+overFuel.height;
+            overFuel.y = resize.height*2+overFuel.preferredHeight;
+            irradiatorRecipe.y = overFuel.y+overFuel.height+irradiatorRecipe.preferredHeight;
         }
         if(multiblock instanceof UnderhaulSFR){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
@@ -358,6 +358,37 @@ public class MenuEdit extends Menu{
             }
         }
         super.render(millisSinceLastTick);
+        if(multiblock instanceof UnderhaulSFR){
+            Core.applyColor(Core.theme.getDarkButtonColor());
+            drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
+            Core.applyColor(Core.theme.getTextColor());
+            drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Fuel");
+        }
+        if(multiblock instanceof OverhaulSFR){
+            Core.applyColor(Core.theme.getDarkButtonColor());
+            drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
+            drawRect(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, 0);
+            drawRect(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, 0);
+            Core.applyColor(Core.theme.getTextColor());
+            drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Coolant Recipe");
+            drawCenteredText(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, "Fuel");
+            drawCenteredText(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, "Irradiator Recipe");
+        }
+        if(multiblock instanceof OverhaulMSR){
+            Core.applyColor(Core.theme.getDarkButtonColor());
+            drawRect(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, 0);
+            drawRect(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, 0);
+            Core.applyColor(Core.theme.getTextColor());
+            drawCenteredText(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, "Fuel");
+            drawCenteredText(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, "Irradiator Recipe");
+        }
+        if(multiblock instanceof OverhaulTurbine){
+            Core.applyColor(Core.theme.getDarkButtonColor());
+            drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
+            Core.applyColor(Core.theme.getTextColor());
+            drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Recipe");
+        }
+        Core.applyWhite();
     }
     public Block getSelectedBlock(){
         if(parts.getSelectedIndex()==-1)return null;
