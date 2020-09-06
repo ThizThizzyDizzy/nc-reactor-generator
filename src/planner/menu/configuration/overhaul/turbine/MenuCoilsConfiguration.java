@@ -18,7 +18,7 @@ public class MenuCoilsConfiguration extends Menu{
         add.addActionListener((e) -> {
             Coil b = new Coil("New Coil");
             configuration.overhaul.turbine.coils.add(b);
-            configuration.overhaul.turbine.allCoils.add(b);
+            Core.configuration.overhaul.turbine.allCoils.add(b);
             gui.open(new MenuCoilConfiguration(gui, this, b));
         });
         back.addActionListener((e) -> {
