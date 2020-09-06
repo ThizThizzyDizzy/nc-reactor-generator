@@ -48,14 +48,10 @@ public class Configuration{
     public Config save(Configuration parent, Config config){
         config.set("partial", isPartial());
         config.set("addon", addon);
-        if(underhaul!=null){
-            config.set("underhaul", underhaul.save(parent, isPartial()));
-            config.set("underhaulVersion", underhaulVersion);
-        }
-        if(overhaul!=null){
-            config.set("overhaul", overhaul.save(parent, isPartial()));
-            config.set("version", overhaulVersion);
-        }
+        if(underhaul!=null)config.set("underhaul", underhaul.save(parent, isPartial()));
+        if(underhaulVersion!=null)config.set("underhaulVersion", underhaulVersion);
+        if(overhaul!=null)config.set("overhaul", overhaul.save(parent, isPartial()));
+        if(overhaulVersion!=null)config.set("version", overhaulVersion);
         config.set("name", name);
         if(!addons.isEmpty()){
             ConfigList addns = new ConfigList();
