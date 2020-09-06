@@ -37,6 +37,7 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import planner.menu.component.MenuComponentDropdownList;
 import planner.menu.component.MenuComponentEditorGrid;
 import planner.menu.component.MenuComponentTurbineBladeEditorGrid;
 import planner.menu.component.MenuComponentTurbineCoilEditorGrid;
@@ -69,9 +70,9 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimalistButton zoomOut = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom out", true, true));
     private final MenuComponentMinimalistButton zoomIn = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom in", true, true));
     private final MenuComponentMinimalistButton resize = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Resize", true, true).setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)"));
-    public final MenuComponentMinimaList underFuelOrCoolantRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
-    private final MenuComponentMinimaList overFuel = new MenuComponentMinimaList(0, 0, 0, 0, 24);
-    private final MenuComponentMinimaList irradiatorRecipe = new MenuComponentMinimaList(0, 0, 0, 0, 24);
+    public final MenuComponentDropdownList underFuelOrCoolantRecipe = new MenuComponentDropdownList(0, 0, 0, 32);
+    private final MenuComponentDropdownList overFuel = new MenuComponentDropdownList(0, 0, 0, 32);
+    private final MenuComponentDropdownList irradiatorRecipe = new MenuComponentDropdownList(0, 0, 0, 32);
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Modify the multiblock metadata"));
     private final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
@@ -252,35 +253,17 @@ public class MenuEdit extends Menu{
         irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
         underFuelOrCoolantRecipe.y = resize.height*2;
         irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
-        underFuelOrCoolantRecipe.height = Core.helper.displayHeight()-resize.height*2;
         for(simplelibrary.opengl.gui.components.MenuComponent c : tools.components){
             c.width = c.height = partSize;
         }
         if(multiblock instanceof OverhaulSFR){
-            underFuelOrCoolantRecipe.height = 96;
-            irradiatorRecipe.height = 96;
-            irradiatorRecipe.y = Core.helper.displayHeight()-irradiatorRecipe.height;
             overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
-            overFuel.height = irradiatorRecipe.y-overFuel.y;
+            irradiatorRecipe.y = overFuel.y+overFuel.height;
         }
         if(multiblock instanceof OverhaulMSR){
-            underFuelOrCoolantRecipe.height = 0;
-            irradiatorRecipe.height = 96;
-            irradiatorRecipe.y = Core.helper.displayHeight()-irradiatorRecipe.height;
-            overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height;
-            overFuel.height = irradiatorRecipe.y-overFuel.y;
-        }
-        for(simplelibrary.opengl.gui.components.MenuComponent c : underFuelOrCoolantRecipe.components){
-            c.width = underFuelOrCoolantRecipe.width-underFuelOrCoolantRecipe.vertScrollbarWidth;
-            c.height = 32;
-        }
-        for(simplelibrary.opengl.gui.components.MenuComponent c : irradiatorRecipe.components){
-            c.width = irradiatorRecipe.width-irradiatorRecipe.vertScrollbarWidth;
-            c.height = 32;
-        }
-        for(simplelibrary.opengl.gui.components.MenuComponent c : overFuel.components){
-            c.width = overFuel.width-overFuel.vertScrollbarWidth;
-            c.height = 32;
+            underFuelOrCoolantRecipe.x = -5000;
+            overFuel.y = resize.height*2;
+            irradiatorRecipe.y = overFuel.y+overFuel.height;
         }
         if(multiblock instanceof UnderhaulSFR){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
@@ -392,16 +375,16 @@ public class MenuEdit extends Menu{
         return ((MenuComponentEditorTool) tools.components.get(tools.getSelectedIndex())).tool;
     }
     public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(){
-        return ((MenuComponentOverSFRFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
+        return ((MenuComponentOverSFRFuel) overFuel.getSelectedComponent()).fuel;
     }
     public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(){
-        return ((MenuComponentSFRIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
+        return ((MenuComponentSFRIrradiatorRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
     }
     public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(){
-        return ((MenuComponentOverMSRFuel) overFuel.components.get(overFuel.getSelectedIndex())).fuel;
+        return ((MenuComponentOverMSRFuel) overFuel.getSelectedComponent()).fuel;
     }
     public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(){
-        return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.components.get(irradiatorRecipe.getSelectedIndex())).recipe;
+        return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
     }
     public void setblock(int x, int y, int z, Block template){
         if(hasSelection()&&!isSelected(x, y, z))return;

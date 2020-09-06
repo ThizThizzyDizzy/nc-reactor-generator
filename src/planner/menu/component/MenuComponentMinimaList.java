@@ -4,7 +4,10 @@ import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentList;
 public class MenuComponentMinimaList extends MenuComponentList{
     public MenuComponentMinimaList(double x, double y, double width, double height, double scrollbarWidth){
-        super(x, y, width, height, scrollbarWidth);
+        this(x, y, width, height, scrollbarWidth, false);
+    }
+    public MenuComponentMinimaList(double x, double y, double width, double height, double scrollbarWidth, boolean alwaysShow){
+        super(x, y, width, height, scrollbarWidth, alwaysShow);
         setScrollMagnitude(32);setScrollWheelMagnitude(32);
     }
     @Override
