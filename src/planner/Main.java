@@ -208,7 +208,7 @@ public class Main{
                     System.out.println("OS: Linux");
                     break;
             }
-            addRequiredLibrary("https://github.com/computerneek/SimpleLibrary/releases/download/11.1.0pre1/SimpleLibrary.11.1.0pre1.jar", "SimpleLibrary-11.1.0pre1.jar", 560);
+            addRequiredLibrary("https://github.com/computerneek/SimpleLibrary/releases/download/11.1.0pre2/SimpleLibrary.11.1.0pre2.jar", "SimpleLibrary-11.1.0pre2.jar", 504);
             if(isBot){//I'll leave this on dropbox for now. What could possibly go wrong?
                 addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
                 addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);

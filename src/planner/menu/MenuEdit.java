@@ -328,29 +328,29 @@ public class MenuEdit extends Menu{
                         if(!Double.isFinite(lowerBound))lowerBound = min;
                         if(!Double.isFinite(prevUpperBound))prevUpperBound = max;
                         if(!Double.isFinite(upperBound))upperBound = max;
-                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((prevUpperBound-min)/(max-min)));//upper
-                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((upperBound-min)/(max-min)));
+                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((prevUpperBound-min)/(max-min)));//upper
+                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((upperBound-min)/(max-min)));
 
-                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((lowerBound-min)/(max-min)));//lower
-                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((prevLowerBound-min)/(max-min)));
+                        GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((lowerBound-min)/(max-min)));//lower
+                        GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((prevLowerBound-min)/(max-min)));
                     }
                 }
                 GL11.glColor4f(0, 0, 1, 1);
                 int thickness = 3;
                 for(int i = 1; i<turbine.idealExpansion.length; i++){
-                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
-                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
 
-                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), -thickness+turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
-                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), -thickness+turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.idealExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.idealExpansion[i-1]-min)/(max-min)));
                 }
                 GL11.glColor4f(1, 1, 1, 1);
                 for(int i = 1; i<turbine.actualExpansion.length; i++){
-                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
-                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height-turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
 
-                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), -thickness+turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
-                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), -thickness+turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
+                    GL11.glVertex2d((i)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.actualExpansion[i]-min)/(max-min)));
+                    GL11.glVertex2d((i-1)*width/(turbine.idealExpansion.length-1), turbineGraph.height+thickness-turbineGraph.height*((turbine.actualExpansion[i-1]-min)/(max-min)));
                 }
                 GL11.glEnd();
                 turbineGraph.releaseRenderTarget();
