@@ -118,7 +118,7 @@ public class MenuConfiguration extends Menu{
         configGuidelines.y = addons.y+addons.height;
         done.y = Core.helper.displayHeight()-done.height;
         for(Configuration c : Configuration.configurations){
-            if((name.text.trim().isEmpty()?null:name.text).equals(c.name)){
+            if(Objects.equals(name.text.trim().isEmpty()?null:name.text,c.name)){
                 if(Objects.equals(overhaulVersion.text.trim().isEmpty()?null:overhaulVersion.text, c.overhaulVersion)){
                     if(!c.isOverhaulConfigurationEqual(configuration)){
                         Core.applyColor(Color.red);
