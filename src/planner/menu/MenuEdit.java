@@ -2,6 +2,7 @@ package planner.menu;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import planner.Core;
 import planner.menu.component.MenuComponentCoolantRecipe;
@@ -24,6 +25,7 @@ import multiblock.action.ClearSelectionAction;
 import multiblock.action.CopyAction;
 import multiblock.action.DeselectAction;
 import multiblock.action.MoveAction;
+import multiblock.action.PasteAction;
 import multiblock.action.SelectAction;
 import multiblock.action.SetCoolantRecipeAction;
 import multiblock.action.SetFuelAction;
@@ -54,6 +56,7 @@ import simplelibrary.opengl.gui.GUI;
 public class MenuEdit extends Menu{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     public Framebuffer turbineGraph;
+    private ArrayList<ClipboardEntry> clipboard = new ArrayList<>();
     {
         editorTools.add(new MoveTool(this));
         editorTools.add(new SelectionTool(this));
@@ -490,6 +493,23 @@ public class MenuEdit extends Menu{
                 if(key==GLFW.GLFW_KEY_Y){
                     multiblock.redo();
                 }
+                if(key==GLFW.GLFW_KEY_C){
+                    copySelection();
+                }
+                if(key==GLFW.GLFW_KEY_X){
+                    copySelection();
+                    SetblocksAction ac = new SetblocksAction(null);
+                    synchronized(selection){
+                        for(int[] i : selection){
+                            ac.add(i[0], i[1], i[2]);
+                        }
+                    }
+                    multiblock.action(ac, true);
+                    clearSelection();
+                }
+                if(key==GLFW.GLFW_KEY_V){
+                    pasteSelection();
+                }
             }
         }
     }
@@ -533,10 +553,6 @@ public class MenuEdit extends Menu{
         return multiblock.isValid(selectedBlock, x, layer, z);
     }
     public void select(int x1, int y1, int z1, int x2, int y2, int z2){
-        if(!Core.isControlPressed()&&x1==x2&&y1==y2&&z1==z2){
-            clearSelection();
-            return;
-        }
         ArrayList<int[]> is = new ArrayList<>();
         for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
             for(int y = Math.min(y1,y2); y<=Math.max(y1,y2); y++){
@@ -677,6 +693,56 @@ public class MenuEdit extends Menu{
                 }
             }
             selection.addAll(sel);
+        }
+    }
+    private void copySelection(){
+        clipboard .clear();
+        synchronized(selection){
+            for(int[] is : selection){
+                Block b = multiblock.getBlock(is[0], is[1], is[2]);
+                clipboard.add(new ClipboardEntry(is, b==null?null:b.copy()));
+            }
+        }
+        int x = multiblock.getX();
+        int y = multiblock.getY();
+        int z = multiblock.getZ();
+        for(ClipboardEntry entry : clipboard){
+            x = Math.min(x,entry.x);
+            y = Math.min(y,entry.y);
+            z = Math.min(z,entry.z);
+        }
+        for(ClipboardEntry entry : clipboard){
+            entry.x-=x;
+            entry.y-=y;
+            entry.z-=z;
+        }
+    }
+    private void pasteSelection(){
+        int x = multiblock.getX();
+        int y = multiblock.getY();
+        int z = multiblock.getZ();
+        synchronized(selection){
+            for(int[] i : selection){
+                x = Math.min(x,i[0]);
+                y = Math.min(y,i[1]);
+                z = Math.min(z,i[2]);
+            }
+        }
+        multiblock.action(new PasteAction(this, clipboard, x, y, z), true);
+    }
+    public static class ClipboardEntry{
+        public int x;
+        public int y;
+        public int z;
+        public final Block block;
+        public ClipboardEntry(int[] xyz, Block b){
+            this(xyz[0], xyz[1], xyz[2], b);
+        }
+        public ClipboardEntry(int x, int y, int z, Block b){
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.block = b;
         }
     }
 }
