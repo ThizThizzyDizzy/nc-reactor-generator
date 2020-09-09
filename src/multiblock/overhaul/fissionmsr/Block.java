@@ -114,6 +114,9 @@ public class Block extends multiblock.Block{
             tip+="\nClosed";
         }
         if(isIrradiator()){
+            if(irradiatorRecipe!=null){
+                tip+="\nRecipe: "+irradiatorRecipe.name;
+            }
             tip+="\nIrradiator flux: "+flux+"\n";
             if(irradiatorRecipe!=null){
                 tip+="Heat per flux: "+irradiatorRecipe.heat+"\n"
