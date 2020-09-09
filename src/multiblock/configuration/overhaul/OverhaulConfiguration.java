@@ -7,6 +7,7 @@ import multiblock.configuration.overhaul.turbine.TurbineConfiguration;
 import multiblock.Multiblock;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.PartialConfiguration;
 import simplelibrary.config2.Config;
 public class OverhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
@@ -19,18 +20,18 @@ public class OverhaulConfiguration{
         if(turbine!=null)config.set("turbine", turbine.save(parent, partial));
         return config;
     }
-    public void apply(OverhaulConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(OverhaulConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         if(fissionSFR!=null){
             partial.fissionSFR = new FissionSFRConfiguration();
-            fissionSFR.apply(partial.fissionSFR, multiblocks);
+            fissionSFR.apply(partial.fissionSFR, multiblocks, parent);
         }
         if(fissionMSR!=null){
             partial.fissionMSR = new FissionMSRConfiguration();
-            fissionMSR.apply(partial.fissionMSR, multiblocks);
+            fissionMSR.apply(partial.fissionMSR, multiblocks, parent);
         }
         if(turbine!=null){
             partial.turbine = new TurbineConfiguration();
-            turbine.apply(partial.turbine, multiblocks);
+            turbine.apply(partial.turbine, multiblocks, parent);
         }
     }
     public void apply(AddonConfiguration addon, Configuration parent){

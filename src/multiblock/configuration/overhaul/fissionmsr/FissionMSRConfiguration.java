@@ -82,7 +82,7 @@ public class FissionMSRConfiguration{
         config.set("irradiatorRecipes", irradiatorRecipes);
         return config;
     }
-    public void apply(FissionMSRConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(FissionMSRConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         Set<Block> usedBlocks = new HashSet<>();
         Set<Fuel> usedFuels = new HashSet<>();
         Set<Source> usedSources = new HashSet<>();
@@ -101,10 +101,10 @@ public class FissionMSRConfiguration{
         partial.fuels.addAll(usedFuels);
         partial.sources.addAll(usedSources);
         partial.irradiatorRecipes.addAll(usedIrradiatorRecipes);
-        partial.allBlocks.addAll(usedBlocks);
-        partial.allFuels.addAll(usedFuels);
-        partial.allSources.addAll(usedSources);
-        partial.allIrradiatorRecipes.addAll(usedIrradiatorRecipes);
+        parent.overhaul.fissionMSR.allBlocks.addAll(usedBlocks);
+        parent.overhaul.fissionMSR.allFuels.addAll(usedFuels);
+        parent.overhaul.fissionMSR.allSources.addAll(usedSources);
+        parent.overhaul.fissionMSR.allIrradiatorRecipes.addAll(usedIrradiatorRecipes);
     }
     public void apply(AddonConfiguration addon, Configuration parent){
         Set<Block> usedBlocks = new HashSet<>();
@@ -162,28 +162,28 @@ public class FissionMSRConfiguration{
     }
     public Block convert(Block template){
         if(template==null)return null;
-        for(Block block : blocks){
+        for(Block block : allBlocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
     }
     public Fuel convert(Fuel template){
         if(template==null)return null;
-        for(Fuel fuel : fuels){
+        for(Fuel fuel : allFuels){
             if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
         }
         throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
     }
     public Source convert(Source template){
         if(template==null)return null;
-        for(Source source : sources){
+        for(Source source : allSources){
             if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
         }
         throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
     }
     public IrradiatorRecipe convert(IrradiatorRecipe template){
         if(template==null)return null;
-        for(IrradiatorRecipe recipe : irradiatorRecipes){
+        for(IrradiatorRecipe recipe : allIrradiatorRecipes){
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }
         throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.toString()+"!");

@@ -5,6 +5,7 @@ import multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
 import multiblock.Multiblock;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.PartialConfiguration;
 import simplelibrary.config2.Config;
 public class UnderhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
@@ -15,10 +16,10 @@ public class UnderhaulConfiguration{
         }
         return config;
     }
-    public void apply(UnderhaulConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(UnderhaulConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         if(fissionSFR!=null){
             partial.fissionSFR = new FissionSFRConfiguration();
-            fissionSFR.apply(partial.fissionSFR, multiblocks);
+            fissionSFR.apply(partial.fissionSFR, multiblocks, parent);
         }
     }
     public void apply(AddonConfiguration addon, Configuration parent){

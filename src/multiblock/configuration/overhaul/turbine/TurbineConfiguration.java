@@ -72,7 +72,7 @@ public class TurbineConfiguration{
         config.set("recipes", recipes);
         return config;
     }
-    public void apply(TurbineConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(TurbineConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         Set<Blade> usedBlades = new HashSet<>();
         Set<Coil> usedCoils = new HashSet<>();
         Set<Recipe> usedRecipes = new HashSet<>();
@@ -86,11 +86,11 @@ public class TurbineConfiguration{
             }
         }
         partial.blades.addAll(usedBlades);
-        partial.allBlades.addAll(usedBlades);
+        parent.overhaul.turbine.allBlades.addAll(usedBlades);
         partial.coils.addAll(usedCoils);
-        partial.allCoils.addAll(usedCoils);
+        parent.overhaul.turbine.allCoils.addAll(usedCoils);
         partial.recipes.addAll(usedRecipes);
-        partial.allRecipes.addAll(usedRecipes);
+        parent.overhaul.turbine.allRecipes.addAll(usedRecipes);
     }
     public void apply(AddonConfiguration addon, Configuration parent){
         Set<Coil> usedCoils = new HashSet<>();
@@ -146,21 +146,21 @@ public class TurbineConfiguration{
     }
     public Blade convert(Blade template){
         if(template==null)return null;
-        for(Blade blade : blades){
+        for(Blade blade : allBlades){
             if(blade.name.trim().equalsIgnoreCase(template.name.trim()))return blade;
         }
         throw new IllegalArgumentException("Failed to find match for blade "+template.toString()+"!");
     }
     public Coil convert(Coil template){
         if(template==null)return null;
-        for(Coil coil : coils){
+        for(Coil coil : allCoils){
             if(coil.name.trim().equalsIgnoreCase(template.name.trim()))return coil;
         }
         throw new IllegalArgumentException("Failed to find match for coil "+template.toString()+"!");
     }
     public Recipe convert(Recipe template){
         if(template==null)return null;
-        for(Recipe recipe : recipes){
+        for(Recipe recipe : allRecipes){
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }
         throw new IllegalArgumentException("Failed to find match for recipe "+template.toString()+"!");

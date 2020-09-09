@@ -59,7 +59,7 @@ public class FissionSFRConfiguration{
         config.set("fuels", fuels);
         return config;
     }
-    public void apply(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         Set<Block> usedBlocks = new HashSet<>();
         Set<Fuel> usedFuels = new HashSet<>();
         for(Multiblock mb : multiblocks){
@@ -71,15 +71,9 @@ public class FissionSFRConfiguration{
             }
         }
         partial.blocks.addAll(usedBlocks);
-        partial.allBlocks.addAll(usedBlocks);
+        parent.underhaul.fissionSFR.allBlocks.addAll(usedBlocks);
         partial.fuels.addAll(usedFuels);
-        partial.allFuels.addAll(usedFuels);
-        partial.minSize = minSize;
-        partial.maxSize = maxSize;
-        partial.neutronReach = neutronReach;
-        partial.moderatorExtraPower = moderatorExtraPower;
-        partial.moderatorExtraHeat = moderatorExtraHeat;
-        partial.activeCoolerRate = activeCoolerRate;
+        parent.underhaul.fissionSFR.allFuels.addAll(usedFuels);
     }
     public void apply(AddonConfiguration addon, Configuration parent){
         Set<Block> usedBlocks = new HashSet<>();
@@ -132,13 +126,13 @@ public class FissionSFRConfiguration{
         parent.underhaul.fissionSFR.allFuels.addAll(fuels);
     }
     public Block convert(Block template){
-        for(Block block : blocks){
+        for(Block block : allBlocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
     }
     public Fuel convert(Fuel template){
-        for(Fuel fuel : fuels){
+        for(Fuel fuel : allFuels){
             if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
         }
         throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");

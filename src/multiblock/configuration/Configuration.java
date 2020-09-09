@@ -91,15 +91,21 @@ public class Configuration{
         configuration.underhaul = fresh.underhaul;
         configuration.underhaulVersion = fresh.underhaulVersion;
     }
-    public void apply(PartialConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(PartialConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         //TODO fix; this ignores addons
         if(underhaul!=null){
             partial.underhaul = new UnderhaulConfiguration();
-            underhaul.apply(partial.underhaul, multiblocks);
+            underhaul.apply(partial.underhaul, multiblocks, parent);
         }
         if(overhaul!=null){
             partial.overhaul = new OverhaulConfiguration();
-            overhaul.apply(partial.overhaul, multiblocks);
+            overhaul.apply(partial.overhaul, multiblocks, parent);
+        }
+        for(Configuration addon : addons){
+            PartialConfiguration adn = new PartialConfiguration(addon.name, addon.overhaulVersion, addon.underhaulVersion);
+            partial.addons.add(adn);
+            adn.addon = true;
+            addon.apply(adn, multiblocks, partial);
         }
     }
     public void apply(AddonConfiguration addon, Configuration parent){
