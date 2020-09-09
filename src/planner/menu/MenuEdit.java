@@ -390,12 +390,6 @@ public class MenuEdit extends Menu{
         }
         Core.applyWhite();
     }
-    @Override
-    public void tick(){
-        if(true)throw new RuntimeException(new RuntimeException("asdf", new IllegalArgumentException("ASDF")));
-        super.tick();
-    }
-    
     public Block getSelectedBlock(){
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
