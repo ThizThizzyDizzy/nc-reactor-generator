@@ -13,6 +13,9 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import multiblock.configuration.Configuration;
@@ -27,6 +30,7 @@ import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorHandler;
 import simplelibrary.error.ErrorLevel;
 import simplelibrary.font.FontManager;
 import simplelibrary.game.Framebuffer;
@@ -94,20 +98,97 @@ public class Core extends Renderer2D{
         helper.setFrameOfView(90);
         if(Main.isBot)Bot.start(args);
         System.out.println("Starting up...");
-        Sys.initLWJGLGame(new File("errors/"), new ErrorAdapter(){
+        Sys.initLWJGLGame(new File("errors/"), new ErrorHandler() {
+            private final Logger logger = Logger.getLogger(Core.class.getName());
             @Override
-            public void warningError(String message, Throwable error, ErrorCategory catagory){
-                if(message==null){
-                    return;
+            public void log(String message, Throwable error, ErrorCategory category){
+                System.err.println(Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Log");
+                logger.log(Level.INFO, message, error);
+            }
+            @Override
+            public void warningError(String message, Throwable error, ErrorCategory category){
+                System.err.println(Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Warning");
+                logger.log(Level.WARNING, message, error);
+            }
+            @Override
+            public void minorError(String message, Throwable error, ErrorCategory category){
+                System.err.println("Minor "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
+                logger.log(Level.SEVERE, message, error);
+            }
+            @Override
+            public void moderateError(String message, Throwable error, ErrorCategory category){
+                System.err.println("Moderate "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
+                logger.log(Level.SEVERE, message, error);
+            }
+            @Override
+            public void severeError(String message, Throwable error, ErrorCategory category){
+                System.err.println("Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
+                logger.log(Level.SEVERE, message, error);
+                String details = "";
+                Throwable t = error;
+                while(t!=null){
+                    details+=t.getClass().getName()+" "+t.getMessage();
+                    StackTraceElement[] stackTrace = t.getStackTrace();
+                    for(StackTraceElement e : stackTrace){
+                        if(e.getClassName().startsWith("net."))continue;
+                        if(e.getClassName().startsWith("com."))continue;
+                        String[] splitClassName = e.getClassName().split("\\Q.");
+                        String filename = splitClassName[splitClassName.length-1]+".java";
+                        String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
+                        if((details+nextLine).length()+4>1024){
+                            details+="\n...";
+                            break;
+                        }else details+=nextLine;
+                    }
+                    t = t.getCause();
+                    if(t!=null)details+="\nCaused by ";
                 }
-                if(message.contains(".png!")){
-                    System.err.println(message);
+                String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
+                switch(JOptionPane.showOptionDialog(null, details, "Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
+                    case 0:
+                        gui.open(new MenuMain(gui));
+                        break;
+                    case 2:
+                        helper.running = false;
+                        break;
+                    case 1:
+                    default:
+                        break;
                 }
             }
             @Override
             public void criticalError(String message, Throwable error, ErrorCategory category){
-                super.criticalError(message, error, category);
-                helper.running = false;
+                System.err.println("Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
+                logger.log(Level.SEVERE, message, error);
+                String details = "";
+                Throwable t = error;
+                while(t!=null){
+                    details+=t.getClass().getName()+" "+t.getMessage();
+                    StackTraceElement[] stackTrace = t.getStackTrace();
+                    for(StackTraceElement e : stackTrace){
+                        if(e.getClassName().startsWith("net."))continue;
+                        if(e.getClassName().startsWith("com."))continue;
+                        String[] splitClassName = e.getClassName().split("\\Q.");
+                        String filename = splitClassName[splitClassName.length-1]+".java";
+                        String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
+                        if((details+nextLine).length()+4>1024){
+                            details+="\n...";
+                            break;
+                        }else details+=nextLine;
+                    }
+                    t = t.getCause();
+                    if(t!=null)details+="\nCaused by ";
+                }
+                String[] options = new String[]{"Main Menu", "Exit"};
+                switch(JOptionPane.showOptionDialog(null, details, "Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
+                    case 0:
+                        gui.open(new MenuMain(gui));
+                        break;
+                    case 1:
+                    default:
+                        helper.running = false;
+                        break;
+                }
             }
         }, null, helper);
     }

@@ -12,13 +12,17 @@ public class ClearSelectionAction extends Action<Multiblock>{
     }
     @Override
     protected void doApply(Multiblock multiblock, boolean allowUndo){
-        if(allowUndo)was.addAll(editor.selection);
-        editor.selection.clear();
+        synchronized(editor.selection){
+            if(allowUndo)was.addAll(editor.selection);
+            editor.selection.clear();
+        }
     }
     @Override
     protected void doUndo(Multiblock multiblock){
-        editor.selection.addAll(was);
-        was.clear();
+        synchronized(editor.selection){
+            editor.selection.addAll(was);
+            was.clear();
+        }
     }
     @Override
     protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){}

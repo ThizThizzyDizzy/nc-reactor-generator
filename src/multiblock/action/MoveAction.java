@@ -14,7 +14,9 @@ public class MoveAction extends Action<Multiblock>{
     private final int dy;
     private final int dz;
     public MoveAction(MenuEdit editor, Collection<int[]> selection, int dy, int dx, int dz){
-        this.selection.addAll(selection);
+        synchronized(selection){
+            this.selection.addAll(selection);
+        }
         this.dx = dy;
         this.dy = dx;
         this.dz = dz;
@@ -45,16 +47,20 @@ public class MoveAction extends Action<Multiblock>{
                 multiblock.setBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz, bl);
             }
         }
-        editor.selection.clear();
-        editor.selection.addAll(movedSelection);
+        synchronized(editor.selection){
+            editor.selection.clear();
+            editor.selection.addAll(movedSelection);
+        }
     }
     @Override
     public void doUndo(Multiblock multiblock){
         for(int[] loc : was.keySet()){
             multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
         }
-        editor.selection.clear();
-        editor.selection.addAll(selection);
+        synchronized(editor.selection){
+            editor.selection.clear();
+            editor.selection.addAll(selection);
+        }
     }
     @Override
     protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){

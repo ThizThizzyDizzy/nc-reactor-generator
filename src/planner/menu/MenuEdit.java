@@ -390,6 +390,12 @@ public class MenuEdit extends Menu{
         }
         Core.applyWhite();
     }
+    @Override
+    public void tick(){
+        if(true)throw new RuntimeException(new RuntimeException("asdf", new IllegalArgumentException("ASDF")));
+        super.tick();
+    }
+    
     public Block getSelectedBlock(){
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
@@ -459,8 +465,10 @@ public class MenuEdit extends Menu{
             if(key==GLFW.GLFW_KEY_ESCAPE)clearSelection();
             if(key==GLFW.GLFW_KEY_DELETE){
                 SetblocksAction ac = new SetblocksAction(null);
-                for(int[] i : selection){
-                    ac.add(i[0], i[1], i[2]);
+                synchronized(selection){
+                    for(int[] i : selection){
+                        ac.add(i[0], i[1], i[2]);
+                    }
                 }
                 multiblock.action(ac, true);
                 clearSelection();
@@ -574,14 +582,18 @@ public class MenuEdit extends Menu{
         multiblock.action(new DeselectAction(this, is), true);
     }
     public boolean isSelected(int x, int y, int z){
-        for(int[] s : selection){
-            if(s==null)continue;//THIS SHOULD NEVER HAPPEN but it does anyway
-            if(s[0]==x&&s[1]==y&&s[2]==z)return true;
+        synchronized(selection){
+            for(int[] s : selection){
+                if(s==null)continue;//THIS SHOULD NEVER HAPPEN but it does anyway
+                if(s[0]==x&&s[1]==y&&s[2]==z)return true;
+            }
         }
         return false;
     }
     private boolean hasSelection(){
-        return !selection.isEmpty();
+        synchronized(selection){
+            return !selection.isEmpty();
+        }
     }
     public void selectCluster(int x, int y, int z){
         if(multiblock instanceof OverhaulSFR){
@@ -661,14 +673,16 @@ public class MenuEdit extends Menu{
         multiblock.action(new ClearSelectionAction(this), true);
     }
     public void addSelection(ArrayList<int[]> sel){
-        for(int[] is : selection){
-            for(Iterator<int[]> it = sel.iterator(); it.hasNext();){
-                int[] i = it.next();
-                if(i[0]==is[0]&&i[1]==is[1]&&i[2]==is[2]){
-                    it.remove();
+        synchronized(selection){
+            for(int[] is : selection){
+                for(Iterator<int[]> it = sel.iterator(); it.hasNext();){
+                    int[] i = it.next();
+                    if(i[0]==is[0]&&i[1]==is[1]&&i[2]==is[2]){
+                        it.remove();
+                    }
                 }
             }
+            selection.addAll(sel);
         }
-        selection.addAll(sel);
     }
 }
