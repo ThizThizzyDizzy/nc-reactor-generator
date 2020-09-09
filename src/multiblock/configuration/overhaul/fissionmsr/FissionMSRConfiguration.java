@@ -5,7 +5,10 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import multiblock.Multiblock;
+import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -79,7 +82,7 @@ public class FissionMSRConfiguration{
         config.set("irradiatorRecipes", irradiatorRecipes);
         return config;
     }
-    public void applyPartial(FissionMSRConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(FissionMSRConfiguration partial, ArrayList<Multiblock> multiblocks){
         Set<Block> usedBlocks = new HashSet<>();
         Set<Fuel> usedFuels = new HashSet<>();
         Set<Source> usedSources = new HashSet<>();
@@ -102,6 +105,60 @@ public class FissionMSRConfiguration{
         partial.allFuels.addAll(usedFuels);
         partial.allSources.addAll(usedSources);
         partial.allIrradiatorRecipes.addAll(usedIrradiatorRecipes);
+    }
+    public void apply(AddonConfiguration addon, Configuration parent){
+        Set<Block> usedBlocks = new HashSet<>();
+        for(Block b : blocks){
+            usedBlocks.addAll(getAllUsedBlocks(b));
+            usedBlocks.removeAll(blocks);
+        }
+        //parent blocks
+        ArrayList<Block> theBlocks = new ArrayList<>();
+        for(Block b : parent.overhaul.fissionMSR.blocks){
+            if(usedBlocks.contains(b)){
+                theBlocks.add(b);
+            }
+        }
+        addon.overhaul.fissionMSR.allBlocks.addAll(theBlocks);
+        addon.overhaul.fissionMSR.blocks.addAll(theBlocks);
+        //self blocks
+        addon.self.overhaul.fissionMSR.blocks.addAll(blocks);
+        addon.overhaul.fissionMSR.allBlocks.addAll(blocks);
+        //addon blocks
+        for(Configuration addn : parent.addons){
+            theBlocks = new ArrayList<>();
+            if(addn.overhaul!=null&&addn.overhaul.fissionMSR!=null){
+                for(Block b : addn.overhaul.fissionMSR.blocks){
+                    if(usedBlocks.contains(b)){
+                        theBlocks.add(b);
+                    }
+                }
+            }
+            addon.overhaul.fissionMSR.allBlocks.addAll(theBlocks);
+            if(!theBlocks.isEmpty()){
+                boolean foundMatch = false;
+                for(Configuration c : addon.addons){
+                    if(c.overhaulNameMatches(addn)){
+                        foundMatch = true;
+                        c.overhaul.fissionMSR.blocks.addAll(theBlocks);
+                    }
+                }
+                if(!foundMatch){
+                    Configuration c = new PartialConfiguration(addn.name, addn.overhaulVersion, addn.overhaulVersion);
+                    addon.addons.add(c);
+                    c.addon = true;
+                    c.overhaul = new OverhaulConfiguration();
+                    c.overhaul.fissionMSR = new FissionMSRConfiguration();
+                    c.overhaul.fissionMSR.blocks.addAll(theBlocks);
+                }
+            }
+        }
+        addon.self.overhaul.fissionMSR.fuels.addAll(fuels);
+        parent.overhaul.fissionMSR.allFuels.addAll(fuels);
+        addon.self.overhaul.fissionMSR.sources.addAll(sources);
+        parent.overhaul.fissionMSR.allSources.addAll(sources);
+        addon.self.overhaul.fissionMSR.irradiatorRecipes.addAll(irradiatorRecipes);
+        parent.overhaul.fissionMSR.allIrradiatorRecipes.addAll(irradiatorRecipes);
     }
     public Block convert(Block template){
         if(template==null)return null;
@@ -156,11 +213,7 @@ public class FissionMSRConfiguration{
     public boolean equals(Object obj){
         if(obj!=null&&obj instanceof FissionMSRConfiguration){
             FissionMSRConfiguration fsfrc = (FissionMSRConfiguration)obj;
-            return Objects.equals(fsfrc.allBlocks, allBlocks)
-                    &&Objects.equals(fsfrc.allFuels, allFuels)
-                    &&Objects.equals(fsfrc.allSources, allSources)
-                    &&Objects.equals(fsfrc.allIrradiatorRecipes, allIrradiatorRecipes)
-                    &&Objects.equals(fsfrc.blocks, blocks)
+            return Objects.equals(fsfrc.blocks, blocks)
                     &&Objects.equals(fsfrc.fuels, fuels)
                     &&Objects.equals(fsfrc.sources, sources)
                     &&Objects.equals(fsfrc.irradiatorRecipes, irradiatorRecipes)
@@ -172,5 +225,13 @@ public class FissionMSRConfiguration{
                     &&sparsityPenaltyThreshold==fsfrc.sparsityPenaltyThreshold;
         }
         return false;
+    }
+    private ArrayList<Block> getAllUsedBlocks(RuleContainer container){
+        ArrayList<Block> used = new ArrayList<>();
+        for(PlacementRule rule : container.rules){
+            used.addAll(getAllUsedBlocks(rule));
+            if(rule.block!=null)used.add(rule.block);
+        }
+        return used;
     }
 }

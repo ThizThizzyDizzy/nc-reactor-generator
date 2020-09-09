@@ -4,7 +4,7 @@ import multiblock.Multiblock;
 public class PartialConfiguration extends Configuration{
     public static PartialConfiguration generate(Configuration configuration, ArrayList<Multiblock> multiblocks){
         PartialConfiguration partial = new PartialConfiguration(configuration.name, configuration.overhaulVersion, configuration.underhaulVersion);
-        configuration.applyPartial(partial, multiblocks);
+        configuration.apply(partial, multiblocks);
         return partial;
     }
     public PartialConfiguration(String name, String version, String underhaulVersion){

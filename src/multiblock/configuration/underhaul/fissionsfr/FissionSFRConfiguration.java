@@ -4,7 +4,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import multiblock.Multiblock;
+import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -56,7 +59,7 @@ public class FissionSFRConfiguration{
         config.set("fuels", fuels);
         return config;
     }
-    public void applyPartial(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks){
         Set<Block> usedBlocks = new HashSet<>();
         Set<Fuel> usedFuels = new HashSet<>();
         for(Multiblock mb : multiblocks){
@@ -78,6 +81,56 @@ public class FissionSFRConfiguration{
         partial.moderatorExtraHeat = moderatorExtraHeat;
         partial.activeCoolerRate = activeCoolerRate;
     }
+    public void apply(AddonConfiguration addon, Configuration parent){
+        Set<Block> usedBlocks = new HashSet<>();
+        for(Block b : blocks){
+            usedBlocks.addAll(getAllUsedBlocks(b));
+            usedBlocks.removeAll(blocks);
+        }
+        //parent blocks
+        ArrayList<Block> theBlocks = new ArrayList<>();
+        for(Block b : parent.underhaul.fissionSFR.blocks){
+            if(usedBlocks.contains(b)){
+                theBlocks.add(b);
+            }
+        }
+        addon.underhaul.fissionSFR.allBlocks.addAll(theBlocks);
+        addon.underhaul.fissionSFR.blocks.addAll(theBlocks);
+        //self blocks
+        addon.self.underhaul.fissionSFR.blocks.addAll(blocks);
+        addon.underhaul.fissionSFR.allBlocks.addAll(blocks);
+        //addon blocks
+        for(Configuration addn : parent.addons){
+            theBlocks = new ArrayList<>();
+            if(addn.underhaul!=null&&addn.underhaul.fissionSFR!=null){
+                for(Block b : addn.underhaul.fissionSFR.blocks){
+                    if(usedBlocks.contains(b)){
+                        theBlocks.add(b);
+                    }
+                }
+            }
+            addon.underhaul.fissionSFR.allBlocks.addAll(theBlocks);
+            if(!theBlocks.isEmpty()){
+                boolean foundMatch = false;
+                for(Configuration c : addon.addons){
+                    if(c.underhaulNameMatches(addn)){
+                        foundMatch = true;
+                        c.underhaul.fissionSFR.blocks.addAll(theBlocks);
+                    }
+                }
+                if(!foundMatch){
+                    Configuration c = new PartialConfiguration(addn.name, addn.overhaulVersion, addn.underhaulVersion);
+                    addon.addons.add(c);
+                    c.addon = true;
+                    c.underhaul = new UnderhaulConfiguration();
+                    c.underhaul.fissionSFR = new FissionSFRConfiguration();
+                    c.underhaul.fissionSFR.blocks.addAll(theBlocks);
+                }
+            }
+        }
+        addon.self.underhaul.fissionSFR.fuels.addAll(fuels);
+        parent.underhaul.fissionSFR.allFuels.addAll(fuels);
+    }
     public Block convert(Block template){
         for(Block block : blocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
@@ -94,9 +147,7 @@ public class FissionSFRConfiguration{
     public boolean equals(Object obj){
         if(obj!=null&&obj instanceof FissionSFRConfiguration){
             FissionSFRConfiguration fsfrc = (FissionSFRConfiguration)obj;
-            return Objects.equals(fsfrc.allBlocks, allBlocks)
-                    &&Objects.equals(fsfrc.allFuels, allFuels)
-                    &&Objects.equals(fsfrc.blocks, blocks)
+            return Objects.equals(fsfrc.blocks, blocks)
                     &&Objects.equals(fsfrc.fuels, fuels)
                     &&minSize==fsfrc.minSize
                     &&maxSize==fsfrc.maxSize
@@ -106,5 +157,13 @@ public class FissionSFRConfiguration{
                     &&activeCoolerRate==fsfrc.activeCoolerRate;
         }
         return false;
+    }
+    private ArrayList<Block> getAllUsedBlocks(RuleContainer container){
+        ArrayList<Block> used = new ArrayList<>();
+        for(PlacementRule rule : container.rules){
+            used.addAll(getAllUsedBlocks(rule));
+            if(rule.block!=null)used.add(rule.block);
+        }
+        return used;
     }
 }

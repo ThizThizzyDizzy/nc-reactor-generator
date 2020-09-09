@@ -5,6 +5,7 @@ import multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
 import multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration;
 import multiblock.configuration.overhaul.turbine.TurbineConfiguration;
 import multiblock.Multiblock;
+import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import simplelibrary.config2.Config;
 public class OverhaulConfiguration{
@@ -18,18 +19,35 @@ public class OverhaulConfiguration{
         if(turbine!=null)config.set("turbine", turbine.save(parent, partial));
         return config;
     }
-    public void applyPartial(OverhaulConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(OverhaulConfiguration partial, ArrayList<Multiblock> multiblocks){
         if(fissionSFR!=null){
             partial.fissionSFR = new FissionSFRConfiguration();
-            fissionSFR.applyPartial(partial.fissionSFR, multiblocks);
+            fissionSFR.apply(partial.fissionSFR, multiblocks);
         }
         if(fissionMSR!=null){
             partial.fissionMSR = new FissionMSRConfiguration();
-            fissionMSR.applyPartial(partial.fissionMSR, multiblocks);
+            fissionMSR.apply(partial.fissionMSR, multiblocks);
         }
         if(turbine!=null){
             partial.turbine = new TurbineConfiguration();
-            turbine.applyPartial(partial.turbine, multiblocks);
+            turbine.apply(partial.turbine, multiblocks);
+        }
+    }
+    public void apply(AddonConfiguration addon, Configuration parent){
+        if(fissionSFR!=null){
+            addon.overhaul.fissionSFR = new FissionSFRConfiguration();
+            addon.self.overhaul.fissionSFR = new FissionSFRConfiguration();
+            fissionSFR.apply(addon, parent);
+        }
+        if(fissionMSR!=null){
+            addon.overhaul.fissionMSR = new FissionMSRConfiguration();
+            addon.self.overhaul.fissionMSR = new FissionMSRConfiguration();
+            fissionMSR.apply(addon, parent);
+        }
+        if(turbine!=null){
+            addon.overhaul.turbine = new TurbineConfiguration();
+            addon.self.overhaul.turbine = new TurbineConfiguration();
+            turbine.apply(addon, parent);
         }
     }
     @Override

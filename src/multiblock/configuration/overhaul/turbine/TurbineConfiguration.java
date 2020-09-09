@@ -4,7 +4,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import multiblock.Multiblock;
+import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -69,7 +72,7 @@ public class TurbineConfiguration{
         config.set("recipes", recipes);
         return config;
     }
-    public void applyPartial(TurbineConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(TurbineConfiguration partial, ArrayList<Multiblock> multiblocks){
         Set<Blade> usedBlades = new HashSet<>();
         Set<Coil> usedCoils = new HashSet<>();
         Set<Recipe> usedRecipes = new HashSet<>();
@@ -88,6 +91,58 @@ public class TurbineConfiguration{
         partial.allCoils.addAll(usedCoils);
         partial.recipes.addAll(usedRecipes);
         partial.allRecipes.addAll(usedRecipes);
+    }
+    public void apply(AddonConfiguration addon, Configuration parent){
+        Set<Coil> usedCoils = new HashSet<>();
+        for(Coil b : coils){
+            usedCoils.addAll(getAllUsedCoils(b));
+            usedCoils.removeAll(coils);
+        }
+        //parent coils
+        ArrayList<Coil> theCoils = new ArrayList<>();
+        for(Coil b : parent.overhaul.turbine.coils){
+            if(usedCoils.contains(b)){
+                theCoils.add(b);
+            }
+        }
+        addon.overhaul.turbine.allCoils.addAll(theCoils);
+        addon.overhaul.turbine.coils.addAll(theCoils);
+        //self coils
+        addon.self.overhaul.turbine.coils.addAll(coils);
+        addon.overhaul.turbine.allCoils.addAll(coils);
+        //addon coils
+        for(Configuration addn : parent.addons){
+            theCoils = new ArrayList<>();
+            if(addn.overhaul!=null&&addn.overhaul.turbine!=null){
+                for(Coil b : addn.overhaul.turbine.coils){
+                    if(usedCoils.contains(b)){
+                        theCoils.add(b);
+                    }
+                }
+            }
+            addon.overhaul.turbine.allCoils.addAll(theCoils);
+            if(!theCoils.isEmpty()){
+                boolean foundMatch = false;
+                for(Configuration c : addon.addons){
+                    if(c.overhaulNameMatches(addn)){
+                        foundMatch = true;
+                        c.overhaul.turbine.coils.addAll(theCoils);
+                    }
+                }
+                if(!foundMatch){
+                    Configuration c = new PartialConfiguration(addn.name, addn.overhaulVersion, addn.overhaulVersion);
+                    addon.addons.add(c);
+                    c.addon = true;
+                    c.overhaul = new OverhaulConfiguration();
+                    c.overhaul.turbine = new TurbineConfiguration();
+                    c.overhaul.turbine.coils.addAll(theCoils);
+                }
+            }
+        }
+        addon.self.overhaul.turbine.blades.addAll(blades);
+        parent.overhaul.turbine.allBlades.addAll(blades);
+        addon.self.overhaul.turbine.recipes.addAll(recipes);
+        parent.overhaul.turbine.allRecipes.addAll(recipes);
     }
     public Blade convert(Blade template){
         if(template==null)return null;
@@ -114,10 +169,7 @@ public class TurbineConfiguration{
     public boolean equals(Object obj){
         if(obj!=null&&obj instanceof TurbineConfiguration){
             TurbineConfiguration fsfrc = (TurbineConfiguration)obj;
-            return Objects.equals(fsfrc.allBlades, allBlades)
-                    &&Objects.equals(fsfrc.allCoils, allCoils)
-                    &&Objects.equals(fsfrc.allRecipes, allRecipes)
-                    &&Objects.equals(fsfrc.blades, blades)
+            return Objects.equals(fsfrc.blades, blades)
                     &&Objects.equals(fsfrc.coils, coils)
                     &&Objects.equals(fsfrc.recipes, recipes)
                     &&minWidth==fsfrc.minWidth
@@ -129,5 +181,13 @@ public class TurbineConfiguration{
                     &&powerBonus==fsfrc.powerBonus;
         }
         return false;
+    }
+    private ArrayList<Coil> getAllUsedCoils(RuleContainer container){
+        ArrayList<Coil> used = new ArrayList<>();
+        for(PlacementRule rule : container.rules){
+            used.addAll(getAllUsedCoils(rule));
+            if(rule.coil!=null)used.add(rule.coil);
+        }
+        return used;
     }
 }

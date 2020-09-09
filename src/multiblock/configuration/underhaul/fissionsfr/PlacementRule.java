@@ -92,16 +92,19 @@ public class PlacementRule extends RuleContainer{
         Config config = Config.newConfig();
         byte blockIndex = (byte)(configuration.blocks.indexOf(block)+1);
         if(parent!=null){
-            if(parent.underhaul!=null&&parent.underhaul.fissionSFR!=null){
-                blockIndex+=parent.underhaul.fissionSFR.blocks.size();
-            }
-            for(Configuration addon : parent.addons){
-                if(addon.underhaul!=null&&addon.underhaul.fissionSFR!=null){
-                    if(addon.underhaul.fissionSFR==configuration)break;
-                    else blockIndex+=addon.underhaul.fissionSFR.blocks.size();
-                }
-            }
+            blockIndex = (byte)(parent.underhaul.fissionSFR.allBlocks.indexOf(block)+1);
         }
+//        if(parent!=null){
+//            if(parent.underhaul!=null&&parent.underhaul.fissionSFR!=null){
+//                blockIndex+=parent.underhaul.fissionSFR.blocks.size();
+//            }
+//            for(Configuration addon : parent.addons){
+//                if(addon.underhaul!=null&&addon.underhaul.fissionSFR!=null){
+//                    if(addon.underhaul.fissionSFR==configuration)break;
+//                    else blockIndex+=addon.underhaul.fissionSFR.blocks.size();
+//                }
+//            }
+//        }
         switch(ruleType){
             case BETWEEN:
                 config.set("type", (byte)0);

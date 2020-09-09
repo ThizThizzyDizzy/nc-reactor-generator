@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
 import multiblock.Multiblock;
+import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import simplelibrary.config2.Config;
 public class UnderhaulConfiguration{
@@ -14,10 +15,17 @@ public class UnderhaulConfiguration{
         }
         return config;
     }
-    public void applyPartial(UnderhaulConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(UnderhaulConfiguration partial, ArrayList<Multiblock> multiblocks){
         if(fissionSFR!=null){
             partial.fissionSFR = new FissionSFRConfiguration();
-            fissionSFR.applyPartial(partial.fissionSFR, multiblocks);
+            fissionSFR.apply(partial.fissionSFR, multiblocks);
+        }
+    }
+    public void apply(AddonConfiguration addon, Configuration parent){
+        if(fissionSFR!=null){
+            addon.underhaul.fissionSFR = new FissionSFRConfiguration();
+            addon.self.underhaul.fissionSFR = new FissionSFRConfiguration();
+            fissionSFR.apply(addon, parent);
         }
     }
     @Override

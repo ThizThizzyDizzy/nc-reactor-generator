@@ -100,11 +100,6 @@ public class Block extends RuleContainer{
         if(obj!=null&&obj instanceof Block){
             Block b = (Block)obj;
             if(!compareImages(texture, b.texture))return false;
-            for(int x = 0; x<texture.getWidth(); x++){
-                for(int y = 0; y<texture.getHeight(); y++){
-                    
-                }
-            }
             return Objects.equals(name, b.name)
                     &&cooling==b.cooling
                     &&fuelCell==b.fuelCell

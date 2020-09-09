@@ -91,14 +91,27 @@ public class Configuration{
         configuration.underhaul = fresh.underhaul;
         configuration.underhaulVersion = fresh.underhaulVersion;
     }
-    public void applyPartial(PartialConfiguration partial, ArrayList<Multiblock> multiblocks){
+    public void apply(PartialConfiguration partial, ArrayList<Multiblock> multiblocks){
+        //TODO fix; this ignores addons
         if(underhaul!=null){
             partial.underhaul = new UnderhaulConfiguration();
-            underhaul.applyPartial(partial.underhaul, multiblocks);
+            underhaul.apply(partial.underhaul, multiblocks);
         }
         if(overhaul!=null){
             partial.overhaul = new OverhaulConfiguration();
-            overhaul.applyPartial(partial.overhaul, multiblocks);
+            overhaul.apply(partial.overhaul, multiblocks);
+        }
+    }
+    public void apply(AddonConfiguration addon, Configuration parent){
+        if(underhaul!=null){
+            addon.underhaul = new UnderhaulConfiguration();
+            addon.self.underhaul = new UnderhaulConfiguration();
+            underhaul.apply(addon, parent);
+        }
+        if(overhaul!=null){
+            addon.overhaul = new OverhaulConfiguration();
+            addon.self.overhaul = new OverhaulConfiguration();
+            overhaul.apply(addon, parent);
         }
     }
     public Configuration addAlternative(String s){
@@ -144,5 +157,21 @@ public class Configuration{
     public boolean isUnderhaulConfigurationEqual(Configuration c){
         if(c==null)return false;
         return Objects.equals(c.underhaul, underhaul);
+    }
+    public String getFullName(){
+        String full = name;
+        for(Configuration addon : addons){
+            full+="+"+addon.name;
+        }
+        return full;
+    }
+    public boolean nameMatches(Configuration other){
+        return Objects.equals(name, other.name);
+    }
+    public boolean underhaulNameMatches(Configuration other){
+        return nameMatches(other)&&Objects.equals(underhaulVersion, other.underhaulVersion);
+    }
+    public boolean overhaulNameMatches(Configuration other){
+        return nameMatches(other)&&Objects.equals(overhaulVersion, other.overhaulVersion);
     }
 }

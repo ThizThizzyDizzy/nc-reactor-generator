@@ -1,15 +1,21 @@
 package planner.menu.configuration;
 import java.awt.Color;
 import java.awt.Desktop;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import multiblock.configuration.AddonConfiguration;
 import planner.Core;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
+import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.configuration.underhaul.MenuUnderhaulConfiguration;
@@ -17,6 +23,7 @@ import planner.menu.configuration.overhaul.MenuOverhaulConfiguration;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.GUI;
 import planner.menu.Menu;
+import simplelibrary.config2.Config;
 public class MenuConfiguration extends Menu{
     private final Configuration configuration;
     private final MenuComponentMinimalistTextBox name;
@@ -27,12 +34,11 @@ public class MenuConfiguration extends Menu{
     private final MenuComponentMinimalistButton deleteUnderhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Ctrl+Shift)", false, true).setTooltip("Delete the underhaul configuration"));
     private final MenuComponentMinimalistButton deleteOverhaul = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Alt+Shift)", false, true).setTooltip("Delete the overhaul configuration"));
     private final MenuComponentMinimalistButton configGuidelines = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Configuration Guidelines (Google doc)", true, true).setTooltip("Opens a webpage in your default browser containing configuration guidelines\nThese guidelines should be followed to ensure no conflicts arise with the default configurations"));
-    private final MenuComponentMinimalistButton addons = new MenuComponentMinimalistButton(0, 0, 0, 0, "Addons", true, true).setTooltip("Manage addons");
+    private final MenuComponentMinimalistButton addons = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Addons", true, true).setTooltip("Manage addons"));
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Finish modifying the configuration and return to the settings screen"));
     public MenuConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent);
         this.configuration = configuration;
-        if(!configuration.addon)add(addons);
         name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, configuration.name, true)).setTooltip(configuration.addon?"The name of the addon\nThis should not change between versions":"The name of the modpack\nThis should not change between versions");
         overhaulVersion = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, configuration.overhaulVersion, true)).setTooltip(configuration.addon?"The version string for the Overhaul version of this addon":"The modpack version");
         underhaulVersion = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, configuration.underhaulVersion, true)).setTooltip(configuration.addon?"The version string for the Underhaul version of this addon":"The modpack version");
@@ -45,6 +51,7 @@ public class MenuConfiguration extends Menu{
             gui.open(new MenuOverhaulConfiguration(gui, this, configuration));
         });
         deleteOverhaul.addActionListener((e) -> {
+            onGUIClosed();
             if(configuration.overhaul==null){
                 configuration.overhaul = new OverhaulConfiguration();
                 configuration.overhaulVersion = "0";
@@ -55,6 +62,7 @@ public class MenuConfiguration extends Menu{
             onGUIOpened();
         });
         deleteUnderhaul.addActionListener((e) -> {
+            onGUIClosed();
             if(configuration.underhaul==null){
                 configuration.underhaul = new UnderhaulConfiguration();
                 configuration.underhaulVersion = "0";
@@ -74,7 +82,35 @@ public class MenuConfiguration extends Menu{
             }
         });
         addons.addActionListener((e) -> {
-            gui.open(new MenuAddonsConfiguration(gui, this));
+            if(configuration.addon){
+                new Thread(() -> {
+                    JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                    chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
+                    chooser.setSelectedFile(new File(configuration.name));
+                    chooser.addActionListener((event) -> {
+                        if(event.getActionCommand().equals("ApproveSelection")){
+                            File file = chooser.getSelectedFile();
+                            if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                            if(file.exists()){
+                                if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
+                                file.delete();
+                            }
+                            try(FileOutputStream stream = new FileOutputStream(file)){
+                                Config header = Config.newConfig();
+                                header.set("version", NCPFFile.SAVE_VERSION);
+                                header.set("count", 0);
+                                header.save(stream);
+                                AddonConfiguration.generate(Core.configuration, configuration).save(null, Config.newConfig()).save(stream);
+                            }catch(IOException ex){
+                                JOptionPane.showMessageDialog(null, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                    });
+                    chooser.showSaveDialog(null);
+                }).start();
+            }else{
+                gui.open(new MenuAddonsConfiguration(gui, this));
+            }
         });
         done.addActionListener((e) -> {
             gui.open(parent);
@@ -87,7 +123,7 @@ public class MenuConfiguration extends Menu{
         name.text = configuration.name==null?"":configuration.name;
         overhaulVersion.text = configuration.overhaulVersion==null?"":configuration.overhaulVersion;
         underhaulVersion.text = configuration.underhaulVersion==null?"":configuration.underhaulVersion;
-        addons.label = "Addons ("+configuration.addons.size()+")";
+        addons.label = configuration.addon?"Save Addon":"Addons ("+configuration.addons.size()+")";
     }
     @Override
     public void onGUIClosed(){
@@ -119,25 +155,14 @@ public class MenuConfiguration extends Menu{
         done.y = Core.helper.displayHeight()-done.height;
         for(Configuration c : Configuration.configurations){
             if(Objects.equals(name.text.trim().isEmpty()?null:name.text,c.name)){
-                if(Objects.equals(overhaulVersion.text.trim().isEmpty()?null:overhaulVersion.text, c.overhaulVersion)){
-                    if(!c.isOverhaulConfigurationEqual(configuration)){
-                        Core.applyColor(Color.red);
-                        String str = "Error: Configuration does not match stored configuration "+c.toString()+"!";
-                        double len = FontManager.getLengthForStringWithHeight(str, configGuidelines.height)+3;
-                        double scale = Core.helper.displayWidth()/len;
-                        drawCenteredText(0, configGuidelines.y+configGuidelines.height, Core.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), str);
-                        drawCenteredText(0, configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), Core.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale)*2, "Please review configuration guidelines");
-                    }
-                }
-                if(Objects.equals(underhaulVersion.text.trim().isEmpty()?null:underhaulVersion.text, c.underhaulVersion)){
-                    if(!c.isUnderhaulConfigurationEqual(configuration)){
-                        Core.applyColor(Color.red);
-                        String str = "Error: Configuration does not match stored configuration "+c.toString()+"!";
-                        double len = FontManager.getLengthForStringWithHeight(str, configGuidelines.height)+3;
-                        double scale = Core.helper.displayWidth()/len;
-                        drawCenteredText(0, configGuidelines.y+configGuidelines.height, Core.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), str);
-                        drawCenteredText(0, configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), Core.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale)*2, "Please review configuration guidelines");
-                    }
+                if(Objects.equals(overhaulVersion.text.trim().isEmpty()?null:overhaulVersion.text, c.overhaulVersion)&&!c.isOverhaulConfigurationEqual(configuration)
+                        ||Objects.equals(underhaulVersion.text.trim().isEmpty()?null:underhaulVersion.text, c.underhaulVersion)&&!c.isUnderhaulConfigurationEqual(configuration)){
+                    Core.applyColor(Color.red);
+                    String str = "Error: Configuration does not match stored configuration "+c.toString()+"!";
+                    double len = FontManager.getLengthForStringWithHeight(str, configGuidelines.height)+3;
+                    double scale = Core.helper.displayWidth()/len;
+                    drawCenteredText(0, configGuidelines.y+configGuidelines.height, Core.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), str);
+                    drawCenteredText(0, configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), Core.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale)*2, "Please review configuration guidelines");
                 }
             }
         }

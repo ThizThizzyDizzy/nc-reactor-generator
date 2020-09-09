@@ -62,6 +62,7 @@ public class MenuSettings extends Menu{
             new Thread(() -> {
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
+                chooser.setSelectedFile(new File(Core.configuration.getFullName()));
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
                         File file = chooser.getSelectedFile();
