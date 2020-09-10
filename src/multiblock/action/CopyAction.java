@@ -42,7 +42,9 @@ public class CopyAction extends Action<Multiblock>{
                 multiblock.setBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz, bl);
             }
         }
-        if(!Core.isShiftPressed())editor.selection.clear();
+        synchronized(editor.selection){
+            if(!Core.isShiftPressed())editor.selection.clear();
+        }
         editor.addSelection(movedSelection);
     }
     @Override
@@ -50,8 +52,10 @@ public class CopyAction extends Action<Multiblock>{
         for(int[] loc : was.keySet()){
             multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
         }
-        editor.selection.clear();
-        editor.selection.addAll(selection);
+        synchronized(editor.selection){
+            editor.selection.clear();
+            editor.selection.addAll(selection);
+        }
     }
     @Override
     protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){

@@ -45,16 +45,20 @@ public class MoveTool extends EditorTool{
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
             if(!Core.isControlPressed()){
-                for(int[] i : editor.selection){
-                    if(i[1]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[2]*blockSize, x+(i[0]+1)*blockSize, y+(i[2]+1)*blockSize, 0);
+                synchronized(editor.selection){
+                    for(int[] i : editor.selection){
+                        if(i[1]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[2]*blockSize, x+(i[0]+1)*blockSize, y+(i[2]+1)*blockSize, 0);
+                    }
                 }
             }
             int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
-            for(int[] i : editor.selection){
-                int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
-                if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.multiblock.getX()||j[1]>=editor.multiblock.getY()||j[2]>=editor.multiblock.getZ())continue;
-                Block b = editor.multiblock.getBlock(i[0], i[1], i[2]);
-                if(j[1]==layer)Renderer2D.drawRect(x+j[0]*blockSize, y+j[2]*blockSize, x+(j[0]+1)*blockSize, y+(j[2]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
+            synchronized(editor.selection){
+                for(int[] i : editor.selection){
+                    int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
+                    if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.multiblock.getX()||j[1]>=editor.multiblock.getY()||j[2]>=editor.multiblock.getZ())continue;
+                    Block b = editor.multiblock.getBlock(i[0], i[1], i[2]);
+                    if(j[1]==layer)Renderer2D.drawRect(x+j[0]*blockSize, y+j[2]*blockSize, x+(j[0]+1)*blockSize, y+(j[2]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
+                }
             }
         }
         Core.applyWhite();
@@ -64,16 +68,20 @@ public class MoveTool extends EditorTool{
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
             if(!Core.isControlPressed()){
-                for(int[] i : editor.selection){
-                    if(i[2]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[1]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, 0);
+                synchronized(editor.selection){
+                    for(int[] i : editor.selection){
+                        if(i[2]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[1]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, 0);
+                    }
                 }
             }
             int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
-            for(int[] i : editor.selection){
-                int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
-                if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.multiblock.getX()||j[1]>=editor.multiblock.getY()||j[2]>=editor.multiblock.getZ())continue;
-                Block b = editor.multiblock.getBlock(i[0], i[1], i[2]);
-                if(j[2]==layer)Renderer2D.drawRect(x+j[0]*blockSize, y+j[1]*blockSize, x+(j[0]+1)*blockSize, y+(j[1]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
+            synchronized(editor.selection){
+                for(int[] i : editor.selection){
+                    int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
+                    if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.multiblock.getX()||j[1]>=editor.multiblock.getY()||j[2]>=editor.multiblock.getZ())continue;
+                    Block b = editor.multiblock.getBlock(i[0], i[1], i[2]);
+                    if(j[2]==layer)Renderer2D.drawRect(x+j[0]*blockSize, y+j[1]*blockSize, x+(j[0]+1)*blockSize, y+(j[1]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
+                }
             }
         }
         Core.applyWhite();
@@ -83,16 +91,20 @@ public class MoveTool extends EditorTool{
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
             if(!Core.isControlPressed()){
-                for(int[] i : editor.selection){
-                    Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
+                synchronized(editor.selection){
+                    for(int[] i : editor.selection){
+                        Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
+                    }
                 }
             }
             int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
-            for(int[] i : editor.selection){
-                int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
-                if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.multiblock.getX()||j[1]>=editor.multiblock.getY()||j[2]>=editor.multiblock.getZ())continue;
-                Block b = editor.multiblock.getBlock(i[0], i[1], i[2]);
-                Renderer2D.drawRect(x+(j[2]-1)*blockSize, y, x+j[2]*blockSize, y+blockSize, b==null?0:Core.getTexture(b.getTexture()));
+            synchronized(editor.selection){
+                for(int[] i : editor.selection){
+                    int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
+                    if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.multiblock.getX()||j[1]>=editor.multiblock.getY()||j[2]>=editor.multiblock.getZ())continue;
+                    Block b = editor.multiblock.getBlock(i[0], i[1], i[2]);
+                    Renderer2D.drawRect(x+(j[2]-1)*blockSize, y, x+j[2]*blockSize, y+blockSize, b==null?0:Core.getTexture(b.getTexture()));
+                }
             }
         }
         Core.applyWhite();

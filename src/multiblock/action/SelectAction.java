@@ -19,14 +19,18 @@ public class SelectAction extends Action<Multiblock>{
     }
     @Override
     protected void doApply(Multiblock multiblock, boolean allowUndo){
-        editor.selection.addAll(sel);
+        synchronized(editor.selection){
+            editor.selection.addAll(sel);
+        }
     }
     @Override
     protected void doUndo(Multiblock multiblock){
-        for(int[] i : sel){
-            for (Iterator<int[]> it = editor.selection.iterator(); it.hasNext();) {
-                int[] s = it.next();
-                if(s[0]==i[0]&&s[1]==i[1]&&s[2]==i[2])it.remove();
+        synchronized(editor.selection){
+            for(int[] i : sel){
+                for (Iterator<int[]> it = editor.selection.iterator(); it.hasNext();) {
+                    int[] s = it.next();
+                    if(s[0]==i[0]&&s[1]==i[1]&&s[2]==i[2])it.remove();
+                }
             }
         }
     }

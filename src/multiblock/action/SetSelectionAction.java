@@ -20,15 +20,19 @@ public class SetSelectionAction extends Action<Multiblock>{
     }
     @Override
     protected void doApply(Multiblock multiblock, boolean allowUndo){
-        if(allowUndo)was.addAll(editor.selection);
-        editor.selection.clear();
-        editor.selection.addAll(sel);
+        synchronized(editor.selection){
+            if(allowUndo)was.addAll(editor.selection);
+            editor.selection.clear();
+            editor.selection.addAll(sel);
+        }
     }
     @Override
     protected void doUndo(Multiblock multiblock){
-        editor.selection.clear();
-        editor.selection.addAll(was);
-        was.clear();
+        synchronized(editor.selection){
+            editor.selection.clear();
+            editor.selection.addAll(was);
+            was.clear();
+        }
     }
     @Override
     protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){}

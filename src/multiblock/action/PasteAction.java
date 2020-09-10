@@ -40,7 +40,11 @@ public class PasteAction extends Action<Multiblock>{
             multiblock.setBlock(X, Y, Z, entry.block);
             sel.add(new int[]{X,Y,Z});
         }
-        if(allowUndo)selWas.addAll(editor.selection);
+        if(allowUndo){
+            synchronized(editor.selection){
+                selWas.addAll(editor.selection);
+            }
+        }
         editor.setSelection(sel);
     }
     @Override
