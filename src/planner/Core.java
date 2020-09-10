@@ -26,9 +26,9 @@ import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import planner.menu.MenuDiscord;
+import planner.menu.MenuTutorial;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
-import simplelibrary.error.ErrorAdapter;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorHandler;
 import simplelibrary.error.ErrorLevel;
@@ -56,6 +56,7 @@ public class Core extends Renderer2D{
     public static Configuration configuration = new Configuration(null, null, null);
     public static Theme theme = Theme.themes.get(0);
     private static long window;
+    private static Boolean tutorialShown;
     static{
         for(Configuration configuration : Configuration.configurations){
             if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
@@ -243,8 +244,12 @@ public class Core extends Renderer2D{
         settings.load();
         System.out.println("Loading theme...");
         setTheme(Theme.themes.get(settings.get("theme", 0)));
+        tutorialShown = settings.get("tutorialShown", false);
         Main.setLookAndFeel();
         System.out.println("Startup complete!");
+        if(!tutorialShown){
+//            gui.open(new MenuTutorial(gui, gui.menu));
+        }
     }
     public static void tick(boolean isLastTick){
         if(!isLastTick){
@@ -257,6 +262,7 @@ public class Core extends Renderer2D{
             File f = new File("settings.dat").getAbsoluteFile();
             Config settings = Config.newConfig(f);
             settings.set("theme", Theme.themes.indexOf(theme));
+            settings.set("tutorialShown", tutorialShown);
             settings.save();
             if(Main.isBot){
                 Bot.stop();

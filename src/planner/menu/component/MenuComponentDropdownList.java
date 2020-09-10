@@ -110,4 +110,7 @@ public class MenuComponentDropdownList extends MenuComponent{
     public MenuComponent getSelectedComponent(){
         return list.components.get(getSelectedIndex());
     }
+    public void clear(){
+        list.components.clear();
+    }
 }

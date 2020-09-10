@@ -1,6 +1,6 @@
 package planner.menu;
 import java.io.File;
-import planner.menu.component.MenuComponentMultiblock;
+import planner.menu.component.editor.MenuComponentMultiblock;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimaList;

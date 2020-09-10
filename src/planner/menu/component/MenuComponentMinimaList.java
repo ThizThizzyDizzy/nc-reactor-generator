@@ -90,22 +90,6 @@ public class MenuComponentMinimaList extends MenuComponentList{
         }
         super.renderBackground();
     }
-//    int lowestNonZeroWheel = Integer.MAX_VALUE;
-//    @Override
-//    public boolean mouseWheelChange(int wheelChange){
-//        if(!isClickWithinBounds(Mouse.getX(), Core.helper.displayHeight()-Mouse.getY(), x, y, x+width, y+height))return false;
-//        if(wheelChange!=0){
-//            lowestNonZeroWheel = Math.min(lowestNonZeroWheel, Math.abs(wheelChange));
-//        }
-//        int scroll = wheelChange/lowestNonZeroWheel;
-//        for(int i = 0; i<scroll; i++){
-//            scrollUp();
-//        }
-//        for(int i = 0; i<-scroll; i++){
-//            scrollDown();
-//        }
-//        return true;
-//    }
     @Override
     public void setSelectedIndex(int index){
         super.setSelectedIndex(index);

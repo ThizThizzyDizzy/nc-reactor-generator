@@ -4,9 +4,9 @@ import multiblock.Block;
 import multiblock.Range;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.Symmetry;
-import planner.menu.component.MenuComponentPostProcessingEffect;
-import planner.menu.component.MenuComponentPriority;
-import planner.menu.component.MenuComponentSymmetry;
+import planner.menu.component.generator.MenuComponentPostProcessingEffect;
+import planner.menu.component.generator.MenuComponentPriority;
+import planner.menu.component.generator.MenuComponentSymmetry;
 public class StandardGeneratorSettings implements Settings{
     public int finalMultiblocks, workingMultiblocks, timeout;
     public ArrayList<Priority> priorities = new ArrayList<>();

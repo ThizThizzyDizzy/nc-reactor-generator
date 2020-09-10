@@ -26,9 +26,9 @@ import multiblock.configuration.overhaul.fissionsfr.Source;
 import multiblock.ppe.SmartFillOverhaulSFR;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.MenuComponentSFRToggleFuel;
-import planner.menu.component.MenuComponentSFRToggleSource;
-import planner.menu.component.MenuComponentSFRToggleIrradiatorRecipe;
+import planner.menu.component.generator.MenuComponentSFRToggleFuel;
+import planner.menu.component.generator.MenuComponentSFRToggleSource;
+import planner.menu.component.generator.MenuComponentSFRToggleIrradiatorRecipe;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
@@ -152,45 +152,47 @@ public class OverhaulSFR extends Multiblock<Block>{
                 clusters.add(cluster);
             }
         }
-        for(Cluster cluster : clusters){
-            int fuelCells = 0;
-            for(Block b : cluster.blocks){
-                if(b.isFuelCellActive()){
-                    fuelCells++;
-                    cluster.totalOutput+=b.fuel.heat*b.efficiency;
-                    cluster.efficiency+=b.efficiency;
-                    cluster.totalHeat+=b.moderatorLines*b.fuel.heat;
-                    cluster.heatMult+=b.moderatorLines;
+        synchronized(clusters){
+            for(Cluster cluster : clusters){
+                int fuelCells = 0;
+                for(Block b : cluster.blocks){
+                    if(b.isFuelCellActive()){
+                        fuelCells++;
+                        cluster.totalOutput+=b.fuel.heat*b.efficiency;
+                        cluster.efficiency+=b.efficiency;
+                        cluster.totalHeat+=b.moderatorLines*b.fuel.heat;
+                        cluster.heatMult+=b.moderatorLines;
+                    }
+                    if(b.isHeatsinkActive()){
+                        cluster.totalCooling+=b.template.cooling;
+                    }
+                    if(b.isShieldActive()){
+                        cluster.totalHeat+=b.template.heatMult*b.neutronFlux;
+                    }
+                    if(b.isIrradiatorActive()){
+                        cluster.irradiation+=b.neutronFlux;
+                        if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.neutronFlux;
+                    }
                 }
-                if(b.isHeatsinkActive()){
-                    cluster.totalCooling+=b.template.cooling;
-                }
-                if(b.isShieldActive()){
-                    cluster.totalHeat+=b.template.heatMult*b.neutronFlux;
-                }
-                if(b.isIrradiatorActive()){
-                    cluster.irradiation+=b.neutronFlux;
-                    if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.neutronFlux;
-                }
+                cluster.efficiency/=fuelCells;
+                cluster.heatMult/=fuelCells;
+                if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
+                if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
+                cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
+                if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
+                else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getConfiguration().overhaul.fissionSFR.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
+                cluster.efficiency*=cluster.coolingPenaltyMult;
+                cluster.totalOutput*=cluster.coolingPenaltyMult;
+                totalFuelCells+=fuelCells;
+                rawOutput+=cluster.totalOutput;
+                totalOutput+=cluster.totalOutput;
+                totalCooling+=cluster.totalCooling;
+                totalHeat+=cluster.totalHeat;
+                netHeat+=cluster.netHeat;
+                totalEfficiency+=cluster.efficiency*fuelCells;
+                totalHeatMult+=cluster.heatMult*fuelCells;
+                totalIrradiation+=cluster.irradiation;
             }
-            cluster.efficiency/=fuelCells;
-            cluster.heatMult/=fuelCells;
-            if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
-            if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
-            cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
-            if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
-            else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getConfiguration().overhaul.fissionSFR.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
-            cluster.efficiency*=cluster.coolingPenaltyMult;
-            cluster.totalOutput*=cluster.coolingPenaltyMult;
-            totalFuelCells+=fuelCells;
-            rawOutput+=cluster.totalOutput;
-            totalOutput+=cluster.totalOutput;
-            totalCooling+=cluster.totalCooling;
-            totalHeat+=cluster.totalHeat;
-            netHeat+=cluster.netHeat;
-            totalEfficiency+=cluster.efficiency*fuelCells;
-            totalHeatMult+=cluster.heatMult*fuelCells;
-            totalIrradiation+=cluster.irradiation;
         }
         totalEfficiency/=totalFuelCells;
         totalHeatMult/=totalFuelCells;
@@ -342,8 +344,10 @@ public class OverhaulSFR extends Multiblock<Block>{
     public Cluster getCluster(Block block){
         if(block==null)return null;
         if(!block.canCluster())return null;
-        for(Cluster cluster : clusters){
-            if(cluster.contains(block))return cluster;
+        synchronized(clusters){
+            for(Cluster cluster : clusters){
+                if(cluster.contains(block))return cluster;
+            }
         }
         return new Cluster(block);
     }

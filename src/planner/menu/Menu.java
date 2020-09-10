@@ -10,7 +10,7 @@ public class Menu extends simplelibrary.opengl.gui.Menu{
     public int tooltipTimer = 0;
     public boolean tooltipShowing = false;
     private boolean mouseMoving = false;
-    public Menu(GUI gui, Menu parent){
+    public Menu(GUI gui, simplelibrary.opengl.gui.Menu parent){
         super(gui, parent);
     }
     @Override

@@ -25,9 +25,9 @@ import multiblock.configuration.overhaul.fissionmsr.Source;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.SmartFillOverhaulMSR;
 import planner.file.NCPFFile;
-import planner.menu.component.MenuComponentMSRToggleFuel;
-import planner.menu.component.MenuComponentMSRToggleSource;
-import planner.menu.component.MenuComponentMSRToggleIrradiatorRecipe;
+import planner.menu.component.generator.MenuComponentMSRToggleFuel;
+import planner.menu.component.generator.MenuComponentMSRToggleSource;
+import planner.menu.component.generator.MenuComponentMSRToggleIrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
@@ -164,41 +164,43 @@ public class OverhaulMSR extends Multiblock<Block>{
                 clusters.add(cluster);
             }
         }
-        for(Cluster cluster : clusters){
-            int fuelVessels = 0;
-            for(Block b : cluster.blocks){
-                if(b.isFuelVesselActive()){
-                    fuelVessels++;
-                    cluster.efficiency+=b.efficiency/b.vesselGroup.size();
-                    cluster.totalHeat+=6*(b.vesselGroup.moderatorLines*b.fuel.heat)/b.vesselGroup.getOpenFaces();
-                    cluster.heatMult+=b.vesselGroup.getHeatMult()/b.vesselGroup.size();
+        synchronized(clusters){
+            for(Cluster cluster : clusters){
+                int fuelVessels = 0;
+                for(Block b : cluster.blocks){
+                    if(b.isFuelVesselActive()){
+                        fuelVessels++;
+                        cluster.efficiency+=b.efficiency/b.vesselGroup.size();
+                        cluster.totalHeat+=6*(b.vesselGroup.moderatorLines*b.fuel.heat)/b.vesselGroup.getOpenFaces();
+                        cluster.heatMult+=b.vesselGroup.getHeatMult()/b.vesselGroup.size();
+                    }
+                    if(b.isHeaterActive()){
+                        cluster.totalCooling+=b.template.cooling;
+                    }
+                    if(b.isShieldActive()){
+                        cluster.totalHeat+=b.template.heatMult*b.flux;
+                    }
+                    if(b.isIrradiatorActive()){
+                        cluster.irradiation+=b.flux;
+                        if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.flux;
+                    }
                 }
-                if(b.isHeaterActive()){
-                    cluster.totalCooling+=b.template.cooling;
-                }
-                if(b.isShieldActive()){
-                    cluster.totalHeat+=b.template.heatMult*b.flux;
-                }
-                if(b.isIrradiatorActive()){
-                    cluster.irradiation+=b.flux;
-                    if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.flux;
-                }
+                cluster.efficiency/=fuelVessels;
+                cluster.heatMult/=fuelVessels;
+                if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
+                if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
+                cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
+                if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
+                else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getConfiguration().overhaul.fissionMSR.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
+                cluster.efficiency*=cluster.coolingPenaltyMult;
+                totalFuelVessels+=fuelVessels;
+                totalCooling+=cluster.totalCooling;
+                totalHeat+=cluster.totalHeat;
+                netHeat+=cluster.netHeat;
+                totalEfficiency+=cluster.efficiency*fuelVessels;
+                totalHeatMult+=cluster.heatMult*fuelVessels;
+                totalIrradiation+=cluster.irradiation;
             }
-            cluster.efficiency/=fuelVessels;
-            cluster.heatMult/=fuelVessels;
-            if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
-            if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
-            cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
-            if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
-            else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getConfiguration().overhaul.fissionMSR.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
-            cluster.efficiency*=cluster.coolingPenaltyMult;
-            totalFuelVessels+=fuelVessels;
-            totalCooling+=cluster.totalCooling;
-            totalHeat+=cluster.totalHeat;
-            netHeat+=cluster.netHeat;
-            totalEfficiency+=cluster.efficiency*fuelVessels;
-            totalHeatMult+=cluster.heatMult*fuelVessels;
-            totalIrradiation+=cluster.irradiation;
         }
         totalEfficiency/=totalFuelVessels;
         totalHeatMult/=totalFuelVessels;
@@ -211,12 +213,14 @@ public class OverhaulMSR extends Multiblock<Block>{
         int volume = getX()*getY()*getZ();
         sparsityMult = (float) (functionalBlocks/(float)volume>=getConfiguration().overhaul.fissionMSR.sparsityPenaltyThreshold?1:getConfiguration().overhaul.fissionMSR.sparsityPenaltyMult+(1-getConfiguration().overhaul.fissionMSR.sparsityPenaltyMult)*Math.sin(Math.PI*functionalBlocks/(2*volume*getConfiguration().overhaul.fissionMSR.sparsityPenaltyThreshold)));
         totalEfficiency*=sparsityMult;
-        for(Cluster c : clusters){
-            for(Block b : c.blocks){
-                if(b.template.cooling>0){
-                    float out = c.efficiency*sparsityMult;
-                    totalOutput.put(b.template.output, (totalOutput.containsKey(b.template.output)?totalOutput.get(b.template.output):0)+out);
-                    totalTotalOutput+=out;
+        synchronized(clusters){
+            for(Cluster c : clusters){
+                for(Block b : c.blocks){
+                    if(b.template.cooling>0){
+                        float out = c.efficiency*sparsityMult;
+                        totalOutput.put(b.template.output, (totalOutput.containsKey(b.template.output)?totalOutput.get(b.template.output):0)+out);
+                        totalTotalOutput+=out;
+                    }
                 }
             }
         }
@@ -361,8 +365,10 @@ public class OverhaulMSR extends Multiblock<Block>{
     public Cluster getCluster(Block block){
         if(block==null)return null;
         if(!block.canCluster())return null;
-        for(Cluster cluster : clusters){
-            if(cluster.contains(block))return cluster;
+        synchronized(clusters){
+            for(Cluster cluster : clusters){
+                if(cluster.contains(block))return cluster;
+            }
         }
         return new Cluster(block);
     }
