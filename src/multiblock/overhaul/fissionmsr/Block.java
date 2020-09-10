@@ -545,7 +545,7 @@ public class Block extends multiblock.Block{
         copy.efficiency = efficiency;
         copy.inCluster = inCluster;
         copy.closed = closed;
-        //TODO vessel groups on the copy!
+        //TODO vessel groups on the copy?
         return copy;
     }
     @Override

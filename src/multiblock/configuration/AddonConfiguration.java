@@ -15,6 +15,12 @@ public class AddonConfiguration extends Configuration{
         addon = true;
     }
     @Override
+    public Config save(Configuration parent, Config config){
+        addons.remove(self);
+        addons.add(self);//Make sure it's always at the end of the list
+        return super.save(parent, config);
+    }
+    @Override
     public boolean isPartial(){
         return true;
     }

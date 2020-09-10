@@ -46,7 +46,7 @@ public class TurbineConfiguration{
     }
     public Config save(Configuration parent, boolean partial){
         Config config = Config.newConfig();
-        if(parent==null){
+        if(parent==null&&!partial){
             config.set("minWidth", minWidth);
             config.set("minLength", minLength);
             config.set("maxSize", maxSize);

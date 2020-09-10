@@ -39,7 +39,7 @@ public class FissionSFRConfiguration{
     }
     public Config save(Configuration parent, boolean partial){
         Config config = Config.newConfig();
-        if(parent==null){
+        if(parent==null&&!partial){
             config.set("minSize", minSize);
             config.set("maxSize", maxSize);
             config.set("neutronReach", neutronReach);

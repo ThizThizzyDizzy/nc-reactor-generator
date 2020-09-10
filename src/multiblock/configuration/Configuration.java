@@ -92,7 +92,6 @@ public class Configuration{
         configuration.underhaulVersion = fresh.underhaulVersion;
     }
     public void apply(PartialConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
-        //TODO fix; this ignores addons
         if(underhaul!=null){
             partial.underhaul = new UnderhaulConfiguration();
             underhaul.apply(partial.underhaul, multiblocks, parent);
