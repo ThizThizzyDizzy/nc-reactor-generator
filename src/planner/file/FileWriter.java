@@ -186,7 +186,7 @@ public class FileWriter{
                                 HashMap<String, ArrayList<multiblock.overhaul.fissionsfr.Block>> radiators = new HashMap<>();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){
-                                        String name = "{\\\"HeatPerFlux\\\":"+(block.irradiatorRecipe==null?0:block.irradiatorRecipe.heat)+",\\\"EfficiencyMultiplier\\\":"+(block.irradiatorRecipe==null?0:block.irradiatorRecipe.efficiency)+"}";
+                                        String name = "{\\\"HeatPerFlux\\\":"+(block.irradiatorRecipe==null?0:(int)block.irradiatorRecipe.heat)+",\\\"EfficiencyMultiplier\\\":"+(block.irradiatorRecipe==null?0:block.irradiatorRecipe.efficiency)+"}";
                                         if(radiators.containsKey(name)){
                                             radiators.get(name).add(block);
                                         }else{
