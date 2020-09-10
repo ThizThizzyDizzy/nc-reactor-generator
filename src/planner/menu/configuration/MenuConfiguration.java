@@ -118,8 +118,8 @@ public class MenuConfiguration extends Menu{
     }
     @Override
     public void onGUIOpened(){
-        underhaulVersion.editable = underhaul.enabled = configuration.underhaul!=null;
-        overhaulVersion.editable = overhaul.enabled = configuration.overhaul!=null;
+        underhaulVersion.editable = underhaul.enabled = configuration.underhaul!=null&&Core.configuration.underhaul!=null;
+        overhaulVersion.editable = overhaul.enabled = configuration.overhaul!=null&&Core.configuration.overhaul!=null;
         name.text = configuration.name==null?"":configuration.name;
         overhaulVersion.text = configuration.overhaulVersion==null?"":configuration.overhaulVersion;
         underhaulVersion.text = configuration.underhaulVersion==null?"":configuration.underhaulVersion;
@@ -133,8 +133,16 @@ public class MenuConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        deleteOverhaul.enabled = Core.isAltPressed()&&Core.isShiftPressed();
-        deleteUnderhaul.enabled = Core.isControlPressed()&&Core.isShiftPressed();
+        if(configuration.overhaul==null){
+            deleteOverhaul.enabled = (configuration.addon&&Core.configuration.overhaul==null)?false:(Core.isAltPressed()&&Core.isShiftPressed());
+        }else{
+            deleteOverhaul.enabled = Core.isAltPressed()&&Core.isShiftPressed();
+        }
+        if(configuration.underhaul==null){
+            deleteUnderhaul.enabled = (configuration.addon&&Core.configuration.underhaul==null)?false:(Core.isControlPressed()&&Core.isShiftPressed());
+        }else{
+            deleteUnderhaul.enabled = Core.isControlPressed()&&Core.isShiftPressed();
+        }
         deleteOverhaul.label = (configuration.overhaul==null?"Create":"Delete")+" (Alt+Shift)";
         deleteUnderhaul.label = (configuration.underhaul==null?"Create":"Delete")+" (Ctrl+Shift)";
         configGuidelines.width = underhaul.width = overhaul.width = done.width = addons.width = Core.helper.displayWidth();

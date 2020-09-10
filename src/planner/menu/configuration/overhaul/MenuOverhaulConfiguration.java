@@ -64,13 +64,27 @@ public class MenuOverhaulConfiguration extends Menu{
     }
     @Override
     public void onGUIOpened(){
-        fissionSFR.enabled = configuration.overhaul.fissionSFR!=null;
-        fissionMSR.enabled = configuration.overhaul.fissionMSR!=null;
-        turbine.enabled = configuration.overhaul.turbine!=null;
+        fissionSFR.enabled = configuration.overhaul.fissionSFR!=null&&Core.configuration.overhaul.fissionSFR!=null;
+        fissionMSR.enabled = configuration.overhaul.fissionMSR!=null&&Core.configuration.overhaul.fissionMSR!=null;
+        turbine.enabled = configuration.overhaul.turbine!=null&&Core.configuration.overhaul.turbine!=null;
     }
     @Override
     public void render(int millisSinceLastTick){
-        deleteSFR.enabled = deleteMSR.enabled = deleteTurbine.enabled = Core.isShiftPressed();
+        if(configuration.overhaul.fissionSFR==null){
+            deleteSFR.enabled = (configuration.addon&&Core.configuration.overhaul.fissionSFR==null)?false:(Core.isShiftPressed());
+        }else{
+            deleteSFR.enabled = Core.isShiftPressed();
+        }
+        if(configuration.overhaul.fissionMSR==null){
+            deleteMSR.enabled = (configuration.addon&&Core.configuration.overhaul.fissionMSR==null)?false:(Core.isShiftPressed());
+        }else{
+            deleteMSR.enabled = Core.isShiftPressed();
+        }
+        if(configuration.overhaul.turbine==null){
+            deleteTurbine.enabled = (configuration.addon&&Core.configuration.overhaul.turbine==null)?false:(Core.isShiftPressed());
+        }else{
+            deleteTurbine.enabled = Core.isShiftPressed();
+        }
         deleteSFR.label = (configuration.overhaul.fissionSFR==null?"Create":"Delete")+" (Shift)";
         deleteMSR.label = (configuration.overhaul.fissionMSR==null?"Create":"Delete")+" (Shift)";
         deleteTurbine.label = (configuration.overhaul.turbine==null?"Create":"Delete")+" (Shift)";

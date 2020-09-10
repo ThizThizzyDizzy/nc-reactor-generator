@@ -32,11 +32,15 @@ public class MenuUnderhaulConfiguration extends Menu{
     }
     @Override
     public void onGUIOpened(){
-        fissionSFR.enabled = configuration.underhaul.fissionSFR!=null;
+        fissionSFR.enabled = configuration.underhaul.fissionSFR!=null&&Core.configuration.underhaul.fissionSFR!=null;
     }
     @Override
     public void render(int millisSinceLastTick){
-        deleteSFR.enabled = Core.isShiftPressed();
+        if(configuration.underhaul.fissionSFR==null){
+            deleteSFR.enabled = (configuration.addon&&Core.configuration.underhaul.fissionSFR==null)?false:(Core.isShiftPressed());
+        }else{
+            deleteSFR.enabled = Core.isShiftPressed();
+        }
         deleteSFR.label = (configuration.underhaul.fissionSFR==null?"Create":"Delete")+" (Shift)";
         back.width = Core.helper.displayWidth();
         fissionSFR.width = Core.helper.displayWidth()*3/4;
