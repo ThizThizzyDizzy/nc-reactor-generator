@@ -45,3 +45,4 @@
 2.12.4=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v2.12.4/NC-Reactor-Generator-2.12.4.jar
 2.12.5=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v2.12.5/NC-Reactor-Generator-2.12.5.jar
 2.12.6=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v2.12.6/NC-Reactor-Generator-2.12.6.jar
+2.12.7=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v2.12.7/NC-Reactor-Generator-2.12.7.jar
