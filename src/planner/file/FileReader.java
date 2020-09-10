@@ -6616,12 +6616,14 @@ public class FileReader{
                     if(underhaul.hasProperty("fissionSFR")){
                         configuration.underhaul.fissionSFR = new multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
                         Config fissionSFR = underhaul.get("fissionSFR");
-                        configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
-                        configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
-                        configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
-                        configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
-                        configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
-                        configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
+                        if(!partial&&!configuration.addon){
+                            configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                            configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                            configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                            configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
+                            configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
+                            configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
+                        }
                         ConfigList blocks = fissionSFR.get("blocks");
                         underhaulPostLoadMap.clear();
                         for(Iterator bit = blocks.iterator(); bit.hasNext();){
@@ -6681,12 +6683,14 @@ public class FileReader{
                     if(overhaul.hasProperty("fissionSFR")){
                         configuration.overhaul.fissionSFR = new multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
                         Config fissionSFR = overhaul.get("fissionSFR");
-                        configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
-                        configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
-                        configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
-                        configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
-                        configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
-                        configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
+                        if(!partial&&!configuration.addon){
+                            configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
+                            configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
+                            configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
+                            configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
+                            configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
+                            configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
+                        }
                         ConfigList blocks = fissionSFR.get("blocks");
                         overhaulSFRPostLoadMap.clear();
                         for(Iterator bit = blocks.iterator(); bit.hasNext();){
@@ -6785,12 +6789,14 @@ public class FileReader{
                     if(overhaul.hasProperty("fissionMSR")){
                         configuration.overhaul.fissionMSR = new multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
                         Config fissionMSR = overhaul.get("fissionMSR");
-                        configuration.overhaul.fissionMSR.minSize = fissionMSR.get("minSize");
-                        configuration.overhaul.fissionMSR.maxSize = fissionMSR.get("maxSize");
-                        configuration.overhaul.fissionMSR.neutronReach = fissionMSR.get("neutronReach");
-                        configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = fissionMSR.get("coolingEfficiencyLeniency");
-                        configuration.overhaul.fissionMSR.sparsityPenaltyMult = fissionMSR.get("sparsityPenaltyMult");
-                        configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = fissionMSR.get("sparsityPenaltyThreshold");
+                        if(!partial&&!configuration.addon){
+                            configuration.overhaul.fissionMSR.minSize = fissionMSR.get("minSize");
+                            configuration.overhaul.fissionMSR.maxSize = fissionMSR.get("maxSize");
+                            configuration.overhaul.fissionMSR.neutronReach = fissionMSR.get("neutronReach");
+                            configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = fissionMSR.get("coolingEfficiencyLeniency");
+                            configuration.overhaul.fissionMSR.sparsityPenaltyMult = fissionMSR.get("sparsityPenaltyMult");
+                            configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = fissionMSR.get("sparsityPenaltyThreshold");
+                        }
                         ConfigList blocks = fissionMSR.get("blocks");
                         overhaulMSRPostLoadMap.clear();
                         for(Iterator bit = blocks.iterator(); bit.hasNext();){
@@ -6885,13 +6891,15 @@ public class FileReader{
                     if(overhaul.hasProperty("turbine")){
                         configuration.overhaul.turbine = new multiblock.configuration.overhaul.turbine.TurbineConfiguration();
                         Config turbine = overhaul.get("turbine");
-                        configuration.overhaul.turbine.minWidth = turbine.get("minWidth");
-                        configuration.overhaul.turbine.minLength = turbine.get("minLength");
-                        configuration.overhaul.turbine.maxSize = turbine.get("maxSize");
-                        configuration.overhaul.turbine.fluidPerBlade = turbine.get("fluidPerBlade");
-                        configuration.overhaul.turbine.throughputEfficiencyLeniency = turbine.get("throughputEfficiencyLeniency");
-                        configuration.overhaul.turbine.throughputFactor = turbine.get("throughputFactor");
-                        configuration.overhaul.turbine.powerBonus = turbine.get("powerBonus");
+                        if(!partial&&!configuration.addon){
+                            configuration.overhaul.turbine.minWidth = turbine.get("minWidth");
+                            configuration.overhaul.turbine.minLength = turbine.get("minLength");
+                            configuration.overhaul.turbine.maxSize = turbine.get("maxSize");
+                            configuration.overhaul.turbine.fluidPerBlade = turbine.get("fluidPerBlade");
+                            configuration.overhaul.turbine.throughputEfficiencyLeniency = turbine.get("throughputEfficiencyLeniency");
+                            configuration.overhaul.turbine.throughputFactor = turbine.get("throughputFactor");
+                            configuration.overhaul.turbine.powerBonus = turbine.get("powerBonus");
+                        }
                         ConfigList coils = turbine.get("coils");
                         overhaulTurbinePostLoadMap.clear();
                         for(Iterator bit = coils.iterator(); bit.hasNext();){

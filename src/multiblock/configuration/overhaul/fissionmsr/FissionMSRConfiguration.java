@@ -165,49 +165,70 @@ public class FissionMSRConfiguration{
         for(Block block : allBlocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
+        for(Block block : blocks){
+            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+        }
+        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
     }
     public Fuel convert(Fuel template){
         if(template==null)return null;
         for(Fuel fuel : allFuels){
             if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
         }
-        throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
+        for(Fuel fuel : fuels){
+            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
+        }
+        throw new IllegalArgumentException("Failed to find match for fuel "+template.name+"!");
     }
     public Source convert(Source template){
         if(template==null)return null;
         for(Source source : allSources){
             if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
         }
-        throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
+        for(Source source : sources){
+            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
+        }
+        throw new IllegalArgumentException("Failed to find match for source "+template.name+"!");
     }
     public IrradiatorRecipe convert(IrradiatorRecipe template){
         if(template==null)return null;
         for(IrradiatorRecipe recipe : allIrradiatorRecipes){
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }
-        throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.toString()+"!");
+        for(IrradiatorRecipe recipe : irradiatorRecipes){
+            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+        }
+        throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.name+"!");
     }
     public Block convertToMSR(multiblock.configuration.overhaul.fissionsfr.Block template){
         if(template==null)return null;
+        for(Block block : allBlocks){
+            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase(Locale.ENGLISH).replace("cell", "vessel").replace("water heat", "standard heat").replace("heat sink", "coolant heater")))return block;
+        }
         for(Block block : blocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase(Locale.ENGLISH).replace("cell", "vessel").replace("water heat", "standard heat").replace("heat sink", "coolant heater")))return block;
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
+        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
     }
     public Fuel convertToMSR(multiblock.configuration.overhaul.fissionsfr.Fuel template){
         if(template==null)return null;
+        for(Fuel fuel : allFuels){
+            if(fuel.name.trim().toLowerCase(Locale.ENGLISH).startsWith(template.name.trim().toLowerCase(Locale.ENGLISH).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return fuel;
+        }
         for(Fuel fuel : fuels){
             if(fuel.name.trim().toLowerCase(Locale.ENGLISH).startsWith(template.name.trim().toLowerCase(Locale.ENGLISH).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return fuel;
         }
-        throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
+        throw new IllegalArgumentException("Failed to find match for fuel "+template.name+"!");
     }
     public Source convertToMSR(multiblock.configuration.overhaul.fissionsfr.Source template){
         if(template==null)return null;
+        for(Source source : allSources){
+            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
+        }
         for(Source source : sources){
             if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
         }
-        throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
+        throw new IllegalArgumentException("Failed to find match for source "+template.name+"!");
     }
     @Override
     public boolean equals(Object obj){
@@ -233,5 +254,16 @@ public class FissionMSRConfiguration{
             if(rule.block!=null)used.add(rule.block);
         }
         return used;
+    }
+    private ArrayList<PlacementRule> getAllSubRules(RuleContainer container){
+        ArrayList<PlacementRule> rules = new ArrayList<>();
+        for(PlacementRule rule : container.rules){
+            rules.addAll(getAllSubRules(rule));
+            rules.add(rule);
+        }
+        return rules;
+    }
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

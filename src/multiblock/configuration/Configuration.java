@@ -173,10 +173,54 @@ public class Configuration{
     public boolean nameMatches(Configuration other){
         return Objects.equals(name, other.name);
     }
+    public boolean nameAndVersionMatches(Configuration other){
+        return Objects.equals(name, other.name)&&Objects.equals(underhaulVersion, other.underhaulVersion)&&Objects.equals(overhaulVersion, other.overhaulVersion);
+    }
     public boolean underhaulNameMatches(Configuration other){
         return nameMatches(other)&&Objects.equals(underhaulVersion, other.underhaulVersion);
     }
     public boolean overhaulNameMatches(Configuration other){
         return nameMatches(other)&&Objects.equals(overhaulVersion, other.overhaulVersion);
+    }
+    public void addAndConvertAddon(AddonConfiguration addon){
+        Configuration addn = addon.self;
+        addn.convertAddon(addon, this);
+        if(addn.underhaul!=null&&addn.underhaul.fissionSFR!=null){
+            underhaul.fissionSFR.allBlocks.addAll(addn.underhaul.fissionSFR.blocks);
+            underhaul.fissionSFR.allFuels.addAll(addn.underhaul.fissionSFR.fuels);
+        }
+        if(addn.overhaul!=null&&addn.overhaul.fissionSFR!=null){
+            overhaul.fissionSFR.allBlocks.addAll(addn.overhaul.fissionSFR.blocks);
+            overhaul.fissionSFR.allCoolantRecipes.addAll(addn.overhaul.fissionSFR.coolantRecipes);
+            overhaul.fissionSFR.allFuels.addAll(addn.overhaul.fissionSFR.fuels);
+            overhaul.fissionSFR.allIrradiatorRecipes.addAll(addn.overhaul.fissionSFR.irradiatorRecipes);
+            overhaul.fissionSFR.allSources.addAll(addn.overhaul.fissionSFR.sources);
+        }
+        if(addn.overhaul!=null&&addn.overhaul.fissionMSR!=null){
+            overhaul.fissionMSR.allBlocks.addAll(addn.overhaul.fissionMSR.blocks);
+            overhaul.fissionMSR.allFuels.addAll(addn.overhaul.fissionMSR.fuels);
+            overhaul.fissionMSR.allIrradiatorRecipes.addAll(addn.overhaul.fissionMSR.irradiatorRecipes);
+            overhaul.fissionMSR.allSources.addAll(addn.overhaul.fissionMSR.sources);
+        }
+        if(addn.overhaul!=null&&addn.overhaul.turbine!=null){
+            overhaul.turbine.allCoils.addAll(addn.overhaul.turbine.coils);
+            overhaul.turbine.allBlades.addAll(addn.overhaul.turbine.blades);
+            overhaul.turbine.allRecipes.addAll(addn.overhaul.turbine.recipes);
+        }
+        addons.add(addn);
+    }
+    private void convertAddon(AddonConfiguration parent, Configuration convertTo){
+        if(underhaul!=null){
+            underhaul.convertAddon(parent, convertTo);
+        }
+        if(overhaul!=null){
+            overhaul.convertAddon(parent, convertTo);
+        }
+    }
+    public Configuration findMatchingAddon(Configuration addon){
+        for(Configuration addn : addons){
+            if(addn.nameAndVersionMatches(addon))return addn;
+        }
+        throw new NullPointerException("No matching addons found for "+addon.toString()+"!");
     }
 }

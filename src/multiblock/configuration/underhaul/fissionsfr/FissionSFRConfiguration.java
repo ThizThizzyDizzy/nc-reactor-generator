@@ -129,13 +129,19 @@ public class FissionSFRConfiguration{
         for(Block block : allBlocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
+        for(Block block : blocks){
+            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+        }
+        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
     }
     public Fuel convert(Fuel template){
         for(Fuel fuel : allFuels){
             if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
         }
-        throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
+        for(Fuel fuel : fuels){
+            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
+        }
+        throw new IllegalArgumentException("Failed to find match for fuel "+template.name+"!");
     }
     @Override
     public boolean equals(Object obj){
@@ -159,5 +165,37 @@ public class FissionSFRConfiguration{
             if(rule.block!=null)used.add(rule.block);
         }
         return used;
+    }
+    private ArrayList<PlacementRule> getAllSubRules(RuleContainer container){
+        ArrayList<PlacementRule> rules = new ArrayList<>();
+        for(PlacementRule rule : container.rules){
+            rules.addAll(getAllSubRules(rule));
+            rules.add(rule);
+        }
+        return rules;
+    }
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+        for(Block block : blocks){
+            for(PlacementRule rule : getAllSubRules(block)){
+                if(rule.block==null)continue;
+                if(parent.underhaul!=null&&parent.underhaul.fissionSFR!=null&&parent.underhaul.fissionSFR.blocks.contains(rule.block)){
+                    rule.block = convertTo.underhaul.fissionSFR.convert(rule.block);
+                }else if(blocks.contains(rule.block)){
+                    //do nothing :)
+                }else{
+                    //in sub-addon, find and convert
+                    boolean found = false;
+                    for(Configuration addon : parent.addons){
+                        if(addon.underhaul!=null&&addon.underhaul.fissionSFR!=null){
+                            if(addon.underhaul.fissionSFR.blocks.contains(rule.block)){
+                                rule.block = convertTo.findMatchingAddon(addon).underhaul.fissionSFR.convert(rule.block);
+                                found = true;
+                            }
+                        }
+                    }
+                    if(!found)throw new IllegalArgumentException("Could not convert block "+block.name+"!");
+                }
+            }
+        }
     }
 }

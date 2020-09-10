@@ -149,21 +149,30 @@ public class TurbineConfiguration{
         for(Blade blade : allBlades){
             if(blade.name.trim().equalsIgnoreCase(template.name.trim()))return blade;
         }
-        throw new IllegalArgumentException("Failed to find match for blade "+template.toString()+"!");
+        for(Blade blade : blades){
+            if(blade.name.trim().equalsIgnoreCase(template.name.trim()))return blade;
+        }
+        throw new IllegalArgumentException("Failed to find match for blade "+template.name+"!");
     }
     public Coil convert(Coil template){
         if(template==null)return null;
         for(Coil coil : allCoils){
             if(coil.name.trim().equalsIgnoreCase(template.name.trim()))return coil;
         }
-        throw new IllegalArgumentException("Failed to find match for coil "+template.toString()+"!");
+        for(Coil coil : coils){
+            if(coil.name.trim().equalsIgnoreCase(template.name.trim()))return coil;
+        }
+        throw new IllegalArgumentException("Failed to find match for coil "+template.name+"!");
     }
     public Recipe convert(Recipe template){
         if(template==null)return null;
         for(Recipe recipe : allRecipes){
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }
-        throw new IllegalArgumentException("Failed to find match for recipe "+template.toString()+"!");
+        for(Recipe recipe : recipes){
+            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+        }
+        throw new IllegalArgumentException("Failed to find match for recipe "+template.name+"!");
     }
     @Override
     public boolean equals(Object obj){
@@ -189,5 +198,16 @@ public class TurbineConfiguration{
             if(rule.coil!=null)used.add(rule.coil);
         }
         return used;
+    }
+    private ArrayList<PlacementRule> getAllSubRules(RuleContainer container){
+        ArrayList<PlacementRule> rules = new ArrayList<>();
+        for(PlacementRule rule : container.rules){
+            rules.addAll(getAllSubRules(rule));
+            rules.add(rule);
+        }
+        return rules;
+    }
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

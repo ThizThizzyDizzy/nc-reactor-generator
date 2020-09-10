@@ -182,56 +182,80 @@ public class FissionSFRConfiguration{
         for(Block block : allBlocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
+        for(Block block : blocks){
+            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+        }
+        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
     }
     public Fuel convert(Fuel template){
         if(template==null)return null;
         for(Fuel fuel : allFuels){
             if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
         }
-        throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
+        for(Fuel fuel : fuels){
+            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
+        }
+        throw new IllegalArgumentException("Failed to find match for fuel "+template.name+"!");
     }
     public Source convert(Source template){
         if(template==null)return null;
         for(Source source : allSources){
             if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
         }
-        throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
+        for(Source source : sources){
+            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
+        }
+        throw new IllegalArgumentException("Failed to find match for source "+template.name+"!");
     }
     public IrradiatorRecipe convert(IrradiatorRecipe template){
         if(template==null)return null;
         for(IrradiatorRecipe recipe : allIrradiatorRecipes){
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }
-        throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.toString()+"!");
+        for(IrradiatorRecipe recipe : irradiatorRecipes){
+            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+        }
+        throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.name+"!");
     }
     public CoolantRecipe convert(CoolantRecipe template){
         if(template==null)return null;
         for(CoolantRecipe recipe : allCoolantRecipes){
             if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
         }
-        throw new IllegalArgumentException("Failed to find match for coolant recipe "+template.toString()+"!");
+        for(CoolantRecipe recipe : coolantRecipes){
+            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+        }
+        throw new IllegalArgumentException("Failed to find match for coolant recipe "+template.name+"!");
     }
     public Block convertToSFR(multiblock.configuration.overhaul.fissionmsr.Block template){
         if(template==null)return null;
+        for(Block block : allBlocks){
+            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase(Locale.ENGLISH).replace("vessel", "cell").replace("coolant heater", "heat sink").replace("standard", "water")))return block;
+        }
         for(Block block : blocks){
             if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase(Locale.ENGLISH).replace("vessel", "cell").replace("coolant heater", "heat sink").replace("standard", "water")))return block;
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.toString()+"!");
+        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
     }
     public Fuel convertToSFR(multiblock.configuration.overhaul.fissionmsr.Fuel template){
         if(template==null)return null;
+        for(Fuel fuel : allFuels){
+            if(fuel.name.trim().toLowerCase(Locale.ENGLISH).startsWith(template.name.trim().toLowerCase(Locale.ENGLISH).replace(" fluoride", "").replace("mf4", "mox")))return fuel;
+        }
         for(Fuel fuel : fuels){
             if(fuel.name.trim().toLowerCase(Locale.ENGLISH).startsWith(template.name.trim().toLowerCase(Locale.ENGLISH).replace(" fluoride", "").replace("mf4", "mox")))return fuel;
         }
-        throw new IllegalArgumentException("Failed to find match for fuel "+template.toString()+"!");
+        throw new IllegalArgumentException("Failed to find match for fuel "+template.name+"!");
     }
     public Source convertToSFR(multiblock.configuration.overhaul.fissionmsr.Source template){
         if(template==null)return null;
+        for(Source source : allSources){
+            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
+        }
         for(Source source : sources){
             if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
         }
-        throw new IllegalArgumentException("Failed to find match for source "+template.toString()+"!");
+        throw new IllegalArgumentException("Failed to find match for source "+template.name+"!");
     }
     @Override
     public boolean equals(Object obj){
@@ -258,5 +282,16 @@ public class FissionSFRConfiguration{
             if(rule.block!=null)used.add(rule.block);
         }
         return used;
+    }
+    private ArrayList<PlacementRule> getAllSubRules(RuleContainer container){
+        ArrayList<PlacementRule> rules = new ArrayList<>();
+        for(PlacementRule rule : container.rules){
+            rules.addAll(getAllSubRules(rule));
+            rules.add(rule);
+        }
+        return rules;
+    }
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
