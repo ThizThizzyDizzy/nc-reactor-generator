@@ -51,7 +51,7 @@ public class FileReader{
                     s = "";
                     String line;
                     while((line = reader.readLine())!=null)s+=line+"\n";
-                    ncpf.configuration = new Configuration(null, null, null);
+                    ncpf.configuration = new Configuration("NuclearCraft", null, "Unknown");
                     ncpf.configuration.underhaul = new UnderhaulConfiguration();
                     ncpf.configuration.underhaul.fissionSFR = new multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
                     boolean waterCoolerRequirements = getBoolean("fission_water_cooler_requirement");
@@ -243,7 +243,7 @@ public class FileReader{
                     s = "";
                     String line;
                     while((line = reader.readLine())!=null)s+=line+"\n";
-                    ncpf.configuration = new Configuration(null, null, null);
+                    ncpf.configuration = new Configuration("NuclearCraft", "Unknown", null);
                     ncpf.configuration.overhaul = new OverhaulConfiguration();
                     //<editor-fold defaultstate="collapsed" desc="Fission SFR">
                     ncpf.configuration.overhaul.fissionSFR = new multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();

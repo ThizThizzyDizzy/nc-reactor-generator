@@ -68,6 +68,7 @@ public class Block extends RuleContainer{
         block.createCluster = true;
         block.irradiator = true;
         block.functional = true;
+        block.blocksLOS = true;
         block.setTexture(TextureManager.getImage(texture));
         return block;
     }

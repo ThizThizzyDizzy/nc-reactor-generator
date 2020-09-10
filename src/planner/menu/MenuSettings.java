@@ -48,7 +48,7 @@ public class MenuSettings extends Menu{
                         File file = chooser.getSelectedFile();
                         NCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
-                        ncpf.configuration.impose(Core.configuration);
+                        Configuration.impose(ncpf.configuration, Core.configuration);
                         for(Multiblock multi : Core.multiblocks){
                             multi.convertTo(Core.configuration);
                         }

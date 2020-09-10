@@ -83,13 +83,26 @@ public class Configuration{
                 fresh.overhaul.fissionMSR.allBlocks.get(i).displayTexture = overhaul.fissionMSR.allBlocks.get(i).displayTexture;
             }
         }
-        configuration.addons = fresh.addons;
-        configuration.alternatives = fresh.alternatives;
-        configuration.name = fresh.name;
-        configuration.overhaul = fresh.overhaul;
-        configuration.overhaulVersion = fresh.overhaulVersion;
-        configuration.underhaul = fresh.underhaul;
-        configuration.underhaulVersion = fresh.underhaulVersion;
+        impose(fresh, configuration);
+    }
+    public static void impose(Configuration toImpose, Configuration configuration){
+        configuration.addons = toImpose.addons;
+        configuration.alternatives = toImpose.alternatives;
+        configuration.name = toImpose.name;
+        if(configuration.overhaul==null&&configuration.underhaul!=null&&toImpose.underhaul==null&&toImpose.overhaul!=null){
+            //imposing overhaul onto underhaul
+            configuration.overhaul = toImpose.overhaul;
+            configuration.overhaulVersion = toImpose.overhaulVersion;
+        }else if(configuration.underhaul==null&&configuration.overhaul!=null&&toImpose.overhaul==null&&toImpose.underhaul!=null){
+            //imposing underhaul onto overhaul
+            configuration.underhaul = toImpose.underhaul;
+            configuration.underhaulVersion = toImpose.underhaulVersion;
+        }else{
+            configuration.overhaul = toImpose.overhaul;
+            configuration.overhaulVersion = toImpose.overhaulVersion;
+            configuration.underhaul = toImpose.underhaul;
+            configuration.underhaulVersion = toImpose.underhaulVersion;
+        }
     }
     public void apply(PartialConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         if(underhaul!=null){
