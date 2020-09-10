@@ -23,6 +23,8 @@ import discord.play.smivilization.HutThing;
 import discord.play.smivilization.HutThingColorable;
 import discord.play.smivilization.Placement;
 import generator.MultiblockGenerator;
+import generator.OverhaulTurbineStandardGenerator;
+import generator.OverhaulTurbineStandardGeneratorSettings;
 import generator.Priority;
 import generator.StandardGenerator;
 import generator.StandardGeneratorSettings;
@@ -53,6 +55,7 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.AxialSymmetry;
+import multiblock.symmetry.CoilSymmetry;
 import multiblock.symmetry.Symmetry;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.dv8tion.jda.api.AccountType;
@@ -191,6 +194,7 @@ public class Bot extends ListenerAdapter{
                 ArrayList<String> symmetryStrings = new ArrayList<>();
                 ArrayList<String> formatStrings = new ArrayList<>();
                 int x = 0, y = 0, z = 0;
+                //<editor-fold defaultstate="collapsed" desc="Keyword Scanning">
                 for(Keyword keyword : keywords){
                     if(keyword instanceof KeywordOverhaul){
                         overhaul = true;
@@ -239,6 +243,8 @@ public class Bot extends ListenerAdapter{
                         formatStrings.add(((KeywordFormat)keyword).input);
                     }
                 }
+//</editor-fold>
+                //<editor-fold defaultstate="collapsed" desc="Validation">
                 if(x==0||y==0||z==0){
                     x = y = z = 3;
                 }
@@ -357,12 +363,18 @@ public class Bot extends ListenerAdapter{
                     }
                 }
                 if(priority==null)priority = presets.get(0);
+//</editor-fold>
+                //<editor-fold defaultstate="collapsed" desc="Calculations and stuff">
                 ArrayList<Symmetry> symmetries = new ArrayList<>();
                 ArrayList<Symmetry> availableSymmetries = multiblock.getSymmetries();
                 for(Symmetry symmetry : availableSymmetries){
                     for(String sym : symmetryStrings){
                         if(symmetry instanceof AxialSymmetry){
                             if(((AxialSymmetry)symmetry).matches(sym)){
+                                symmetries.add(symmetry);
+                            }
+                        }else if(symmetry instanceof CoilSymmetry){
+                            if(((CoilSymmetry)symmetry).matches(sym)){
                                 symmetries.add(symmetry);
                             }
                         }else{
@@ -414,12 +426,14 @@ public class Bot extends ListenerAdapter{
                     }
                     ((OverhaulMSR)multiblockInstance).setValidFuels(validFuels);
                 }
+//</editor-fold>
                 try{
                     generator = MultiblockGenerator.getGenerators(multiblock).get(0).newInstance(multiblockInstance);
                 }catch(IndexOutOfBoundsException ex){
                     throw new IllegalArgumentException("No generators available for multiblock!", ex);
                 }
                 if(generator instanceof StandardGenerator){
+                    //<editor-fold defaultstate="collapsed" desc="StandardGenerator">
                     StandardGeneratorSettings settings = new StandardGeneratorSettings((StandardGenerator)generator);
                     settings.finalMultiblocks = 1;
                     settings.workingMultiblocks = 1;
@@ -448,80 +462,114 @@ public class Bot extends ListenerAdapter{
                     settings.lockCore = false;
                     settings.fillAir = true;
                     generator.refreshSettings(settings);
-                    Core.configuration = configuration;
-                    Thread t = new Thread(() -> {
-                        generator.startThread();
-                        synchronized(storedMultiblocks){
-                            for(NCPFFile file : storedMultiblocks){
-                                for(Multiblock m : file.multiblocks){
-                                    if(m.getMultiblockID()==generator.multiblock.getMultiblockID()){
-                                        try{
-                                            generator.importMultiblock(m);
-                                        }catch(Exception ex){
-                                            System.err.println("Failed to import multiblock: "+m.getName());
-                                        }
+//</editor-fold>
+                }else if(generator instanceof OverhaulTurbineStandardGenerator){
+                    //<editor-fold defaultstate="collapsed" desc="OverhaulTurbineStandardGenerator">
+                    OverhaulTurbineStandardGeneratorSettings settings = new OverhaulTurbineStandardGeneratorSettings((OverhaulTurbineStandardGenerator)generator);
+                    settings.finalMultiblocks = 1;
+                    settings.workingMultiblocks = 1;
+                    settings.timeout = 10;
+                    priority.set(priorities);
+                    settings.priorities.addAll(priorities);
+                    settings.symmetries.addAll(symmetries);
+                    ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
+                    for(PostProcessingEffect ppe : ppes){
+                        if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
+                            settings.postProcessingEffects.add(ppe);
+                        }
+                    }
+                    for(Range<Block> range : blockRanges){
+                        if(range.min==0&&range.max==0)continue;
+                        settings.allowedBlocks.add(range);
+                    }
+                    FOR:for(Block b : availableBlocks){
+                        for(Range<Block> range : blockRanges){
+                            if(range.obj==b)continue FOR;
+                        }
+                        if(b.defaultEnabled())settings.allowedBlocks.add(new Range(b, 0));
+                    }
+                    settings.changeChancePercent = 1;
+                    settings.variableRate = true;
+                    settings.lockCore = false;
+                    settings.fillAir = true;
+                    generator.refreshSettings(settings);
+//</editor-fold>
+                }else{
+                    throw new IllegalArgumentException("I don't know how to use the non-standard generators!");
+                }
+                Core.configuration = configuration;
+                //<editor-fold defaultstate="collapsed" desc="Generation">
+                Thread t = new Thread(() -> {
+                    generator.startThread();
+                    synchronized(storedMultiblocks){
+                        for(NCPFFile file : storedMultiblocks){
+                            for(Multiblock m : file.multiblocks){
+                                if(m.getMultiblockID()==generator.multiblock.getMultiblockID()){
+                                    try{
+                                        generator.importMultiblock(m);
+                                    }catch(Exception ex){
+                                        System.err.println("Failed to import multiblock: "+m.getName());
                                     }
                                 }
                             }
                         }
-                        String configName = Core.configuration.getShortName();
-                        generatorMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField(generator.multiblock.getGeneralName()+" Details", generator.getMainMultiblockBotTooltip(), false).build()).complete();
-                        int time = 0;
-                        int interval = 1000;//1 sec
-                        int maxTime = 60000;//60 sec
-                        int timeout = 10000;//10 sec
-                        while(time<maxTime){
+                    }
+                    String configName = Core.configuration.getShortName();
+                    generatorMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField(generator.multiblock.getGeneralName()+" Details", generator.getMainMultiblockBotTooltip(), false).build()).complete();
+                    int time = 0;
+                    int interval = 1000;//1 sec
+                    int maxTime = 60000;//60 sec
+                    int timeout = 10000;//10 sec
+                    while(time<maxTime){
+                        try{
+                            Thread.sleep(interval);
+                        }catch(InterruptedException ex){
+                            printErrorMessage(channel, "Generation Interrupted!", ex);
+                            break;
+                        }
+                        time+=interval;
+                        if(!generator.isRunning())break;
+                        Multiblock main = generator.getMainMultiblock();
+                        generatorMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField(generator.multiblock.getGeneralName()+" Details", generator.getMainMultiblockBotTooltip(), false).build()).queue();
+                        if(main!=null&&main.millisSinceLastChange()<maxTime&&main.millisSinceLastChange()>timeout)break;
+                    }
+                    generator.stopAllThreads();
+                    Multiblock finalMultiblock = generator.getMainMultiblock();
+                    if(finalMultiblock==null||finalMultiblock.isEmpty()){
+                        generatorMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase(Locale.ENGLISH)+" was generated. :(").build()).queue();
+                    }else{
+                        generatorMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField(generator.multiblock.getGeneralName()+" Details", finalMultiblock.getBotTooltip(), false).build()).queue();
+                        NCPFFile ncpf = new NCPFFile();
+                        String name = UUID.randomUUID().toString();
+                        ncpf.metadata.put("Author", "S'plodo-Bot");
+                        ncpf.metadata.put("Name", name);
+                        finalMultiblock.metadata.put("Author", "S'plodo-Bot");
+                        finalMultiblock.metadata.put("Name", name);
+                        GregorianCalendar calendar = new GregorianCalendar();
+                        String[] months = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+                        ncpf.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
+                        ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
+                        ncpf.multiblocks.add(finalMultiblock);
+                        ncpf.configuration = PartialConfiguration.generate(finalMultiblock.getConfiguration(), ncpf.multiblocks);
+                        for(FormatWriter writer : formats){
+                            CircularStream stream = new CircularStream(1024*1024);//1MB
+                            CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getExtensions()[0]).submit();
                             try{
-                                Thread.sleep(interval);
-                            }catch(InterruptedException ex){
-                                printErrorMessage(channel, "Generation Interrupted!", ex);
-                                break;
-                            }
-                            time+=interval;
-                            if(!generator.isRunning())break;
-                            Multiblock main = generator.getMainMultiblock();
-                            generatorMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField(generator.multiblock.getGeneralName()+" Details", generator.getMainMultiblockBotTooltip(), false).build()).queue();
-                            if(main!=null&&main.millisSinceLastChange()<maxTime&&main.millisSinceLastChange()>timeout)break;
-                        }
-                        generator.stopAllThreads();
-                        Multiblock finalMultiblock = generator.getMainMultiblock();
-                        if(finalMultiblock==null||finalMultiblock.isEmpty()){
-                            generatorMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase(Locale.ENGLISH)+" was generated. :(").build()).queue();
-                        }else{
-                            generatorMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField(generator.multiblock.getGeneralName()+" Details", finalMultiblock.getBotTooltip(), false).build()).queue();
-                            NCPFFile ncpf = new NCPFFile();
-                            String name = UUID.randomUUID().toString();
-                            ncpf.metadata.put("Author", "S'plodo-Bot");
-                            ncpf.metadata.put("Name", name);
-                            finalMultiblock.metadata.put("Author", "S'plodo-Bot");
-                            finalMultiblock.metadata.put("Name", name);
-                            GregorianCalendar calendar = new GregorianCalendar();
-                            String[] months = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-                            ncpf.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
-                            ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
-                            ncpf.multiblocks.add(finalMultiblock);
-                            ncpf.configuration = PartialConfiguration.generate(finalMultiblock.getConfiguration(), ncpf.multiblocks);
-                            for(FormatWriter writer : formats){
-                                CircularStream stream = new CircularStream(1024*1024);//1MB
-                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getExtensions()[0]).submit();
-                                try{
-                                    writer.write(ncpf, stream);
-                                }catch(Exception ex){
-                                    printErrorMessage(channel, "Failed to write file", ex);
-                                    submit.cancel(true);
-                                    stream.close();
-                                }
+                                writer.write(ncpf, stream);
+                            }catch(Exception ex){
+                                printErrorMessage(channel, "Failed to write file", ex);
+                                submit.cancel(true);
+                                stream.close();
                             }
                         }
-                        generator = null;
-                        generatorMessage = null;
-                    });
-                    t.setDaemon(true);
-                    t.setName("Discord Bot Generation Thread");
-                    t.start();
-                }else{
-                    throw new IllegalArgumentException("I don't know how to use the non-standard generators!");
-                }
+                    }
+                    generator = null;
+                    generatorMessage = null;
+                });
+                t.setDaemon(true);
+                t.setName("Discord Bot Generation Thread");
+                t.start();
+//</editor-fold>
             }
             @Override
             public void addKeywords(){
