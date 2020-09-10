@@ -147,8 +147,10 @@ public class OverhaulSFR extends Multiblock<Block>{
         for(Block block : allBlocks){//detect clusters
             Cluster cluster = getCluster(block);
             if(cluster==null)continue;//that's not a cluster!
-            if(clusters.contains(cluster))continue;//already know about that one!
-            clusters.add(cluster);
+            synchronized(clusters){
+                if(clusters.contains(cluster))continue;//already know about that one!
+                clusters.add(cluster);
+            }
         }
         for(Cluster cluster : clusters){
             int fuelCells = 0;
@@ -220,27 +222,29 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     public String tooltip(boolean showDetails){
         if(this.showDetails!=null)showDetails = this.showDetails;
-        String s = "Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
-                + "Total Heat: "+totalHeat+"H/t\n"
-                + "Total Cooling: "+totalCooling+"H/t\n"
-                + "Net Heat: "+netHeat+"H/t\n"
-                + "Overall Efficiency: "+percent(totalEfficiency, 0)+"\n"
-                + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
-                + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
-                + "Clusters: "+clusters.size()+"\n"
-                + "Total Irradiation: "+totalIrradiation+"\n"
-                + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n"
-                + "Rainbow Score: "+percent(rainbowScore, 2)+"\n";//TODO make this (and shutdown factor?) modular
-        for(Fuel f : getConfiguration().overhaul.fissionSFR.allFuels){
-            int i = getFuelCount(f);
-            if(i>0)s+="\n"+f.name+": "+i;
-        }
-        if(showDetails){
-            for(Cluster c : clusters){
-                s+="\n\n"+c.getTooltip();
+        synchronized(clusters){
+            String s = "Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
+                    + "Total Heat: "+totalHeat+"H/t\n"
+                    + "Total Cooling: "+totalCooling+"H/t\n"
+                    + "Net Heat: "+netHeat+"H/t\n"
+                    + "Overall Efficiency: "+percent(totalEfficiency, 0)+"\n"
+                    + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
+                    + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
+                    + "Clusters: "+clusters.size()+"\n"
+                    + "Total Irradiation: "+totalIrradiation+"\n"
+                    + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n"
+                    + "Rainbow Score: "+percent(rainbowScore, 2)+"\n";//TODO make this (and shutdown factor?) modular
+            for(Fuel f : getConfiguration().overhaul.fissionSFR.allFuels){
+                int i = getFuelCount(f);
+                if(i>0)s+="\n"+f.name+": "+i;
             }
+            if(showDetails){
+                for(Cluster c : clusters){
+                    s+="\n\n"+c.getTooltip();
+                }
+            }
+            return s;
         }
-        return s;
     }
     @Override
     public int getMultiblockID(){
@@ -610,7 +614,9 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     public void clearData(List<Block> blocks){
         super.clearData(blocks);
-        clusters.clear();
+        synchronized(clusters){
+            clusters.clear();
+        }
         rainbowScore = shutdownFactor = totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = rawOutput = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
     }
     /**
@@ -717,8 +723,10 @@ public class OverhaulSFR extends Multiblock<Block>{
                 }
             }
         }
-        for(Cluster cluster : clusters){
-            copy.clusters.add(cluster.copy(copy));
+        synchronized(clusters){
+            for(Cluster cluster : clusters){
+                copy.clusters.add(cluster.copy(copy));
+            }
         }
         copy.totalFuelCells = totalFuelCells;
         copy.rawOutput = rawOutput;
