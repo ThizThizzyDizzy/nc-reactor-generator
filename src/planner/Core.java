@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import multiblock.configuration.Configuration;
@@ -26,7 +25,6 @@ import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import planner.menu.MenuDiscord;
-import planner.menu.MenuTutorial;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -145,7 +143,7 @@ public class Core extends Renderer2D{
                     if(t!=null)details+="\nCaused by ";
                 }
                 String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
-                switch(JOptionPane.showOptionDialog(null, details, "Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
+                switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
                     case 0:
                         gui.open(new MenuMain(gui));
                         break;
@@ -181,7 +179,7 @@ public class Core extends Renderer2D{
                     if(t!=null)details+="\nCaused by ";
                 }
                 String[] options = new String[]{"Main Menu", "Exit"};
-                switch(JOptionPane.showOptionDialog(null, details, "Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
+                switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
                     case 0:
                         gui.open(new MenuMain(gui));
                         break;

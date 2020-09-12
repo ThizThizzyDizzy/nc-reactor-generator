@@ -292,6 +292,27 @@ public class FissionSFRConfiguration{
         return rules;
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo){
-        throw new UnsupportedOperationException("Not supported yet.");
+        for(Block block : blocks){
+            for(PlacementRule rule : getAllSubRules(block)){
+                if(rule.block==null)continue;
+                if(parent.overhaul!=null&&parent.overhaul.fissionSFR!=null&&parent.overhaul.fissionSFR.blocks.contains(rule.block)){
+                    rule.block = convertTo.overhaul.fissionSFR.convert(rule.block);
+                }else if(blocks.contains(rule.block)){
+                    //do nothing :)
+                }else{
+                    //in sub-addon, find and convert
+                    boolean found = false;
+                    for(Configuration addon : parent.addons){
+                        if(addon.overhaul!=null&&addon.overhaul.fissionSFR!=null){
+                            if(addon.overhaul.fissionSFR.blocks.contains(rule.block)){
+                                rule.block = convertTo.findMatchingAddon(addon).overhaul.fissionSFR.convert(rule.block);
+                                found = true;
+                            }
+                        }
+                    }
+                    if(!found)throw new IllegalArgumentException("Could not convert block "+block.name+"!");
+                }
+            }
+        }
     }
 }

@@ -47,7 +47,8 @@ public class MenuTutorial extends Menu{
     public void renderBackground(){
         tutorialList.x = categoryLabel.width = tutorialLabel.width = categoryBox.width = tutorialBox.width = done.width = title.x = 300;
         title.width = Core.helper.displayWidth()-title.x;
-        categoryLabel.height = tutorialLabel.height = done.height = title.height = 48;
+        categoryLabel.height = tutorialLabel.height = 48;
+        done.height = title.height = 64;
         tutorialList.y = categoryLabel.y = done.y+done.height;
         categoryBox.y = categoryLabel.y+categoryLabel.height;
         tutorialLabel.y = categoryBox.y+categoryBox.height;

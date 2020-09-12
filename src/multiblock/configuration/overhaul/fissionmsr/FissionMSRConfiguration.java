@@ -264,6 +264,27 @@ public class FissionMSRConfiguration{
         return rules;
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo){
-        throw new UnsupportedOperationException("Not supported yet.");
+        for(Block block : blocks){
+            for(PlacementRule rule : getAllSubRules(block)){
+                if(rule.block==null)continue;
+                if(parent.overhaul!=null&&parent.overhaul.fissionMSR!=null&&parent.overhaul.fissionMSR.blocks.contains(rule.block)){
+                    rule.block = convertTo.overhaul.fissionMSR.convert(rule.block);
+                }else if(blocks.contains(rule.block)){
+                    //do nothing :)
+                }else{
+                    //in sub-addon, find and convert
+                    boolean found = false;
+                    for(Configuration addon : parent.addons){
+                        if(addon.overhaul!=null&&addon.overhaul.fissionMSR!=null){
+                            if(addon.overhaul.fissionMSR.blocks.contains(rule.block)){
+                                rule.block = convertTo.findMatchingAddon(addon).overhaul.fissionMSR.convert(rule.block);
+                                found = true;
+                            }
+                        }
+                    }
+                    if(!found)throw new IllegalArgumentException("Could not convert block "+block.name+"!");
+                }
+            }
+        }
     }
 }

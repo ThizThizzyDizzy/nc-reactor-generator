@@ -17,6 +17,7 @@ import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorGrid extends MenuComponent implements MenuComponentTooltip{
+    private Object synchronizer = new Object();
     private final Multiblock multiblock;
     private final int layer;
     private final MenuEdit editor;
@@ -53,16 +54,18 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
     }
     @Override
     public void render(){
-        if(!isMouseOver)mouseover = null;
-        if(mouseover!=null){
-            if(mouseover[0]<0||mouseover[1]<0||mouseover[0]>=multiblock.getX()||mouseover[1]>=multiblock.getZ())mouseover = null;
-        }
-        blockSize = (int) Math.min(width/multiblock.getX(), height/multiblock.getZ());
-        Core.applyColor(Core.theme.getEditorListBorderColor());
-        drawRect(x,y,x+width,y+height,0);
-        if(mouseover!=null){
-            Core.applyColor(Core.theme.getEditorListBorderColor().brighter());
-            drawRect(x+mouseover[0]*blockSize, y+mouseover[1]*blockSize, x+(mouseover[0]+1)*blockSize, y+(mouseover[1]+1)*blockSize, 0);
+        synchronized(synchronizer){
+            if(!isMouseOver)mouseover = null;
+            if(mouseover!=null){
+                if(mouseover[0]<0||mouseover[1]<0||mouseover[0]>=multiblock.getX()||mouseover[1]>=multiblock.getZ())mouseover = null;
+            }
+            blockSize = (int) Math.min(width/multiblock.getX(), height/multiblock.getZ());
+            Core.applyColor(Core.theme.getEditorListBorderColor());
+            drawRect(x,y,x+width,y+height,0);
+            if(mouseover!=null){
+                Core.applyColor(Core.theme.getEditorListBorderColor().brighter());//TODO .brighter()
+                drawRect(x+mouseover[0]*blockSize, y+mouseover[1]*blockSize, x+(mouseover[0]+1)*blockSize, y+(mouseover[1]+1)*blockSize, 0);
+            }
         }
         Core.applyColor(Core.theme.getTextColor());
         for(int x = 0; x<=multiblock.getX(); x++){
@@ -132,26 +135,30 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
             }
         }
         editor.getSelectedTool().drawGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
-        if(mouseover!=null){
-            double X = this.x+mouseover[0]*blockSize;
-            double Y = this.y+mouseover[1]*blockSize;
-            double border = blockSize/8;
-            Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
-            drawRect(X, Y, X+border, Y+border, 0);
-            drawRect(X+blockSize-border, Y, X+blockSize, Y+border, 0);
-            drawRect(X, Y+blockSize-border, X+border, Y+blockSize, 0);
-            drawRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize, 0);
-            Core.applyColor(Core.theme.getTextColor(), .6375f);
-            drawRect(X+border, Y, X+blockSize-border, Y+border, 0);
-            drawRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize, 0);
-            drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
-            drawRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border, 0);
+        synchronized(synchronizer){
+            if(mouseover!=null){
+                double X = this.x+mouseover[0]*blockSize;
+                double Y = this.y+mouseover[1]*blockSize;
+                double border = blockSize/8;
+                Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
+                drawRect(X, Y, X+border, Y+border, 0);
+                drawRect(X+blockSize-border, Y, X+blockSize, Y+border, 0);
+                drawRect(X, Y+blockSize-border, X+border, Y+blockSize, 0);
+                drawRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize, 0);
+                Core.applyColor(Core.theme.getTextColor(), .6375f);
+                drawRect(X+border, Y, X+blockSize-border, Y+border, 0);
+                drawRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize, 0);
+                drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
+                drawRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border, 0);
+            }
         }
     }
     @Override
     public void onMouseMove(double x, double y){
         super.onMouseMove(x, y);
-        mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
+        synchronized(synchronizer){
+            mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
+        }
         for(int i : gui.mouseWereDown){
             mouseDragged(x, y, i);
         }
@@ -159,7 +166,9 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
     @Override
     public void onMouseMovedElsewhere(double x, double y){
         super.onMouseMovedElsewhere(x, y);
-        mouseover = null;
+        synchronized(synchronizer){
+            mouseover = null;
+        }
     }
     @Override
     public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
@@ -221,16 +230,22 @@ public class MenuComponentEditorGrid extends MenuComponent implements MenuCompon
     }
     @Override
     public String getTooltip(){
-        if(mouseover==null)return null;
-        Block block = multiblock.getBlock(mouseover[0],layer,mouseover[1]);
-        return block==null?null:block.getTooltip(multiblock);
+        synchronized(synchronizer){
+            if(mouseover==null)return null;
+            Block block = multiblock.getBlock(mouseover[0],layer,mouseover[1]);
+            return block==null?null:block.getTooltip(multiblock);
+        }
     }
     @Override
     public double getTooltipOffsetX(){
-        return mouseover!=null?mouseover[0]*blockSize:0;
+        synchronized(synchronizer){
+            return mouseover!=null?mouseover[0]*blockSize:0;
+        }
     }
     @Override
     public double getTooltipOffsetY(){
-        return mouseover!=null?(mouseover[1]+1)*blockSize:height;
+        synchronized(synchronizer){
+            return mouseover!=null?(mouseover[1]+1)*blockSize:height;
+        }
     }
 }

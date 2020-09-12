@@ -25,6 +25,7 @@ public class MenuSettings extends Menu{
     private final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Modify Configuration", true, true).setTooltip("Modify the current configuration"));
     private final MenuComponentMinimalistOptionButton theme = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Theme", true, true, Theme.themes.indexOf(Core.theme), Theme.getThemeS())).setTooltip("Click to cycle through available themes\nRight click to cycle back");
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Close the settings menu"));
+    private final MenuComponentMinimalistButton tutorials = new MenuComponentMinimalistButton(0, 0, 0, 0, "Tutorials", true, true);
     private final ArrayList<MenuComponentMinimalistButton> buttons = new ArrayList<>();
     public MenuSettings(GUI gui, Menu parent){
         super(gui, parent);
@@ -85,6 +86,9 @@ public class MenuSettings extends Menu{
                 chooser.showSaveDialog(null);
             }).start();
         });
+        tutorials.addActionListener((e) -> {
+            gui.open(new MenuTutorial(gui, this));
+        });
         edit.addActionListener((e) -> {
             gui.open(new MenuConfiguration(gui, this, Core.configuration));
         });
@@ -104,14 +108,15 @@ public class MenuSettings extends Menu{
             b.height = Core.helper.displayHeight()/16;
             b.y = b.height*i;
         }
-        currentConfig.width = theme.width = load.width = save.width = done.width = edit.width = Core.helper.displayWidth();
-        currentConfig.height = theme.height = load.height = save.height = done.height = edit.height = Core.helper.displayHeight()/16;
+        tutorials.width = currentConfig.width = theme.width = load.width = save.width = done.width = edit.width = Core.helper.displayWidth();
+        tutorials.height = currentConfig.height = theme.height = load.height = save.height = done.height = edit.height = Core.helper.displayHeight()/16;
         currentConfig.y = load.height*(Configuration.configurations.size());
         load.y = currentConfig.y+currentConfig.height;
         save.y = load.y+load.height;
         edit.y = save.y+save.height;
         done.y = Core.helper.displayHeight()-done.height;
         theme.y = done.y-theme.height;
+        tutorials.y = theme.y-theme.height;
         if(Theme.themes.indexOf(Core.theme)!=theme.getIndex()){
             try{
                 Core.setTheme(Theme.themes.get(theme.getIndex()));

@@ -11,6 +11,9 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
 import planner.menu.Menu;
+import simplelibrary.Sys;
+import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorLevel;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuAddonsConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
@@ -31,12 +34,16 @@ public class MenuAddonsConfiguration extends Menu{
                 JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
                 chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
                 chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        File file = chooser.getSelectedFile();
-                        NCPFFile ncpf = FileReader.read(file);
-                        if(ncpf==null)return;
-                        Core.configuration.addAndConvertAddon(AddonConfiguration.convert(ncpf.configuration));
-                        onGUIOpened();
+                    try{
+                        if(event.getActionCommand().equals("ApproveSelection")){
+                            File file = chooser.getSelectedFile();
+                            NCPFFile ncpf = FileReader.read(file);
+                            if(ncpf==null)return;
+                            Core.configuration.addAndConvertAddon(AddonConfiguration.convert(ncpf.configuration));
+                            onGUIOpened();
+                        }
+                    }catch(Exception ex){
+                        Sys.error(ErrorLevel.severe, "Failed to load addon", ex, ErrorCategory.fileIO);
                     }
                 });
                 chooser.showOpenDialog(null);

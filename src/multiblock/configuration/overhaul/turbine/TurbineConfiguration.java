@@ -208,6 +208,27 @@ public class TurbineConfiguration{
         return rules;
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo){
-        throw new UnsupportedOperationException("Not supported yet.");
+        for(Coil coil : coils){
+            for(PlacementRule rule : getAllSubRules(coil)){
+                if(rule.coil==null)continue;
+                if(parent.overhaul!=null&&parent.overhaul.turbine!=null&&parent.overhaul.turbine.coils.contains(rule.coil)){
+                    rule.coil = convertTo.overhaul.turbine.convert(rule.coil);
+                }else if(coils.contains(rule.coil)){
+                    //do nothing :)
+                }else{
+                    //in sub-addon, find and convert
+                    boolean found = false;
+                    for(Configuration addon : parent.addons){
+                        if(addon.overhaul!=null&&addon.overhaul.turbine!=null){
+                            if(addon.overhaul.turbine.coils.contains(rule.coil)){
+                                rule.coil = convertTo.findMatchingAddon(addon).overhaul.turbine.convert(rule.coil);
+                                found = true;
+                            }
+                        }
+                    }
+                    if(!found)throw new IllegalArgumentException("Could not convert coil "+coil.name+"!");
+                }
+            }
+        }
     }
 }

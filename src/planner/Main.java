@@ -14,10 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
-import javax.swing.UnsupportedLookAndFeelException;
 public class Main{
     private static String versionListURL = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt";
     public static final String applicationName = "Nuclearcraft Reactor Generator";
@@ -34,10 +30,10 @@ public class Main{
     public static void main(String[] args){
         try{
             if(args.length>=1&&args[0].equals("maybediscord")){
-                if(JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[0] = "discord";
+                if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[0] = "discord";
             }
             if(args.length>=2&&args[1].equals("maybediscord")){
-                if(JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
+                if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
             }
             if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){
                 isBot = true;
@@ -54,7 +50,7 @@ public class Main{
                 trace+="\n"+e.toString();
             }
             trace = trace.isEmpty()?trace:trace.substring(1);
-            JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread!", JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread!", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
     private static String getLibraryRoot(){
@@ -64,14 +60,14 @@ public class Main{
         ArrayList<String> theargs = new ArrayList<>(Arrays.asList(args));
         if(args.length<1||!args[0].equals("Skip Dependencies")){
             setLookAndFeel();
-            JFrame frame;
-            JProgressBar bar;
+            javax.swing.JFrame frame;
+            javax.swing.JProgressBar bar;
             if(versionListURL.isEmpty()){
                 System.err.println("Version list URL is empty! assuming latest version.");
             }else{
                 System.out.println("Checking for updates...");
                 Updater updater = Updater.read(versionListURL, VersionManager.currentVersion, applicationName);
-                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0&&(isBot||JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)){
+                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0&&(isBot||javax.swing.JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", javax.swing.JOptionPane.YES_NO_OPTION)==javax.swing.JOptionPane.YES_OPTION)){
                     System.out.println("Updating...");
                     startJava(new String[0], new String[]{"justUpdated"}, updater.update(updater.getLatestDownloadableVersion()));
                     System.exit(0);
@@ -97,7 +93,7 @@ public class Main{
             if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
             if(os==OS_UNKNOWN){
                 System.out.println("Unknown OS: "+osName);
-                os = JOptionPane.showOptionDialog(null, "Unrecognized OS \""+osName+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, which natives should I load?", "Unrecognized Operating System", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Mac OS", "Linux"}, "Windows");
+                os = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized OS \""+osName+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, which natives should I load?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Mac OS", "Linux"}, "Windows");
                 if(os<0||os>2){
                     System.exit(0);
                 }
@@ -117,7 +113,7 @@ public class Main{
                         System.out.println("OS: Windows");
                         if(arch==ARCH_UNKNOWN){
                             System.out.println("Unknown Architecture: "+osArch);
-                            arch = JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"x86", "x64"}, "x64");
+                            arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x86", "x64"}, "x64");
                             if(arch<0||arch>1){
                                 System.exit(0);
                             }
@@ -170,7 +166,7 @@ public class Main{
                         System.out.println("OS: Windows");
                         if(arch==ARCH_UNKNOWN){
                             System.out.println("Unknown Architecture: "+osArch);
-                            arch = JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"x64", "arm32", "arm64"}, "x64");
+                            arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x64", "arm32", "arm64"}, "x64");
                             if(arch<0||arch>2){
                                 System.exit(0);
                             }
@@ -232,17 +228,17 @@ public class Main{
                 }
             }
             if(downloadSize>0&&!allowDownload){
-                if(JOptionPane.showConfirmDialog(null, applicationName+" has a few dependencies that must be downloaded before play.\nThere is up to about "+(downloadSize>=1000?(downloadSize/1000+"MB"):(downloadSize+" KB"))+" to download.\nDownload them now?", applicationName+" - Dependencies", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)
-                        !=JOptionPane.YES_OPTION){
+                if(javax.swing.JOptionPane.showConfirmDialog(null, applicationName+" has a few dependencies that must be downloaded before play.\nThere is up to about "+(downloadSize>=1000?(downloadSize/1000+"MB"):(downloadSize+" KB"))+" to download.\nDownload them now?", applicationName+" - Dependencies", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE)
+                        !=javax.swing.JOptionPane.YES_OPTION){
                     //no download
-                    JOptionPane.showMessageDialog(null, applicationName+" will now exit.", "Exit", JOptionPane.OK_OPTION);
+                    javax.swing.JOptionPane.showMessageDialog(null, applicationName+" will now exit.", "Exit", javax.swing.JOptionPane.OK_OPTION);
                     System.exit(0);
                 }
             }
             allowDownload = true;
             total = 8+requiredLibraries.size();
-            frame = new JFrame("Download Progress");
-            bar = new JProgressBar(0, total);
+            frame = new javax.swing.JFrame("Download Progress");
+            bar = new javax.swing.JProgressBar(0, total);
             frame.add(bar);
             frame.setSize(300, 70);
             bar.setBounds(0, 0, 300, 70);
@@ -264,7 +260,7 @@ public class Main{
             String[] additionalClasspathElements = new String[requiredLibs.length+4];
             for(int i = 0; i<requiredLibs.length; i++){
                 if(requiredLibs[i]==null){
-                    JOptionPane.showMessageDialog(null, "Failed to download dependencies!\n"+applicationName+" will now exit.", "Exit", JOptionPane.OK_OPTION);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Failed to download dependencies!\n"+applicationName+" will now exit.", "Exit", javax.swing.JOptionPane.OK_OPTION);
                     System.exit(0);
                 }
                 additionalClasspathElements[i] = requiredLibs[i].getAbsolutePath();
@@ -505,6 +501,6 @@ public class Main{
         }
         try{
             javax.swing.UIManager.setLookAndFeel(lookAndFeel);
-        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|UnsupportedLookAndFeelException ex){}
+        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
     }
 }

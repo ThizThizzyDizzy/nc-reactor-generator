@@ -152,6 +152,7 @@ public class MenuMain extends Menu{
     public OverhaulTurbine settingInputs = null;
     public MenuMain(GUI gui){
         super(gui, null);
+        addMultiblock.textInset = 0;
         for(Multiblock m : Core.multiblockTypes){
             MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true).setTooltip(m.getDescriptionTooltip()));
             button.addActionListener((e) -> {

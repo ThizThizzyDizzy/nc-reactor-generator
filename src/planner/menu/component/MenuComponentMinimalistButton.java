@@ -28,7 +28,7 @@ public class MenuComponentMinimalistButton extends MenuComponentButton implement
         Color col = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
         if(enabled){
             if(isPressed)col = col.darker();
-            else if(isMouseOver)col = col.brighter();
+            else if(isMouseOver)col = col.brighter();//TODO .darker() and .brighter()
         }else{
             col = col.darker();
         }
