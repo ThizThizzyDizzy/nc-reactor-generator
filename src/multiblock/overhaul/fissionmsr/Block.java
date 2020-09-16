@@ -51,7 +51,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public String getName(){
-        return template==null?"Casing":template.name;//should never be null, but it is sometimes...?
+        return isCasing()?"Casing":template.name;
     }
     @Override
     public void clearData(){

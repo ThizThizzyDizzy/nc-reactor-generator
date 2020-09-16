@@ -3,16 +3,19 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Coil;
+import planner.FileChooserResultListener;
+import planner.FileFormat;
+import planner.Main;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;
 import planner.menu.Menu;
+import simplelibrary.Sys;
+import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorLevel;
 public class MenuCoilConfiguration extends Menu{
     private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "Name", true)).setTooltip("The name of this coil. This should never change");
     private final MenuComponentMinimalistButton texture = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Select Texture", true, true)).setTooltip("Change the texture for this coil");
@@ -26,25 +29,21 @@ public class MenuCoilConfiguration extends Menu{
     public MenuCoilConfiguration(GUI gui, Menu parent, Coil coil){
         super(gui, parent);
         texture.addActionListener((e) -> {
-            new Thread(() -> {
-                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setFileFilter(new FileNameExtensionFilter("PNG (.png)", "png"));
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        File file = chooser.getSelectedFile();
-                        try{
-                            BufferedImage img = ImageIO.read(file);
-                            if(img==null)return;
-                            if(img.getWidth()!=img.getHeight()){
-                                JOptionPane.showMessageDialog(null, "Image is not square!", "Error loading image", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                            coil.setTexture(img);
-                        }catch(IOException ex){}
+            Core.createFileChooser((file, format) -> {
+                try{
+                    BufferedImage img = ImageIO.read(file);
+                    if(img==null)return;
+                    if(img.getWidth()!=img.getHeight()){
+                        if(Main.hasAWT){
+                            javax.swing.JOptionPane.showMessageDialog(null, "Image is not square!", "Error loading image", javax.swing.JOptionPane.ERROR_MESSAGE);
+                        }else{
+                            Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO);
+                        }
+                        return;
                     }
-                });
-                chooser.showOpenDialog(null);
-            }).start();
+                    coil.setTexture(img);
+                }catch(IOException ex){}
+            }, FileFormat.PNG);
         });
         rules.addActionListener((e) -> {
             gui.open(new MenuPlacementRulesConfiguration(gui, this, coil));

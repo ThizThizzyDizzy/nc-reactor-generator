@@ -15,6 +15,7 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.FileFormat;
 import simplelibrary.config2.Config;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
@@ -25,12 +26,8 @@ public class FileWriter{
     static{
         formats.add(HELLRAGE = new FormatWriter(){
             @Override
-            public String getName(){
-                return "Hellrage format";
-            }
-            @Override
-            public String[] getExtensions(){
-                return new String[]{"json"};
+            public FileFormat getFileFormat(){
+                return FileFormat.HELLRAGE_REACTOR;
             }
             @Override
             public void write(NCPFFile ncpf, OutputStream stream){
@@ -251,12 +248,8 @@ public class FileWriter{
         });
         formats.add(NCPF = new FormatWriter(){
             @Override
-            public String getName(){
-                return "NuclearCraft Planner Format";
-            }
-            @Override
-            public String[] getExtensions(){
-                return new String[]{"ncpf"};
+            public FileFormat getFileFormat(){
+                return FileFormat.NCPF;
             }
             @Override
             public void write(NCPFFile ncpf, OutputStream stream){
@@ -292,12 +285,8 @@ public class FileWriter{
             private final int textHeight = 20;
             private final int borderSize = 16;
             @Override
-            public String getName(){
-                return "PNG Image";
-            }
-            @Override
-            public String[] getExtensions(){
-                return new String[]{"png"};
+            public FileFormat getFileFormat(){
+                return FileFormat.PNG;
             }
             @Override
             public void write(NCPFFile ncpf, OutputStream stream){

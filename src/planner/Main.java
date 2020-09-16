@@ -22,18 +22,43 @@ public class Main{
     //Download details
     private static int total;
     private static int current;
-    private static boolean allowDownload = true;
     public static boolean isBot = false;
+    public static boolean hasAWT = true;
+    public static boolean hasAWTAfterStartup = false;
     private static void addRequiredLibrary(String url, String filename, int sizeKB){
         requiredLibraries.put(new String[]{url,filename}, sizeKB);
     }
     public static void main(String[] args){
         try{
-            if(args.length>=1&&args[0].equals("maybediscord")){
-                if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[0] = "discord";
+            if(args.length>=1&&args[0].equals("noAWT")){
+                hasAWT = false;
+                String[] rgs = new String[args.length-1];
+                for(int i = 0; i<rgs.length; i++){
+                    rgs[i] = args[i+1];
+                }
+                args = rgs;
             }
-            if(args.length>=2&&args[1].equals("maybediscord")){
-                if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
+            if(args.length>=1&&args[0].equals("noAWTDuringStartup")){
+                hasAWT = false;
+                hasAWTAfterStartup = true;
+                String[] rgs = new String[args.length-1];
+                for(int i = 0; i<rgs.length; i++){
+                    rgs[i] = args[i+1];
+                }
+                args = rgs;
+            }
+            if(args.length>=1&&args[0].equals("maybediscord")||args.length>=2&&args[1].equals("maybediscord")){
+                if(hasAWT){
+                    if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
+                }else{
+                    System.out.println("Bot or Planner? (B|P)\n> ");
+                    BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+                    String s = r.readLine();
+                    if(s==null)s = "";
+                    s = s.trim();
+                    r.close();
+                    if(s.equalsIgnoreCase("B")||s.equalsIgnoreCase("Bot")||s.equalsIgnoreCase("Discord"))args[1] = "discord";
+                }
             }
             if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){
                 isBot = true;
@@ -45,12 +70,16 @@ public class Main{
             }
             Core.main(args);
         }catch(Exception ex){
-            String trace = "";
-            for(StackTraceElement e : ex.getStackTrace()){
-                trace+="\n"+e.toString();
+            if(hasAWT){
+                String trace = "";
+                for(StackTraceElement e : ex.getStackTrace()){
+                    trace+="\n"+e.toString();
+                }
+                trace = trace.isEmpty()?trace:trace.substring(1);
+                javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread!", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }else{
+                throw new RuntimeException("Exception on main thread!", ex);
             }
-            trace = trace.isEmpty()?trace:trace.substring(1);
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread!", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
     private static String getLibraryRoot(){
@@ -60,17 +89,29 @@ public class Main{
         ArrayList<String> theargs = new ArrayList<>(Arrays.asList(args));
         if(args.length<1||!args[0].equals("Skip Dependencies")){
             setLookAndFeel();
-            javax.swing.JFrame frame;
-            javax.swing.JProgressBar bar;
             if(versionListURL.isEmpty()){
                 System.err.println("Version list URL is empty! assuming latest version.");
             }else{
                 System.out.println("Checking for updates...");
                 Updater updater = Updater.read(versionListURL, VersionManager.currentVersion, applicationName);
-                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0&&(isBot||javax.swing.JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", javax.swing.JOptionPane.YES_NO_OPTION)==javax.swing.JOptionPane.YES_OPTION)){
-                    System.out.println("Updating...");
-                    startJava(new String[0], new String[]{"justUpdated"}, updater.update(updater.getLatestDownloadableVersion()));
-                    System.exit(0);
+                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
+                    boolean allowUpdate = false;
+                    if(hasAWT){
+                        allowUpdate = javax.swing.JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", javax.swing.JOptionPane.YES_NO_OPTION)==javax.swing.JOptionPane.YES_OPTION;
+                    }else{
+                        System.out.println("Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now? (Y/N)");
+                        BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+                        String s = r.readLine();
+                        if(s==null)s = "";
+                        s = s.trim();
+                        r.close();
+                        allowUpdate = s.equalsIgnoreCase("Y")||s.equalsIgnoreCase("Yes");
+                    }
+                    if(allowUpdate){
+                        System.out.println("Updating...");
+                        startJava(new String[0], new String[]{"justUpdated"}, updater.update(updater.getLatestDownloadableVersion()));
+                        System.exit(0);
+                    }
                 }
                 System.out.println("Update Check Complete.");
             }
@@ -93,7 +134,19 @@ public class Main{
             if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
             if(os==OS_UNKNOWN){
                 System.out.println("Unknown OS: "+osName);
-                os = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized OS \""+osName+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, which natives should I load?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Mac OS", "Linux"}, "Windows");
+                if(hasAWT){
+                    os = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized OS \""+osName+"\"!\nPlease report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues.\nIn the meantime, which OS are you using?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Mac OS", "Linux"}, "Windows");
+                }else{
+                    System.out.println("Unrecognized OS \""+osName+"\"! Please report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues\nWhich OS are you using? (Windows|Mac|Linux)");
+                    BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+                    String s = r.readLine();
+                    if(s==null)s = "";
+                    s = s.trim();
+                    r.close();
+                    if(s.equalsIgnoreCase("Windows"))os = OS_WINDOWS;
+                    if(s.equalsIgnoreCase("Mac")||s.equalsIgnoreCase("MacOS")||s.equalsIgnoreCase("Mac OS"))os = OS_MACOS;
+                    if(s.equalsIgnoreCase("Linux"))os = OS_LINUX;
+                }
                 if(os<0||os>2){
                     System.exit(0);
                 }
@@ -113,7 +166,18 @@ public class Main{
                         System.out.println("OS: Windows");
                         if(arch==ARCH_UNKNOWN){
                             System.out.println("Unknown Architecture: "+osArch);
-                            arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x86", "x64"}, "x64");
+                            if(hasAWT){
+                                arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x86", "x64"}, "x64");
+                            }else{
+                                System.out.println("Unrecognized Architecture \""+osArch+"\"! Please report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues\nWhat is your OS architecture? (x86|x64)");
+                                BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+                                String s = r.readLine();
+                                if(s==null)s = "";
+                                s = s.trim();
+                                r.close();
+                                if(s.equalsIgnoreCase("x86")||s.equalsIgnoreCase("86")||s.equalsIgnoreCase("x32")||s.equalsIgnoreCase("32"))arch = ARCH_X86;
+                                if(s.equalsIgnoreCase("x64")||s.equalsIgnoreCase("64"))arch = ARCH_X64;
+                            }
                             if(arch<0||arch>1){
                                 System.exit(0);
                             }
@@ -163,10 +227,22 @@ public class Main{
                         if(osArch.equals("x64"))arch = ARCH_X64;
                         if(osArch.equals("arm32"))arch = ARCH_ARM32;
                         if(osArch.equals("arm64"))arch = ARCH_ARM64;
-                        System.out.println("OS: Windows");
+                        System.out.println("OS: Linux");
                         if(arch==ARCH_UNKNOWN){
                             System.out.println("Unknown Architecture: "+osArch);
-                            arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem on the "+applicationName+" issue tracker.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x64", "arm32", "arm64"}, "x64");
+                            if(hasAWT){
+                                arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x64", "arm32", "arm64"}, "x64");
+                            }else{
+                                System.out.println("Unrecognized Architecture \""+osArch+"\"! Please report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues\nWhat is your OS architecture? (x64|arm32|arm64)");
+                                BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+                                String s = r.readLine();
+                                if(s==null)s = "";
+                                s = s.trim();
+                                r.close();
+                                if(s.equalsIgnoreCase("x64")||s.equalsIgnoreCase("64"))arch = ARCH_X64;
+                                if(s.equalsIgnoreCase("arm32"))arch = ARCH_ARM32;
+                                if(s.equalsIgnoreCase("arm64"))arch = ARCH_ARM64;
+                            }
                             if(arch<0||arch>2){
                                 System.exit(0);
                             }
@@ -201,7 +277,6 @@ public class Main{
                                 break;
                         }
                     }
-                    System.out.println("OS: Linux");
                     break;
             }
             addRequiredLibrary("https://github.com/computerneek/SimpleLibrary/releases/download/11.1.0pre2/SimpleLibrary.11.1.0pre2.jar", "SimpleLibrary-11.1.0pre2.jar", 504);
@@ -227,40 +302,50 @@ public class Main{
                     downloadSize+=requiredLibraries.get(lib);
                 }
             }
-            if(downloadSize>0&&!allowDownload){
-                if(javax.swing.JOptionPane.showConfirmDialog(null, applicationName+" has a few dependencies that must be downloaded before play.\nThere is up to about "+(downloadSize>=1000?(downloadSize/1000+"MB"):(downloadSize+" KB"))+" to download.\nDownload them now?", applicationName+" - Dependencies", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE)
-                        !=javax.swing.JOptionPane.YES_OPTION){
-                    //no download
-                    javax.swing.JOptionPane.showMessageDialog(null, applicationName+" will now exit.", "Exit", javax.swing.JOptionPane.OK_OPTION);
-                    System.exit(0);
-                }
-            }
-            allowDownload = true;
             total = 8+requiredLibraries.size();
-            frame = new javax.swing.JFrame("Download Progress");
-            bar = new javax.swing.JProgressBar(0, total);
-            frame.add(bar);
-            frame.setSize(300, 70);
-            bar.setBounds(0, 0, 300, 70);
-            if(downloadSize>0){
-                frame.setVisible(true);
-            }
             File[] requiredLibs = new File[requiredLibraries.size()];
-            int n = 0;
-            System.out.println("Downloading libraries...");
-            for(String[] lib : requiredLibraries.keySet()){
-                String url = lib[0];
-                String filename = lib[1];
-                requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"/"+filename));
-                bar.setValue(current);
-                n++;
+            if(hasAWT){
+                javax.swing.JFrame frame;
+                javax.swing.JProgressBar bar;
+                frame = new javax.swing.JFrame("Download Progress");
+                bar = new javax.swing.JProgressBar(0, total);
+                frame.add(bar);
+                frame.setSize(300, 70);
+                bar.setBounds(0, 0, 300, 70);
+                if(downloadSize>0){
+                    frame.setVisible(true);
+                }
+                int n = 0;
+                System.out.println("Downloading libraries...");
+                for(String[] lib : requiredLibraries.keySet()){
+                    String url = lib[0];
+                    String filename = lib[1];
+                    requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"/"+filename));
+                    bar.setValue(current);
+                    n++;
+                }
+                System.out.println("Finished downloading libraries");
+                frame.dispose();
+            }else{//duplicated code, oh well
+                int n = 0;
+                System.out.println("Downloading libraries...");
+                for(String[] lib : requiredLibraries.keySet()){
+                    String url = lib[0];
+                    String filename = lib[1];
+                    requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"/"+filename));
+                    System.out.println("Downloading... "+(100d*current/total)+"% ("+current+"/"+total+")");
+                    n++;
+                }
+                System.out.println("Finished downloading libraries");
             }
-            System.out.println("Finished downloading libraries");
-            frame.dispose();
             String[] additionalClasspathElements = new String[requiredLibs.length+4];
             for(int i = 0; i<requiredLibs.length; i++){
                 if(requiredLibs[i]==null){
-                    javax.swing.JOptionPane.showMessageDialog(null, "Failed to download dependencies!\n"+applicationName+" will now exit.", "Exit", javax.swing.JOptionPane.OK_OPTION);
+                    if(hasAWT){
+                        javax.swing.JOptionPane.showMessageDialog(null, "Failed to download dependencies!\n"+applicationName+" will now exit.", "Exit", javax.swing.JOptionPane.OK_OPTION);
+                    }else{
+                        System.err.println("Failed to download dependencies!");//TODO yes, but WHAT dependencies?
+                    }
                     System.exit(0);
                 }
                 additionalClasspathElements[i] = requiredLibs[i].getAbsolutePath();
@@ -330,10 +415,6 @@ public class Main{
             return destinationFile;
         }
         System.out.println("Downloading "+destinationFile.getName()+"...");
-        if(!allowDownload){
-            System.err.println("Failed to download file!\nDownload has not been allowed!");
-            return null;
-        }
         if(destinationFile.getParentFile()!=null)destinationFile.getParentFile().mkdirs();
         try {
             URL url = new URL(link);
@@ -485,6 +566,7 @@ public class Main{
         return builder.start();
     }
     public static void setLookAndFeel(){
+        if(!hasAWT)return;
         System.out.println("Setting Swing look and feel...");
         String lookAndFeel = null;
         for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){

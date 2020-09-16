@@ -13,7 +13,6 @@ import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
-import javax.swing.JOptionPane;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
@@ -149,9 +148,7 @@ public class Updater{
         if(link==null){
             return null;
         }
-        String fileName = applicationName+" "+currentVersion+".jar";
         String newFilename = applicationName+" "+version+".jar";
-        String existingFilename = new File(Updater.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getName();
         String temporaryFilename = newFilename;
         for(int i = 2; new File(temporaryFilename).exists(); i++){
             temporaryFilename = applicationName+" "+version+" ("+i+").jar";
@@ -213,22 +210,6 @@ public class Updater{
             Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.InternetIO);
             new File(temporaryFilename).delete();
         }//</editor-fold>
-        if((!existingFilename.equals(fileName))&&false){
-            boolean useExisting = JOptionPane.showConfirmDialog(null, "Would you like to use the same file for the new version of "+applicationName+"?", applicationName+" Update", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)==JOptionPane.YES_OPTION;
-            if(useExisting){
-                File file = new File(Updater.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-                File otherFile = new File(temporaryFilename);
-                try{
-                    file.delete();
-                    otherFile.renameTo(file);
-                    return file;
-                }catch(Throwable twbl){
-                    JOptionPane.showMessageDialog(null, "Could not replace file!");
-                }
-                return new File(temporaryFilename);
-            }
-        }
-        newFilename = temporaryFilename;
         return new File(temporaryFilename);
     }
     public static InputStream getRemoteInputStream(String currentFile, final URLConnection urlconnection) throws Exception {

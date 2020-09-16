@@ -3,12 +3,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.Core;
+import planner.FileFormat;
 import planner.Theme;
 import planner.file.FileReader;
 import planner.file.NCPFFile;
@@ -16,7 +14,10 @@ import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.configuration.MenuConfiguration;
+import simplelibrary.Sys;
 import simplelibrary.config2.Config;
+import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorLevel;
 import simplelibrary.opengl.gui.GUI;
 public class MenuSettings extends Menu{
     private final MenuComponentLabel currentConfig = add(new MenuComponentLabel(0, 0, 0, 0, "Current Configuration", true));
@@ -41,50 +42,31 @@ public class MenuSettings extends Menu{
             buttons.add(add(b));
         }
         load.addActionListener((e) -> {
-            new Thread(() -> {
-                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Configuration File", "ncpf", "cfg", "json"));
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        File file = chooser.getSelectedFile();
-                        NCPFFile ncpf = FileReader.read(file);
-                        if(ncpf==null)return;
-                        Configuration.impose(ncpf.configuration, Core.configuration);
-                        for(Multiblock multi : Core.multiblocks){
-                            multi.convertTo(Core.configuration);
-                        }
-                        onGUIOpened();
-                    }
-                });
-                chooser.showOpenDialog(null);
-            }).start();
+            Core.createFileChooser((file, format) -> {
+                NCPFFile ncpf = FileReader.read(file);
+                if(ncpf==null)return;
+                Configuration.impose(ncpf.configuration, Core.configuration);
+                for(Multiblock multi : Core.multiblocks){
+                    multi.convertTo(Core.configuration);
+                }
+                onGUIOpened();
+            }, FileFormat.ALL_CONFIGURATION_FORMATS);
         });
         save.addActionListener((e) -> {
-            new Thread(() -> {
-                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
-                chooser.setSelectedFile(new File(Core.configuration.getFullName()));
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        File file = chooser.getSelectedFile();
-                        if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                        if(file.exists()){
-                            if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
-                            file.delete();
-                        }
-                        try(FileOutputStream stream = new FileOutputStream(file)){
-                            Config header = Config.newConfig();
-                            header.set("version", NCPFFile.SAVE_VERSION);
-                            header.set("count", 0);
-                            header.save(stream);
-                            Core.configuration.save(null, Config.newConfig()).save(stream);
-                        }catch(IOException ex){
-                            JOptionPane.showMessageDialog(null, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                });
-                chooser.showSaveDialog(null);
-            }).start();
+            Core.createFileChooser(new File(Core.configuration.getFullName()), (file, format) -> {
+                if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                file = Core.askForOverwrite(file);
+                if(file==null)return;
+                try(FileOutputStream stream = new FileOutputStream(file)){
+                    Config header = Config.newConfig();
+                    header.set("version", NCPFFile.SAVE_VERSION);
+                    header.set("count", 0);
+                    header.save(stream);
+                    Core.configuration.save(null, Config.newConfig()).save(stream);
+                }catch(IOException ex){
+                    Sys.error(ErrorLevel.severe, "Failed to save configuration!", ex, ErrorCategory.fileIO);
+                }
+            }, FileFormat.NCPF);
         });
         tutorials.addActionListener((e) -> {
             gui.open(new MenuTutorial(gui, this));

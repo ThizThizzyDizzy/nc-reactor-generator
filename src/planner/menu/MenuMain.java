@@ -7,10 +7,6 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import java.util.ArrayList;
 import java.util.HashMap;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.PartialConfiguration;
@@ -22,7 +18,12 @@ import multiblock.Multiblock;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
+import planner.FileFormat;
+import planner.Main;
 import simplelibrary.Queue;
+import simplelibrary.Sys;
+import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorLevel;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
@@ -163,117 +164,83 @@ public class MenuMain extends Menu{
             multiblockButtons.add(button);
         }
         saveFile.addActionListener((e) -> {
-            new Thread(() -> {
-                NCPFFile ncpf = new NCPFFile();
-                ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
-                ncpf.multiblocks.addAll(Core.multiblocks);
-                ncpf.metadata.putAll(Core.metadata);
-                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setAcceptAllFileFilterUsed(false);
-                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        File file = chooser.getSelectedFile();
-                        if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                        if(file.exists()){
-                            if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
-                            file.delete();
-                        }
-                        FileWriter.write(ncpf, file, FileWriter.NCPF);
-                    }
-                });
-                chooser.showSaveDialog(null);
-            }).start();
+            NCPFFile ncpf = new NCPFFile();
+            ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
+            ncpf.multiblocks.addAll(Core.multiblocks);
+            ncpf.metadata.putAll(Core.metadata);
+            Core.createFileChooser(null, (file, format) -> {
+                if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                file = Core.askForOverwrite(file);
+                if(file==null)return;
+                FileWriter.write(ncpf, file, FileWriter.NCPF);
+            }, FileFormat.NCPF);
         });
         loadFile.addActionListener((e) -> {
-            new Thread(() -> {
-                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setAcceptAllFileFilterUsed(false);
-                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf", "json"));
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        File file = chooser.getSelectedFile();
-                        NCPFFile ncpf = FileReader.read(file);
-                        if(ncpf==null)return;
-                        Core.multiblocks.clear();
-                        Core.metadata.clear();
-                        Core.metadata.putAll(ncpf.metadata);
-                        if(ncpf.configuration==null||ncpf.configuration.isPartial()){
-                            if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                                JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
+            Core.createFileChooser((file, format) -> {
+                NCPFFile ncpf = FileReader.read(file);
+                if(ncpf==null)return;
+                Core.multiblocks.clear();
+                Core.metadata.clear();
+                Core.metadata.putAll(ncpf.metadata);
+                if(ncpf.configuration==null||ncpf.configuration.isPartial()){
+                    if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
+                        if(Main.hasAWT){
+                            javax.swing.JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
                         }else{
-                            Core.configuration = ncpf.configuration;
+                            Sys.error(ErrorLevel.minor, "Configuration mismatch detected!", null, ErrorCategory.other);
                         }
-                        for(Multiblock mb : ncpf.multiblocks){
-                            mb.convertTo(Core.configuration);
-                            Core.multiblocks.add(mb);
-                        }
-                        onGUIOpened();
+                        return;
                     }
-                });
-                chooser.showOpenDialog(null);
-            }).start();
+                }else{
+                    Core.configuration = ncpf.configuration;
+                }
+                for(Multiblock mb : ncpf.multiblocks){
+                    mb.convertTo(Core.configuration);
+                    Core.multiblocks.add(mb);
+                }
+                onGUIOpened();
+            }, FileFormat.ALL_PLANNER_FORMATS);
         });
         importFile.addActionListener((e) -> {
-            new Thread(() -> {
-                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setAcceptAllFileFilterUsed(false);
-                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf", "json"));
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        File file = chooser.getSelectedFile();
-                        NCPFFile ncpf = FileReader.read(file);
-                        if(ncpf==null)return;
-                        if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                            JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        for(Multiblock mb : ncpf.multiblocks){
-                            mb.convertTo(Core.configuration);
-                            Core.multiblocks.add(mb);
-                        }
-                        onGUIOpened();
+            Core.createFileChooser((file, format) -> {
+                NCPFFile ncpf = FileReader.read(file);
+                if(ncpf==null)return;
+                if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
+                    if(Main.hasAWT){
+                        javax.swing.JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        Sys.error(ErrorLevel.minor, "Configuration mismatch detected!", null, ErrorCategory.other);
                     }
-                });
-                chooser.showOpenDialog(null);
-            }).start();
+                    return;
+                }
+                for(Multiblock mb : ncpf.multiblocks){
+                    mb.convertTo(Core.configuration);
+                    Core.multiblocks.add(mb);
+                }
+                onGUIOpened();
+            }, FileFormat.ALL_PLANNER_FORMATS);
         });
         exportMultiblock.addActionListener((e) -> {
-            new Thread(() -> {
-                NCPFFile ncpf = new NCPFFile();
-                Multiblock multi = getSelectedMultiblock();
-                ncpf.multiblocks.add(multi);
-                ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
-                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setAcceptAllFileFilterUsed(false);
-                HashMap<FileFilter, FormatWriter> filters = new HashMap<>();
-                for(FormatWriter writer : FileWriter.formats){
-                    if(!writer.isMultiblockSupported(multi))continue;
-                    FileFilter f = new FileNameExtensionFilter(writer.getDesc(), writer.getExtensions());
-                    chooser.addChoosableFileFilter(f);
-                    if(Core.isShiftPressed()&&f.getDescription().contains("PNG"))chooser.setFileFilter(f);
-                    filters.put(f, writer);
+            NCPFFile ncpf = new NCPFFile();
+            Multiblock multi = getSelectedMultiblock();
+            ncpf.multiblocks.add(multi);
+            ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
+            HashMap<FileFormat, FormatWriter> formats = new HashMap<>();
+            for(FormatWriter writer : FileWriter.formats){
+                if(!writer.isMultiblockSupported(multi))continue;
+                formats.put(writer.getFileFormat(), writer);
+            }
+            Core.createFileChooser(null, (file, format) -> {
+                FormatWriter writer = formats.get(format);
+                boolean hasExtension = false;
+                for(String ext : format.extensions){
+                    if(file.getName().endsWith("."+ext))hasExtension = true;
                 }
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        File file = chooser.getSelectedFile();
-                        FormatWriter writer = filters.get(chooser.getFileFilter());
-                        boolean hasExtension = false;
-                        for(String ext : writer.getExtensions()){
-                            if(file.getName().endsWith("."+ext))hasExtension = true;
-                        }
-                        if(!hasExtension)file = new File(file.getAbsolutePath()+"."+writer.getExtensions()[0]);
-                        if(file.exists()){
-                            if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
-                            file.delete();
-                        }
-                        pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
-                    }
-                });
-                chooser.showSaveDialog(null);
-            }).start();
+                if(!hasExtension)file = new File(file.getAbsolutePath()+"."+format.extensions[0]);
+                file = Core.askForOverwrite(file);
+                if(file==null)return;
+                pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
+            }, formats.keySet().toArray(new FileFormat[formats.keySet().size()]));
         });
         addMultiblock.addActionListener((e) -> {
             adding = true;

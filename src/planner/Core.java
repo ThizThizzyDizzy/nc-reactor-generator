@@ -24,7 +24,12 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
+import planner.menu.error.MenuCriticalError;
 import planner.menu.MenuDiscord;
+import planner.menu.MenuLoadFile;
+import planner.menu.error.MenuMinorError;
+import planner.menu.error.MenuModerateError;
+import planner.menu.error.MenuSevereError;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -113,80 +118,158 @@ public class Core extends Renderer2D{
             public void minorError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Minor "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
+                if(Main.hasAWT){
+                    String details = "";
+                    Throwable t = error;
+                    while(t!=null){
+                        details+=t.getClass().getName()+" "+t.getMessage();
+                        StackTraceElement[] stackTrace = t.getStackTrace();
+                        for(StackTraceElement e : stackTrace){
+                            if(e.getClassName().startsWith("net."))continue;
+                            if(e.getClassName().startsWith("com."))continue;
+                            String[] splitClassName = e.getClassName().split("\\Q.");
+                            String filename = splitClassName[splitClassName.length-1]+".java";
+                            String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
+                            if((details+nextLine).length()+4>1024){
+                                details+="\n...";
+                                break;
+                            }else details+=nextLine;
+                        }
+                        t = t.getCause();
+                        if(t!=null)details+="\nCaused by ";
+                    }
+                    String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
+                    switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Minor "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
+                        case 0:
+                            gui.open(new MenuMain(gui));
+                            break;
+                        case 2:
+                            helper.running = false;
+                            break;
+                        case 1:
+                        default:
+                            break;
+                    }
+                }else{
+                    gui.open(new MenuMinorError(gui, gui.menu, message, error, category));
+                }
             }
             @Override
             public void moderateError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Moderate "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
+                if(Main.hasAWT){
+                    String details = "";
+                    Throwable t = error;
+                    while(t!=null){
+                        details+=t.getClass().getName()+" "+t.getMessage();
+                        StackTraceElement[] stackTrace = t.getStackTrace();
+                        for(StackTraceElement e : stackTrace){
+                            if(e.getClassName().startsWith("net."))continue;
+                            if(e.getClassName().startsWith("com."))continue;
+                            String[] splitClassName = e.getClassName().split("\\Q.");
+                            String filename = splitClassName[splitClassName.length-1]+".java";
+                            String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
+                            if((details+nextLine).length()+4>1024){
+                                details+="\n...";
+                                break;
+                            }else details+=nextLine;
+                        }
+                        t = t.getCause();
+                        if(t!=null)details+="\nCaused by ";
+                    }
+                    String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
+                    switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Moderate "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
+                        case 0:
+                            gui.open(new MenuMain(gui));
+                            break;
+                        case 2:
+                            helper.running = false;
+                            break;
+                        case 1:
+                        default:
+                            break;
+                    }
+                }else{
+                    gui.open(new MenuModerateError(gui, gui.menu, message, error, category));
+                }
             }
             @Override
             public void severeError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
-                String details = "";
-                Throwable t = error;
-                while(t!=null){
-                    details+=t.getClass().getName()+" "+t.getMessage();
-                    StackTraceElement[] stackTrace = t.getStackTrace();
-                    for(StackTraceElement e : stackTrace){
-                        if(e.getClassName().startsWith("net."))continue;
-                        if(e.getClassName().startsWith("com."))continue;
-                        String[] splitClassName = e.getClassName().split("\\Q.");
-                        String filename = splitClassName[splitClassName.length-1]+".java";
-                        String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
-                        if((details+nextLine).length()+4>1024){
-                            details+="\n...";
-                            break;
-                        }else details+=nextLine;
+                if(Main.hasAWT){
+                    String details = "";
+                    Throwable t = error;
+                    while(t!=null){
+                        details+=t.getClass().getName()+" "+t.getMessage();
+                        StackTraceElement[] stackTrace = t.getStackTrace();
+                        for(StackTraceElement e : stackTrace){
+                            if(e.getClassName().startsWith("net."))continue;
+                            if(e.getClassName().startsWith("com."))continue;
+                            String[] splitClassName = e.getClassName().split("\\Q.");
+                            String filename = splitClassName[splitClassName.length-1]+".java";
+                            String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
+                            if((details+nextLine).length()+4>1024){
+                                details+="\n...";
+                                break;
+                            }else details+=nextLine;
+                        }
+                        t = t.getCause();
+                        if(t!=null)details+="\nCaused by ";
                     }
-                    t = t.getCause();
-                    if(t!=null)details+="\nCaused by ";
-                }
-                String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
-                switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
-                    case 0:
-                        gui.open(new MenuMain(gui));
-                        break;
-                    case 2:
-                        helper.running = false;
-                        break;
-                    case 1:
-                    default:
-                        break;
+                    String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
+                    switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
+                        case 0:
+                            gui.open(new MenuMain(gui));
+                            break;
+                        case 2:
+                            helper.running = false;
+                            break;
+                        case 1:
+                        default:
+                            break;
+                    }
+                }else{
+                    gui.open(new MenuSevereError(gui, gui.menu, message, error, category));
                 }
             }
             @Override
             public void criticalError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
-                String details = "";
-                Throwable t = error;
-                while(t!=null){
-                    details+=t.getClass().getName()+" "+t.getMessage();
-                    StackTraceElement[] stackTrace = t.getStackTrace();
-                    for(StackTraceElement e : stackTrace){
-                        if(e.getClassName().startsWith("net."))continue;
-                        if(e.getClassName().startsWith("com."))continue;
-                        String[] splitClassName = e.getClassName().split("\\Q.");
-                        String filename = splitClassName[splitClassName.length-1]+".java";
-                        String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
-                        if((details+nextLine).length()+4>1024){
-                            details+="\n...";
-                            break;
-                        }else details+=nextLine;
+                if(Main.hasAWT){
+                    String details = "";
+                    Throwable t = error;
+                    while(t!=null){
+                        details+=t.getClass().getName()+" "+t.getMessage();
+                        StackTraceElement[] stackTrace = t.getStackTrace();
+                        for(StackTraceElement e : stackTrace){
+                            if(e.getClassName().startsWith("net."))continue;
+                            if(e.getClassName().startsWith("com."))continue;
+                            String[] splitClassName = e.getClassName().split("\\Q.");
+                            String filename = splitClassName[splitClassName.length-1]+".java";
+                            String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
+                            if((details+nextLine).length()+4>1024){
+                                details+="\n...";
+                                break;
+                            }else details+=nextLine;
+                        }
+                        t = t.getCause();
+                        if(t!=null)details+="\nCaused by ";
                     }
-                    t = t.getCause();
-                    if(t!=null)details+="\nCaused by ";
-                }
-                String[] options = new String[]{"Main Menu", "Exit"};
-                switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
-                    case 0:
-                        gui.open(new MenuMain(gui));
-                        break;
-                    case 1:
-                    default:
-                        helper.running = false;
-                        break;
+                    String[] options = new String[]{"Main Menu", "Exit"};
+                    switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
+                        case 0:
+                            gui.open(new MenuMain(gui));
+                            break;
+                        case 1:
+                        default:
+                            helper.running = false;
+                            break;
+                    }
+                }else{
+                    gui.open(new MenuCriticalError(gui, message, error, category));
                 }
             }
         }, null, helper);
@@ -245,6 +328,10 @@ public class Core extends Renderer2D{
         tutorialShown = settings.get("tutorialShown", false);
         Main.setLookAndFeel();
         System.out.println("Startup complete!");
+        if(Main.hasAWTAfterStartup){
+            Main.hasAWT = true;
+            Main.setLookAndFeel();
+        }
         if(!tutorialShown){
 //            gui.open(new MenuTutorial(gui, gui.menu));
         }
@@ -389,10 +476,84 @@ public class Core extends Renderer2D{
         img.setRGB(0, 0, width, height, imgRGBData, 0, width);
         return img;
     }
+    public static File askForOverwrite(File file){
+        if(!file.exists())return file; 
+        if(Main.hasAWT){
+            if(javax.swing.JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE)!=javax.swing.JOptionPane.OK_OPTION)return null;
+            file.delete();
+        }else{
+            while(file.exists()){
+                String path = file.getPath();
+                String[] split = path.split("\\.");
+                String extension = "."+split[split.length-1];
+                file = new File(path.substring(0, path.length()-extension.length())+"_"+extension);//TODO TEST THIS
+            }
+        }
+        return file;
+    }
     public static interface BufferRenderer{
         void render(Framebuffer buff);
     }
     private static int f(byte imgData){
         return (imgData+256)&255;
+    }
+    public static void createFileChooser(FileChooserResultListener listener, FileFormat... formats){
+        if(Main.hasAWT){
+            new Thread(() -> {
+                javax.swing.JFileChooser chooser = new javax.swing.JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                HashMap<javax.swing.filechooser.FileFilter, FileFormat> filters = new HashMap<>();
+                for(FileFormat format : formats){
+                    javax.swing.filechooser.FileFilter filter = format.getFileFilter();
+                    filters.put(filter, format);
+                    chooser.addChoosableFileFilter(filter);
+                    if(Core.isShiftPressed()&&format==FileFormat.PNG)chooser.setFileFilter(filter);
+                }
+                chooser.setAcceptAllFileFilterUsed(false);
+                chooser.addActionListener((event) -> {
+                    if(event.getActionCommand().equals("ApproveSelection")){
+                        listener.approved(chooser.getSelectedFile(), filters.get(chooser.getFileFilter()));
+                    }
+                });
+                chooser.showOpenDialog(null);
+            }).start();
+        }else{
+            gui.open(new MenuLoadFile(gui, gui.menu, listener, formats));
+        }
+    }
+    public static void createFileChooser(File selectedFile, FileChooserResultListener listener, FileFormat... formats){
+        if(Main.hasAWT){
+            new Thread(() -> {
+                javax.swing.JFileChooser chooser = new javax.swing.JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                if(selectedFile!=null)chooser.setSelectedFile(selectedFile);
+                HashMap<javax.swing.filechooser.FileFilter, FileFormat> filters = new HashMap<>();
+                for(FileFormat format : formats){
+                    javax.swing.filechooser.FileFilter filter = format.getFileFilter();
+                    filters.put(filter, format);
+                    chooser.addChoosableFileFilter(filter);
+                    if(Core.isShiftPressed()&&format==FileFormat.PNG)chooser.setFileFilter(filter);
+                }
+                chooser.setAcceptAllFileFilterUsed(false);
+                chooser.addActionListener((event) -> {
+                    if(event.getActionCommand().equals("ApproveSelection")){
+                        listener.approved(chooser.getSelectedFile(), filters.get(chooser.getFileFilter()));
+                    }
+                });
+                chooser.showSaveDialog(null);
+            }).start();
+        }else{
+            if(selectedFile!=null){
+                FileFormat form = null;
+                for(FileFormat format : formats){
+                    for(String ext : format.extensions){
+                        if(selectedFile.getName().endsWith("."+ext))form = format;
+                    }
+                }
+                if(form!=null){
+                    listener.approved(selectedFile, form);
+                    return;
+                }
+            }
+            listener.approved(new File("export."+formats[0].extensions[0]), formats[0]);//TODO proper save
+        }
     }
 }

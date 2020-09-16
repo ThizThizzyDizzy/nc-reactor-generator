@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Supplier;
-import javax.swing.JOptionPane;
 public abstract class Theme{
     public static ArrayList<Theme> themes = new ArrayList<>();
     static{
@@ -507,7 +506,11 @@ public abstract class Theme{
             if(Main.isBot)siezureAllowed = false;
             new Thread(() -> {
                 if(siezureAllowed==null){
-                    siezureAllowed = JOptionPane.showConfirmDialog(null, "CONTAINS LOTS OF FLASHING COLORS\nCONTINUE?", "SIEZURE WARNING", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)==JOptionPane.OK_OPTION;
+                    if(Main.hasAWT){
+                        siezureAllowed = javax.swing.JOptionPane.showConfirmDialog(null, "CONTAINS LOTS OF FLASHING COLORS\nCONTINUE?", "SIEZURE WARNING", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE)==javax.swing.JOptionPane.OK_OPTION;
+                    }else{
+                        siezureAllowed = false;//TODO add a non-awt thing for this
+                    }
                     if(!siezureAllowed){
                         Core.setTheme(themes.get(0));
                         themes.remove(this);

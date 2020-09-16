@@ -385,7 +385,7 @@ public class Bot extends ListenerAdapter{
                 ArrayList<FormatWriter> formats = new ArrayList<>();
                 for(String format : formatStrings){
                     for(FormatWriter writer : FileWriter.formats){
-                        for(String extention : writer.getExtensions()){
+                        for(String extention : writer.getFileFormat().extensions){
                             if(format.toLowerCase(Locale.ENGLISH).contains(extention)){
                                 formats.add(writer);
                                 break;
@@ -553,7 +553,7 @@ public class Bot extends ListenerAdapter{
                         ncpf.configuration = PartialConfiguration.generate(finalMultiblock.getConfiguration(), ncpf.multiblocks);
                         for(FormatWriter writer : formats){
                             CircularStream stream = new CircularStream(1024*1024);//1MB
-                            CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getExtensions()[0]).submit();
+                            CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
                             try{
                                 writer.write(ncpf, stream);
                             }catch(Exception ex){

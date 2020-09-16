@@ -54,7 +54,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public String getName(){
-        return template.name;
+        return isCasing()?"Casing":template.name;
     }
     @Override
     public void clearData(){
@@ -159,6 +159,7 @@ public class Block extends multiblock.Block{
     public boolean isCore(){
         return isModerator()||isFuelCell()||isShield()||isIrradiator()||isReflector();
     }
+    @Override
     public boolean isCasing(){
         return template==null;
     }

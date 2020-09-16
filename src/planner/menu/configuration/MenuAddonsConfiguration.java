@@ -1,10 +1,9 @@
 package planner.menu.configuration;
 import java.io.File;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import planner.Core;
+import planner.FileFormat;
 import planner.file.FileReader;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
@@ -30,24 +29,16 @@ public class MenuAddonsConfiguration extends Menu{
             gui.open(new MenuConfiguration(gui, this, c));
         });
         load.addActionListener((e) -> {
-            new Thread(() -> {
-                JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
-                chooser.addActionListener((event) -> {
-                    try{
-                        if(event.getActionCommand().equals("ApproveSelection")){
-                            File file = chooser.getSelectedFile();
-                            NCPFFile ncpf = FileReader.read(file);
-                            if(ncpf==null)return;
-                            Core.configuration.addAndConvertAddon(AddonConfiguration.convert(ncpf.configuration));
-                            onGUIOpened();
-                        }
-                    }catch(Exception ex){
-                        Sys.error(ErrorLevel.severe, "Failed to load addon", ex, ErrorCategory.fileIO);
-                    }
-                });
-                chooser.showOpenDialog(null);
-            }).start();
+            Core.createFileChooser((file, format) -> {
+                try{
+                    NCPFFile ncpf = FileReader.read(file);
+                    if(ncpf==null)return;
+                    Core.configuration.addAndConvertAddon(AddonConfiguration.convert(ncpf.configuration));
+                    onGUIOpened();
+                }catch(Exception ex){
+                    Sys.error(ErrorLevel.severe, "Failed to load addon", ex, ErrorCategory.fileIO);
+                }
+            }, FileFormat.NCPF);
         });
         back.addActionListener((e) -> {
             gui.open(parent);

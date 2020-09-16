@@ -7,14 +7,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import multiblock.configuration.AddonConfiguration;
 import planner.Core;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
+import planner.FileFormat;
+import planner.Main;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
@@ -23,7 +22,10 @@ import planner.menu.configuration.overhaul.MenuOverhaulConfiguration;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.GUI;
 import planner.menu.Menu;
+import simplelibrary.Sys;
 import simplelibrary.config2.Config;
+import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorLevel;
 public class MenuConfiguration extends Menu{
     private final Configuration configuration;
     private final MenuComponentMinimalistTextBox name;
@@ -77,37 +79,32 @@ public class MenuConfiguration extends Menu{
                 try{
                     Desktop.getDesktop().browse(new URI("https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit?usp=sharing"));
                 }catch(URISyntaxException|IOException ex){
-                    JOptionPane.showMessageDialog(null, "https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit?usp=sharing", "Failed to open webpage", JOptionPane.ERROR_MESSAGE);
+                    if(Main.hasAWT){
+                        javax.swing.JOptionPane.showMessageDialog(null, "https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit?usp=sharing", "Failed to open webpage", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        Sys.error(ErrorLevel.minor, "Failed to open webpage\nhttps://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit?usp=sharing", null, ErrorCategory.InternetIO, false);
+                    }
                 }
+            }else{
+                Sys.error(ErrorLevel.minor, "Desktop Browse is not supported\nhttps://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit?usp=sharing", null, ErrorCategory.InternetIO, false);
             }
         });
         addons.addActionListener((e) -> {
             if(configuration.addon){
-                new Thread(() -> {
-                    JFileChooser chooser = new JFileChooser(new File("file").getAbsoluteFile().getParentFile());
-                    chooser.setFileFilter(new FileNameExtensionFilter("NuclearCraft Planner File", "ncpf"));
-                    chooser.setSelectedFile(new File(configuration.name));
-                    chooser.addActionListener((event) -> {
-                        if(event.getActionCommand().equals("ApproveSelection")){
-                            File file = chooser.getSelectedFile();
-                            if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                            if(file.exists()){
-                                if(JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE)!=JOptionPane.OK_OPTION)return;
-                                file.delete();
-                            }
-                            try(FileOutputStream stream = new FileOutputStream(file)){
-                                Config header = Config.newConfig();
-                                header.set("version", NCPFFile.SAVE_VERSION);
-                                header.set("count", 0);
-                                header.save(stream);
-                                AddonConfiguration.generate(Core.configuration, configuration).save(null, Config.newConfig()).save(stream);
-                            }catch(IOException ex){
-                                JOptionPane.showMessageDialog(null, ex.getMessage(), ex.getClass().getName(), JOptionPane.ERROR_MESSAGE);
-                            }
-                        }
-                    });
-                    chooser.showSaveDialog(null);
-                }).start();
+                Core.createFileChooser(new File(configuration.name), (file, format) -> {
+                    if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                    file = Core.askForOverwrite(file);
+                    if(file==null)return;
+                    try(FileOutputStream stream = new FileOutputStream(file)){
+                        Config header = Config.newConfig();
+                        header.set("version", NCPFFile.SAVE_VERSION);
+                        header.set("count", 0);
+                        header.save(stream);
+                        AddonConfiguration.generate(Core.configuration, configuration).save(null, Config.newConfig()).save(stream);
+                    }catch(IOException ex){
+                        Sys.error(ErrorLevel.severe, "Failed to save addon", ex, ErrorCategory.fileIO);
+                    }
+                }, FileFormat.NCPF);
             }else{
                 gui.open(new MenuAddonsConfiguration(gui, this));
             }
