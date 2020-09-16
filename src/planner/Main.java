@@ -302,7 +302,7 @@ public class Main{
                     downloadSize+=requiredLibraries.get(lib);
                 }
             }
-            total = 8+requiredLibraries.size();
+            total = requiredLibraries.size();
             File[] requiredLibs = new File[requiredLibraries.size()];
             if(hasAWT){
                 javax.swing.JFrame frame;
@@ -333,7 +333,7 @@ public class Main{
                     String url = lib[0];
                     String filename = lib[1];
                     requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"/"+filename));
-                    System.out.println("Downloading... "+(100d*current/total)+"% ("+current+"/"+total+")");
+                    System.out.println("Downloading... "+Math.round(100d*current/total)+"% ("+current+"/"+total+")");
                     n++;
                 }
                 System.out.println("Finished downloading libraries");

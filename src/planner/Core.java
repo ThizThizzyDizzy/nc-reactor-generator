@@ -326,12 +326,11 @@ public class Core extends Renderer2D{
         System.out.println("Loading theme...");
         setTheme(Theme.themes.get(settings.get("theme", 0)));
         tutorialShown = settings.get("tutorialShown", false);
-        Main.setLookAndFeel();
-        System.out.println("Startup complete!");
         if(Main.hasAWTAfterStartup){
             Main.hasAWT = true;
-            Main.setLookAndFeel();
         }
+        Main.setLookAndFeel();
+        System.out.println("Startup complete!");
         if(!tutorialShown){
 //            gui.open(new MenuTutorial(gui, gui.menu));
         }
