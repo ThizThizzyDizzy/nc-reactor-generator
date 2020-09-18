@@ -536,7 +536,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     private float getRainbowScore(){
         float totalSinks = 0;
         for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
-            if(b.cooling>0)totalSinks++;
+            if(b.cooling!=0)totalSinks++;
         }
         Set<multiblock.configuration.overhaul.fissionsfr.Block> unique = new HashSet<>();
         for(Block b : getBlocks()){
@@ -567,7 +567,9 @@ public class OverhaulSFR extends Multiblock<Block>{
         }
         private Cluster(){}
         private boolean isValid(){
-            if(!isConnectedToWall)return false;
+            return isConnectedToWall&&isCreated();
+        }
+        public boolean isCreated(){
             for(Block block : blocks){
                 if(block.template.createCluster)return true;
             }

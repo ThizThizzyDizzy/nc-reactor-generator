@@ -10,6 +10,7 @@ import planner.menu.component.tutorial.MenuComponentTutorialDisplay;
 import planner.tutorial.Tutorial;
 import planner.tutorial.TutorialCategory;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 public class MenuTutorial extends Menu{
     public MenuComponentMinimaList tutorialList = add(new MenuComponentMinimaList(0, 0, 0, 0, 32, true));
     public MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true));
@@ -46,15 +47,15 @@ public class MenuTutorial extends Menu{
     @Override
     public void renderBackground(){
         tutorialList.x = categoryLabel.width = tutorialLabel.width = categoryBox.width = tutorialBox.width = done.width = title.x = 300;
-        title.width = Core.helper.displayWidth()-title.x;
+        title.width = gui.helper.displayWidth()-title.x;
         categoryLabel.height = tutorialLabel.height = 48;
         done.height = title.height = 64;
         tutorialList.y = categoryLabel.y = done.y+done.height;
         categoryBox.y = categoryLabel.y+categoryLabel.height;
         tutorialLabel.y = categoryBox.y+categoryBox.height;
         tutorialBox.y = tutorialLabel.y+tutorialLabel.height;
-        tutorialList.width = Core.helper.displayWidth()-tutorialList.x;
-        tutorialList.height = Core.helper.displayHeight()-tutorialList.y;
+        tutorialList.width = gui.helper.displayWidth()-tutorialList.x;
+        tutorialList.height = gui.helper.displayHeight()-tutorialList.y;
         tutorialDisplay.width = tutorialList.width-tutorialList.vertScrollbarWidth;
         tutorialDisplay.height = selectedTutorial.getHeight(tutorialDisplay.width);
         if(selectedCategory!=Tutorial.categories.get(categoryBox.getSelectedIndex())){
@@ -66,7 +67,7 @@ public class MenuTutorial extends Menu{
             onTutorialChanged();
         }
         Core.applyAverageColor(Core.theme.getDarkButtonColor(),Core.theme.getBackgroundColor());
-        drawRect(0, 0, done.width, Core.helper.displayHeight(), 0);
+        drawRect(0, 0, done.width, gui.helper.displayHeight(), 0);
         super.renderBackground();
     }
 }

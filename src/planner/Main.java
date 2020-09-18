@@ -25,29 +25,24 @@ public class Main{
     public static boolean isBot = false;
     public static boolean hasAWT = true;
     public static boolean hasAWTAfterStartup = false;
+    private static final int OS_UNKNOWN = -1;
+    private static final int OS_WINDOWS = 0;
+    private static final int OS_MACOS = 1;
+    private static final int OS_LINUX = 2;
+    private static int os = OS_UNKNOWN;//Should not be directly referenced from other classes, as there are always better ways of handling OS-compatibility
     private static void addRequiredLibrary(String url, String filename, int sizeKB){
         requiredLibraries.put(new String[]{url,filename}, sizeKB);
     }
     public static void main(String[] args){
         try{
-            if(args.length>=1&&args[0].equals("noAWT")){
+            if(args.length>=1&&args[0].equals("noAWT")||args.length>=2&&args[1].equals("noAWT")||args.length>=3&&args[2].equals("noAWT")){
                 hasAWT = false;
-                String[] rgs = new String[args.length-1];
-                for(int i = 0; i<rgs.length; i++){
-                    rgs[i] = args[i+1];
-                }
-                args = rgs;
             }
-            if(args.length>=1&&args[0].equals("noAWTDuringStartup")){
+            if(args.length>=1&&args[0].equals("noAWTDuringStartup")||args.length>=2&&args[1].equals("noAWTDuringStartup")||args.length>=3&&args[2].equals("noAWTDuringStartup")){
                 hasAWT = false;
                 hasAWTAfterStartup = true;
-                String[] rgs = new String[args.length-1];
-                for(int i = 0; i<rgs.length; i++){
-                    rgs[i] = args[i+1];
-                }
-                args = rgs;
             }
-            if(args.length>=1&&args[0].equals("maybediscord")||args.length>=2&&args[1].equals("maybediscord")){
+            if(args.length>=1&&args[0].equals("maybediscord")||args.length>=2&&args[1].equals("maybediscord")||args.length>=3&&args[2].equals("maybediscord")){
                 if(hasAWT){
                     if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
                 }else{
@@ -121,11 +116,6 @@ public class Main{
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-opengl.jar", "lwjgl-opengl.jar", 915);
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-stb.jar", "lwjgl-stb.jar", 102);
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl-3.2.3.jar", 540);
-            final int OS_UNKNOWN = -1;
-            final int OS_WINDOWS = 0;
-            final int OS_MACOS = 1;
-            final int OS_LINUX = 2;
-            int os = OS_UNKNOWN;
             String osName = System.getProperty("os.name");
             if(osName==null)osName = "null";
             osName = osName.toLowerCase(Locale.ENGLISH);
@@ -279,7 +269,7 @@ public class Main{
                     }
                     break;
             }
-            addRequiredLibrary("https://github.com/computerneek/SimpleLibrary/releases/download/11.1.0pre2/SimpleLibrary.11.1.0pre2.jar", "SimpleLibrary-11.1.0pre2.jar", 504);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.0.1/SimpleLibraryPlus-1.0.1.jar", "SimpleLibraryPlus-1.0.1.jar", 505);
             if(isBot){//I'll leave this on dropbox for now. What could possibly go wrong?
                 addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
                 addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);
@@ -533,6 +523,7 @@ public class Main{
     public static Process restart(String[] vmArgs, String[] applicationArgs, String[] additionalFiles, Class<?> mainClass) throws URISyntaxException, IOException{
         ArrayList<String> params = new ArrayList<>();
         params.add("java");
+        if(os==OS_MACOS)params.add("-XstartOnFirstThread");
         params.addAll(Arrays.asList(vmArgs));
         params.add("-classpath");
         String filepath = mainClass.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
@@ -557,7 +548,7 @@ public class Main{
     public static Process startJava(String[] vmArgs, String[] applicationArgs, File file) throws URISyntaxException, IOException{
         ArrayList<String> params = new ArrayList<>();
         params.add("java");
-        params.add("-XstartOnFirstThread");
+        if(os==OS_MACOS)params.add("-XstartOnFirstThread");
         params.addAll(Arrays.asList(vmArgs));
         params.add("-jar");
         params.add(file.getAbsolutePath());

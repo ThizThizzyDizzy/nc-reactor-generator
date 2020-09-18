@@ -2,9 +2,8 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
-import planner.menu.MenuComponentTooltip;
 import simplelibrary.opengl.gui.components.MenuComponentSlider;
-public class MenuComponentMinimalistSlider extends MenuComponentSlider implements MenuComponentTooltip{
+public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     private final boolean darker;
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled){
         this(x, y, width, height, name, minimum, maximum, initial, enabled, false);

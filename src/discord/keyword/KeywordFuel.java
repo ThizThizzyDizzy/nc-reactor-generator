@@ -23,6 +23,9 @@ public class KeywordFuel extends Keyword{
             fuel = fuel.replaceAll("\\[[fF]4\\]", "")+" Fluoride";
         }
         fuel = fuel.replace("  ", " ").replace(" -", "-").trim();
+        fuel = fuel.replaceAll("[iI][cC]2[- ]", "IC2 ");
+        if(fuel.equalsIgnoreCase("enriched uranium"))fuel = "IC2 "+fuel;
+        if(fuel.equalsIgnoreCase("yellorium"))fuel = fuel+" Ingot";
         return true;
     }
     @Override
@@ -31,7 +34,7 @@ public class KeywordFuel extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "([a-z]+[ -]?\\d{3} ?\\[[a-z0-9]+\\]|\\[[a-z0-9]+\\] ?[a-z]+[ -]?\\d{3}|([a-z]+[ -]?\\d{3}|tbu)([ -]?(ox(ide)?|ni(tride)?|(tetra)?f(4|luoride)|z(a|irconium([ -]?alloy)?)))?)([ -](fuel))?|((ic2[ -]?)?(enriched )?[a-z]+([ -]?(ox(ide)?|ni(tride)?|(tetra)?f(4|luoride)|z(a|irconium([ -]?alloy)?))?)([ -]((nuclear )?fuel|ingot)))|yellorium|(enriched[ -])?uranium";
+        return "(ic2[ -]mox|[a-z]+[ -]?\\d{3} ?\\[[a-z0-9]+\\]|\\[[a-z0-9]+\\] ?[a-z]+[ -]?\\d{3}|([a-z]+[ -]?\\d{3}|tbu)([ -]?(ox(ide)?|ni(tride)?|(tetra)?f(4|luoride)|z(a|irconium([ -]?alloy)?)))?)([ -](fuel))?|((ic2[ -]?)?(enriched )?[a-z]+([ -]?(ox(ide)?|ni(tride)?|(tetra)?f(4|luoride)|z(a|irconium([ -]?alloy)?))?)([ -]((nuclear )?fuel|ingot)))|yellorium|(enriched[ -])?uranium";
     }
     @Override
     public Keyword newInstance(){

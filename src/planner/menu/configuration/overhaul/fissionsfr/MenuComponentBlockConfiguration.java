@@ -74,7 +74,7 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
         Core.applyColor(Core.theme.getTextColor());
         ArrayList<String> strs = new ArrayList<>();
         strs.add(block.name);
-        if(block.cooling>0)strs.add("Cooling: "+block.cooling+" H/t");
+        if(block.cooling!=0)strs.add("Cooling: "+block.cooling+" H/t");
         if(block.cluster)strs.add("Can Cluster");
         if(block.createCluster)strs.add("Creates Cluster");
         if(block.conductor)strs.add("Conductor");

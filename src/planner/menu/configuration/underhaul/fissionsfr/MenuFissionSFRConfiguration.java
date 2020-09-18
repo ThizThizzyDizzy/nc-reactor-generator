@@ -5,7 +5,7 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import static simplelibrary.opengl.Renderer2D.drawText;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 public class MenuFissionSFRConfiguration extends Menu{
     private final MenuComponentMinimalistButton blocks = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Blocks", true, true).setTooltip("Add, remove, or modify blocks"));
     private final MenuComponentMinimalistButton fuels = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Fuels", true, true).setTooltip("Add, remove, or modify fuels"));
@@ -52,10 +52,10 @@ public class MenuFissionSFRConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        minSize.width = maxSize.width = neutronReach.width = moderatorExtraPower.width = moderatorExtraHeat.width = activeCoolerRate.width = Core.helper.displayWidth()*.75;
-        minSize.x = maxSize.x = neutronReach.x = moderatorExtraPower.x = moderatorExtraHeat.x = activeCoolerRate.x = Core.helper.displayWidth()*.25;
-        blocks.width = fuels.width = back.width = Core.helper.displayWidth();
-        minSize.height = maxSize.height = neutronReach.height = moderatorExtraPower.height = moderatorExtraHeat.height = activeCoolerRate.height = blocks.height = fuels.height = back.height = Core.helper.displayHeight()/16;
+        minSize.width = maxSize.width = neutronReach.width = moderatorExtraPower.width = moderatorExtraHeat.width = activeCoolerRate.width = gui.helper.displayWidth()*.75;
+        minSize.x = maxSize.x = neutronReach.x = moderatorExtraPower.x = moderatorExtraHeat.x = activeCoolerRate.x = gui.helper.displayWidth()*.25;
+        blocks.width = fuels.width = back.width = gui.helper.displayWidth();
+        minSize.height = maxSize.height = neutronReach.height = moderatorExtraPower.height = moderatorExtraHeat.height = activeCoolerRate.height = blocks.height = fuels.height = back.height = gui.helper.displayHeight()/16;
         fuels.y = blocks.height;
         minSize.y = fuels.y+fuels.height;
         maxSize.y = minSize.y+minSize.height;
@@ -63,17 +63,17 @@ public class MenuFissionSFRConfiguration extends Menu{
         moderatorExtraPower.y = neutronReach.y+neutronReach.height;
         moderatorExtraHeat.y = moderatorExtraPower.y+moderatorExtraPower.height;
         activeCoolerRate.y = moderatorExtraHeat.y+moderatorExtraHeat.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         if(configuration.addon){
             minSize.y = maxSize.y = neutronReach.y = moderatorExtraPower.y = moderatorExtraHeat.y = activeCoolerRate.y = -minSize.height;
         }
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, minSize.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, minSize.y+minSize.height-Core.helper.displayHeight()/64, "Minimum reactor size");
-        drawText(0, maxSize.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, maxSize.y+maxSize.height-Core.helper.displayHeight()/64, "Maximum reactor size");
-        drawText(0, neutronReach.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, neutronReach.y+neutronReach.height-Core.helper.displayHeight()/64, "Neutron reach");
-        drawText(0, moderatorExtraPower.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, moderatorExtraPower.y+moderatorExtraPower.height-Core.helper.displayHeight()/64, "Moderator extra power");
-        drawText(0, moderatorExtraHeat.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, moderatorExtraHeat.y+moderatorExtraHeat.height-Core.helper.displayHeight()/64, "Moderator extra heat");
-        drawText(0, activeCoolerRate.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, activeCoolerRate.y+activeCoolerRate.height-Core.helper.displayHeight()/64, "Active cooler fluid rate");
+        drawText(0, minSize.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, minSize.y+minSize.height-gui.helper.displayHeight()/64, "Minimum reactor size");
+        drawText(0, maxSize.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, maxSize.y+maxSize.height-gui.helper.displayHeight()/64, "Maximum reactor size");
+        drawText(0, neutronReach.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, neutronReach.y+neutronReach.height-gui.helper.displayHeight()/64, "Neutron reach");
+        drawText(0, moderatorExtraPower.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, moderatorExtraPower.y+moderatorExtraPower.height-gui.helper.displayHeight()/64, "Moderator extra power");
+        drawText(0, moderatorExtraHeat.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, moderatorExtraHeat.y+moderatorExtraHeat.height-gui.helper.displayHeight()/64, "Moderator extra heat");
+        drawText(0, activeCoolerRate.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, activeCoolerRate.y+activeCoolerRate.height-gui.helper.displayHeight()/64, "Active cooler fluid rate");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

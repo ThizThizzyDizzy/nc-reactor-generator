@@ -4,11 +4,13 @@ import java.awt.Color;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.menu.MenuMain;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GLUtil;
 import planner.menu.error.MenuCriticalError;
 import planner.menu.MenuDiscord;
 import planner.menu.MenuLoadFile;
@@ -58,13 +61,12 @@ public class Core extends Renderer2D{
     public static HashMap<String, String> metadata = new HashMap<>();
     public static Configuration configuration = new Configuration(null, null, null);
     public static Theme theme = Theme.themes.get(0);
-    private static long window;
-    private static Boolean tutorialShown;
+    private static boolean tutorialShown = false;
     static{
         for(Configuration configuration : Configuration.configurations){
             if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
                 for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-                    if(b.cooling>0&&!b.name.contains("Standard")){
+                    if(b.cooling!=0&&!b.name.contains("Standard")){
                         try{
                             b.setInternalTexture(TextureManager.getImage("overhaul/"+b.name.toLowerCase(Locale.ENGLISH).replace(" coolant heater", "").replace("liquid ", "")));
                         }catch(Exception ex){
@@ -102,6 +104,22 @@ public class Core extends Renderer2D{
         helper.setFrameOfView(90);
         if(Main.isBot)Bot.start(args);
         System.out.println("Starting up...");
+        Thread debug = new Thread(() -> {
+            try{
+                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                while(helper.running){
+                    String line = reader.readLine();
+                    switch(line.trim()){
+                        case "fps":
+                            System.out.println("FPS: "+getFPS());
+                            break;
+                    }
+                }
+                reader.close();
+            }catch(IOException ex){}
+        });
+        debug.setDaemon(true);
+        debug.start();
         Sys.initLWJGLGame(new File("errors/"), new ErrorHandler() {
             private final Logger logger = Logger.getLogger(Core.class.getName());
             @Override
@@ -314,18 +332,16 @@ public class Core extends Renderer2D{
     public static void tickInit(){}
     public static void finalInit() throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException{
         System.out.println("Activating GUI...");
-        Field helperWindowField = GameHelper.class.getDeclaredField("window");
-        helperWindowField.setAccessible(true);
-        window = (long)helperWindowField.get(helper);
         helper.assignGUI(gui);
         System.out.println("Loading settings...");
         File f = new File("settings.dat").getAbsoluteFile();
-        if(!f.exists())return;
-        Config settings = Config.newConfig(f);
-        settings.load();
-        System.out.println("Loading theme...");
-        setTheme(Theme.themes.get(settings.get("theme", 0)));
-        tutorialShown = settings.get("tutorialShown", false);
+        if(f.exists()){
+            Config settings = Config.newConfig(f);
+            settings.load();
+            System.out.println("Loading theme...");
+            setTheme(Theme.themes.get(settings.get("theme", 0)));
+            tutorialShown = settings.get("tutorialShown", false);
+        }
         if(Main.hasAWTAfterStartup){
             Main.hasAWT = true;
         }
@@ -337,10 +353,10 @@ public class Core extends Renderer2D{
     }
     public static void tick(boolean isLastTick){
         if(!isLastTick){
-            if(isKeyDown(GLFW.GLFW_KEY_LEFT))xRot-=2;
-            if(isKeyDown(GLFW.GLFW_KEY_RIGHT))xRot+=2;
-            if(isKeyDown(GLFW.GLFW_KEY_UP))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot-2));
-            if(isKeyDown(GLFW.GLFW_KEY_DOWN))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot+2));
+            if(helper.isKeyDown(GLFW.GLFW_KEY_LEFT))xRot-=2;
+            if(helper.isKeyDown(GLFW.GLFW_KEY_RIGHT))xRot+=2;
+            if(helper.isKeyDown(GLFW.GLFW_KEY_UP))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot-2));
+            if(helper.isKeyDown(GLFW.GLFW_KEY_DOWN))yRot = Math.min(maxYRot, Math.max(-maxYRot, yRot+2));
             gui.tick();
         }else{
             File f = new File("settings.dat").getAbsoluteFile();
@@ -418,17 +434,17 @@ public class Core extends Renderer2D{
     public static void applyAverageColor(Color c1, Color c2){
         GL11.glColor4f((c1.getRed()+c2.getRed())/510f, (c1.getGreen()+c2.getGreen())/510f, (c1.getBlue()+c2.getBlue())/510f, (c1.getAlpha()+c2.getAlpha())/510f);
     }
+    public static void applyAverageColor(Color c1, Color c2, float alpha){
+        GL11.glColor4f((c1.getRed()+c2.getRed())/510f, (c1.getGreen()+c2.getGreen())/510f, (c1.getBlue()+c2.getBlue())/510f, (c1.getAlpha()+c2.getAlpha())/510f*alpha);
+    }
     public static boolean isAltPressed(){
-        return isKeyDown(GLFW.GLFW_KEY_LEFT_ALT)||isKeyDown(GLFW.GLFW_KEY_RIGHT_ALT);
+        return helper.isKeyDown(GLFW.GLFW_KEY_LEFT_ALT)||helper.isKeyDown(GLFW.GLFW_KEY_RIGHT_ALT);
     }
     public static boolean isControlPressed(){
-        return isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)||isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL);
+        return helper.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)||helper.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL);
     }
     public static boolean isShiftPressed(){
-        return isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)||isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT);
-    }
-    public static boolean isKeyDown(int key){
-        return GLFW.glfwGetKey(window, key)==GLFW.GLFW_PRESS;
+        return helper.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)||helper.isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT);
     }
     public static void drawCircle(double x, double y, double innerRadius, double outerRadius, Color color){
         Core.applyColor(color);
@@ -456,7 +472,7 @@ public class Core extends Renderer2D{
     }
     public static BufferedImage makeImage(int width, int height, BufferRenderer r){
         ByteBuffer bufferer = ImageStash.createDirectByteBuffer(width*height*4);
-        Framebuffer buff = new Framebuffer(Core.helper, null, width, height);
+        Framebuffer buff = new Framebuffer(helper, null, width, height);
         buff.bindRenderTarget2D();
         r.render(buff);
         bufferer.clear();

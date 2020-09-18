@@ -90,7 +90,7 @@ public class MenuComponentMinimalistScrollable extends MenuComponentScrollable{
 //    int lowestNonZeroWheel = Integer.MAX_VALUE;
 //    @Override
 //    public boolean mouseWheelChange(int wheelChange){
-//        if(!isClickWithinBounds(Mouse.getX(), Core.helper.displayHeight()-Mouse.getY(), x, y, x+width, y+height))return false;
+//        if(!isClickWithinBounds(Mouse.getX(), gui.helper.displayHeight()-Mouse.getY(), x, y, x+width, y+height))return false;
 //        if(wheelChange!=0){
 //            lowestNonZeroWheel = Math.min(lowestNonZeroWheel, Math.abs(wheelChange));
 //        }

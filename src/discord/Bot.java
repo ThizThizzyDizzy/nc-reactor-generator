@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Random;
@@ -1794,8 +1793,8 @@ public class Bot extends ListenerAdapter{
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
         guild = event.getGuild();
+        if(dataChannels.contains(event.getChannel().getIdLong()))storeMultiblocks(event.getMessage());//store own posts too :3
         if(event.getAuthor().isBot())return;
-        storeMultiblocks(event.getMessage());
         if(botChannels.contains(event.getChannel().getIdLong())){
             String command = event.getMessage().getContentRaw();
             boolean hasPrefix = false;

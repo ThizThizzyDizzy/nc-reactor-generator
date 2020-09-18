@@ -5,7 +5,7 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import static simplelibrary.opengl.Renderer2D.drawText;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 public class MenuTurbineConfiguration extends Menu{
     private final MenuComponentMinimalistButton coils = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Coils", true, true).setTooltip("Add, remove, or modify Coils"));
     private final MenuComponentMinimalistButton blades = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Blades", true, true).setTooltip("Add, remove, or modify Blades"));
@@ -60,10 +60,10 @@ public class MenuTurbineConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        minWidth.width = minLength.width = maxSize.width = fluidPerBlade.width = throughputEfficiencyLeniency.width = throughputFactor.width = powerBonus.width = Core.helper.displayWidth()*.75;
-        minWidth.x = minLength.x = maxSize.x = fluidPerBlade.x = throughputEfficiencyLeniency.x = throughputFactor.x = powerBonus.x = Core.helper.displayWidth()*.25;
-        coils.width = blades.width = recipes.width = back.width = Core.helper.displayWidth();
-        minWidth.height = minLength.height = maxSize.height = fluidPerBlade.height = throughputEfficiencyLeniency.height = throughputFactor.height = powerBonus.height = coils.height = blades.height = recipes.height = back.height = Core.helper.displayHeight()/16;
+        minWidth.width = minLength.width = maxSize.width = fluidPerBlade.width = throughputEfficiencyLeniency.width = throughputFactor.width = powerBonus.width = gui.helper.displayWidth()*.75;
+        minWidth.x = minLength.x = maxSize.x = fluidPerBlade.x = throughputEfficiencyLeniency.x = throughputFactor.x = powerBonus.x = gui.helper.displayWidth()*.25;
+        coils.width = blades.width = recipes.width = back.width = gui.helper.displayWidth();
+        minWidth.height = minLength.height = maxSize.height = fluidPerBlade.height = throughputEfficiencyLeniency.height = throughputFactor.height = powerBonus.height = coils.height = blades.height = recipes.height = back.height = gui.helper.displayHeight()/16;
         blades.y = coils.height;
         recipes.y = blades.y+blades.height;
         minWidth.y = recipes.y+recipes.height;
@@ -73,18 +73,18 @@ public class MenuTurbineConfiguration extends Menu{
         throughputEfficiencyLeniency.y = fluidPerBlade.y+fluidPerBlade.height;
         throughputFactor.y = throughputEfficiencyLeniency.y+throughputEfficiencyLeniency.height;
         powerBonus.y = throughputFactor.y+throughputFactor.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         if(configuration.addon){
             minWidth.y = minLength.y = maxSize.y = fluidPerBlade.y = throughputEfficiencyLeniency.y = throughputFactor.y = powerBonus.y = -minWidth.height;
         }
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, minWidth.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, minWidth.y+minWidth.height-Core.helper.displayHeight()/64, "Minimum turbine diameter");
-        drawText(0, minLength.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, minLength.y+minLength.height-Core.helper.displayHeight()/64, "Minimum turbine length");
-        drawText(0, maxSize.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, maxSize.y+maxSize.height-Core.helper.displayHeight()/64, "Maximum reactor size");
-        drawText(0, fluidPerBlade.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, fluidPerBlade.y+fluidPerBlade.height-Core.helper.displayHeight()/64, "Fluid per blade (mb)");
-        drawText(0, throughputEfficiencyLeniency.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, throughputEfficiencyLeniency.y+throughputEfficiencyLeniency.height-Core.helper.displayHeight()/64, "Throughput Eff. Leniency");
-        drawText(0, throughputFactor.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, throughputFactor.y+throughputFactor.height-Core.helper.displayHeight()/64, "Throughput Factor");
-        drawText(0, powerBonus.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, powerBonus.y+powerBonus.height-Core.helper.displayHeight()/64, "Power Bonus");
+        drawText(0, minWidth.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, minWidth.y+minWidth.height-gui.helper.displayHeight()/64, "Minimum turbine diameter");
+        drawText(0, minLength.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, minLength.y+minLength.height-gui.helper.displayHeight()/64, "Minimum turbine length");
+        drawText(0, maxSize.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, maxSize.y+maxSize.height-gui.helper.displayHeight()/64, "Maximum reactor size");
+        drawText(0, fluidPerBlade.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, fluidPerBlade.y+fluidPerBlade.height-gui.helper.displayHeight()/64, "Fluid per blade (mb)");
+        drawText(0, throughputEfficiencyLeniency.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, throughputEfficiencyLeniency.y+throughputEfficiencyLeniency.height-gui.helper.displayHeight()/64, "Throughput Eff. Leniency");
+        drawText(0, throughputFactor.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, throughputFactor.y+throughputFactor.height-gui.helper.displayHeight()/64, "Throughput Factor");
+        drawText(0, powerBonus.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, powerBonus.y+powerBonus.height-gui.helper.displayHeight()/64, "Power Bonus");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

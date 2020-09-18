@@ -6,8 +6,8 @@ public class CoolantRecipe{
     public String input;
     public String output;
     public int heat;
-    public int outputRatio;
-    public CoolantRecipe(String name, String input, String output, int heat, int outputRatio){
+    public float outputRatio;
+    public CoolantRecipe(String name, String input, String output, int heat, float outputRatio){
         this.name = name;
         this.input = input;
         this.output = output;

@@ -12,11 +12,10 @@ import multiblock.action.SFRShieldAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import org.lwjgl.glfw.GLFW;
-import planner.menu.MenuComponentTooltip;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentEditorGrid extends MenuComponent implements MenuComponentTooltip{
+public class MenuComponentEditorGrid extends MenuComponent{
     private Object synchronizer = new Object();
     private final Multiblock multiblock;
     private final int layer;

@@ -5,7 +5,7 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistSlider;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 public class MenuPlacementRuleConfiguration extends Menu{
     private final MenuComponentMinimalistOptionButton type = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Type", true, true, 0, PlacementRule.RuleType.getStringList()));
     private final MenuComponentMinimalistOptionButton blockType = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Type", true, true, 0, PlacementRule.BlockType.getStringList()));
@@ -43,9 +43,9 @@ public class MenuPlacementRuleConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        type.width = blockType.width = block.width = min.width = max.width = rules.width = back.width = Core.helper.displayWidth();
-        type.height = blockType.height = block.height = min.height = max.height = rules.height = back.height = Core.helper.displayHeight()/16;
-        blockType.y = block.y = min.y = max.y = rules.y = -Core.helper.displayHeight()/8;
+        type.width = blockType.width = block.width = min.width = max.width = rules.width = back.width = gui.helper.displayWidth();
+        type.height = blockType.height = block.height = min.height = max.height = rules.height = back.height = gui.helper.displayHeight()/16;
+        blockType.y = block.y = min.y = max.y = rules.y = -gui.helper.displayHeight()/8;
         switch(PlacementRule.RuleType.values()[type.getIndex()]){
             case AXIAL:
             case BETWEEN:
@@ -72,7 +72,7 @@ public class MenuPlacementRuleConfiguration extends Menu{
             default:
                 throw new IllegalArgumentException("Unknown rule type: "+PlacementRule.RuleType.values()[type.getIndex()].name());
         }
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
         Core.applyWhite();
         super.render(millisSinceLastTick);

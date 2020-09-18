@@ -1,11 +1,10 @@
 package planner.menu.configuration.overhaul.fissionmsr;
 import multiblock.configuration.overhaul.fissionmsr.RuleContainer;
 import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
-import planner.Core;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuPlacementRulesConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
@@ -42,14 +41,14 @@ public class MenuPlacementRulesConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        list.width = Core.helper.displayWidth();
-        list.height = Core.helper.displayHeight()-back.height-add.height;
+        list.width = gui.helper.displayWidth();
+        list.height = gui.helper.displayHeight()-back.height-add.height;
         for(simplelibrary.opengl.gui.components.MenuComponent component : list.components){
             component.width = list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0);
         }
-        add.width = back.width = Core.helper.displayWidth();
-        add.height = back.height = Core.helper.displayHeight()/16;
-        back.y = Core.helper.displayHeight()-back.height;
+        add.width = back.width = gui.helper.displayWidth();
+        add.height = back.height = gui.helper.displayHeight()/16;
+        back.y = gui.helper.displayHeight()-back.height;
         add.y = back.y-add.height;
         super.render(millisSinceLastTick);
     }

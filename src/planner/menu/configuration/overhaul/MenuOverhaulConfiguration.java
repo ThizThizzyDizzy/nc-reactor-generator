@@ -9,7 +9,7 @@ import planner.menu.configuration.overhaul.fissionmsr.MenuFissionMSRConfiguratio
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.configuration.overhaul.turbine.MenuTurbineConfiguration;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 public class MenuOverhaulConfiguration extends Menu{
     private final MenuComponentMinimalistButton fissionSFR;
     private final MenuComponentMinimalistButton fissionMSR;
@@ -88,14 +88,14 @@ public class MenuOverhaulConfiguration extends Menu{
         deleteSFR.label = (configuration.overhaul.fissionSFR==null?"Create":"Delete")+" (Shift)";
         deleteMSR.label = (configuration.overhaul.fissionMSR==null?"Create":"Delete")+" (Shift)";
         deleteTurbine.label = (configuration.overhaul.turbine==null?"Create":"Delete")+" (Shift)";
-        back.width = Core.helper.displayWidth();
-        fissionSFR.width = fissionMSR.width = turbine.width = Core.helper.displayWidth()*3/4;
-        deleteSFR.width = deleteMSR.width = deleteTurbine.width = Core.helper.displayWidth()/4;
+        back.width = gui.helper.displayWidth();
+        fissionSFR.width = fissionMSR.width = turbine.width = gui.helper.displayWidth()*3/4;
+        deleteSFR.width = deleteMSR.width = deleteTurbine.width = gui.helper.displayWidth()/4;
         deleteSFR.x = deleteMSR.x = deleteTurbine.x = fissionSFR.width;
-        deleteSFR.height = deleteMSR.height = deleteTurbine.height = fissionSFR.height = fissionMSR.height = turbine.height = back.height = Core.helper.displayHeight()/16;
+        deleteSFR.height = deleteMSR.height = deleteTurbine.height = fissionSFR.height = fissionMSR.height = turbine.height = back.height = gui.helper.displayHeight()/16;
         deleteMSR.y = fissionMSR.y = fissionSFR.height;
         deleteTurbine.y = turbine.y = fissionMSR.y+fissionMSR.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         super.render(millisSinceLastTick);
     }
 }

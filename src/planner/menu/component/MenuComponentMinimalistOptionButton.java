@@ -2,11 +2,10 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
-import planner.menu.MenuComponentTooltip;
 import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.components.MenuComponentOptionButton;
-public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton implements MenuComponentTooltip{
+public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton{
     private String label;
     private boolean isPressed, isRightPressed;
     private final boolean darker;

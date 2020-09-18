@@ -113,8 +113,8 @@ public abstract class Theme{
                 return process(themes.get(0).getSelectionColor());
             }
             @Override
-            public Color getRGB(float r, float g, float b){
-                return process(themes.get(0).getRGB(r,g,b));
+            public Color getRGBA(float r, float g, float b, float a){
+                return process(themes.get(0).getRGBA(r,g,b, a));
             }
             @Override
             public Color getWhite(){
@@ -171,12 +171,12 @@ public abstract class Theme{
     public abstract Color getDarkButtonColor();
     public abstract Color getButtonColor();
     public abstract Color getSelectionColor();
-    public abstract Color getRGB(float r, float g, float b);
+    public abstract Color getRGBA(float r, float g, float b, float a);
     public abstract Color getWhite();
     public void onSet(){}
     public abstract Color getFadeout();
-    public Color getRGB(Color color){
-        return getRGB(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
+    public Color getRGBA(Color color){
+        return getRGBA(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
     }
     private static class SolidColorTheme extends Theme{
         private final Color background;
@@ -268,12 +268,12 @@ public abstract class Theme{
             return new Color(color.getRed()/255f*f, color.getGreen()/255f*f, color.getBlue()/255f*f, color.getAlpha()/255f);
         }
         @Override
-        public Color getRGB(float r, float g, float b){
-            return new Color(r*(1-(1-rgbTint)*rgbSat), g*(1-(1-rgbTint)*rgbSat), b*(1-(1-rgbTint)*rgbSat));
+        public Color getRGBA(float r, float g, float b, float a){
+            return new Color(r*(1-(1-rgbTint)*rgbSat), g*(1-(1-rgbTint)*rgbSat), b*(1-(1-rgbTint)*rgbSat), a);
         }
         @Override
         public Color getSelectionColor(){
-            return getRGB(.75f, .75f, 0);
+            return getRGBA(.75f, .75f, 0, 1);
         }
         @Override
         public Color getWhite(){
@@ -394,8 +394,8 @@ public abstract class Theme{
             return selection;
         }
         @Override
-        public Color getRGB(float r, float g, float b){
-            return average(rgb, new Color(r,g,b));
+        public Color getRGBA(float r, float g, float b, float a){
+            return average(rgb, new Color(r,g,b,a));
         }
         @Override
         public Color getWhite(){
@@ -487,8 +487,8 @@ public abstract class Theme{
             return current.getSelectionColor();
         }
         @Override
-        public Color getRGB(float r, float g, float b){
-            return current.getRGB(r,g,b);
+        public Color getRGBA(float r, float g, float b, float a){
+            return current.getRGBA(r,g,b,a);
         }
         @Override
         public Color getWhite(){
@@ -586,7 +586,7 @@ public abstract class Theme{
             return rand();
         }
         @Override
-        public Color getRGB(float r, float g, float b){
+        public Color getRGBA(float r, float g, float b, float a){
             return rand();
         }
         @Override

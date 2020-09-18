@@ -19,6 +19,7 @@ import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 public class MenuSettings extends Menu{
     private final MenuComponentLabel currentConfig = add(new MenuComponentLabel(0, 0, 0, 0, "Current Configuration", true));
     private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load Configuration", true, true).setTooltip("Load configuration from a file, replacing the current configuration\nAny existing multiblocks will be converted to the new configuration\nYou can load the following files:\nnuclearcraft.cfg in the game files\nany .ncpf configuration file"));
@@ -86,17 +87,17 @@ public class MenuSettings extends Menu{
     public void render(int millisSinceLastTick){
         for(int i = 0; i<buttons.size(); i++){
             MenuComponentMinimalistButton b = buttons.get(i);
-            b.width = Core.helper.displayWidth();
-            b.height = Core.helper.displayHeight()/16;
+            b.width = gui.helper.displayWidth();
+            b.height = gui.helper.displayHeight()/16;
             b.y = b.height*i;
         }
-        tutorials.width = currentConfig.width = theme.width = load.width = save.width = done.width = edit.width = Core.helper.displayWidth();
-        tutorials.height = currentConfig.height = theme.height = load.height = save.height = done.height = edit.height = Core.helper.displayHeight()/16;
+        tutorials.width = currentConfig.width = theme.width = load.width = save.width = done.width = edit.width = gui.helper.displayWidth();
+        tutorials.height = currentConfig.height = theme.height = load.height = save.height = done.height = edit.height = gui.helper.displayHeight()/16;
         currentConfig.y = load.height*(Configuration.configurations.size());
         load.y = currentConfig.y+currentConfig.height;
         save.y = load.y+load.height;
         edit.y = save.y+save.height;
-        done.y = Core.helper.displayHeight()-done.height;
+        done.y = gui.helper.displayHeight()-done.height;
         theme.y = done.y-theme.height;
         tutorials.y = theme.y-theme.height;
         if(Theme.themes.indexOf(Core.theme)!=theme.getIndex()){

@@ -1,7 +1,6 @@
 package planner.menu;
 import java.io.File;
 import java.util.Locale;
-import planner.Core;
 import planner.FileChooserResultListener;
 import planner.FileFormat;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -25,9 +24,9 @@ public class MenuLoadFile extends Menu{
     }
     @Override
     public void renderBackground(){
-        text.width = Core.helper.displayWidth();
-        cancel.width = Core.helper.displayWidth();
-        text.height = cancel.y = Core.helper.displayHeight()-cancel.height;
+        text.width = gui.helper.displayWidth();
+        cancel.width = gui.helper.displayWidth();
+        text.height = cancel.y = gui.helper.displayHeight()-cancel.height;
     }
     public void setText(String extra){
         String txt = "Drag-and-drop a file onto this window\nAllowed File formats:";

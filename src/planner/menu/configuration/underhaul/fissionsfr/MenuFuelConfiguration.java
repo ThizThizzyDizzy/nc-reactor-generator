@@ -4,7 +4,7 @@ import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 public class MenuFuelConfiguration extends Menu{
     private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "Name", true)).setTooltip("The name of this fuel. This should never change");
     private final MenuComponentMinimalistTextBox power = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
@@ -32,18 +32,18 @@ public class MenuFuelConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        back.width = name.width = Core.helper.displayWidth();
-        power.width = heat.width = time.width = Core.helper.displayWidth()*.75;
-        power.x = heat.x = time.x = Core.helper.displayWidth()*.25;
-        power.height = heat.height = time.height = name.height = back.height = Core.helper.displayHeight()/16;
+        back.width = name.width = gui.helper.displayWidth();
+        power.width = heat.width = time.width = gui.helper.displayWidth()*.75;
+        power.x = heat.x = time.x = gui.helper.displayWidth()*.25;
+        power.height = heat.height = time.height = name.height = back.height = gui.helper.displayHeight()/16;
         power.y = name.height;
         heat.y = power.y+power.height;
         time.y = heat.y+heat.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*2, "Power");
-        drawText(0, Core.helper.displayHeight()/16*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*3, "Heat");
-        drawText(0, Core.helper.displayHeight()/16*3, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*4, "Time");
+        drawText(0, gui.helper.displayHeight()/16, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/16*2, "Power");
+        drawText(0, gui.helper.displayHeight()/16*2, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/16*3, "Heat");
+        drawText(0, gui.helper.displayHeight()/16*3, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/16*4, "Time");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

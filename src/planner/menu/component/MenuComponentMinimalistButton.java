@@ -2,11 +2,10 @@ package planner.menu.component;
 import java.awt.Color;
 import java.util.function.Supplier;
 import planner.Core;
-import planner.menu.MenuComponentTooltip;
 import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
-public class MenuComponentMinimalistButton extends MenuComponentButton implements MenuComponentTooltip{
+public class MenuComponentMinimalistButton extends MenuComponentButton{
     private final boolean darker;
     private Supplier<Color> textColor = () -> {
         return Core.theme.getTextColor();

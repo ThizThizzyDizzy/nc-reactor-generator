@@ -95,7 +95,7 @@ public class FileWriter{
                         JSON.JSONObject irradiators = new JSON.JSONObject();
                         JSON.JSONObject shields = new JSON.JSONObject();
                         for(multiblock.configuration.overhaul.fissionsfr.Block b : ncpf.configuration.overhaul.fissionSFR.allBlocks){
-                            if(b.cooling>0){
+                            if(b.cooling!=0){
                                 JSON.JSONArray array = new JSON.JSONArray();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                                     if(block.template==b){

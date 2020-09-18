@@ -5,7 +5,6 @@ import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.Range;
 import multiblock.action.GenerateAction;
-import planner.Core;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -17,6 +16,7 @@ import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 public class MenuGenerator extends Menu{
     private final Multiblock<Block> multiblock;
     private final MenuComponentMinimalistButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Settings", false, true).setTooltip("Modify generator settings\nThis does not stop the generator\nSettings are not applied until you click Generate"));
@@ -150,8 +150,8 @@ public class MenuGenerator extends Menu{
         for(simplelibrary.opengl.gui.components.MenuComponent m : components){
             m.x = m.y = m.width = m.height = -1;
         }
-        settings.width = output.width = Core.helper.displayWidth()/3;
-        settings.x = Core.helper.displayWidth()-settings.width-output.width;
+        settings.width = output.width = gui.helper.displayWidth()/3;
+        settings.x = gui.helper.displayWidth()-settings.width-output.width;
         output.x = settings.x+settings.width;
         output.y = settings.y = 0;
         output.height = settings.height = 64;
@@ -160,41 +160,41 @@ public class MenuGenerator extends Menu{
                 done.height = 64;
                 done.x = 0;
                 done.y = 0;
-                done.width = Core.helper.displayWidth()/4;
+                done.width = gui.helper.displayWidth()/4;
                 blocksHeader.x = 0;
                 blocksHeader.y = settings.height;
-                blocksHeader.width = blocks.width = Core.helper.displayWidth()/4;
+                blocksHeader.width = blocks.width = gui.helper.displayWidth()/4;
                 blocksHeader.height = settings.height;
                 blocks.x = 0;
                 blocks.y = settings.height*2;
-                blocks.height = Core.helper.displayHeight()-blocks.y;
-                generatorsHeader.x = Core.helper.displayWidth()/4;
+                blocks.height = gui.helper.displayHeight()-blocks.y;
+                generatorsHeader.x = gui.helper.displayWidth()/4;
                 generatorsHeader.y = settings.height;
-                generatorsHeader.width = generators.width = Core.helper.displayWidth()/4;
+                generatorsHeader.width = generators.width = gui.helper.displayWidth()/4;
                 generatorsHeader.height = settings.height;
-                generators.x = Core.helper.displayWidth()/4;
+                generators.x = gui.helper.displayWidth()/4;
                 generators.y = settings.height*2;
-                generators.width = Core.helper.displayWidth()/4;
-                generators.height = Core.helper.displayHeight()-generators.y;
+                generators.width = gui.helper.displayWidth()/4;
+                generators.height = gui.helper.displayHeight()-generators.y;
                 for(simplelibrary.opengl.gui.components.MenuComponent c : generators.components){
                     c.width = generators.width-(generators.hasVertScrollbar()?generators.vertScrollbarWidth:0);
                 }
-                settingsHeader.x = Core.helper.displayWidth()/2;
+                settingsHeader.x = gui.helper.displayWidth()/2;
                 settingsHeader.y = settings.height;
-                settingsHeader.width = Core.helper.displayWidth()/2;
+                settingsHeader.width = gui.helper.displayWidth()/2;
                 settingsHeader.height = settings.height;
-                generatorSettings.x = Core.helper.displayWidth()/2;
-                generatorSettings.width = Core.helper.displayWidth()/4;
+                generatorSettings.x = gui.helper.displayWidth()/2;
+                generatorSettings.width = gui.helper.displayWidth()/4;
                 generatorSettings.y = settings.height*2;
-                generatorSettings.width = Core.helper.displayWidth()/4;
-                generatorSettings.height = Core.helper.displayHeight()-generatorSettings.y;
+                generatorSettings.width = gui.helper.displayWidth()/4;
+                generatorSettings.height = gui.helper.displayHeight()-generatorSettings.y;
                 for(simplelibrary.opengl.gui.components.MenuComponent c : generatorSettings.components){
                     c.width = generatorSettings.width-(generatorSettings.hasVertScrollbar()?generatorSettings.vertScrollbarWidth:0);
                 }
-                multiblockSettings.x = Core.helper.displayWidth()*3/4;
+                multiblockSettings.x = gui.helper.displayWidth()*3/4;
                 multiblockSettings.y = settings.height*2;
-                multiblockSettings.width = Core.helper.displayWidth()/4;
-                multiblockSettings.height = Core.helper.displayHeight()-multiblockSettings.y;
+                multiblockSettings.width = gui.helper.displayWidth()/4;
+                multiblockSettings.height = gui.helper.displayHeight()-multiblockSettings.y;
                 for(simplelibrary.opengl.gui.components.MenuComponent c : multiblockSettings.components){
                     c.width = multiblockSettings.width-(multiblockSettings.hasVertScrollbar()?multiblockSettings.vertScrollbarWidth:0);
                 }
@@ -202,20 +202,20 @@ public class MenuGenerator extends Menu{
             case GENERATE:
                 threadsLabel.x = 0;
                 threadsLabel.y = 64;
-                threadsLabel.width = Core.helper.displayWidth()/3;
+                threadsLabel.width = gui.helper.displayWidth()/3;
                 threadsLabel.height = 48;
                 addThread.x = threadsLabel.width;
                 addThread.y = 64;
-                addThread.width = Core.helper.displayWidth()/3;
+                addThread.width = gui.helper.displayWidth()/3;
                 addThread.height = 48;
                 removeThread.x = addThread.x+addThread.width;
                 removeThread.y = 64;
-                removeThread.width = Core.helper.displayWidth()-removeThread.x;
+                removeThread.width = gui.helper.displayWidth()-removeThread.x;
                 removeThread.height = 48;
                 multiblockLists.x = 0;
                 multiblockLists.y = threadsLabel.height+settings.height;
-                multiblockLists.width = Core.helper.displayWidth();
-                multiblockLists.height = Core.helper.displayHeight()-multiblockLists.y;
+                multiblockLists.width = gui.helper.displayWidth();
+                multiblockLists.height = gui.helper.displayHeight()-multiblockLists.y;
                 for(simplelibrary.opengl.gui.components.MenuComponent m : multiblockLists.components){
                     m.width = multiblockLists.width;
                     m.height = 800;

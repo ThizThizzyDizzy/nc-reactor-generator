@@ -5,7 +5,7 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 public class MenuFuelConfiguration extends Menu{
     private final MenuComponentMinimalistTextBox name = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "Name", true)).setTooltip("The name of this fuel. This should never change");
     private final MenuComponentMinimalistTextBox efficiency = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
@@ -39,21 +39,21 @@ public class MenuFuelConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        back.width = name.width = selfPriming.width = Core.helper.displayWidth();
-        efficiency.width = heat.width = time.width = criticality.width = Core.helper.displayWidth()*.75;
-        efficiency.x = heat.x = time.x = criticality.x = Core.helper.displayWidth()*.25;
-        efficiency.height = heat.height = time.height = criticality.height = selfPriming.height = name.height = back.height = Core.helper.displayHeight()/16;
+        back.width = name.width = selfPriming.width = gui.helper.displayWidth();
+        efficiency.width = heat.width = time.width = criticality.width = gui.helper.displayWidth()*.75;
+        efficiency.x = heat.x = time.x = criticality.x = gui.helper.displayWidth()*.25;
+        efficiency.height = heat.height = time.height = criticality.height = selfPriming.height = name.height = back.height = gui.helper.displayHeight()/16;
         efficiency.y = name.height;
         heat.y = efficiency.y+efficiency.height;
         time.y = heat.y+heat.height;
         criticality.y = time.y+time.height;
         selfPriming.y = criticality.y+criticality.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Core.helper.displayHeight()/16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*2, "Power");
-        drawText(0, Core.helper.displayHeight()/16*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*3, "Heat");
-        drawText(0, Core.helper.displayHeight()/16*3, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*4, "Time");
-        drawText(0, Core.helper.displayHeight()/16*4, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/16*5, "Criticality");
+        drawText(0, gui.helper.displayHeight()/16, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/16*2, "Power");
+        drawText(0, gui.helper.displayHeight()/16*2, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/16*3, "Heat");
+        drawText(0, gui.helper.displayHeight()/16*3, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/16*4, "Time");
+        drawText(0, gui.helper.displayHeight()/16*4, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/16*5, "Criticality");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

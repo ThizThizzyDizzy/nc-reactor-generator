@@ -216,7 +216,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         synchronized(clusters){
             for(Cluster c : clusters){
                 for(Block b : c.blocks){
-                    if(b.template.cooling>0){
+                    if(b.template.cooling!=0){
                         float out = c.efficiency*sparsityMult;
                         totalOutput.put(b.template.output, (totalOutput.containsKey(b.template.output)?totalOutput.get(b.template.output):0)+out);
                         totalTotalOutput+=out;
@@ -567,7 +567,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     private float getRainbowScore(){
         float totalSinks = 0;
         for(multiblock.configuration.overhaul.fissionmsr.Block b : getConfiguration().overhaul.fissionMSR.allBlocks){
-            if(b.cooling>0)totalSinks++;
+            if(b.cooling!=0)totalSinks++;
         }
         Set<multiblock.configuration.overhaul.fissionmsr.Block> unique = new HashSet<>();
         for(Block b : getBlocks()){
@@ -603,7 +603,9 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
         private Cluster(){}
         private boolean isValid(){
-            if(!isConnectedToWall)return false;
+            return isConnectedToWall&&isCreated();
+        }
+        public boolean isCreated(){
             for(Block block : blocks){
                 if(block.template.createCluster)return true;
             }

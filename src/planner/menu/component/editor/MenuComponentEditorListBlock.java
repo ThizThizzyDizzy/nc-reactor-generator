@@ -3,9 +3,8 @@ import java.awt.Color;
 import planner.Core;
 import planner.menu.MenuEdit;
 import multiblock.Block;
-import planner.menu.MenuComponentTooltip;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentEditorListBlock extends MenuComponent implements MenuComponentTooltip{
+public class MenuComponentEditorListBlock extends MenuComponent{
     private final MenuEdit editor;
     public final Block block;
     public MenuComponentEditorListBlock(MenuEdit editor, Block block){

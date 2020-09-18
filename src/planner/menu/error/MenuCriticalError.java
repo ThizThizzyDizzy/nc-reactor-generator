@@ -1,12 +1,11 @@
 package planner.menu.error;
-import planner.Core;
-import planner.menu.Menu;
 import planner.menu.MenuMain;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistScrollable;
 import planner.menu.component.MenuComponentTextDisplay;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 public class MenuCriticalError extends Menu{
     public MenuComponentMinimalistButton mainMenu = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Main Menu", true, true));
     public MenuComponentMinimalistButton exit = add(new MenuComponentMinimalistButton(0, 0, 0, 64, "Exit", true, true));
@@ -36,16 +35,16 @@ public class MenuCriticalError extends Menu{
             gui.open(new MenuMain(gui));
         });
         exit.addActionListener((e) -> {
-            Core.helper.running = false;
+            gui.helper.running = false;
         });
     }
     @Override
     public void renderBackground(){
-        mainMenu.width = Core.helper.displayWidth()/2;
+        mainMenu.width = gui.helper.displayWidth()/2;
         exit.x = mainMenu.x+mainMenu.width;
-        exit.width = Core.helper.displayWidth()-exit.x;
-        scroller.width = Core.helper.displayWidth();
-        scroller.height = mainMenu.y = exit.y = Core.helper.displayHeight()-mainMenu.height;
+        exit.width = gui.helper.displayWidth()-exit.x;
+        scroller.width = gui.helper.displayWidth();
+        scroller.height = mainMenu.y = exit.y = gui.helper.displayHeight()-mainMenu.height;
         super.renderBackground();
     }
 }

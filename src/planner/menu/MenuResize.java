@@ -8,6 +8,7 @@ import planner.menu.component.editor.MenuComponentVisibleBlock;
 import multiblock.Block;
 import multiblock.Multiblock;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuResize extends Menu{
     private final Multiblock<Block> multiblock;
@@ -154,10 +155,10 @@ public class MenuResize extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        done.width = Core.helper.displayWidth()/4;
-        multibwauk.width = done.x = Core.helper.displayWidth()-done.width;
+        done.width = gui.helper.displayWidth()/4;
+        multibwauk.width = done.x = gui.helper.displayWidth()-done.width;
         done.height = 64;
-        multibwauk.height = Core.helper.displayHeight();
+        multibwauk.height = gui.helper.displayHeight();
         super.render(millisSinceLastTick);
         Core.applyColor(Core.theme.getTextColor());
         drawCenteredText(done.x, done.height, done.x+done.width, done.height+40, multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ());

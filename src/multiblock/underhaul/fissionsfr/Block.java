@@ -209,11 +209,11 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean canGroup(){
-        return template.cooling>0;
+        return template.cooling!=0;
     }
     @Override
     public boolean canBeQuickReplaced(){
-        return template.cooling>0;
+        return template.cooling!=0;
     }
     @Override
     public boolean defaultEnabled(){

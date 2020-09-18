@@ -1,9 +1,8 @@
 package planner.menu.component;
 import planner.Core;
-import planner.menu.MenuComponentTooltip;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponentTextBox;
-public class MenuComponentMinimalistTextBox extends MenuComponentTextBox implements MenuComponentTooltip{
+public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
     private static final int NONE = 0;
     private static final int INT = 1;
     private static final int FLOAT = 2;
@@ -36,6 +35,8 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox impleme
         super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
         if(filter==INT){
             if(text.trim().isEmpty())text = "0";
+            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+            if(text.startsWith("--"))text = text.substring(2);
             try{
                 int val = Integer.parseInt(text);
                 if(min!=null&&val<min.intValue()){
@@ -50,6 +51,8 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox impleme
         }
         if(filter==FLOAT){
             if(text.trim().isEmpty())text = "0";
+            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+            if(text.startsWith("--"))text = text.substring(2);
             try{
                 float val = Float.parseFloat(text);
                 if(min!=null&&val<min.floatValue()){

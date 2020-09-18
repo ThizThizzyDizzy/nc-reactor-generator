@@ -6,12 +6,11 @@ import multiblock.Block;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import planner.menu.MenuComponentTooltip;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentTurbineBladeEditorGrid extends MenuComponent implements MenuComponentTooltip{
+public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
     private final OverhaulTurbine multiblock;
     private final MenuEdit editor;
     private int blockSize;

@@ -1,18 +1,16 @@
 package planner.menu.configuration.underhaul.fissionsfr;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.Block;
-import planner.FileChooserResultListener;
 import planner.FileFormat;
 import planner.Main;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
@@ -73,22 +71,22 @@ public class MenuBlockConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        drawRect(0, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps*2, Core.getTexture(block.texture));
-        active.width = cooling.width = Core.helper.displayWidth()*.75;
-        active.x = cooling.x = Core.helper.displayWidth()-cooling.width;
-        moderator.width = fuelCell.width = name.width = rules.width = back.width = Core.helper.displayWidth();
-        texture.x = texture.height = active.height = moderator.height = fuelCell.height = cooling.height = name.height = rules.height = back.height = Core.helper.displayHeight()/numComps;
-        texture.width = Core.helper.displayWidth()-texture.x;
+        drawRect(0, gui.helper.displayHeight()/numComps, gui.helper.displayHeight()/numComps, gui.helper.displayHeight()/numComps*2, Core.getTexture(block.texture));
+        active.width = cooling.width = gui.helper.displayWidth()*.75;
+        active.x = cooling.x = gui.helper.displayWidth()-cooling.width;
+        moderator.width = fuelCell.width = name.width = rules.width = back.width = gui.helper.displayWidth();
+        texture.x = texture.height = active.height = moderator.height = fuelCell.height = cooling.height = name.height = rules.height = back.height = gui.helper.displayHeight()/numComps;
+        texture.width = gui.helper.displayWidth()-texture.x;
         texture.y = name.height;
         cooling.y = texture.y+texture.height;
         fuelCell.y = cooling.y+cooling.height;
         moderator.y = fuelCell.y+fuelCell.height;
         active.y = moderator.y+moderator.height;
         rules.y = active.y+active.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Core.helper.displayHeight()/numComps*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*3, "Cooling");
-        drawText(0, Core.helper.displayHeight()/numComps*5, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*6, "Active");
+        drawText(0, gui.helper.displayHeight()/numComps*2, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*3, "Cooling");
+        drawText(0, gui.helper.displayHeight()/numComps*5, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*6, "Active");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

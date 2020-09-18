@@ -1,18 +1,16 @@
 package planner.menu.configuration.overhaul.turbine;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Coil;
-import planner.FileChooserResultListener;
 import planner.FileFormat;
 import planner.Main;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
@@ -70,20 +68,20 @@ public class MenuCoilConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        drawRect(0, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps*2, Core.getTexture(coil.texture));
-        efficiency.width = Core.helper.displayWidth()*.75;
-        efficiency.x = Core.helper.displayWidth()-efficiency.width;
-        bearing.width = connector.width = name.width = rules.width = back.width = Core.helper.displayWidth();
-        texture.x = texture.height = bearing.height = connector.height = efficiency.height = name.height = rules.height = back.height = Core.helper.displayHeight()/numComps;
-        texture.width = Core.helper.displayWidth()-texture.x;
+        drawRect(0, gui.helper.displayHeight()/numComps, gui.helper.displayHeight()/numComps, gui.helper.displayHeight()/numComps*2, Core.getTexture(coil.texture));
+        efficiency.width = gui.helper.displayWidth()*.75;
+        efficiency.x = gui.helper.displayWidth()-efficiency.width;
+        bearing.width = connector.width = name.width = rules.width = back.width = gui.helper.displayWidth();
+        texture.x = texture.height = bearing.height = connector.height = efficiency.height = name.height = rules.height = back.height = gui.helper.displayHeight()/numComps;
+        texture.width = gui.helper.displayWidth()-texture.x;
         texture.y = name.height;
         efficiency.y = texture.y+texture.height;
         connector.y = efficiency.y+efficiency.height;
         bearing.y = connector.y+connector.height;
         rules.y = bearing.y+bearing.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Core.helper.displayHeight()/numComps*2, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*3, "Efficiency");
+        drawText(0, gui.helper.displayHeight()/numComps*2, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*3, "Efficiency");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

@@ -69,7 +69,7 @@ public class MenuComponentBlockConfiguration extends MenuComponent{
     public void renderForeground(){
         Core.applyColor(Core.theme.getTextColor());
         drawText(x, y, x+width, y+height/5, block.name);
-        if(block.cooling>0)drawText(x, y+height/5, x+width, y+height/5*2, "Cooling: "+block.cooling+" H/t");
+        if(block.cooling!=0)drawText(x, y+height/5, x+width, y+height/5*2, "Cooling: "+block.cooling+" H/t");
         if(block.fuelCell)drawText(x, y+height/5*2, x+width, y+height/5*3, "Fuel Cell");
         if(block.moderator)drawText(x, y+height/5*3, x+width, y+height/5*4, "Moderator");
         if(block.active!=null)drawText(x, y+height/5*4, x+width, y+height/5*5, "Active: "+block.active);

@@ -5,11 +5,10 @@ import multiblock.Block;
 import multiblock.action.SetBearingDiameterAction;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
-import planner.menu.MenuComponentTooltip;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentTurbineCoilEditorGrid extends MenuComponent implements MenuComponentTooltip{
+public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
     private final OverhaulTurbine multiblock;
     private final int layer;
     private final MenuEdit editor;

@@ -52,10 +52,10 @@ public abstract class KeywordCommand extends Command{
         String[] strs = str.split("@@@@@");
         for(String s : strs){
             if(s.contains("@@@")){
-                debugText.add(Core.theme.getRGB(new Color(Integer.parseInt(s.split("@@@")[0]))));
+                debugText.add(Core.theme.getRGBA(new Color(Integer.parseInt(s.split("@@@")[0]))));
                 debugText.add(s.split("@@@")[1]);
             }else{
-                debugText.add(Core.theme.getRGB(.5f, .5f, .5f));
+                debugText.add(Core.theme.getRGBA(.5f, .5f, .5f, 1));
                 debugText.add(s);
             }
         }
@@ -82,7 +82,7 @@ public abstract class KeywordCommand extends Command{
             }
             for(int i = 0; i<words.size(); i++){
                 Keyword word = words.get(i);
-                Core.applyColor(Core.theme.getRGB(word.getColor()));
+                Core.applyColor(Core.theme.getRGBA(word.getColor()));
                 Renderer2D.drawText(border, border+(i+1)*textHeight, width+border, border+(i+2)*textHeight, word.name+" | "+word.input);
             }
         });

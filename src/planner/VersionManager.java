@@ -70,6 +70,7 @@ public class VersionManager{
         addVersion("2.12.6");
         addVersion("2.12.7");
         addVersion("2.12.8");
+        addVersion("2.13");
         currentVersion = versions.get(versions.size()-1);
     }
     /**

@@ -21,7 +21,7 @@ import planner.menu.configuration.underhaul.MenuUnderhaulConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulConfiguration;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -142,22 +142,22 @@ public class MenuConfiguration extends Menu{
         }
         deleteOverhaul.label = (configuration.overhaul==null?"Create":"Delete")+" (Alt+Shift)";
         deleteUnderhaul.label = (configuration.underhaul==null?"Create":"Delete")+" (Ctrl+Shift)";
-        configGuidelines.width = underhaul.width = overhaul.width = done.width = addons.width = Core.helper.displayWidth();
-        configGuidelines.height = name.height = overhaulVersion.height = underhaulVersion.height = addons.height = underhaul.height = overhaul.height = done.height = deleteUnderhaul.height = deleteOverhaul.height = Core.helper.displayHeight()/16;
-        name.width = Core.helper.displayWidth()*.75;
-        overhaulVersion.width = underhaulVersion.width = Core.helper.displayWidth()/3;
-        name.x = overhaulVersion.x = underhaulVersion.x = Core.helper.displayWidth()*.25;
+        configGuidelines.width = underhaul.width = overhaul.width = done.width = addons.width = gui.helper.displayWidth();
+        configGuidelines.height = name.height = overhaulVersion.height = underhaulVersion.height = addons.height = underhaul.height = overhaul.height = done.height = deleteUnderhaul.height = deleteOverhaul.height = gui.helper.displayHeight()/16;
+        name.width = gui.helper.displayWidth()*.75;
+        overhaulVersion.width = underhaulVersion.width = gui.helper.displayWidth()/3;
+        name.x = overhaulVersion.x = underhaulVersion.x = gui.helper.displayWidth()*.25;
         overhaul.y = name.y+name.height;
         deleteOverhaul.y = overhaulVersion.y = overhaul.y+overhaul.height;
         underhaul.y = overhaulVersion.y+overhaulVersion.height;
         deleteUnderhaul.y = underhaulVersion.y = underhaul.y+underhaul.height;
         deleteUnderhaul.x = underhaulVersion.x+underhaulVersion.width;
         deleteOverhaul.x = overhaulVersion.x+overhaulVersion.width;
-        deleteOverhaul.width = Core.helper.displayWidth()-deleteOverhaul.x;
-        deleteUnderhaul.width = Core.helper.displayWidth()-deleteUnderhaul.x;
+        deleteOverhaul.width = gui.helper.displayWidth()-deleteOverhaul.x;
+        deleteUnderhaul.width = gui.helper.displayWidth()-deleteUnderhaul.x;
         addons.y = deleteUnderhaul.y+deleteUnderhaul.height;
         configGuidelines.y = addons.y+addons.height;
-        done.y = Core.helper.displayHeight()-done.height;
+        done.y = gui.helper.displayHeight()-done.height;
         for(Configuration c : Configuration.configurations){
             if(Objects.equals(name.text.trim().isEmpty()?null:name.text,c.name)){
                 if(Objects.equals(overhaulVersion.text.trim().isEmpty()?null:overhaulVersion.text, c.overhaulVersion)&&!c.isOverhaulConfigurationEqual(configuration)
@@ -165,9 +165,9 @@ public class MenuConfiguration extends Menu{
                     Core.applyColor(Color.red);
                     String str = "Error: Configuration does not match stored configuration "+c.toString()+"!";
                     double len = FontManager.getLengthForStringWithHeight(str, configGuidelines.height)+3;
-                    double scale = Core.helper.displayWidth()/len;
-                    drawCenteredText(0, configGuidelines.y+configGuidelines.height, Core.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), str);
-                    drawCenteredText(0, configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), Core.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale)*2, "Please review configuration guidelines");
+                    double scale = gui.helper.displayWidth()/len;
+                    drawCenteredText(0, configGuidelines.y+configGuidelines.height, gui.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), str);
+                    drawCenteredText(0, configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale), gui.helper.displayWidth(), configGuidelines.y+configGuidelines.height+configGuidelines.height*Math.min(1, scale)*2, "Please review configuration guidelines");
                 }
             }
         }

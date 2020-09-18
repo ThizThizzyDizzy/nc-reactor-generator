@@ -2,7 +2,6 @@ package planner.menu;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import planner.Core;
 import planner.menu.component.editor.MenuComponentCoolantRecipe;
@@ -53,6 +52,7 @@ import simplelibrary.game.Framebuffer;
 import simplelibrary.opengl.ImageStash;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 public class MenuEdit extends Menu{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     public Framebuffer turbineGraph;
@@ -243,14 +243,14 @@ public class MenuEdit extends Menu{
         parts.x = tools.width+partSize/4;
         generate.x = editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
         generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
-        generate.y = Core.helper.displayHeight()-generate.height;
+        generate.y = gui.helper.displayHeight()-generate.height;
         tools.height = parts.height = Math.max((parts.components.size()+5)/partsWide,editorTools.size())*partSize;
         resize.width = 320;
-        generate.width = editMetadata.width = multibwauk.width = Core.helper.displayWidth()-parts.x-parts.width-resize.width;
+        generate.width = editMetadata.width = multibwauk.width = gui.helper.displayWidth()-parts.x-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
         zoomIn.width = zoomOut.width = resize.width/2;
         zoomIn.y = zoomOut.y = resize.height;
-        resize.x = Core.helper.displayWidth()-resize.width;
+        resize.x = gui.helper.displayWidth()-resize.width;
         zoomIn.x = resize.x;
         zoomOut.x = zoomIn.x+zoomIn.width;
         irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
@@ -292,9 +292,9 @@ public class MenuEdit extends Menu{
                 }
             }
         }
-        multibwauk.height = Core.helper.displayHeight()-multibwauk.y-generate.height;
+        multibwauk.height = gui.helper.displayHeight()-multibwauk.y-generate.height;
         textBox.y = parts.y+parts.height;
-        textBox.height = Core.helper.displayHeight()-textBox.y;
+        textBox.height = gui.helper.displayHeight()-textBox.y;
         if(multiblock instanceof OverhaulTurbine){
             OverhaulTurbine turbine = (OverhaulTurbine)multiblock;
             double width = turbine.getDisplayZ()*CELL_SIZE;
@@ -311,7 +311,7 @@ public class MenuEdit extends Menu{
                     min = Math.min(min,d);
                 }
                 ImageStash.instance.bindTexture(0);
-                turbineGraph = new Framebuffer(Core.helper, null, (int)width, (int)height);
+                turbineGraph = new Framebuffer(gui.helper, null, (int)width, (int)height);
                 turbineGraph.bindRenderTarget2D();
                 GL11.glColor4d(0, 0, 0, 1);
                 GL11.glBegin(GL11.GL_QUADS);

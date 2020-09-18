@@ -121,6 +121,12 @@ public class Block extends multiblock.Block{
         }
         OverhaulSFR.Cluster cluster = ((OverhaulSFR)multiblock).getCluster(this);
         if(cluster!=null){
+            if(!cluster.isCreated()){
+                tip+="\nInvalid cluster!";
+            }
+            if(!cluster.isConnectedToWall){
+                tip+="\nCluster is not connected to the casing!";
+            }
             if(cluster.netHeat>0){
                 tip+="\nCluster is heat-positive!";
             }
@@ -207,7 +213,7 @@ public class Block extends multiblock.Block{
     }
     public boolean isHeatsink(){
         if(isCasing())return false;
-        return template.cooling>0;
+        return template.cooling!=0;
     }
     public boolean isHeatsinkActive(){
         return isHeatsink()&&heatsinkValid;
@@ -415,22 +421,22 @@ public class Block extends multiblock.Block{
             float r = self?0:Math.min(1, -2*fac+2);
             float g = self?0:Math.min(1, fac*2);
             float b = self?1:0;
-            drawCircle(x, y, width, height, Core.theme.getRGB(r, g, b));
+            drawCircle(x, y, width, height, Core.theme.getRGBA(r, g, b, 1));
         }
         OverhaulSFR sfr = (OverhaulSFR)multiblock;
         OverhaulSFR.Cluster cluster = sfr.getCluster(this);
         if(cluster!=null){
-            Color color = null;
+            Color primaryColor = null;
             if(cluster.netHeat>0){
-                color = Color.red;
+                primaryColor = Color.red;
             }
             if(cluster.coolingPenaltyMult<1){
-                color = Color.blue;
+                primaryColor = Color.blue;
             }
-            if(color!=null){
-                Core.applyColor(Core.theme.getRGB(color), .125f);
+            if(primaryColor!=null){
+                Core.applyColor(Core.theme.getRGBA(primaryColor), .125f);
                 Renderer2D.drawRect(x, y, x+width, y+height, 0);
-                Core.applyColor(Core.theme.getRGB(color), .375f);
+                Core.applyColor(Core.theme.getRGBA(primaryColor), .75f);
                 double border = width/8;
                 boolean top = cluster.contains(this.x, this.y, z-1);
                 boolean right = cluster.contains(this.x+1, this.y, z);
@@ -440,25 +446,56 @@ public class Block extends multiblock.Block{
                     Renderer2D.drawRect(x, y, x+border, y+border, 0);
                 }
                 if(!top){//top
-                    Renderer2D.drawRect(x+border, y, x+width-border, y+border, 0);
+                    Renderer2D.drawRect(x+width/2-border, y, x+width/2+border, y+border, 0);
                 }
                 if(!top||!right||!cluster.contains(this.x+1, this.y, z-1)){//top right
                     Renderer2D.drawRect(x+width-border, y, x+width, y+border, 0);
                 }
                 if(!right){//right
-                    Renderer2D.drawRect(x+width-border, y+border, x+width, y+height-border, 0);
+                    Renderer2D.drawRect(x+width-border, y+height/2-border, x+width, y+height/2+border, 0);
                 }
                 if(!bottom||!right||!cluster.contains(this.x+1, this.y, z+1)){//bottom right
                     Renderer2D.drawRect(x+width-border, y+height-border, x+width, y+height, 0);
                 }
                 if(!bottom){//bottom
-                    Renderer2D.drawRect(x+border, y+height-border, x+width-border, y+height, 0);
+                    Renderer2D.drawRect(x+width/2-border, y+height-border, x+width/2+border, y+height, 0);
                 }
                 if(!bottom||!left||!cluster.contains(this.x-1, this.y, z+1)){//bottom left
                     Renderer2D.drawRect(x, y+height-border, x+border, y+height, 0);
                 }
                 if(!left){//left
-                    Renderer2D.drawRect(x, y+border, x+border, y+height-border, 0);
+                    Renderer2D.drawRect(x, y+height/2-border, x+border, y+height/2+border, 0);
+                }
+            }
+            Color secondaryColor = null;
+            if(!cluster.isConnectedToWall){
+                secondaryColor = Color.white;
+            }
+            if(!cluster.isCreated()){
+                secondaryColor = Color.pink;
+            }
+            if(secondaryColor!=null){
+                Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor), .75f);
+                double border = width/8;
+                boolean top = cluster.contains(this.x, this.y, z-1);
+                boolean right = cluster.contains(this.x+1, this.y, z);
+                boolean bottom = cluster.contains(this.x, this.y, z+1);
+                boolean left = cluster.contains(this.x-1, this.y, z);
+                if(!top){//top
+                    Renderer2D.drawRect(x+border, y, x+width/2-border, y+border, 0);
+                    Renderer2D.drawRect(x+width/2+border, y, x+width-border, y+border, 0);
+                }
+                if(!right){//right
+                    Renderer2D.drawRect(x+width-border, y+border, x+width, y+height/2-border, 0);
+                    Renderer2D.drawRect(x+width-border, y+height/2+border, x+width, y+height-border, 0);
+                }
+                if(!bottom){//bottom
+                    Renderer2D.drawRect(x+border, y+height-border, x+width/2-border, y+height, 0);
+                    Renderer2D.drawRect(x+width/2+border, y+height-border, x+width-border, y+height, 0);
+                }
+                if(!left){//left
+                    Renderer2D.drawRect(x, y+border, x+border, y+height/2-border, 0);
+                    Renderer2D.drawRect(x, y+height/2+border, x+border, y+height-border, 0);
                 }
             }
         }
@@ -511,7 +548,7 @@ public class Block extends multiblock.Block{
     @Override
     public boolean canGroup(){
         if(template.moderator)return false;
-        return template.cooling>0;
+        return template.cooling!=0;
     }
     public multiblock.overhaul.fissionmsr.Block convertToMSR(){
         multiblock.overhaul.fissionmsr.Block b = new multiblock.overhaul.fissionmsr.Block(x, y, z, Core.configuration.overhaul.fissionMSR.convertToMSR(template));
@@ -521,7 +558,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean canBeQuickReplaced(){
-        return template.cooling>0;
+        return template.cooling!=0;
     }
     @Override
     public Block copy(){

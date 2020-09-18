@@ -1,5 +1,4 @@
 package planner.menu.configuration;
-import java.io.File;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import planner.Core;
@@ -9,7 +8,7 @@ import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
@@ -61,14 +60,14 @@ public class MenuAddonsConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        list.width = Core.helper.displayWidth();
-        list.height = Core.helper.displayHeight()-back.height-add.height;
+        list.width = gui.helper.displayWidth();
+        list.height = gui.helper.displayHeight()-back.height-add.height;
         for(simplelibrary.opengl.gui.components.MenuComponent component : list.components){
             component.width = list.width-(list.hasVertScrollbar()?list.vertScrollbarWidth:0);
         }
-        load.width = add.width = back.width = Core.helper.displayWidth();
-        load.height = add.height = back.height = Core.helper.displayHeight()/16;
-        back.y = Core.helper.displayHeight()-back.height;
+        load.width = add.width = back.width = gui.helper.displayWidth();
+        load.height = add.height = back.height = gui.helper.displayHeight()/16;
+        back.y = gui.helper.displayHeight()-back.height;
         add.y = back.y-add.height;
         load.y = add.y-load.height;
         super.render(millisSinceLastTick);

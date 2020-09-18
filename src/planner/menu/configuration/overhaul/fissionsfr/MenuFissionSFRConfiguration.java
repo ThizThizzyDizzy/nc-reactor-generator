@@ -5,7 +5,7 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import static simplelibrary.opengl.Renderer2D.drawText;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 public class MenuFissionSFRConfiguration extends Menu{
     private final MenuComponentMinimalistButton blocks = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Blocks", true, true).setTooltip("Add, remove, or modify blocks"));
     private final MenuComponentMinimalistButton fuels = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Fuels", true, true).setTooltip("Add, remove, or modify fuels"));
@@ -67,10 +67,10 @@ public class MenuFissionSFRConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        minSize.width = maxSize.width = neutronReach.width = coolingEfficiencyLeniency.width = sparsityPenaltyMult.width = sparsityPenaltyThreshold.width = Core.helper.displayWidth()*.75;
-        minSize.x = maxSize.x = neutronReach.x = coolingEfficiencyLeniency.x = sparsityPenaltyMult.x = sparsityPenaltyThreshold.x = Core.helper.displayWidth()*.25;
-        blocks.width = fuels.width = sources.width = irradiatorRecipes.width = coolantRecipes.width = back.width = Core.helper.displayWidth();
-        minSize.height = maxSize.height = neutronReach.height = coolingEfficiencyLeniency.height = sparsityPenaltyMult.height = sparsityPenaltyThreshold.height = blocks.height = fuels.height = sources.height = irradiatorRecipes.height = coolantRecipes.height = back.height = Core.helper.displayHeight()/16;
+        minSize.width = maxSize.width = neutronReach.width = coolingEfficiencyLeniency.width = sparsityPenaltyMult.width = sparsityPenaltyThreshold.width = gui.helper.displayWidth()*.75;
+        minSize.x = maxSize.x = neutronReach.x = coolingEfficiencyLeniency.x = sparsityPenaltyMult.x = sparsityPenaltyThreshold.x = gui.helper.displayWidth()*.25;
+        blocks.width = fuels.width = sources.width = irradiatorRecipes.width = coolantRecipes.width = back.width = gui.helper.displayWidth();
+        minSize.height = maxSize.height = neutronReach.height = coolingEfficiencyLeniency.height = sparsityPenaltyMult.height = sparsityPenaltyThreshold.height = blocks.height = fuels.height = sources.height = irradiatorRecipes.height = coolantRecipes.height = back.height = gui.helper.displayHeight()/16;
         fuels.y = blocks.height;
         sources.y = fuels.y+fuels.height;
         irradiatorRecipes.y = sources.y+sources.height;
@@ -81,17 +81,17 @@ public class MenuFissionSFRConfiguration extends Menu{
         coolingEfficiencyLeniency.y = neutronReach.y+neutronReach.height;
         sparsityPenaltyMult.y = coolingEfficiencyLeniency.y+coolingEfficiencyLeniency.height;
         sparsityPenaltyThreshold.y = sparsityPenaltyMult.y+sparsityPenaltyMult.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         if(configuration.addon){
             minSize.y = maxSize.y = neutronReach.y = coolingEfficiencyLeniency.y = sparsityPenaltyMult.y = sparsityPenaltyThreshold.y = -minSize.height;
         }
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, minSize.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, minSize.y+minSize.height-Core.helper.displayHeight()/64, "Minimum reactor size");
-        drawText(0, maxSize.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, maxSize.y+maxSize.height-Core.helper.displayHeight()/64, "Maximum reactor size");
-        drawText(0, neutronReach.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, neutronReach.y+neutronReach.height-Core.helper.displayHeight()/64, "Neutron reach");
-        drawText(0, coolingEfficiencyLeniency.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, coolingEfficiencyLeniency.y+coolingEfficiencyLeniency.height-Core.helper.displayHeight()/64, "Cooling Efficiency Leniency");
-        drawText(0, sparsityPenaltyMult.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, sparsityPenaltyMult.y+sparsityPenaltyMult.height-Core.helper.displayHeight()/64, "Sparsity Penalty Multiplier");
-        drawText(0, sparsityPenaltyThreshold.y+Core.helper.displayHeight()/64, Core.helper.displayWidth()*.25, sparsityPenaltyThreshold.y+sparsityPenaltyThreshold.height-Core.helper.displayHeight()/64, "Sparsity Penalty Threshold");
+        drawText(0, minSize.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, minSize.y+minSize.height-gui.helper.displayHeight()/64, "Minimum reactor size");
+        drawText(0, maxSize.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, maxSize.y+maxSize.height-gui.helper.displayHeight()/64, "Maximum reactor size");
+        drawText(0, neutronReach.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, neutronReach.y+neutronReach.height-gui.helper.displayHeight()/64, "Neutron reach");
+        drawText(0, coolingEfficiencyLeniency.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, coolingEfficiencyLeniency.y+coolingEfficiencyLeniency.height-gui.helper.displayHeight()/64, "Cooling Efficiency Leniency");
+        drawText(0, sparsityPenaltyMult.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, sparsityPenaltyMult.y+sparsityPenaltyMult.height-gui.helper.displayHeight()/64, "Sparsity Penalty Multiplier");
+        drawText(0, sparsityPenaltyThreshold.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, sparsityPenaltyThreshold.y+sparsityPenaltyThreshold.height-gui.helper.displayHeight()/64, "Sparsity Penalty Threshold");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

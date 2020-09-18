@@ -1,18 +1,16 @@
 package planner.menu.configuration.overhaul.fissionsfr;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.Block;
-import planner.FileChooserResultListener;
 import planner.FileFormat;
 import planner.Main;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
@@ -127,8 +125,8 @@ public class MenuBlockConfiguration extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        drawRect(0, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps*2, Core.getTexture(block.texture));
-        if(block.closedTexture!=null)drawRect(0, Core.helper.displayHeight()/numComps*2, Core.helper.displayHeight()/numComps, Core.helper.displayHeight()/numComps*3, Core.getTexture(block.closedTexture));
+        drawRect(0, gui.helper.displayHeight()/numComps, gui.helper.displayHeight()/numComps, gui.helper.displayHeight()/numComps*2, Core.getTexture(block.texture));
+        if(block.closedTexture!=null)drawRect(0, gui.helper.displayHeight()/numComps*2, gui.helper.displayHeight()/numComps, gui.helper.displayHeight()/numComps*3, Core.getTexture(block.closedTexture));
         cluster.enabled = conductor.getIndex()==0;
         conductor.enabled = cluster.getIndex()==0;
         createCluster.enabled = cluster.getIndex()==1;
@@ -139,11 +137,11 @@ public class MenuBlockConfiguration extends Menu{
         heatMult.editable = shield.getIndex()==1;
         fuelCell.enabled = reflector.getIndex()==0;
         reflector.enabled = fuelCell.getIndex()==0;
-        cooling.width = flux.width = efficiency.width = reflectivity.width = heatMult.width = Core.helper.displayWidth()*.75;
-        cooling.x = flux.x = efficiency.x = reflectivity.x = heatMult.x = Core.helper.displayWidth()-cooling.width;
-        functional.width = blocksLOS.width = shield.width = activeModerator.width = moderator.width = irradiator.width = reflector.width = fuelCell.width = conductor.width = createCluster.width = cluster.width = name.width = rules.width = back.width = Core.helper.displayWidth();
-        closedTexture.x = closedTexture.height = texture.x = texture.height = functional.height = blocksLOS.height = heatMult.height = reflectivity.height = efficiency.height = flux.height = shield.height = activeModerator.height = moderator.height = irradiator.height = reflector.height = fuelCell.height = conductor.height = createCluster.height = cluster.height = cooling.height = name.height = rules.height = back.height = Core.helper.displayHeight()/numComps;
-        closedTexture.width = texture.width = Core.helper.displayWidth()-texture.x;
+        cooling.width = flux.width = efficiency.width = reflectivity.width = heatMult.width = gui.helper.displayWidth()*.75;
+        cooling.x = flux.x = efficiency.x = reflectivity.x = heatMult.x = gui.helper.displayWidth()-cooling.width;
+        functional.width = blocksLOS.width = shield.width = activeModerator.width = moderator.width = irradiator.width = reflector.width = fuelCell.width = conductor.width = createCluster.width = cluster.width = name.width = rules.width = back.width = gui.helper.displayWidth();
+        closedTexture.x = closedTexture.height = texture.x = texture.height = functional.height = blocksLOS.height = heatMult.height = reflectivity.height = efficiency.height = flux.height = shield.height = activeModerator.height = moderator.height = irradiator.height = reflector.height = fuelCell.height = conductor.height = createCluster.height = cluster.height = cooling.height = name.height = rules.height = back.height = gui.helper.displayHeight()/numComps;
+        closedTexture.width = texture.width = gui.helper.displayWidth()-texture.x;
         texture.y = name.height;
         closedTexture.y = texture.y+texture.height;
         cooling.y = closedTexture.y+closedTexture.height;
@@ -163,13 +161,13 @@ public class MenuBlockConfiguration extends Menu{
         blocksLOS.y = heatMult.y+heatMult.height;
         functional.y = blocksLOS.y+blocksLOS.height;
         rules.y = functional.y+functional.height;
-        back.y = Core.helper.displayHeight()-back.height;
+        back.y = gui.helper.displayHeight()-back.height;
         Core.applyColor(Core.theme.getTextColor());
-        drawText(0, Core.helper.displayHeight()/numComps*3, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*4, "Cooling");
-        drawText(0, Core.helper.displayHeight()/numComps*13, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*14, "Neutron Flux");
-        drawText(0, Core.helper.displayHeight()/numComps*14, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*15, "Efficiency");
-        drawText(0, Core.helper.displayHeight()/numComps*15, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*16, "Reflectivity");
-        drawText(0, Core.helper.displayHeight()/numComps*16, Core.helper.displayWidth()*.25, Core.helper.displayHeight()/numComps*17, "Heat Multiplier");
+        drawText(0, gui.helper.displayHeight()/numComps*3, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*4, "Cooling");
+        drawText(0, gui.helper.displayHeight()/numComps*13, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*14, "Neutron Flux");
+        drawText(0, gui.helper.displayHeight()/numComps*14, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*15, "Efficiency");
+        drawText(0, gui.helper.displayHeight()/numComps*15, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*16, "Reflectivity");
+        drawText(0, gui.helper.displayHeight()/numComps*16, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*17, "Heat Multiplier");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

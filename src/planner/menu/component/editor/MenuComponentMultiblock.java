@@ -54,11 +54,11 @@ public class MenuComponentMultiblock extends MenuComponent{
         else Core.applyColor(isSelected?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
         if(main.getSelectedMultiblock()!=null&&main.getSelectedMultiblock() instanceof OverhaulTurbine&&((OverhaulTurbine)main.getSelectedMultiblock()).inputs.contains(multiblock)){
-            Core.applyColor(Core.theme.getRGB(1, 1, 0), .25f);
+            Core.applyColor(Core.theme.getRGBA(1, 1, 0, 1), .25f);
             drawRect(x, y, x+width, y+height, 0);
         }
         if(main.settingInputs!=null&&!multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.input)){
-            Core.applyColor(Core.theme.getRGB(0, 0, 0), .25f);
+            Core.applyColor(Core.theme.getRGBA(0, 0, 0, 1), .25f);
             drawRect(x, y, x+width, y+height, 0);
         }
     }

@@ -5,7 +5,7 @@ import planner.Core;
 import planner.menu.configuration.underhaul.fissionsfr.MenuFissionSFRConfiguration;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
-import planner.menu.Menu;
+import simplelibrary.opengl.gui.Menu;
 public class MenuUnderhaulConfiguration extends Menu{
     private final MenuComponentMinimalistButton fissionSFR;
     private final MenuComponentMinimalistButton deleteSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete (Shift)", false, true).setTooltip("Delete the Underhaul SFR configuration"));
@@ -42,12 +42,12 @@ public class MenuUnderhaulConfiguration extends Menu{
             deleteSFR.enabled = Core.isShiftPressed();
         }
         deleteSFR.label = (configuration.underhaul.fissionSFR==null?"Create":"Delete")+" (Shift)";
-        back.width = Core.helper.displayWidth();
-        fissionSFR.width = Core.helper.displayWidth()*3/4;
-        deleteSFR.width = Core.helper.displayWidth()/4;
+        back.width = gui.helper.displayWidth();
+        fissionSFR.width = gui.helper.displayWidth()*3/4;
+        deleteSFR.width = gui.helper.displayWidth()/4;
         deleteSFR.x = fissionSFR.width;
-        deleteSFR.height = fissionSFR.height = back.height = Core.helper.displayHeight()/16;
-        back.y = Core.helper.displayHeight()-back.height;
+        deleteSFR.height = fissionSFR.height = back.height = gui.helper.displayHeight()/16;
+        back.y = gui.helper.displayHeight()-back.height;
         super.render(millisSinceLastTick);
     }
 }
