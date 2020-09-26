@@ -1,4 +1,5 @@
 package planner;
+import java.awt.HeadlessException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,6 +26,7 @@ public class Main{
     public static boolean isBot = false;
     public static boolean hasAWT = true;
     public static boolean hasAWTAfterStartup = false;
+    public static boolean headless = false;
     private static final int OS_UNKNOWN = -1;
     private static final int OS_WINDOWS = 0;
     private static final int OS_MACOS = 1;
@@ -35,6 +37,10 @@ public class Main{
     }
     public static void main(String[] args){
         try{
+            if(args.length>=1&&args[0].equals("headless")||args.length>=2&&args[1].equals("headless")||args.length>=3&&args[2].equals("headless")){
+                hasAWT = false;
+                headless = true;
+            }
             if(args.length>=1&&args[0].equals("noAWT")||args.length>=2&&args[1].equals("noAWT")||args.length>=3&&args[2].equals("noAWT")){
                 hasAWT = false;
             }
@@ -55,7 +61,7 @@ public class Main{
                     if(s.equalsIgnoreCase("B")||s.equalsIgnoreCase("Bot")||s.equalsIgnoreCase("Discord"))args[1] = "discord";
                 }
             }
-            if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")){
+            if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")||args.length>=3&&args[2].equals("discord")){
                 isBot = true;
             }
             System.out.println("Initializing...");
@@ -269,7 +275,7 @@ public class Main{
                     }
                     break;
             }
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.0.1/SimpleLibraryPlus-1.0.1.jar", "SimpleLibraryPlus-1.0.1.jar", 505);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.2.0/SimpleLibraryPlus-1.2.0.jar", "SimpleLibraryPlus-1.2.0.jar", 560);
             if(isBot){//I'll leave this on dropbox for now. What could possibly go wrong?
                 addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
                 addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);

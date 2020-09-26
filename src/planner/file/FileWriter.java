@@ -1,5 +1,6 @@
 package planner.file;
 import discord.Bot;
+import java.awt.image.BufferedImage;
 import planner.JSON;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,7 +23,8 @@ import simplelibrary.opengl.Renderer2D;
 public class FileWriter{
     public static final ArrayList<FormatWriter> formats = new ArrayList<>();
     public static boolean botRunning;
-    public static FormatWriter NCPF,PNG,HELLRAGE;
+    public static FormatWriter NCPF,HELLRAGE;
+    public static ImageFormatWriter PNG;
     static{
         formats.add(HELLRAGE = new FormatWriter(){
             @Override
@@ -281,7 +283,7 @@ public class FileWriter{
                 return true;
             }
         });
-        formats.add(PNG = new FormatWriter(){
+        formats.add(PNG = new ImageFormatWriter(){
             private final int textHeight = 20;
             private final int borderSize = 16;
             @Override
@@ -289,7 +291,7 @@ public class FileWriter{
                 return FileFormat.PNG;
             }
             @Override
-            public void write(NCPFFile ncpf, OutputStream stream){
+            public BufferedImage write(NCPFFile ncpf){
                 if(!ncpf.multiblocks.isEmpty()){
                     if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by Hellrage JSON!");
                     final Multiblock<Block> multi = ncpf.multiblocks.get(0);
@@ -326,57 +328,52 @@ public class FileWriter{
                         height = totalTextHeight+rowCount*(multi.getZ()*blockSize+borderSize);
                     }
                     int mpr = multisPerRow;
-                    try{
-                        Core.BufferRenderer renderer = (buff) -> {
-                            Core.applyColor(Core.theme.getEditorListBorderColor());
-                            Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
-                            Core.applyColor(Core.theme.getTextColor());
-                            for(int i = 0; i<strs.length; i++){
-                                String str = strs[i];
-                                Renderer2D.drawText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str);
-                            }
-                            for(int i = 0; i<parts.size(); i++){
-                                PartCount c = parts.get(i);
-                                Renderer2D.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
-                            }
-                            Core.applyWhite();
-                            for(int i = 0; i<parts.size(); i++){
-                                PartCount c = parts.get(i);
-                                int tex = c.getTexture();
-                                if(tex!=-1)Renderer2D.drawRect(tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2, tex);
-                            }
-//                            GL11.glEnable(GL11.GL_CULL_FACE);
-                            GL11.glPushMatrix();
-                            GL11.glTranslated(buff.width-totalTextHeight/2, totalTextHeight/2, -1);
-                            GL11.glScaled(1, 1, 0.0001);
-                            GL11.glRotated(45, 1, 0, 0);
-                            GL11.glRotated(45, 0, 1, 0);
-                            double size = Math.max(multi.getX(), Math.max(multi.getY(), multi.getZ()));
-                            GL11.glScaled(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2);
-                            GL11.glScaled(1/size, 1/size, 1/size);
-                            GL11.glTranslated(-multi.getX()/2d, -multi.getY()/2d, -multi.getZ()/2d);
-                            multi.draw3DInOrder();
-                            GL11.glPopMatrix();
-//                            GL11.glDisable(GL11.GL_CULL_FACE);
-                            for(int y = 0; y<multi.getY(); y++){
-                                int column = y%mpr;
-                                int row = y/mpr;
-                                int layerWidth = multi.getX()*blockSize+borderSize;
-                                int layerHeight = multi.getZ()*blockSize+borderSize;
-                                for(int x = 0; x<multi.getX(); x++){
-                                    for(int z = 0; z<multi.getZ(); z++){
-                                        Block b = multi.getBlock(x, y, z);
-                                        if(b!=null)b.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, false, multi);
-                                    }
+                    Core.BufferRenderer renderer = (buff) -> {
+                        Core.applyColor(Core.theme.getEditorListBorderColor());
+                        Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
+                        Core.applyColor(Core.theme.getTextColor());
+                        for(int i = 0; i<strs.length; i++){
+                            String str = strs[i];
+                            Renderer2D.drawText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str);
+                        }
+                        for(int i = 0; i<parts.size(); i++){
+                            PartCount c = parts.get(i);
+                            Renderer2D.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
+                        }
+                        Core.applyWhite();
+                        for(int i = 0; i<parts.size(); i++){
+                            PartCount c = parts.get(i);
+                            int tex = c.getTexture();
+                            if(tex!=-1)Renderer2D.drawRect(tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2, tex);
+                        }
+//                        GL11.glEnable(GL11.GL_CULL_FACE);
+                        GL11.glPushMatrix();
+                        GL11.glTranslated(buff.width-totalTextHeight/2, totalTextHeight/2, -1);
+                        GL11.glScaled(1, 1, 0.0001);
+                        GL11.glRotated(45, 1, 0, 0);
+                        GL11.glRotated(45, 0, 1, 0);
+                        double size = Math.max(multi.getX(), Math.max(multi.getY(), multi.getZ()));
+                        GL11.glScaled(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2);
+                        GL11.glScaled(1/size, 1/size, 1/size);
+                        GL11.glTranslated(-multi.getX()/2d, -multi.getY()/2d, -multi.getZ()/2d);
+                        multi.draw3DInOrder();
+                        GL11.glPopMatrix();
+//                        GL11.glDisable(GL11.GL_CULL_FACE);
+                        for(int y = 0; y<multi.getY(); y++){
+                            int column = y%mpr;
+                            int row = y/mpr;
+                            int layerWidth = multi.getX()*blockSize+borderSize;
+                            int layerHeight = multi.getZ()*blockSize+borderSize;
+                            for(int x = 0; x<multi.getX(); x++){
+                                for(int z = 0; z<multi.getZ(); z++){
+                                    Block b = multi.getBlock(x, y, z);
+                                    if(b!=null)b.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, false, multi);
                                 }
                             }
-                        };
-                        if(botRunning)ImageIO.write(Bot.makeImage(width, height, renderer), "png", stream);
-                        else ImageIO.write(Core.makeImage(width, height, renderer), "png", stream);
-                        stream.close();
-                    }catch(IOException ex){
-                        throw new RuntimeException(ex);
-                    }
+                        }
+                    };
+                    if(botRunning)return Bot.makeImage(width, height, renderer);
+                    return Core.makeImage(width, height, renderer);
                 }else{
                     throw new IllegalArgumentException("Cannot export configuration to image!");
                 }

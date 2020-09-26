@@ -26,7 +26,6 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GLUtil;
 import planner.menu.error.MenuCriticalError;
 import planner.menu.MenuDiscord;
 import planner.menu.MenuLoadFile;
@@ -136,6 +135,7 @@ public class Core extends Renderer2D{
             public void minorError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Minor "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
+                if(Main.isBot)return;
                 if(Main.hasAWT){
                     String details = "";
                     Throwable t = error;
@@ -176,6 +176,7 @@ public class Core extends Renderer2D{
             public void moderateError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Moderate "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
+                if(Main.isBot)return;
                 if(Main.hasAWT){
                     String details = "";
                     Throwable t = error;
@@ -216,6 +217,7 @@ public class Core extends Renderer2D{
             public void severeError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
+                if(Main.isBot)return;
                 if(Main.hasAWT){
                     String details = "";
                     Throwable t = error;
@@ -256,6 +258,7 @@ public class Core extends Renderer2D{
             public void criticalError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
+                if(Main.isBot)return;
                 if(Main.hasAWT){
                     String details = "";
                     Throwable t = error;
@@ -331,6 +334,7 @@ public class Core extends Renderer2D{
     }
     public static void tickInit(){}
     public static void finalInit() throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException{
+        if(Main.headless)GLFW.glfwHideWindow(helper.getWindow());
         System.out.println("Activating GUI...");
         helper.assignGUI(gui);
         System.out.println("Loading settings...");

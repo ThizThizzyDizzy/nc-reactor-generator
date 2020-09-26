@@ -1752,6 +1752,13 @@ public class Bot extends ListenerAdapter{
     }
     public static void start(String[] args){
         SmoreBot.load();
+        if(args[0].startsWith("noAWT")){
+            String[] rgs = new String[args.length-1];
+            for(int i = 0; i<rgs.length; i++){
+                rgs[i] = args[i+1];
+            }
+            args = rgs;
+        }
         for(int i = 2; i<args.length; i++){
             String arg = args[i];
             if(arg.startsWith("bot"))botChannels.add(Long.parseLong(arg.substring(3)));
