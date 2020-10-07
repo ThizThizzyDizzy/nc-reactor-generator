@@ -14,7 +14,8 @@ public class MenuTurbineConfiguration extends Menu{
     private final MenuComponentMinimalistTextBox minLength = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter()).setTooltip("The minimum length of this turbine");
     private final MenuComponentMinimalistTextBox maxSize = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter()).setTooltip("The maximum size of this turbine");
     private final MenuComponentMinimalistTextBox fluidPerBlade = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter());
-    private final MenuComponentMinimalistTextBox throughputEfficiencyLeniency = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
+    private final MenuComponentMinimalistTextBox throughputEfficiencyLeniencyMult = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
+    private final MenuComponentMinimalistTextBox throughputEfficiencyLeniencyThreshold = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
     private final MenuComponentMinimalistTextBox throughputFactor = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
     private final MenuComponentMinimalistTextBox powerBonus = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setFloatFilter());
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
@@ -44,7 +45,8 @@ public class MenuTurbineConfiguration extends Menu{
         minLength.text = configuration.overhaul.turbine.minLength+"";
         maxSize.text = configuration.overhaul.turbine.maxSize+"";
         fluidPerBlade.text = configuration.overhaul.turbine.fluidPerBlade+"";
-        throughputEfficiencyLeniency.text = configuration.overhaul.turbine.throughputEfficiencyLeniency+"";
+        throughputEfficiencyLeniencyMult.text = configuration.overhaul.turbine.throughputEfficiencyLeniencyMult+"";
+        throughputEfficiencyLeniencyThreshold.text = configuration.overhaul.turbine.throughputEfficiencyLeniencyThreshold+"";
         throughputFactor.text = configuration.overhaul.turbine.throughputFactor+"";
         powerBonus.text = configuration.overhaul.turbine.powerBonus+"";
     }
@@ -54,35 +56,38 @@ public class MenuTurbineConfiguration extends Menu{
         configuration.overhaul.turbine.minLength = Integer.parseInt(minLength.text);
         configuration.overhaul.turbine.maxSize = Integer.parseInt(maxSize.text);
         configuration.overhaul.turbine.fluidPerBlade = Integer.parseInt(fluidPerBlade.text);
-        configuration.overhaul.turbine.throughputEfficiencyLeniency = Float.parseFloat(throughputEfficiencyLeniency.text);
+        configuration.overhaul.turbine.throughputEfficiencyLeniencyMult = Float.parseFloat(throughputEfficiencyLeniencyMult.text);
+        configuration.overhaul.turbine.throughputEfficiencyLeniencyThreshold = Float.parseFloat(throughputEfficiencyLeniencyThreshold.text);
         configuration.overhaul.turbine.throughputFactor = Float.parseFloat(throughputFactor.text);
         configuration.overhaul.turbine.powerBonus = Float.parseFloat(powerBonus.text);
     }
     @Override
     public void render(int millisSinceLastTick){
-        minWidth.width = minLength.width = maxSize.width = fluidPerBlade.width = throughputEfficiencyLeniency.width = throughputFactor.width = powerBonus.width = gui.helper.displayWidth()*.75;
-        minWidth.x = minLength.x = maxSize.x = fluidPerBlade.x = throughputEfficiencyLeniency.x = throughputFactor.x = powerBonus.x = gui.helper.displayWidth()*.25;
+        minWidth.width = minLength.width = maxSize.width = fluidPerBlade.width = throughputEfficiencyLeniencyMult.width = throughputEfficiencyLeniencyThreshold.width = throughputFactor.width = powerBonus.width = gui.helper.displayWidth()*.75;
+        minWidth.x = minLength.x = maxSize.x = fluidPerBlade.x = throughputEfficiencyLeniencyMult.x = throughputEfficiencyLeniencyThreshold.x = throughputFactor.x = powerBonus.x = gui.helper.displayWidth()*.25;
         coils.width = blades.width = recipes.width = back.width = gui.helper.displayWidth();
-        minWidth.height = minLength.height = maxSize.height = fluidPerBlade.height = throughputEfficiencyLeniency.height = throughputFactor.height = powerBonus.height = coils.height = blades.height = recipes.height = back.height = gui.helper.displayHeight()/16;
+        minWidth.height = minLength.height = maxSize.height = fluidPerBlade.height = throughputEfficiencyLeniencyMult.height = throughputEfficiencyLeniencyThreshold.height = throughputFactor.height = powerBonus.height = coils.height = blades.height = recipes.height = back.height = gui.helper.displayHeight()/16;
         blades.y = coils.height;
         recipes.y = blades.y+blades.height;
         minWidth.y = recipes.y+recipes.height;
         minLength.y = minWidth.y+minWidth.height;
         maxSize.y = minLength.y+minLength.height;
         fluidPerBlade.y = maxSize.y+maxSize.height;
-        throughputEfficiencyLeniency.y = fluidPerBlade.y+fluidPerBlade.height;
-        throughputFactor.y = throughputEfficiencyLeniency.y+throughputEfficiencyLeniency.height;
+        throughputEfficiencyLeniencyMult.y = fluidPerBlade.y+fluidPerBlade.height;
+        throughputEfficiencyLeniencyThreshold.y = throughputEfficiencyLeniencyMult.y+throughputEfficiencyLeniencyMult.height;
+        throughputFactor.y = throughputEfficiencyLeniencyThreshold.y+throughputEfficiencyLeniencyThreshold.height;
         powerBonus.y = throughputFactor.y+throughputFactor.height;
         back.y = gui.helper.displayHeight()-back.height;
         if(configuration.addon){
-            minWidth.y = minLength.y = maxSize.y = fluidPerBlade.y = throughputEfficiencyLeniency.y = throughputFactor.y = powerBonus.y = -minWidth.height;
+            minWidth.y = minLength.y = maxSize.y = fluidPerBlade.y = throughputEfficiencyLeniencyMult.y = throughputEfficiencyLeniencyThreshold.y = throughputFactor.y = powerBonus.y = -minWidth.height;
         }
         Core.applyColor(Core.theme.getTextColor());
         drawText(0, minWidth.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, minWidth.y+minWidth.height-gui.helper.displayHeight()/64, "Minimum turbine diameter");
         drawText(0, minLength.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, minLength.y+minLength.height-gui.helper.displayHeight()/64, "Minimum turbine length");
         drawText(0, maxSize.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, maxSize.y+maxSize.height-gui.helper.displayHeight()/64, "Maximum reactor size");
         drawText(0, fluidPerBlade.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, fluidPerBlade.y+fluidPerBlade.height-gui.helper.displayHeight()/64, "Fluid per blade (mb)");
-        drawText(0, throughputEfficiencyLeniency.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, throughputEfficiencyLeniency.y+throughputEfficiencyLeniency.height-gui.helper.displayHeight()/64, "Throughput Eff. Leniency");
+        drawText(0, throughputEfficiencyLeniencyMult.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, throughputEfficiencyLeniencyMult.y+throughputEfficiencyLeniencyMult.height-gui.helper.displayHeight()/64, "Throughput Eff. Leniency Mult");
+        drawText(0, throughputEfficiencyLeniencyThreshold.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, throughputEfficiencyLeniencyThreshold.y+throughputEfficiencyLeniencyThreshold.height-gui.helper.displayHeight()/64, "Throughput Eff. Leniency Threshold");
         drawText(0, throughputFactor.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, throughputFactor.y+throughputFactor.height-gui.helper.displayHeight()/64, "Throughput Factor");
         drawText(0, powerBonus.y+gui.helper.displayHeight()/64, gui.helper.displayWidth()*.25, powerBonus.y+powerBonus.height-gui.helper.displayHeight()/64, "Power Bonus");
         Core.applyWhite();

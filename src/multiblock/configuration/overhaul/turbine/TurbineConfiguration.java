@@ -34,9 +34,10 @@ public class TurbineConfiguration{
     public int minLength;
     public int maxSize;
     public int fluidPerBlade;
-    public float throughputEfficiencyLeniency;
     public float throughputFactor;
     public float powerBonus;
+    public float throughputEfficiencyLeniencyMult;
+    public float throughputEfficiencyLeniencyThreshold;
     public String[] getAllCoilsStringList(){
         String[] strs = new String[allCoils.size()];
         for(int i = 0; i<strs.length; i++){
@@ -51,7 +52,8 @@ public class TurbineConfiguration{
             config.set("minLength", minLength);
             config.set("maxSize", maxSize);
             config.set("fluidPerBlade", fluidPerBlade);
-            config.set("throughputEfficiencyLeniency", throughputEfficiencyLeniency);
+            config.set("throughputEfficiencyLeniencyMult", throughputEfficiencyLeniencyMult);
+            config.set("throughputEfficiencyLeniencyThreshold", throughputEfficiencyLeniencyThreshold);
             config.set("throughputFactor", throughputFactor);
             config.set("powerBonus", powerBonus);
         }
@@ -185,7 +187,8 @@ public class TurbineConfiguration{
                     &&minLength==fsfrc.minLength
                     &&maxSize==fsfrc.maxSize
                     &&fluidPerBlade==fsfrc.fluidPerBlade
-                    &&throughputEfficiencyLeniency==fsfrc.throughputEfficiencyLeniency
+                    &&throughputEfficiencyLeniencyMult==fsfrc.throughputEfficiencyLeniencyMult
+                    &&throughputEfficiencyLeniencyThreshold==fsfrc.throughputEfficiencyLeniencyThreshold
                     &&throughputFactor==fsfrc.throughputFactor
                     &&powerBonus==fsfrc.powerBonus;
         }

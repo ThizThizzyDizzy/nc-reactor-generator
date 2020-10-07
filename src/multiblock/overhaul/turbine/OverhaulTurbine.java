@@ -391,6 +391,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
             double expansionSoFar = 1;
             rotorEfficiency = 0;
             float minBladeExpansion = Float.MAX_VALUE;
+            float maxBladeExpansion = 0;
             float minStatorExpansion = 1;
             int numBlades = 0;
             int numberOfBlades = 0;
@@ -401,6 +402,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
                     numberOfBlades++;
                     numBlades+=bearingDiameter*4*(getX()/2-bearingDiameter/2);
                     minBladeExpansion = Math.min(blades[i].blade.expansion, minBladeExpansion);
+                    maxBladeExpansion = Math.max(blades[i].blade.expansion, maxBladeExpansion);
                 }
                 idealExpansion[i] = Math.pow(recipe.coefficient, (i+.5f)/blades.length);
                 actualExpansion[i] = expansionSoFar*Math.sqrt(blades[i].blade.expansion);
@@ -410,19 +412,22 @@ public class OverhaulTurbine extends Multiblock<Block>{
             rotorEfficiency/=numberOfBlades;
             maxInput = numBlades*getConfiguration().overhaul.turbine.fluidPerBlade;
             maxUnsafeInput = maxInput*2;
-            double effectiveMaxLength;
-            if(minBladeExpansion<=1){
+            int effectiveMaxLength;
+            if(minBladeExpansion<=1||minStatorExpansion>=1d){
                 effectiveMaxLength = getConfiguration().overhaul.turbine.maxSize;
-            }else if(minStatorExpansion>=1){
-                effectiveMaxLength = Math.max(getConfiguration().overhaul.turbine.minLength, Math.min(getConfiguration().overhaul.turbine.maxSize, Math.log(recipe.coefficient)/Math.log(minBladeExpansion)));
             }else{
-                effectiveMaxLength = Math.max(getConfiguration().overhaul.turbine.minLength, Math.min(getConfiguration().overhaul.turbine.maxSize, (Math.log(recipe.coefficient)-getConfiguration().overhaul.turbine.maxSize*Math.log(minStatorExpansion))/(Math.log(minBladeExpansion)-Math.log(minStatorExpansion))));
+                effectiveMaxLength = (int)Math.ceil(Math.max(getConfiguration().overhaul.turbine.minLength, Math.min(getConfiguration().overhaul.turbine.maxSize, (Math.log(recipe.coefficient)-getConfiguration().overhaul.turbine.maxSize*Math.log(minStatorExpansion))/(Math.log(minBladeExpansion)-Math.log(minStatorExpansion)))));
             }
             int bladeArea = bearingDiameter*4*(getX()/2-bearingDiameter/2);
             double rate = Math.min(getInputRate(), maxInput);
             double lengthBonus = rate/(getConfiguration().overhaul.turbine.fluidPerBlade*bladeArea*effectiveMaxLength);
             double areaBonus = Math.sqrt(2*rate/(getConfiguration().overhaul.turbine.fluidPerBlade*(getZ()-2)*getConfiguration().overhaul.turbine.maxSize*effectiveMaxLength));
-            throughputEfficiency = 1+getConfiguration().overhaul.turbine.powerBonus*Math.pow(lengthBonus*areaBonus, 2/3d);
+            double effectiveMinLength = recipe.coefficient<=1||maxBladeExpansion<=1?getConfiguration().overhaul.turbine.maxSize:Math.ceil(Math.log(recipe.coefficient)/Math.log(maxBladeExpansion));
+            int minBladeArea = ((getConfiguration().overhaul.turbine.minWidth-1)*2);
+            double absoluteLeniency = effectiveMinLength*minBladeArea*getConfiguration().overhaul.turbine.fluidPerBlade;
+            double throughputRatio = maxInput==0?1:Math.min(1, (getInputRate()+absoluteLeniency)/maxInput);
+            double throughputEfficiencyMult = throughputRatio>=getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyThreshold?1:(1-getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyMult)*Math.sin(throughputRatio*Math.PI/(2*getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyThreshold))+getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyMult;
+            throughputEfficiency = (1+getConfiguration().overhaul.turbine.powerBonus*Math.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
         }
         boolean somethingChanged;
         do{
@@ -787,6 +792,6 @@ public class OverhaulTurbine extends Multiblock<Block>{
     }
     @Override
     public String getDescriptionTooltip(){
-        return "Overhaul Turbines are Turbines in NuclearCraft: Overhauled\nI bet that was pretty obvious though";
+        return "Overhaul Turbines are Turbines in NuclearCraft: Overhauled";
     }
 }
