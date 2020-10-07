@@ -862,9 +862,14 @@ public class OverhaulMSR extends Multiblock<Block>{
         public boolean isPrimed(){
             return getSources()>=getRequiredSources();
         }
-        private void propogateNeutronFlux(OverhaulMSR msr){
+        public void propogateNeutronFlux(OverhaulMSR msr){
             for(Block b : blocks){
                 b.propogateNeutronFlux(msr);
+            }
+        }
+        public void rePropogateNeutronFlux(OverhaulMSR msr){
+            for(Block b : blocks){
+                b.rePropogateNeutronFlux(msr);
             }
         }
     }

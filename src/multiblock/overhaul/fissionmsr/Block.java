@@ -261,7 +261,7 @@ public class Block extends multiblock.Block{
                     block.vesselGroup.neutronFlux+=flux;
                     block.vesselGroup.moderatorLines++;
                     block.vesselGroup.positionalEfficiency+=efficiency/length;
-                    block.propogateNeutronFlux(reactor);
+                    block.vesselGroup.propogateNeutronFlux(reactor);
                     break;
                 }
                 if(block.isReflector()){
@@ -284,6 +284,7 @@ public class Block extends multiblock.Block{
     public void rePropogateNeutronFlux(OverhaulMSR reactor){
         if(!isFuelVessel())return;
         if(!vesselGroup.wasActive)return;
+        if(!vesselGroup.isPrimed()&&vesselGroup.neutronFlux<vesselGroup.criticality)return;
         if(hasPropogated)return;
         hasPropogated = true;
         for(Direction d : directions){
@@ -309,7 +310,7 @@ public class Block extends multiblock.Block{
                     block.vesselGroup.neutronFlux+=flux;
                     block.vesselGroup.moderatorLines++;
                     block.vesselGroup.positionalEfficiency+=efficiency/length;
-                    block.rePropogateNeutronFlux(reactor);
+                    block.vesselGroup.rePropogateNeutronFlux(reactor);
                     break;
                 }
                 if(block.isReflector()){

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import javax.imageio.ImageIO;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.PartCount;
@@ -293,7 +292,7 @@ public class FileWriter{
             @Override
             public BufferedImage write(NCPFFile ncpf){
                 if(!ncpf.multiblocks.isEmpty()){
-                    if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by Hellrage JSON!");
+                    if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by PNG!");
                     final Multiblock<Block> multi = ncpf.multiblocks.get(0);
                     multi.recalculate();
                     int blSiz = 32;

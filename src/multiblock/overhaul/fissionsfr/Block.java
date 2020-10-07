@@ -278,6 +278,7 @@ public class Block extends multiblock.Block{
     public void rePropogateNeutronFlux(OverhaulSFR reactor){
         if(!isFuelCell())return;
         if(!wasActive)return;
+        if(!isPrimed()&&neutronFlux<fuel.criticality)return;
         if(hasPropogated)return;
         hasPropogated = true;
         for(Direction d : directions){
