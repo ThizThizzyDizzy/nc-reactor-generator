@@ -470,11 +470,11 @@ public class MenuEdit extends Menu{
                 multiblock.action(ac, true);
                 clearSelection();
             }
-            if(key==GLFW.GLFW_KEY_M)tools.setSelectedIndex(0);
-            if(key==GLFW.GLFW_KEY_S)tools.setSelectedIndex(1);
-            if(key==GLFW.GLFW_KEY_P)tools.setSelectedIndex(2);
-            if(key==GLFW.GLFW_KEY_L)tools.setSelectedIndex(3);
-            if(key==GLFW.GLFW_KEY_O)tools.setSelectedIndex(4);
+            if(key==GLFW.GLFW_KEY_M||key==GLFW.GLFW_KEY_1)tools.setSelectedIndex(0);
+            if(key==GLFW.GLFW_KEY_S||key==GLFW.GLFW_KEY_2)tools.setSelectedIndex(1);
+            if(key==GLFW.GLFW_KEY_P||key==GLFW.GLFW_KEY_3)tools.setSelectedIndex(2);
+            if(key==GLFW.GLFW_KEY_L||key==GLFW.GLFW_KEY_4)tools.setSelectedIndex(3);
+            if(key==GLFW.GLFW_KEY_B||key==GLFW.GLFW_KEY_5)tools.setSelectedIndex(4);
             if(Core.isControlPressed()){
                 if(key==GLFW.GLFW_KEY_A){
                     ArrayList<int[]> sel = new ArrayList<>();

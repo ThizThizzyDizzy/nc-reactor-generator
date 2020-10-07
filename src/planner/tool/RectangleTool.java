@@ -102,6 +102,6 @@ public class RectangleTool extends EditorTool{
     }
     @Override
     public String getTooltip(){
-        return "Box tool (O)\nUse this tool to draw Rectangles or Cuboids of the same block\nHold CTRL to only place blocks where they are valid";
+        return "Box tool (B)\nUse this tool to draw Rectangles or Cuboids of the same block\nHold CTRL to only place blocks where they are valid";
     }
 }
