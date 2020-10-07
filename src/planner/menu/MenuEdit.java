@@ -244,7 +244,8 @@ public class MenuEdit extends Menu{
         generate.x = editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
         generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
         generate.y = gui.helper.displayHeight()-generate.height;
-        tools.height = parts.height = Math.max((parts.components.size()+5)/partsWide,editorTools.size())*partSize;
+        tools.height = editorTools.size()*partSize;
+        tools.height = parts.height = Math.min(Math.max(tools.height, gui.helper.displayHeight()/2), ((parts.components.size()+5)/partsWide)*partSize);
         resize.width = 320;
         generate.width = editMetadata.width = multibwauk.width = gui.helper.displayWidth()-parts.x-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
