@@ -114,15 +114,7 @@ public class PlacementRule extends RuleContainer{
         Config config = Config.newConfig();
         byte coilIndex = (byte)(configuration.coils.indexOf(coil)+1);
         if(parent!=null){
-            if(parent.overhaul!=null&&parent.overhaul.turbine!=null){
-                coilIndex+=parent.overhaul.turbine.coils.size();
-            }
-            for(Configuration addon : parent.addons){
-                if(addon.overhaul!=null&&addon.overhaul.turbine!=null){
-                    if(addon.overhaul.turbine==configuration)break;
-                    else coilIndex+=addon.overhaul.turbine.coils.size();
-                }
-            }
+            coilIndex = (byte)(parent.overhaul.turbine.allCoils.indexOf(coil)+1);
         }
         switch(ruleType){
             case BETWEEN:
