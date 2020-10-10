@@ -1,6 +1,5 @@
 package multiblock.overhaul.fissionsfr;
 import generator.Priority;
-import generator.challenger.Challenger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -504,14 +503,12 @@ public class OverhaulSFR extends Multiblock<Block>{
                 return main.totalIrradiation-other.totalIrradiation;
             }
         });
-        if(Challenger.isActive){
-            priorities.add(new Priority<OverhaulSFR>("Rainbow", false){
-                @Override
-                protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                    return main.rainbowScore-other.rainbowScore;
-                }
-            });//TODO make this modular
-        }
+        priorities.add(new Priority<OverhaulSFR>("Rainbow", false){
+            @Override
+            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                return main.rainbowScore-other.rainbowScore;
+            }
+        });//TODO make this modular
     }
     @Override
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
@@ -528,7 +525,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
         postProcessingEffects.add(new ClearInvalid());
-        if(Challenger.isActive)postProcessingEffects.add(new SmartFillOverhaulSFR());
+        postProcessingEffects.add(new SmartFillOverhaulSFR());
         for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new SFRFill(b));
         }
