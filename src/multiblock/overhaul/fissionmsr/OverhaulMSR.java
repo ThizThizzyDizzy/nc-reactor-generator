@@ -818,7 +818,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         int size(){
             return blocks.size();
         }
-        private int getOpenFaces(){
+        int getOpenFaces(){
             int open = 0;
             for(Block b1 : blocks){
                 DIRECTION:for(Direction d : directions){

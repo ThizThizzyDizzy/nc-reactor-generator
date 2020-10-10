@@ -70,6 +70,7 @@ public class Block extends multiblock.Block{
                 tip +="Vessel Group "+(isFuelVesselActive()?"Active":"Inactive")+" ("+vesselGroup.size()+" Vessels)";
                 if(isFuelVesselActive()){
                     tip+="\nAdjacent moderator lines: "+vesselGroup.moderatorLines+"\n"
+                            + "Open Faces: "+vesselGroup.getOpenFaces()+"\n"
                             + "Heat Multiplier: "+percent(vesselGroup.getHeatMult()/vesselGroup.size(), 0)+"\n"
                             + "Heat Produced: "+vesselGroup.getHeatMult()*fuel.heat+"H/t\n"
                             + "Efficiency: "+percent(efficiency/vesselGroup.size(), 0)+"\n"

@@ -16,10 +16,12 @@ public class MultiblockBit extends Renderer2D{
     }
     protected String percent(double n, int digits){
         double fac = Math.pow(10, digits);
-        return (Math.round(n*fac*100)/(double)Math.round(fac))+"%";//why is there a (double)Math.round(fac)?
+        double d = (Math.round(n*fac*100)/(double)Math.round(fac));
+        return (digits==0?Math.round(d):d)+"%";
     }
-    protected double round(double n, int digits){
+    protected String round(double n, int digits){
         double fac = Math.pow(10, digits);
-        return Math.round(n*fac)/(double)Math.round(fac);//why is there a (double)Math.round(fac)?
+        double d = Math.round(n*fac)/(double)Math.round(fac);
+        return (digits==0?Math.round(d):d)+"";
     }
 }
