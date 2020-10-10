@@ -172,7 +172,7 @@ public class MenuEdit extends Menu{
     @Override
     public void onGUIOpened(){
         delCircle = true;
-        editMetadata.label = multiblock.getName();
+        editMetadata.label = multiblock.getName().isEmpty()?"Edit Metadata":(multiblock.getName()+" | Edit Metadata");
 //        generate.label = multiblock.isEmpty()?"Generate":"Generate Suggestions";
         if(multiblock instanceof UnderhaulSFR){
             underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));

@@ -1,4 +1,5 @@
 package planner.menu.configuration;
+import java.io.File;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import planner.Core;
@@ -29,14 +30,8 @@ public class MenuAddonsConfiguration extends Menu{
         });
         load.addActionListener((e) -> {
             Core.createFileChooser((file, format) -> {
-                try{
-                    NCPFFile ncpf = FileReader.read(file);
-                    if(ncpf==null)return;
-                    Core.configuration.addAndConvertAddon(AddonConfiguration.convert(ncpf.configuration));
-                    onGUIOpened();
-                }catch(Exception ex){
-                    Sys.error(ErrorLevel.severe, "Failed to load addon", ex, ErrorCategory.fileIO);
-                }
+                loadAddon(file);
+                onGUIOpened();
             }, FileFormat.NCPF);
         });
         back.addActionListener((e) -> {
@@ -88,5 +83,22 @@ public class MenuAddonsConfiguration extends Menu{
             }
         }
         super.buttonClicked(button);
+    }
+    @Override
+    public boolean onFilesDropped(double x, double y, String[] files){
+        for(String fil : files){
+            loadAddon(new File(fil));
+        }
+        onGUIOpened();
+        return true;
+    }
+    private void loadAddon(File file){
+        try{
+            NCPFFile ncpf = FileReader.read(file);
+            if(ncpf==null)return;
+            Core.configuration.addAndConvertAddon(AddonConfiguration.convert(ncpf.configuration));
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, "Failed to load addon", ex, ErrorCategory.fileIO);
+        }
     }
 }

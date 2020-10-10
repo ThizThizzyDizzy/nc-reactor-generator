@@ -204,20 +204,7 @@ public class MenuMain extends Menu{
         });
         importFile.addActionListener((e) -> {
             Core.createFileChooser((file, format) -> {
-                NCPFFile ncpf = FileReader.read(file);
-                if(ncpf==null)return;
-                if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                    if(Main.hasAWT){
-                        javax.swing.JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
-                    }else{
-                        Sys.error(ErrorLevel.minor, "Configuration mismatch detected!", null, ErrorCategory.other);
-                    }
-                    return;
-                }
-                for(Multiblock mb : ncpf.multiblocks){
-                    mb.convertTo(Core.configuration);
-                    Core.multiblocks.add(mb);
-                }
+                importMultiblocks(file);
                 onGUIOpened();
             }, FileFormat.ALL_PLANNER_FORMATS);
         });
@@ -395,7 +382,8 @@ public class MenuMain extends Menu{
         for(Multiblock multi : Core.multiblocks){
             multiblocks.add(new MenuComponentMultiblock(this, multi));
         }
-        editMetadata.label = Core.metadata.containsKey("Name")?Core.metadata.get("Name"):"";
+        String name = Core.metadata.containsKey("Name")?Core.metadata.get("Name"):"";
+        editMetadata.label = name.isEmpty()?"Edit Metadata":(name+" | Edit Metadata");
     }
     @Override
     public void buttonClicked(MenuComponentButton button){
@@ -411,6 +399,22 @@ public class MenuMain extends Menu{
         if(multiblocks.getSelectedIndex()==-1)return null;
         return ((MenuComponentMultiblock)multiblocks.components.get(multiblocks.getSelectedIndex())).multiblock;
     }
+    private void importMultiblocks(File file){
+        NCPFFile ncpf = FileReader.read(file);
+        if(ncpf==null)return;
+        if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
+            if(Main.hasAWT){
+                javax.swing.JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }else{
+                Sys.error(ErrorLevel.minor, "Configuration mismatch detected!", null, ErrorCategory.other);
+            }
+            return;
+        }
+        for(Multiblock mb : ncpf.multiblocks){
+            mb.convertTo(Core.configuration);
+            Core.multiblocks.add(mb);
+        }
+    }
     private static class PendingWrite{
         private final NCPFFile ncpf;
         private final File file;
@@ -423,5 +427,13 @@ public class MenuMain extends Menu{
         private void write(){
             FileWriter.write(ncpf, file, writer);
         }
+    }
+    @Override
+    public boolean onFilesDropped(double x, double y, String[] files){
+        for(String fil : files){
+            importMultiblocks(new File(fil));
+        }
+        onGUIOpened();
+        return true;
     }
 }

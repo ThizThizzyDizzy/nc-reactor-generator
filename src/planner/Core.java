@@ -516,10 +516,11 @@ public class Core extends Renderer2D{
     private static int f(byte imgData){
         return (imgData+256)&255;
     }
+    private static File lastOpenFolder = new File("file").getAbsoluteFile().getParentFile();
     public static void createFileChooser(FileChooserResultListener listener, FileFormat... formats){
         if(Main.hasAWT){
             new Thread(() -> {
-                javax.swing.JFileChooser chooser = new javax.swing.JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                javax.swing.JFileChooser chooser = new javax.swing.JFileChooser(lastOpenFolder);
                 HashMap<javax.swing.filechooser.FileFilter, FileFormat> filters = new HashMap<>();
                 for(FileFormat format : formats){
                     javax.swing.filechooser.FileFilter filter = format.getFileFilter();
@@ -530,6 +531,7 @@ public class Core extends Renderer2D{
                 chooser.setAcceptAllFileFilterUsed(false);
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
+                        lastOpenFolder = chooser.getSelectedFile().getAbsoluteFile().getParentFile();
                         listener.approved(chooser.getSelectedFile(), filters.get(chooser.getFileFilter()));
                     }
                 });
@@ -542,7 +544,7 @@ public class Core extends Renderer2D{
     public static void createFileChooser(File selectedFile, FileChooserResultListener listener, FileFormat... formats){
         if(Main.hasAWT){
             new Thread(() -> {
-                javax.swing.JFileChooser chooser = new javax.swing.JFileChooser(new File("file").getAbsoluteFile().getParentFile());
+                javax.swing.JFileChooser chooser = new javax.swing.JFileChooser(lastOpenFolder);
                 if(selectedFile!=null)chooser.setSelectedFile(selectedFile);
                 HashMap<javax.swing.filechooser.FileFilter, FileFormat> filters = new HashMap<>();
                 for(FileFormat format : formats){
@@ -554,6 +556,7 @@ public class Core extends Renderer2D{
                 chooser.setAcceptAllFileFilterUsed(false);
                 chooser.addActionListener((event) -> {
                     if(event.getActionCommand().equals("ApproveSelection")){
+                        lastOpenFolder = chooser.getSelectedFile().getAbsoluteFile().getParentFile();
                         listener.approved(chooser.getSelectedFile(), filters.get(chooser.getFileFilter()));
                     }
                 });
