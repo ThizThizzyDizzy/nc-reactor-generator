@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import multiblock.Action;
-import multiblock.Block;
 import multiblock.Multiblock;
 import planner.menu.MenuEdit;
 public class DeselectAction extends Action<Multiblock>{
@@ -18,7 +17,7 @@ public class DeselectAction extends Action<Multiblock>{
         this.sel.addAll(sel);
     }
     @Override
-    protected void doApply(Multiblock multiblock, boolean allowUndo){
+    public void apply(Multiblock multiblock, boolean allowUndo){
         synchronized(editor.selection){
             for(int[] i : sel){
                 for (Iterator<int[]> it = editor.selection.iterator(); it.hasNext();) {
@@ -29,11 +28,9 @@ public class DeselectAction extends Action<Multiblock>{
         }
     }
     @Override
-    protected void doUndo(Multiblock multiblock){
+    public void undo(Multiblock multiblock){
         synchronized(editor.selection){
             editor.selection.addAll(sel);
         }
     }
-    @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){}
 }

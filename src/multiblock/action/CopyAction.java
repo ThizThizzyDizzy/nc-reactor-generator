@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import multiblock.Action;
-import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.configuration.Block;
 import planner.Core;
 import planner.menu.MenuEdit;
 public class CopyAction extends Action<Multiblock>{
@@ -22,7 +22,7 @@ public class CopyAction extends Action<Multiblock>{
         this.editor = editor;
     }
     @Override
-    public void doApply(Multiblock multiblock, boolean allowUndo){
+    public void apply(Multiblock multiblock, boolean allowUndo){
         ArrayList<int[]> movedSelection = new ArrayList<>();
         for(int[] loc : selection){
             int[] movedLoc = new int[]{loc[0]+dx, loc[1]+dy, loc[2]+dz};
@@ -48,25 +48,13 @@ public class CopyAction extends Action<Multiblock>{
         editor.addSelection(movedSelection);
     }
     @Override
-    public void doUndo(Multiblock multiblock){
+    public void undo(Multiblock multiblock){
         for(int[] loc : was.keySet()){
-            multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
+            multiblock.setBlock(loc[0], loc[1], loc[2], was.get(loc));
         }
         synchronized(editor.selection){
             editor.selection.clear();
             editor.selection.addAll(selection);
-        }
-    }
-    @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
-        for(int[] loc : selection){
-            Block from = multiblock.getBlock(loc[0], loc[1], loc[2]);
-            if(from!=null)blocks.add(from);
-            Block to = multiblock.getBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz);
-            if(to==null)continue;
-            if(!to.isCasing()&&!blocks.contains(to)){
-                blocks.add(to);
-            }
         }
     }
 }

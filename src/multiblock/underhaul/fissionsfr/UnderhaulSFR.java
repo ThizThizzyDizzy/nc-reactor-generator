@@ -3,10 +3,13 @@ import generator.Priority;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import multiblock.Direction;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.Multiblock;
 import multiblock.PartCount;
+import multiblock.configuration.underhaul.fissionsfr.Block;
+import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.ppe.SmartFillUnderhaulSFR;
@@ -14,6 +17,7 @@ import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
+import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
@@ -21,7 +25,14 @@ public class UnderhaulSFR extends Multiblock<Block>{
     private int power, heat, cooling, cells;
     private float efficiency;
     public Fuel fuel;
-    private double heatMult;
+    private double globalHeatMult;
+    private boolean[][][] moderatorActive;
+    private boolean[][][] moderatorValid;
+    private boolean[][][] coolerValid;
+    private int[][][] adjacentModerators;
+    private int[][][] adjacentCells;
+    private float[][][] heatMult;
+    private float[][][] energyMult;
     public UnderhaulSFR(){
         this(7, 5, 7, null);
     }
@@ -46,9 +57,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().underhaul==null||getConfiguration().underhaul.fissionSFR==null)return;
-        for(multiblock.configuration.underhaul.fissionsfr.Block block : getConfiguration().underhaul.fissionSFR.allBlocks){
-            blocks.add(new Block(-1,-1,-1,block));
-        }
+        blocks.addAll(getConfiguration().underhaul.fissionSFR.allBlocks);
     }
     @Override
     public int getMinX(){
@@ -75,9 +84,48 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return getConfiguration().underhaul.fissionSFR.maxSize;
     }
     @Override
-    public void calculate(List<Block> blocks){
-        for(Block block : blocks){
-            block.calculateCore(this);
+    public void calculate(){
+        moderatorActive = new boolean[getX()][getY()][getZ()];
+        moderatorValid = new boolean[getX()][getY()][getZ()];
+        coolerValid = new boolean[getX()][getY()][getZ()];
+        adjacentModerators = new int[getX()][getY()][getZ()];
+        adjacentCells = new int[getX()][getY()][getZ()];
+        heatMult = new float[getX()][getY()][getZ()];
+        energyMult = new float[getX()][getY()][getZ()];
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    Block template = getBlock(x, y, z);
+                    if(!template.fuelCell)continue;
+                    for(Direction d : directions){
+                        Queue<int[]> toValidate = new Queue<>();
+                        for(int i = 1; i<=getConfiguration().underhaul.fissionSFR.neutronReach+1; i++){
+                            Block block = getBlock(x+d.x*i,y+d.y*i,z+d.z*i);
+                            if(block==null)break;
+                            if(block.moderator){
+                                if(i==1){
+                                    moderatorActive[x+d.x*i][y+d.y*i][z+d.z*i] = moderatorValid[x+d.x*i][y+d.y*i][z+d.z*i] = true;
+                                    adjacentModerators[x][y][z]++;
+                                }
+                                toValidate.enqueue(new int[]{x+d.x*i,y+d.y*i,z+d.z*i});
+                                continue;
+                            }
+                            if(block.fuelCell){
+                                for(int[] b : toValidate){
+                                    moderatorValid[b[0]][b[1]][b[2]] = true;
+                                }
+                                adjacentCells[x][y][z]++;
+                                break;
+                            }
+                            break;
+                        }
+                    }
+                    float baseEff = energyMult[x][y][z] = adjacentCells[x][y][z]+1;
+                    heatMult[x][y][z] = (baseEff*(baseEff+1))/2;
+                    energyMult[x][y][z]+=baseEff/6*getConfiguration().underhaul.fissionSFR.moderatorExtraPower*adjacentModerators[x][y][z];
+                    heatMult[x][y][z]+=baseEff/6*getConfiguration().underhaul.fissionSFR.moderatorExtraHeat*adjacentModerators[x][y][z];
+                }
+            }
         }
         float totalHeatMult = 0;
         float totalEnergyMult = 0;
@@ -85,10 +133,27 @@ public class UnderhaulSFR extends Multiblock<Block>{
         boolean somethingChanged;
         do{
             somethingChanged = false;
-            for(Block block : blocks){
-                if(block.calculateCooler(this))somethingChanged = true;
+            for(int x = 0; x<getX(); x++){
+                for(int y = 0; y<getY(); y++){
+                    BLOCK:for(int z = 0; z<getZ(); z++){
+                        Block template = getBlock(x, y, z);
+                        if(!template.isCooler())continue;
+                        boolean wasValid = coolerValid[x][y][z];
+                        for(PlacementRule rule : template.rules){
+                            if(!rule.isValid(x, y, z, this)){
+                                coolerValid[x][y][z] = false;
+                                if(wasValid!=coolerValid[x][y][z])somethingChanged = true;
+                                continue BLOCK;
+                                //return wasValid!=coolerValid;
+                            }
+                        }
+                        coolerValid[x][y][z] = true;
+                        if(wasValid!=coolerValid[x][y][z])somethingChanged = true;
+                    }
+                }
             }
         }while(somethingChanged);
+        //TODO haven't done from here on
         cooling = 0;
         for(Block block : getBlocks()){
             if(block.isFuelCell()){
@@ -98,8 +163,8 @@ public class UnderhaulSFR extends Multiblock<Block>{
             }
             if(block.isCooler()&&block.isActive())cooling+=block.getCooling();
         }
-        this.heatMult = totalHeatMult/cells;
-        if(Double.isNaN(heatMult))heatMult = 0;
+        this.globalHeatMult = totalHeatMult/cells;
+        if(Double.isNaN(globalHeatMult))globalHeatMult = 0;
         heat = (int) (totalHeatMult*fuel.heat);
         netHeat = heat-cooling;
         power = (int) (totalEnergyMult*fuel.power);
@@ -107,7 +172,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         if(Double.isNaN(efficiency))efficiency = 0;
     }
     @Override
-    protected Block newCasing(int x, int y, int z){
+    protected Block getCasing(int x, int y, int z){
         return new Block(x, y, z, null);
     }
     @Override
@@ -125,7 +190,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 + "Total Cooling: "+cooling+"H/t\n"
                 + "Net Heat: "+netHeat+"H/t\n"
                 + "Efficiency: "+percent(efficiency, 0)+"\n"
-                + "Heat multiplier: "+percent(heatMult, 0)+"\n"
+                + "Heat multiplier: "+percent(globalHeatMult, 0)+"\n"
                 + "Fuel cells: "+cells;
     }
     @Override
@@ -276,7 +341,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         copy.cooling = cooling;
         copy.cells = cells;
         copy.efficiency = efficiency;
-        copy.heatMult = heatMult;
+        copy.globalHeatMult = globalHeatMult;
         return copy;
     }
     @Override

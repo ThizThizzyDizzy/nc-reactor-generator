@@ -210,7 +210,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         rainbowScore = getRainbowScore();
     }
     @Override
-    protected Block newCasing(int x, int y, int z){
+    protected Block getCasing(int x, int y, int z){
         return new Block(x, y, z, null);
     }
     @Override

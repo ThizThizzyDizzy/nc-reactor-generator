@@ -467,7 +467,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         unsafeOutput = (long)(totalFluidEfficiency*maxUnsafeInput);
     }
     @Override
-    protected Block newCasing(int x, int y, int z){
+    protected Block getCasing(int x, int y, int z){
         return Block.casing(x, y, z);
     }
     @Override

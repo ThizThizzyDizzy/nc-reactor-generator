@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import multiblock.action.SetblockAction;
+import multiblock.configuration.Block;
 import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -41,7 +42,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         blocks = new Block[x][y][z];
     }
     public T getBlock(int x, int y, int z){
-        if(x<0||y<0||z<0||x>=getX()||y>=getY()||z>=getZ())return newCasing(x,y,z);
+        if(x<0||y<0||z<0||x>=getX()||y>=getY()||z>=getZ())return getCasing();
         return (T) blocks[x][y][z];
     }
     public abstract String getDefinitionName();
@@ -85,7 +86,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -100,7 +100,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -115,7 +114,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -130,7 +128,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -145,7 +142,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -160,7 +156,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -175,7 +170,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -190,7 +184,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -205,7 +198,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -220,7 +212,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -235,7 +226,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
@@ -250,94 +240,66 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         blocks = blks;
-        updateBlockLocations();
         history.clear();
         future.clear();
     }
-    public void clearData(List<T> blocks){
-        for(T t : blocks){
-            t.clearData();
-        }
-    }
-    public abstract void calculate(List<T> blocks);
-    private ArrayList<T> lastBlocks = null;
-    private boolean forceRescan = false;
-    public ArrayList<T> getAbsoluteBlocks(){
-        ArrayList<T> absolute = new ArrayList<>();
+    public abstract void clearData();
+    public abstract void calculate();
+    public ArrayList<BlockHolder<T>> getAbsoluteBlocks(){
+        ArrayList<BlockHolder<T>> absolute = new ArrayList<>();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
                 for(int z = 0; z<getZ(); z++){
                     T b = getBlock(x, y, z);
                     if(b!=null){
-                        T t = (T)b.copy(x, y, z);
-                        t.x = x;
-                        t.y = y;
-                        t.z = z;
-                        //because blades
-                        absolute.add(t);
+                        absolute.add(new BlockHolder<>(x,y,z,b));
                     }
                 }
             }
         }
         return absolute;
     }
-    public ArrayList<T> getBlocks(){
-        return getBlocks(false);
-    }
-    public ArrayList<T> getBlocks(boolean rescan){
-        if(lastBlocks!=null&&!rescan&&!forceRescan)return lastBlocks;
-        ArrayList<T> lastBlox = new ArrayList<>();
-        for(int x = 0; x<getX(); x++){
-            for(int y = 0; y<getY(); y++){
-                for(int z = 0; z<getZ(); z++){
-                    T b = getBlock(x, y, z);
-                    if(b!=null)lastBlox.add(b);
-                }
-            }
-        }
-        return lastBlocks = lastBlox;
-    }
-    protected abstract T newCasing(int x, int y, int z);
+    protected abstract T getCasing();
     public abstract String getTooltip();
     public void draw3D(){
-        ArrayList<T> blocks = getAbsoluteBlocks();
-        Collections.sort(blocks, (T o1, T o2) -> o1.getName().compareTo(o2.getName()));
-        Block last = null;
-        for(T block : blocks){
-            if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
+        ArrayList<BlockHolder<T>> holders = getAbsoluteBlocks();
+        Collections.sort(holders, (BlockHolder<T> o1, BlockHolder<T> o2) -> o1.block.getName().compareTo(o2.block.getName()));
+        BlockHolder<T> last = null;
+        for(BlockHolder<T> holder : holders){
+            if(last==null||last.getBaseTexture()!=holder.getBaseTexture()){
                 if(last!=null)GL11.glEnd();
-                ImageStash.instance.bindTexture(Core.getTexture(block.getBaseTexture()));
+                ImageStash.instance.bindTexture(Core.getTexture(holder.getBaseTexture()));
                 GL11.glBegin(GL11.GL_QUADS);
             }
-            drawCube(block, false);
-            last = block;
+            drawCube(holder, false);
+            last = holder;
         }
-        if(!blocks.isEmpty())GL11.glEnd();
+        if(!holders.isEmpty())GL11.glEnd();
     }
     public void draw3DInOrder(){
-        ArrayList<T> blocks = getAbsoluteBlocks();
-        Collections.sort(blocks, (T o1, T o2) -> {
+        ArrayList<BlockHolder<T>> holders = getAbsoluteBlocks();
+        Collections.sort(holders, (BlockHolder<T> o1, BlockHolder<T> o2) -> {
             if(o1.y!=o2.y)return o2.y-o1.y;
             int d1 = o1.x-o1.z;
             int d2 = o2.x-o2.z;
             return d1-d2;
         });
-        Block last = null;
-        for(T block : blocks){
-            if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
+        BlockHolder<T> last = null;
+        for(BlockHolder<T> holder : holders){
+            if(last==null||last.getBaseTexture()!=holder.getBaseTexture()){
                 if(last!=null)GL11.glEnd();
-                ImageStash.instance.bindTexture(Core.getTexture(block.getBaseTexture()));
+                ImageStash.instance.bindTexture(Core.getTexture(holder.getBaseTexture()));
                 GL11.glBegin(GL11.GL_QUADS);
             }
-            drawCube(block, true);
-            last = block;
+            drawCube(holder, true);
+            last = holder;
         }
-        if(!blocks.isEmpty())GL11.glEnd();
+        if(!holders.isEmpty())GL11.glEnd();
     }
-    protected void drawCube(T block, boolean inOrder){
-        int x = block.x;
-        int y = block.y;
-        int z = block.z;
+    protected void drawCube(BlockHolder<T> holder, boolean inOrder){
+        int x = holder.x;
+        int y = holder.y;
+        int z = holder.z;
         //xy +z
         if(!inOrder&&(z==getZ()-1||getBlock(x, y, z+1)==null)){
             GL11.glTexCoord2d(0, 0);
@@ -427,19 +389,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
      * @return true if anything changed
      */
     public abstract boolean validate();
-    private void updateBlockLocations(){
-        for(int x = 0; x<getX(); x++){
-            for(int y = 0; y<getY(); y++){
-                for(int z = 0; z<getZ(); z++){
-                    T b = getBlock(x, y, z);
-                    if(b==null)continue;
-                    b.x = x;
-                    b.y = y;
-                    b.z = z;
-                }
-            }
-        }
-    }
     public String getName(){
         return metadata.containsKey("Name")?metadata.get("Name"):"";
     }
@@ -447,86 +396,43 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public void undo(){
         if(!history.isEmpty()){
             Action a = history.pop();
-            recalculate(a.undo(this));
+            a.undo(this);
+            recalculate();
             future.push(a);
         }
     }
     public void redo(){
         if(!future.isEmpty()){
             Action a = future.pop();
-            recalculate(a.apply(this, true));
+            a.apply(this, true);
+            recalculate();
             history.push(a);
         }
     }
     public void action(Action action, boolean allowUndo){
         lastChangeTime = System.nanoTime();
-        recalculate(action.apply(this, allowUndo));
+        action.apply(this, allowUndo);
+        recalculate();
         future.clear();
         if(allowUndo)history.push(action);
     }
     public void recalculate(){
-        List<T> blox = getBlocks();
-        clearData(blox);
+        clearData();
         validate();
-        calculate(blox);
-    }
-    private void recalculate(ActionResult result){
-        forceRescan = true;
-        ArrayList<T> affectedGroups = result.getAffectedGroups();
-        recalculate(affectedGroups==null?getBlocks(true):affectedGroups);
-        forceRescan = false;
-    }
-    private void recalculate(List<T> blox){
-        forceRescan = true;
-        clearData(blox);
-        if(validate()){
-            recalculate();
-            return;
-        }
-        calculate(blox);
-        forceRescan = false;
-    }
-    public ArrayList<T> getGroup(T block){
-        ArrayList<T> group = new ArrayList<>();
-        if(block==null)return group;
-        if(!block.canGroup())return null;
-        group.add(block);
-        boolean somethingChanged;
-        do{
-            somethingChanged = false;
-            for(T blok : getBlocks()){
-                if(group.contains(blok))continue;
-                boolean req = false;
-                for(T b : group){
-                    if(b.requires(blok, this)||blok.requires(b, this))req = true;
-                }
-                if(req){
-                    group.add(blok);
-                    somethingChanged = true;
-                }
-            }
-        }while(somethingChanged);
-        return group;
-    }
-    public ArrayList<T> getAffectedGroups(List<T> blocks){
-        ArrayList<T> group = new ArrayList<>();
-        for(T block : blocks){
-            ArrayList<T> g = getGroup(block);
-            if(g==null)return getBlocks();
-            for(T b : g){
-                if(!group.contains(b))group.add(b);
-            }
-        }
-        return group;
+        calculate();
     }
     public boolean isEmpty(){
-        return getBlocks().isEmpty();
+        for(int x = 0; x<getX(); x++){
+            for(int y =0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    if(getBlock(x, y, z)!=null)return false;
+                }
+            }
+        }
+        return true;
     }
     public void setBlock(int x, int y, int z, Block block){
-        blocks[x][y][z] = block==null?null:block.copy(x, y, z);
-    }
-    public void setBlockExact(int x, int y, int z, Block exact){
-        blocks[x][y][z] = exact;
+        blocks[x][y][z] = block;
     }
     public String getSaveTooltip(){
         String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.underhaulVersion:Core.configuration.overhaulVersion)+")\n";
@@ -599,28 +505,12 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     public void performActions(boolean allowUndo){
         future.clear();
-        ArrayList<T> affected = new ArrayList<>();
         while(!queue.isEmpty()){
             Action action = queue.dequeue();
-            ActionResult result = action.apply(this, allowUndo);
-            ArrayList<T> affectedGroups = result.getAffectedGroups();
-            if(affected!=null){
-                if(affectedGroups==null)affected = null;
-                else affected.addAll(affectedGroups);
-            }
+            action.apply(this, allowUndo);
             history.push(action);
         }
-        if(affected==null){
-            recalculate(getBlocks(true));
-            return;
-        }
-        Set<T> actual = new HashSet<>();
-        for(T t : affected){
-            T b = getBlock(t.x, t.y, t.z);
-            if(b==null)continue;
-            actual.add(b);
-        }
-        recalculate(new ArrayList<>(actual));
+        recalculate();
     }
     public boolean isBetterThan(Multiblock other, ArrayList<Priority> priorities){
         for(Priority p : priorities){
@@ -685,7 +575,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
                         }
                     }
                     if(block==null)continue;
-                    if(block.isEqual(type))total++;
+                    if(block==type)total++;
                 }
             }
         }
@@ -721,14 +611,14 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     protected void getMainParts(ArrayList<PartCount> parts){
         HashMap<T, Integer> blocks = new HashMap<>();
-        FOR:for(T block : getBlocks(true)){
-            for(T t : blocks.keySet()){
-                if(t.isEqual(block)){
-                    blocks.put(t, blocks.get(t)+1);
-                    continue FOR;
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    T block = getBlock(x, y, z);
+                    if(blocks.containsKey(block))blocks.put(block, blocks.get(block)+1);
+                    else blocks.put(block, 1);
                 }
             }
-            blocks.put(block, 1);
         }
         for(T block : blocks.keySet()){
             parts.add(new PartCount(block.getTexture(), block.getName(), blocks.get(block)));
@@ -736,8 +626,40 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     protected abstract void getExtraParts(ArrayList<PartCount> parts);
     public boolean isValid(Block block, int x, int y, int z){
-        Block b = block.newInstance(x, y, z);
-        return b.hasRules()&&b.calculateRules(this);
+        return block.hasRules()&&block.calculateRules(x, y, z, this);
     }
     public abstract String getDescriptionTooltip();
+    public Queue<int[]> getAdjacent(int x, int y, int z){
+        Queue<int[]> adjacent = new Queue<>();
+        for(Direction d : directions){
+            T b = getBlock(x+d.x, y+d.y, z+d.z);
+            if(b!=null)adjacent.enqueue(new int[]{x+d.x,y+d.y,z+d.z});
+        }
+        return adjacent;
+    }
+    public Queue<int[]> getActiveAdjacent(int x, int y, int z){
+        Queue<int[]> adjacent = new Queue<>();
+        for(Direction d : directions){
+            T b = getBlock(x+d.x, y+d.y, z+d.z);
+            if(b!=null&&isActive(x,y,z))adjacent.enqueue(new int[]{x+d.x,y+d.y,z+d.z});
+        }
+        return adjacent;
+    }
+    public Queue<T> getAdjacentBlocks(int x, int y, int z){
+        Queue<T> adjacent = new Queue<>();
+        for(Direction d : directions){
+            T b = getBlock(x+d.x, y+d.y, z+d.z);
+            if(b!=null)adjacent.enqueue(b);
+        }
+        return adjacent;
+    }
+    public Queue<T> getActiveAdjacentBlocks(int x, int y, int z){
+        Queue<T> adjacent = new Queue<>();
+        for(Direction d : directions){
+            T b = getBlock(x+d.x, y+d.y, z+d.z);
+            if(b!=null&&isActive(x,y,z))adjacent.enqueue(b);
+        }
+        return adjacent;
+    }
+    public abstract boolean isActive(int x, int y, int z);
 }

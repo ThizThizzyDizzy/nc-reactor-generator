@@ -1,5 +1,4 @@
 package multiblock.action;
-import java.util.ArrayList;
 import java.util.HashMap;
 import multiblock.Action;
 import multiblock.overhaul.fissionmsr.Block;
@@ -11,7 +10,7 @@ public class MSRAllShieldsAction extends Action<OverhaulMSR>{
         this.close = close;
     }
     @Override
-    public void doApply(OverhaulMSR multiblock, boolean allowUndo){
+    public void apply(OverhaulMSR multiblock, boolean allowUndo){
         for(Block b : multiblock.getBlocks()){
             if(b.template.shield){
                 if(allowUndo)was.put(b, b.closed);
@@ -20,15 +19,9 @@ public class MSRAllShieldsAction extends Action<OverhaulMSR>{
         }
     }
     @Override
-    public void doUndo(OverhaulMSR multiblock){
+    public void undo(OverhaulMSR multiblock){
         for(Block b : was.keySet()){
             b.closed = was.get(b);
-        }
-    }
-    @Override
-    protected void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
-        for(Block block : multiblock.getBlocks()){
-            if(block.template.shield)blocks.add(block);
         }
     }
 }

@@ -8,7 +8,8 @@ import multiblock.configuration.Configuration;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-public class PlacementRule extends RuleContainer{
+public class PlacementRule{
+    public ArrayList<PlacementRule> rules = new ArrayList<>();
     public RuleType ruleType = RuleType.BETWEEN;
     public BlockType blockType = BlockType.AIR;
     public Block block;
@@ -184,21 +185,21 @@ public class PlacementRule extends RuleContainer{
         }
         return "Unknown Rule";
     }
-    public boolean isValid(multiblock.underhaul.fissionsfr.Block block, UnderhaulSFR reactor){
+    public boolean isValid(int x, int y, int z, UnderhaulSFR reactor){
         int num = 0;
         switch(ruleType){
             case BETWEEN:
-                for(multiblock.underhaul.fissionsfr.Block b : block.getActiveAdjacent(reactor)){
-                    if(b.template==this.block)num++;
+                for(multiblock.configuration.underhaul.fissionsfr.Block b : reactor.getActiveAdjacentBlocks(x,y,z)){
+                    if(b==this.block)num++;
                 }
                 return num>=min&&num<=max;
             case BETWEEN_GROUP:
                 switch(blockType){
                     case AIR:
-                        num = 6-block.getAdjacent(reactor).size();
+                        num = 6-reactor.getActiveAdjacent(x,y,z).size();
                         break;
                     default:
-                        for(multiblock.underhaul.fissionsfr.Block b : block.getActiveAdjacent(reactor)){
+                        for(multiblock.configuration.underhaul.fissionsfr.Block b : reactor.getActiveAdjacentBlocks(x,y,z)){
                             switch(blockType){
                                 case CASING:
                                     if(b.isCasing())num++;
@@ -207,10 +208,10 @@ public class PlacementRule extends RuleContainer{
                                     if(b.isCooler())num++;
                                     break;
                                 case FUEL_CELL:
-                                    if(b.isFuelCell())num++;
+                                    if(b.fuelCell)num++;
                                     break;
                                 case MODERATOR:
-                                    if(b.isModerator())num++;
+                                    if(b.moderator)num++;
                                     break;
                             }
                         }
@@ -219,26 +220,26 @@ public class PlacementRule extends RuleContainer{
                 return num>=min&&num<=max;
             case AXIAL:
                 for(Axis axis : Axis.values()){
-                    multiblock.underhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
-                    multiblock.underhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
-                    if(b1!=null&&b1.template==this.block&&b1.isActive()&&b2!=null&&b2.template==this.block&&b2.isActive())num++;
+                    multiblock.configuration.underhaul.fissionsfr.Block b1 = reactor.getBlock(x-axis.x, y-axis.y, z-axis.z);
+                    multiblock.configuration.underhaul.fissionsfr.Block b2 = reactor.getBlock(x+axis.x, y+axis.y, z+axis.z);
+                    if(b1!=null&&b1==this.block&&reactor.isActive(x-axis.x, y-axis.y, z-axis.z)&&b2!=null&&b2==this.block&&reactor.isActive(x+axis.x, y+axis.y, z+axis.z))num++;
                 }
                 return num>=min&&num<=max;
             case AXIAL_GROUP:
                 switch(blockType){
                     case AIR:
                         for(Axis axis : Axis.values()){
-                            multiblock.underhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
-                            multiblock.underhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                            multiblock.configuration.underhaul.fissionsfr.Block b1 = reactor.getBlock(x-axis.x, y-axis.y, z-axis.z);
+                            multiblock.configuration.underhaul.fissionsfr.Block b2 = reactor.getBlock(x+axis.x, y+axis.y, z+axis.z);
                             if(b1==null&&b2==null)num++;
                         }
                         break;
                     default:
                         for(Axis axis : Axis.values()){
-                            multiblock.underhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
-                            multiblock.underhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                            multiblock.configuration.underhaul.fissionsfr.Block b1 = reactor.getBlock(x-axis.x, y-axis.y, z-axis.z);
+                            multiblock.configuration.underhaul.fissionsfr.Block b2 = reactor.getBlock(x+axis.x, y+axis.y, z+axis.z);
                             if(b1==null||b2==null)continue;
-                            if(!b1.isActive()||!b2.isActive())continue;
+                            if(!reactor.isActive(x-axis.x, y-axis.y, z-axis.z)||!reactor.isActive(x+axis.x, y+axis.y, z+axis.z))continue;
                             switch(blockType){
                                 case CASING:
                                     if(b1.isCasing()&&b2.isCasing())num++;
@@ -247,10 +248,10 @@ public class PlacementRule extends RuleContainer{
                                     if(b1.isCooler()&&b2.isCooler())num++;
                                     break;
                                 case FUEL_CELL:
-                                    if(b1.isFuelCell()&&b2.isFuelCell())num++;
+                                    if(b1.fuelCell&&b2.fuelCell)num++;
                                     break;
                                 case MODERATOR:
-                                    if(b1.isModerator()&&b2.isModerator())num++;
+                                    if(b1.moderator&&b2.moderator)num++;
                             }
                         }
                         break;
@@ -259,8 +260,8 @@ public class PlacementRule extends RuleContainer{
             case VERTEX:
                 ArrayList<Direction> dirs = new ArrayList<>();
                 for(Direction d : Direction.values()){
-                    multiblock.underhaul.fissionsfr.Block b = reactor.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
-                    if(b.template==this.block)dirs.add(d);
+                    multiblock.configuration.underhaul.fissionsfr.Block b = reactor.getBlock(x+d.x, y+d.y, z+d.z);
+                    if(b==this.block)dirs.add(d);
                 }
                 for(Vertex e : Vertex.values()){
                     boolean missingOne = false;
@@ -273,7 +274,7 @@ public class PlacementRule extends RuleContainer{
             case VERTEX_GROUP:
                 dirs = new ArrayList<>();
                 for(Direction d : Direction.values()){
-                    multiblock.underhaul.fissionsfr.Block b = reactor.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                    multiblock.configuration.underhaul.fissionsfr.Block b = reactor.getBlock(x+d.x, y+d.y, z+d.z);
                     switch(blockType){
                         case AIR:
                             if(b==null){
@@ -291,11 +292,11 @@ public class PlacementRule extends RuleContainer{
                             break;
                         case MODERATOR:
                             if(b==null)continue;
-                            if(!b.isModerator())continue;
+                            if(!b.moderator)continue;
                             break;
                         case FUEL_CELL:
                             if(b==null)continue;
-                            if(!b.isFuelCell())continue;
+                            if(!b.fuelCell)continue;
                             break;
                     }
                     dirs.add(d);
@@ -310,12 +311,12 @@ public class PlacementRule extends RuleContainer{
                 return false;
             case AND:
                 for(PlacementRule rule : rules){
-                    if(!rule.isValid(block, reactor))return false;
+                    if(!rule.isValid(x, y, z, reactor))return false;
                 }
                 return true;
             case OR:
                 for(PlacementRule rule : rules){
-                    if(rule.isValid(block, reactor))return true;
+                    if(rule.isValid(x, y, z, reactor))return true;
                 }
                 return false;
         }
@@ -369,8 +370,12 @@ public class PlacementRule extends RuleContainer{
         }
     }
     @Override
-    public boolean stillEquals(RuleContainer rc){
-        PlacementRule pr = (PlacementRule)rc;
-        return pr.ruleType==ruleType&&Objects.equals(pr.block,block)&&pr.min==min&&pr.max==max;
+    public boolean equals(Object obj){
+        if(obj==null&&obj instanceof PlacementRule){
+            PlacementRule rule = (PlacementRule)obj;
+            if(!rules.equals(rule.rules))return false;
+            return rule.ruleType==ruleType&&Objects.equals(rule.block,block)&&rule.min==min&&rule.max==max;
+        }
+        return false;
     }
 }

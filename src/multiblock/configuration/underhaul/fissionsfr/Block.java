@@ -1,13 +1,16 @@
 package multiblock.configuration.underhaul.fissionsfr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Objects;
+import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
+import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
-public class Block extends RuleContainer{
+public class Block extends multiblock.configuration.Block{
     public static Block cooler(String name, int cooling, String texture, PlacementRule... rules){
         Block block = new Block(name);
         block.cooling = cooling;
@@ -39,6 +42,7 @@ public class Block extends RuleContainer{
         block.setTexture(TextureManager.getImage(texture));
         return block;
     }
+    public ArrayList<PlacementRule> rules = new ArrayList<>();
     public String name;
     public int cooling = 0;
     public boolean fuelCell = false;
@@ -52,7 +56,7 @@ public class Block extends RuleContainer{
     public Config save(Configuration parent, FissionSFRConfiguration configuration, boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
-        if(cooling!=0)config.set("cooling", cooling);
+        if(isCooler())config.set("cooling", cooling);
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
             for(PlacementRule rule : rules){
@@ -96,9 +100,10 @@ public class Block extends RuleContainer{
         displayTexture = displayImg;
     }
     @Override
-    public boolean stillEquals(RuleContainer obj){
-        if(obj!=null&&obj instanceof Block){
+    public boolean equals(Object obj){
+        if(obj==null&&obj instanceof Block){
             Block b = (Block)obj;
+            if(!rules.equals(b.rules))return false;
             if(!compareImages(texture, b.texture))return false;
             return Objects.equals(name, b.name)
                     &&cooling==b.cooling
@@ -141,4 +146,59 @@ public class Block extends RuleContainer{
 
      return true;
    }
+    @Override
+    public BufferedImage getBaseTexture(){
+        return texture;
+    }
+    @Override
+    public BufferedImage getTexture(){
+        return displayTexture;
+    }
+    @Override
+    public String getName(){
+        return name;
+    }
+    @Override
+    public String getTooltip(){
+        String tip = getName();
+        if(fuelCell)tip+="\nFuel Cell";
+        if(moderator)tip+="\nModerator";
+        if(isCooler()){
+            tip+="\nCooler"
+                + "\nCooling: "+cooling+"H/t";
+            if(active!=null)tip+="\nActive ("+active+")";
+        }
+        for(PlacementRule rule : rules){
+            tip+="\nRequires "+rule.toString();
+        }
+        return tip;
+    }
+    @Override
+    public boolean isCore(){
+        return fuelCell||moderator;
+    }
+    @Override
+    public boolean isCasing(){
+        throw new UnsupportedOperationException("Not supported yet.");//TODO what about casing?
+    }
+    @Override
+    public boolean hasRules(){
+        return !rules.isEmpty();
+    }
+    @Override
+    public boolean calculateRules(int x, int y, int z, Multiblock multiblock){
+        for(PlacementRule rule : rules){
+            if(!rule.isValid(x, y, z, (UnderhaulSFR) multiblock)){
+                return false;
+            }
+        }
+        return true;
+    }
+    @Override
+    public boolean canBeQuickReplaced(){
+        return isCooler();
+    }
+    public boolean isCooler(){
+        return cooling!=0;
+    }
 }

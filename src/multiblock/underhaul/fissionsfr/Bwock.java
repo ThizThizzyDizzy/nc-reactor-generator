@@ -5,7 +5,7 @@ import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import simplelibrary.Queue;
-public class Block extends multiblock.Block{
+public class Bwock extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */

@@ -1,8 +1,7 @@
 package multiblock.action;
-import java.util.ArrayList;
 import multiblock.Action;
-import multiblock.Block;
 import multiblock.Multiblock;
+import multiblock.configuration.Block;
 public class SetblockAction extends Action<Multiblock>{
     public final int x;
     public final int y;
@@ -16,17 +15,12 @@ public class SetblockAction extends Action<Multiblock>{
         this.block = block;
     }
     @Override
-    public void doApply(Multiblock multiblock, boolean allowUndo){
+    public void apply(Multiblock multiblock, boolean allowUndo){
         if(allowUndo)was = multiblock.getBlock(x, y, z);
-        multiblock.setBlockExact(x, y, z, block);
+        multiblock.setBlock(x, y, z, block);
     }
     @Override
-    public void doUndo(Multiblock multiblock){
-        multiblock.setBlockExact(x, y, z, was);
-    }
-    @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
-        Block b = multiblock.getBlock(x, y, z);
-        if(b!=null)blocks.add(b);
+    public void undo(Multiblock multiblock){
+        multiblock.setBlock(x, y, z, was);
     }
 }
