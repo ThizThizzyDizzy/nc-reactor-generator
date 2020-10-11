@@ -95,12 +95,12 @@ public abstract class Block extends MultiblockBit{
     public abstract void renderOverlay(double x, double y, double width, double height, Multiblock multiblock);
     public void drawCircle(double x, double y, double width, double height, Color color){
         Core.applyColor(color);
-        Renderer2D.drawRect(x, y, x+width, y+height, MenuEdit.sourceCircle);
+        Renderer2D.drawRect(x, y, x+width, y+height, Core.sourceCircle);
         Core.applyWhite();
     }
     public void drawOutline(double x, double y, double width, double height, double inset, Color color){
         Core.applyColor(color);
-        Renderer2D.drawRect(x, y, x+width, y+height, MenuEdit.outlineSquare);
+        Renderer2D.drawRect(x, y, x+width, y+height, Core.outlineSquare);
         Core.applyWhite();
 //        Core.applyColor(color);
 //        inset*=Math.min(width, height);

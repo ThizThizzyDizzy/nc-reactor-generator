@@ -97,9 +97,6 @@ public class MenuEdit extends Menu{
     public int CELL_SIZE = (int) (16*scale);
     private int LAYER_GAP = CELL_SIZE/2;
     private int multisPerRow = 0;
-    public static int sourceCircle = -1;
-    public static int outlineSquare = -1;
-    public static boolean delCircle = false;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         if(multiblock instanceof UnderhaulSFR){
@@ -181,7 +178,8 @@ public class MenuEdit extends Menu{
     }
     @Override
     public void onGUIOpened(){
-        delCircle = true;
+        Core.delCircle = true;
+        Core.circleSize = CELL_SIZE;
         editMetadata.label = multiblock.getName().isEmpty()?"Edit Metadata":(multiblock.getName()+" | Edit Metadata");
 //        generate.label = multiblock.isEmpty()?"Generate":"Generate Suggestions";
         if(multiblock instanceof UnderhaulSFR){
@@ -220,30 +218,6 @@ public class MenuEdit extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
-        if(delCircle&&sourceCircle!=-1){
-            ImageStash.instance.deleteTexture(sourceCircle);
-            ImageStash.instance.deleteTexture(outlineSquare);
-            sourceCircle = -1;
-            outlineSquare = -1;
-            delCircle = false;
-        }
-        if(sourceCircle==-1){
-            BufferedImage image = Core.makeImage(CELL_SIZE, CELL_SIZE, (buff) -> {
-                Core.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d), Color.white);
-            });
-            sourceCircle = ImageStash.instance.allocateAndSetupTexture(image);
-        }
-        if(outlineSquare==-1){
-            BufferedImage image = Core.makeImage(32, 32, (buff) -> {
-                Core.applyWhite();
-                double inset = buff.width/32d;
-                drawRect(inset, inset, buff.width-inset, inset+buff.width/16, 0);
-                drawRect(inset, buff.width-inset-buff.width/16, buff.width-inset, buff.width-inset, 0);
-                drawRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16, 0);
-                drawRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16, 0);
-            });
-            outlineSquare = ImageStash.instance.allocateAndSetupTexture(image);
-        }
         textBox.setText(multiblock.getTooltip());
         if(multisPerRow!=Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)))){
             onGUIOpened();

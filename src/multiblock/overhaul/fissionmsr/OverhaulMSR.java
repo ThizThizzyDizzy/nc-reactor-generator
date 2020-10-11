@@ -1,5 +1,7 @@
 package multiblock.overhaul.fissionmsr;
+import discord.Bot;
 import generator.Priority;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +25,8 @@ import multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe;
 import multiblock.configuration.overhaul.fissionmsr.Source;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.SmartFillOverhaulMSR;
+import planner.Core;
+import planner.Main;
 import planner.file.NCPFFile;
 import planner.menu.component.generator.MenuComponentMSRToggleFuel;
 import planner.menu.component.generator.MenuComponentMSRToggleSource;
@@ -31,6 +35,7 @@ import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.opengl.Renderer2D;
 public class OverhaulMSR extends Multiblock<Block>{
     public ArrayList<Cluster> clusters = new ArrayList<>();
     private ArrayList<VesselGroup> vesselGroups = new ArrayList<>();
@@ -987,7 +992,18 @@ public class OverhaulMSR extends Multiblock<Block>{
         for(Source s : getConfiguration().overhaul.fissionMSR.allSources){
             int num = count(s);
             sources+=num;
-            if(num>0)parts.add(new PartCount(null, s.name+" Neutron Source", num));
+            if(num>0){
+                Core.BufferRenderer renderer = (buff) -> {
+                    float fac = (float) Math.pow(s.efficiency, 10);
+                    float r = Math.min(1, -2*fac+2);
+                    float g = Math.min(1, fac*2);
+                    float b = 0;
+                    Core.applyColor(Core.theme.getRGBA(r, g, b, 1));
+                    Renderer2D.drawRect(0, 0, buff.width, buff.height, Core.sourceCircle);
+                    Core.applyWhite();
+                };
+                parts.add(new PartCount(Main.isBot?Bot.makeImage(64, 64, renderer):Core.makeImage(64, 64, renderer), s.name+" Neutron Source", num));
+            }
         }
         parts.add(new PartCount(null, "Casing", (getX()+2)*(getZ()+2)*2+(getX()+2)*getY()*2+getY()*getZ()*2-1-sources));
     }

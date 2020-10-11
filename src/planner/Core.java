@@ -28,6 +28,7 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import planner.menu.error.MenuCriticalError;
 import planner.menu.MenuDiscord;
+import planner.menu.MenuEdit;
 import planner.menu.MenuLoadFile;
 import planner.menu.MenuTutorial;
 import planner.menu.error.MenuMinorError;
@@ -62,6 +63,10 @@ public class Core extends Renderer2D{
     public static Configuration configuration = new Configuration(null, null, null);
     public static Theme theme = Theme.themes.get(0);
     private static boolean tutorialShown = false;
+    public static int sourceCircle = -1;
+    public static int outlineSquare = -1;
+    public static boolean delCircle = false;
+    public static int circleSize = 64;
     static{
         for(Configuration configuration : Configuration.configurations){
             if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
@@ -377,6 +382,30 @@ public class Core extends Renderer2D{
         }
     }
     public static void render(int millisSinceLastTick){
+        if(delCircle&&sourceCircle!=-1){
+            ImageStash.instance.deleteTexture(sourceCircle);
+            ImageStash.instance.deleteTexture(outlineSquare);
+            sourceCircle = -1;
+            outlineSquare = -1;
+            delCircle = false;
+        }
+        if(sourceCircle==-1){
+            BufferedImage image = Core.makeImage(circleSize, circleSize, (buff) -> {
+                Core.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d), Color.white);
+            });
+            sourceCircle = ImageStash.instance.allocateAndSetupTexture(image);
+        }
+        if(outlineSquare==-1){
+            BufferedImage image = Core.makeImage(32, 32, (buff) -> {
+                Core.applyWhite();
+                double inset = buff.width/32d;
+                drawRect(inset, inset, buff.width-inset, inset+buff.width/16, 0);
+                drawRect(inset, buff.width-inset-buff.width/16, buff.width-inset, buff.width-inset, 0);
+                drawRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16, 0);
+                drawRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16, 0);
+            });
+            outlineSquare = ImageStash.instance.allocateAndSetupTexture(image);
+        }
         applyWhite();
         if(gui.menu instanceof MenuMain){
             GL11.glPushMatrix();
