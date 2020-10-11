@@ -22,6 +22,8 @@ import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
 import discord.play.smivilization.HutThingColorable;
 import discord.play.smivilization.Placement;
+import generator.CoreBasedGenerator;
+import generator.CoreBasedGeneratorSettings;
 import generator.MultiblockGenerator;
 import generator.OverhaulTurbineStandardGenerator;
 import generator.OverhaulTurbineStandardGeneratorSettings;
@@ -490,6 +492,39 @@ public class Bot extends ListenerAdapter{
                     settings.changeChancePercent = 1;
                     settings.variableRate = true;
                     settings.lockCore = false;
+                    settings.fillAir = true;
+                    generator.refreshSettings(settings);
+//</editor-fold>
+                }else if(generator instanceof CoreBasedGenerator){
+                    //<editor-fold defaultstate="collapsed" desc="CoreBasedGenerator">
+                    CoreBasedGeneratorSettings settings = new CoreBasedGeneratorSettings((CoreBasedGenerator)generator);
+                    settings.finalMultiblocks = 1;
+                    settings.workingMultiblocks = 1;
+                    settings.workingCores = 1;
+                    settings.finalCores = 1;
+                    settings.timeout = 10;
+                    priority.set(priorities);
+                    settings.priorities.addAll(priorities);
+                    settings.symmetries.addAll(symmetries);
+                    ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
+                    for(PostProcessingEffect ppe : ppes){
+                        if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
+                            settings.postProcessingEffects.add(ppe);
+                        }
+                    }
+                    for(Range<Block> range : blockRanges){
+                        if(range.min==0&&range.max==0)continue;
+                        settings.allowedBlocks.add(range);
+                    }
+                    FOR:for(Block b : availableBlocks){
+                        for(Range<Block> range : blockRanges){
+                            if(range.obj==b)continue FOR;
+                        }
+                        if(b.defaultEnabled())settings.allowedBlocks.add(new Range(b, 0));
+                    }
+                    settings.changeChancePercent = 1;
+                    settings.morphChancePercent = .01f;
+                    settings.variableRate = true;
                     settings.fillAir = true;
                     generator.refreshSettings(settings);
 //</editor-fold>

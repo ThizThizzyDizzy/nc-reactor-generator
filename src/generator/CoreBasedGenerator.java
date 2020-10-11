@@ -56,7 +56,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
     }
     @Override
     public Class<? extends Multiblock>[] getValidMultiblocks(){
-        return new Class[]{UnderhaulSFR.class,OverhaulSFR.class};
+        return new Class[]{OverhaulSFR.class, OverhaulMSR.class};
     }
     @Override
     public String getName(){

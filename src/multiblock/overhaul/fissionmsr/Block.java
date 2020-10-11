@@ -170,8 +170,8 @@ public class Block extends multiblock.Block{
         return source!=null||fuel.selfPriming;
     }
     @Override
-    public boolean isCore(){
-        return isModerator()||isFuelVessel()||isShield()||isIrradiator()||isReflector();
+    public boolean isCore(){//maybe I shouldn't specifically blacklist heaters...
+        return (isModerator()&&!isHeater())||isFuelVessel()||isShield()||isIrradiator()||isReflector();
     }
     public boolean isCasing(){
         return template==null;

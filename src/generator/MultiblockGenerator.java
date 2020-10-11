@@ -12,9 +12,9 @@ public abstract class MultiblockGenerator{
     protected Random rand = new Random();
     public static final ArrayList<MultiblockGenerator> generators = new ArrayList<>();
     static{
-        generators.add(new StandardGenerator(null));
         generators.add(new OverhaulTurbineStandardGenerator(null));
         generators.add(new CoreBasedGenerator(null));
+        generators.add(new StandardGenerator(null));
     }
     protected ArrayList<Priority> priorities;
     private Object threadronyzer = new Object();

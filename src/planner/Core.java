@@ -352,7 +352,7 @@ public class Core extends Renderer2D{
         }
         Main.setLookAndFeel();
         System.out.println("Startup complete!");
-        if(!tutorialShown){
+        if(!tutorialShown&&!Main.isBot&&!Main.headless){
             gui.open(new MenuTutorial(gui, gui.menu));
         }
     }
