@@ -1,26 +1,32 @@
 package planner.tutorial;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Random;
+import multiblock.action.SetSelectionAction;
+import multiblock.action.SetblocksAction;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.menu.MenuEdit;
+import planner.menu.component.editor.MenuComponentEditorGrid;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public abstract class Tutorial extends Renderer2D{
     public static ArrayList<TutorialCategory> categories = new ArrayList<>();
-    private static final TutorialCategory underhaul;
-    private static final TutorialCategory overhaul;
+//    private static final TutorialCategory underhaul;
+//    private static final TutorialCategory overhaul;
     private static final TutorialCategory planner;
     public final String name;
     static{
         categories.add(planner = new TutorialCategory("Planner"));
-        categories.add(underhaul = new TutorialCategory("Underhaul"));
-        categories.add(overhaul = new TutorialCategory("Overhaul"));
+//        categories.add(underhaul = new TutorialCategory("Underhaul"));
+//        categories.add(overhaul = new TutorialCategory("Overhaul"));
         planner.add(new Tutorial("Introduction"){
             @Override
             public double getHeight(double width){
                 return width*1.1;
             }
             @Override
-            public void render(float resonatingBrightness){
+            public void render(float resonatingBrightness, float frame){
                 Core.applyColor(Core.theme.getTextColor());
                 GL11.glTranslated(0, -.05, 0);//too lazy to change the values of every method here
                 drawCenteredText(.05, .1, .95, .15, "Welcome to the tutorials!");
@@ -54,7 +60,7 @@ public abstract class Tutorial extends Renderer2D{
                 return width*3.175;
             }
             @Override
-            public void render(float resonatingBrightness){
+            public void render(float resonatingBrightness, float frame){
                 //loading E2E/PO3 configuration
                 //<editor-fold defaultstate="collapsed" desc="Loading alternate configurations">
                 Core.applyColor(Core.theme.getButtonColor());
@@ -382,12 +388,110 @@ public abstract class Tutorial extends Renderer2D{
             }
         });
         planner.add(new Tutorial("Editing"){
-            @Override
-            public double getHeight(double width){
-                return width*2;
+            private int editorImage = -1;
+            private MenuEdit pencilEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
+            private MenuEdit lineEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
+            private MenuEdit boxEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
+            private MenuEdit selectEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
+            private MenuEdit moveEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
+            private MenuComponentEditorGrid pencil, line, box, select, move;
+            private MenuComponentEditorGrid[] editors;
+            private Random rand = new Random();
+            {
+                pencilEditor.onGUIOpened();
+                pencilEditor.tools.setSelectedIndex(2);
+                lineEditor.onGUIOpened();
+                lineEditor.tools.setSelectedIndex(3);
+                boxEditor.onGUIOpened();
+                boxEditor.tools.setSelectedIndex(4);
+                selectEditor.onGUIOpened();
+                selectEditor.tools.setSelectedIndex(1);
+                moveEditor.onGUIOpened();
+                moveEditor.tools.setSelectedIndex(0);
+                pencil = (MenuComponentEditorGrid)pencilEditor.multibwauk.components.get(0);
+                line = (MenuComponentEditorGrid)lineEditor.multibwauk.components.get(0);
+                box = (MenuComponentEditorGrid)boxEditor.multibwauk.components.get(0);
+                select = (MenuComponentEditorGrid)selectEditor.multibwauk.components.get(0);
+                move = (MenuComponentEditorGrid)moveEditor.multibwauk.components.get(0);
+                editors = new MenuComponentEditorGrid[]{pencil,line,box,select,move};
             }
             @Override
-            public void render(float resonatingBrightness){
+            public double getHeight(double width){
+                return width*3.475;
+            }
+            @Override
+            public void preRender(){
+                if(editorImage==-1){
+                    MenuEdit editor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance());
+                    GL11.glPushMatrix();
+                    GL11.glScaled(0, 0, 0);
+                    editor.render(0);
+                    pencilEditor.render(0);
+                    pencilEditor.render(0);
+                    lineEditor.render(0);
+                    lineEditor.render(0);
+                    boxEditor.render(0);
+                    boxEditor.render(0);
+                    selectEditor.render(0);
+                    selectEditor.render(0);
+                    moveEditor.render(0);
+                    moveEditor.render(0);
+                    GL11.glPopMatrix();
+                    editor.onGUIOpened();
+                    BufferedImage image = Core.makeImage(Core.helper.displayWidth(), Core.helper.displayHeight(), (buff) -> {
+                        GL11.glColor4d(1, 1, 1, 1);
+                        editor.render(0);
+                    });
+                    editorImage = ImageStash.instance.allocateAndSetupTexture(image);
+                }
+            }
+            private static final int squiggleLength = 40;//2 seconds of squiggle
+            private static final int undoTime = 60;//3 seconds total
+            private static final int loopLength = 70;//3 seconds total
+            @Override
+            public void tick(int tick){
+                super.tick(tick);
+                int t = tick%loopLength;//2.5 second loop
+                if(t<=squiggleLength){
+                    if(t==0){
+                        moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock()).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
+                        ArrayList<int[]> selection = new ArrayList<>();
+                        selection.add(new int[]{0, 0, 1});
+                        selection.add(new int[]{1, 0, 1});
+                        selection.add(new int[]{2, 0, 1});
+                        selection.add(new int[]{0, 0, 2});
+                        selection.add(new int[]{1, 0, 2});
+                        selection.add(new int[]{2, 0, 2});
+                        selection.add(new int[]{0, 0, 3});
+                        selection.add(new int[]{1, 0, 3});
+                        selection.add(new int[]{2, 0, 3});
+                        moveEditor.multiblock.action(new SetSelectionAction(moveEditor, selection), false);
+                    }
+                    double x = (6*t)/(float)squiggleLength+1.5f;
+                    double y = Math.cos((Math.PI*(x-3))/3)+5/2f;
+                    for(MenuComponentEditorGrid grid : editors){
+                        double X = x*grid.blockSize;
+                        double Y = y*grid.blockSize;
+                        grid.onMouseMove(X, Y);
+                        if(t==0){
+                            grid.editor.parts.setSelectedIndex(rand.nextInt(grid.editor.parts.components.size()));
+                            grid.onMouseButton(X, Y, 0, true, 0);
+                        }
+                        else if(t==squiggleLength){
+                            grid.onMouseButton(X, Y, 0, false, 0);
+                            grid.onMouseMovedElsewhere(-1, -1);
+                        }
+                        else grid.mouseDragged(X, Y, 0);
+                    }
+                }
+                if(t==undoTime){
+                    for(MenuComponentEditorGrid grid : editors){
+                        grid.editor.multiblock.undo();
+                    }
+                }
+            }
+            @Override
+            public void render(float resonatingBrightness, float frame){
                 Core.applyColor(Core.theme.getTextColor());
                 drawCenteredText(0, .05, 1, .1, "Editing Overview");
                 drawText(.05, .125, .95, .15, "There are many panels in the editor window.");
@@ -397,79 +501,179 @@ public abstract class Tutorial extends Renderer2D{
                 drawText(.05, .225, .95, .25, "The info panel is found on the bottom left, and contains the overall multiblock info");
                 drawText(.05, .25, .95, .275, "The Settings panel is found on the right, and contains multiblock-specific settings");
                 drawText(.05, .275, .95, .3, "such as fuel or coolant/irradiator recipes");
-                //now a screenshot
-                //now the tools
-                //now the parts
-                //AT THE VERY END, generation stuffs
+                drawCenteredText(.05, .325, .95, .345, "Shown below: The editor window for a blank "+Core.multiblockTypes.get(0).getDefinitionName());
+                Core.applyColor(Core.theme.getEditorListBorderColor());
+                Renderer2D.drawRect(.05, .35, .95, .85, editorImage);
+                GL11.glTranslated(0, .85, 0);
+                Core.applyColor(Core.theme.getTextColor());
+                drawCenteredText(0, .05, 1, .1, "The Pencil Tool");
+                {
+                    GL11.glPushMatrix();
+                    GL11.glTranslated(.05, .125, 0);
+                    double scale = .45/pencil.width;
+                    GL11.glScaled(scale, scale, 1);
+                    pencil.render(0);
+                    GL11.glPopMatrix();
+                }
+                Core.applyColor(Core.theme.getTextColor());
+                drawText(.55, .125, .95, .15, "The Pencil tool lets you freely draw");
+                drawText(.55, .15, .95, .175, "in the editor window. Click and drag");
+                drawText(.55, .175, .95, .2, "to draw across the editor with the");
+                drawText(.55, .2, .95, .225, "selected block");
+                GL11.glTranslated(0, .4, 0);
+                Core.applyColor(Core.theme.getTextColor());
+                drawCenteredText(0, .05, 1, .1, "The Line Tool");
+                {
+                    GL11.glPushMatrix();
+                    GL11.glTranslated(.05, .125, 0);
+                    double scale = .45/line.width;
+                    GL11.glScaled(scale, scale, 1);
+                    line.render(0);
+                    GL11.glPopMatrix();
+                }
+                Core.applyColor(Core.theme.getTextColor());
+                drawText(.55, .125, .95, .15, "The Line tool lets you draw straight");
+                drawText(.55, .15, .95, .175, "lines of blocks through the");
+                drawText(.55, .175, .95, .2, "multiblock. Click and drag from one");
+                drawText(.55, .2, .95, .225, "point to another to draw a line");
+                drawText(.55, .225, .95, .25, "between them. Lines can be drawn");
+                drawText(.55, .25, .95, .275, "across layers, and will be drawn as");
+                drawText(.55, .275, .95, .3, "a straight line through the multiblock.");
+                GL11.glTranslated(0, .4, 0);
+                Core.applyColor(Core.theme.getTextColor());
+                drawCenteredText(0, .05, 1, .1, "The Box Tool");
+                {
+                    GL11.glPushMatrix();
+                    GL11.glTranslated(.05, .125, 0);
+                    double scale = .45/box.width;
+                    GL11.glScaled(scale, scale, 1);
+                    box.render(0);
+                    GL11.glPopMatrix();
+                }
+                Core.applyColor(Core.theme.getTextColor());
+                drawText(.55, .125, .95, .15, "The Box tool lets you draw");
+                drawText(.55, .15, .95, .175, "rectangles (or cuboids) in the");
+                drawText(.55, .175, .95, .2, "multiblock. Click and drag from one");
+                drawText(.55, .2, .95, .225, "corner to another to draw a cuboid");
+                drawText(.55, .225, .95, .25, "between them.");
+                GL11.glTranslated(0, .4, 0);
+                Core.applyColor(Core.theme.getTextColor());
+                drawCenteredText(0, .05, 1, .1, "The Selection Tool");
+                {
+                    GL11.glPushMatrix();
+                    GL11.glTranslated(.05, .125, 0);
+                    double scale = .45/select.width;
+                    GL11.glScaled(scale, scale, 1);
+                    select.render(0);
+                    GL11.glPopMatrix();
+                }
+                Core.applyColor(Core.theme.getTextColor());
+                drawText(.55, .125, .95, .15, "The Selection tool lets you select");
+                drawText(.55, .15, .95, .175, "areas of the multiblock. When an");
+                drawText(.55, .175, .95, .2, "area is selected, edits will only be");
+                drawText(.55, .2, .95, .225, "applied within the selection.");
+                drawText(.55, .225, .95, .25, "Hold Ctrl to select multiple areas, or");
+                drawText(.55, .25, .95, .275, "Ctrl+Right click to deselect an area.");
+                drawText(.55, .275, .95, .3, "Press delete to remove all blocks in");
+                drawText(.55, .3, .95, .325, "the selection.");
+                drawText(.55, .325, .95, .35, "Press Ctrl+A to select the entire");
+                drawText(.55, .35, .95, .375, "multiblock.");
+                drawText(.55, .375, .95, .4, "Press Escape to deselect everything");
+                drawText(.05, .4, .95, .425, "In some multiblocks, Shift-click and Alt-click may have special functions, such as");
+                drawText(.05, .425, .95, .45, "selecting clusters or groups of heatsinks.");
+                GL11.glTranslated(0, .45, 0);
+                Core.applyColor(Core.theme.getTextColor());
+                drawCenteredText(0, .05, 1, .1, "The Move Tool");
+                {
+                    GL11.glPushMatrix();
+                    GL11.glTranslated(.05, .125, 0);
+                    double scale = .45/move.width;
+                    GL11.glScaled(scale, scale, 1);
+                    move.render(0);
+                    GL11.glPopMatrix();
+                }
+                Core.applyColor(Core.theme.getTextColor());
+                drawText(.55, .125, .95, .15, "The Selection tool lets you move or");
+                drawText(.55, .15, .95, .175, "copy any selected areas. Click and");
+                drawText(.55, .175, .95, .2, "drag to move a selection. Hold Ctrl");
+                drawText(.55, .2, .95, .225, "to copy the selected blocks. Hold");
+                drawText(.55, .225, .95, .25, "Ctrl+Shift to copy and keep the");
+                drawText(.55, .25, .95, .275, "selection.");
+                GL11.glTranslated(0, .4, 0);
+                Core.applyColor(Core.theme.getTextColor());
+                drawCenteredText(0, .05, 1, .1, "Other functions");
+                drawText(.05, .125, .95, .15, "With any editing tool (pencil, line, box,) you can hold Ctrl to highlight possible");
+                drawText(.05, .15, .95, .175, "placements for blocks with placement rules (such as heatsinks)");
+                drawText(.05, .175, .95, .2, "Holding Ctrl while editing will only place blocks in these locations.");
+                drawText(.05, .2, .95, .225, "Holding Ctrl+Shift Will allow other blocks to be overwritten.");
+                drawCenteredText(.05, .25, .95, .275, "Copy/Paste");
+                drawText(.05, .275, .95, .3, "Press Ctrl+C to switch to the Copy tool. Selecting any area will copy it and switch");
+                drawText(.05, .3, .95, .325, "to the paste tool.");
+                drawText(.05, .325, .95, .35, "With the paste tool selected, Click to place copies of the original selected area.");
+                drawText(.05, .35, .95, .375, "Press Escape to exit the paste tool.");
+                drawText(.05, .375, .95, .4, "Press Ctrl+V to open the paste tool with the most recently copied selection.");
+                drawCenteredText(.05, .45, .95, .475, "Undo/Redo");
+                drawText(.05, .475, .95, .5, "Press Ctrl+Z to undo the most recent action. Press Ctrl+Y to redo.");
+                drawText(.05, .5, .95, .525, "Some actions, such as resizing the multiblock, will clear all undo/redo history");
+                //copy/paste, undo/redo, etc.
             }
         });
-        planner.add(new Tutorial("Configurations"){
-            @Override
-            public double getHeight(double width){
-                return width*.1;
-            }
-            @Override
-            public void render(float resonatingBrightness){
-            }
-        });
-        planner.add(new Tutorial("Generators"){
-            @Override
-            public double getHeight(double width){
-                return width*.1;
-            }
-            @Override
-            public void render(float resonatingBrightness){
-            }
-        });
-        underhaul.add(new Tutorial("SFRs"){
-            @Override
-            public double getHeight(double width){
-                return width*.1;
-            }
-            @Override
-            public void render(float resonatingBrightness){
-            }
-        });
-        overhaul.add(new Tutorial("Fission"){
-            @Override
-            public double getHeight(double width){
-                return width*.1;
-            }
-            @Override
-            public void render(float resonatingBrightness){
-            }
-        });
-        overhaul.add(new Tutorial("SFRs"){
-            @Override
-            public double getHeight(double width){
-                return width*.1;
-            }
-            @Override
-            public void render(float resonatingBrightness){
-            }
-        });
-        overhaul.add(new Tutorial("MSRs"){
-            @Override
-            public double getHeight(double width){
-                return width*.1;
-            }
-            @Override
-            public void render(float resonatingBrightness){
-            }
-        });
-        overhaul.add(new Tutorial("Turbines"){
-            @Override
-            public double getHeight(double width){
-                return width*.1;
-            }
-            @Override
-            public void render(float resonatingBrightness){
-            }
-        });
+        //TODO tutorial on modifying configs and whatnot (first redo config system
+        //TODO tutorial on using the generator
+//        underhaul.add(new Tutorial("SFRs"){
+//            @Override
+//            public double getHeight(double width){
+//                return width*.1;
+//            }
+//            @Override
+//            public void render(float resonatingBrightness, float frame){
+//            }
+//        });
+//        overhaul.add(new Tutorial("Fission"){
+//            @Override
+//            public double getHeight(double width){
+//                return width*.1;
+//            }
+//            @Override
+//            public void render(float resonatingBrightness, float frame){
+//            }
+//        });
+//        overhaul.add(new Tutorial("SFRs"){
+//            @Override
+//            public double getHeight(double width){
+//                return width*.1;
+//            }
+//            @Override
+//            public void render(float resonatingBrightness, float frame){
+//            }
+//        });
+//        overhaul.add(new Tutorial("MSRs"){
+//            @Override
+//            public double getHeight(double width){
+//                return width*.1;
+//            }
+//            @Override
+//            public void render(float resonatingBrightness, float frame){
+//            }
+//        });
+//        overhaul.add(new Tutorial("Turbines"){
+//            @Override
+//            public double getHeight(double width){
+//                return width*.1;
+//            }
+//            @Override
+//            public void render(float resonatingBrightness, float frame){
+//            }
+//        });
     }
     public Tutorial(String name){
         this.name = name;
     }
     public abstract double getHeight(double width);
-    public abstract void render(float resonatingBrightness);
+    public void tick(int tick){}
+    /**
+     * Called before the coordinates are scaled for render
+     */
+    public void preRender(){}
+    public abstract void render(float resonatingBrightness, float frame);
 }

@@ -19,7 +19,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
     private final Object synchronizer = new Object();
     private final Multiblock multiblock;
     public final int layer;
-    private final MenuEdit editor;
+    public final MenuEdit editor;
     public int blockSize;
     private int[] mouseover;
     private static final int resonatingTime = 60;

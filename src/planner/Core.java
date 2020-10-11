@@ -354,6 +354,7 @@ public class Core extends Renderer2D{
         System.out.println("Startup complete!");
         if(!tutorialShown&&!Main.isBot&&!Main.headless){
             gui.open(new MenuTutorial(gui, gui.menu));
+            tutorialShown = true;
         }
     }
     public static void tick(boolean isLastTick){
