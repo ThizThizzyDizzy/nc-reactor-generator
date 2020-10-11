@@ -414,6 +414,18 @@ public abstract class Tutorial extends Renderer2D{
                 select = (MenuComponentEditorGrid)selectEditor.multibwauk.components.get(0);
                 move = (MenuComponentEditorGrid)moveEditor.multibwauk.components.get(0);
                 editors = new MenuComponentEditorGrid[]{pencil,line,box,select,move};
+                moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock()).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
+                ArrayList<int[]> selection = new ArrayList<>();
+                selection.add(new int[]{0, 0, 1});
+                selection.add(new int[]{1, 0, 1});
+                selection.add(new int[]{2, 0, 1});
+                selection.add(new int[]{0, 0, 2});
+                selection.add(new int[]{1, 0, 2});
+                selection.add(new int[]{2, 0, 2});
+                selection.add(new int[]{0, 0, 3});
+                selection.add(new int[]{1, 0, 3});
+                selection.add(new int[]{2, 0, 3});
+                moveEditor.multiblock.action(new SetSelectionAction(moveEditor, selection), false);
             }
             @Override
             public double getHeight(double width){
@@ -453,20 +465,6 @@ public abstract class Tutorial extends Renderer2D{
                 super.tick(tick);
                 int t = tick%loopLength;//2.5 second loop
                 if(t<=squiggleLength){
-                    if(t==0){
-                        moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock()).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
-                        ArrayList<int[]> selection = new ArrayList<>();
-                        selection.add(new int[]{0, 0, 1});
-                        selection.add(new int[]{1, 0, 1});
-                        selection.add(new int[]{2, 0, 1});
-                        selection.add(new int[]{0, 0, 2});
-                        selection.add(new int[]{1, 0, 2});
-                        selection.add(new int[]{2, 0, 2});
-                        selection.add(new int[]{0, 0, 3});
-                        selection.add(new int[]{1, 0, 3});
-                        selection.add(new int[]{2, 0, 3});
-                        moveEditor.multiblock.action(new SetSelectionAction(moveEditor, selection), false);
-                    }
                     double x = (6*t)/(float)squiggleLength+1.5f;
                     double y = Math.cos((Math.PI*(x-3))/3)+5/2f;
                     for(MenuComponentEditorGrid grid : editors){
@@ -488,6 +486,18 @@ public abstract class Tutorial extends Renderer2D{
                     for(MenuComponentEditorGrid grid : editors){
                         grid.editor.multiblock.undo();
                     }
+                    moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock()).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
+                    ArrayList<int[]> selection = new ArrayList<>();
+                    selection.add(new int[]{0, 0, 1});
+                    selection.add(new int[]{1, 0, 1});
+                    selection.add(new int[]{2, 0, 1});
+                    selection.add(new int[]{0, 0, 2});
+                    selection.add(new int[]{1, 0, 2});
+                    selection.add(new int[]{2, 0, 2});
+                    selection.add(new int[]{0, 0, 3});
+                    selection.add(new int[]{1, 0, 3});
+                    selection.add(new int[]{2, 0, 3});
+                    moveEditor.multiblock.action(new SetSelectionAction(moveEditor, selection), false);
                 }
             }
             @Override
@@ -607,8 +617,8 @@ public abstract class Tutorial extends Renderer2D{
                 drawText(.05, .175, .95, .2, "Holding Ctrl while editing will only place blocks in these locations.");
                 drawText(.05, .2, .95, .225, "Holding Ctrl+Shift Will allow other blocks to be overwritten.");
                 drawCenteredText(.05, .25, .95, .275, "Copy/Paste");
-                drawText(.05, .275, .95, .3, "Press Ctrl+C to switch to the Copy tool. Selecting any area will copy it and switch");
-                drawText(.05, .3, .95, .325, "to the paste tool.");
+                drawText(.05, .275, .95, .3, "Press Ctrl+X or Ctrl+C to switch to the Cut or Copy tools. Selecting any area will");
+                drawText(.05, .3, .95, .325, "cut or copy it and switch to the paste tool.");
                 drawText(.05, .325, .95, .35, "With the paste tool selected, Click to place copies of the original selected area.");
                 drawText(.05, .35, .95, .375, "Press Escape to exit the paste tool.");
                 drawText(.05, .375, .95, .4, "Press Ctrl+V to open the paste tool with the most recently copied selection.");

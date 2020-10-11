@@ -44,6 +44,7 @@ import planner.menu.component.editor.MenuComponentTurbineBladeEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineCoilEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineRecipe;
 import planner.tool.CopyTool;
+import planner.tool.CutTool;
 import planner.tool.LineTool;
 import planner.tool.MoveTool;
 import planner.tool.PasteTool;
@@ -62,6 +63,8 @@ public class MenuEdit extends Menu{
     public ArrayList<ClipboardEntry> clipboard = new ArrayList<>();
     private EditorTool copy = new CopyTool(this);
     private MenuComponentEditorTool copyComp = new MenuComponentEditorTool(copy);
+    private EditorTool cut = new CutTool(this);
+    private MenuComponentEditorTool cutComp = new MenuComponentEditorTool(cut);
     private EditorTool paste = new PasteTool(this);
     private MenuComponentEditorTool pasteComp = new MenuComponentEditorTool(paste);
     {
@@ -415,11 +418,15 @@ public class MenuEdit extends Menu{
     public EditorTool getSelectedTool(){
         if(tools.getSelectedIndex()==-1)return null;
         EditorTool tool = ((MenuComponentEditorTool) tools.components.get(tools.getSelectedIndex())).tool;
-        if(!(tool instanceof CopyTool)){//selecting a non-copy tool, remove all copy tools!
+        if(!(tool instanceof CutTool)){//selecting a non-copy tool, remove the cut tool!
+            editorTools.remove(cut);
+            tools.components.remove(cutComp);
+        }
+        if(!(tool instanceof CopyTool)){//selecting a non-copy tool, remove the copy tool!
             editorTools.remove(copy);
             tools.components.remove(copyComp);
         }
-        if(!(tool instanceof PasteTool)){//selecting a non-paste tool, remove all paste tools!
+        if(!(tool instanceof PasteTool)){//selecting a non-paste tool, remove the paste tool!
             editorTools.remove(paste);
             tools.components.remove(pasteComp);
         }
@@ -477,7 +484,7 @@ public class MenuEdit extends Menu{
         super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
         if(isPress){
             if(key==GLFW.GLFW_KEY_ESCAPE){
-                if(getSelectedTool() instanceof PasteTool||getSelectedTool() instanceof CopyTool){
+                if(getSelectedTool() instanceof PasteTool||getSelectedTool() instanceof CopyTool||getSelectedTool() instanceof CutTool){
                     tools.setSelectedIndex(1);
                 }else{
                     clearSelection();
@@ -546,7 +553,7 @@ public class MenuEdit extends Menu{
                         //do nothing
                     }else{
                         if(key==GLFW.GLFW_KEY_C){
-                            copySelectionToClipboard(x, y, z);
+                            copySelection(x, y, z);
                         }
                         if(key==GLFW.GLFW_KEY_X){
                             cutSelection(x, y, z);
@@ -561,7 +568,10 @@ public class MenuEdit extends Menu{
                     }
                 }else{
                     if(key==GLFW.GLFW_KEY_C){
-                        copySelectionToClipboard(-1, -1, -1);
+                        copySelection(-1, -1, -1);
+                    }
+                    if(key==GLFW.GLFW_KEY_X){
+                        cutSelection(-1, -1, -1);
                     }
                 }
             }
@@ -730,7 +740,7 @@ public class MenuEdit extends Menu{
     public void moveSelection(int x, int y, int z){
         multiblock.action(new MoveAction(this, selection, x, y, z), true);
     }
-    public void copySelection(int x, int y, int z){
+    public void cloneSelection(int x, int y, int z){
         multiblock.action(new CopyAction(this, selection, x, y, z), true);
     }
     public void clearSelection(){
@@ -749,7 +759,7 @@ public class MenuEdit extends Menu{
             selection.addAll(sel);
         }
     }
-    public void copySelectionToClipboard(int x, int y, int z){//like copySelection, but clipboardier
+    public void copySelection(int x, int y, int z){//like copySelection, but clipboardier
         clipboard.clear();
         synchronized(selection){
             if(selection.isEmpty()){
@@ -773,7 +783,18 @@ public class MenuEdit extends Menu{
         }
     }
     public void cutSelection(int x, int y, int z){
-        copySelectionToClipboard(x,y,z);
+        clipboard.clear();
+        synchronized(selection){
+            if(selection.isEmpty()){
+                if(!editorTools.contains(cut)){
+                    editorTools.add(cut);
+                    tools.add(cutComp);
+                    tools.setSelectedIndex(tools.components.size()-1);
+                }
+                return;
+            }
+        }
+        copySelection(x,y,z);
         SetblocksAction ac = new SetblocksAction(null);
         synchronized(selection){
             for(int[] i : selection){

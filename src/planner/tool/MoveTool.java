@@ -120,7 +120,7 @@ public class MoveTool extends EditorTool{
     @Override
     public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null&&leftDragEnd!=null){
-            if(Core.isControlPressed())editor.copySelection(leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
+            if(Core.isControlPressed())editor.cloneSelection(leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
             else editor.moveSelection(leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
         }
         mouseReset(button);
