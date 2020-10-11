@@ -137,4 +137,8 @@ public class MoveTool extends EditorTool{
     public String getTooltip(){
         return "Move tool (M)\nUse this to move or copy selections\nHold Ctrl to copy selections\nHold Ctrl+Shift to copy selection, and keep the old selection";
     }
+    @Override
+    public void mouseMoved(MenuComponent layer, int x, int y, int z){}
+    @Override
+    public void mouseMovedElsewhere(MenuComponent layer){}
 }

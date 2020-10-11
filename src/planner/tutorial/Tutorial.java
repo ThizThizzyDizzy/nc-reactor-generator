@@ -51,7 +51,7 @@ public abstract class Tutorial extends Renderer2D{
         planner.add(new Tutorial("Basics"){
             @Override
             public double getHeight(double width){
-                return width*3.1;
+                return width*3.175;
             }
             @Override
             public void render(float resonatingBrightness){
@@ -63,6 +63,7 @@ public abstract class Tutorial extends Renderer2D{
                 drawRect(.9, .15, .95, .2, 0);
                 Core.applyColor(Core.theme.getTextColor());
                 {
+                    ImageStash.instance.bindTexture(0);
                     double siz = .05;
                     double x = .9;
                     double y = .15;
@@ -268,8 +269,9 @@ public abstract class Tutorial extends Renderer2D{
                 Core.applyColor(Core.theme.getButtonColor().brighter(), resonatingBrightness);
                 drawRect(.3, .3, .7, .35, 0);
                 Core.applyColor(Core.theme.getTextColor());
-                drawCenteredText(.05, .3, .3, .35, "Done");
-                drawCenteredText(.7, .3, .95, .35, "Resize");
+                drawCenteredText(.05, .31, .3, .34, "Done");
+                drawCenteredText(.3, .31, .7, .34, "Tutorial Build v1 | Edit Metadata");
+                drawCenteredText(.7, .31, .95, .34, "Resize");
                 Core.applyColor(Core.theme.getMetadataPanelHeaderColor());
                 drawRect(.05, .4, .95, .45, 0);
                 Core.applyColor(Core.theme.getTextColor());
@@ -298,6 +300,40 @@ public abstract class Tutorial extends Renderer2D{
                 drawCenteredText(.12, .665, .19, .685, "Export");
                 drawCenteredText(.19, .665, .26, .685, "Save");
                 drawCenteredText(.26, .665, .33, .685, "Load");
+                drawCenteredText(.3, .66, .85, .69, "Tutorial Collection | Edit Metadata");
+                {
+                    ImageStash.instance.bindTexture(0);
+                    double siz = .05;
+                    double x = .9;
+                    double y = .65;
+                    double holeRad = siz*.1;
+                    int teeth = 8;
+                    double averageRadius = siz*.3;
+                    double toothSize = siz*.1;
+                    double rot = 360/16d;
+                    int resolution = (int)(2*Math.PI*averageRadius*Core.helper.displayWidth()/3*2/teeth);//an extra *2 to account for wavy surface?
+                    GL11.glBegin(GL11.GL_QUADS);
+                    double angle = rot;
+                    double radius = averageRadius+toothSize/2;
+                    for(int i = 0; i<teeth*resolution; i++){
+                        double inX = x+siz/2+Math.cos(Math.toRadians(angle-90))*holeRad;
+                        double inY = y+siz/2+Math.sin(Math.toRadians(angle-90))*holeRad;
+                        GL11.glVertex2d(inX, inY);
+                        double outX = x+siz/2+Math.cos(Math.toRadians(angle-90))*radius;
+                        double outY = y+siz/2+Math.sin(Math.toRadians(angle-90))*radius;
+                        GL11.glVertex2d(outX,outY);
+                        angle+=(360d/(teeth*resolution));
+                        if(angle>=360)angle-=360;
+                        radius = averageRadius+(toothSize/2)*Math.cos(Math.toRadians(teeth*(angle-rot)));
+                        outX = x+siz/2+Math.cos(Math.toRadians(angle-90))*radius;
+                        outY = y+siz/2+Math.sin(Math.toRadians(angle-90))*radius;
+                        GL11.glVertex2d(outX,outY);
+                        inX = x+siz/2+Math.cos(Math.toRadians(angle-90))*holeRad;
+                        inY = y+siz/2+Math.sin(Math.toRadians(angle-90))*holeRad;
+                        GL11.glVertex2d(inX, inY);
+                    }
+                    GL11.glEnd();
+                }
                 Core.applyColor(Core.theme.getMetadataPanelHeaderColor());
                 drawRect(.05, .75, .95, .8, 0);
                 Core.applyColor(Core.theme.getTextColor());
@@ -319,6 +355,13 @@ public abstract class Tutorial extends Renderer2D{
                 //<editor-fold defaultstate="collapsed" desc="Saving and Loading multiblocks">
                 Core.applyColor(Core.theme.getTextColor());
                 drawCenteredText(0, .05, 1, .1, "Saving and Loading multiblocks");
+                Core.applyColor(Core.theme.getButtonColor());
+                drawRect(.55, .15, .95, .2, 0);
+                Core.applyColor(Core.theme.getTextColor());
+                drawCenteredText(.55, .16, .65, .19, "Import");
+                drawCenteredText(.65, .16, .75, .19, "Export");
+                drawCenteredText(.75, .16, .85, .19, "Save");
+                drawCenteredText(.85, .16, .95, .19, "Load");
                 drawText(.05, .15, .5, .175, "The Import button adds multiblocks from");
                 drawText(.05, .175, .5, .2, "a file");
                 drawText(.05, .2, .5, .225, "The Export button saves the selected");
@@ -327,30 +370,37 @@ public abstract class Tutorial extends Renderer2D{
                 drawText(.05, .275, .5, .3, "multiblocks to one .ncpf file");
                 drawText(.05, .3, .5, .325, "The Load button replaces the current");
                 drawText(.05, .325, .5, .35, "multiblock list with those loaded from a file");
-                Core.applyColor(Core.theme.getButtonColor());
-                drawRect(.55, .15, .95, .2, 0);
-                Core.applyColor(Core.theme.getTextColor());
-                drawCenteredText(.55, .16, .65, .19, "Import");
-                drawCenteredText(.65, .16, .75, .19, "Export");
-                drawCenteredText(.75, .16, .85, .19, "Save");
-                drawCenteredText(.85, .16, .95, .19, "Load");
-                drawCenteredText(.05, .375, .95, .4, "Export formats");
-                drawText(.05, .4, .95, .425, "NCPF - Stores all multiblocks and metadata. This is the standard save format for");
-                drawText(.05, .425, .95, .45, "this planner");
-                drawText(.05, .45, .95, .475, "Hellrage JSON - Stores Overhaul and Underhaul SFRs. These can be loaded into");
-                drawText(.05, .475, .95, .5, "Hellrage's reactor planner");
-                drawText(.05, .5, .95, .525, "PNG - Exports an image detailing the multiblock design");
-//                GL11.glTranslated(0, .5, 0);
+                drawText(.05, .375, 1, .4, "Alternatively, Drag-and-drop files onto the planner to import them");
+                //export formats
+                drawCenteredText(.05, .45, .95, .475, "Export formats");
+                drawText(.05, .475, .95, .5, "NCPF - Stores all multiblocks and metadata. This is the standard save format for");
+                drawText(.05, .5, .95, .525, "this planner");
+                drawText(.05, .525, .95, .55, "Hellrage JSON - Stores Overhaul and Underhaul SFRs. These can be loaded into");
+                drawText(.05, .55, .95, .575, "Hellrage's reactor planner");
+                drawText(.05, .575, .95, .6, "PNG - Exports an image detailing the multiblock design");
                 //</editor-fold>
             }
         });
         planner.add(new Tutorial("Editing"){
             @Override
             public double getHeight(double width){
-                return width*.1;
+                return width*2;
             }
             @Override
             public void render(float resonatingBrightness){
+                Core.applyColor(Core.theme.getTextColor());
+                drawCenteredText(0, .05, 1, .1, "Editing Overview");
+                drawText(.05, .125, .95, .15, "There are many panels in the editor window.");
+                drawText(.05, .15, .95, .175, "The tools panel is found on the top left, and contains all of the editing tools.");
+                drawText(.05, .175, .95, .2, "The parts panel is found next to the tools panel, and contains all blocks that can");
+                drawText(.05, .2, .95, .225, "be used in the multiblock.");
+                drawText(.05, .225, .95, .25, "The info panel is found on the bottom left, and contains the overall multiblock info");
+                drawText(.05, .25, .95, .275, "The Settings panel is found on the right, and contains multiblock-specific settings");
+                drawText(.05, .275, .95, .3, "such as fuel or coolant/irradiator recipes");
+                //now a screenshot
+                //now the tools
+                //now the parts
+                //AT THE VERY END, generation stuffs
             }
         });
         planner.add(new Tutorial("Configurations"){

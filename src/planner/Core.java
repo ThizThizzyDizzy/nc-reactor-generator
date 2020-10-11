@@ -29,6 +29,7 @@ import org.lwjgl.glfw.GLFW;
 import planner.menu.error.MenuCriticalError;
 import planner.menu.MenuDiscord;
 import planner.menu.MenuLoadFile;
+import planner.menu.MenuTutorial;
 import planner.menu.error.MenuMinorError;
 import planner.menu.error.MenuModerateError;
 import planner.menu.error.MenuSevereError;
@@ -352,7 +353,7 @@ public class Core extends Renderer2D{
         Main.setLookAndFeel();
         System.out.println("Startup complete!");
         if(!tutorialShown){
-//            gui.open(new MenuTutorial(gui, gui.menu));
+            gui.open(new MenuTutorial(gui, gui.menu));
         }
     }
     public static void tick(boolean isLastTick){

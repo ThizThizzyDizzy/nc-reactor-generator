@@ -10,9 +10,9 @@ import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
     private final OverhaulTurbine multiblock;
-    private final int layer;
+    public final int layer;
     private final MenuEdit editor;
-    private int blockSize;
+    public int blockSize;
     private int[] mouseover;
     private static final int resonatingTime = 60;
     private static final float resonatingMin = .25f;
@@ -143,10 +143,17 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
         for(int i : gui.mouseWereDown){
             mouseDragged(x, y, i);
         }
+        if(Double.isNaN(x)||Double.isNaN(y)){
+            return;
+        }
+        int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
+        int blockY = Math.max(0, Math.min(multiblock.getY()-1, (int) (y/blockSize)));
+        editor.getSelectedTool().mouseMoved(selected, blockX, blockY, layer);
     }
     @Override
     public void onMouseMovedElsewhere(double x, double y){
         super.onMouseMovedElsewhere(x, y);
+        if(mouseover!=null)editor.getSelectedTool().mouseMovedElsewhere(selected);
         mouseover = null;
     }
     @Override

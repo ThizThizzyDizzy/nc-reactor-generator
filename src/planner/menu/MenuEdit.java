@@ -43,8 +43,10 @@ import planner.menu.component.editor.MenuComponentEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineBladeEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineCoilEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineRecipe;
+import planner.tool.CopyTool;
 import planner.tool.LineTool;
 import planner.tool.MoveTool;
+import planner.tool.PasteTool;
 import planner.tool.PencilTool;
 import planner.tool.RectangleTool;
 import planner.tool.SelectionTool;
@@ -53,10 +55,15 @@ import simplelibrary.opengl.ImageStash;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
+import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuEdit extends Menu{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     public Framebuffer turbineGraph;
-    private ArrayList<ClipboardEntry> clipboard = new ArrayList<>();
+    public ArrayList<ClipboardEntry> clipboard = new ArrayList<>();
+    private EditorTool copy = new CopyTool(this);
+    private MenuComponentEditorTool copyComp = new MenuComponentEditorTool(copy);
+    private EditorTool paste = new PasteTool(this);
+    private MenuComponentEditorTool pasteComp = new MenuComponentEditorTool(paste);
     {
         editorTools.add(new MoveTool(this));
         editorTools.add(new SelectionTool(this));
@@ -245,7 +252,7 @@ public class MenuEdit extends Menu{
         generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
         generate.y = gui.helper.displayHeight()-generate.height;
         tools.height = editorTools.size()*partSize;
-        tools.height = parts.height = Math.min(Math.max(tools.height, gui.helper.displayHeight()/2), ((parts.components.size()+5)/partsWide)*partSize);
+        tools.height = parts.height = Math.max(tools.height, Math.min(gui.helper.displayHeight()/2, ((parts.components.size()+5)/partsWide)*partSize));
         resize.width = 320;
         generate.width = editMetadata.width = multibwauk.width = gui.helper.displayWidth()-parts.x-parts.width-resize.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
@@ -407,7 +414,16 @@ public class MenuEdit extends Menu{
     }
     public EditorTool getSelectedTool(){
         if(tools.getSelectedIndex()==-1)return null;
-        return ((MenuComponentEditorTool) tools.components.get(tools.getSelectedIndex())).tool;
+        EditorTool tool = ((MenuComponentEditorTool) tools.components.get(tools.getSelectedIndex())).tool;
+        if(!(tool instanceof CopyTool)){//selecting a non-copy tool, remove all copy tools!
+            editorTools.remove(copy);
+            tools.components.remove(copyComp);
+        }
+        if(!(tool instanceof PasteTool)){//selecting a non-paste tool, remove all paste tools!
+            editorTools.remove(paste);
+            tools.components.remove(pasteComp);
+        }
+        return tool;
     }
     public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(){
         return ((MenuComponentOverSFRFuel) overFuel.getSelectedComponent()).fuel;
@@ -460,7 +476,13 @@ public class MenuEdit extends Menu{
     public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
         super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
         if(isPress){
-            if(key==GLFW.GLFW_KEY_ESCAPE)clearSelection();
+            if(key==GLFW.GLFW_KEY_ESCAPE){
+                if(getSelectedTool() instanceof PasteTool||getSelectedTool() instanceof CopyTool){
+                    tools.setSelectedIndex(1);
+                }else{
+                    clearSelection();
+                }
+            }
             if(key==GLFW.GLFW_KEY_DELETE){
                 SetblocksAction ac = new SetblocksAction(null);
                 synchronized(selection){
@@ -494,22 +516,53 @@ public class MenuEdit extends Menu{
                 if(key==GLFW.GLFW_KEY_Y){
                     multiblock.redo();
                 }
-                if(key==GLFW.GLFW_KEY_C){
-                    copySelection();
+                MenuComponent grid = null;
+                for(MenuComponent c : multibwauk.components){
+                    if(!c.isMouseOver)continue;
+                    if(c instanceof MenuComponentEditorGrid)grid = c;
+                    if(c instanceof MenuComponentTurbineCoilEditorGrid)grid = c;
+                    if(c instanceof MenuComponentTurbineBladeEditorGrid)grid = c;
                 }
-                if(key==GLFW.GLFW_KEY_X){
-                    copySelection();
-                    SetblocksAction ac = new SetblocksAction(null);
-                    synchronized(selection){
-                        for(int[] i : selection){
-                            ac.add(i[0], i[1], i[2]);
+                if(grid!=null){
+                    int x = -1,y = -1,z = -1;
+                    double mx = gui.mouseX-(multibwauk.x+grid.x-multibwauk.getHorizScroll());
+                    double my = gui.mouseY-(multibwauk.y+grid.y-multibwauk.getVertScroll());
+                    if(grid instanceof MenuComponentEditorGrid){
+                        x = (int)(mx/((MenuComponentEditorGrid)grid).blockSize);
+                        y = ((MenuComponentEditorGrid)grid).layer;
+                        z = (int)(my/((MenuComponentEditorGrid)grid).blockSize);
+                    }
+                    if(grid instanceof MenuComponentTurbineCoilEditorGrid){
+                        x = (int)(mx/((MenuComponentTurbineCoilEditorGrid)grid).blockSize);
+                        y = (int)(my/((MenuComponentTurbineCoilEditorGrid)grid).blockSize);
+                        z = ((MenuComponentTurbineCoilEditorGrid)grid).layer;
+                    }
+                    if(grid instanceof MenuComponentTurbineBladeEditorGrid){
+                        x = multiblock.getX()/2;
+                        y = 0;
+                        z = (int)(mx/((MenuComponentTurbineBladeEditorGrid)grid).blockSize);
+                    }
+                    if(x<0||y<0||z<0||x>=multiblock.getX()||y>=multiblock.getY()||z>=multiblock.getZ()){
+                        //do nothing
+                    }else{
+                        if(key==GLFW.GLFW_KEY_C){
+                            copySelectionToClipboard(x, y, z);
+                        }
+                        if(key==GLFW.GLFW_KEY_X){
+                            cutSelection(x, y, z);
+                        }
+                        if(key==GLFW.GLFW_KEY_V){
+                            if(!clipboard.isEmpty()&&!editorTools.contains(paste)){
+                                editorTools.add(paste);
+                                tools.add(pasteComp);
+                                tools.setSelectedIndex(tools.components.size()-1);
+                            }
                         }
                     }
-                    multiblock.action(ac, true);
-                    clearSelection();
-                }
-                if(key==GLFW.GLFW_KEY_V){
-                    pasteSelection();
+                }else{
+                    if(key==GLFW.GLFW_KEY_C){
+                        copySelectionToClipboard(-1, -1, -1);
+                    }
                 }
             }
         }
@@ -696,40 +749,42 @@ public class MenuEdit extends Menu{
             selection.addAll(sel);
         }
     }
-    private void copySelection(){
-        clipboard .clear();
+    public void copySelectionToClipboard(int x, int y, int z){//like copySelection, but clipboardier
+        clipboard.clear();
         synchronized(selection){
+            if(selection.isEmpty()){
+                if(!editorTools.contains(copy)){
+                    editorTools.add(copy);
+                    tools.add(copyComp);
+                    tools.setSelectedIndex(tools.components.size()-1);
+                }
+                return;
+            }
+            if(x==-1||y==-1||z==-1)return;
             for(int[] is : selection){
                 Block b = multiblock.getBlock(is[0], is[1], is[2]);
-                clipboard.add(new ClipboardEntry(is, b==null?null:b.copy()));
+                clipboard.add(new ClipboardEntry(is[0]-x, is[1]-y, is[2]-z, b==null?null:b.copy(b.x-x, b.y-y, b.z-z)));
             }
         }
-        int x = multiblock.getX();
-        int y = multiblock.getY();
-        int z = multiblock.getZ();
-        for(ClipboardEntry entry : clipboard){
-            x = Math.min(x,entry.x);
-            y = Math.min(y,entry.y);
-            z = Math.min(z,entry.z);
-        }
-        for(ClipboardEntry entry : clipboard){
-            entry.x-=x;
-            entry.y-=y;
-            entry.z-=z;
+        if(!editorTools.contains(paste)){
+            editorTools.add(paste);
+            tools.add(pasteComp);
+            tools.setSelectedIndex(tools.components.size()-1);
         }
     }
-    private void pasteSelection(){
-        int x = multiblock.getX();
-        int y = multiblock.getY();
-        int z = multiblock.getZ();
+    public void cutSelection(int x, int y, int z){
+        copySelectionToClipboard(x,y,z);
+        SetblocksAction ac = new SetblocksAction(null);
         synchronized(selection){
             for(int[] i : selection){
-                x = Math.min(x,i[0]);
-                y = Math.min(y,i[1]);
-                z = Math.min(z,i[2]);
+                ac.add(i[0], i[1], i[2]);
             }
         }
-        multiblock.action(new PasteAction(this, clipboard, x, y, z), true);
+        multiblock.action(ac, true);
+        clearSelection();
+    }
+    public void pasteSelection(int x, int y, int z){
+        multiblock.action(new PasteAction(clipboard, x, y, z), true);
     }
     public static class ClipboardEntry{
         public int x;

@@ -163,4 +163,8 @@ public class PencilTool extends EditorTool{
     public String getTooltip(){
         return "Pencil tool (P)\nUse this tool to draw blocks one at a time\nHold CTRL to only place blocks where they are valid";
     }
+    @Override
+    public void mouseMoved(MenuComponent layer, int x, int y, int z){}
+    @Override
+    public void mouseMovedElsewhere(MenuComponent layer){}
 }

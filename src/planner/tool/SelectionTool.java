@@ -160,4 +160,8 @@ public class SelectionTool extends EditorTool{
     public String getTooltip(){
         return "Select tool (S)\nUse this to select areas of the reactor\nCtrl-click to select multiple selections\nShift-click to select Groups of blocks that require each other\nAlt-click to select clusters\nEdits can only be made inside of selections (unless there are no selections)\nPress Delete to delete the selected area\nPress Escape to clear selection";
     }
+    @Override
+    public void mouseMoved(MenuComponent layer, int x, int y, int z){}
+    @Override
+    public void mouseMovedElsewhere(MenuComponent layer){}
 }

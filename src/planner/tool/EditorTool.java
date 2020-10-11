@@ -12,6 +12,8 @@ public abstract class EditorTool{
     public abstract void mousePressed(MenuComponent layer, int x, int y, int z, int button);
     public abstract void mouseReleased(MenuComponent layer, int x, int y, int z, int button);
     public abstract void mouseDragged(MenuComponent layer, int x, int y, int z, int button);
+    public abstract void mouseMoved(MenuComponent layer, int x, int y, int z);
+    public abstract void mouseMovedElsewhere(MenuComponent layer);
     public abstract void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
     public abstract void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
     public abstract void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture);

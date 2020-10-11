@@ -16,11 +16,11 @@ import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorGrid extends MenuComponent{
-    private Object synchronizer = new Object();
+    private final Object synchronizer = new Object();
     private final Multiblock multiblock;
-    private final int layer;
+    public final int layer;
     private final MenuEdit editor;
-    private int blockSize;
+    public int blockSize;
     private int[] mouseover;
     private static final int resonatingTime = 60;
     private static final float resonatingMin = .25f;
@@ -161,11 +161,18 @@ public class MenuComponentEditorGrid extends MenuComponent{
         for(int i : gui.mouseWereDown){
             mouseDragged(x, y, i);
         }
+        if(Double.isNaN(x)||Double.isNaN(y)){
+            return;
+        }
+        int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
+        int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
+        editor.getSelectedTool().mouseMoved(selected, blockX, layer, blockZ);
     }
     @Override
     public void onMouseMovedElsewhere(double x, double y){
         super.onMouseMovedElsewhere(x, y);
         synchronized(synchronizer){
+            if(mouseover!=null)editor.getSelectedTool().mouseMovedElsewhere(selected);
             mouseover = null;
         }
     }

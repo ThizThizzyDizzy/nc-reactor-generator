@@ -2,11 +2,9 @@ package multiblock;
 import simplelibrary.Queue;
 import simplelibrary.opengl.Renderer2D;
 public class MultiblockBit extends Renderer2D{
-    protected static final Queue<Direction> directions = directions();
-    private static Queue<Direction> directions(){
-        Queue<Direction> directions = new Queue<>();
+    protected static final Queue<Direction> directions = new Queue<>();
+    static{
         for(Direction d : Direction.values())directions.enqueue(d);
-        return directions;
     }
     protected static final Queue<Axis> axes = axes();
     private static Queue<Axis> axes(){

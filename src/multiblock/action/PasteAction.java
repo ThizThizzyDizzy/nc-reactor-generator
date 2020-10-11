@@ -5,16 +5,13 @@ import multiblock.Block;
 import multiblock.Multiblock;
 import planner.menu.MenuEdit;
 public class PasteAction extends Action<Multiblock>{
-    private final ArrayList<int[]> selWas = new ArrayList<>();
     private final ArrayList<Block> was = new ArrayList<>();
     private final ArrayList<int[]> wasAir = new ArrayList<>();
-    private final MenuEdit editor;
     private final int x;
     private final int y;
     private final int z;
     private final ArrayList<MenuEdit.ClipboardEntry> blocks;
-    public PasteAction(MenuEdit editor, ArrayList<MenuEdit.ClipboardEntry> blocks, int x, int y, int z){
-        this.editor = editor;
+    public PasteAction(ArrayList<MenuEdit.ClipboardEntry> blocks, int x, int y, int z){
         this.blocks = blocks;
         this.x = x;
         this.y = y;
@@ -22,13 +19,14 @@ public class PasteAction extends Action<Multiblock>{
     }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
-        ArrayList<int[]> sel = new ArrayList<>();
         was.clear();
-        selWas.clear();
         for(MenuEdit.ClipboardEntry entry : blocks){
             int X = entry.x+x;
             int Y = entry.y+y;
             int Z = entry.z+z;
+            if(X<0)continue;
+            if(Y<0)continue;
+            if(Z<0)continue;
             if(X>multiblock.getX()-1)continue;
             if(Y>multiblock.getY()-1)continue;
             if(Z>multiblock.getZ()-1)continue;
@@ -38,20 +36,12 @@ public class PasteAction extends Action<Multiblock>{
                 else wasAir.add(new int[]{X,Y,Z});
             }
             multiblock.setBlock(X, Y, Z, entry.block);
-            sel.add(new int[]{X,Y,Z});
         }
-        if(allowUndo){
-            synchronized(editor.selection){
-                selWas.addAll(editor.selection);
-            }
-        }
-        editor.setSelection(sel);
     }
     @Override
     public void doUndo(Multiblock multiblock){
-        editor.setSelection(selWas);
         for(Block b : was){
-            multiblock.setBlockExact(x, y, z, b);
+            multiblock.setBlockExact(b.x, b.y, b.z, b);
         }
         for(int[] loc : wasAir){
             multiblock.setBlockExact(loc[0], loc[1], loc[2], null);

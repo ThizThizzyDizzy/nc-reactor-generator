@@ -100,4 +100,8 @@ public class LineTool extends EditorTool{
     public String getTooltip(){
         return "Line tool (L)\nUse this tool to draw blocks in a line through the multiblock\nHold CTRL to only place blocks where they are valid";
     }
+    @Override
+    public void mouseMoved(MenuComponent layer, int x, int y, int z){}
+    @Override
+    public void mouseMovedElsewhere(MenuComponent layer){}
 }

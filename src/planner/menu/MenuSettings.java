@@ -27,7 +27,7 @@ public class MenuSettings extends Menu{
     private final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Modify Configuration", true, true).setTooltip("Modify the current configuration"));
     private final MenuComponentMinimalistOptionButton theme = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Theme", true, true, Theme.themes.indexOf(Core.theme), Theme.getThemeS())).setTooltip("Click to cycle through available themes\nRight click to cycle back");
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Close the settings menu"));
-    private final MenuComponentMinimalistButton tutorials = new MenuComponentMinimalistButton(0, 0, 0, 0, "Tutorials", true, true);
+    private final MenuComponentMinimalistButton tutorials = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Tutorials", true, true));
     private final ArrayList<MenuComponentMinimalistButton> buttons = new ArrayList<>();
     public MenuSettings(GUI gui, Menu parent){
         super(gui, parent);
