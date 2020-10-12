@@ -1,7 +1,6 @@
 package multiblock.overhaul.fissionsfr;
 import discord.Bot;
 import generator.Priority;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

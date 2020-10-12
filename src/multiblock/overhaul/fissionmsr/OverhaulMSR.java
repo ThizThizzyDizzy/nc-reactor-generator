@@ -154,7 +154,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
         }while(somethingChanged);
         for(VesselGroup group : vesselGroups){
-            group.positionalEfficiency*=6f*group.size()/group.getOpenFaces();
+            group.positionalEfficiency*=group.getBunchingFactor();
             for(Block block : group.blocks){
                 float criticalityModifier = (float) (1/(1+Math.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
                 block.efficiency = block.fuel.efficiency*group.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier;
@@ -171,12 +171,15 @@ public class OverhaulMSR extends Multiblock<Block>{
         synchronized(clusters){
             for(Cluster cluster : clusters){
                 int fuelVessels = 0;
+                ArrayList<VesselGroup> alreadyProcessedGroups = new ArrayList<>();
                 for(Block b : cluster.blocks){
                     if(b.isFuelVesselActive()){
-                        fuelVessels++;
-                        cluster.efficiency+=b.efficiency/b.vesselGroup.size();
-                        cluster.totalHeat+=6*(b.vesselGroup.moderatorLines*b.fuel.heat)/b.vesselGroup.getOpenFaces();
-                        cluster.heatMult+=b.vesselGroup.getHeatMult()/b.vesselGroup.size();
+                        if(alreadyProcessedGroups.contains(b.vesselGroup))continue;
+                        alreadyProcessedGroups.add(b.vesselGroup);
+                        fuelVessels+=b.vesselGroup.size();
+                        cluster.efficiency+=b.efficiency;
+                        cluster.totalHeat+=b.vesselGroup.moderatorLines*b.fuel.heat*b.vesselGroup.getBunchingFactor();
+                        cluster.heatMult+=b.vesselGroup.getHeatMult();
                     }
                     if(b.isHeaterActive()){
                         cluster.totalCooling+=b.template.cooling;
@@ -737,10 +740,12 @@ public class OverhaulMSR extends Multiblock<Block>{
         public boolean wasActive;
         public VesselGroup(Block block){
             blocks.addAll(toList(getBlocks(block)));
+            int fuelCriticality = 0;
             for(Block b : blocks){
-                criticality+=b.fuel.criticality;
+                fuelCriticality = b.fuel.criticality;
                 b.vesselGroup = this;
             }
+            criticality = fuelCriticality*getSurfaceFactor();
         }
         private VesselGroup(){}
         public boolean contains(Block block){
@@ -838,6 +843,12 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
             return open;
         }
+        int getBunchingFactor(){
+            return 6*size()/getOpenFaces();
+        }
+        int getSurfaceFactor(){
+            return getOpenFaces()/6;
+        }
         private boolean isActive(){
             return neutronFlux>=criticality;
         }
@@ -849,10 +860,10 @@ public class OverhaulMSR extends Multiblock<Block>{
             moderatorLines = 0;
         }
         public float getHeatMult(){
-            return 6*size()*((float)moderatorLines)/getOpenFaces();
+            return moderatorLines*getBunchingFactor();
         }
         public int getRequiredSources(){
-            return getOpenFaces()/6;
+            return getSurfaceFactor();
         }
         public int getSources(){
             int sources = 0;
