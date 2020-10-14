@@ -8,16 +8,19 @@ import multiblock.Multiblock;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.overhaul.fusion.FusionConfiguration;
 import simplelibrary.config2.Config;
 public class OverhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
     public FissionMSRConfiguration fissionMSR;
     public TurbineConfiguration turbine;
+    public FusionConfiguration fusion;
     public Config save(Configuration parent, boolean partial){
         Config config = Config.newConfig();
         if(fissionSFR!=null)config.set("fissionSFR", fissionSFR.save(parent, partial));
         if(fissionMSR!=null)config.set("fissionMSR", fissionMSR.save(parent, partial));
         if(turbine!=null)config.set("turbine", turbine.save(parent, partial));
+        if(fusion!=null)config.set("fusion", fusion.save(parent, partial));
         return config;
     }
     public void apply(OverhaulConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
@@ -32,6 +35,10 @@ public class OverhaulConfiguration{
         if(turbine!=null){
             partial.turbine = new TurbineConfiguration();
             turbine.apply(partial.turbine, multiblocks, parent);
+        }
+        if(fusion!=null){
+            partial.fusion = new FusionConfiguration();
+            fusion.apply(partial.fusion, multiblocks, parent);
         }
     }
     public void apply(AddonConfiguration addon, Configuration parent){
@@ -50,13 +57,19 @@ public class OverhaulConfiguration{
             addon.self.overhaul.turbine = new TurbineConfiguration();
             turbine.apply(addon, parent);
         }
+        if(fusion!=null){
+            addon.overhaul.fusion = new FusionConfiguration();
+            addon.self.overhaul.fusion = new FusionConfiguration();
+            fusion.apply(addon, parent);
+        }
     }
     @Override
     public boolean equals(Object obj){
         if(obj!=null&&obj instanceof OverhaulConfiguration){
             return Objects.equals(fissionSFR, ((OverhaulConfiguration)obj).fissionSFR)
                     &&Objects.equals(fissionMSR, ((OverhaulConfiguration)obj).fissionMSR)
-                    &&Objects.equals(turbine, ((OverhaulConfiguration)obj).turbine);
+                    &&Objects.equals(turbine, ((OverhaulConfiguration)obj).turbine)
+                    &&Objects.equals(fusion, ((OverhaulConfiguration)obj).fusion);
         }
         return super.equals(obj);
     }
@@ -69,6 +82,9 @@ public class OverhaulConfiguration{
         }
         if(turbine!=null){
             turbine.convertAddon(parent, convertTo);
+        }
+        if(fusion!=null){
+            fusion.convertAddon(parent, convertTo);
         }
     }
 }

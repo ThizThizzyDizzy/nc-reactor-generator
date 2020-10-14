@@ -192,6 +192,7 @@ public class Block extends RuleContainer{
                 &&b.shield==shield
                 &&b.flux==flux
                 &&b.efficiency==efficiency
+                &&b.reflectivity==reflectivity
                 &&b.heatMult==heatMult
                 &&b.blocksLOS==blocksLOS
                 &&b.functional==functional

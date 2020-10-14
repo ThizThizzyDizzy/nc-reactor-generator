@@ -14,11 +14,14 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.Configuration;
 import planner.file.NCPFFile;
+import planner.menu.MenuEdit;
+import planner.menu.MenuResize;
 import planner.menu.component.MenuComponentMinimaList;
 import simplelibrary.Queue;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
+import simplelibrary.opengl.gui.GUI;
 public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public long lastChangeTime;
     public Stack<Action> history = new Stack<>();
@@ -740,4 +743,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return b.hasRules()&&b.calculateRules(this);
     }
     public abstract String getDescriptionTooltip();
+    public float get3DPreviewScale(){
+        return 1;
+    }
+    public void openResizeMenu(GUI gui, MenuEdit editor){
+        gui.open(new MenuResize(gui, editor, this));
+    }
 }

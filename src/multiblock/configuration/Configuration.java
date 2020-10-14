@@ -36,6 +36,9 @@ public class Configuration{
         configurations.add(FileReader.read(() -> {
             return getInputStream("configurations/e2e.ncpf");
         }).configuration.addAlternative("E2E"));
+        configurations.add(FileReader.read(() -> {
+            return getInputStream("configurations/fusion_test.ncpf");
+        }).configuration.addAlternative("Fusion"));
     }
     public ArrayList<String> alternatives = new ArrayList<>();
     public Configuration(String name, String version, String underhaulVersion){

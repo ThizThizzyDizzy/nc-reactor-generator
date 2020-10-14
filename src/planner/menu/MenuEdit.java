@@ -1,6 +1,4 @@
 package planner.menu;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 import planner.Core;
@@ -28,18 +26,24 @@ import multiblock.action.PasteAction;
 import multiblock.action.SelectAction;
 import multiblock.action.SetCoolantRecipeAction;
 import multiblock.action.SetFuelAction;
+import multiblock.action.SetFusionCoolantRecipeAction;
+import multiblock.action.SetFusionRecipeAction;
 import multiblock.action.SetSelectionAction;
 import multiblock.action.SetTurbineRecipeAction;
 import multiblock.action.SetblockAction;
 import multiblock.action.SetblocksAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.menu.component.MenuComponentDropdownList;
 import planner.menu.component.editor.MenuComponentEditorGrid;
+import planner.menu.component.editor.MenuComponentFusionBreedingBlanketRecipe;
+import planner.menu.component.editor.MenuComponentFusionCoolantRecipe;
+import planner.menu.component.editor.MenuComponentOverFusionRecipe;
 import planner.menu.component.editor.MenuComponentTurbineBladeEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineCoilEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineRecipe;
@@ -84,7 +88,7 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimalistButton zoomIn = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom in", true, true));
     private final MenuComponentMinimalistButton resize = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Resize", true, true).setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)"));
     public final MenuComponentDropdownList underFuelOrCoolantRecipe = new MenuComponentDropdownList(0, 0, 0, 32);
-    private final MenuComponentDropdownList overFuel = new MenuComponentDropdownList(0, 0, 0, 32);
+    public final MenuComponentDropdownList overFuel = new MenuComponentDropdownList(0, 0, 0, 32);
     private final MenuComponentDropdownList irradiatorRecipe = new MenuComponentDropdownList(0, 0, 0, 32);
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Modify the multiblock metadata"));
@@ -139,13 +143,29 @@ public class MenuEdit extends Menu{
             }
             irradiatorRecipe.setSelectedIndex(0);
         }
+        if(multiblock instanceof OverhaulFusionReactor){
+            add(underFuelOrCoolantRecipe);
+            for(multiblock.configuration.overhaul.fusion.CoolantRecipe recipe : Core.configuration.overhaul.fusion.allCoolantRecipes){
+                underFuelOrCoolantRecipe.add(new MenuComponentFusionCoolantRecipe(recipe));
+            }
+            add(overFuel);
+            for(multiblock.configuration.overhaul.fusion.Recipe recipe : Core.configuration.overhaul.fusion.allRecipes){
+                overFuel.add(new MenuComponentOverFusionRecipe(recipe));
+            }
+            overFuel.setSelectedIndex(0);
+            add(irradiatorRecipe);
+            for(multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe recipe : Core.configuration.overhaul.fusion.allBreedingBlanketRecipes){
+                irradiatorRecipe.add(new MenuComponentFusionBreedingBlanketRecipe(recipe));
+            }
+            irradiatorRecipe.setSelectedIndex(0);
+        }
         this.multiblock = multiblock;
         multibwauk.setScrollMagnitude(CELL_SIZE/2);
         back.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(1, 0), 5));
         });
         resize.addActionListener((e) -> {
-            gui.open(new MenuResize(gui, this, multiblock));
+            multiblock.openResizeMenu(gui, this);
         });
         zoomOut.addActionListener((e) -> {
             scale = Math.max(minScale, Math.min(maxScale, scale/1.5));
@@ -190,6 +210,9 @@ public class MenuEdit extends Menu{
         }
         if(multiblock instanceof OverhaulTurbine){
             underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
+        }
+        if(multiblock instanceof OverhaulFusionReactor){
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fusion.allCoolantRecipes.indexOf(((OverhaulFusionReactor)multiblock).coolantRecipe));
         }
         multibwauk.components.clear();
         multisPerRow = Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)));
@@ -248,6 +271,10 @@ public class MenuEdit extends Menu{
             overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+overFuel.preferredHeight;
             irradiatorRecipe.y = overFuel.y+overFuel.height+irradiatorRecipe.preferredHeight;
         }
+        if(multiblock instanceof OverhaulFusionReactor){
+            overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+overFuel.preferredHeight;
+            irradiatorRecipe.y = overFuel.y+overFuel.height+irradiatorRecipe.preferredHeight;
+        }
         if(multiblock instanceof OverhaulMSR){
             underFuelOrCoolantRecipe.x = -5000;
             overFuel.y = resize.height*2+overFuel.preferredHeight;
@@ -266,6 +293,20 @@ public class MenuEdit extends Menu{
                 multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
                     multiblock.action(new SetCoolantRecipeAction(this, recipe), true);
+                }
+            }
+        }
+        if(multiblock instanceof OverhaulFusionReactor){
+            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
+                multiblock.configuration.overhaul.fusion.CoolantRecipe recipe = Core.configuration.overhaul.fusion.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                if(((OverhaulFusionReactor)multiblock).coolantRecipe!=recipe){
+                    multiblock.action(new SetFusionCoolantRecipeAction(this, recipe), true);
+                }
+            }
+            if(overFuel.getSelectedIndex()>-1){
+                multiblock.configuration.overhaul.fusion.Recipe recipe = Core.configuration.overhaul.fusion.allRecipes.get(overFuel.getSelectedIndex());
+                if(((OverhaulFusionReactor)multiblock).recipe!=recipe){
+                    multiblock.action(new SetFusionRecipeAction(this, recipe), true);
                 }
             }
         }
@@ -376,6 +417,16 @@ public class MenuEdit extends Menu{
             Core.applyColor(Core.theme.getTextColor());
             drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Recipe");
         }
+        if(multiblock instanceof OverhaulFusionReactor){
+            Core.applyColor(Core.theme.getDarkButtonColor());
+            drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
+            drawRect(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, 0);
+            drawRect(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, 0);
+            Core.applyColor(Core.theme.getTextColor());
+            drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Coolant Recipe");
+            drawCenteredText(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, "Recipe");
+            drawCenteredText(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, "Breeding Blanket Recipe");
+        }
         Core.applyWhite();
     }
     public Block getSelectedBlock(){
@@ -405,6 +456,9 @@ public class MenuEdit extends Menu{
             tools.components.remove(pasteComp);
         }
         return tool;
+    }
+    public multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(){
+        return ((MenuComponentFusionBreedingBlanketRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
     }
     public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(){
         return ((MenuComponentOverSFRFuel) overFuel.getSelectedComponent()).fuel;
@@ -449,6 +503,11 @@ public class MenuEdit extends Menu{
             }
             if(((multiblock.overhaul.fissionmsr.Block)blok).isIrradiator()){
                 ((multiblock.overhaul.fissionmsr.Block)blok).irradiatorRecipe = getSelectedMSRIrradiatorRecipe();
+            }
+        }
+        if(multiblock instanceof OverhaulFusionReactor){
+            if(((multiblock.overhaul.fusion.Block)blok).isBreedingBlanket()){
+                ((multiblock.overhaul.fusion.Block)blok).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe();
             }
         }
         multiblock.action(new SetblockAction(x,y,z,blok), true);
@@ -583,6 +642,11 @@ public class MenuEdit extends Menu{
             }
             if(((multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
                 ((multiblock.overhaul.fissionmsr.Block)set.block).irradiatorRecipe = getSelectedMSRIrradiatorRecipe();
+            }
+        }
+        if(set.block!=null&&multiblock instanceof OverhaulFusionReactor){
+            if(((multiblock.overhaul.fusion.Block)set.block).isBreedingBlanket()){
+                ((multiblock.overhaul.fusion.Block)set.block).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe();
             }
         }
         multiblock.action(set, true);

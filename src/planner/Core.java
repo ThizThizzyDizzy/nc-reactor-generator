@@ -24,11 +24,11 @@ import multiblock.Multiblock;
 import multiblock.configuration.TextureManager;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import planner.menu.error.MenuCriticalError;
 import planner.menu.MenuDiscord;
-import planner.menu.MenuEdit;
 import planner.menu.MenuLoadFile;
 import planner.menu.MenuTutorial;
 import planner.menu.error.MenuMinorError;
@@ -86,6 +86,7 @@ public class Core extends Renderer2D{
         multiblockTypes.add(new OverhaulSFR());
         multiblockTypes.add(new OverhaulMSR());
         multiblockTypes.add(new OverhaulTurbine());
+        multiblockTypes.add(new OverhaulFusionReactor());
         resetMetadata();
     }
     public static void resetMetadata(){
@@ -415,6 +416,7 @@ public class Core extends Renderer2D{
             Multiblock mb = ((MenuMain)gui.menu).getSelectedMultiblock();
             if(mb!=null){
                 double size = Math.max(mb.getX(), Math.max(mb.getY(), mb.getZ()));
+                size/=mb.get3DPreviewScale();
                 GL11.glScaled(1/size, 1/size, 1/size);
                 GL11.glTranslated(-mb.getX()/2d, -mb.getY()/2d, -mb.getZ()/2d);
                 mb.draw3D();
