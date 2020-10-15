@@ -19,7 +19,7 @@ public class Block extends multiblock.Block{
     public float efficiencyMult;//breeding blankets
     public float heatMult;//heating blankets
     public float efficiency;//heating blankets
-    boolean inCluster;
+    public OverhaulFusionReactor.Cluster cluster;
     public Block(int x, int y, int z, multiblock.configuration.overhaul.fusion.Block template){
         super(x, y, z);
         this.template = template;
@@ -46,7 +46,8 @@ public class Block extends multiblock.Block{
     }
     @Override
     public void clearData(){
-        breedingBlanketValid = breedingBlanketAugmented = heatsinkValid = reflectorValid = inCluster = false;
+        breedingBlanketValid = breedingBlanketAugmented = heatsinkValid = reflectorValid = false;
+        cluster = null;
         efficiency = heatMult = efficiencyMult = 0;
     }
     @Override
@@ -73,7 +74,7 @@ public class Block extends multiblock.Block{
         if(isHeatsink()){
             tip+="\nHeatsink "+(heatsinkValid?"Valid":"Invalid");
         }
-        OverhaulFusionReactor.Cluster cluster = fusion.getCluster(this);
+        OverhaulFusionReactor.Cluster cluster = this.cluster;
         if(cluster!=null){
             if(!cluster.isCreated()){
                 tip+="\nInvalid cluster!";
@@ -120,8 +121,7 @@ public class Block extends multiblock.Block{
         if(isBreedingBlanketAugmented()){
             drawOutline(x, y, width, height, 1/32d, Core.theme.getGreen());
         }
-        OverhaulFusionReactor fusion = (OverhaulFusionReactor)multiblock;
-        OverhaulFusionReactor.Cluster cluster = fusion.getCluster(this);
+        OverhaulFusionReactor.Cluster cluster = this.cluster;
         if(cluster!=null){
             Color primaryColor = null;
             if(cluster.netHeat>0){
@@ -309,7 +309,7 @@ public class Block extends multiblock.Block{
         copy.efficiencyMult = efficiencyMult;
         copy.heatMult = heatMult;
         copy.efficiency = efficiency;
-        copy.inCluster = inCluster;
+        copy.cluster = cluster;//TODO probably shouldn't do that
         return copy;
     }
     @Override
@@ -379,7 +379,7 @@ public class Block extends multiblock.Block{
     }
     public boolean isFunctional(){
         if(isCasing())return false;
-        if(canCluster()&&!inCluster)return false;
+        if(canCluster()&&cluster==null)return false;
         return template.functional&&(isActive()||breedingBlanketValid);
     }
 }

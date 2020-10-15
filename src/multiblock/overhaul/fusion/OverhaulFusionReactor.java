@@ -16,7 +16,6 @@ import multiblock.ppe.PostProcessingEffect;
 import multiblock.ppe.SmartFillOverhaulFusion;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
-import planner.Core;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
@@ -481,7 +480,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             }
             if(isValid()){
                 for(Block b : blocks){
-                    b.inCluster = true;
+                    b.cluster = this;
                 }
             }
         }

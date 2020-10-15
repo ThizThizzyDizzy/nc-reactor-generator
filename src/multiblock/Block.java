@@ -6,7 +6,6 @@ import planner.Core;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
-import planner.menu.MenuEdit;
 public abstract class Block extends MultiblockBit{
     public int x;
     public int y;

@@ -26,10 +26,10 @@ public class Block extends multiblock.Block{
     public boolean reflectorActive;
     public boolean shieldActive;
     public float efficiency;
-    public boolean inCluster;
     public boolean closed = false;
     public boolean wasActive;
     public int hadFlux;
+    public OverhaulSFR.Cluster cluster;
     public Block(int x, int y, int z, multiblock.configuration.overhaul.fissionsfr.Block template){
         super(x, y, z);
         this.template = template;
@@ -60,7 +60,8 @@ public class Block extends multiblock.Block{
     public void clearData(){
         hasPropogated = false;
         positionalEfficiency = efficiency = moderatorLines = neutronFlux = 0;
-        wasActive = moderatorValid = moderatorActive = heatsinkValid = reflectorActive = shieldActive = inCluster = false;
+        wasActive = moderatorValid = moderatorActive = heatsinkValid = reflectorActive = shieldActive = false;
+        cluster = null;
     }
     @Override
     public String getTooltip(Multiblock multiblock){
@@ -119,7 +120,7 @@ public class Block extends multiblock.Block{
         if(isHeatsink()){
             tip+="\nHeatsink "+(heatsinkValid?"Valid":"Invalid");
         }
-        OverhaulSFR.Cluster cluster = ((OverhaulSFR)multiblock).getCluster(this);
+        OverhaulSFR.Cluster cluster = this.cluster;
         if(cluster!=null){
             if(!cluster.isCreated()){
                 tip+="\nInvalid cluster!";
@@ -224,7 +225,7 @@ public class Block extends multiblock.Block{
     }
     public boolean isFunctional(){
         if(isCasing())return false;
-        if(canCluster()&&!inCluster)return false;
+        if(canCluster()&&cluster==null)return false;
         return template.functional&&(isActive()||moderatorValid);
     }
     public void propogateNeutronFlux(OverhaulSFR reactor){
@@ -424,8 +425,7 @@ public class Block extends multiblock.Block{
             float b = self?1:0;
             drawCircle(x, y, width, height, Core.theme.getRGBA(r, g, b, 1));
         }
-        OverhaulSFR sfr = (OverhaulSFR)multiblock;
-        OverhaulSFR.Cluster cluster = sfr.getCluster(this);
+        OverhaulSFR.Cluster cluster = this.cluster;
         if(cluster!=null){
             Color primaryColor = null;
             if(cluster.netHeat>0){
@@ -577,7 +577,7 @@ public class Block extends multiblock.Block{
         copy.reflectorActive = reflectorActive;
         copy.shieldActive = shieldActive;
         copy.efficiency = efficiency;
-        copy.inCluster = inCluster;
+        copy.cluster = cluster;//TODO probably shouldn't do that
         copy.closed = closed;
         return copy;
     }

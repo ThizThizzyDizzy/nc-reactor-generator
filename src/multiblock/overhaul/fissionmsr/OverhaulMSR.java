@@ -1,7 +1,6 @@
 package multiblock.overhaul.fissionmsr;
 import discord.Bot;
 import generator.Priority;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -602,7 +601,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
             if(isValid()){
                 for(Block b : blocks){
-                    b.inCluster = true;
+                    b.cluster = this;
                 }
             }
         }

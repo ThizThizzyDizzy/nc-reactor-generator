@@ -24,7 +24,7 @@ public class Block extends multiblock.Block{
     public boolean reflectorActive;
     public boolean shieldActive;
     public float efficiency;
-    public boolean inCluster;
+    public OverhaulMSR.Cluster cluster;
     public boolean closed = false;
     public OverhaulMSR.VesselGroup vesselGroup;//only used when recalculating; doesn't even need to be reset
     public Block(int x, int y, int z, multiblock.configuration.overhaul.fissionmsr.Block template){
@@ -57,7 +57,8 @@ public class Block extends multiblock.Block{
     public void clearData(){
         hasPropogated = false;
         efficiency = flux = 0;
-        moderatorValid = moderatorActive = heaterValid = reflectorActive = shieldActive = inCluster = false;
+        moderatorValid = moderatorActive = heaterValid = reflectorActive = shieldActive = false;
+        cluster = null;
     }
     @Override
     public String getTooltip(Multiblock multiblock){
@@ -127,7 +128,7 @@ public class Block extends multiblock.Block{
         if(isHeater()){
             tip+="\nHeater "+(heaterValid?"Valid":"Invalid");
         }
-        OverhaulMSR.Cluster cluster = ((OverhaulMSR)multiblock).getCluster(this);
+        OverhaulMSR.Cluster cluster = this.cluster;
         if(cluster!=null){
             if(!cluster.isCreated()){
                 tip+="\nInvalid cluster!";
@@ -231,7 +232,7 @@ public class Block extends multiblock.Block{
     }
     public boolean isFunctional(){
         if(isCasing())return false;
-        if(canCluster()&&!inCluster)return false;
+        if(canCluster()&&cluster==null)return false;
         return template.functional&&(isActive()||moderatorValid);
     }
     public void propogateNeutronFlux(OverhaulMSR reactor){
@@ -431,8 +432,7 @@ public class Block extends multiblock.Block{
             float b = self?1:0;
             drawCircle(x, y, width, height, Core.theme.getRGBA(r, g, b, 1));
         }
-        OverhaulMSR msr = (OverhaulMSR)multiblock;
-        OverhaulMSR.Cluster cluster = msr.getCluster(this);
+        OverhaulMSR.Cluster cluster = this.cluster;
         if(cluster!=null){
             Color primaryColor = null;
             if(cluster.netHeat>0){
@@ -582,7 +582,7 @@ public class Block extends multiblock.Block{
         copy.reflectorActive = reflectorActive;
         copy.shieldActive = shieldActive;
         copy.efficiency = efficiency;
-        copy.inCluster = inCluster;
+        copy.cluster = cluster;//TODO probably shouldn't do that
         copy.closed = closed;
         //TODO vessel groups on the copy?
         return copy;

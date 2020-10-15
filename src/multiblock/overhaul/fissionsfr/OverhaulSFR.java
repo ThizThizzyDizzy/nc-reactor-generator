@@ -563,7 +563,7 @@ public class OverhaulSFR extends Multiblock<Block>{
             }
             if(isValid()){
                 for(Block b : blocks){
-                    b.inCluster = true;
+                    b.cluster = this;
                 }
             }
         }
