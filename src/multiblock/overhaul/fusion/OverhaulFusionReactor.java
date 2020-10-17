@@ -183,7 +183,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                 for(Block b : cluster.blocks){
                     if(b.isHeatingBlanketActive()){
                         heatingBlankets++;
-                        cluster.totalOutput = recipe.heat*b.efficiency;
+                        cluster.totalOutput += recipe.heat*b.efficiency;
                         cluster.efficiency+=b.efficiency;
                         cluster.totalHeat+=recipe.heat*b.heatMult;
                         cluster.heatMult+=b.heatMult;
