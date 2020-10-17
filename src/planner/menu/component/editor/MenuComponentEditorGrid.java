@@ -11,7 +11,9 @@ import multiblock.action.SFRAllShieldsAction;
 import multiblock.action.SFRShieldAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.glfw.GLFW;
+import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -89,6 +91,10 @@ public class MenuComponentEditorGrid extends MenuComponent{
                         Core.applyColor(Core.theme.getSelectionColor(), resonatingAlpha);
                         Renderer2D.drawRect(X, Y, X+blockSize, Y+blockSize, 0);
                     }
+                }
+                if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, layer, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                    Core.applyWhite();
+                    drawRect(X, Y, X+blockSize, Y+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"));
                 }
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){

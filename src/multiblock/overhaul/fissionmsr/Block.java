@@ -72,6 +72,8 @@ public class Block extends multiblock.Block{
                 if(isFuelVesselActive()){
                     tip+="\nAdjacent moderator lines: "+vesselGroup.moderatorLines+"\n"
                             + "Open Faces: "+vesselGroup.getOpenFaces()+"\n"
+                            + "Bunching Factor: "+vesselGroup.getBunchingFactor()+"\n"
+                            + "Surface Factor: "+vesselGroup.getSurfaceFactor()+"\n"
                             + "Heat Multiplier: "+percent(vesselGroup.getHeatMult()/vesselGroup.size(), 0)+"\n"
                             + "Heat Produced: "+vesselGroup.getHeatMult()*fuel.heat+"H/t\n"
                             + "Efficiency: "+percent(efficiency/vesselGroup.size(), 0)+"\n"
@@ -232,7 +234,7 @@ public class Block extends multiblock.Block{
     }
     public boolean isFunctional(){
         if(isCasing())return false;
-        if(canCluster()&&cluster==null)return false;
+        if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
         return template.functional&&(isActive()||moderatorValid);
     }
     public void propogateNeutronFlux(OverhaulMSR reactor){

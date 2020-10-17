@@ -254,6 +254,10 @@ public class OverhaulMSR extends Multiblock<Block>{
             if(showDetails)outs+="\n "+Math.round(totalOutput.get(s))+" mb/t of "+s;
         }
         synchronized(clusters){
+            int validClusters = 0;
+            for(Cluster c : clusters){
+                if(c.isValid())validClusters++;
+            }
             String s = "Total output: "+Math.round(totalTotalOutput)+" mb/t"+outs+"\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
@@ -261,7 +265,7 @@ public class OverhaulMSR extends Multiblock<Block>{
                     + "Overall Efficiency: "+percent(totalEfficiency, 0)+"\n"
                     + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
-                    + "Clusters: "+clusters.size()+"\n"
+                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
                     + "Total Irradiation: "+totalIrradiation+"\n"
                     + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n"
                     + "Rainbow Score: "+percent(rainbowScore, 2)+"\n";//TODO make this (and shutdown factor?) modular
@@ -485,6 +489,13 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
         return badVessels;
     }
+    private int getVessels(){
+        int vessels = 0;
+        for(Block b : getBlocks()){
+            if(b.isFuelVessel())vessels++;
+        }
+        return vessels;
+    }
     private float calculateShutdownFactor(){
         Stack<Action> copy = future.copy();
         computingShutdown = true;
@@ -497,7 +508,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<OverhaulMSR>("Valid (>0 output)", true){
+        priorities.add(new Priority<OverhaulMSR>("Valid (>0 output)", true, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
                 if(main.isValid()&&!other.isValid())return 1;
@@ -505,43 +516,49 @@ public class OverhaulMSR extends Multiblock<Block>{
                 return 0;
             }
         });
-        priorities.add(new Priority<OverhaulMSR>("Minimize Bad Vessels", true){
+        priorities.add(new Priority<OverhaulMSR>("Minimize Bad Vessels", true, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
                 return other.getBadVessels()-main.getBadVessels();
             }
         });
-        priorities.add(new Priority<OverhaulMSR>("Shutdownable", true){
+        priorities.add(new Priority<OverhaulMSR>("Shutdownable", true, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
                 return main.shutdownFactor-other.shutdownFactor;
             }
         });
-        priorities.add(new Priority<OverhaulMSR>("Stability", false){
+        priorities.add(new Priority<OverhaulMSR>("Stability", false, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
                 return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
             }
         });
-        priorities.add(new Priority<OverhaulMSR>("Efficiency", true){
+        priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
                 return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
             }
         });
-        priorities.add(new Priority<OverhaulMSR>("Output", true){
+        priorities.add(new Priority<OverhaulMSR>("Output", true, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
                 return main.totalTotalOutput-other.totalTotalOutput;
             }
         });
-        priorities.add(new Priority<OverhaulMSR>("Irradiation", true){
+        priorities.add(new Priority<OverhaulMSR>("Irradiation", true, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
                 return main.totalIrradiation-other.totalIrradiation;
             }
         });
-        priorities.add(new Priority<OverhaulMSR>("Rainbow", false){
+        priorities.add(new Priority<OverhaulMSR>("Vessel Count", true, true){
+            @Override
+            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                return main.getVessels()-other.getVessels();
+            }
+        });
+        priorities.add(new Priority<OverhaulMSR>("Rainbow", false, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
                 return main.rainbowScore-other.rainbowScore;
@@ -599,10 +616,8 @@ public class OverhaulMSR extends Multiblock<Block>{
             if(!isConnectedToWall){
                 isConnectedToWall = wallCheck(toList(getBlocks(block, true)));
             }
-            if(isValid()){
-                for(Block b : blocks){
-                    b.cluster = this;
-                }
+            for(Block b : blocks){
+                b.cluster = this;
             }
         }
         private Cluster(){}
@@ -626,6 +641,8 @@ public class OverhaulMSR extends Multiblock<Block>{
             return false;
         }
         public String getTooltip(){
+            if(!isCreated())return "Invalid cluster!";
+            if(!isValid())return "Cluster is not connected to the casing!";
             return "Efficiency: "+percent(efficiency, 0)+"\n"
                 + "Total Heating: "+totalHeat+"H/t\n"
                 + "Total Cooling: "+totalCooling+"H/t\n"
@@ -824,10 +841,10 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
             return results;
         }
-        int size(){
+        public int size(){
             return blocks.size();
         }
-        int getOpenFaces(){
+        public int getOpenFaces(){
             int open = 0;
             for(Block b1 : blocks){
                 DIRECTION:for(Direction d : directions){
@@ -842,10 +859,10 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
             return open;
         }
-        int getBunchingFactor(){
+        public int getBunchingFactor(){
             return 6*size()/getOpenFaces();
         }
-        int getSurfaceFactor(){
+        public int getSurfaceFactor(){
             return getOpenFaces()/6;
         }
         private boolean isActive(){

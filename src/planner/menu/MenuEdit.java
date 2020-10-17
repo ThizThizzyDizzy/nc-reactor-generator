@@ -728,6 +728,16 @@ public class MenuEdit extends Menu{
             }
             select(is);
         }
+        if(multiblock instanceof OverhaulFusionReactor){
+            OverhaulFusionReactor ofr = (OverhaulFusionReactor) multiblock;
+            OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(x, y, z));
+            if(c==null)return;
+            ArrayList<int[]> is = new ArrayList<>();
+            for(Block b : c.blocks){
+                is.add(new int[]{b.x,b.y,b.z});
+            }
+            select(is);
+        }
     }
     public void deselectCluster(int x, int y, int z){
         if(multiblock instanceof OverhaulSFR){
@@ -743,6 +753,16 @@ public class MenuEdit extends Menu{
         if(multiblock instanceof OverhaulMSR){
             OverhaulMSR omsr = (OverhaulMSR) multiblock;
             OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
+            if(c==null)return;
+            ArrayList<int[]> is = new ArrayList<>();
+            for(Block b : c.blocks){
+                is.add(new int[]{b.x,b.y,b.z});
+            }
+            deselect(is);
+        }
+        if(multiblock instanceof OverhaulFusionReactor){
+            OverhaulFusionReactor ofr = (OverhaulFusionReactor) multiblock;
+            OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
             for(Block b : c.blocks){

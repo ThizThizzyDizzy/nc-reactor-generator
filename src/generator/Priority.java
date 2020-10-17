@@ -3,14 +3,16 @@ import java.util.ArrayList;
 import multiblock.Multiblock;
 public abstract class Priority<T extends Multiblock>{
     public final String name;
-    private final boolean core;
+    private final boolean core, isFinal;
     /**
      * @param name The priority name
-     * @param core if this priority is to be used when calculating the core
+     * @param core if this priority is available for multiblock cores
+     * @param isFinal if this priority is available for final multiblocks
      */
-    public Priority(String name, boolean core){
+    public Priority(String name, boolean core, boolean isFinal){
         this.name = name;
         this.core = core;
+        this.isFinal = isFinal;
     }
     @Override
     public String toString(){
@@ -25,6 +27,9 @@ public abstract class Priority<T extends Multiblock>{
     protected abstract double doCompare(T main, T other);
     public boolean isCore(){
         return core;
+    }
+    public boolean isFinal(){
+        return isFinal;
     }
     public static class Preset{
         public final String name;

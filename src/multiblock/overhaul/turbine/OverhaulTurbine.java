@@ -545,31 +545,31 @@ public class OverhaulTurbine extends Multiblock<Block>{
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){}
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<OverhaulTurbine>("Valid Rotor", true){
+        priorities.add(new Priority<OverhaulTurbine>("Valid Rotor", true, true){
             @Override
             protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
                 return main.bladeCount-other.bladeCount;
             }
         });
-        priorities.add(new Priority<OverhaulTurbine>("RF per mb", true){
+        priorities.add(new Priority<OverhaulTurbine>("RF per mb", true, true){
             @Override
             protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
                 return main.totalFluidEfficiency-other.totalFluidEfficiency;
             }
         });
-        priorities.add(new Priority<OverhaulTurbine>("Total Efficiency", true){
+        priorities.add(new Priority<OverhaulTurbine>("Total Efficiency", true, true){
             @Override
             protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
                 return main.totalEfficiency-other.totalEfficiency;
             }
         });
-        priorities.add(new Priority<OverhaulTurbine>("Rotor Efficiency", true){
+        priorities.add(new Priority<OverhaulTurbine>("Rotor Efficiency", true, true){
             @Override
             protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
                 return main.rotorEfficiency-other.rotorEfficiency;
             }
         });
-        priorities.add(new Priority<OverhaulTurbine>("Coil Efficiency", true){
+        priorities.add(new Priority<OverhaulTurbine>("Coil Efficiency", true, true){
             @Override
             protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
                 return main.coilEfficiency-other.coilEfficiency;

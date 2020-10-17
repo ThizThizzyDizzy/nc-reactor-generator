@@ -251,6 +251,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public String tooltip(boolean showDetails){
         if(this.showDetails!=null)showDetails = this.showDetails;
         synchronized(clusters){
+            int validClusters = 0;
+            for(Cluster c : clusters){
+                if(c.isValid())validClusters++;
+            }
             String s = "Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
@@ -259,7 +263,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                     + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Shieldiness Factor: "+percent(shieldinessFactor, 1)+"\n"
-                    + "Clusters: "+clusters.size()+"\n";
+                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n";
             if(showDetails){
                 for(Cluster c : clusters){
                     s+="\n\n"+c.getTooltip();
@@ -341,7 +345,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<OverhaulFusionReactor>("Valid (>0 output)", true){
+        priorities.add(new Priority<OverhaulFusionReactor>("Valid (>0 output)", true, true){
             @Override
             protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
                 if(main.isValid()&&!other.isValid())return 1;
@@ -349,19 +353,19 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                 return 0;
             }
         });
-        priorities.add(new Priority<OverhaulFusionReactor>("Stability", false){
+        priorities.add(new Priority<OverhaulFusionReactor>("Stability", false, true){
             @Override
             protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
                 return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
             }
         });
-        priorities.add(new Priority<OverhaulFusionReactor>("Efficiency", true){
+        priorities.add(new Priority<OverhaulFusionReactor>("Efficiency", true, true){
             @Override
             protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
                 return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
             }
         });
-        priorities.add(new Priority<OverhaulFusionReactor>("Output", true){
+        priorities.add(new Priority<OverhaulFusionReactor>("Output", true, true){
             @Override
             protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
                 return main.totalOutput-other.totalOutput;
@@ -478,10 +482,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             if(!isConnectedToWall){
                 isConnectedToWall = wallCheck(toList(getClusterBlocks(block, true)));
             }
-            if(isValid()){
-                for(Block b : blocks){
-                    b.cluster = this;
-                }
+            for(Block b : blocks){
+                b.cluster = this;
             }
         }
         private Cluster(){}
@@ -513,6 +515,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             return false;
         }
         public String getTooltip(){
+            if(!isCreated())return "Invalid cluster!";
+            if(!isValid())return "Cluster is not connected to a connector!";
             return "Total output: "+Math.round(totalOutput)+"\n"
                 + "Efficiency: "+percent(efficiency, 0)+"\n"
                 + "Total Heating: "+totalHeat+"H/t\n"
@@ -778,9 +782,9 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             case CORE:
                 return block!=null&&block.template.core;
             case EXTERIOR:
-                return block==null||block.isHeatsink()||block.isShielding()||block.isConductor();
+                return block==null||block.isHeatsink()||block.isShielding()||block.isConductor()||block.isInert();
             case INTERIOR:
-                return block==null||block.isHeatingBlanket()||block.isBreedingBlanket()||block.isReflector()||block.isHeatsink()||block.isShielding()||block.isConductor();
+                return block==null||block.isHeatingBlanket()||block.isBreedingBlanket()||block.isReflector()||block.isHeatsink()||block.isShielding()||block.isConductor()||block.isInert();
             case NONE:
             case PLASMA:
                 return block==null;

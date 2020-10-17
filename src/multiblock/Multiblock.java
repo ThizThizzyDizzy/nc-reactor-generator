@@ -633,15 +633,6 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         return false;
     }
-    public boolean isCoreBetterThan(Multiblock other, ArrayList<Priority> priorities){
-        for(Priority p : priorities){
-            if(!p.isCore())continue;
-            double result = p.compare(this, other);
-            if(result>0)return true;
-            if(result<0)return false;
-        }
-        return false;
-    }
     public abstract Multiblock<T> blankCopy();
     public abstract Multiblock<T> copy();
     public long nanosSinceLastChange(){

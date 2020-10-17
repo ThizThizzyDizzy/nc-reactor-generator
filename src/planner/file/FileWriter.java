@@ -12,12 +12,14 @@ import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.FileFormat;
 import simplelibrary.config2.Config;
 import simplelibrary.font.FontManager;
+import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class FileWriter{
     public static final ArrayList<FormatWriter> formats = new ArrayList<>();
@@ -293,10 +295,11 @@ public class FileWriter{
             public BufferedImage write(NCPFFile ncpf){
                 if(!ncpf.multiblocks.isEmpty()){
                     if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by PNG!");
-                    final Multiblock<Block> multi = ncpf.multiblocks.get(0);
+                    final Multiblock multi = ncpf.multiblocks.get(0);
                     multi.recalculate();
                     int blSiz = 32;
-                    for(Block b : multi.getBlocks()){
+                    ArrayList<Block> blox = multi.getBlocks();
+                    for(Block b : blox){
                         blSiz = Math.max(b.getTexture().getWidth(), blSiz);
                     }
                     int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image
@@ -367,6 +370,9 @@ public class FileWriter{
                                 for(int z = 0; z<multi.getZ(); z++){
                                     Block b = multi.getBlock(x, y, z);
                                     if(b!=null)b.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, true, multi);
+                                    if(multi instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multi).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                                        Renderer2D.drawRect(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"));
+                                    }
                                 }
                             }
                         }

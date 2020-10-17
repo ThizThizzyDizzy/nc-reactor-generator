@@ -11,7 +11,8 @@ import planner.menu.component.generator.MenuComponentPriority;
 import planner.menu.component.generator.MenuComponentSymmetry;
 public class CoreBasedGeneratorSettings implements Settings{
     public int finalMultiblocks, workingMultiblocks, finalCores, workingCores, timeout;
-    public ArrayList<Priority> priorities = new ArrayList<>();
+    public ArrayList<Priority> finalPriorities = new ArrayList<>();
+    public ArrayList<Priority> corePriorities = new ArrayList<>();
     public ArrayList<Symmetry> symmetries = new ArrayList<>();
     public ArrayList<PostProcessingEffect> postProcessingEffects = new ArrayList<>();
     public ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
@@ -29,7 +30,8 @@ public class CoreBasedGeneratorSettings implements Settings{
         finalCores = settings.finalCores;
         workingCores = settings.workingCores;
         timeout = settings.timeout;
-        priorities = settings.priorities;
+        finalPriorities = settings.finalPriorities;
+        corePriorities = settings.corePriorities;
         symmetries = settings.symmetries;
         postProcessingEffects = settings.postProcessingEffects;
         allowedBlocks = settings.allowedBlocks;
@@ -50,11 +52,18 @@ public class CoreBasedGeneratorSettings implements Settings{
             if(((MenuComponentSymmetry)comp).enabled)newSymmetries.add(((MenuComponentSymmetry)comp).symmetry);
         }
         symmetries = newSymmetries;
-        ArrayList<Priority> newPriorities = new ArrayList<>();
-        for(simplelibrary.opengl.gui.components.MenuComponent comp : generator.prioritiesList.components){
-            newPriorities.add(((MenuComponentPriority)comp).priority);
+        ArrayList<Priority> newFinalPriorities = new ArrayList<>();
+        for(simplelibrary.opengl.gui.components.MenuComponent comp : generator.finalPrioritiesList.components){
+            Priority priority = ((MenuComponentPriority)comp).priority;
+            if(priority.isFinal())newFinalPriorities.add(((MenuComponentPriority)comp).priority);
         }
-        priorities = newPriorities;//to avoid concurrentModification
+        finalPriorities = newFinalPriorities;//to avoid concurrentModification
+        ArrayList<Priority> newCorePriorities = new ArrayList<>();
+        for(simplelibrary.opengl.gui.components.MenuComponent comp : generator.corePrioritiesList.components){
+            Priority priority = ((MenuComponentPriority)comp).priority;
+            if(priority.isCore())newCorePriorities.add(((MenuComponentPriority)comp).priority);
+        }
+        corePriorities = newCorePriorities;//to avoid concurrentModification
         ArrayList<PostProcessingEffect> newEffects = new ArrayList<>();
         for(simplelibrary.opengl.gui.components.MenuComponent comp : generator.postProcessingEffectsList.components){
             if(((MenuComponentPostProcessingEffect)comp).enabled)newEffects.add(((MenuComponentPostProcessingEffect)comp).postProcessingEffect);

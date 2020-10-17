@@ -31,9 +31,12 @@ public class CoreBasedGenerator extends MultiblockGenerator{
     MenuComponentMinimalistTextBox finalCoreCount;
     MenuComponentMinimalistTextBox workingCoreCount;
     MenuComponentMinimalistTextBox timeout;
-    MenuComponentMinimaList prioritiesList;
-    MenuComponentMinimalistButton moveUp;
-    MenuComponentMinimalistButton moveDown;
+    MenuComponentMinimaList finalPrioritiesList;
+    MenuComponentMinimaList corePrioritiesList;
+    MenuComponentMinimalistButton moveFinalUp;
+    MenuComponentMinimalistButton moveFinalDown;
+    MenuComponentMinimalistButton moveCoreUp;
+    MenuComponentMinimalistButton moveCoreDown;
     MenuComponentMinimaList symmetriesList;
     MenuComponentMinimaList postProcessingEffectsList;
     MenuComponentMinimalistTextBox changeChance;
@@ -74,8 +77,13 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         workingCoreCount = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "6", true).setIntFilter()).setTooltip("This is the number of multiblock cores that are actively being worked on\nEvery thread will work on all working cores");
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Timeout (sec)", true));
         timeout = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "10", true).setIntFilter()).setTooltip("If a multiblock hasn't changed for this long, it will be reset\nThis is to avoid running into generation dead-ends");
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Priorities", true));
-        prioritiesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, priorities.size()*32, 24){
+        int numFinal = 0, numCore = 0;
+        for(Priority p : priorities){
+            if(p.isFinal())numFinal++;
+            if(p.isCore())numCore++;
+        }
+        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Final Priorities", true));
+        finalPrioritiesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, numFinal*32, 24){
             @Override
             public void render(int millisSinceLastTick){
                 for(simplelibrary.opengl.gui.components.MenuComponent c : components){
@@ -84,7 +92,50 @@ public class CoreBasedGenerator extends MultiblockGenerator{
                 super.render(millisSinceLastTick);
             }
         });
-        refreshPriorities();
+        finalPrioritiesList.components.clear();
+        for(Priority priority : priorities){
+            if(priority.isFinal())finalPrioritiesList.add(new MenuComponentPriority(priority));
+        }
+        MenuComponent finalPriorityButtonHolder = generatorSettings.add(new MenuComponent(0, 0, 0, 32){
+            @Override
+            public void renderBackground(){
+                components.get(1).x = width/2;
+                components.get(0).width = components.get(1).width = width/2;
+                components.get(0).height = components.get(1).height = height;
+            }
+            @Override
+            public void render(){}
+        });
+        moveFinalUp = finalPriorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Up", true, true).setTooltip("Move the selected priority up so it is more important"));
+        moveFinalUp.addActionListener((e) -> {
+            int index = finalPrioritiesList.getSelectedIndex();
+            if(index==-1||index==0)return;
+            finalPrioritiesList.components.add(index-1, finalPrioritiesList.components.remove(index));
+//            refreshPriorities();
+            finalPrioritiesList.setSelectedIndex(index-1);
+        });
+        moveFinalDown = finalPriorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Down", true, true).setTooltip("Move the selected priority down so it is less important"));
+        moveFinalDown.addActionListener((e) -> {
+            int index = finalPrioritiesList.getSelectedIndex();
+            if(index==-1||index==finalPrioritiesList.components.size()-1)return;
+            finalPrioritiesList.components.add(index+1, finalPrioritiesList.components.remove(index));
+//            refreshPriorities();
+            finalPrioritiesList.setSelectedIndex(index+1);
+        });
+        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Core Priorities", true));
+        corePrioritiesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, numCore*32, 24){
+            @Override
+            public void render(int millisSinceLastTick){
+                for(simplelibrary.opengl.gui.components.MenuComponent c : components){
+                    c.width = width-(hasVertScrollbar()?vertScrollbarWidth:0);
+                }
+                super.render(millisSinceLastTick);
+            }
+        });
+        corePrioritiesList.components.clear();
+        for(Priority priority : priorities){
+            if(priority.isCore())corePrioritiesList.add(new MenuComponentPriority(priority));
+        }
         MenuComponent priorityButtonHolder = generatorSettings.add(new MenuComponent(0, 0, 0, 32){
             @Override
             public void renderBackground(){
@@ -95,21 +146,21 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             @Override
             public void render(){}
         });
-        moveUp = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Up", true, true).setTooltip("Move the selected priority up so it is more important"));
-        moveUp.addActionListener((e) -> {
-            int index = prioritiesList.getSelectedIndex();
+        moveCoreUp = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Up", true, true).setTooltip("Move the selected priority up so it is more important"));
+        moveCoreUp.addActionListener((e) -> {
+            int index = corePrioritiesList.getSelectedIndex();
             if(index==-1||index==0)return;
-            priorities.add(index-1, priorities.remove(index));
-            refreshPriorities();
-            prioritiesList.setSelectedIndex(index-1);
+            corePrioritiesList.components.add(index-1, corePrioritiesList.components.remove(index));
+//            refreshPriorities();
+            corePrioritiesList.setSelectedIndex(index-1);
         });
-        moveDown = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Down", true, true).setTooltip("Move the selected priority down so it is less important"));
-        moveDown.addActionListener((e) -> {
-            int index = prioritiesList.getSelectedIndex();
-            if(index==-1||index==priorities.size()-1)return;
-            priorities.add(index+1, priorities.remove(index));
-            refreshPriorities();
-            prioritiesList.setSelectedIndex(index+1);
+        moveCoreDown = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Down", true, true).setTooltip("Move the selected priority down so it is less important"));
+        moveCoreDown.addActionListener((e) -> {
+            int index = corePrioritiesList.getSelectedIndex();
+            if(index==-1||index==corePrioritiesList.components.size()-1)return;
+            corePrioritiesList.components.add(index+1, corePrioritiesList.components.remove(index));
+//            refreshPriorities();
+            corePrioritiesList.setSelectedIndex(index+1);
         });
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Generator Settings", true));
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 24, "Change Chance", true));
@@ -134,12 +185,6 @@ public class CoreBasedGenerator extends MultiblockGenerator{
     @Override
     public MultiblockGenerator newInstance(Multiblock multi){
         return new CoreBasedGenerator(multi);
-    }
-    private void refreshPriorities(){
-        prioritiesList.components.clear();
-        for(Priority priority : priorities){
-            prioritiesList.add(new MenuComponentPriority(priority));
-        }
     }
     @Override
     public void refreshSettingsFromGUI(ArrayList<Range<Block>> allowedBlocks){
@@ -168,7 +213,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             synchronized(workingCores){
                 Multiblock worst = null;
                 for(Multiblock mb : workingCores){
-                    if(worst==null||worst.isCoreBetterThan(mb, settings.priorities)){
+                    if(worst==null||worst.isBetterThan(mb, settings.corePriorities)){
                         worst = mb;
                     }
                 }
@@ -246,7 +291,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         synchronized(workingCores.get(coreIndex)){
             Multiblock mult = workingCores.get(coreIndex);
             finalizeCore(mult);
-            if(currentMultiblockCore.isCoreBetterThan(mult, settings.priorities)){workingCores.set(coreIndex, currentMultiblockCore.copy());}
+            if(currentMultiblockCore.isBetterThan(mult, settings.corePriorities)){workingCores.set(coreIndex, currentMultiblockCore.copy());}
             else if(mult.millisSinceLastChange()>settings.timeout*1000){
                 workingCores.set(coreIndex, multiblock.blankCopy());
             }
@@ -276,7 +321,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
                 synchronized(workingMultiblocks){
                     Multiblock worst = null;
                     for(Multiblock mb : workingMultiblocks){
-                        if(worst==null||worst.isBetterThan(mb, settings.priorities)){
+                        if(worst==null||worst.isBetterThan(mb, settings.finalPriorities)){
                             worst = mb;
                         }
                     }
@@ -360,7 +405,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             synchronized(workingMultiblocks.get(idx)){
                 Multiblock mult = workingMultiblocks.get(idx);
                 finalize(mult);
-                if(currentMultiblock.isBetterThan(mult, settings.priorities)){workingMultiblocks.set(idx, currentMultiblock.copy());}
+                if(currentMultiblock.isBetterThan(mult, settings.finalPriorities)){workingMultiblocks.set(idx, currentMultiblock.copy());}
                 else if(mult.millisSinceLastChange()>settings.timeout*1000){
                     synchronized(finalCores){
                         workingMultiblocks.set(idx, finalCores.get(rand.nextInt(finalCores.size())).copy());
@@ -412,7 +457,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             }else if(finalCores.size()>settings.finalCores){
                 Multiblock wrst = null;
                 for(Multiblock mb : finalCores){
-                    if(wrst==null||wrst.isCoreBetterThan(mb, settings.priorities)){
+                    if(wrst==null||wrst.isBetterThan(mb, settings.corePriorities)){
                         wrst = mb;
                     }
                 }
@@ -423,7 +468,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
 //</editor-fold>
             for(int i = 0; i<finalCores.size(); i++){
                 Multiblock multi = finalCores.get(i);
-                if(worst.isCoreBetterThan(multi, settings.priorities)){
+                if(worst.isBetterThan(multi, settings.corePriorities)){
                     finalCores.set(i, worst.copy());
                     return;
                 }
@@ -440,7 +485,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             }else if(finalMultiblocks.size()>settings.finalMultiblocks){
                 Multiblock wrst = null;
                 for(Multiblock mb : finalMultiblocks){
-                    if(wrst==null||wrst.isBetterThan(mb, settings.priorities)){
+                    if(wrst==null||wrst.isBetterThan(mb, settings.finalPriorities)){
                         wrst = mb;
                     }
                 }
@@ -451,7 +496,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
 //</editor-fold>
             for(int i = 0; i<finalMultiblocks.size(); i++){
                 Multiblock multi = finalMultiblocks.get(i);
-                if(worst.isBetterThan(multi, settings.priorities)){
+                if(worst.isBetterThan(multi, settings.finalPriorities)){
                     finalMultiblocks.set(i, worst.copy());
                     return;
                 }

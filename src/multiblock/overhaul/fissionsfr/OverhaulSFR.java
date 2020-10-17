@@ -229,6 +229,10 @@ public class OverhaulSFR extends Multiblock<Block>{
     public String tooltip(boolean showDetails){
         if(this.showDetails!=null)showDetails = this.showDetails;
         synchronized(clusters){
+            int validClusters = 0;
+            for(Cluster c : clusters){
+                if(c.isValid())validClusters++;
+            }
             String s = "Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
@@ -236,7 +240,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                     + "Overall Efficiency: "+percent(totalEfficiency, 0)+"\n"
                     + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
-                    + "Clusters: "+clusters.size()+"\n"
+                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
                     + "Total Irradiation: "+totalIrradiation+"\n"
                     + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n"
                     + "Rainbow Score: "+percent(rainbowScore, 2)+"\n";//TODO make this (and shutdown factor?) modular
@@ -464,7 +468,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<OverhaulSFR>("Valid (>0 output)", true){
+        priorities.add(new Priority<OverhaulSFR>("Valid (>0 output)", true, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
                 if(main.isValid()&&!other.isValid())return 1;
@@ -472,43 +476,43 @@ public class OverhaulSFR extends Multiblock<Block>{
                 return 0;
             }
         });
-        priorities.add(new Priority<OverhaulSFR>("Minimize Bad Cells", true){
+        priorities.add(new Priority<OverhaulSFR>("Minimize Bad Cells", true, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
                 return other.getBadCells()-main.getBadCells();
             }
         });
-        priorities.add(new Priority<OverhaulSFR>("Shutdownable", true){
+        priorities.add(new Priority<OverhaulSFR>("Shutdownable", true, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
                 return main.shutdownFactor-other.shutdownFactor;
             }
         });
-        priorities.add(new Priority<OverhaulSFR>("Stability", false){
+        priorities.add(new Priority<OverhaulSFR>("Stability", false, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
                 return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
             }
         });
-        priorities.add(new Priority<OverhaulSFR>("Efficiency", true){
+        priorities.add(new Priority<OverhaulSFR>("Efficiency", true, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
                 return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
             }
         });
-        priorities.add(new Priority<OverhaulSFR>("Output", true){
+        priorities.add(new Priority<OverhaulSFR>("Output", true, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
                 return main.totalOutput-other.totalOutput;
             }
         });
-        priorities.add(new Priority<OverhaulSFR>("Irradiation", true){
+        priorities.add(new Priority<OverhaulSFR>("Irradiation", true, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
                 return main.totalIrradiation-other.totalIrradiation;
             }
         });
-        priorities.add(new Priority<OverhaulSFR>("Rainbow", false){
+        priorities.add(new Priority<OverhaulSFR>("Rainbow", false, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
                 return main.rainbowScore-other.rainbowScore;
@@ -561,10 +565,8 @@ public class OverhaulSFR extends Multiblock<Block>{
             if(!isConnectedToWall){
                 isConnectedToWall = wallCheck(toList(getClusterBlocks(block, true)));
             }
-            if(isValid()){
-                for(Block b : blocks){
-                    b.cluster = this;
-                }
+            for(Block b : blocks){
+                b.cluster = this;
             }
         }
         private Cluster(){}
@@ -594,6 +596,8 @@ public class OverhaulSFR extends Multiblock<Block>{
             return false;
         }
         public String getTooltip(){
+            if(!isCreated())return "Invalid cluster!";
+            if(!isValid())return "Cluster is not connected to the casing!";
             return "Total output: "+Math.round(totalOutput)+"\n"
                 + "Efficiency: "+percent(efficiency, 0)+"\n"
                 + "Total Heating: "+totalHeat+"H/t\n"

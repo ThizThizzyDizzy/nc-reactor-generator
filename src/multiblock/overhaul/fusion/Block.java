@@ -80,7 +80,7 @@ public class Block extends multiblock.Block{
                 tip+="\nInvalid cluster!";
             }
             if(!cluster.isConnectedToWall){
-                tip+="\nCluster is not connected to the casing!";
+                tip+="\nCluster is not connected to a connector!";
             }
             if(cluster.netHeat>0){
                 tip+="\nCluster is heat-positive!";
@@ -379,7 +379,7 @@ public class Block extends multiblock.Block{
     }
     public boolean isFunctional(){
         if(isCasing())return false;
-        if(canCluster()&&cluster==null)return false;
+        if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
         return template.functional&&(isActive()||breedingBlanketValid);
     }
 }

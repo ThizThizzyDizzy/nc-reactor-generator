@@ -225,7 +225,7 @@ public class Block extends multiblock.Block{
     }
     public boolean isFunctional(){
         if(isCasing())return false;
-        if(canCluster()&&cluster==null)return false;
+        if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
         return template.functional&&(isActive()||moderatorValid);
     }
     public void propogateNeutronFlux(OverhaulSFR reactor){

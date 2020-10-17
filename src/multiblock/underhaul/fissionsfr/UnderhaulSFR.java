@@ -199,7 +199,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<UnderhaulSFR>("Valid (>0 output)", true){
+        priorities.add(new Priority<UnderhaulSFR>("Valid (>0 output)", true, true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 if(main.isValid()&&!other.isValid())return 1;
@@ -207,31 +207,31 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 return 0;
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Stability", false){
+        priorities.add(new Priority<UnderhaulSFR>("Stability", false, true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Efficiency", true){
+        priorities.add(new Priority<UnderhaulSFR>("Efficiency", true, true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return main.efficiency-other.efficiency;
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Output", true){
+        priorities.add(new Priority<UnderhaulSFR>("Output", true, true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return main.power-other.power;
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Minimize Heat", false){
+        priorities.add(new Priority<UnderhaulSFR>("Minimize Heat", false, true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return other.heat-main.heat;
             }
         });
-        priorities.add(new Priority<UnderhaulSFR>("Fuel usage", true){
+        priorities.add(new Priority<UnderhaulSFR>("Fuel usage", true, true){
             @Override
             protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
                 return main.cells-other.cells;

@@ -504,7 +504,10 @@ public class Bot extends ListenerAdapter{
                     settings.finalCores = 1;
                     settings.timeout = 10;
                     priority.set(priorities);
-                    settings.priorities.addAll(priorities);
+                    for(Priority p : priorities){
+                        if(p.isCore())settings.corePriorities.add(p);
+                        if(p.isFinal())settings.finalPriorities.add(p);
+                    }
                     settings.symmetries.addAll(symmetries);
                     ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
                     for(PostProcessingEffect ppe : ppes){
