@@ -274,7 +274,7 @@ public class Main{
                     }
                     break;
             }
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.2.0/SimpleLibraryPlus-1.2.0.jar", "SimpleLibraryPlus-1.2.0.jar", 560);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.2.1/SimpleLibraryPlus-1.2.1.jar", "SimpleLibraryPlus-1.2.1.jar", 549);
             if(isBot){//I'll leave this on dropbox for now. What could possibly go wrong?
                 addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
                 addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);

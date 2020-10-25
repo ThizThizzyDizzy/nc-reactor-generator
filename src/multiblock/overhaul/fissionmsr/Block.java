@@ -6,6 +6,7 @@ import planner.Core;
 import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.overhaul.fissionmsr.Source;
 import simplelibrary.Queue;
 import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
@@ -86,9 +87,10 @@ public class Block extends multiblock.Block{
                 }
             }
             if(isPrimed()){
+                Source src = source;
                 tip+="\n"
                         + "Vessel Primed\n"
-                        + "Neutron source: "+(source==null?"Self":source.name);
+                        + "Neutron source: "+(src==null?"Self":src.name);
             }
             if(vesselGroup!=null){
                 if(vesselGroup.isPrimed()){

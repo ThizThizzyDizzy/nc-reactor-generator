@@ -6,6 +6,7 @@ import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.overhaul.fissionsfr.Source;
 import simplelibrary.Queue;
 import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
@@ -82,9 +83,10 @@ public class Block extends multiblock.Block{
                         + "Criticality Factor: "+fuel.criticality;
             }
             if(isPrimed()){
+                Source src = source;
                 tip+="\n"
                         + "Primed\n"
-                        + "Neutron source: "+(source==null?"Self":source.name);
+                        + "Neutron source: "+(src==null?"Self":src.name);
             }
         }
         if(isModerator()){

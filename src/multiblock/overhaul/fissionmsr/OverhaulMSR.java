@@ -754,6 +754,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         public float positionalEfficiency;
         public int hadFlux;
         public boolean wasActive;
+        public int openFaces = -1; 
         public VesselGroup(Block block){
             blocks.addAll(toList(getBlocks(block)));
             int fuelCriticality = 0;
@@ -845,19 +846,22 @@ public class OverhaulMSR extends Multiblock<Block>{
             return blocks.size();
         }
         public int getOpenFaces(){
-            int open = 0;
-            for(Block b1 : blocks){
-                DIRECTION:for(Direction d : directions){
-                    int x = b1.x+d.x;
-                    int y = b1.y+d.y;
-                    int z = b1.z+d.z;
-                    for(Block b2 : blocks){
-                        if(b2.x==x&&b2.y==y&&b2.z==z)continue DIRECTION;
+            if(openFaces==-1){
+                int open = 0;
+                for(Block b1 : blocks){
+                    DIRECTION:for(Direction d : directions){
+                        int x = b1.x+d.x;
+                        int y = b1.y+d.y;
+                        int z = b1.z+d.z;
+                        for(Block b2 : blocks){
+                            if(b2.x==x&&b2.y==y&&b2.z==z)continue DIRECTION;
+                        }
+                        open++;
                     }
-                    open++;
                 }
+                openFaces = open;
             }
-            return open;
+            return openFaces;
         }
         public int getBunchingFactor(){
             return 6*size()/getOpenFaces();
@@ -870,6 +874,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
         private void clearData(){
             for(Block b : blocks)b.clearData();
+            openFaces = -1;
             wasActive = false;
             neutronFlux = 0;
             positionalEfficiency = 0;
