@@ -53,7 +53,7 @@ public class Core extends Renderer2D{
     public static ArrayList<Long> FPStracker = new ArrayList<>();
     public static boolean debugMode = false;
     public static final boolean is3D = true;
-    public static boolean enableCullFace = true;
+    public static final boolean enableCullFace = true;
     public static final float maxYRot = 80f;
     public static float xRot = 30;
     public static float yRot = 30;
@@ -109,7 +109,7 @@ public class Core extends Renderer2D{
         helper.setAntiAliasing(4);
         helper.setFrameOfView(90);
         if(Main.isBot)Bot.start(args);
-        System.out.println("Starting up...");
+        System.out.println("Starting up");
         Thread debug = new Thread(() -> {
             try{
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -303,13 +303,13 @@ public class Core extends Renderer2D{
         }, null, helper);
     }
     public static void renderInit(){
-        System.out.println("Loading fonts...");
+        System.out.println("Loading fonts");
         FontManager.addFont("/simplelibrary/font");
         FontManager.addFont("/planner/font/high resolution");
         FontManager.addFont("/planner/font/small");
         FontManager.addFont("/planner/font/slim");
         FontManager.setFont("high resolution");
-        System.out.println("Loading render engine...");
+        System.out.println("Initializing render engine");
         GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -320,7 +320,7 @@ public class Core extends Renderer2D{
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             if(enableCullFace) GL11.glEnable(GL11.GL_CULL_FACE);
         }
-        System.out.println("Creating texture pack manager...");
+        System.out.println("Creating texture pack manager");
         new TexturePackManager(null, new TexturePack(){
             @Override
             public InputStream getResourceAsStream(String name){
@@ -333,7 +333,7 @@ public class Core extends Renderer2D{
                 return super.getResourceAsStream(name);
             }
         });
-        System.out.println("Loading GUI...");
+        System.out.println("Initializing GUI");
         gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper);
         if(Main.isBot)gui.open(new MenuDiscord(gui));
         else gui.open(new MenuMain(gui));
@@ -342,14 +342,14 @@ public class Core extends Renderer2D{
     public static void tickInit(){}
     public static void finalInit() throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException{
         if(Main.headless)GLFW.glfwHideWindow(helper.getWindow());
-        System.out.println("Activating GUI...");
+        System.out.println("Activating GUI");
         helper.assignGUI(gui);
-        System.out.println("Loading settings...");
+        System.out.println("Loading settings");
         File f = new File("settings.dat").getAbsoluteFile();
         if(f.exists()){
             Config settings = Config.newConfig(f);
             settings.load();
-            System.out.println("Loading theme...");
+            System.out.println("Loading theme");
             setTheme(Theme.themes.get(settings.get("theme", 0)));
             tutorialShown = settings.get("tutorialShown", false);
         }

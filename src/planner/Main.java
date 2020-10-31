@@ -12,27 +12,35 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 public class Main{
-    private static String versionListURL = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt";
+    private static final String versionListURL = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt";
     public static final String applicationName = "Nuclearcraft Reactor Generator";
-    private static HashMap<String[], Integer> requiredLibraries = new HashMap<>();
-    private static int downloadSize = 0;
+    public static final String issueTrackerLink = "https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues";
+    private static final ArrayList<String[]> requiredLibraries = new ArrayList<>();
     //Download details
     private static int total;
     private static int current;
-    public static boolean isBot = false;
+    //OS details
     public static boolean hasAWT = true;
     public static boolean hasAWTAfterStartup = false;
-    public static boolean headless = false;
     private static final int OS_UNKNOWN = -1;
     private static final int OS_WINDOWS = 0;
     private static final int OS_MACOS = 1;
     private static final int OS_LINUX = 2;
     private static int os = OS_UNKNOWN;//Should not be directly referenced from other classes, as there are always better ways of handling OS-compatibility
-    private static void addRequiredLibrary(String url, String filename, int sizeKB){
-        requiredLibraries.put(new String[]{url,filename}, sizeKB);
+    //other stuff
+    public static boolean isBot = false;
+    public static boolean headless = false;
+    private static void addRequiredLibrary(String url, String filename){
+        requiredLibraries.add(new String[]{url,filename});
+    }
+    private static void addRequiredLibraries(){
+        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.2.1/SimpleLibraryPlus-1.2.1.jar", "SimpleLibraryPlus-1.2.1.jar");
+        if(isBot){
+            addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies.jar", "JDA-4.2.0_168-withDependencies.jar");
+        }
     }
     public static void main(String[] args){
         try{
@@ -99,7 +107,7 @@ public class Main{
                     if(hasAWT){
                         allowUpdate = javax.swing.JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", javax.swing.JOptionPane.YES_NO_OPTION)==javax.swing.JOptionPane.YES_OPTION;
                     }else{
-                        System.out.println("Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now? (Y/N)");
+                        System.out.println("Version "+updater.getLatestDownloadableVersion()+" is out! Would you like to update "+applicationName+" now? (Y/N)");
                         BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
                         String s = r.readLine();
                         if(s==null)s = "";
@@ -115,12 +123,12 @@ public class Main{
                 }
                 System.out.println("Update Check Complete.");
             }
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-assimp.jar", "lwjgl-assimp.jar", 214);
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-glfw.jar", "lwjgl-glfw.jar", 105);
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-openal.jar", "lwjgl-openal.jar", 78);
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-opengl.jar", "lwjgl-opengl.jar", 915);
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl-stb.jar", "lwjgl-stb.jar", 102);
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl-3.2.3.jar", 540);
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-assimp.jar", "lwjgl-assimp.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-glfw.jar", "lwjgl-glfw.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openal.jar", "lwjgl-openal.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-opengl.jar", "lwjgl-opengl.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-stb.jar", "lwjgl-stb.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl.jar");
             String osName = System.getProperty("os.name");
             if(osName==null)osName = "null";
             osName = osName.toLowerCase(Locale.ENGLISH);
@@ -130,9 +138,9 @@ public class Main{
             if(os==OS_UNKNOWN){
                 System.out.println("Unknown OS: "+osName);
                 if(hasAWT){
-                    os = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized OS \""+osName+"\"!\nPlease report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues.\nIn the meantime, which OS are you using?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Mac OS", "Linux"}, "Windows");
+                    os = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized OS \""+osName+"\"!\nPlease report this problem at "+issueTrackerLink+".\nIn the meantime, which OS are you using?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Mac OS", "Linux"}, "Windows");
                 }else{
-                    System.out.println("Unrecognized OS \""+osName+"\"! Please report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues\nWhich OS are you using? (Windows|Mac|Linux)");
+                    System.out.println("Unrecognized OS \""+osName+"\"! Please report this problem at "+issueTrackerLink+"\nWhich OS are you using? (Windows|Mac|Linux)");
                     BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
                     String s = r.readLine();
                     if(s==null)s = "";
@@ -162,9 +170,9 @@ public class Main{
                         if(arch==ARCH_UNKNOWN){
                             System.out.println("Unknown Architecture: "+osArch);
                             if(hasAWT){
-                                arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x86", "x64"}, "x64");
+                                arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem at "+issueTrackerLink+".\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x86", "x64"}, "x64");
                             }else{
-                                System.out.println("Unrecognized Architecture \""+osArch+"\"! Please report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues\nWhat is your OS architecture? (x86|x64)");
+                                System.out.println("Unrecognized Architecture \""+osArch+"\"! Please report this problem at "+issueTrackerLink+"\nWhat is your OS architecture? (x86|x64)");
                                 BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
                                 String s = r.readLine();
                                 if(s==null)s = "";
@@ -180,33 +188,33 @@ public class Main{
                         switch(arch){
                             case ARCH_X86:
                                 System.out.println("OS Architecture: x86");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-assimp-natives-windows-x86.jar", "lwjgl-assimp-natives-windows-x86.jar", 2106);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-glfw-natives-windows-x86.jar", "lwjgl-glfw-natives-windows-x86.jar", 132);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-natives-windows-x86.jar", "lwjgl-natives-windows-x86.jar", 117);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-openal-natives-windows-x86.jar", "lwjgl-openal-natives-windows-x86.jar", 598);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-opengl-natives-windows-x86.jar", "lwjgl-opengl-natives-windows-x86.jar", 81);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-stb-natives-windows-x86.jar", "lwjgl-stb-natives-windows-x86.jar", 208);
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-assimp-natives-windows-x86.jar", "lwjgl-assimp-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-glfw-natives-windows-x86.jar", "lwjgl-glfw-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-natives-windows-x86.jar", "lwjgl-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openal-natives-windows-x86.jar", "lwjgl-openal-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-opengl-natives-windows-x86.jar", "lwjgl-opengl-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-stb-natives-windows-x86.jar", "lwjgl-stb-natives-windows-x86.jar");
                                 break;
                             case ARCH_X64:
                                 System.out.println("OS Architecture: x64");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-assimp-natives-windows.jar", "lwjgl-assimp-natives-windows.jar", 2533);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-glfw-natives-windows.jar", "lwjgl-glfw-natives-windows.jar", 137);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-natives-windows.jar", "lwjgl-natives-windows.jar", 133);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-openal-natives-windows.jar", "lwjgl-openal-natives-windows.jar", 634);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-opengl-natives-windows.jar", "lwjgl-opengl-natives-windows.jar", 89);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-stb-natives-windows.jar", "lwjgl-stb-natives-windows.jar", 233);
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-assimp-natives-windows.jar", "lwjgl-assimp-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-glfw-natives-windows.jar", "lwjgl-glfw-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-natives-windows.jar", "lwjgl-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openal-natives-windows.jar", "lwjgl-openal-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-opengl-natives-windows.jar", "lwjgl-opengl-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-stb-natives-windows.jar", "lwjgl-stb-natives-windows.jar");
                                 break;
                         }
                     }
                     break;
                 case OS_MACOS:
                     System.out.println("OS: Mac OS");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-assimp-natives-macos.jar", "lwjgl-assimp-natives-macos.jar", 3068);
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-glfw-natives-macos.jar", "lwjgl-glfw-natives-macos.jar", 65);
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-natives-macos.jar", "lwjgl-natives-macos.jar", 39);
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-openal-natives-macos.jar", "lwjgl-openal-natives-macos.jar", 516);
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-opengl-natives-macos.jar", "lwjgl-opengl-natives-macos.jar", 39);
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-stb-natives-macos.jar", "lwjgl-stb-natives-macos.jar", 191);
+                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-assimp-natives-macos.jar", "lwjgl-assimp-natives-macos.jar");
+                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-glfw-natives-macos.jar", "lwjgl-glfw-natives-macos.jar");
+                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-natives-macos.jar", "lwjgl-natives-macos.jar");
+                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openal-natives-macos.jar", "lwjgl-openal-natives-macos.jar");
+                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-opengl-natives-macos.jar", "lwjgl-opengl-natives-macos.jar");
+                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-stb-natives-macos.jar", "lwjgl-stb-natives-macos.jar");
                     break;
                 case OS_LINUX:
                     {
@@ -226,9 +234,9 @@ public class Main{
                         if(arch==ARCH_UNKNOWN){
                             System.out.println("Unknown Architecture: "+osArch);
                             if(hasAWT){
-                                arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues.\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x64", "arm32", "arm64"}, "x64");
+                                arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem at "+issueTrackerLink+".\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x64", "arm32", "arm64"}, "x64");
                             }else{
-                                System.out.println("Unrecognized Architecture \""+osArch+"\"! Please report this problem at https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues\nWhat is your OS architecture? (x64|arm32|arm64)");
+                                System.out.println("Unrecognized Architecture \""+osArch+"\"! Please report this problem at "+issueTrackerLink+"\nWhat is your OS architecture? (x64|arm32|arm64)");
                                 BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
                                 String s = r.readLine();
                                 if(s==null)s = "";
@@ -245,93 +253,75 @@ public class Main{
                         switch(arch){
                             case ARCH_X64:
                                 System.out.println("OS Architecture: x64");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-assimp-natives-linux.jar", "lwjgl-assimp-natives-linux.jar", 4097);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-glfw-natives-linux.jar", "lwjgl-glfw-natives-linux.jar", 156);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-natives-linux.jar", "lwjgl-natives-linux.jar", 74);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-openal-natives-linux.jar", "lwjgl-openal-natives-linux.jar", 578);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-opengl-natives-linux.jar", "lwjgl-opengl-natives-linux.jar", 77);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-stb-natives-linux.jar", "lwjgl-stb-natives-linux.jar", 196);
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-assimp-natives-linux.jar", "lwjgl-assimp-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-glfw-natives-linux.jar", "lwjgl-glfw-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-natives-linux.jar", "lwjgl-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openal-natives-linux.jar", "lwjgl-openal-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-opengl-natives-linux.jar", "lwjgl-opengl-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-stb-natives-linux.jar", "lwjgl-stb-natives-linux.jar");
                                 break;
                             case ARCH_ARM32:
                                 System.out.println("OS Architecture: arm32");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-assimp-natives-linux-arm32.jar", "lwjgl-assimp-natives-linux-arm32.jar", 3095);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-glfw-natives-linux-arm32.jar", "lwjgl-glfw-natives-linux-arm32.jar", 136);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-natives-linux-arm32.jar", "lwjgl-natives-linux-arm32.jar", 52);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-openal-natives-linux-arm32.jar", "lwjgl-openal-natives-linux-arm32.jar", 540);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-opengl-natives-linux-arm32.jar", "lwjgl-opengl-natives-linux-arm32.jar", 58);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-stb-natives-linux-arm32.jar", "lwjgl-stb-natives-linux-arm32.jar", 144);
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-assimp-natives-linux-arm32.jar", "lwjgl-assimp-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-glfw-natives-linux-arm32.jar", "lwjgl-glfw-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-natives-linux-arm32.jar", "lwjgl-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-openal-natives-linux-arm32.jar", "lwjgl-openal-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-opengl-natives-linux-arm32.jar", "lwjgl-opengl-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-stb-natives-linux-arm32.jar", "lwjgl-stb-natives-linux-arm32.jar");
                                 break;
                             case ARCH_ARM64:
                                 System.out.println("OS Architecture: arm64");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-assimp-natives-linux-arm64.jar", "lwjgl-assimp-natives-linux-arm64.jar", 3726);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-glfw-natives-linux-arm64.jar", "lwjgl-glfw-natives-linux-arm64.jar", 139);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-natives-linux-arm64.jar", "lwjgl-natives-linux-arm64.jar", 50);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-openal-natives-linux-arm64.jar", "lwjgl-openal-natives-linux-arm64.jar", 542);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-opengl-natives-linux-arm64.jar", "lwjgl-opengl-natives-linux-arm64.jar", 57);
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/42f710e533a43267dbff3b34651b33224ca7e071/libraries/lwjgl-3.2.3/native/lwjgl-stb-natives-linux-arm64.jar", "lwjgl-stb-natives-linux-arm64.jar", 177);
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-assimp-natives-linux-arm64.jar", "lwjgl-assimp-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-glfw-natives-linux-arm64.jar", "lwjgl-glfw-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-natives-linux-arm64.jar", "lwjgl-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-openal-natives-linux-arm64.jar", "lwjgl-openal-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-opengl-natives-linux-arm64.jar", "lwjgl-opengl-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-stb-natives-linux-arm64.jar", "lwjgl-stb-natives-linux-arm64.jar");
                                 break;
                         }
                     }
                     break;
             }
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.2.1/SimpleLibraryPlus-1.2.1.jar", "SimpleLibraryPlus-1.2.1.jar", 549);
-            if(isBot){//I'll leave this on dropbox for now. What could possibly go wrong?
-                addRequiredLibrary("https://www.dropbox.com/s/zeeu5wgmcisg4ez/JDA-4.1.1_101.jar?dl=1", "JDA-4.1.1_101.jar", 1097);
-                addRequiredLibrary("https://www.dropbox.com/s/ljx8in7xona4akl/annotations-16.0.1.jar?dl=1", "annotations-16.0.1.jar", 19);
-                addRequiredLibrary("https://www.dropbox.com/s/5fzv4attffxpn67/commons-collections4-4.1.jar?dl=1", "commons-collections4-4.1.jar", 734);
-                addRequiredLibrary("https://www.dropbox.com/s/w9ca19hm60az7d6/jackson-annotations-2.10.1.jar?dl=1", "jackson-annotations-2.10.1.jar", 67);
-                addRequiredLibrary("https://www.dropbox.com/s/glbpufagd0mpr1c/jackson-core-2.10.1.jar?dl=1", "jackson-core-2.10.1.jar", 341);
-                addRequiredLibrary("https://www.dropbox.com/s/djfkcwgily1xqah/jackson-databind-2.10.1.jar?dl=1", "jackson-databind-2.10.1.jar", 1371);
-                addRequiredLibrary("https://www.dropbox.com/s/dkg097yp0sm1d6l/jna-4.4.0.jar?dl=1", "jna-4.4.0.jar", 1066);
-                addRequiredLibrary("https://www.dropbox.com/s/a9fil1c2z6fkzav/jsr305-3.0.2.jar?dl=1", "jsr305-3.0.2.jar", 20);
-                addRequiredLibrary("https://www.dropbox.com/s/1kcxeldni1vr1il/nv-websocket-client-2.9.jar?dl=1", "nv-websocket-client-2.9.jar", 121);
-                addRequiredLibrary("https://www.dropbox.com/s/y3oztlbymtx9ldw/okhttp-3.13.0.jar?dl=1", "okhttp-3.13.0.jar", 405);
-                addRequiredLibrary("https://www.dropbox.com/s/hom0yvn6htky8nn/okio-1.17.2.jar?dl=1", "okio-1.17.2.jar", 90);
-                addRequiredLibrary("https://www.dropbox.com/s/cv7wico9ry711a1/opus-java-api-1.0.4.jar?dl=1", "opus-java-api-1.0.4.jar", 11);
-                addRequiredLibrary("https://www.dropbox.com/s/lmlh95nonmfmkx5/opus-java-natives-1.0.4.jar?dl=1", "opus-java-natives-1.0.4.jar", 2228);
-                addRequiredLibrary("https://www.dropbox.com/s/1uguzf5hpqzo0qn/slf4j-api-1.7.25.jar?dl=1", "slf4j-api-1.7.25.jar", 41);
-                addRequiredLibrary("https://www.dropbox.com/s/ho0vh24y9cizt9x/trove4j-3.0.3.jar?dl=1", "trove4j-3.0.3.jar", 2465);
-            }
-            for(String[] lib : requiredLibraries.keySet()){
-                if(!new File(getLibraryRoot()+"/"+lib[1]).exists()){
-                    downloadSize+=requiredLibraries.get(lib);
+            addRequiredLibraries();
+            boolean hasAnythingToDownload = false;
+            for(String[] lib : requiredLibraries){
+                if(!new File(getLibraryRoot()+File.separatorChar+lib[1]).exists()){
+                    hasAnythingToDownload = true;
                 }
             }
             total = requiredLibraries.size();
             File[] requiredLibs = new File[requiredLibraries.size()];
             if(hasAWT){
-                javax.swing.JFrame frame;
-                javax.swing.JProgressBar bar;
-                frame = new javax.swing.JFrame("Download Progress");
-                bar = new javax.swing.JProgressBar(0, total);
+                javax.swing.JFrame frame = new javax.swing.JFrame("Download Progress");
+                javax.swing.JProgressBar bar = new javax.swing.JProgressBar(0, total);
                 frame.add(bar);
                 frame.setSize(300, 70);
                 bar.setBounds(0, 0, 300, 70);
-                if(downloadSize>0){
+                if(hasAnythingToDownload){
                     frame.setVisible(true);
                 }
                 int n = 0;
-                System.out.println("Downloading libraries...");
-                for(String[] lib : requiredLibraries.keySet()){
+                System.out.println("Checking Libraries...");
+                for(String[] lib : requiredLibraries){
                     String url = lib[0];
                     String filename = lib[1];
-                    requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"/"+filename));
+                    requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+File.separatorChar+filename));
                     bar.setValue(current);
                     n++;
                 }
-                System.out.println("Finished downloading libraries");
+                System.out.println("Libraries OK");
                 frame.dispose();
-            }else{//duplicated code, oh well
+            }else{
                 int n = 0;
-                System.out.println("Downloading libraries...");
-                for(String[] lib : requiredLibraries.keySet()){
+                System.out.println("Checking Libraries...");
+                for(String[] lib : requiredLibraries){
                     String url = lib[0];
                     String filename = lib[1];
-                    requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+"/"+filename));
-                    System.out.println("Downloading... "+Math.round(100d*current/total)+"% ("+current+"/"+total+")");
+                    requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+File.separatorChar+filename));
+                    System.out.println("Checking... "+Math.round(100d*current/total)+"% ("+current+"/"+total+")");
                     n++;
                 }
-                System.out.println("Finished downloading libraries");
+                System.out.println("Libraries OK");
             }
             String[] additionalClasspathElements = new String[requiredLibs.length+4];
             for(int i = 0; i<requiredLibs.length; i++){
@@ -463,10 +453,6 @@ public class Main{
             return null;
         }
     }
-    private static File forceDownloadFile(String link, File destinationFile){
-        if(destinationFile.exists())destinationFile.delete();
-        return downloadFile(link, destinationFile);
-    }
     public static InputStream getRemoteInputStream(String currentFile, final URLConnection urlconnection) throws Exception {
         final InputStream[] is = new InputStream[1];
         for (int j = 0; (j < 3) && (is[0] == null); j++) {
@@ -499,22 +485,6 @@ public class Main{
             throw new Exception("Unable to download "+currentFile);
         }
         return is[0];
-    }
-    private static void delete(File file){
-        if(!file.exists()){
-            return;
-        }
-        if(file.isDirectory()){
-            File[] files = file.listFiles();
-            if(files!=null){
-                for(File afile : files){
-                    delete(afile);
-                }
-            }
-            file.delete();
-        }else{
-            file.delete();
-        }
     }
     /**
      * Restarts the program.  This method will return normally if the program was properly restarted or throw an exception if it could not be restarted.

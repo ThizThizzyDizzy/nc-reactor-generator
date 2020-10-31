@@ -75,6 +75,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -1789,6 +1790,7 @@ public class Bot extends ListenerAdapter{
         return builder;
     }
     public static void start(String[] args){
+        System.out.println("Loading S'more bank...");
         SmoreBot.load();
         if(args[0].startsWith("noAWT")){
             String[] rgs = new String[args.length-1];
@@ -1797,23 +1799,41 @@ public class Bot extends ListenerAdapter{
             }
             args = rgs;
         }
+        System.out.println("Loading channels...");
         for(int i = 2; i<args.length; i++){
             String arg = args[i];
-            if(arg.startsWith("bot"))botChannels.add(Long.parseLong(arg.substring(3)));
-            else if(arg.startsWith("play"))playChannels.add(Long.parseLong(arg.substring(4)));
-            else if(arg.startsWith("data"))dataChannels.add(Long.parseLong(arg.substring(4)));
-            else prefixes.add(arg);
+            if(arg.startsWith("bot")){
+                long c = Long.parseLong(arg.substring(3));
+                botChannels.add(c);
+                System.out.println("Added bot channel: "+c);
+            }
+            else if(arg.startsWith("play")){
+                long c = Long.parseLong(arg.substring(4));
+                playChannels.add(c);
+                System.out.println("Added play channel: "+c);
+            }
+            else if(arg.startsWith("data")){
+                long c = Long.parseLong(arg.substring(4));
+                playChannels.add(c);
+                System.out.println("Added play channel: "+c);
+            }
+            else{
+                prefixes.add(arg);
+                System.out.println("Added prefix: "+arg);
+            }
         }
         if(prefixes.isEmpty())prefixes.add("-");
+        System.out.println("Loading bot specialties...");
         config = Config.newConfig(new File(new File("special.dat").getAbsolutePath()));
         config.load();
         cookies = config.get("cookies", 0);
-        JDABuilder b = new JDABuilder(AccountType.BOT);
-        b.setToken(args[1]);
+        System.out.println("Starting bot...");
+        JDABuilder b = JDABuilder.createDefault(args[1]);
         b.setActivity(Activity.watching("cookies accumulate ("+cookies+")"));
         b.addEventListeners(new Bot());
         try{
             jda = b.build();
+            System.out.println("Bot started!");
             FileWriter.botRunning = true;
         }catch(LoginException ex){
             Sys.error(ErrorLevel.critical, "Failed to log in!", ex, ErrorCategory.InternetIO);
@@ -1834,6 +1854,10 @@ public class Bot extends ListenerAdapter{
             }
             pendingImage = null;
         }
+    }
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event){
+        super.onMessageReceived(event);
     }
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
