@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 import planner.Core;
 import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
+import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuComponentMinimalistButton extends MenuComponentButton{
     private final boolean darker;
@@ -47,21 +48,9 @@ public class MenuComponentMinimalistButton extends MenuComponentButton{
 //        }
 //        drawCenteredText(x, y+textInset, x+width, y+height-textInset, label);
     }
-    private String tooltip = null;
     @Override
-    public String getTooltip(){
-        return tooltip;
-    }
-    public MenuComponentMinimalistButton setTooltip(String s){
-        this.tooltip = s;
+    public MenuComponentMinimalistButton setTooltip(String tooltip){
+        this.tooltip = tooltip;
         return this;
-    }
-    @Override
-    public double getTooltipOffsetX(){
-        return 0;
-    }
-    @Override
-    public double getTooltipOffsetY(){
-        return height;
     }
 }

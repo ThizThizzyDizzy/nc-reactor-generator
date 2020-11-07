@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import planner.Core;
 import multiblock.configuration.overhaul.turbine.Blade;
-import planner.FileFormat;
+import planner.file.FileFormat;
 import planner.Main;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;

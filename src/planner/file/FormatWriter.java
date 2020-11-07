@@ -1,7 +1,6 @@
 package planner.file;
 import java.io.OutputStream;
 import multiblock.Multiblock;
-import planner.FileFormat;
 public abstract class FormatWriter{
     public abstract FileFormat getFileFormat();
 //    public abstract String getName();

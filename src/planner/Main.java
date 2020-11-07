@@ -12,7 +12,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 public class Main{
     private static final String versionListURL = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt";
@@ -37,7 +36,7 @@ public class Main{
         requiredLibraries.add(new String[]{url,filename});
     }
     private static void addRequiredLibraries(){
-        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.2.1/SimpleLibraryPlus-1.2.1.jar", "SimpleLibraryPlus-1.2.1.jar");
+        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.3/SimpleLibraryPlus-1.3.jar", "SimpleLibraryPlus-1.3.jar");
         if(isBot){
             addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies.jar", "JDA-4.2.0_168-withDependencies.jar");
         }

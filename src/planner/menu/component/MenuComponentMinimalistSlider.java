@@ -2,6 +2,7 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
+import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentSlider;
 public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     private final boolean darker;
@@ -90,21 +91,9 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
         double percent = (getValue()-minimum)/(maximum-minimum);
         sliderX = maxSliderX*percent;
     }
-    private String tooltip = null;
-    public MenuComponentMinimalistSlider setTooltip(String s){
-        this.tooltip = s;
+    @Override
+    public MenuComponentMinimalistSlider setTooltip(String tooltip){
+        this.tooltip = tooltip;
         return this;
-    }
-    @Override
-    public String getTooltip(){
-        return tooltip;
-    }
-    @Override
-    public double getTooltipOffsetX(){
-        return 0;
-    }
-    @Override
-    public double getTooltipOffsetY(){
-        return height;
     }
 }

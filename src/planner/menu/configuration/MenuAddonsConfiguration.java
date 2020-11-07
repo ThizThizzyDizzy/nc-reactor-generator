@@ -3,7 +3,7 @@ import java.io.File;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import planner.Core;
-import planner.FileFormat;
+import planner.file.FileFormat;
 import planner.file.FileReader;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;

@@ -59,7 +59,6 @@ import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.CoilSymmetry;
 import multiblock.symmetry.Symmetry;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -803,7 +802,7 @@ public class Bot extends ListenerAdapter{
                 }
                 User targetUser;
                 try{
-                    targetUser = jda.getUserById(targetID);
+                    targetUser = jda.retrieveUserById(targetID).complete();
                     if(targetUser==null){
                         channel.sendMessage("Who?").queue();
                         return;
@@ -831,7 +830,7 @@ public class Bot extends ListenerAdapter{
                     channel.sendMessage("Nothing happens.").queue();
                     return;
                 }
-                channel.sendMessage("You gave "+nick(guild.getMember(targetUser))+" "+amt+" smore"+(amt==1?"":"s")+".").queue();
+                channel.sendMessage("You gave "+nick(guild.retrieveMember(targetUser).complete())+" "+amt+" smore"+(amt==1?"":"s")+".").queue();
                 SmoreBot.removeSmores(user, amt);
                 SmoreBot.addSmores(targetUser, amt);
             }
@@ -866,7 +865,7 @@ public class Bot extends ListenerAdapter{
                 }
                 User targetUser;
                 try{
-                    targetUser = jda.getUserById(targetID);
+                    targetUser = jda.retrieveUserById(targetID).complete();
                     if(targetUser==null){
                         return;
                     }
@@ -882,7 +881,7 @@ public class Bot extends ListenerAdapter{
                 if(amt<0){
                     return;
                 }
-                channel.sendMessage("set "+nick(guild.getMember(targetUser))+" to "+amt+" eated smore"+(amt==1?"":"s")+".").queue();
+                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" eated smore"+(amt==1?"":"s")+".").queue();
                 SmoreBot.eaten.put(targetUser.getIdLong(), amt);
             }
         });
@@ -916,7 +915,7 @@ public class Bot extends ListenerAdapter{
                 }
                 User targetUser;
                 try{
-                    targetUser = jda.getUserById(targetID);
+                    targetUser = jda.retrieveUserById(targetID).complete();
                     if(targetUser==null){
                         return;
                     }
@@ -929,7 +928,7 @@ public class Bot extends ListenerAdapter{
                 }catch(Exception ex){
                     return;
                 }
-                channel.sendMessage("set "+nick(guild.getMember(targetUser))+" to "+amt+" smore"+(amt==1?"":"s")+".").queue();
+                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" smore"+(amt==1?"":"s")+".").queue();
                 SmoreBot.smores.put(targetUser.getIdLong(), amt);
             }
         });
@@ -985,7 +984,7 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new SecretCommand("smorelord", "s'morelord", "s’morelord"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                for(Role role : guild.getMember(user).getRoles()){
+                for(Role role : guild.retrieveMember(user).complete().getRoles()){
                     if(role.getIdLong()==563124574032756746L){
                         if(SmoreBot.getSmoreCount(user.getIdLong())<0){
                             channel.sendMessage("You try to make a s'morelord, but you are stopped by the S'more bank. They want the S'mores you owe them.").queue();
@@ -1009,7 +1008,7 @@ public class Bot extends ListenerAdapter{
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 String actions = "";
                 for(Long key : SmoreBot.actions.keySet()){
-                    actions+=nick(guild.getMemberById(key))+" is "+SmoreBot.actions.get(key).getAction()+"\n";
+                    actions+=nick(guild.retrieveMemberById(key).complete())+" is "+SmoreBot.actions.get(key).getAction()+"\n";
                 }
                 if(actions.isEmpty())return;
                 channel.sendMessage(actions).queue();
@@ -1047,7 +1046,7 @@ public class Bot extends ListenerAdapter{
                 EmbedBuilder builder = createEmbed("S'moreboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
-                    mess+=nick(guild.getMemberById(smorepilers.get(i)))+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
+                    mess+=nick(guild.retrieveMemberById(smorepilers.get(i)).complete())+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
                 }
                 channel.sendMessage(builder.addField("Top S'more Stockpilers", mess, false).build()).queue();
             }
@@ -1064,7 +1063,7 @@ public class Bot extends ListenerAdapter{
                 EmbedBuilder builder = createEmbed("Snoreboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
-                    mess+=nick(guild.getMemberById(smorepilers.get(i)))+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
+                    mess+=nick(guild.retrieveMemberById(smorepilers.get(i)).complete())+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
                 }
                 channel.sendMessage(builder.addField("Top S'more Debtors", mess, false).build()).queue();
             }
@@ -1081,7 +1080,7 @@ public class Bot extends ListenerAdapter{
                 EmbedBuilder builder = createEmbed("Nomboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, snommers.size()); i++){
-                    mess+=nick(guild.getMemberById(snommers.get(i)))+": "+SmoreBot.getEatenCountS(snommers.get(i))+"\n";
+                    mess+=nick(guild.retrieveMemberById(snommers.get(i)).complete())+": "+SmoreBot.getEatenCountS(snommers.get(i))+"\n";
                 }
                 channel.sendMessage(builder.addField("Top S'nomnomnommers", mess, false).build()).queue();
             }
@@ -1124,11 +1123,11 @@ public class Bot extends ListenerAdapter{
                 if(args.startsWith("<@")&&args.endsWith(">")){
                     if(args.contains("!"))args = args.substring(1);
                     try{
-                        targetUser = jda.getUserById(Long.parseLong(args.substring(2, args.length()-1)));
+                        targetUser = jda.retrieveUserById(Long.parseLong(args.substring(2, args.length()-1))).complete();
                     }catch(Exception ex){}
                 }else{
                     try{
-                        targetUser = jda.getUserById(Long.parseLong(args));
+                        targetUser = jda.retrieveUserById(Long.parseLong(args)).complete();
                     }catch(Exception ex){}
                 }
                 if(targetUser==null){
@@ -1149,7 +1148,7 @@ public class Bot extends ListenerAdapter{
                             hut.sendInteriorImage(channel);
                         }
                     }else{
-                        channel.sendMessage("You look for a hut belonging to "+nick(guild.getMember(targetUser))+", but you don't find one").queue();
+                        channel.sendMessage("You look for a hut belonging to "+nick(guild.retrieveMember(targetUser).complete())+", but you don't find one").queue();
                     }
                 }
             }
@@ -1184,7 +1183,7 @@ public class Bot extends ListenerAdapter{
                 }
                 User target1User;
                 try{
-                    target1User = jda.getUserById(target1ID);
+                    target1User = jda.retrieveUserById(target1ID).complete();
                     if(target1User==null){
                         return;
                     }
@@ -1209,7 +1208,7 @@ public class Bot extends ListenerAdapter{
                 }
                 User target2User;
                 try{
-                    target2User = jda.getUserById(target2ID);
+                    target2User = jda.retrieveUserById(target2ID).complete();
                     if(target2User==null){
                         return;
                     }
@@ -1219,11 +1218,11 @@ public class Bot extends ListenerAdapter{
                 target1ID = target1User.getIdLong();
                 target2ID = target2User.getIdLong();
                 if(!SmoreBot.huts.containsKey(target1ID)){
-                    channel.sendMessage(nick(guild.getMember(target1User))+" doesn't have a hut!").queue();
+                    channel.sendMessage(nick(guild.retrieveMember(target1User).complete())+" doesn't have a hut!").queue();
                     return;
                 }
                 if(SmoreBot.huts.containsKey(target2ID)){
-                    channel.sendMessage(nick(guild.getMember(target2User))+" already has a hut!").queue();
+                    channel.sendMessage(nick(guild.retrieveMember(target2User).complete())+" already has a hut!").queue();
                     return;
                 }
                 if(SmoreBot.huts.containsKey(target1ID)){
@@ -1264,7 +1263,7 @@ public class Bot extends ListenerAdapter{
                 }
                 User targetUser;
                 try{
-                    targetUser = jda.getUserById(targetID);
+                    targetUser = jda.retrieveUserById(targetID).complete();
                     if(targetUser==null){
                         return;
                     }
@@ -1272,8 +1271,8 @@ public class Bot extends ListenerAdapter{
                     return;
                 }
                 targetID = targetUser.getIdLong();
-                if(SmoreBot.getSmoreCount(targetID)!=0)throw new NonZeroSmoreException(nick(guild.getMember(targetUser))+" has non-zero s'mores!");
-                if(SmoreBot.getEatenCount(targetID)!=0)throw new NonZeroEatenException(nick(guild.getMember(targetUser))+" has non-zero eaten s'mores!");
+                if(SmoreBot.getSmoreCount(targetID)!=0)throw new NonZeroSmoreException(nick(guild.retrieveMember(targetUser).complete())+" has non-zero s'mores!");
+                if(SmoreBot.getEatenCount(targetID)!=0)throw new NonZeroEatenException(nick(guild.retrieveMember(targetUser).complete())+" has non-zero eaten s'mores!");
                 SmoreBot.smores.remove(targetID);
                 SmoreBot.eaten.remove(targetID);
             }
@@ -1603,7 +1602,7 @@ public class Bot extends ListenerAdapter{
                 }
                 User targetUser;
                 try{
-                    targetUser = jda.getUserById(targetID);
+                    targetUser = jda.retrieveUserById(targetID).complete();
                     if(targetUser==null){
                         channel.sendMessage("Who?").queue();
                         return;
@@ -1614,10 +1613,10 @@ public class Bot extends ListenerAdapter{
                 }
                 Hut hut = SmoreBot.huts.get(user.getIdLong());
                 if(hut.invited.contains(targetID)){
-                    channel.sendMessage(nick(guild.getMember(targetUser))+" is already invited!").queue();
+                    channel.sendMessage(nick(guild.retrieveMember(targetUser).complete())+" is already invited!").queue();
                     return;
                 }
-                channel.sendMessage("You invite "+nick(guild.getMember(targetUser))+" to your hut.").queue();
+                channel.sendMessage("You invite "+nick(guild.retrieveMember(targetUser).complete())+" to your hut.").queue();
                 hut.invited.add(targetID);
             }
         });
@@ -1656,7 +1655,7 @@ public class Bot extends ListenerAdapter{
                 }
                 User targetUser;
                 try{
-                    targetUser = jda.getUserById(targetID);
+                    targetUser = jda.retrieveUserById(targetID).complete();
                     if(targetUser==null){
                         channel.sendMessage("Who?").queue();
                         return;
@@ -1667,10 +1666,10 @@ public class Bot extends ListenerAdapter{
                 }
                 Hut hut = SmoreBot.huts.get(user.getIdLong());
                 if(!hut.invited.contains(targetID)){
-                    channel.sendMessage(nick(guild.getMember(targetUser))+" isn't invited!").queue();
+                    channel.sendMessage(nick(guild.retrieveMember(targetUser).complete())+" isn't invited!").queue();
                     return;
                 }
-                channel.sendMessage("You rectract your invitation from "+nick(guild.getMember(targetUser))+" to your hut.").queue();
+                channel.sendMessage("You rectract your invitation from "+nick(guild.retrieveMember(targetUser).complete())+" to your hut.").queue();
                 hut.invited.remove(targetID);
             }
         });
@@ -1814,8 +1813,8 @@ public class Bot extends ListenerAdapter{
             }
             else if(arg.startsWith("data")){
                 long c = Long.parseLong(arg.substring(4));
-                playChannels.add(c);
-                System.out.println("Added play channel: "+c);
+                dataChannels.add(c);
+                System.out.println("Added data channel: "+c);
             }
             else{
                 prefixes.add(arg);

@@ -18,7 +18,7 @@ import multiblock.Multiblock;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
-import planner.FileFormat;
+import planner.file.FileFormat;
 import planner.Main;
 import simplelibrary.Queue;
 import simplelibrary.Sys;

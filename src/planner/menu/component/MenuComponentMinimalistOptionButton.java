@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
+import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentOptionButton;
 public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButton{
     private String label;
@@ -56,21 +57,9 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
         double textHeight = (int)((height-textInset*2)*scale)-4;
         drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
-    private String tooltip = null;
-    public MenuComponentMinimalistOptionButton setTooltip(String s){
-        this.tooltip = s;
+    @Override
+    public MenuComponentMinimalistOptionButton setTooltip(String tooltip){
+        this.tooltip = tooltip;
         return this;
-    }
-    @Override
-    public String getTooltip(){
-        return tooltip;
-    }
-    @Override
-    public double getTooltipOffsetX(){
-        return 0;
-    }
-    @Override
-    public double getTooltipOffsetY(){
-        return height;
     }
 }

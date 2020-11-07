@@ -1,6 +1,7 @@
 package planner.menu.component;
 import planner.Core;
 import static simplelibrary.opengl.Renderer2D.drawRect;
+import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentTextBox;
 public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
     private static final int NONE = 0;
@@ -93,21 +94,9 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
         this.suffix = suffix;
         return this;
     }
-    private String tooltip = null;
-    public MenuComponentMinimalistTextBox setTooltip(String s){
-        this.tooltip = s;
+    @Override
+    public MenuComponentMinimalistTextBox setTooltip(String tooltip){
+        this.tooltip = tooltip;
         return this;
-    }
-    @Override
-    public String getTooltip(){
-        return tooltip;
-    }
-    @Override
-    public double getTooltipOffsetX(){
-        return 0;
-    }
-    @Override
-    public double getTooltipOffsetY(){
-        return height;
     }
 }

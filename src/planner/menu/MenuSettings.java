@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.Core;
-import planner.FileFormat;
+import planner.file.FileFormat;
 import planner.Theme;
 import planner.file.FileReader;
 import planner.file.NCPFFile;

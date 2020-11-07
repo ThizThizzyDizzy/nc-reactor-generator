@@ -1,4 +1,4 @@
-package planner;
+package planner.file;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 public enum FileFormat{

@@ -12,7 +12,7 @@ import planner.Core;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
-import planner.FileFormat;
+import planner.file.FileFormat;
 import planner.Main;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimalistButton;

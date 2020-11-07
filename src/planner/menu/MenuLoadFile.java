@@ -2,7 +2,7 @@ package planner.menu;
 import java.io.File;
 import java.util.Locale;
 import planner.FileChooserResultListener;
-import planner.FileFormat;
+import planner.file.FileFormat;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentTextDisplay;
 import simplelibrary.opengl.gui.GUI;

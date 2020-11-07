@@ -16,7 +16,6 @@ import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.FileFormat;
 import simplelibrary.config2.Config;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.ImageStash;
