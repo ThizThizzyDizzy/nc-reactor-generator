@@ -39,13 +39,15 @@ public class PasteTool extends EditorTool{
     public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        for(MenuEdit.ClipboardEntry entry : editor.clipboard){
-            if(entry.y+mouseY==layer){
-                int X = entry.x+mouseX;
-                int Z = entry.z+mouseZ;
-                if(X<0||X>=editor.multiblock.getX())continue;
-                if(Z<0||Z>=editor.multiblock.getZ())continue;
-                Renderer2D.drawRect(x+X*blockSize, y+Z*blockSize, x+(X+1)*blockSize, y+(Z+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
+        synchronized(editor.clipboard){
+            for(MenuEdit.ClipboardEntry entry : editor.clipboard){
+                if(entry.y+mouseY==layer){
+                    int X = entry.x+mouseX;
+                    int Z = entry.z+mouseZ;
+                    if(X<0||X>=editor.multiblock.getX())continue;
+                    if(Z<0||Z>=editor.multiblock.getZ())continue;
+                    Renderer2D.drawRect(x+X*blockSize, y+Z*blockSize, x+(X+1)*blockSize, y+(Z+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
+                }
             }
         }
         Core.applyWhite();
@@ -54,13 +56,15 @@ public class PasteTool extends EditorTool{
     public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        for(MenuEdit.ClipboardEntry entry : editor.clipboard){
-            if(entry.z+mouseZ==layer){
-                int X = entry.x+mouseX;
-                int Y = entry.y+mouseY;
-                if(X<0||X>=editor.multiblock.getX())continue;
-                if(Y<0||Y>=editor.multiblock.getY())continue;
-                Renderer2D.drawRect(x+X*blockSize, y+Y*blockSize, x+(X+1)*blockSize, y+(Y+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
+        synchronized(editor.clipboard){
+            for(MenuEdit.ClipboardEntry entry : editor.clipboard){
+                if(entry.z+mouseZ==layer){
+                    int X = entry.x+mouseX;
+                    int Y = entry.y+mouseY;
+                    if(X<0||X>=editor.multiblock.getX())continue;
+                    if(Y<0||Y>=editor.multiblock.getY())continue;
+                    Renderer2D.drawRect(x+X*blockSize, y+Y*blockSize, x+(X+1)*blockSize, y+(Y+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
+                }
             }
         }
         Core.applyWhite();
@@ -69,10 +73,12 @@ public class PasteTool extends EditorTool{
     public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        for(MenuEdit.ClipboardEntry entry : editor.clipboard){
-            int Z = entry.z+mouseZ;
-            if(Z<0||Z>=editor.multiblock.getZ())continue;
-            Renderer2D.drawRect(x+Z*blockSize, y, x+(Z+1)*blockSize, y+blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
+        synchronized(editor.clipboard){
+            for(MenuEdit.ClipboardEntry entry : editor.clipboard){
+                int Z = entry.z+mouseZ;
+                if(Z<0||Z>=editor.multiblock.getZ())continue;
+                Renderer2D.drawRect(x+Z*blockSize, y, x+(Z+1)*blockSize, y+blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
+            }
         }
         Core.applyWhite();
     }

@@ -125,7 +125,8 @@ public class Block extends multiblock.Block{
             }
             tip+="\nIrradiator flux: "+flux+"\n";
             if(irradiatorRecipe!=null){
-                tip+="Heat per flux: "+irradiatorRecipe.heat+"\n"
+                tip+="Efficiency bonus: "+percent(irradiatorRecipe.efficiency,0)+"\n"
+                        + "Heat per flux: "+irradiatorRecipe.heat+"\n"
                         + "Total heat: "+irradiatorRecipe.heat*flux+"H/t";
             }
         }
@@ -281,6 +282,9 @@ public class Block extends multiblock.Block{
                 if(block.isIrradiator()){
                     if(length==0||nonshields==0)break;
                     vesselGroup.moderatorLines++;
+                    if(block.irradiatorRecipe!=null){
+                        vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.efficiency;
+                    }
                     break;
                 }
                 break;
@@ -330,6 +334,9 @@ public class Block extends multiblock.Block{
                 if(block.isIrradiator()){
                     if(length==0||nonshields==0)break;
                     vesselGroup.moderatorLines++;
+                    if(block.irradiatorRecipe!=null){
+                        vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.efficiency;
+                    }
                     break;
                 }
                 break;

@@ -818,20 +818,22 @@ public class MenuEdit extends Menu{
         }
     }
     public void copySelection(int x, int y, int z){//like copySelection, but clipboardier
-        clipboard.clear();
-        synchronized(selection){
-            if(selection.isEmpty()){
-                if(!editorTools.contains(copy)){
-                    editorTools.add(copy);
-                    tools.add(copyComp);
-                    tools.setSelectedIndex(tools.components.size()-1);
+        synchronized(clipboard){
+            clipboard.clear();
+            synchronized(selection){
+                if(selection.isEmpty()){
+                    if(!editorTools.contains(copy)){
+                        editorTools.add(copy);
+                        tools.add(copyComp);
+                        tools.setSelectedIndex(tools.components.size()-1);
+                    }
+                    return;
                 }
-                return;
-            }
-            if(x==-1||y==-1||z==-1)return;
-            for(int[] is : selection){
-                Block b = multiblock.getBlock(is[0], is[1], is[2]);
-                clipboard.add(new ClipboardEntry(is[0]-x, is[1]-y, is[2]-z, b==null?null:b.copy(b.x-x, b.y-y, b.z-z)));
+                if(x==-1||y==-1||z==-1)return;
+                for(int[] is : selection){
+                    Block b = multiblock.getBlock(is[0], is[1], is[2]);
+                    clipboard.add(new ClipboardEntry(is[0]-x, is[1]-y, is[2]-z, b==null?null:b.copy(b.x-x, b.y-y, b.z-z)));
+                }
             }
         }
         if(!editorTools.contains(paste)){
@@ -841,7 +843,9 @@ public class MenuEdit extends Menu{
         }
     }
     public void cutSelection(int x, int y, int z){
-        clipboard.clear();
+        synchronized(clipboard){
+            clipboard.clear();
+        }
         synchronized(selection){
             if(selection.isEmpty()){
                 if(!editorTools.contains(cut)){
@@ -863,7 +867,9 @@ public class MenuEdit extends Menu{
         clearSelection();
     }
     public void pasteSelection(int x, int y, int z){
-        multiblock.action(new PasteAction(clipboard, x, y, z), true);
+        synchronized(clipboard){
+            multiblock.action(new PasteAction(clipboard, x, y, z), true);
+        }
     }
     public static class ClipboardEntry{
         public int x;
