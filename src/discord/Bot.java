@@ -103,7 +103,6 @@ public class Bot extends ListenerAdapter{
     private static final ArrayList<Command> playCommands = new ArrayList<>();
     private static MultiblockGenerator generator;
     private static Message generatorMessage;
-    private static final int batchSize = 100;
     private static Guild guild = null;
     public static final ArrayList<NCPFFile> storedMultiblocks = new ArrayList<>();
     static{
@@ -175,6 +174,8 @@ public class Bot extends ListenerAdapter{
 "IC2-MOX (IC2)\n" +
 "Enriched Uranium (IC2)\n" +
 "Uranium Ingot (E2E Only)\n" +
+"**Other**" +
+"To use active coolers (underhaul), add a keyword such as `0-4 active water` to allow the bot to use up to 4 active water coolers" +
 "**Examples of valid commands**\n" +
 "-generate a 3x3x3 PO3 LEU-235 Oxide breeder with symmetry\n" +
 "-generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum";
@@ -268,12 +269,13 @@ public class Bot extends ListenerAdapter{
                     multiblockKeyword = new KeywordMultiblock();
                     multiblockKeyword.read("SFR");
                 }
-                multiblock = multiblockKeyword.getMultiblock(overhaul).newInstance(configuration);
-                ArrayList<Range<Block>> blockRanges = new ArrayList<>();
-                if(multiblock==null){
+                Multiblock template = multiblockKeyword.getMultiblock(overhaul);
+                if(template==null){
                     channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase(Locale.ENGLISH)+"`!").queue();
                     return;
                 }
+                multiblock = template.newInstance(configuration);
+                ArrayList<Range<Block>> blockRanges = new ArrayList<>();
                 if(multiblock.getDefinitionName().contains("Turbine"))z+=2;
                 if(x<multiblock.getMinX()||y<multiblock.getMinY()||z<multiblock.getMinZ()){
                     channel.sendMessage("Too small! Minimum size: "+multiblock.getMinX()+"x"+multiblock.getMinY()+"x"+multiblock.getMinZ()).queue();
@@ -399,7 +401,7 @@ public class Bot extends ListenerAdapter{
                     formats.add(FileWriter.NCPF);
                 }
                 formats.add(FileWriter.PNG);
-                Multiblock multiblockInstance = multiblock.newInstance(x,y,z);
+                Multiblock multiblockInstance = multiblock.newInstance(configuration,x,y,z);
                 if(multiblockInstance instanceof UnderhaulSFR){
                     ((UnderhaulSFR)multiblockInstance).fuel = (Fuel)fuels;
                 }
@@ -589,14 +591,16 @@ public class Bot extends ListenerAdapter{
                         ncpf.multiblocks.add(finalMultiblock);
                         ncpf.configuration = PartialConfiguration.generate(finalMultiblock.getConfiguration(), ncpf.multiblocks);
                         for(FormatWriter writer : formats){
-                            CircularStream stream = new CircularStream(1024*1024);//1MB
-                            CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
-                            try{
-                                writer.write(ncpf, stream);
-                            }catch(Exception ex){
-                                printErrorMessage(channel, "Failed to write file", ex);
-                                submit.cancel(true);
-                                stream.close();
+                            if(writer.isMultiblockSupported(finalMultiblock)){
+                                CircularStream stream = new CircularStream(1024*1024);//1MB
+                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
+                                try{
+                                    writer.write(ncpf, stream);
+                                }catch(Exception ex){
+                                    printErrorMessage(channel, "Failed to write file", ex);
+                                    submit.cancel(true);
+                                    stream.close();
+                                }
                             }
                         }
                     }

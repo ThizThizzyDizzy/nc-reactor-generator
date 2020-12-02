@@ -23,10 +23,13 @@ public class UnderhaulSFR extends Multiblock<Block>{
     public Fuel fuel;
     private double heatMult;
     public UnderhaulSFR(){
-        this(7, 5, 7, null);
+        this(null);
     }
-    public UnderhaulSFR(int x, int y, int z, Fuel fuel){
-        super(x, y, z);
+    public UnderhaulSFR(Configuration configuration){
+        this(configuration, 7, 5, 7, null);
+    }
+    public UnderhaulSFR(Configuration configuration, int x, int y, int z, Fuel fuel){
+        super(configuration, x, y, z);
         this.fuel = fuel==null?getConfiguration().underhaul.fissionSFR.allFuels.get(0):fuel;
     }
     @Override
@@ -35,19 +38,17 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public UnderhaulSFR newInstance(Configuration configuration){
-        UnderhaulSFR sfr = new UnderhaulSFR();
-        sfr.setConfiguration(configuration);
-        return sfr;
+        return new UnderhaulSFR(configuration);
     }
     @Override
-    public Multiblock<Block> newInstance(int x, int y, int z){
-        return new UnderhaulSFR(x, y, z, null);
+    public Multiblock<Block> newInstance(Configuration configuration, int x, int y, int z){
+        return new UnderhaulSFR(configuration, x, y, z, null);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().underhaul==null||getConfiguration().underhaul.fissionSFR==null)return;
         for(multiblock.configuration.underhaul.fissionsfr.Block block : getConfiguration().underhaul.fissionSFR.allBlocks){
-            blocks.add(new Block(-1,-1,-1,block));
+            blocks.add(new Block(getConfiguration(),-1,-1,-1,block));
         }
     }
     @Override
@@ -108,7 +109,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     protected Block newCasing(int x, int y, int z){
-        return new Block(x, y, z, null);
+        return new Block(getConfiguration(), x, y, z, null);
     }
     @Override
     protected String getExtraSaveTooltip(){
@@ -182,7 +183,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
             block.template = to.underhaul.fissionSFR.convert(block.template);
         }
         fuel = to.underhaul.fissionSFR.convert(fuel);
-        setConfiguration(to);
+        configuration = to;
     }
     @Override
     public boolean validate(){
@@ -257,7 +258,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public UnderhaulSFR blankCopy(){
-        return new UnderhaulSFR(getX(), getY(), getZ(), fuel);
+        return new UnderhaulSFR(configuration, getX(), getY(), getZ(), fuel);
     }
     @Override
     public UnderhaulSFR copy(){

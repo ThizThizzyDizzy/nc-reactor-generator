@@ -2,16 +2,19 @@ package multiblock;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Locale;
+import multiblock.configuration.Configuration;
 import planner.Core;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 public abstract class Block extends MultiblockBit{
+    private final Configuration configuration;
     public int x;
     public int y;
     public int z;
     private BufferedImage grayscaleTexture = null;
-    public Block(int x, int y, int z){
+    public Block(Configuration configuration, int x, int y, int z){
+        this.configuration = configuration;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -141,5 +144,8 @@ public abstract class Block extends MultiblockBit{
     }
     public boolean isFullBlock(){
         return true;
+    }
+    public Configuration getConfiguration(){
+        return configuration;
     }
 }

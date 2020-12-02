@@ -1,6 +1,5 @@
 package multiblock.action;
 import java.util.ArrayList;
-import planner.Core;
 import multiblock.configuration.overhaul.turbine.Recipe;
 import planner.menu.MenuEdit;
 import multiblock.Action;
@@ -18,12 +17,12 @@ public class SetTurbineRecipeAction extends Action<OverhaulTurbine>{
     public void doApply(OverhaulTurbine multiblock, boolean allowUndo){
         if(allowUndo)was = multiblock.recipe;
         multiblock.recipe = recipe;
-        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
+        editor.underFuelOrCoolantRecipe.setSelectedIndex(multiblock.getConfiguration().overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
     }
     @Override
     public void doUndo(OverhaulTurbine multiblock){
         multiblock.recipe = was;
-        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
+        editor.underFuelOrCoolantRecipe.setSelectedIndex(multiblock.getConfiguration().overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
     }
     @Override
     protected void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<Block> blocks){

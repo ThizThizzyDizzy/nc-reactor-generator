@@ -741,7 +741,7 @@ public class FileReader{
                     if(fool.name.equalsIgnoreCase(fuelName))fuel = fool;
                 }
                 if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+fuelName);
-                UnderhaulSFR sfr = new UnderhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), fuel);
+                UnderhaulSFR sfr = new UnderhaulSFR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), fuel);
                 JSON.JSONArray compressedReactor = hellrage.getJSONArray("CompressedReactor");
                 for(Object o : compressedReactor){
                     JSONObject ob = (JSONObject) o;
@@ -758,7 +758,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 NCPFFile file = new NCPFFile();
@@ -787,7 +787,7 @@ public class FileReader{
                     if(fool.name.equalsIgnoreCase(fuelName))fuel = fool;
                 }
                 if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+fuelName);
-                UnderhaulSFR sfr = new UnderhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), fuel);
+                UnderhaulSFR sfr = new UnderhaulSFR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), fuel);
                 JSON.JSONObject compressedReactor = hellrage.getJSONObject("CompressedReactor");
                 for(String name : compressedReactor.keySet()){
                     multiblock.configuration.underhaul.fissionsfr.Block block = null;
@@ -801,7 +801,7 @@ public class FileReader{
                         int x = blokLoc.getInt("X")-1;
                         int y = blokLoc.getInt("Y")-1;
                         int z = blokLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 NCPFFile file = new NCPFFile();
@@ -828,7 +828,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0));
+                OverhaulSFR sfr = new OverhaulSFR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
@@ -843,7 +843,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -860,7 +860,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
@@ -876,7 +876,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
@@ -916,7 +916,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, cell));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, cell));
                         sfr.getBlock(x, y, z).fuel = fuel;
                         if(source)sfr.getBlock(x, y, z).source = src;
                     }
@@ -945,7 +945,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0));
+                OverhaulSFR sfr = new OverhaulSFR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
@@ -960,7 +960,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -977,7 +977,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
@@ -993,7 +993,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
@@ -1012,7 +1012,7 @@ public class FileReader{
                     int x = Integer.parseInt(blockLoc[0])-1;
                     int y = Integer.parseInt(blockLoc[1])-1;
                     int z = Integer.parseInt(blockLoc[2])-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, reflector));
+                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
                 for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
@@ -1051,7 +1051,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, cell));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, cell));
                         sfr.getBlock(x, y, z).fuel = fuel;
                         if(source)sfr.getBlock(x, y, z).source = src;
                     }
@@ -1086,7 +1086,7 @@ public class FileReader{
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
                 }
                 if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
-                OverhaulSFR sfr = new OverhaulSFR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), coolantRecipe);
+                OverhaulSFR sfr = new OverhaulSFR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), coolantRecipe);
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
@@ -1101,7 +1101,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -1118,7 +1118,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
@@ -1134,7 +1134,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
@@ -1153,7 +1153,7 @@ public class FileReader{
                     int x = Integer.parseInt(blockLoc[0])-1;
                     int y = Integer.parseInt(blockLoc[1])-1;
                     int z = Integer.parseInt(blockLoc[2])-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, reflector));
+                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
                 for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
@@ -1191,7 +1191,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, cell));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, cell));
                         sfr.getBlock(x, y, z).fuel = fuel;
                         if(hasSource)sfr.getBlock(x, y, z).source = src;
                     }
@@ -1225,7 +1225,7 @@ public class FileReader{
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
                 }
                 if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
-                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
+                OverhaulSFR sfr = new OverhaulSFR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
@@ -1239,7 +1239,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -1255,7 +1255,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
@@ -1270,7 +1270,7 @@ public class FileReader{
                             int x = blockLoc.getInt("X")-1;
                             int y = blockLoc.getInt("Y")-1;
                             int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block reflector = null;
@@ -1288,7 +1288,7 @@ public class FileReader{
                     int x = blockLoc.getInt("X")-1;
                     int y = blockLoc.getInt("Y")-1;
                     int z = blockLoc.getInt("Z")-1;
-                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, reflector));
+                    sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
                 for(multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
@@ -1325,7 +1325,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, cell));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, cell));
                         sfr.getBlock(x, y, z).fuel = fuel;
                         if(hasSource)sfr.getBlock(x, y, z).source = src;
                     }
@@ -1359,7 +1359,7 @@ public class FileReader{
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
                 }
                 if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
-                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
+                OverhaulSFR sfr = new OverhaulSFR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
@@ -1373,7 +1373,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -1389,7 +1389,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
@@ -1404,7 +1404,7 @@ public class FileReader{
                             int x = blockLoc.getInt("X")-1;
                             int y = blockLoc.getInt("Y")-1;
                             int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
@@ -1420,7 +1420,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block cell = null;
@@ -1458,7 +1458,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, cell));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, cell));
                         sfr.getBlock(x, y, z).fuel = fuel;
                         if(hasSource)sfr.getBlock(x, y, z).source = src;
                     }
@@ -1494,7 +1494,7 @@ public class FileReader{
                     if(recipe.name.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;
                 }
                 if(coolantRecipe==null)throw new IllegalArgumentException("Unknown coolant recipe: "+coolantRecipeName);
-                OverhaulSFR sfr = new OverhaulSFR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
+                OverhaulSFR sfr = new OverhaulSFR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
                 JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionsfr.Block block = null;
@@ -1508,7 +1508,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = data.getJSONObject("Moderators");
@@ -1524,7 +1524,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
@@ -1539,7 +1539,7 @@ public class FileReader{
                             int x = blockLoc.getInt("X")-1;
                             int y = blockLoc.getInt("Y")-1;
                             int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, conductor));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
@@ -1555,7 +1555,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
@@ -1571,7 +1571,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, block));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionsfr.Block irradiator = null;
@@ -1596,7 +1596,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, irradiator));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, irradiator));
                         sfr.getBlock(x, y, z).irradiatorRecipe = irrecipe;
                     }
                 }
@@ -1638,7 +1638,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, cell));
+                        sfr.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, cell));
                         sfr.getBlock(x, y, z).fuel = fuel;
                         if(hasSource)sfr.getBlock(x, y, z).source = src;
                     }
@@ -1667,7 +1667,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulMSR msr = new OverhaulMSR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                OverhaulMSR msr = new OverhaulMSR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
@@ -1682,7 +1682,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -1699,7 +1699,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
@@ -1715,7 +1715,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
@@ -1753,7 +1753,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, vessel));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, vessel));
                         msr.getBlock(x, y, z).fuel = fuel;
                         if(source)msr.getBlock(x, y, z).source = src;
                     }
@@ -1782,7 +1782,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulMSR msr = new OverhaulMSR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                OverhaulMSR msr = new OverhaulMSR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
@@ -1797,7 +1797,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -1814,7 +1814,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
@@ -1830,7 +1830,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
@@ -1849,7 +1849,7 @@ public class FileReader{
                     int x = Integer.parseInt(blockLoc[0])-1;
                     int y = Integer.parseInt(blockLoc[1])-1;
                     int z = Integer.parseInt(blockLoc[2])-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, reflector));
+                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
                 for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
@@ -1886,7 +1886,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, vessel));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, vessel));
                         msr.getBlock(x, y, z).fuel = fuel;
                         if(source)msr.getBlock(x, y, z).source = src;
                     }
@@ -1915,7 +1915,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 String dimS = hellrage.getString("InteriorDimensions");
                 String[] dims = dimS.split(",");
-                OverhaulMSR msr = new OverhaulMSR(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+                OverhaulMSR msr = new OverhaulMSR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
@@ -1930,7 +1930,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -1947,7 +1947,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
@@ -1963,7 +1963,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
@@ -1982,7 +1982,7 @@ public class FileReader{
                     int x = Integer.parseInt(blockLoc[0])-1;
                     int y = Integer.parseInt(blockLoc[1])-1;
                     int z = Integer.parseInt(blockLoc[2])-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, reflector));
+                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
                 for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
@@ -2018,7 +2018,7 @@ public class FileReader{
                         int x = Integer.parseInt(blockLoc[0])-1;
                         int y = Integer.parseInt(blockLoc[1])-1;
                         int z = Integer.parseInt(blockLoc[2])-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, vessel));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, vessel));
                         msr.getBlock(x, y, z).fuel = fuel;
                         if(hasSource)msr.getBlock(x, y, z).source = src;
                     }
@@ -2046,7 +2046,7 @@ public class FileReader{
             public synchronized NCPFFile read(InputStream in){
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
-                OverhaulMSR msr = new OverhaulMSR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                OverhaulMSR msr = new OverhaulMSR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
@@ -2060,7 +2060,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -2076,7 +2076,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
@@ -2091,7 +2091,7 @@ public class FileReader{
                             int x = blockLoc.getInt("X")-1;
                             int y = blockLoc.getInt("Y")-1;
                             int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block reflector = null;
@@ -2109,7 +2109,7 @@ public class FileReader{
                     int x = blockLoc.getInt("X")-1;
                     int y = blockLoc.getInt("Y")-1;
                     int z = blockLoc.getInt("Z")-1;
-                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, reflector));
+                    msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, reflector));
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
                 for(multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
@@ -2144,7 +2144,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, vessel));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, vessel));
                         msr.getBlock(x, y, z).fuel = fuel;
                         if(hasSource)msr.getBlock(x, y, z).source = src;
                     }
@@ -2172,7 +2172,7 @@ public class FileReader{
             public synchronized NCPFFile read(InputStream in){
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
-                OverhaulMSR msr = new OverhaulMSR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                OverhaulMSR msr = new OverhaulMSR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
                 JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
@@ -2186,7 +2186,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -2202,7 +2202,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
@@ -2217,7 +2217,7 @@ public class FileReader{
                             int x = blockLoc.getInt("X")-1;
                             int y = blockLoc.getInt("Y")-1;
                             int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
@@ -2233,7 +2233,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
@@ -2269,7 +2269,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, vessel));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, vessel));
                         msr.getBlock(x, y, z).fuel = fuel;
                         if(hasSource)msr.getBlock(x, y, z).source = src;
                     }
@@ -2299,7 +2299,7 @@ public class FileReader{
                 JSONObject hellrage = JSON.parse(in);
                 JSONObject data = hellrage.getJSONObject("Data");
                 JSONObject dims = data.getJSONObject("InteriorDimensions");
-                OverhaulMSR msr = new OverhaulMSR(dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+                OverhaulMSR msr = new OverhaulMSR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
                 JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
                 for(String name : heatSinks.keySet()){
                     multiblock.configuration.overhaul.fissionmsr.Block block = null;
@@ -2313,7 +2313,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject moderators = data.getJSONObject("Moderators");
@@ -2329,7 +2329,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
@@ -2344,7 +2344,7 @@ public class FileReader{
                             int x = blockLoc.getInt("X")-1;
                             int y = blockLoc.getInt("Y")-1;
                             int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, conductor));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, conductor));
                     }
                 }
                 JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
@@ -2360,7 +2360,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
@@ -2376,7 +2376,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, block));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
                     }
                 }
                 multiblock.configuration.overhaul.fissionmsr.Block irradiator = null;
@@ -2401,7 +2401,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, irradiator));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, irradiator));
                         msr.getBlock(x, y, z).irradiatorRecipe = irrecipe;
                     }
                 }
@@ -2441,7 +2441,7 @@ public class FileReader{
                         int x = blockLoc.getInt("X")-1;
                         int y = blockLoc.getInt("Y")-1;
                         int z = blockLoc.getInt("Z")-1;
-                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, vessel));
+                        msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, vessel));
                         msr.getBlock(x, y, z).fuel = fuel;
                         if(hasSource)msr.getBlock(x, y, z).source = src;
                     }
@@ -2650,7 +2650,7 @@ public class FileReader{
                         switch(id){
                             case 0:
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -2659,7 +2659,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -2670,14 +2670,14 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
                                 break;
                             case 1:
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -2687,7 +2687,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -2699,7 +2699,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -3268,7 +3268,7 @@ public class FileReader{
                         switch(id){
                             case 0:
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -3277,7 +3277,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -3288,14 +3288,14 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
                                 break;
                             case 1:
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -3305,7 +3305,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -3317,7 +3317,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -3344,7 +3344,7 @@ public class FileReader{
                                 break;
                             case 2:
                                 size = data.get("size");
-                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -3354,7 +3354,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -3366,7 +3366,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -4140,7 +4140,7 @@ public class FileReader{
                             case 0:
                                 //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -4149,7 +4149,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -4160,7 +4160,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
@@ -4169,7 +4169,7 @@ public class FileReader{
                             case 1:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -4179,7 +4179,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -4191,7 +4191,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -4220,7 +4220,7 @@ public class FileReader{
                             case 2:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul MSR">
                                 size = data.get("size");
-                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -4230,7 +4230,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -4242,7 +4242,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -4271,7 +4271,7 @@ public class FileReader{
                             case 3:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
                                 size = data.get("size");
-                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
                                 if(data.hasProperty("inputs")){
                                     overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                                     ConfigNumberList inputs = data.get("inputs");
@@ -4286,7 +4286,7 @@ public class FileReader{
                                         for(int y = 0; y<overhaulTurbine.getY(); y++){
                                             int bid = (int) coils.get(index);
                                             if(bid>0){
-                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
                                             }
                                             index++;
                                         }
@@ -4297,7 +4297,7 @@ public class FileReader{
                                 for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
                                     int bid = (int) blades.get(index);
                                     if(bid>0){
-                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(ncpf.configuration, z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
                                     }
                                     index++;
                                 }
@@ -5218,7 +5218,7 @@ public class FileReader{
                             case 0:
                                 //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -5227,7 +5227,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -5238,7 +5238,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
@@ -5247,7 +5247,7 @@ public class FileReader{
                             case 1:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -5257,7 +5257,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -5269,7 +5269,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -5298,7 +5298,7 @@ public class FileReader{
                             case 2:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul MSR">
                                 size = data.get("size");
-                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -5308,7 +5308,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -5320,7 +5320,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -5349,7 +5349,7 @@ public class FileReader{
                             case 3:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
                                 size = data.get("size");
-                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
                                 if(data.hasProperty("inputs")){
                                     overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                                     ConfigNumberList inputs = data.get("inputs");
@@ -5364,7 +5364,7 @@ public class FileReader{
                                         for(int y = 0; y<overhaulTurbine.getY(); y++){
                                             int bid = (int) coils.get(index);
                                             if(bid>0){
-                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
                                             }
                                             index++;
                                         }
@@ -5375,7 +5375,7 @@ public class FileReader{
                                 for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
                                     int bid = (int) blades.get(index);
                                     if(bid>0){
-                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(ncpf.configuration, z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
                                     }
                                     index++;
                                 }
@@ -5935,7 +5935,7 @@ public class FileReader{
                             case 0:
                                 //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -5944,7 +5944,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -5955,7 +5955,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
@@ -5964,7 +5964,7 @@ public class FileReader{
                             case 1:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -5974,7 +5974,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -5986,7 +5986,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -6015,7 +6015,7 @@ public class FileReader{
                             case 2:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul MSR">
                                 size = data.get("size");
-                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -6025,7 +6025,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -6037,7 +6037,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -6066,7 +6066,7 @@ public class FileReader{
                             case 3:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
                                 size = data.get("size");
-                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
                                 if(data.hasProperty("inputs")){
                                     overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                                     ConfigNumberList inputs = data.get("inputs");
@@ -6081,7 +6081,7 @@ public class FileReader{
                                         for(int y = 0; y<overhaulTurbine.getY(); y++){
                                             int bid = (int) coils.get(index);
                                             if(bid>0){
-                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
                                             }
                                             index++;
                                         }
@@ -6092,7 +6092,7 @@ public class FileReader{
                                 for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
                                     int bid = (int) blades.get(index);
                                     if(bid>0){
-                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(ncpf.configuration, z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
                                     }
                                     index++;
                                 }
@@ -7378,7 +7378,7 @@ public class FileReader{
                             case 0:
                                 //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -7387,7 +7387,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -7398,7 +7398,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
@@ -7407,7 +7407,7 @@ public class FileReader{
                             case 1:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -7417,7 +7417,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -7429,7 +7429,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -7458,7 +7458,7 @@ public class FileReader{
                             case 2:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul MSR">
                                 size = data.get("size");
-                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -7468,7 +7468,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -7480,7 +7480,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -7509,7 +7509,7 @@ public class FileReader{
                             case 3:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
                                 size = data.get("size");
-                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
                                 if(data.hasProperty("inputs")){
                                     overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                                     ConfigNumberList inputs = data.get("inputs");
@@ -7524,7 +7524,7 @@ public class FileReader{
                                         for(int y = 0; y<overhaulTurbine.getY(); y++){
                                             int bid = (int) coils.get(index);
                                             if(bid>0){
-                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
                                             }
                                             index++;
                                         }
@@ -7535,7 +7535,7 @@ public class FileReader{
                                 for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
                                     int bid = (int) blades.get(index);
                                     if(bid>0){
-                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(ncpf.configuration, z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
                                     }
                                     index++;
                                 }
@@ -8821,7 +8821,7 @@ public class FileReader{
                             case 0:
                                 //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -8830,7 +8830,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -8841,7 +8841,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
@@ -8850,7 +8850,7 @@ public class FileReader{
                             case 1:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -8860,7 +8860,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -8872,7 +8872,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -8901,7 +8901,7 @@ public class FileReader{
                             case 2:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul MSR">
                                 size = data.get("size");
-                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -8911,7 +8911,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -8923,7 +8923,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -8952,7 +8952,7 @@ public class FileReader{
                             case 3:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
                                 size = data.get("size");
-                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
                                 if(data.hasProperty("inputs")){
                                     overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                                     ConfigNumberList inputs = data.get("inputs");
@@ -8967,7 +8967,7 @@ public class FileReader{
                                         for(int y = 0; y<overhaulTurbine.getY(); y++){
                                             int bid = (int) coils.get(index);
                                             if(bid>0){
-                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
                                             }
                                             index++;
                                         }
@@ -8978,7 +8978,7 @@ public class FileReader{
                                 for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
                                     int bid = (int) blades.get(index);
                                     if(bid>0){
-                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(ncpf.configuration, z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
                                     }
                                     index++;
                                 }
@@ -10265,7 +10265,7 @@ public class FileReader{
                             case 0:
                                 //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
                                 ConfigNumberList size = data.get("size");
-                                UnderhaulSFR underhaulSFR = new UnderhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+                                UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
                                 boolean compact = data.get("compact");
                                 ConfigNumberList blocks = data.get("blocks");
                                 if(compact){
@@ -10274,7 +10274,7 @@ public class FileReader{
                                         for(int y = 0; y<underhaulSFR.getY(); y++){
                                             for(int z = 0; z<underhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
-                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 index++;
                                             }
                                         }
@@ -10285,7 +10285,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 multiblock = underhaulSFR;
@@ -10294,7 +10294,7 @@ public class FileReader{
                             case 1:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
                                 size = data.get("size");
-                                OverhaulSFR overhaulSFR = new OverhaulSFR((int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -10304,7 +10304,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulSFR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -10316,7 +10316,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                        overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 ConfigNumberList fuels = data.get("fuels");
@@ -10345,7 +10345,7 @@ public class FileReader{
                             case 2:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul MSR">
                                 size = data.get("size");
-                                OverhaulMSR overhaulMSR = new OverhaulMSR((int)size.get(0),(int)size.get(1),(int)size.get(2));
+                                OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
                                 compact = data.get("compact");
                                 blocks = data.get("blocks");
                                 if(compact){
@@ -10355,7 +10355,7 @@ public class FileReader{
                                             for(int z = 0; z<overhaulMSR.getZ(); z++){
                                                 int bid = (int) blocks.get(index);
                                                 if(bid>0){
-                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                                 }
                                                 index++;
                                             }
@@ -10367,7 +10367,7 @@ public class FileReader{
                                         int y = (int) blocks.get(j+1);
                                         int z = (int) blocks.get(j+2);
                                         int bid = (int) blocks.get(j+3);
-                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                        overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
                                     }
                                 }
                                 fuels = data.get("fuels");
@@ -10396,7 +10396,7 @@ public class FileReader{
                             case 3:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
                                 size = data.get("size");
-                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine((int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
+                                OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)size.get(0), (int)size.get(1), (int)size.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
                                 if(data.hasProperty("inputs")){
                                     overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                                     ConfigNumberList inputs = data.get("inputs");
@@ -10411,7 +10411,7 @@ public class FileReader{
                                         for(int y = 0; y<overhaulTurbine.getY(); y++){
                                             int bid = (int) coils.get(index);
                                             if(bid>0){
-                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
+                                                overhaulTurbine.setCoilExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.turbine.allCoils.get(bid-1)));
                                             }
                                             index++;
                                         }
@@ -10422,7 +10422,7 @@ public class FileReader{
                                 for(int z = 1; z<overhaulTurbine.getZ()-1; z++){
                                     int bid = (int) blades.get(index);
                                     if(bid>0){
-                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
+                                        overhaulTurbine.setBladeExact(z, new multiblock.overhaul.turbine.Block(ncpf.configuration, z, ncpf.configuration.overhaul.turbine.allBlades.get(bid-1)));
                                     }
                                     index++;
                                 }
@@ -10432,7 +10432,7 @@ public class FileReader{
                             case 4:
                                 //<editor-fold defaultstate="collapsed" desc="Overhaul Fusion Reactor">
                                 size = data.get("size");
-                                OverhaulFusionReactor overhaulFusionReactor = new OverhaulFusionReactor((int)size.get(0),(int)size.get(1),(int)size.get(2),(int)size.get(3),ncpf.configuration.overhaul.fusion.allRecipes.get(data.get("recipe", (byte)-1)),ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+                                OverhaulFusionReactor overhaulFusionReactor = new OverhaulFusionReactor(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),(int)size.get(3),ncpf.configuration.overhaul.fusion.allRecipes.get(data.get("recipe", (byte)-1)),ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
                                 blocks = data.get("blocks");
                                 index = 0;
                                 for(int x = 0; x<overhaulFusionReactor.getX(); x++){
@@ -10440,7 +10440,7 @@ public class FileReader{
                                         for(int z = 0; z<overhaulFusionReactor.getZ(); z++){
                                             int bid = (int) blocks.get(index);
                                             if(bid>0){
-                                                overhaulFusionReactor.setBlockExact(x, y, z, new multiblock.overhaul.fusion.Block(x, y, z, ncpf.configuration.overhaul.fusion.allBlocks.get(bid-1)));
+                                                overhaulFusionReactor.setBlockExact(x, y, z, new multiblock.overhaul.fusion.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fusion.allBlocks.get(bid-1)));
                                             }
                                             index++;
                                         }

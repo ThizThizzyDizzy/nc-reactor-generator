@@ -54,10 +54,13 @@ public class OverhaulSFR extends Multiblock<Block>{
     public float rainbowScore;
     private boolean computingShutdown = false;
     public OverhaulSFR(){
-        this(7, 5, 7, null);
+        this(null);
     }
-    public OverhaulSFR(int x, int y, int z, CoolantRecipe coolantRecipe){
-        super(x, y, z);
+    public OverhaulSFR(Configuration configuration){
+        this(configuration, 7, 5, 7, null);
+    }
+    public OverhaulSFR(Configuration configuration, int x, int y, int z, CoolantRecipe coolantRecipe){
+        super(configuration, x, y, z);
         this.coolantRecipe = coolantRecipe==null?getConfiguration().overhaul.fissionSFR.allCoolantRecipes.get(0):coolantRecipe;
     }
     @Override
@@ -66,19 +69,17 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public OverhaulSFR newInstance(Configuration configuration){
-        OverhaulSFR sfr = new OverhaulSFR();
-        sfr.setConfiguration(configuration);
-        return sfr;
+        return new OverhaulSFR(configuration);
     }
     @Override
-    public Multiblock<Block> newInstance(int x, int y, int z){
-        return new OverhaulSFR(x, y, z, null);
+    public Multiblock<Block> newInstance(Configuration configuration, int x, int y, int z){
+        return new OverhaulSFR(configuration, x, y, z, null);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.fissionSFR==null)return;
         for(multiblock.configuration.overhaul.fissionsfr.Block block : getConfiguration().overhaul.fissionSFR.allBlocks){
-            blocks.add(new Block(-1, -1, -1, block));
+            blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
         }
     }
     @Override
@@ -216,7 +217,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     protected Block newCasing(int x, int y, int z){
-        return new Block(x, y, z, null);
+        return new Block(getConfiguration(), x, y, z, null);
     }
     @Override
     public synchronized String getTooltip(){
@@ -324,7 +325,7 @@ public class OverhaulSFR extends Multiblock<Block>{
             block.template = to.overhaul.fissionSFR.convert(block.template);
         }
         coolantRecipe = to.overhaul.fissionSFR.convert(coolantRecipe);
-        setConfiguration(to);
+        configuration = to;
     }
     @Override
     public boolean validate(){
@@ -367,7 +368,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         return count;
     }
     public OverhaulMSR convertToMSR(){
-        OverhaulMSR msr = new OverhaulMSR(getX(), getY(), getZ());
+        OverhaulMSR msr = new OverhaulMSR(configuration, getX(), getY(), getZ());
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
                 for(int z = 0; z<getZ(); z++){
@@ -722,7 +723,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public OverhaulSFR blankCopy(){
-        return new OverhaulSFR(getX(), getY(), getZ(), coolantRecipe);
+        return new OverhaulSFR(configuration, getX(), getY(), getZ(), coolantRecipe);
     }
     @Override
     public OverhaulSFR copy(){

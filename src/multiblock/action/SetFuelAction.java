@@ -1,6 +1,5 @@
 package multiblock.action;
 import java.util.ArrayList;
-import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.menu.MenuEdit;
 import multiblock.Action;
@@ -18,12 +17,12 @@ public class SetFuelAction extends Action<UnderhaulSFR>{
     public void doApply(UnderhaulSFR multiblock, boolean allowUndo){
         if(allowUndo)was = multiblock.fuel;
         multiblock.fuel = recipe;
-        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
+        editor.underFuelOrCoolantRecipe.setSelectedIndex(multiblock.getConfiguration().underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
     }
     @Override
     public void doUndo(UnderhaulSFR multiblock){
         multiblock.fuel = was;
-        editor.underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
+        editor.underFuelOrCoolantRecipe.setSelectedIndex(multiblock.getConfiguration().underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
     }
     @Override
     protected void getAffectedBlocks(UnderhaulSFR multiblock, ArrayList<Block> blocks){

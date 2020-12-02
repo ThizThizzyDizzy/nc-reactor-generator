@@ -30,6 +30,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     public int maxInput;
     public int maxUnsafeInput;
     public double throughputEfficiency;
+    public double idealityMultiplier;
     private float coilEfficiency;
     private double totalEfficiency;
     private double totalFluidEfficiency;
@@ -38,11 +39,13 @@ public class OverhaulTurbine extends Multiblock<Block>{
     public double[] idealExpansion;
     public double[] actualExpansion;
     public OverhaulTurbine(){
-        this(3, 3, 1, null);
-        updateBlockLocations();
+        this(null);
     }
-    public OverhaulTurbine(int diameter, int length, int bearingDiameter, Recipe recipe){
-        super(diameter, diameter, length+2);
+    public OverhaulTurbine(Configuration configuration){
+        this(configuration, 3, 3, 1, null);
+    }
+    public OverhaulTurbine(Configuration configuration, int diameter, int length, int bearingDiameter, Recipe recipe){
+        super(configuration, diameter, diameter, length+2);
         if(bearingDiameter%2!=diameter%2){
             throw new IllegalArgumentException("Bearing size is "+(bearingDiameter%2==0?"even":"odd")+"!, but turbine diameter is not!");
         }
@@ -56,9 +59,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     }
     @Override
     public Multiblock<Block> newInstance(Configuration configuration){
-        OverhaulTurbine turbine = new OverhaulTurbine();
-        turbine.setConfiguration(configuration);
-        return turbine;
+        return new OverhaulTurbine(configuration);
     }
     public void setCoilExact(int x, int y, int z, multiblock.Block exact){
         if(z==1)z = getZ()-1;
@@ -158,17 +159,17 @@ public class OverhaulTurbine extends Multiblock<Block>{
         super.setBlockExact(x, y, z, exact);
     }
     @Override
-    public Multiblock<Block> newInstance(int x, int y, int z){
-        return new OverhaulTurbine(x, z-2, x%2==0?2:1, null);
+    public Multiblock<Block> newInstance(Configuration configuration, int x, int y, int z){
+        return new OverhaulTurbine(configuration, x, z-2, x%2==0?2:1, null);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.turbine==null)return;
         for(Blade blade : getConfiguration().overhaul.turbine.allBlades){
-            blocks.add(new Block(-1, blade));
+            blocks.add(new Block(getConfiguration(),-1, blade));
         }
         for(Coil coil : getConfiguration().overhaul.turbine.allCoils){
-            blocks.add(new Block(-1, -1, -1, coil));
+            blocks.add(new Block(getConfiguration(),-1, -1, -1, coil));
         }
     }
     @Override
@@ -318,7 +319,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     private void updateBlockLocations(){
         if(bearingDiameter==getX())bearingDiameter-=2;
         if(bearingDiameter<=0)bearingDiameter+=2;
-        Block shaft = new Block(0, null);//internal casing? :O
+        Block shaft = new Block(getConfiguration(),0, null);//internal casing? :O
         Coil bearing = null;
         for(Coil coil : getConfiguration().overhaul.turbine.allCoils){
             if(coil.bearing)bearing = coil;
@@ -341,7 +342,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
                 for(int z = 0; z<getZ(); z++){
                     if(x>=minD&&x<=maxD&&y>=minD&&y<=maxD){
                         if(z==0||z==getZ()-1){
-                            setBlockExact(x, y, z, new Block(x, y, z, bearing));
+                            setBlockExact(x, y, z, new Block(getConfiguration(), x, y, z, bearing));
                         }else{
                             setBlockExact(x, y, z, shaft);
                         }
@@ -428,6 +429,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
             double throughputRatio = maxInput==0?1:Math.min(1, (getInputRate()+absoluteLeniency)/maxInput);
             double throughputEfficiencyMult = throughputRatio>=getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyThreshold?1:(1-getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyMult)*Math.sin(throughputRatio*Math.PI/(2*getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyThreshold))+getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyMult;
             throughputEfficiency = (1+getConfiguration().overhaul.turbine.powerBonus*Math.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
+            idealityMultiplier = Math.min(expansionSoFar, recipe.coefficient)/Math.max(expansionSoFar, recipe.coefficient);
         }
         boolean somethingChanged;
         do{
@@ -460,7 +462,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         if(Float.isNaN(inputEff))inputEff = 0;
         if(Float.isNaN(outputEff))outputEff = 0;
         coilEfficiency = (inputEff+outputEff)/2;
-        totalEfficiency = coilEfficiency*rotorEfficiency*throughputEfficiency;//*getConfiguration().overhaul.turbine.throughputEfficiencyLeniency;
+        totalEfficiency = coilEfficiency*rotorEfficiency*throughputEfficiency*idealityMultiplier;//*getConfiguration().overhaul.turbine.throughputEfficiencyLeniency;
         totalFluidEfficiency = totalEfficiency*recipe.power;
         totalOutput = (long)(totalFluidEfficiency*getInputRate());
         safeOutput = (long)(totalFluidEfficiency*maxInput);
@@ -468,7 +470,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     }
     @Override
     protected Block newCasing(int x, int y, int z){
-        return Block.casing(x, y, z);
+        return Block.casing(getConfiguration(), x, y, z);
     }
     @Override
     public String getTooltip(){
@@ -479,7 +481,8 @@ public class OverhaulTurbine extends Multiblock<Block>{
                  + "Total Efficiency: "+percent(totalEfficiency, 2)+"\n"
                  + "Rotor Efficiency: "+percent(rotorEfficiency, 2)+"\n"
                  + "Coil Efficiency: "+percent(coilEfficiency, 2)+"\n"
-                 + "Throughput Efficiency: "+percent(throughputEfficiency, 2);
+                 + "Throughput Efficiency: "+percent(throughputEfficiency, 2)+"\n"
+                 + "Ideality Multiplier: "+percent(idealityMultiplier, 2);
         }else{
             return "<Rotor Invalid>\n"
                  + "Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
@@ -535,7 +538,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
             block.blade = to.overhaul.turbine.convert(block.blade);
         }
         recipe = to.overhaul.turbine.convert(recipe);
-        setConfiguration(to);
+        configuration = to;
     }
     @Override
     public boolean validate(){
@@ -598,7 +601,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         super.clearData(blocks);
         bladesValid = false;
         bladeCount = 0;
-        throughputEfficiency = totalEfficiency = totalFluidEfficiency = rotorEfficiency = coilEfficiency = 0;
+        idealityMultiplier = throughputEfficiency = totalEfficiency = totalFluidEfficiency = rotorEfficiency = coilEfficiency = 0;
         totalOutput = safeOutput = unsafeOutput = maxInput = maxUnsafeInput = 0;
     }
     @Override
@@ -607,7 +610,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     }
     @Override
     public OverhaulTurbine blankCopy(){
-        return new OverhaulTurbine(getX(), getZ()-2, bearingDiameter, recipe);
+        return new OverhaulTurbine(configuration, getX(), getZ()-2, bearingDiameter, recipe);
     }
     @Override
     public OverhaulTurbine copy(){
@@ -623,6 +626,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         copy.bladesValid = bladesValid;
         copy.bladeCount = bladeCount;
         copy.throughputEfficiency = throughputEfficiency;
+        copy.idealityMultiplier = idealityMultiplier;
         copy.totalEfficiency = totalEfficiency;
         copy.totalFluidEfficiency = totalFluidEfficiency;
         copy.rotorEfficiency = rotorEfficiency;

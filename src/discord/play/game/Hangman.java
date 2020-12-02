@@ -53,11 +53,11 @@ public class Hangman extends Game{
             return;
         }
         basis = multis.get(new Random().nextInt(multis.size())).copy();
+        this.config = configs.get(basis);
+        basis.configuration = config;//why is this here...?
         basis.recalculate();
         new ClearInvalid().apply(basis, null);
         basis.recalculate();
-        this.config = configs.get(basis);
-        basis.setConfiguration(config);
         basis.metadata.clear();
         current = basis.blankCopy();
         ArrayList<Block> blocks = basis.getBlocks();

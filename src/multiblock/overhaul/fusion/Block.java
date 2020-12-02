@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fusion.PlacementRule;
 import planner.Core;
 import simplelibrary.opengl.Renderer2D;
@@ -20,13 +21,13 @@ public class Block extends multiblock.Block{
     public float heatMult;//heating blankets
     public float efficiency;//heating blankets
     public OverhaulFusionReactor.Cluster cluster;
-    public Block(int x, int y, int z, multiblock.configuration.overhaul.fusion.Block template){
-        super(x, y, z);
+    public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.overhaul.fusion.Block template){
+        super(configuration, x, y, z);
         this.template = template;
     }
     @Override
     public multiblock.Block newInstance(int x, int y, int z){
-        return new Block(x, y, z, template);
+        return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
     public void copyProperties(multiblock.Block other){
@@ -301,7 +302,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public multiblock.Block copy(){
-        Block copy = new Block(x, y, z, template);
+        Block copy = new Block(getConfiguration(), x, y, z, template);
         copy.breedingBlanketValid = breedingBlanketValid;
         copy.breedingBlanketAugmented = breedingBlanketAugmented;
         copy.heatsinkValid = heatsinkValid;

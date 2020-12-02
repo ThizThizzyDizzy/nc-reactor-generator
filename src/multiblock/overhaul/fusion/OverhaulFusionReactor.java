@@ -58,10 +58,13 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     private float sparsityMult;
     private float shieldinessFactor;
     public OverhaulFusionReactor(){
-        this(1, 1, 1, 1, null, null);
+        this(null);
     }
-    public OverhaulFusionReactor(int innerRadius, int coreSize, int toroidWidth, int liningThickness, Recipe recipe, CoolantRecipe coolantRecipe){
-        super(getWidth(innerRadius, coreSize, toroidWidth, liningThickness), getHeight(innerRadius, coreSize, toroidWidth, liningThickness), getWidth(innerRadius, coreSize, toroidWidth, liningThickness));
+    public OverhaulFusionReactor(Configuration configuration){
+        this(configuration, 1, 1, 1, 1, null, null);
+    }
+    public OverhaulFusionReactor(Configuration configuration, int innerRadius, int coreSize, int toroidWidth, int liningThickness, Recipe recipe, CoolantRecipe coolantRecipe){
+        super(configuration, getWidth(innerRadius, coreSize, toroidWidth, liningThickness), getHeight(innerRadius, coreSize, toroidWidth, liningThickness), getWidth(innerRadius, coreSize, toroidWidth, liningThickness));
         this.recipe = recipe==null?(exists()?getConfiguration().overhaul.fusion.allRecipes.get(0):null):recipe;
         this.coolantRecipe = coolantRecipe==null?(exists()?getConfiguration().overhaul.fusion.allCoolantRecipes.get(0):null):coolantRecipe;
         this.innerRadius = innerRadius;
@@ -110,19 +113,17 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     public OverhaulFusionReactor newInstance(Configuration configuration){
-        OverhaulFusionReactor fusion = new OverhaulFusionReactor();
-        fusion.setConfiguration(configuration);
-        return fusion;
+        return new OverhaulFusionReactor(configuration);
     }
     @Override
-    public Multiblock<Block> newInstance(int x, int y, int z){
-        return new OverhaulFusionReactor(1, 1, 1, 1, null, null);//I'm not even gonna try to convert that to reasonable settings
+    public Multiblock<Block> newInstance(Configuration configuration, int x, int y, int z){
+        return new OverhaulFusionReactor(configuration, 1, 1, 1, 1, null, null);//I'm not even gonna try to convert that to reasonable settings
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.fusion==null)return;
         for(multiblock.configuration.overhaul.fusion.Block block : getConfiguration().overhaul.fusion.allBlocks){
-            blocks.add(new Block(-1, -1, -1, block));
+            blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
         }
     }
     @Override
@@ -314,7 +315,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         }
         recipe = to.overhaul.fusion.convert(recipe);
         coolantRecipe = to.overhaul.fusion.convert(coolantRecipe);
-        setConfiguration(to);
+        configuration = to;
     }
     @Override
     public boolean validate(){
@@ -640,7 +641,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     public OverhaulFusionReactor blankCopy(){
-        return new OverhaulFusionReactor(innerRadius, coreSize, toroidWidth, liningThickness, recipe, coolantRecipe);
+        return new OverhaulFusionReactor(configuration, innerRadius, coreSize, toroidWidth, liningThickness, recipe, coolantRecipe);
     }
     @Override
     public OverhaulFusionReactor copy(){

@@ -6,6 +6,7 @@ import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.Source;
 import simplelibrary.Queue;
 import simplelibrary.opengl.Renderer2D;
@@ -31,13 +32,13 @@ public class Block extends multiblock.Block{
     public boolean wasActive;
     public int hadFlux;
     public OverhaulSFR.Cluster cluster;
-    public Block(int x, int y, int z, multiblock.configuration.overhaul.fissionsfr.Block template){
-        super(x, y, z);
+    public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.overhaul.fissionsfr.Block template){
+        super(configuration, x, y, z);
         this.template = template;
     }
     @Override
     public multiblock.Block newInstance(int x, int y, int z){
-        return new Block(x, y, z, template);
+        return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
     public void copyProperties(multiblock.Block other){
@@ -241,7 +242,7 @@ public class Block extends multiblock.Block{
             int length = 0;
             int nonshields = 0;
             float efficiency = 0;
-            for(int i = 1; i<=Core.configuration.overhaul.fissionSFR.neutronReach+1; i++){
+            for(int i = 1; i<=reactor.getConfiguration().overhaul.fissionSFR.neutronReach+1; i++){
                 Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
                 if(block==null)break;
                 if(block.isCasing())break;
@@ -264,7 +265,7 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isReflector()){
                     if(length==0||nonshields==0)break;
-                    if(length>Core.configuration.overhaul.fissionSFR.neutronReach/2)break;
+                    if(length>reactor.getConfiguration().overhaul.fissionSFR.neutronReach/2)break;
                     neutronFlux+=flux*2*block.template.reflectivity;
                     positionalEfficiency+=efficiency/length*block.template.efficiency;
                     moderatorLines++;
@@ -293,7 +294,7 @@ public class Block extends multiblock.Block{
             int length = 0;
             int nonshields = 0;
             float efficiency = 0;
-            for(int i = 1; i<=Core.configuration.overhaul.fissionSFR.neutronReach+1; i++){
+            for(int i = 1; i<=reactor.getConfiguration().overhaul.fissionSFR.neutronReach+1; i++){
                 Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
                 if(block==null)break;
                 if(block.isCasing())break;
@@ -316,7 +317,7 @@ public class Block extends multiblock.Block{
                 }
                 if(block.isReflector()){
                     if(length==0||nonshields==0)break;
-                    if(length>Core.configuration.overhaul.fissionSFR.neutronReach/2)break;
+                    if(length>reactor.getConfiguration().overhaul.fissionSFR.neutronReach/2)break;
                     neutronFlux+=flux*2*block.template.reflectivity;
                     positionalEfficiency+=efficiency/length*block.template.efficiency;
                     moderatorLines++;
@@ -343,7 +344,7 @@ public class Block extends multiblock.Block{
             HashMap<Block, Integer> shieldFluxes = new HashMap<>();
             Queue<Block> toActivate = new Queue<>();
             Queue<Block> toValidate = new Queue<>();
-            for(int i = 1; i<=Core.configuration.overhaul.fissionSFR.neutronReach+1; i++){
+            for(int i = 1; i<=reactor.getConfiguration().overhaul.fissionSFR.neutronReach+1; i++){
                 Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
                 if(block==null)break;
                 boolean skip = false;
@@ -561,9 +562,9 @@ public class Block extends multiblock.Block{
         return template.cooling!=0;
     }
     public multiblock.overhaul.fissionmsr.Block convertToMSR(){
-        multiblock.overhaul.fissionmsr.Block b = new multiblock.overhaul.fissionmsr.Block(x, y, z, Core.configuration.overhaul.fissionMSR.convertToMSR(template));
-        b.fuel = Core.configuration.overhaul.fissionMSR.convertToMSR(fuel);
-        b.source = Core.configuration.overhaul.fissionMSR.convertToMSR(source);
+        multiblock.overhaul.fissionmsr.Block b = new multiblock.overhaul.fissionmsr.Block(getConfiguration(), x, y, z, getConfiguration().overhaul.fissionMSR.convertToMSR(template));
+        b.fuel = getConfiguration().overhaul.fissionMSR.convertToMSR(fuel);
+        b.source = getConfiguration().overhaul.fissionMSR.convertToMSR(source);
         return b;
     }
     @Override
@@ -572,7 +573,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public Block copy(){
-        Block copy = new Block(x, y, z, template);
+        Block copy = new Block(getConfiguration(), x, y, z, template);
         copy.fuel = fuel;
         copy.source = source;
         copy.irradiatorRecipe = irradiatorRecipe;

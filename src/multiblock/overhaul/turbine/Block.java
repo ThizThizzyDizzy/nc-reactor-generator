@@ -1,31 +1,32 @@
 package multiblock.overhaul.turbine;
 import java.awt.image.BufferedImage;
 import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
 import planner.Core;
 public class Block extends multiblock.Block{
-    public static Block casing(int x, int y, int z){
-        Block casing = new Block(x, y, z);
+    public static Block casing(Configuration configuration, int x, int y, int z){
+        Block casing = new Block(configuration, x, y, z);
         return casing;
     }
     public multiblock.configuration.overhaul.turbine.Blade blade;
     public multiblock.configuration.overhaul.turbine.Coil coil;
     private boolean valid;
-    private Block(int x, int y, int z){
-        super(x,y,z);
+    private Block(Configuration configuration, int x, int y, int z){
+        super(configuration, x,y,z);
     }
-    public Block(int z, multiblock.configuration.overhaul.turbine.Blade blade){
-        this(0, 0, z);
+    public Block(Configuration configuration, int z, multiblock.configuration.overhaul.turbine.Blade blade){
+        this(configuration, 0, 0, z);
         this.blade = blade;
     }
-    public Block(int x, int y, int z, multiblock.configuration.overhaul.turbine.Coil coil){
-        this(x, y, z);
+    public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.overhaul.turbine.Coil coil){
+        this(configuration, x, y, z);
         this.coil = coil;
     }
     @Override
     public multiblock.Block newInstance(int x, int y, int z){
-        if(blade!=null)return new Block(z, blade);
-        return new Block(x, y, z, coil);
+        if(blade!=null)return new Block(getConfiguration(), z, blade);
+        return new Block(getConfiguration(), x, y, z, coil);
     }
     @Override
     public void copyProperties(multiblock.Block other){}
@@ -181,8 +182,8 @@ public class Block extends multiblock.Block{
     @Override
     public multiblock.Block copy(){
         Block copy;
-        if(blade!=null)copy = new Block(z,blade);
-        else copy = new Block(x,y,z,coil);
+        if(blade!=null)copy = new Block(getConfiguration(),z,blade);
+        else copy = new Block(getConfiguration(),x,y,z,coil);
         copy.valid = valid;
         return copy;
     }

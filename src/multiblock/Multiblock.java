@@ -29,7 +29,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public Queue<Action> queue = new Queue<>();
     public HashMap<String, String> metadata = new HashMap<>();
     public Boolean showDetails = null;//details override
-    private Configuration configuration;
+    public Configuration configuration;
     {
         resetMetadata();
         lastChangeTime = System.nanoTime();
@@ -40,19 +40,20 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         metadata.put("Author", "");
     }
     protected Block[][][] blocks;
-    public Multiblock(int x, int y, int z){
+    public Multiblock(Configuration configuration, int x, int y, int z){
         blocks = new Block[x][y][z];
+        this.configuration = configuration;
     }
     public T getBlock(int x, int y, int z){
         if(x<0||y<0||z<0||x>=getX()||y>=getY()||z>=getZ())return newCasing(x,y,z);
         return (T) blocks[x][y][z];
     }
     public abstract String getDefinitionName();
-    public abstract Multiblock<T> newInstance(Configuration c);
+    public abstract Multiblock<T> newInstance(Configuration configuration);
     public final Multiblock<T> newInstance(){
         return newInstance(Core.configuration);
     }
-    public abstract Multiblock<T> newInstance(int x, int y, int z);
+    public abstract Multiblock<T> newInstance(Configuration configuration, int x, int y, int z);
     public abstract void getAvailableBlocks(List<T> blocks);
     public final List<T> getAvailableBlocks(){
         ArrayList<T> list = new ArrayList<>();
@@ -532,7 +533,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         blocks[x][y][z] = exact;
     }
     public String getSaveTooltip(){
-        String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.underhaulVersion:Core.configuration.overhaulVersion)+")\n";
+        String s = getConfiguration().name+" ("+(getDefinitionName().contains("Underhaul")?getConfiguration().underhaulVersion:getConfiguration().overhaulVersion)+")\n";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";
@@ -548,7 +549,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return extra.isEmpty()?(s+getTooltip()):(s+getExtraSaveTooltip()+"\n"+getTooltip());
     }
     public String getBotTooltip(){
-        String s = Core.configuration.name+" ("+(getDefinitionName().contains("Underhaul")?Core.configuration.underhaulVersion:Core.configuration.overhaulVersion)+")\n";
+        String s = getConfiguration().name+" ("+(getDefinitionName().contains("Underhaul")?getConfiguration().underhaulVersion:getConfiguration().overhaulVersion)+")\n";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";
@@ -693,11 +694,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         if(other.getZ()!=getZ())return false;
         return isCompatible(other);
     }
-    public void setConfiguration(Configuration configuration){
-        this.configuration = configuration;
-    }
     public Configuration getConfiguration(){
-        if(configuration==null)return Core.configuration;
+        if(configuration==null)return Core.configuration;//TODO maybe force it to have a specific configuration?
         return configuration;
     }
     public final HashMap<String, Double> getFluidOutputs(){

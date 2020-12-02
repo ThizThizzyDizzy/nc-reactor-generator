@@ -53,10 +53,13 @@ public class OverhaulMSR extends Multiblock<Block>{
     public float rainbowScore;
     private boolean computingShutdown = false;
     public OverhaulMSR(){
-        this(7, 5, 7);
+        this(null);
     }
-    public OverhaulMSR(int x, int y, int z){
-        super(x, y, z);
+    public OverhaulMSR(Configuration configuration){
+        this(configuration, 7, 5, 7);
+    }
+    public OverhaulMSR(Configuration configuration, int x, int y, int z){
+        super(configuration, x, y, z);
     }
     @Override
     public String getDefinitionName(){
@@ -64,19 +67,17 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public OverhaulMSR newInstance(Configuration configuration){
-        OverhaulMSR sfr = new OverhaulMSR();
-        sfr.setConfiguration(configuration);
-        return sfr;
+        return new OverhaulMSR(configuration);
     }
     @Override
-    public Multiblock<Block> newInstance(int x, int y, int z){
-        return new OverhaulMSR(x, y, z);
+    public Multiblock<Block> newInstance(Configuration configuration, int x, int y, int z){
+        return new OverhaulMSR(configuration, x, y, z);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.fissionMSR==null)return;
         for(multiblock.configuration.overhaul.fissionmsr.Block block : getConfiguration().overhaul.fissionMSR.allBlocks){
-            blocks.add(new Block(-1, -1, -1, block));
+            blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
         }
     }
     @Override
@@ -235,7 +236,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     protected Block newCasing(int x, int y, int z){
-        return new Block(x, y, z, null);
+        return new Block(getConfiguration(), x, y, z, null);
     }
     @Override
     public synchronized String getTooltip(){
@@ -347,7 +348,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             if(block.template.irradiator)block.irradiatorRecipe = to.overhaul.fissionMSR.convert(block.irradiatorRecipe);
             block.template = to.overhaul.fissionMSR.convert(block.template);
         }
-        setConfiguration(to);
+        configuration = to;
     }
     @Override
     public boolean validate(){
@@ -398,7 +399,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         return count;
     }
     public OverhaulSFR convertToSFR(){
-        OverhaulSFR sfr = new OverhaulSFR(getX(), getY(), getZ(), getConfiguration().overhaul.fissionSFR.allCoolantRecipes.get(0));
+        OverhaulSFR sfr = new OverhaulSFR(configuration, getX(), getY(), getZ(), getConfiguration().overhaul.fissionSFR.allCoolantRecipes.get(0));
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
                 for(int z = 0; z<getZ(); z++){
@@ -933,7 +934,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public OverhaulMSR blankCopy(){
-        return new OverhaulMSR(getX(), getY(), getZ());
+        return new OverhaulMSR(configuration, getX(), getY(), getZ());
     }
     @Override
     public synchronized OverhaulMSR copy(){

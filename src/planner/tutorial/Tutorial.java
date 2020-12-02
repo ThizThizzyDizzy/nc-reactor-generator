@@ -389,11 +389,11 @@ public abstract class Tutorial extends Renderer2D{
         });
         planner.add(new Tutorial("Editing"){
             private int editorImage = -1;
-            private MenuEdit pencilEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
-            private MenuEdit lineEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
-            private MenuEdit boxEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
-            private MenuEdit selectEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
-            private MenuEdit moveEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(9, 1, 5));
+            private MenuEdit pencilEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+            private MenuEdit lineEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+            private MenuEdit boxEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+            private MenuEdit selectEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+            private MenuEdit moveEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
             private MenuComponentEditorGrid pencil, line, box, select, move;
             private MenuComponentEditorGrid[] editors;
             private Random rand = new Random();

@@ -4,6 +4,7 @@ import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 import simplelibrary.Queue;
 public class Block extends multiblock.Block{
     /**
@@ -18,13 +19,13 @@ public class Block extends multiblock.Block{
     private boolean moderatorActive;
     //cooler
     private boolean coolerValid;
-    public Block(int x, int y, int z, multiblock.configuration.underhaul.fissionsfr.Block template){
-        super(x,y,z);
+    public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.underhaul.fissionsfr.Block template){
+        super(configuration,x,y,z);
         this.template = template;
     }
     @Override
     public multiblock.Block newInstance(int x, int y, int z){
-        return new Block(x, y, z, template);
+        return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
     public void copyProperties(multiblock.Block other){}
@@ -69,7 +70,7 @@ public class Block extends multiblock.Block{
         return isActive()||moderatorValid;
     }
     public int getCooling(){
-        return template.active==null?template.cooling:(template.cooling*Core.configuration.underhaul.fissionSFR.activeCoolerRate/20);
+        return template.active==null?template.cooling:(template.cooling*getConfiguration().underhaul.fissionSFR.activeCoolerRate/20);
     }
     @Override
     public void clearData(){
@@ -81,7 +82,7 @@ public class Block extends multiblock.Block{
         if(!template.fuelCell)return;
         for(Direction d : directions){
             Queue<Block> toValidate = new Queue<>();
-            for(int i = 1; i<=Core.configuration.underhaul.fissionSFR.neutronReach+1; i++){
+            for(int i = 1; i<=reactor.getConfiguration().underhaul.fissionSFR.neutronReach+1; i++){
                 Block block = reactor.getBlock(x+d.x*i,y+d.y*i,z+d.z*i);
                 if(block==null)break;
                 if(block.isModerator()){
@@ -104,8 +105,8 @@ public class Block extends multiblock.Block{
         }
         float baseEff = energyMult = adjacentCells+1;
         heatMult = (baseEff*(baseEff+1))/2;
-        energyMult+=baseEff/6*Core.configuration.underhaul.fissionSFR.moderatorExtraPower*adjacentModerators;
-        heatMult+=baseEff/6*Core.configuration.underhaul.fissionSFR.moderatorExtraHeat*adjacentModerators;
+        energyMult+=baseEff/6*reactor.getConfiguration().underhaul.fissionSFR.moderatorExtraPower*adjacentModerators;
+        heatMult+=baseEff/6*reactor.getConfiguration().underhaul.fissionSFR.moderatorExtraHeat*adjacentModerators;
     }
     /**
      * Calculates the cooler
@@ -221,7 +222,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public Block copy(){
-        Block copy = new Block(x, y, z, template);
+        Block copy = new Block(getConfiguration(), x, y, z, template);
         copy.adjacentCells = adjacentCells;
         copy.adjacentModerators = adjacentModerators;
         copy.energyMult = energyMult;
