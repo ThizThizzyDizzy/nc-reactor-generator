@@ -261,7 +261,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return new UnderhaulSFR(configuration, getX(), getY(), getZ(), fuel);
     }
     @Override
-    public UnderhaulSFR copy(){
+    public UnderhaulSFR doCopy(){
         UnderhaulSFR copy = blankCopy();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){

@@ -9,4 +9,9 @@ public abstract class Symmetry{
     public boolean defaultEnabled(){
         return false;
     }
+    public boolean check(Multiblock m){
+        Multiblock copy = m.copy();
+        apply(copy);
+        return m.areBlocksEqual(copy);
+    }
 }

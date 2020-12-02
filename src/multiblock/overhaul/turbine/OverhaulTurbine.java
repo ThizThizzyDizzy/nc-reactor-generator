@@ -613,7 +613,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         return new OverhaulTurbine(configuration, getX(), getZ()-2, bearingDiameter, recipe);
     }
     @Override
-    public OverhaulTurbine copy(){
+    public OverhaulTurbine doCopy(){
         OverhaulTurbine copy = blankCopy();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){

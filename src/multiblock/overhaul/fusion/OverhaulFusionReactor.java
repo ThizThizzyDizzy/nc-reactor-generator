@@ -644,7 +644,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         return new OverhaulFusionReactor(configuration, innerRadius, coreSize, toroidWidth, liningThickness, recipe, coolantRecipe);
     }
     @Override
-    public OverhaulFusionReactor copy(){
+    public OverhaulFusionReactor doCopy(){
         OverhaulFusionReactor copy = blankCopy();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){

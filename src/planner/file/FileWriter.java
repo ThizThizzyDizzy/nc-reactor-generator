@@ -299,6 +299,7 @@ public class FileWriter{
                     int blSiz = 32;
                     ArrayList<Block> blox = multi.getBlocks();
                     for(Block b : blox){
+                        if(b.getTexture()==null)continue;
                         blSiz = Math.max(b.getTexture().getWidth(), blSiz);
                     }
                     int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image

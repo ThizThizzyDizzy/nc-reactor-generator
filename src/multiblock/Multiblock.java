@@ -635,7 +635,12 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return false;
     }
     public abstract Multiblock<T> blankCopy();
-    public abstract Multiblock<T> copy();
+    public Multiblock<T> copy(){
+        Multiblock<T> copy = doCopy();
+        copy.metadata = (HashMap<String, String>)metadata.clone();
+        return copy;
+    }
+    public abstract Multiblock<T> doCopy();
     public long nanosSinceLastChange(){
         return System.nanoTime()-lastChangeTime;
     }
@@ -737,5 +742,23 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     public void openResizeMenu(GUI gui, MenuEdit editor){
         gui.open(new MenuResize(gui, editor, this));
+    }
+    public boolean areBlocksEqual(Multiblock other){
+        if(getX()!=other.getX())return false;
+        if(getY()!=other.getY())return false;
+        if(getZ()!=other.getZ())return false;
+        for(int x = 0; x<getX(); x++){
+            for(int y = 0; y<getY(); y++){
+                for(int z = 0; z<getZ(); z++){
+                    Block a = getBlock(x, y, z);
+                    Block b = other.getBlock(x, y, z);
+                    if(a==b)continue;//all good
+                    if(a==null&&b!=null)return false;
+                    if(a!=null&&b==null)return false;
+                    if(!a.isEqual(b))return false;
+                }
+            }
+        }
+        return true;
     }
 }

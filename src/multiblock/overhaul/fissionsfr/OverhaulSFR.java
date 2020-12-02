@@ -360,12 +360,20 @@ public class OverhaulSFR extends Multiblock<Block>{
         }
         return new Cluster(block);
     }
-    private int getFuelCount(Fuel f){
+    public int getFuelCount(Fuel f){
         int count = 0;
         for(Block block : getBlocks()){
             if(block.fuel==f)count++;
         }
         return count;
+    }
+    public HashMap<Fuel, Integer> getFuelCounts(){
+        HashMap<Fuel, Integer> counts = new HashMap<>();
+        for(Fuel f : getConfiguration().overhaul.fissionSFR.allFuels){
+            int count = getFuelCount(f);
+            if(count!=0)counts.put(f, count);
+        }
+        return counts;
     }
     public OverhaulMSR convertToMSR(){
         OverhaulMSR msr = new OverhaulMSR(configuration, getX(), getY(), getZ());
@@ -726,7 +734,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         return new OverhaulSFR(configuration, getX(), getY(), getZ(), coolantRecipe);
     }
     @Override
-    public OverhaulSFR copy(){
+    public OverhaulSFR doCopy(){
         OverhaulSFR copy = blankCopy();
         for(int x = 0; x<getX(); x++){
             for(int y = 0; y<getY(); y++){
