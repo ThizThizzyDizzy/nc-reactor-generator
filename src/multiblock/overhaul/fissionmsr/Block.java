@@ -114,7 +114,7 @@ public class Block extends multiblock.Block{
             tip+="\nShield "+(shieldActive?"Valid":"Invalid")+"\n"
                     + "Total flux: "+flux+"\n"
                     + "Heat per flux: "+template.heatMult+"\n"
-                    + "Total heat: "+(flux*template.heatMult)+"\n H/t"
+                    + "Total heat: "+(flux*template.heatMult)+" H/t\n"
                     + "Efficiency factor: "+template.efficiency;
         }
         if(closed){
@@ -250,7 +250,6 @@ public class Block extends multiblock.Block{
             int flux = 0;
             int length = 0;
             float efficiency = 0;
-            int nonshields = 0;
             for(int i = 1; i<=reactor.getConfiguration().overhaul.fissionMSR.neutronReach+1; i++){
                 Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
                 if(block==null)break;
@@ -259,32 +258,29 @@ public class Block extends multiblock.Block{
                     flux+=block.template.flux;
                     efficiency+=block.template.efficiency;
                     length++;
-                    if(!block.isShield()){
-                        nonshields++;
-                    }
                     continue;
                 }
                 if(block.isFuelVessel()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     block.vesselGroup.neutronFlux+=flux;
                     block.vesselGroup.moderatorLines++;
-                    block.vesselGroup.positionalEfficiency+=efficiency/length;
+                    if(flux>0)block.vesselGroup.positionalEfficiency+=efficiency/length;
                     block.vesselGroup.propogateNeutronFlux(reactor, false);
                     break;
                 }
                 if(block.isReflector()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     if(length>reactor.getConfiguration().overhaul.fissionMSR.neutronReach/2)break;
                     vesselGroup.neutronFlux+=flux*2*block.template.reflectivity;
-                    vesselGroup.positionalEfficiency+=efficiency/length*block.template.efficiency;
+                    if(flux>0)vesselGroup.positionalEfficiency+=efficiency/length*block.template.efficiency;
                     vesselGroup.moderatorLines++;
                     break;
                 }
                 if(block.isIrradiator()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     vesselGroup.moderatorLines++;
                     if(block.irradiatorRecipe!=null){
-                        vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.efficiency;
+                        if(flux>0)vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.efficiency;
                     }
                     break;
                 }
@@ -301,7 +297,6 @@ public class Block extends multiblock.Block{
         for(Direction d : directions){
             int flux = 0;
             int length = 0;
-            int nonshields = 0;
             float efficiency = 0;
             for(int i = 1; i<=reactor.getConfiguration().overhaul.fissionMSR.neutronReach+1; i++){
                 Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
@@ -311,32 +306,29 @@ public class Block extends multiblock.Block{
                     flux+=block.template.flux;
                     efficiency+=block.template.efficiency;
                     length++;
-                    if(!block.isShield()){
-                        nonshields++;
-                    }
                     continue;
                 }
                 if(block.isFuelVessel()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     block.vesselGroup.neutronFlux+=flux;
                     block.vesselGroup.moderatorLines++;
-                    block.vesselGroup.positionalEfficiency+=efficiency/length;
+                    if(flux>0)block.vesselGroup.positionalEfficiency+=efficiency/length;
                     block.vesselGroup.rePropogateNeutronFlux(reactor, false);
                     break;
                 }
                 if(block.isReflector()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     if(length>reactor.getConfiguration().overhaul.fissionMSR.neutronReach/2)break;
                     vesselGroup.neutronFlux+=flux*2*block.template.reflectivity;
-                    vesselGroup.positionalEfficiency+=efficiency/length*block.template.efficiency;
+                    if(flux>0)vesselGroup.positionalEfficiency+=efficiency/length*block.template.efficiency;
                     vesselGroup.moderatorLines++;
                     break;
                 }
                 if(block.isIrradiator()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     vesselGroup.moderatorLines++;
                     if(block.irradiatorRecipe!=null){
-                        vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.efficiency;
+                        if(flux>0)vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.efficiency;
                     }
                     break;
                 }
@@ -349,7 +341,6 @@ public class Block extends multiblock.Block{
         for(Direction d : directions){
             int flux = 0;
             int length = 0;
-            int nonshields = 0;
             HashMap<Block, Integer> shieldFluxes = new HashMap<>();
             Queue<Block> toActivate = new Queue<>();
             Queue<Block> toValidate = new Queue<>();
@@ -359,9 +350,6 @@ public class Block extends multiblock.Block{
                 boolean skip = false;
                 if(block.isModerator()){
                     length++;
-                    if(!block.isShield()){
-                        nonshields++;
-                    }
                     flux+=block.template.flux;
                     if(i==1)toActivate.enqueue(block);
                     toValidate.enqueue(block);
@@ -374,7 +362,7 @@ public class Block extends multiblock.Block{
                 }
                 if(skip)continue;
                 if(block.isFuelVesselActive()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     for(Block b : shieldFluxes.keySet()){
                         b.flux+=shieldFluxes.get(b);
                     }
@@ -383,7 +371,7 @@ public class Block extends multiblock.Block{
                     break;
                 }
                 if(block.isReflector()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     block.reflectorActive = true;
                     for(Block b : shieldFluxes.keySet()){
                         b.flux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
@@ -393,7 +381,7 @@ public class Block extends multiblock.Block{
                     break;
                 }
                 if(block.isIrradiator()){
-                    if(length==0||nonshields==0)break;
+                    if(length==0)break;
                     for(Block b : shieldFluxes.keySet()){
                         b.flux+=shieldFluxes.get(b);
                     }
