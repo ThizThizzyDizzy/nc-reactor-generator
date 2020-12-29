@@ -3,10 +3,12 @@ import generator.Priority;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.Multiblock;
 import multiblock.PartCount;
+import multiblock.action.SetblockAction;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.ppe.SmartFillUnderhaulSFR;
@@ -16,6 +18,8 @@ import planner.Core;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.module.Module;
+import planner.suggestion.Suggestion;
+import planner.suggestion.Suggestor;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
@@ -262,7 +266,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
         presets.add(new Priority.Preset("Efficiency", priorities.get(0), priorities.get(1), priorities.get(2), priorities.get(3), priorities.get(4)).addAlternative("Efficient"));
         presets.add(new Priority.Preset("Output", priorities.get(0), priorities.get(1), priorities.get(3), priorities.get(2), priorities.get(4)));
-        presets.add(new Priority.Preset("Fuel Usage (Breeder)", priorities.get(0), priorities.get(1), priorities.get(5), priorities.get(4), priorities.get(3), priorities.get(2)).addAlternative("Fuel Usage").addAlternative("Speed").addAlternative("Cell Count").addAlternative("Breeder").addAlternative("Fast"));
+        presets.add(new Priority.Preset("Fuel Usage (Burner)", priorities.get(0), priorities.get(1), priorities.get(5), priorities.get(4), priorities.get(3), priorities.get(2)).addAlternative("Fuel Usage").addAlternative("Speed").addAlternative("Cell Count").addAlternative("Breeder").addAlternative("Burner").addAlternative("Fast"));
     }
     @Override
     public void getSymmetries(ArrayList<Symmetry> symmetries){
@@ -321,5 +325,34 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     public String getDescriptionTooltip(){
         return "Underhaul SFRs are Solid-Fueled Fission reactors in NuclearCraft\nIf you have blocks called \"Heat Sink\" instead of \"Cooler\", you are playing Overhaul";
+    }
+    @Override
+    public void getSuggestors(ArrayList<Suggestor> suggestors){
+        for(Priority.Preset preset : getGenerationPriorityPresets()){
+            suggestors.add(new Suggestor<UnderhaulSFR>(100, 1_000) {
+                @Override
+                public String getName(){
+                    return "Random Block Suggestor ("+preset.name+")";
+                }
+                @Override
+                public String getDescription(){
+                    return "Generates random single-block suggestions";
+                }
+                @Override
+                public void generateSuggestions(UnderhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                    Random rand = new Random();
+                    while(suggestor.acceptingSuggestions()){
+                        int x = rand.nextInt(multiblock.getX());
+                        int y = rand.nextInt(multiblock.getY());
+                        int z = rand.nextInt(multiblock.getZ());
+                        ArrayList<Block> blocks = new ArrayList<>();
+                        multiblock.getAvailableBlocks(blocks);
+                        for(Block b : blocks){
+                            suggestor.suggest(new Suggestion(new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                        }
+                    }
+                }
+            });
+        }
     }
 }

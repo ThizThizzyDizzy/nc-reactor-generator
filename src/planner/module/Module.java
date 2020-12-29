@@ -2,6 +2,7 @@ package planner.module;
 import generator.Priority;
 import java.util.ArrayList;
 import multiblock.Multiblock;
+import planner.suggestion.Suggestor;
 public abstract class Module<T>{
     private boolean active = false;
     public void activate(){
@@ -37,6 +38,7 @@ public abstract class Module<T>{
         return (digits==0?Math.round(d):d)+"";
     }
     public abstract void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities);
+    public abstract void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors);
     public void setActive(boolean active){
         if(active)activate();
         else deactivate();

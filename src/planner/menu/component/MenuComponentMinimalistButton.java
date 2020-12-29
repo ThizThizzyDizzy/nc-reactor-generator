@@ -43,10 +43,6 @@ public class MenuComponentMinimalistButton extends MenuComponentButton{
         double scale = Math.min(1, (width-textInset*2)/textLength);
         double textHeight = (int)((height-textInset*2)*scale)-4;
         drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
-//        if(height>width){
-//            drawCenteredText(x, y+height/2-width/2, x+width, y+height/2+width/2, label);
-//        }
-//        drawCenteredText(x, y+textInset, x+width, y+height-textInset, label);
     }
     @Override
     public MenuComponentMinimalistButton setTooltip(String tooltip){

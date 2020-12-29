@@ -363,7 +363,7 @@ public class Bot extends ListenerAdapter{
                 ArrayList<Priority.Preset> presets = multiblock.getGenerationPriorityPresets(priorities);
                 for(Priority.Preset preset : presets){
                     for(String str : priorityStrings){
-                        for(String alternative : preset.alternatives){
+                        for(String alternative : (ArrayList<String>)preset.alternatives){
                             if(str.equalsIgnoreCase(alternative)){
                                 if(priority!=null){
                                     channel.sendMessage("You can only target one priority at a time!\nDownload the generator for more control over generation priorities (see footnote)").queue();
@@ -805,7 +805,7 @@ public class Bot extends ListenerAdapter{
                 ArrayList<Priority.Preset> presets = multiblock.getGenerationPriorityPresets(priorities);
                 for(Priority.Preset preset : presets){
                     for(String str : priorityStrings){
-                        for(String alternative : preset.alternatives){
+                        for(String alternative : (ArrayList<String>)preset.alternatives){
                             if(str.equalsIgnoreCase(alternative)){
                                 if(priority!=null){
                                     channel.sendMessage("You can only target one priority at a time!").queue();

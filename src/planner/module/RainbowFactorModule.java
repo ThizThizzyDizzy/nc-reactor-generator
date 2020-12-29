@@ -8,6 +8,7 @@ import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import planner.suggestion.Suggestor;
 public class RainbowFactorModule extends Module<Float>{
     @Override
     public String getName(){
@@ -109,4 +110,6 @@ public class RainbowFactorModule extends Module<Float>{
             });
         }
     }
+    @Override
+    public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}//TODO rainbowification suggestions? (only if reactor is stable!)
 }

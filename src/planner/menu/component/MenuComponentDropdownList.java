@@ -4,8 +4,8 @@ import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentDropdownList extends MenuComponent{
     public double preferredHeight;
-    private final MenuComponentMinimaList list;
-    private boolean isDown = false;
+    public final MenuComponentMinimaList list;
+    public boolean isDown = false;
     public MenuComponentDropdownList(double x, double y, double width, double height){
         super(x, y, width, height);
         preferredHeight = height;

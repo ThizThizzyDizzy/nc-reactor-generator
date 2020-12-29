@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
-public class SetblockAction extends Action<Multiblock>{
+public class SetblockAction extends Action{
     public final int x;
     public final int y;
     public final int z;
@@ -25,7 +25,7 @@ public class SetblockAction extends Action<Multiblock>{
         multiblock.setBlockExact(x, y, z, was);
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    protected void getAffectedBlocks(Multiblock multiblock, ArrayList blocks){
         Block b = multiblock.getBlock(x, y, z);
         if(b!=null)blocks.add(b);
     }

@@ -17,6 +17,7 @@ import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResize;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.suggestion.Suggestor;
 import simplelibrary.Queue;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
@@ -634,6 +635,14 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         return false;
     }
+    public int compareTo(Multiblock other, ArrayList<Priority> priorities){
+        for(Priority p : priorities){
+            double result = p.compare(this, other);
+            if(result>0)return 1;
+            if(result<0)return -1;
+        }
+        return 0;
+    }
     public abstract Multiblock<T> blankCopy();
     public Multiblock<T> copy(){
         Multiblock<T> copy = doCopy();
@@ -761,4 +770,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         return true;
     }
+    public ArrayList<Suggestor> getSuggestors(){
+        ArrayList<Suggestor> suggestors = new ArrayList<>();
+        getSuggestors(suggestors);
+        return suggestors;
+    }
+    public abstract void getSuggestors(ArrayList<Suggestor> suggestors);
 }

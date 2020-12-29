@@ -1,4 +1,4 @@
-package planner.menu;
+package planner.menu.component;
 import planner.Core;
 import org.lwjgl.glfw.GLFW;
 import planner.module.Module;

@@ -31,17 +31,17 @@ public abstract class Priority<T extends Multiblock>{
     public boolean isFinal(){
         return isFinal;
     }
-    public static class Preset{
+    public static class Preset<T extends Multiblock>{
         public final String name;
-        private final ArrayList<Priority> prior = new ArrayList<>();
+        private final ArrayList<Priority<T>> prior = new ArrayList<>();
         public ArrayList<String> alternatives = new ArrayList<>();
-        public Preset(String name, Priority... priorities){
+        public Preset(String name, Priority<T>... priorities){
             this.name = name;
-            for(Priority p : priorities)prior.add(p);
+            for(Priority<T> p : priorities)prior.add(p);
             alternatives.add(name);
         }
-        public void set(ArrayList<Priority> priorities){
-            ArrayList<Priority> irrelevant = new ArrayList<>();
+        public void set(ArrayList<Priority<T>> priorities){
+            ArrayList<Priority<T>> irrelevant = new ArrayList<>();
             irrelevant.addAll(priorities);
             irrelevant.removeAll(prior);
             priorities.clear();
@@ -51,6 +51,9 @@ public abstract class Priority<T extends Multiblock>{
         public Preset addAlternative(String alt){
             alternatives.add(alt);
             return this;
+        }
+        public ArrayList<Priority<T>> getPriorities(){
+            return prior;
         }
     }
 }

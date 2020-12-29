@@ -15,7 +15,7 @@ public class KeywordPriority extends Keyword{
             ArrayList<Priority.Preset> presets = new ArrayList<>();
             m.getGenerationPriorityPresets(m.getGenerationPriorities(), presets);
             for(Priority.Preset preset : presets){
-                for(String s : preset.alternatives){
+                for(String s : (ArrayList<String>)preset.alternatives){
                     if(input.equalsIgnoreCase(s))return true;
                 }
             }

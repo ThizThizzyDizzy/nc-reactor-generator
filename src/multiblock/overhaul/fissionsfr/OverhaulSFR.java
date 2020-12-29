@@ -4,6 +4,7 @@ import generator.Priority;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import multiblock.Action;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
@@ -14,6 +15,7 @@ import multiblock.PartCount;
 import multiblock.Range;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.SFRAllShieldsAction;
+import multiblock.action.SetblockAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.SFRFill;
@@ -31,6 +33,8 @@ import planner.menu.component.generator.MenuComponentSFRToggleFuel;
 import planner.menu.component.generator.MenuComponentSFRToggleSource;
 import planner.menu.component.generator.MenuComponentSFRToggleIrradiatorRecipe;
 import planner.module.Module;
+import planner.suggestion.Suggestion;
+import planner.suggestion.Suggestor;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
@@ -873,5 +877,34 @@ public class OverhaulSFR extends Multiblock<Block>{
     @Override
     public String getDescriptionTooltip(){
         return "Overhaul SFRs are Solid-Fueled Fission reactors in NuclearCraft: Overhauled\nIf you have blocks called \"Cooler\" instead of \"Heat Sink\", you are playing Underhaul";
+    }
+    @Override
+    public void getSuggestors(ArrayList<Suggestor> suggestors){
+        for(Priority.Preset preset : getGenerationPriorityPresets()){
+            suggestors.add(new Suggestor<OverhaulSFR>(100, 1_000) {
+                @Override
+                public String getName(){
+                    return "Random Block Suggestor ("+preset.name+")";
+                }
+                @Override
+                public String getDescription(){
+                    return "Generates random single-block suggestions";
+                }
+                @Override
+                public void generateSuggestions(OverhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                    Random rand = new Random();
+                    while(suggestor.acceptingSuggestions()){
+                        int x = rand.nextInt(multiblock.getX());
+                        int y = rand.nextInt(multiblock.getY());
+                        int z = rand.nextInt(multiblock.getZ());
+                        ArrayList<Block> blocks = new ArrayList<>();
+                        multiblock.getAvailableBlocks(blocks);
+                        for(Block b : blocks){
+                            suggestor.suggest(new Suggestion(new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                        }
+                    }
+                }
+            });
+        }
     }
 }

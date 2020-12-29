@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import multiblock.Action;
 import multiblock.configuration.Configuration;
@@ -16,6 +17,7 @@ import multiblock.PartCount;
 import multiblock.Range;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.MSRAllShieldsAction;
+import multiblock.action.SetblockAction;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.ppe.MSRFill;
 import multiblock.symmetry.AxialSymmetry;
@@ -32,6 +34,8 @@ import planner.menu.component.generator.MenuComponentMSRToggleSource;
 import planner.menu.component.generator.MenuComponentMSRToggleIrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.module.Module;
+import planner.suggestion.Suggestion;
+import planner.suggestion.Suggestor;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
@@ -1083,5 +1087,34 @@ public class OverhaulMSR extends Multiblock<Block>{
     @Override
     public String getDescriptionTooltip(){
         return "Overhaul MSRs are Molten Salt Fission reactors in NuclearCraft: Overhauled";
+    }
+    @Override
+    public void getSuggestors(ArrayList<Suggestor> suggestors){
+        for(Priority.Preset preset : getGenerationPriorityPresets()){
+            suggestors.add(new Suggestor<OverhaulMSR>(100, 1_000) {
+                @Override
+                public String getName(){
+                    return "Random Block Suggestor ("+preset.name+")";
+                }
+                @Override
+                public String getDescription(){
+                    return "Generates random single-block suggestions";
+                }
+                @Override
+                public void generateSuggestions(OverhaulMSR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                    Random rand = new Random();
+                    while(suggestor.acceptingSuggestions()){
+                        int x = rand.nextInt(multiblock.getX());
+                        int y = rand.nextInt(multiblock.getY());
+                        int z = rand.nextInt(multiblock.getZ());
+                        ArrayList<Block> blocks = new ArrayList<>();
+                        multiblock.getAvailableBlocks(blocks);
+                        for(Block b : blocks){
+                            suggestor.suggest(new Suggestion(new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                        }
+                    }
+                }
+            });
+        }
     }
 }

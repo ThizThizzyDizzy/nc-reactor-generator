@@ -3,9 +3,11 @@ import generator.Priority;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.PartCount;
+import multiblock.action.SetblockAction;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe;
 import multiblock.configuration.overhaul.fusion.CoolantRecipe;
@@ -23,6 +25,8 @@ import planner.menu.MenuResizeFusion;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.generator.MenuComponentFusionToggleBreedingBlanketRecipe;
 import planner.module.Module;
+import planner.suggestion.Suggestion;
+import planner.suggestion.Suggestor;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.opengl.gui.GUI;
@@ -833,5 +837,34 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     @Override
     public void setBlockExact(int x, int y, int z, multiblock.Block exact){
         if(isLocationValid((Block)exact, x,y,z))super.setBlockExact(x, y, z, exact);
+    }
+    @Override
+    public void getSuggestors(ArrayList<Suggestor> suggestors){
+        for(Priority.Preset preset : getGenerationPriorityPresets()){
+            suggestors.add(new Suggestor<OverhaulFusionReactor>(100, 1_000) {
+                @Override
+                public String getName(){
+                    return "Random Block Suggestor ("+preset.name+")";
+                }
+                @Override
+                public String getDescription(){
+                    return "Generates random single-block suggestions";
+                }
+                @Override
+                public void generateSuggestions(OverhaulFusionReactor multiblock, Suggestor.SuggestionAcceptor suggestor){
+                    Random rand = new Random();
+                    while(suggestor.acceptingSuggestions()){
+                        int x = rand.nextInt(multiblock.getX());
+                        int y = rand.nextInt(multiblock.getY());
+                        int z = rand.nextInt(multiblock.getZ());
+                        ArrayList<Block> blocks = new ArrayList<>();
+                        multiblock.getAvailableBlocks(blocks);
+                        for(Block b : blocks){
+                            suggestor.suggest(new Suggestion(new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                        }
+                    }
+                }
+            });
+        }
     }
 }

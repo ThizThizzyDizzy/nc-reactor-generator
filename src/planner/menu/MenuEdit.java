@@ -1,4 +1,5 @@
 package planner.menu;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import planner.Core;
@@ -44,9 +45,13 @@ import planner.menu.component.editor.MenuComponentEditorGrid;
 import planner.menu.component.editor.MenuComponentFusionBreedingBlanketRecipe;
 import planner.menu.component.editor.MenuComponentFusionCoolantRecipe;
 import planner.menu.component.editor.MenuComponentOverFusionRecipe;
+import planner.menu.component.editor.MenuComponentSuggestor;
 import planner.menu.component.editor.MenuComponentTurbineBladeEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineCoilEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineRecipe;
+import planner.module.Module;
+import planner.suggestion.Suggestion;
+import planner.suggestion.Suggestor;
 import planner.tool.CopyTool;
 import planner.tool.CutTool;
 import planner.tool.LineTool;
@@ -70,7 +75,7 @@ public class MenuEdit extends Menu{
     private EditorTool cut = new CutTool(this);
     private MenuComponentEditorTool cutComp = new MenuComponentEditorTool(cut);
     private EditorTool paste = new PasteTool(this);
-    private MenuComponentEditorTool pasteComp = new MenuComponentEditorTool(paste);
+    private MenuComponentEditorTool pasteComp = new MenuComponentEditorTool(paste);;
     {
         editorTools.add(new MoveTool(this));
         editorTools.add(new SelectionTool(this));
@@ -94,13 +99,33 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Modify the multiblock metadata"));
     public final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
     private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", true, true).setTooltip("Generate or improve this multiblock"));
+    private final MenuComponentDropdownList suggestorSettings = add(new MenuComponentDropdownList(0, 0, 0, 0){
+        @Override
+        public void render(){
+            if(!isDown){
+                Color col = Core.theme.getButtonColor();
+                if(isMouseOver)col = col.brighter();//TODO .brighter()
+                Core.applyColor(col);
+                drawRect(x, y, x+width, y+height, 0);
+                Core.applyColor(Core.theme.getTextColor());
+                double border = height/6;
+                double lineThickness = height/9;
+                drawRect(x+border, y+border, x+width-border, y+border+lineThickness, 0);
+                drawRect(x+border, y+height/2-lineThickness/2, x+width-border, y+height/2+lineThickness/2, 0);
+                drawRect(x+border, y+height-border-lineThickness, x+width-border, y+height-border, 0);
+            }
+        }
+    });
     public final ArrayList<int[]> selection = new ArrayList<>();
+    private ArrayList<Suggestion> suggestions = new ArrayList<>();
+    private ArrayList<Suggestor> suggestors = new ArrayList<>();
     private double scale = 4;
     private double minScale = 0.5;
     private double maxScale = 16;
     public int CELL_SIZE = (int) (16*scale);
     private int LAYER_GAP = CELL_SIZE/2;
     private int multisPerRow = 0;
+    private long lastChange = 0;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         if(multiblock instanceof UnderhaulSFR){
@@ -195,13 +220,21 @@ public class MenuEdit extends Menu{
             tools.add(new MenuComponentEditorTool(tool));
         }
         tools.setSelectedIndex(2);
+        multiblock.getSuggestors(suggestors);
+        for(Module m : Core.modules){
+            if(m.isActive()){
+                m.getSuggestors(multiblock, suggestors);
+            }
+        }
+        for(Suggestor suggestor : suggestors){
+            suggestorSettings.add(new MenuComponentSuggestor(suggestor));
+        }
     }
     @Override
     public void onGUIOpened(){
         Core.delCircle = true;
         Core.circleSize = CELL_SIZE;
         editMetadata.label = multiblock.getName().isEmpty()?"Edit Metadata":(multiblock.getName()+" | Edit Metadata");
-//        generate.label = multiblock.isEmpty()?"Generate":"Generate Suggestions";
         if(multiblock instanceof UnderhaulSFR){
             underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
         }
@@ -249,12 +282,14 @@ public class MenuEdit extends Menu{
         tools.width = partSize;
         parts.x = tools.width+partSize/4;
         generate.x = editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
-        generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
+        suggestorSettings.preferredHeight = generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
         generate.y = gui.helper.displayHeight()-generate.height;
         tools.height = editorTools.size()*partSize;
         tools.height = parts.height = Math.max(tools.height, Math.min(gui.helper.displayHeight()/2, ((parts.components.size()+5)/partsWide)*partSize));
         resize.width = 320;
-        generate.width = editMetadata.width = multibwauk.width = gui.helper.displayWidth()-parts.x-parts.width-resize.width;
+        editMetadata.width = multibwauk.width = gui.helper.displayWidth()-parts.x-parts.width-resize.width;
+        generate.width = multibwauk.width-generate.height;
+        suggestorSettings.x = generate.x+generate.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
         zoomIn.width = zoomOut.width = resize.width/2;
         zoomIn.y = zoomOut.y = resize.height;
@@ -264,6 +299,13 @@ public class MenuEdit extends Menu{
         irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
         underFuelOrCoolantRecipe.y = resize.height*2+underFuelOrCoolantRecipe.preferredHeight;
         irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
+        if(suggestorSettings.isDown){
+            suggestorSettings.width = gui.helper.displayWidth()-suggestorSettings.x;
+            suggestorSettings.y = gui.helper.displayHeight()*3/4;
+        }else{
+            suggestorSettings.width = suggestorSettings.preferredHeight;
+            suggestorSettings.y = generate.y;
+        }
         for(simplelibrary.opengl.gui.components.MenuComponent c : tools.components){
             c.width = c.height = partSize;
         }
@@ -428,6 +470,14 @@ public class MenuEdit extends Menu{
             drawCenteredText(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, "Breeding Blanket Recipe");
         }
         Core.applyWhite();
+    }
+    @Override
+    public void tick(){
+        super.tick();
+        if(lastChange!=multiblock.lastChangeTime){
+            lastChange = multiblock.lastChangeTime;
+            recalculateSuggestions();
+        }
     }
     public Block getSelectedBlock(){
         if(parts.getSelectedIndex()==-1)return null;
@@ -869,6 +919,18 @@ public class MenuEdit extends Menu{
     public void pasteSelection(int x, int y, int z){
         synchronized(clipboard){
             multiblock.action(new PasteAction(clipboard, x, y, z), true);
+        }
+    }
+    private void recalculateSuggestions(){
+        suggestions.clear();
+        for(Suggestor s : suggestors){
+            if(s.isActive()){
+                s.generateSuggestions(multiblock, suggestions);
+            }
+        }
+        for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
+            Suggestion s = it.next();
+            if(!s.test(multiblock))it.remove();
         }
     }
     public static class ClipboardEntry{
