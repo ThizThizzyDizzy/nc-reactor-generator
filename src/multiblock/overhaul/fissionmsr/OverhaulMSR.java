@@ -31,6 +31,7 @@ import planner.menu.component.generator.MenuComponentMSRToggleFuel;
 import planner.menu.component.generator.MenuComponentMSRToggleSource;
 import planner.menu.component.generator.MenuComponentMSRToggleIrradiatorRecipe;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.module.Module;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
@@ -50,10 +51,10 @@ public class OverhaulMSR extends Multiblock<Block>{
     public HashMap<String, Float> totalOutput = new HashMap<>();
     public float totalTotalOutput;
     public float shutdownFactor;
-    public float rainbowScore;
     private int calculationStep = 0;//0 is initial calculation, 1 is shield check, 2 is shutdown factor check
     private ArrayList<VesselGroup> vesselGroupsWereActive = new ArrayList<>();//used for shield check
     private ArrayList<Block> vesselsWereActive = new ArrayList<>();//used for shield check
+    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public OverhaulMSR(){
         this(null);
     }
@@ -247,7 +248,9 @@ public class OverhaulMSR extends Multiblock<Block>{
         if(calculationStep==0){
             shutdownFactor = calculateShutdownFactor();
         }
-        rainbowScore = getRainbowScore();
+        for(Module m : Core.modules){
+            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
+        }
     }
     private void calculatePartialShutdown(){
         int last = calculationStep;
@@ -303,8 +306,11 @@ public class OverhaulMSR extends Multiblock<Block>{
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
                     + "Total Irradiation: "+totalIrradiation+"\n"
-                    + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n"
-                    + "Rainbow Score: "+percent(rainbowScore, 2)+"\n";//TODO make this (and shutdown factor?) modular
+                    + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n";
+            for(Module m : moduleData.keySet()){
+                String str = m.getTooltip(this, moduleData.get(m));
+                if(str!=null)s+=str+"\n";
+            }
             for(Fuel f : getConfiguration().overhaul.fissionMSR.allFuels){
                 int i = getFuelCount(f);
                 if(i>0)s+="\n"+f.name+": "+i;
@@ -607,12 +613,9 @@ public class OverhaulMSR extends Multiblock<Block>{
                 return main.getVessels()-other.getVessels();
             }
         });
-        priorities.add(new Priority<OverhaulMSR>("Rainbow", false, true){
-            @Override
-            protected double doCompare(OverhaulMSR main, OverhaulMSR other){
-                return main.rainbowScore-other.rainbowScore;
-            }
-        });//TODO make this modular
+        for(Module m : Core.modules){
+            m.getGenerationPriorities(this, priorities);
+        }
     }
     @Override
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
@@ -633,18 +636,6 @@ public class OverhaulMSR extends Multiblock<Block>{
         for(multiblock.configuration.overhaul.fissionmsr.Block b : getConfiguration().overhaul.fissionMSR.allBlocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new MSRFill(b));
         }
-    }
-    private float getRainbowScore(){
-        float totalSinks = 0;
-        for(multiblock.configuration.overhaul.fissionmsr.Block b : getConfiguration().overhaul.fissionMSR.allBlocks){
-            if(b.cooling!=0)totalSinks++;
-        }
-        Set<multiblock.configuration.overhaul.fissionmsr.Block> unique = new HashSet<>();
-        for(Block b : getBlocks()){
-            if(!b.isActive())continue;
-            if(b.isHeater())unique.add(b.template);
-        }
-        return unique.size()/totalSinks;
     }
     @Override
     protected void getFluidOutputs(HashMap<String, Double> outputs){
@@ -963,7 +954,8 @@ public class OverhaulMSR extends Multiblock<Block>{
             clusters.clear();
         }
         totalOutput.clear();
-        rainbowScore = shutdownFactor = totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelVessels = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+        shutdownFactor = totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelVessels = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+        moduleData.clear();
     }
     /**
      * Converts the tiered search returned by getBlocks into a list of blocks.<br>
@@ -1012,7 +1004,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         copy.totalOutput.putAll(totalOutput);
         copy.totalTotalOutput = totalTotalOutput;
         copy.shutdownFactor = shutdownFactor;
-        copy.rainbowScore = rainbowScore;
+        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override

@@ -35,6 +35,8 @@ import planner.menu.MenuTutorial;
 import planner.menu.error.MenuMinorError;
 import planner.menu.error.MenuModerateError;
 import planner.menu.error.MenuSevereError;
+import planner.module.Module;
+import planner.module.RainbowFactorModule;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -68,6 +70,7 @@ public class Core extends Renderer2D{
     public static int outlineSquare = -1;
     public static boolean delCircle = false;
     public static int circleSize = 64;
+    public static final ArrayList<Module> modules = new ArrayList<>();
     static{
         for(Configuration configuration : Configuration.configurations){
             if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
@@ -89,6 +92,10 @@ public class Core extends Renderer2D{
         multiblockTypes.add(new OverhaulTurbine());
         multiblockTypes.add(new OverhaulFusionReactor());
         resetMetadata();
+        modules.add(new RainbowFactorModule());
+    }
+    public static void addModule(Module m){
+        modules.add(m);
     }
     public static void resetMetadata(){
         metadata.clear();

@@ -16,11 +16,13 @@ import multiblock.ppe.PostProcessingEffect;
 import multiblock.ppe.SmartFillOverhaulFusion;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
+import planner.Core;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.generator.MenuComponentFusionToggleBreedingBlanketRecipe;
+import planner.module.Module;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.opengl.gui.GUI;
@@ -41,6 +43,9 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public float totalEfficiency;
     public float totalHeatMult;
     public int functionalBlocks;
+    private float sparsityMult;
+    private float shieldinessFactor;
+    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     private static int getWidth(int innerRadius, int coreSize, int toroidWidth, int liningThickness){
         return coreSize+2+innerRadius*2+toroidWidth*2+liningThickness*4+4;
     }
@@ -55,8 +60,6 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         int edge = edgeTop*2+edgeEnd*2;
         return corner*4+edge*4;
     }
-    private float sparsityMult;
-    private float shieldinessFactor;
     public OverhaulFusionReactor(){
         this(null);
     }
@@ -236,6 +239,9 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         totalOutput*=sparsityMult;
         totalEfficiency*=sparsityMult;
         totalOutput/=coolantRecipe.heat/coolantRecipe.outputRatio;
+        for(Module m : Core.modules){
+            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
+        }
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -265,6 +271,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Shieldiness Factor: "+percent(shieldinessFactor, 1)+"\n"
                     + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n";
+            for(Module m : moduleData.keySet()){
+                String str = m.getTooltip(this, moduleData.get(m));
+                if(str!=null)s+=str+"\n";
+            }
             if(showDetails){
                 HashMap<String, Integer> counts = new HashMap<>();
                 ArrayList<String> order = new ArrayList<>();
@@ -387,6 +397,9 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                 return main.totalOutput-other.totalOutput;
             }
         });
+        for(Module m : Core.modules){
+            m.getGenerationPriorities(this, priorities);
+        }
     }
     @Override
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
@@ -564,6 +577,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             clusters.clear();
         }
         shieldinessFactor = totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalHeatingBlankets = rawOutput = totalCooling = totalHeat = netHeat = functionalBlocks = 0;
+        moduleData.clear();
     }
     /**
      * Block search algorithm from my Tree Feller for Bukkit.
@@ -684,6 +698,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         copy.totalHeatMult = totalHeatMult;
         copy.functionalBlocks = functionalBlocks;
         copy.sparsityMult = sparsityMult;
+        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override

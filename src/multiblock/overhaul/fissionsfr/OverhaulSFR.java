@@ -3,9 +3,7 @@ import discord.Bot;
 import generator.Priority;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import multiblock.Action;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
@@ -32,6 +30,7 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.generator.MenuComponentSFRToggleFuel;
 import planner.menu.component.generator.MenuComponentSFRToggleSource;
 import planner.menu.component.generator.MenuComponentSFRToggleIrradiatorRecipe;
+import planner.module.Module;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
@@ -51,9 +50,9 @@ public class OverhaulSFR extends Multiblock<Block>{
     public int functionalBlocks;
     public float sparsityMult;
     public float shutdownFactor;
-    public float rainbowScore;
     private int calculationStep = 0;//0 is initial calculation, 1 is shield check, 2 is shutdown factor check
     private ArrayList<Block> cellsWereActive = new ArrayList<>();//used for shield check
+    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public OverhaulSFR(){
         this(null);
     }
@@ -229,7 +228,9 @@ public class OverhaulSFR extends Multiblock<Block>{
         if(calculationStep==0){
             shutdownFactor = calculateShutdownFactor();
         }
-        rainbowScore = getRainbowScore();
+        for(Module m : Core.modules){
+            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
+        }
     }
     private void calculatePartialShutdown(){
         int last = calculationStep;
@@ -277,8 +278,11 @@ public class OverhaulSFR extends Multiblock<Block>{
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
                     + "Total Irradiation: "+totalIrradiation+"\n"
-                    + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n"
-                    + "Rainbow Score: "+percent(rainbowScore, 2)+"\n";//TODO make this (and shutdown factor?) modular
+                    + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n";
+            for(Module m : moduleData.keySet()){
+                String str = m.getTooltip(this, moduleData.get(m));
+                if(str!=null)s+=str+"\n";
+            }
             for(Fuel f : getConfiguration().overhaul.fissionSFR.allFuels){
                 int i = getFuelCount(f);
                 if(i>0)s+="\n"+f.name+": "+i;
@@ -560,12 +564,9 @@ public class OverhaulSFR extends Multiblock<Block>{
                 return main.totalIrradiation-other.totalIrradiation;
             }
         });
-        priorities.add(new Priority<OverhaulSFR>("Rainbow", false, true){
-            @Override
-            protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                return main.rainbowScore-other.rainbowScore;
-            }
-        });//TODO make this modular
+        for(Module m : Core.modules){
+            m.getGenerationPriorities(this, priorities);
+        }
     }
     @Override
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
@@ -586,18 +587,6 @@ public class OverhaulSFR extends Multiblock<Block>{
         for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
             if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new SFRFill(b));
         }
-    }
-    private float getRainbowScore(){
-        float totalSinks = 0;
-        for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
-            if(b.cooling!=0)totalSinks++;
-        }
-        Set<multiblock.configuration.overhaul.fissionsfr.Block> unique = new HashSet<>();
-        for(Block b : getBlocks()){
-            if(!b.isActive())continue;
-            if(b.isHeatsink())unique.add(b.template);
-        }
-        return unique.size()/totalSinks;
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();
@@ -677,7 +666,8 @@ public class OverhaulSFR extends Multiblock<Block>{
         synchronized(clusters){
             clusters.clear();
         }
-        rainbowScore = shutdownFactor = totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = rawOutput = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+        shutdownFactor = totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = rawOutput = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+        moduleData.clear();
     }
     /**
      * Block search algorithm from my Tree Feller for Bukkit.
@@ -800,7 +790,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         copy.functionalBlocks = functionalBlocks;
         copy.sparsityMult = sparsityMult;
         copy.shutdownFactor = shutdownFactor;
-        copy.rainbowScore = rainbowScore;
+        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override

@@ -3,7 +3,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
-import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.Core;
 import planner.file.FileReader;

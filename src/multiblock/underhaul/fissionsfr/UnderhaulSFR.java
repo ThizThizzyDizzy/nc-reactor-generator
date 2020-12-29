@@ -12,8 +12,10 @@ import multiblock.ppe.PostProcessingEffect;
 import multiblock.ppe.SmartFillUnderhaulSFR;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
+import planner.Core;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.module.Module;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
@@ -22,6 +24,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     private float efficiency;
     public Fuel fuel;
     private double heatMult;
+    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public UnderhaulSFR(){
         this(null);
     }
@@ -106,6 +109,9 @@ public class UnderhaulSFR extends Multiblock<Block>{
         power = (int) (totalEnergyMult*fuel.power);
         efficiency = totalEnergyMult/cells;
         if(Double.isNaN(efficiency))efficiency = 0;
+        for(Module m : Core.modules){
+            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
+        }
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -121,13 +127,18 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public String getTooltip(){
-        return "Power Generation: "+power+"RF/t\n"
+        String tooltip = "Power Generation: "+power+"RF/t\n"
                 + "Total Heat: "+heat+"H/t\n"
                 + "Total Cooling: "+cooling+"H/t\n"
                 + "Net Heat: "+netHeat+"H/t\n"
                 + "Efficiency: "+percent(efficiency, 0)+"\n"
                 + "Heat multiplier: "+percent(heatMult, 0)+"\n"
                 + "Fuel cells: "+cells;
+        for(Module m : moduleData.keySet()){
+            String s = m.getTooltip(this, moduleData.get(m));
+            if(s!=null)tooltip+="\n"+s;
+        }
+        return tooltip;
     }
     @Override
     public int getMultiblockID(){
@@ -186,6 +197,11 @@ public class UnderhaulSFR extends Multiblock<Block>{
         configuration = to;
     }
     @Override
+    public void clearData(List<Block> blocks){
+        super.clearData(blocks);
+        moduleData.clear();
+    }
+    @Override
     public boolean validate(){
         return false;
     }
@@ -238,6 +254,9 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 return main.cells-other.cells;
             }
         });
+        for(Module m : Core.modules){
+            m.getGenerationPriorities(this, priorities);
+        }
     }
     @Override
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
@@ -278,6 +297,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         copy.cells = cells;
         copy.efficiency = efficiency;
         copy.heatMult = heatMult;
+        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override

@@ -14,6 +14,7 @@ import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.configuration.MenuConfiguration;
+import planner.module.Module;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -28,6 +29,7 @@ public class MenuSettings extends Menu{
     private final MenuComponentMinimalistOptionButton theme = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Theme", true, true, Theme.themes.indexOf(Core.theme), Theme.getThemeS())).setTooltip("Click to cycle through available themes\nRight click to cycle back");
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Close the settings menu"));
     private final MenuComponentMinimalistButton tutorials = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Tutorials", true, true));
+    private final MenuComponentMinimalistButton modules = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Modules", true, true));
     private final ArrayList<MenuComponentMinimalistButton> buttons = new ArrayList<>();
     public MenuSettings(GUI gui, Menu parent){
         super(gui, parent);
@@ -72,6 +74,9 @@ public class MenuSettings extends Menu{
         tutorials.addActionListener((e) -> {
             gui.open(new MenuTutorial(gui, this));
         });
+        modules.addActionListener((e) -> {
+            gui.open(new MenuModules(gui, this));
+        });
         edit.addActionListener((e) -> {
             gui.open(new MenuConfiguration(gui, this, Core.configuration));
         });
@@ -82,6 +87,9 @@ public class MenuSettings extends Menu{
     @Override
     public void onGUIOpened(){
         currentConfig.text = "Current Configuration: "+Core.configuration.toString();
+        int active = 0;
+        for(Module m : Core.modules)if(m.isActive())active++;
+        modules.label = "Modules ("+active+"/"+Core.modules.size()+" Active)";
     }
     @Override
     public void render(int millisSinceLastTick){
@@ -91,8 +99,8 @@ public class MenuSettings extends Menu{
             b.height = gui.helper.displayHeight()/16;
             b.y = b.height*i;
         }
-        tutorials.width = currentConfig.width = theme.width = load.width = save.width = done.width = edit.width = gui.helper.displayWidth();
-        tutorials.height = currentConfig.height = theme.height = load.height = save.height = done.height = edit.height = gui.helper.displayHeight()/16;
+        modules.width = tutorials.width = currentConfig.width = theme.width = load.width = save.width = done.width = edit.width = gui.helper.displayWidth();
+        modules.height = tutorials.height = currentConfig.height = theme.height = load.height = save.height = done.height = edit.height = gui.helper.displayHeight()/16;
         currentConfig.y = load.height*(Configuration.configurations.size());
         load.y = currentConfig.y+currentConfig.height;
         save.y = load.y+load.height;
@@ -100,6 +108,7 @@ public class MenuSettings extends Menu{
         done.y = gui.helper.displayHeight()-done.height;
         theme.y = done.y-theme.height;
         tutorials.y = theme.y-theme.height;
+        modules.y = tutorials.y-tutorials.height;
         if(Theme.themes.indexOf(Core.theme)!=theme.getIndex()){
             try{
                 Core.setTheme(Theme.themes.get(theme.getIndex()));
