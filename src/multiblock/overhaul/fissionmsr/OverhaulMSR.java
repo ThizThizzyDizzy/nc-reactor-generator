@@ -310,8 +310,23 @@ public class OverhaulMSR extends Multiblock<Block>{
                 if(i>0)s+="\n"+f.name+": "+i;
             }
             if(showDetails){
+                HashMap<String, Integer> counts = new HashMap<>();
+                ArrayList<String> order = new ArrayList<>();
                 for(Cluster c : clusters){
-                    s+="\n\n"+c.getTooltip();
+                    String str = c.getTooltip();
+                    if(counts.containsKey(str)){
+                        counts.put(str, counts.get(str)+1);
+                    }else{
+                        counts.put(str, 1);
+                        order.add(str);
+                    }
+                }
+                for(String str : order){
+                    int count = counts.get(str);
+                    if(count==1)s+="\n\n"+str;
+                    else{
+                        s+="\n\n"+count+" similar clusters:\n\n"+str;
+                    }
                 }
             }
             return s;
