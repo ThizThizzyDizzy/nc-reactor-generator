@@ -51,7 +51,9 @@ public class OverhaulMSR extends Multiblock<Block>{
     public float totalTotalOutput;
     public float shutdownFactor;
     public float rainbowScore;
-    private boolean computingShutdown = false;
+    private int calculationStep = 0;//0 is initial calculation, 1 is shield check, 2 is shutdown factor check
+    private ArrayList<VesselGroup> vesselGroupsWereActive = new ArrayList<>();//used for shield check
+    private ArrayList<Block> vesselsWereActive = new ArrayList<>();//used for shield check
     public OverhaulMSR(){
         this(null);
     }
@@ -106,7 +108,14 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public synchronized void calculate(List<Block> blocks){
+        HashMap<Block, Boolean> shieldsWere = new HashMap<>();
         List<Block> allBlocks = getBlocks();
+        if(calculationStep!=1){//temporarily open all shields
+            for(Block block : allBlocks){
+                shieldsWere.put(block, block.closed);
+                block.closed = false;
+            }
+        }
         vesselGroups.clear();
         for(Block b : allBlocks){
             b.vesselGroup = null;
@@ -118,9 +127,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             vesselGroups.add(group);
         }
         for(VesselGroup group : vesselGroups){
-            if(group.isPrimed()){
-                group.propogateNeutronFlux(this);
-            }
+            group.propogateNeutronFlux(this, calculationStep==1&&vesselGroupsWereActive.contains(group));
         }
         int lastActive, nowActive;
         do{
@@ -132,8 +139,8 @@ public class OverhaulMSR extends Multiblock<Block>{
                 if(wasActive)lastActive+=group.size();
                 group.wasActive = wasActive;
             }
-            for(Block block : blocks){
-                block.rePropogateNeutronFlux(this);
+            for(Block block : blocks){//why not vessel groups...?
+                block.rePropogateNeutronFlux(this, calculationStep==1&&vesselsWereActive.contains(block));
             }
             nowActive = 0;
             for(VesselGroup group : vesselGroups){
@@ -231,8 +238,36 @@ public class OverhaulMSR extends Multiblock<Block>{
                 }
             }
         }
-        if(!computingShutdown)shutdownFactor = calculateShutdownFactor();
+        for(Block b : shieldsWere.keySet()){
+            b.closed = shieldsWere.get(b);
+        }
+        if(calculationStep!=1){
+            calculatePartialShutdown();
+        }
+        if(calculationStep==0){
+            shutdownFactor = calculateShutdownFactor();
+        }
         rainbowScore = getRainbowScore();
+    }
+    private void calculatePartialShutdown(){
+        int last = calculationStep;
+        calculationStep = 1;
+        vesselsWereActive.clear();
+        vesselGroupsWereActive.clear();
+        for(Block b : getBlocks())if(b!=null&&b.isFuelVesselActive())vesselsWereActive.add(b);
+        for(VesselGroup group : vesselGroups)if(group.isActive())vesselGroupsWereActive.add(group);
+        recalculate();
+        calculationStep = last;
+    }
+    private float calculateShutdownFactor(){
+        Stack<Action> copy = future.copy();
+        calculationStep = 2;
+        action(new MSRAllShieldsAction(true), true);
+        float offOut = totalTotalOutput;
+        undo();
+        calculationStep = 0;
+        future = copy;
+        return 1-(offOut/totalTotalOutput);
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -504,16 +539,6 @@ public class OverhaulMSR extends Multiblock<Block>{
             if(b.isFuelVessel())vessels++;
         }
         return vessels;
-    }
-    private float calculateShutdownFactor(){
-        Stack<Action> copy = future.copy();
-        computingShutdown = true;
-        action(new MSRAllShieldsAction(true), true);
-        float offOut = totalTotalOutput;
-        undo();
-        computingShutdown = false;
-        future = copy;
-        return 1-(offOut/totalTotalOutput);
     }
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
@@ -905,14 +930,14 @@ public class OverhaulMSR extends Multiblock<Block>{
         public boolean isPrimed(){
             return getSources()>=getRequiredSources();
         }
-        public void propogateNeutronFlux(OverhaulMSR msr){
+        public void propogateNeutronFlux(OverhaulMSR msr, boolean force){
             for(Block b : blocks){
-                b.propogateNeutronFlux(msr);
+                b.propogateNeutronFlux(msr, force);
             }
         }
-        public void rePropogateNeutronFlux(OverhaulMSR msr){
+        public void rePropogateNeutronFlux(OverhaulMSR msr, boolean force){
             for(Block b : blocks){
-                b.rePropogateNeutronFlux(msr);
+                b.rePropogateNeutronFlux(msr, force);
             }
         }
     }

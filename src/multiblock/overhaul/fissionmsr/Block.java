@@ -241,10 +241,10 @@ public class Block extends multiblock.Block{
         if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
         return template.functional&&(isActive()||moderatorValid);
     }
-    public void propogateNeutronFlux(OverhaulMSR reactor){
+    public void propogateNeutronFlux(OverhaulMSR reactor, boolean force){
         if(!isFuelVessel())return;
         if(hasPropogated)return;
-        if(!vesselGroup.isPrimed()&&vesselGroup.neutronFlux<vesselGroup.criticality)return;
+        if(!force&&!vesselGroup.isPrimed()&&vesselGroup.neutronFlux<vesselGroup.criticality)return;
         hasPropogated = true;
         for(Direction d : directions){
             int flux = 0;
@@ -269,7 +269,7 @@ public class Block extends multiblock.Block{
                     block.vesselGroup.neutronFlux+=flux;
                     block.vesselGroup.moderatorLines++;
                     block.vesselGroup.positionalEfficiency+=efficiency/length;
-                    block.vesselGroup.propogateNeutronFlux(reactor);
+                    block.vesselGroup.propogateNeutronFlux(reactor, false);
                     break;
                 }
                 if(block.isReflector()){
@@ -292,10 +292,10 @@ public class Block extends multiblock.Block{
             }
         }
     }
-    public void rePropogateNeutronFlux(OverhaulMSR reactor){
+    public void rePropogateNeutronFlux(OverhaulMSR reactor, boolean force){
         if(!isFuelVessel())return;
         if(!vesselGroup.wasActive)return;
-        if(!vesselGroup.isPrimed()&&vesselGroup.neutronFlux<vesselGroup.criticality)return;
+        if(!force&&!vesselGroup.isPrimed()&&vesselGroup.neutronFlux<vesselGroup.criticality)return;
         if(hasPropogated)return;
         hasPropogated = true;
         for(Direction d : directions){
@@ -321,7 +321,7 @@ public class Block extends multiblock.Block{
                     block.vesselGroup.neutronFlux+=flux;
                     block.vesselGroup.moderatorLines++;
                     block.vesselGroup.positionalEfficiency+=efficiency/length;
-                    block.vesselGroup.rePropogateNeutronFlux(reactor);
+                    block.vesselGroup.rePropogateNeutronFlux(reactor, false);
                     break;
                 }
                 if(block.isReflector()){

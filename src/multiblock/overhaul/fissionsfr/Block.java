@@ -232,9 +232,9 @@ public class Block extends multiblock.Block{
         if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
         return template.functional&&(isActive()||moderatorValid);
     }
-    public void propogateNeutronFlux(OverhaulSFR reactor){
+    public void propogateNeutronFlux(OverhaulSFR reactor, boolean force){
         if(!isFuelCell())return;
-        if(!isPrimed()&&neutronFlux<fuel.criticality)return;
+        if(!force&&!isPrimed()&&neutronFlux<fuel.criticality)return;
         if(hasPropogated)return;
         hasPropogated = true;
         for(Direction d : directions){
@@ -260,7 +260,7 @@ public class Block extends multiblock.Block{
                     block.neutronFlux+=flux;
                     block.moderatorLines++;
                     block.positionalEfficiency+=efficiency/length;
-                    block.propogateNeutronFlux(reactor);
+                    block.propogateNeutronFlux(reactor, false);
                     break;
                 }
                 if(block.isReflector()){
@@ -283,10 +283,10 @@ public class Block extends multiblock.Block{
             }
         }
     }
-    public void rePropogateNeutronFlux(OverhaulSFR reactor){
+    public void rePropogateNeutronFlux(OverhaulSFR reactor, boolean force){
         if(!isFuelCell())return;
         if(!wasActive)return;
-        if(!isPrimed()&&neutronFlux<fuel.criticality)return;
+        if(!force&&!isPrimed()&&neutronFlux<fuel.criticality)return;
         if(hasPropogated)return;
         hasPropogated = true;
         for(Direction d : directions){
@@ -312,7 +312,7 @@ public class Block extends multiblock.Block{
                     block.neutronFlux+=flux;
                     block.moderatorLines++;
                     block.positionalEfficiency+=efficiency/length;
-                    block.rePropogateNeutronFlux(reactor);
+                    block.rePropogateNeutronFlux(reactor, false);
                     break;
                 }
                 if(block.isReflector()){

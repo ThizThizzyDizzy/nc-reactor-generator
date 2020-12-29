@@ -52,7 +52,8 @@ public class OverhaulSFR extends Multiblock<Block>{
     public float sparsityMult;
     public float shutdownFactor;
     public float rainbowScore;
-    private boolean computingShutdown = false;
+    private int calculationStep = 0;//0 is initial calculation, 1 is shield check, 2 is shutdown factor check
+    private ArrayList<Block> cellsWereActive = new ArrayList<>();//used for shield check
     public OverhaulSFR(){
         this(null);
     }
@@ -108,9 +109,16 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void calculate(List<Block> blocks){
+        HashMap<Block, Boolean> shieldsWere = new HashMap<>();
         List<Block> allBlocks = getBlocks();
+        if(calculationStep!=1){//temporarily open all shields
+            for(Block block : allBlocks){
+                shieldsWere.put(block, block.closed);
+                block.closed = false;
+            }
+        }
         for(Block block : blocks){
-            if(block.isPrimed())block.propogateNeutronFlux(this);
+            block.propogateNeutronFlux(this, calculationStep==1&&cellsWereActive.contains(block));
         }
         int lastActive, nowActive;
         do{
@@ -123,7 +131,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                 block.wasActive = wasActive;
             }
             for(Block block : blocks){
-                block.rePropogateNeutronFlux(this);
+                block.rePropogateNeutronFlux(this, calculationStep==1&&cellsWereActive.contains(block));
             }
             nowActive = 0;
             for(Block block : blocks){
@@ -212,8 +220,34 @@ public class OverhaulSFR extends Multiblock<Block>{
         totalOutput*=sparsityMult;
         totalEfficiency*=sparsityMult;
         totalOutput/=coolantRecipe.heat/coolantRecipe.outputRatio;
-        if(!computingShutdown)shutdownFactor = calculateShutdownFactor();
+        for(Block b : shieldsWere.keySet()){
+            b.closed = shieldsWere.get(b);
+        }
+        if(calculationStep!=1){
+            calculatePartialShutdown();
+        }
+        if(calculationStep==0){
+            shutdownFactor = calculateShutdownFactor();
+        }
         rainbowScore = getRainbowScore();
+    }
+    private void calculatePartialShutdown(){
+        int last = calculationStep;
+        calculationStep = 1;
+        cellsWereActive.clear();
+        for(Block b : getBlocks())if(b!=null&&b.isFuelCellActive())cellsWereActive.add(b);
+        recalculate();
+        calculationStep = last;
+    }
+    private float calculateShutdownFactor(){
+        Stack<Action> copy = future.copy();
+        calculationStep = 2;
+        action(new SFRAllShieldsAction(true), true);
+        float offOut = totalOutput;
+        undo();
+        calculationStep = 0;
+        future = copy;
+        return 1-(offOut/totalOutput);
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -464,16 +498,6 @@ public class OverhaulSFR extends Multiblock<Block>{
             if(b.isFuelCell()&&!b.isFuelCellActive())badCells++;
         }
         return badCells;
-    }
-    private float calculateShutdownFactor(){
-        Stack<Action> copy = future.copy();
-        computingShutdown = true;
-        action(new SFRAllShieldsAction(true), true);
-        float offOut = totalOutput;
-        undo();
-        computingShutdown = false;
-        future = copy;
-        return 1-(offOut/totalOutput);
     }
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
