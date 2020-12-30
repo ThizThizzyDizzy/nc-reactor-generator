@@ -1,15 +1,17 @@
 package planner.menu.component.editor;
 import planner.Core;
-import org.lwjgl.glfw.GLFW;
-import planner.suggestion.Suggestor;
+import planner.menu.MenuEdit;
+import planner.suggestion.Suggestion;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentSuggestor extends MenuComponent{
-    public final Suggestor suggestor;
+public class MenuComponentSuggestion extends MenuComponent{
+    private final MenuEdit editor;
+    public final Suggestion suggestion;
     public boolean enabled = false;
-    public MenuComponentSuggestor(Suggestor suggestor){
+    public MenuComponentSuggestion(MenuEdit editor, Suggestion suggestion){
         super(0, 0, 0, 64);
-        this.suggestor = suggestor;
+        this.editor = editor;
+        this.suggestion = suggestion;
     }
     @Override
     public void render(){
@@ -17,7 +19,7 @@ public class MenuComponentSuggestor extends MenuComponent{
         else Core.applyColor(enabled?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(Core.theme.getTextColor());
-        drawText(suggestor.getName()+" ("+(suggestor.isActive()?"On":"Off")+")");
+        drawText(suggestion.getName());
     }
     public void drawText(String text){
         double textLength = FontManager.getLengthForStringWithHeight(text, height);
@@ -27,14 +29,28 @@ public class MenuComponentSuggestor extends MenuComponent{
     }
     @Override
     public String getTooltip(){
-        return suggestor.getDescription();
+        return suggestion.getDescription();
+    }
+    @Override
+    public void onMouseMove(double x, double y){
+        super.onMouseMove(x, y);
+        suggestion.selected = true;
+    }
+    @Override
+    public void onMouseMovedElsewhere(double x, double y){
+        super.onMouseMovedElsewhere(x, y);
+        suggestion.selected = false;
     }
     @Override
     public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
         super.onMouseButton(x, y, button, pressed, mods);
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed){
-            enabled = !enabled;
-            suggestor.setActive(enabled);
+        if(pressed){
+//            if(button==1){
+//                editor.suggestions.remove(suggestion);
+//            }
+            if(button==0){
+                suggestion.apply(editor.multiblock);
+            }
         }
     }
 }

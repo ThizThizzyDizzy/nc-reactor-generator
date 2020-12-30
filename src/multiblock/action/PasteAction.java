@@ -48,7 +48,7 @@ public class PasteAction extends Action<Multiblock>{
         }
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
         for(MenuEdit.ClipboardEntry entry : this.blocks){
             Block block = multiblock.getBlock(entry.x+x, entry.y+y, entry.z+z);
             if(block==null)continue;

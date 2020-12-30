@@ -25,7 +25,7 @@ public class SetFusionRecipeAction extends Action<OverhaulFusionReactor>{
         editor.overFuel.setSelectedIndex(multiblock.getConfiguration().overhaul.fusion.allRecipes.indexOf(((OverhaulFusionReactor)multiblock).recipe));
     }
     @Override
-    protected void getAffectedBlocks(OverhaulFusionReactor multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(OverhaulFusionReactor multiblock, ArrayList<Block> blocks){
         blocks.addAll(multiblock.getBlocks());
     }
 }

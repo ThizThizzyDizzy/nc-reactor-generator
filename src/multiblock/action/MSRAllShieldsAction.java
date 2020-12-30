@@ -26,7 +26,7 @@ public class MSRAllShieldsAction extends Action<OverhaulMSR>{
         }
     }
     @Override
-    protected void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
         for(Block block : multiblock.getBlocks()){
             if(block.template.shield)blocks.add(block);
         }

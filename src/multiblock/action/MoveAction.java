@@ -63,7 +63,7 @@ public class MoveAction extends Action<Multiblock>{
         }
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
         for(int[] loc : selection){
             Block from = multiblock.getBlock(loc[0], loc[1], loc[2]);
             if(from!=null)blocks.add(from);

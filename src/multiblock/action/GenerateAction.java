@@ -35,7 +35,7 @@ public class GenerateAction extends Action<Multiblock>{
         }
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
         blocks.addAll(multiblock.getBlocks());//TODO only list the actually affected blocks
     }
 }

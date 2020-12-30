@@ -45,6 +45,7 @@ import planner.menu.component.editor.MenuComponentEditorGrid;
 import planner.menu.component.editor.MenuComponentFusionBreedingBlanketRecipe;
 import planner.menu.component.editor.MenuComponentFusionCoolantRecipe;
 import planner.menu.component.editor.MenuComponentOverFusionRecipe;
+import planner.menu.component.editor.MenuComponentSuggestion;
 import planner.menu.component.editor.MenuComponentSuggestor;
 import planner.menu.component.editor.MenuComponentTurbineBladeEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineCoilEditorGrid;
@@ -99,6 +100,7 @@ public class MenuEdit extends Menu{
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Modify the multiblock metadata"));
     public final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
     private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", true, true).setTooltip("Generate or improve this multiblock"));
+    private final MenuComponentMinimaList suggestionList = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
     private final MenuComponentDropdownList suggestorSettings = add(new MenuComponentDropdownList(0, 0, 0, 0){
         @Override
         public void render(){
@@ -117,7 +119,7 @@ public class MenuEdit extends Menu{
         }
     });
     public final ArrayList<int[]> selection = new ArrayList<>();
-    private ArrayList<Suggestion> suggestions = new ArrayList<>();
+    public ArrayList<Suggestion> suggestions = new ArrayList<>();
     private ArrayList<Suggestor> suggestors = new ArrayList<>();
     private double scale = 4;
     private double minScale = 0.5;
@@ -296,9 +298,9 @@ public class MenuEdit extends Menu{
         resize.x = gui.helper.displayWidth()-resize.width;
         zoomIn.x = resize.x;
         zoomOut.x = zoomIn.x+zoomIn.width;
-        irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
+        suggestionList.x = irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
         underFuelOrCoolantRecipe.y = resize.height*2+underFuelOrCoolantRecipe.preferredHeight;
-        irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
+        suggestionList.width = irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
         if(suggestorSettings.isDown){
             suggestorSettings.width = gui.helper.displayWidth()-suggestorSettings.x;
             suggestorSettings.y = gui.helper.displayHeight()*3/4;
@@ -360,6 +362,8 @@ public class MenuEdit extends Menu{
                 }
             }
         }
+        suggestionList.y = Math.max(underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height, Math.max(overFuel.y+overFuel.height, irradiatorRecipe.y+irradiatorRecipe.height));
+        suggestionList.height = gui.helper.displayHeight()-suggestionList.y;
         multibwauk.height = gui.helper.displayHeight()-multibwauk.y-generate.height;
         textBox.y = parts.y+parts.height;
         textBox.height = gui.helper.displayHeight()-textBox.y;
@@ -923,6 +927,7 @@ public class MenuEdit extends Menu{
     }
     private void recalculateSuggestions(){
         suggestions.clear();
+        suggestionList.components.clear();
         for(Suggestor s : suggestors){
             if(s.isActive()){
                 s.generateSuggestions(multiblock, suggestions);
@@ -931,6 +936,9 @@ public class MenuEdit extends Menu{
         for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
             Suggestion s = it.next();
             if(!s.test(multiblock))it.remove();
+        }
+        for(Suggestion s : suggestions){
+            suggestionList.add(new MenuComponentSuggestion(this, s));
         }
     }
     public static class ClipboardEntry{

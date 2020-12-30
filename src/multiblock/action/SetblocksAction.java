@@ -29,7 +29,7 @@ public class SetblocksAction extends Action<Multiblock>{
         return this;
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
         for(int[] loc : locations){
             Block b = multiblock.getBlock(loc[0], loc[1], loc[2]);
             if(b!=null)blocks.add(b);

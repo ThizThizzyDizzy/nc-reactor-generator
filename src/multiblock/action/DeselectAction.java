@@ -35,5 +35,5 @@ public class DeselectAction extends Action<Multiblock>{
         }
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){}
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){}
 }

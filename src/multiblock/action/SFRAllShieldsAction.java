@@ -26,7 +26,7 @@ public class SFRAllShieldsAction extends Action<OverhaulSFR>{
         }
     }
     @Override
-    protected void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<multiblock.Block> blocks){
         for(Block block : multiblock.getBlocks()){
             if(block.template.shield)blocks.add(block);
         }

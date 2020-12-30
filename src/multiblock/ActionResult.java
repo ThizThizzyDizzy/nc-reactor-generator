@@ -16,4 +16,13 @@ public class ActionResult<T extends Multiblock>{
         }
         return multiblock.getAffectedGroups(blocks);
     }
+    /**
+     * @return null if all blocks were affected
+     */
+    public ArrayList<Block> getAffectedBlocks(){
+        if(blocks==null){
+            return null;
+        }
+        return blocks;
+    }
 }

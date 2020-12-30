@@ -25,7 +25,7 @@ public class SetTurbineRecipeAction extends Action<OverhaulTurbine>{
         editor.underFuelOrCoolantRecipe.setSelectedIndex(multiblock.getConfiguration().overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
     }
     @Override
-    protected void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<Block> blocks){
         blocks.addAll(multiblock.getBlocks());
     }
 }

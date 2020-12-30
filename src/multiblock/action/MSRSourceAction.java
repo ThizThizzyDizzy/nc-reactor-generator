@@ -22,7 +22,7 @@ public class MSRSourceAction extends Action<OverhaulMSR>{
         block.source = was;
     }
     @Override
-    protected void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
         blocks.add(multiblock.getBlock(block.x, block.y, block.z));
     }
 }

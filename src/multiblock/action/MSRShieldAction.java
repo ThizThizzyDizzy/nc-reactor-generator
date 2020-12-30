@@ -19,7 +19,7 @@ public class MSRShieldAction extends Action<OverhaulMSR>{
         block.closed = was;
     }
     @Override
-    protected void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
         blocks.add(multiblock.getBlock(block.x, block.y, block.z));
     }
 }

@@ -899,8 +899,10 @@ public class OverhaulSFR extends Multiblock<Block>{
                         int z = rand.nextInt(multiblock.getZ());
                         ArrayList<Block> blocks = new ArrayList<>();
                         multiblock.getAvailableBlocks(blocks);
+                        Block was = multiblock.getBlock(x, y, z);
                         for(Block b : blocks){
-                            suggestor.suggest(new Suggestion(new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                            if(b.isFuelCell())continue;
+                            suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
                         }
                     }
                 }

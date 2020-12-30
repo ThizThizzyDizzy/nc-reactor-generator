@@ -4,10 +4,8 @@ import generator.Priority;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import multiblock.Action;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Fuel;
@@ -1109,8 +1107,10 @@ public class OverhaulMSR extends Multiblock<Block>{
                         int z = rand.nextInt(multiblock.getZ());
                         ArrayList<Block> blocks = new ArrayList<>();
                         multiblock.getAvailableBlocks(blocks);
+                        Block was = multiblock.getBlock(x, y, z);
                         for(Block b : blocks){
-                            suggestor.suggest(new Suggestion(new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                            if(b.isFuelVessel())continue;
+                            suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
                         }
                     }
                 }

@@ -13,6 +13,7 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.glfw.GLFW;
+import planner.suggestion.Suggestion;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
@@ -135,6 +136,42 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     }
                     if(!left){//left
                         Renderer2D.drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
+                    }
+                }
+                //TODO there's a MUCH better way do do this, but this'll do for now
+                for(Suggestion s : editor.suggestions){
+                    if(s.affects(x, layer, z)){
+                        Core.applyColor(Core.theme.getGreen());
+                        border = blockSize/40f;
+                        if(s.selected)border*=3;
+                        boolean top = s.affects(x, layer, z-1);
+                        boolean right = s.affects(x+1, layer, z);
+                        boolean bottom = s.affects(x, layer, z+1);
+                        boolean left = s.affects(x-1, layer, z);
+                        if(!top||!left||!s.affects(x-1, layer, z-1)){//top left
+                            Renderer2D.drawRect(X, Y, X+border, Y+border, 0);
+                        }
+                        if(!top){//top
+                            Renderer2D.drawRect(X+border, Y, X+blockSize-border, Y+border, 0);
+                        }
+                        if(!top||!right||!s.affects(x+1, layer, z-1)){//top right
+                            Renderer2D.drawRect(X+blockSize-border, Y, X+blockSize, Y+border, 0);
+                        }
+                        if(!right){//right
+                            Renderer2D.drawRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border, 0);
+                        }
+                        if(!bottom||!right||!s.affects(x+1, layer, z+1)){//bottom right
+                            Renderer2D.drawRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize, 0);
+                        }
+                        if(!bottom){//bottom
+                            Renderer2D.drawRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize, 0);
+                        }
+                        if(!bottom||!left||!s.affects(x-1, layer, z+1)){//bottom left
+                            Renderer2D.drawRect(X, Y+blockSize-border, X+border, Y+blockSize, 0);
+                        }
+                        if(!left){//left
+                            Renderer2D.drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
+                        }
                     }
                 }
             }

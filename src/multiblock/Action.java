@@ -29,5 +29,5 @@ public abstract class Action<T extends Multiblock>{
         return new ActionResult<>(multiblock, blocks);
     }
     protected abstract void doUndo(T multiblock);
-    protected abstract void getAffectedBlocks(T multiblock, ArrayList<Block> blocks);
+    public abstract void getAffectedBlocks(T multiblock, ArrayList<Block> blocks);
 }

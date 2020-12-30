@@ -19,7 +19,7 @@ public class SFRShieldAction extends Action<OverhaulSFR>{
         block.closed = was;
     }
     @Override
-    protected void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<multiblock.Block> blocks){
         blocks.add(multiblock.getBlock(block.x, block.y, block.z));
     }
 }

@@ -25,7 +25,7 @@ public class SetblockAction extends Action{
         multiblock.setBlockExact(x, y, z, was);
     }
     @Override
-    protected void getAffectedBlocks(Multiblock multiblock, ArrayList blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList blocks){
         Block b = multiblock.getBlock(x, y, z);
         if(b!=null)blocks.add(b);
     }
