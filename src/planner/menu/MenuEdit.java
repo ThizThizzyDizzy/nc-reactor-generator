@@ -303,7 +303,7 @@ public class MenuEdit extends Menu{
         suggestionList.width = irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
         if(suggestorSettings.isDown){
             suggestorSettings.width = gui.helper.displayWidth()-suggestorSettings.x;
-            suggestorSettings.y = gui.helper.displayHeight()*3/4;
+            suggestorSettings.y = gui.helper.displayHeight()/2;
         }else{
             suggestorSettings.width = suggestorSettings.preferredHeight;
             suggestorSettings.y = generate.y;

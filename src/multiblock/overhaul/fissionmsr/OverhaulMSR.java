@@ -4,7 +4,9 @@ import generator.Priority;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import multiblock.Action;
 import multiblock.configuration.Configuration;
@@ -1088,11 +1090,44 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
+        for(Priority.Preset<OverhaulMSR> preset : getGenerationPriorityPresets()){
+            ArrayList<Priority<OverhaulMSR>> prior = preset.getPriorities();
+            for(Iterator<Priority<OverhaulMSR>> it = prior.iterator(); it.hasNext();){
+                Priority<OverhaulMSR> next = it.next();
+                if(next.name.toLowerCase(Locale.ENGLISH).contains("shutdown"))it.remove();
+            }
+            suggestors.add(new Suggestor<OverhaulMSR>(100, 1_000) {
+                @Override
+                public String getName(){
+                    return "Random Suggestor ("+preset.name+")";
+                }
+                @Override
+                public String getDescription(){
+                    return "Generates random single-block suggestions";
+                }
+                @Override
+                public void generateSuggestions(OverhaulMSR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                    Random rand = new Random();
+                    while(suggestor.acceptingSuggestions()){
+                        int x = rand.nextInt(multiblock.getX());
+                        int y = rand.nextInt(multiblock.getY());
+                        int z = rand.nextInt(multiblock.getZ());
+                        ArrayList<Block> blocks = new ArrayList<>();
+                        multiblock.getAvailableBlocks(blocks);
+                        Block was = multiblock.getBlock(x, y, z);
+                        for(Block b : blocks){
+                            if(b.isFuelVessel())continue;
+                            suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), prior));
+                        }
+                    }
+                }
+            });
+        }
         for(Priority.Preset preset : getGenerationPriorityPresets()){
             suggestors.add(new Suggestor<OverhaulMSR>(100, 1_000) {
                 @Override
                 public String getName(){
-                    return "Random Block Suggestor ("+preset.name+")";
+                    return "Random Suggestor (Shutdownable, "+preset.name+")";
                 }
                 @Override
                 public String getDescription(){

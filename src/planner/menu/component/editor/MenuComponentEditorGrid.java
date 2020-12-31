@@ -141,6 +141,15 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 //TODO there's a MUCH better way do do this, but this'll do for now
                 for(Suggestion s : editor.suggestions){
                     if(s.affects(x, layer, z)){
+                        if(s.selected&&s.result!=null){
+                            Block b = s.result.getBlock(x, layer, z);
+                            Core.applyWhite(resonatingAlpha+.5f);
+                            if(b==null){
+                                drawRect(X, Y, X+blockSize, Y+blockSize, 0);
+                            }else{
+                                b.render(X, Y, blockSize, blockSize, false, resonatingAlpha+.5f, s.result);
+                            }
+                        }
                         Core.applyColor(Core.theme.getGreen());
                         border = blockSize/40f;
                         if(s.selected)border*=3;
