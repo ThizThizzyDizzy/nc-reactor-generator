@@ -9,13 +9,15 @@ import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 public class Block extends RuleContainer{
     public static Block heater(String name, int cooling, String input, String texture, PlacementRule... rules){
-        return heater(name, cooling, input, "Hot "+input, texture, rules);
+        return heater(name, cooling, input, "Hot "+input, 1, 1, texture, rules);
     }
-    public static Block heater(String name, int cooling, String input, String output, String texture, PlacementRule... rules){
+    public static Block heater(String name, int cooling, String input, String output, int inputRate, int outputRate, String texture, PlacementRule... rules){
         Block block = new Block(name);
         block.cooling = cooling;
         block.input = input;
         block.output = output;
+        block.inputRate = inputRate;
+        block.outputRate = outputRate;
         for(PlacementRule r : rules){
             block.rules.add(r);
         }
@@ -89,6 +91,8 @@ public class Block extends RuleContainer{
     public int cooling = 0;
     public String input;
     public String output;
+    public int inputRate;
+    public int outputRate;
     public boolean cluster = false;
     public boolean createCluster = false;
     public boolean conductor = false;
@@ -117,6 +121,8 @@ public class Block extends RuleContainer{
         if(cooling!=0)config.set("cooling", cooling);
         if(input!=null)config.set("input", input);
         if(output!=null)config.set("output", output);
+        if(inputRate!=0)config.set("inputRate", inputRate);
+        if(outputRate!=0)config.set("outputRate", outputRate);
         if(cluster)config.set("cluster", cluster);
         if(createCluster)config.set("createCluster", createCluster);
         if(conductor)config.set("conductor", conductor);
@@ -226,6 +232,8 @@ public class Block extends RuleContainer{
                 &&cooling==b.cooling
                 &&Objects.equals(input, b.input)
                 &&Objects.equals(output, b.output)
+                &&inputRate==b.inputRate
+                &&outputRate==b.outputRate
                 &&b.cluster==cluster
                 &&b.createCluster==createCluster
                 &&b.conductor==conductor

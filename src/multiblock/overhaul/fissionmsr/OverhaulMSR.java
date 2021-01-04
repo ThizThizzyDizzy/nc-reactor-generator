@@ -236,7 +236,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             for(Cluster c : clusters){
                 for(Block b : c.blocks){
                     if(b.template.cooling!=0){
-                        float out = c.efficiency*sparsityMult;
+                        float out = c.efficiency*sparsityMult*b.template.outputRate;
                         totalOutput.put(b.template.output, (totalOutput.containsKey(b.template.output)?totalOutput.get(b.template.output):0)+out);
                         totalTotalOutput+=out;
                     }
@@ -1090,6 +1090,180 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
+        suggestors.add(new Suggestor<OverhaulMSR>(1000, 1_000){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                    }
+                });
+                priorities.add(new Priority<OverhaulMSR>("Irradiation", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return main.totalIrradiation-other.totalIrradiation;
+                    }
+                });
+            }
+            @Override
+            public String getName(){
+                return "Addvanced Moderator Line Upgrader";
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests changing moderator lines to increase efficiency or irradiation";
+            }
+            @Override
+            public void generateSuggestions(OverhaulMSR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> moderators = new ArrayList<>();
+                multiblock.getAvailableBlocks(moderators);
+                for(Iterator<Block> it = moderators.iterator(); it.hasNext();){
+                    Block block = it.next();
+                    if(!block.isModerator()||block.template.flux<=0)it.remove();
+                }
+                for(Block block : multiblock.getBlocks()){
+                    if(!block.isFuelVessel())continue;
+                    DIRECTION:for(Direction d : directions){
+                        ArrayList<Block> line = new ArrayList<>();
+                        int x = block.x;
+                        int y = block.y;
+                        int z = block.z;
+                        for(int i = 0; i<getConfiguration().overhaul.fissionMSR.neutronReach+1; i++){
+                            x+=d.x;
+                            y+=d.y;
+                            z+=d.z;
+                            Block b = multiblock.getBlock(x, y, z);
+                            if(b==null)continue DIRECTION;
+                            if(!b.isModerator()){
+                                if(b.isFuelVessel()||b.isIrradiator()||b.isReflector())break;
+                                continue DIRECTION;
+                            }
+                            line.add(b);
+                        }
+                        if(line.size()>getConfiguration().overhaul.fissionMSR.neutronReach)continue;//too long
+                        if(moderators.size()==1){
+                            ArrayList<Action> actions = new ArrayList<>();
+                            for(Block b : line){
+                                actions.add(new SetblockAction(b.x, b.y, b.z, moderators.get(0).newInstance(b.x, b.y, b.z)));
+                            }
+                            suggestor.suggest(new Suggestion("Replace Moderator Line", actions, priorities));
+                        }
+                        for(long i = 0; i<Math.pow(moderators.size(), line.size()); i++){
+                            ArrayList<Action> actions = new ArrayList<>();
+                            String str = Long.toString(i, moderators.size());
+                            while(str.length()<line.size())str = "0"+str;
+                            for(int j = 0; j<line.size(); j++){
+                                Block lin = line.get(j);
+                                actions.add(new SetblockAction(lin.x, lin.y, lin.z, moderators.get(Integer.parseInt(str.charAt(j)+"",moderators.size())).newInstance(lin.x, lin.y, lin.z)));
+                            }
+                            suggestor.suggest(new Suggestion("Replace Moderator Line", actions, priorities));
+                        }
+                    }
+                }
+            }
+        });
+        suggestors.add(new Suggestor<OverhaulMSR>(1000, 1_000){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                    }
+                });
+                priorities.add(new Priority<OverhaulMSR>("Irradiation", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return main.totalIrradiation-other.totalIrradiation;
+                    }
+                });
+            }
+            @Override
+            public String getName(){
+                return "Simple Moderator Line Upgrader";
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests changing moderator lines to increase efficiency or irradiation";
+            }
+            @Override
+            public void generateSuggestions(OverhaulMSR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> moderators = new ArrayList<>();
+                multiblock.getAvailableBlocks(moderators);
+                for(Iterator<Block> it = moderators.iterator(); it.hasNext();){
+                    Block block = it.next();
+                    if(!block.isModerator()||block.template.flux<=0)it.remove();
+                }
+                for(Block block : multiblock.getBlocks()){
+                    if(!block.isFuelVessel())continue;
+                    DIRECTION:for(Direction d : directions){
+                        ArrayList<Block> line = new ArrayList<>();
+                        int x = block.x;
+                        int y = block.y;
+                        int z = block.z;
+                        for(int i = 0; i<getConfiguration().overhaul.fissionMSR.neutronReach+1; i++){
+                            x+=d.x;
+                            y+=d.y;
+                            z+=d.z;
+                            Block b = multiblock.getBlock(x, y, z);
+                            if(b==null)continue DIRECTION;
+                            if(!b.isModerator()){
+                                if(b.isFuelVessel()||b.isIrradiator()||b.isReflector())break;
+                                continue DIRECTION;
+                            }
+                            line.add(b);
+                        }
+                        if(line.size()>getConfiguration().overhaul.fissionMSR.neutronReach)continue;//too long
+                        for(Block mod : moderators){
+                            ArrayList<Action> actions = new ArrayList<>();
+                            for(Block b : line){
+                                actions.add(new SetblockAction(b.x, b.y, b.z, mod.newInstance(b.x, b.y, b.z)));
+                            }
+                            suggestor.suggest(new Suggestion("Replace Moderator Line with "+mod.getName().replace(" Moderator", ""), actions, priorities));
+                        }
+                    }
+                }
+            }
+        });
+        suggestors.add(new Suggestor<OverhaulMSR>(1000, 1_000){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                    }
+                });
+                priorities.add(new Priority<OverhaulMSR>("Irradiation", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return main.totalIrradiation-other.totalIrradiation;
+                    }
+                });
+            }
+            @Override
+            public String getName(){
+                return "Single Moderator Upgrader";
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests changing single moderators to increase efficiency or irradiation";
+            }
+            @Override
+            public void generateSuggestions(OverhaulMSR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                for(Block block : multiblock.getBlocks()){
+                    if(!block.isModerator())continue;
+                    ArrayList<Block> blocks = new ArrayList<>();
+                    multiblock.getAvailableBlocks(blocks);
+                    for(Block b : blocks){
+                        if(!b.isModerator())continue;
+                        if(b.template.flux<=0)continue;
+                        suggestor.suggest(new Suggestion("Upgrade Moderator from "+block.getName().replace(" Moderator", "")+" to "+b.getName().replace(" Moderator", ""), new SetblockAction(block.x, block.y, block.z, b.newInstance(block.x, block.y, block.z)), priorities));
+                    }
+                }
+            }
+        });
         for(Priority.Preset<OverhaulMSR> preset : getGenerationPriorityPresets()){
             ArrayList<Priority<OverhaulMSR>> prior = preset.getPriorities();
             for(Iterator<Priority<OverhaulMSR>> it = prior.iterator(); it.hasNext();){

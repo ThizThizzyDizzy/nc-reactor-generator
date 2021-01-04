@@ -21,6 +21,8 @@ public class MenuBlockConfiguration extends Menu{
     private final MenuComponentMinimalistTextBox cooling = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter()).setTooltip("The amount of cooling the block provides as a heater");
     private final MenuComponentMinimalistTextBox input = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true)).setTooltip("The fluid this block takes as an input\nFor Heaters ONLY (to specify coolant type)");
     private final MenuComponentMinimalistTextBox output = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true)).setTooltip("The fluid this block takes as an input\nFor Heaters ONLY (to specify coolant type)");
+    private final MenuComponentMinimalistTextBox inputRate = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter()).setTooltip("The amount of fluid this block inputs in mb/t");
+    private final MenuComponentMinimalistTextBox outputRate = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true).setIntFilter()).setTooltip("The amount of fluid this block outputs in mb/t");
     private final MenuComponentMinimalistOptionButton cluster = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Can Cluster", true, true, 0, "FALSE", "TRUE")).setTooltip("If true, this block can be part of a cluster");
     private final MenuComponentMinimalistOptionButton createCluster = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Creates Cluster", true, true, 0, "FALSE", "TRUE")).setTooltip("If true, this block will create a cluster");
     private final MenuComponentMinimalistOptionButton conductor = add(new MenuComponentMinimalistOptionButton(0, 0, 0, 0, "Conductor", true, true, 0, "FALSE", "TRUE")).setTooltip("If true, this block will connect clusters to the casing, but will not connect them together");
@@ -39,7 +41,7 @@ public class MenuBlockConfiguration extends Menu{
     private final MenuComponentMinimalistButton rules = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Placement Rules", true, true).setTooltip("Add, remove, or modify placement rules"));
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true));
     private final Block block;
-    private final int numComps = 23;
+    private final int numComps = 25;
     public MenuBlockConfiguration(GUI gui, Menu parent, Block block){
         super(gui, parent);
         texture.addActionListener((e) -> {
@@ -90,6 +92,8 @@ public class MenuBlockConfiguration extends Menu{
         cooling.text = block.cooling+"";
         input.text = block.input==null?"":block.input;
         output.text = block.output==null?"":block.output;
+        inputRate.text = block.inputRate+"";
+        outputRate.text = block.outputRate+"";
         cluster.setIndex(block.cluster?1:0);
         createCluster.setIndex(block.createCluster?1:0);
         conductor.setIndex(block.conductor?1:0);
@@ -113,6 +117,8 @@ public class MenuBlockConfiguration extends Menu{
         block.cooling = Integer.parseInt(cooling.text);
         block.input = input.text.trim().isEmpty()?null:input.text;
         block.output = output.text.trim().isEmpty()?null:output.text;
+        block.inputRate = Integer.parseInt(inputRate.text);
+        block.outputRate = Integer.parseInt(outputRate.text);
         block.cluster = cluster.getIndex()==1;
         block.createCluster = createCluster.getIndex()==1;
         block.conductor = conductor.getIndex()==1;
@@ -143,17 +149,19 @@ public class MenuBlockConfiguration extends Menu{
         heatMult.editable = shield.getIndex()==1;
         fuelVessel.enabled = reflector.getIndex()==0;
         reflector.enabled = fuelVessel.getIndex()==0;
-        input.width = output.width = cooling.width = flux.width = efficiency.width = reflectivity.width = heatMult.width = gui.helper.displayWidth()*.75;
-        input.x = output.x = cooling.x = flux.x = efficiency.x = reflectivity.x = heatMult.x = gui.helper.displayWidth()-cooling.width;
+        inputRate.width = outputRate.width = input.width = output.width = cooling.width = flux.width = efficiency.width = reflectivity.width = heatMult.width = gui.helper.displayWidth()*.75;
+        inputRate.x = outputRate.x = input.x = output.x = cooling.x = flux.x = efficiency.x = reflectivity.x = heatMult.x = gui.helper.displayWidth()-cooling.width;
         functional.width = blocksLOS.width = shield.width = activeModerator.width = moderator.width = irradiator.width = reflector.width = fuelVessel.width = conductor.width = createCluster.width = cluster.width = name.width = rules.width = back.width = gui.helper.displayWidth();
-        closedTexture.x = closedTexture.height = texture.x = texture.height = functional.height = blocksLOS.height = heatMult.height = reflectivity.height = efficiency.height = flux.height = shield.height = activeModerator.height = moderator.height = irradiator.height = reflector.height = fuelVessel.height = conductor.height = createCluster.height = cluster.height = input.height = output.height = cooling.height = name.height = rules.height = back.height = gui.helper.displayHeight()/numComps;
+        closedTexture.x = closedTexture.height = texture.x = texture.height = functional.height = blocksLOS.height = heatMult.height = reflectivity.height = efficiency.height = flux.height = shield.height = activeModerator.height = moderator.height = irradiator.height = reflector.height = fuelVessel.height = conductor.height = createCluster.height = cluster.height = inputRate.height = outputRate.height = input.height = output.height = cooling.height = name.height = rules.height = back.height = gui.helper.displayHeight()/numComps;
         closedTexture.width = texture.width = gui.helper.displayWidth()-texture.x;
         texture.y = name.height;
         closedTexture.y = texture.y+texture.height;
         cooling.y = closedTexture.y+closedTexture.height;
         input.y = cooling.y+cooling.height;
         output.y = input.y+input.height;
-        cluster.y = output.y+output.height;
+        inputRate.y = output.y+output.height;
+        outputRate.y = inputRate.y+inputRate.height;
+        cluster.y = outputRate.y+outputRate.height;
         createCluster.y = cluster.y+cluster.height;
         conductor.y = createCluster.y+createCluster.height;
         fuelVessel.y = conductor.y+conductor.height;
@@ -174,10 +182,12 @@ public class MenuBlockConfiguration extends Menu{
         drawText(0, gui.helper.displayHeight()/numComps*3, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*4, "Cooling");
         drawText(0, gui.helper.displayHeight()/numComps*4, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*5, "Input Fluid");
         drawText(0, gui.helper.displayHeight()/numComps*5, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*6, "Output Fluid");
-        drawText(0, gui.helper.displayHeight()/numComps*15, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*16, "Neutron Flux");
-        drawText(0, gui.helper.displayHeight()/numComps*16, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*17, "Efficiency");
-        drawText(0, gui.helper.displayHeight()/numComps*17, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*18, "Reflectivity");
-        drawText(0, gui.helper.displayHeight()/numComps*18, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*19, "Heat Multiplier");
+        drawText(0, gui.helper.displayHeight()/numComps*6, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*7, "Input Fluid");
+        drawText(0, gui.helper.displayHeight()/numComps*7, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*8, "Output Fluid");
+        drawText(0, gui.helper.displayHeight()/numComps*17, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*18, "Neutron Flux");
+        drawText(0, gui.helper.displayHeight()/numComps*18, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*19, "Efficiency");
+        drawText(0, gui.helper.displayHeight()/numComps*19, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*20, "Reflectivity");
+        drawText(0, gui.helper.displayHeight()/numComps*20, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*21, "Heat Multiplier");
         Core.applyWhite();
         super.render(millisSinceLastTick);
     }

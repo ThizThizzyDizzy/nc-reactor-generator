@@ -185,6 +185,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                         cluster.totalCooling+=b.template.cooling;
                     }
                     if(b.isShieldActive()){
+                        cluster.totalOutput+=b.template.heatMult*b.neutronFlux*b.template.efficiency;
                         cluster.totalHeat+=b.template.heatMult*b.neutronFlux;
                     }
                     if(b.isIrradiatorActive()){
