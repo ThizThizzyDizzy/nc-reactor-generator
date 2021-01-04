@@ -1,6 +1,7 @@
 package planner.menu;
 import java.io.File;
 import java.util.Locale;
+import org.lwjgl.glfw.GLFW;
 import planner.FileChooserResultListener;
 import planner.file.FileFormat;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -55,5 +56,12 @@ public class MenuLoadFile extends Menu{
             }
         }
         return true;
+    }
+    @Override
+    public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
+        super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
+        if(isPress&&key==GLFW.GLFW_KEY_ESCAPE){
+            gui.open(parent);
+        }
     }
 }
