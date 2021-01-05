@@ -1,12 +1,12 @@
-package planner.tool;
+package planner.editor.tool;
 import planner.Core;
-import planner.menu.MenuEdit;
 import multiblock.action.SetblocksAction;
 import org.lwjgl.glfw.GLFW;
+import planner.editor.Editor;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class RectangleTool extends EditorTool{
-    public RectangleTool(MenuEdit editor){
+    public RectangleTool(Editor editor){
         super(editor);
     }
     private int[] leftDragStart;

@@ -14,7 +14,7 @@ import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.configuration.MenuConfiguration;
-import planner.module.Module;
+import planner.editor.module.Module;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;

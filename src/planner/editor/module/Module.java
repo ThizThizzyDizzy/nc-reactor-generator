@@ -1,8 +1,8 @@
-package planner.module;
+package planner.editor.module;
 import generator.Priority;
 import java.util.ArrayList;
 import multiblock.Multiblock;
-import planner.suggestion.Suggestor;
+import planner.editor.suggestion.Suggestor;
 public abstract class Module<T>{
     private boolean active = false;
     public void activate(){

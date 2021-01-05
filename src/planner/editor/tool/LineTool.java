@@ -1,14 +1,14 @@
-package planner.tool;
+package planner.editor.tool;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.menu.MenuEdit;
 import multiblock.action.SetblocksAction;
 import org.lwjgl.glfw.GLFW;
+import planner.editor.Editor;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class LineTool extends EditorTool{
-    public LineTool(MenuEdit editor){
+    public LineTool(Editor editor){
         super(editor);
     }
     private int[] leftDragStart;

@@ -3,24 +3,24 @@ import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
-import planner.menu.MenuEdit;
+import planner.editor.Editor;
 public class ClearSelectionAction extends Action<Multiblock>{
     public final ArrayList<int[]> was = new ArrayList<>();
-    private final MenuEdit editor;
-    public ClearSelectionAction(MenuEdit editor){
+    private final Editor editor;
+    public ClearSelectionAction(Editor editor){
         this.editor = editor;
     }
     @Override
     protected void doApply(Multiblock multiblock, boolean allowUndo){
-        synchronized(editor.selection){
-            if(allowUndo)was.addAll(editor.selection);
-            editor.selection.clear();
+        synchronized(editor.getSelection()){
+            if(allowUndo)was.addAll(editor.getSelection());
+            editor.getSelection().clear();
         }
     }
     @Override
     protected void doUndo(Multiblock multiblock){
-        synchronized(editor.selection){
-            editor.selection.addAll(was);
+        synchronized(editor.getSelection()){
+            editor.getSelection().addAll(was);
             was.clear();
         }
     }

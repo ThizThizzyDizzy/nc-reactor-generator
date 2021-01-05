@@ -1,4 +1,4 @@
-package planner.suggestion;
+package planner.editor.suggestion;
 import java.util.ArrayList;
 import java.util.Collections;
 import multiblock.Multiblock;

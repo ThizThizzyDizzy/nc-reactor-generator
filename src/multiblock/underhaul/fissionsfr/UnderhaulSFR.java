@@ -17,9 +17,9 @@ import multiblock.symmetry.Symmetry;
 import planner.Core;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
-import planner.module.Module;
-import planner.suggestion.Suggestion;
-import planner.suggestion.Suggestor;
+import planner.editor.module.Module;
+import planner.editor.suggestion.Suggestion;
+import planner.editor.suggestion.Suggestor;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{

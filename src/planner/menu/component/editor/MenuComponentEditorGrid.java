@@ -13,7 +13,7 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.glfw.GLFW;
-import planner.suggestion.Suggestion;
+import planner.editor.suggestion.Suggestion;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;

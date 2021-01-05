@@ -1,4 +1,4 @@
-package planner.module;
+package planner.editor.module;
 import generator.Priority;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,7 +8,7 @@ import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import planner.suggestion.Suggestor;
+import planner.editor.suggestion.Suggestor;
 public class RainbowFactorModule extends Module<Float>{
     @Override
     public String getName(){

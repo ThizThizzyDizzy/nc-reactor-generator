@@ -1,7 +1,7 @@
 package planner.menu.component.editor;
 import java.awt.Color;
 import planner.Core;
-import planner.tool.EditorTool;
+import planner.editor.tool.EditorTool;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorTool extends MenuComponent{
     public final EditorTool tool;

@@ -5,15 +5,15 @@ import java.util.HashMap;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
-import planner.menu.MenuEdit;
+import planner.editor.Editor;
 public class MoveAction extends Action<Multiblock>{
-    private final MenuEdit editor;
+    private final Editor editor;
     private final ArrayList<int[]> selection = new ArrayList<>();
     private final HashMap<int[], Block> was = new HashMap<>();
     private final int dx;
     private final int dy;
     private final int dz;
-    public MoveAction(MenuEdit editor, Collection<int[]> selection, int dy, int dx, int dz){
+    public MoveAction(Editor editor, Collection<int[]> selection, int dy, int dx, int dz){
         synchronized(selection){
             this.selection.addAll(selection);
         }
@@ -47,9 +47,9 @@ public class MoveAction extends Action<Multiblock>{
                 multiblock.setBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz, bl);
             }
         }
-        synchronized(editor.selection){
-            editor.selection.clear();
-            editor.selection.addAll(movedSelection);
+        synchronized(editor.getSelection()){
+            editor.getSelection().clear();
+            editor.getSelection().addAll(movedSelection);
         }
     }
     @Override
@@ -57,9 +57,9 @@ public class MoveAction extends Action<Multiblock>{
         for(int[] loc : was.keySet()){
             multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
         }
-        synchronized(editor.selection){
-            editor.selection.clear();
-            editor.selection.addAll(selection);
+        synchronized(editor.getSelection()){
+            editor.getSelection().clear();
+            editor.getSelection().addAll(selection);
         }
     }
     @Override

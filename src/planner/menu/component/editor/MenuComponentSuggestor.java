@@ -1,7 +1,7 @@
 package planner.menu.component.editor;
 import planner.Core;
 import org.lwjgl.glfw.GLFW;
-import planner.suggestion.Suggestor;
+import planner.editor.suggestion.Suggestor;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentSuggestor extends MenuComponent{

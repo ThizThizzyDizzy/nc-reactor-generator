@@ -3,15 +3,15 @@ import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
-import planner.menu.MenuEdit;
+import planner.editor.ClipboardEntry;
 public class PasteAction extends Action<Multiblock>{
     private final ArrayList<Block> was = new ArrayList<>();
     private final ArrayList<int[]> wasAir = new ArrayList<>();
     private final int x;
     private final int y;
     private final int z;
-    private final ArrayList<MenuEdit.ClipboardEntry> blocks;
-    public PasteAction(ArrayList<MenuEdit.ClipboardEntry> blocks, int x, int y, int z){
+    private final ArrayList<ClipboardEntry> blocks;
+    public PasteAction(ArrayList<ClipboardEntry> blocks, int x, int y, int z){
         this.blocks = blocks;
         this.x = x;
         this.y = y;
@@ -20,7 +20,7 @@ public class PasteAction extends Action<Multiblock>{
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
         was.clear();
-        for(MenuEdit.ClipboardEntry entry : blocks){
+        for(ClipboardEntry entry : blocks){
             int X = entry.x+x;
             int Y = entry.y+y;
             int Z = entry.z+z;
@@ -49,7 +49,7 @@ public class PasteAction extends Action<Multiblock>{
     }
     @Override
     public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
-        for(MenuEdit.ClipboardEntry entry : this.blocks){
+        for(ClipboardEntry entry : this.blocks){
             Block block = multiblock.getBlock(entry.x+x, entry.y+y, entry.z+z);
             if(block==null)continue;
             if(!block.isCasing()&&!blocks.contains(block)){

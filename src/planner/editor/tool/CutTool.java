@@ -1,11 +1,13 @@
-package planner.tool;
+package planner.editor.tool;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.menu.MenuEdit;
+import planner.editor.Editor;
+import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class CopyTool extends EditorTool{
-    public CopyTool(MenuEdit editor){
+public class CutTool extends EditorTool{
+    public CutTool(Editor editor){
         super(editor);
     }
     private int[] dragStart;
@@ -13,13 +15,19 @@ public class CopyTool extends EditorTool{
     @Override
     public void render(double x, double y, double width, double height){
         Core.applyColor(Core.theme.getTextColor());
-        Renderer2D.drawRect(x+width*.35, y+height*.15, x+width*.8, y+height*.75, 0);
-        Core.applyColor(Core.theme.getEditorListBorderColor());
-        Renderer2D.drawRect(x+width*.4, y+height*.2, x+width*.75, y+height*.7, 0);
-        Core.applyColor(Core.theme.getTextColor());
-        Renderer2D.drawRect(x+width*.2, y+height*.25, x+width*.65, y+height*.85, 0);
-        Core.applyColor(Core.theme.getEditorListBorderColor());
-        Renderer2D.drawRect(x+width*.25, y+height*.3, x+width*.6, y+height*.8, 0);
+        ImageStash.instance.bindTexture(0);
+        Core.drawCircle(x+width*.3, y+height*.3, width*.075, width*.125, Core.theme.getTextColor());
+        Core.drawCircle(x+width*.3, y+height*.7, width*.075, width*.125, Core.theme.getTextColor());
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2d(x+width*.4, y+height*.35);
+        GL11.glVertex2d(x+width*.35, y+height*.4);
+        GL11.glVertex2d(x+width*.75, y+height*.8);
+        GL11.glVertex2d(x+width*.85, y+height*.8);
+        
+        GL11.glVertex2d(x+width*.4, y+height*.65);
+        GL11.glVertex2d(x+width*.35, y+height*.6);
+        GL11.glVertex2d(x+width*.75, y+height*.2);
+        GL11.glVertex2d(x+width*.85, y+height*.2);
     }
     @Override
     public void drawGhosts(int layer, double x, double y, double width, double height, int w, int texture){
@@ -90,7 +98,7 @@ public class CopyTool extends EditorTool{
     public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&dragStart!=null){
             editor.select(dragStart[0], dragStart[1], dragStart[2], x, y, z);
-            editor.copySelection((dragStart[0]+x)/2, (dragStart[1]+y)/2, (dragStart[2]+z)/2);
+            editor.cutSelection((dragStart[0]+x)/2, (dragStart[1]+y)/2, (dragStart[2]+z)/2);
             editor.clearSelection();
         }
         mouseReset(button);
@@ -105,7 +113,7 @@ public class CopyTool extends EditorTool{
     }
     @Override
     public String getTooltip(){
-        return "Copy tool\nUse this to select an area to copy\nOnce an area is selected, click to paste that selection";
+        return "Cut tool\nUse this to select an area to cut\nOnce an area is selected, click to paste that selection";
     }
     @Override
     public void mouseMoved(MenuComponent layer, int x, int y, int z){}

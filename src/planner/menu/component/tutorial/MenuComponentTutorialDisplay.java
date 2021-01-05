@@ -1,7 +1,7 @@
 package planner.menu.component.tutorial;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.tutorial.Tutorial;
+import planner.editor.tutorial.Tutorial;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentTutorialDisplay extends MenuComponent{

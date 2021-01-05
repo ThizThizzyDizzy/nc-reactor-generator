@@ -1,6 +1,6 @@
 package planner.menu.component.tutorial;
 import planner.Core;
-import planner.tutorial.Tutorial;
+import planner.editor.tutorial.Tutorial;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentTutorial extends MenuComponent{

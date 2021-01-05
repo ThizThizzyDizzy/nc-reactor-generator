@@ -1,4 +1,4 @@
-package planner.suggestion;
+package planner.editor.suggestion;
 import generator.Priority;
 import java.util.ArrayList;
 import multiblock.Action;

@@ -1,13 +1,14 @@
-package planner.tool;
+package planner.editor.tool;
 import planner.Core;
-import planner.menu.MenuEdit;
+import planner.editor.ClipboardEntry;
+import planner.editor.Editor;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class PasteTool extends EditorTool{
     private int mouseX;
     private int mouseY;
     private int mouseZ;
-    public PasteTool(MenuEdit editor){
+    public PasteTool(Editor editor){
         super(editor);
     }
     @Override
@@ -39,13 +40,13 @@ public class PasteTool extends EditorTool{
     public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        synchronized(editor.clipboard){
-            for(MenuEdit.ClipboardEntry entry : editor.clipboard){
+        synchronized(editor.getClipboard()){
+            for(ClipboardEntry entry : editor.getClipboard()){
                 if(entry.y+mouseY==layer){
                     int X = entry.x+mouseX;
                     int Z = entry.z+mouseZ;
-                    if(X<0||X>=editor.multiblock.getX())continue;
-                    if(Z<0||Z>=editor.multiblock.getZ())continue;
+                    if(X<0||X>=editor.getMultiblock().getX())continue;
+                    if(Z<0||Z>=editor.getMultiblock().getZ())continue;
                     Renderer2D.drawRect(x+X*blockSize, y+Z*blockSize, x+(X+1)*blockSize, y+(Z+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
                 }
             }
@@ -56,13 +57,13 @@ public class PasteTool extends EditorTool{
     public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        synchronized(editor.clipboard){
-            for(MenuEdit.ClipboardEntry entry : editor.clipboard){
+        synchronized(editor.getClipboard()){
+            for(ClipboardEntry entry : editor.getClipboard()){
                 if(entry.z+mouseZ==layer){
                     int X = entry.x+mouseX;
                     int Y = entry.y+mouseY;
-                    if(X<0||X>=editor.multiblock.getX())continue;
-                    if(Y<0||Y>=editor.multiblock.getY())continue;
+                    if(X<0||X>=editor.getMultiblock().getX())continue;
+                    if(Y<0||Y>=editor.getMultiblock().getY())continue;
                     Renderer2D.drawRect(x+X*blockSize, y+Y*blockSize, x+(X+1)*blockSize, y+(Y+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
                 }
             }
@@ -73,10 +74,10 @@ public class PasteTool extends EditorTool{
     public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        synchronized(editor.clipboard){
-            for(MenuEdit.ClipboardEntry entry : editor.clipboard){
+        synchronized(editor.getClipboard()){
+            for(ClipboardEntry entry : editor.getClipboard()){
                 int Z = entry.z+mouseZ;
-                if(Z<0||Z>=editor.multiblock.getZ())continue;
+                if(Z<0||Z>=editor.getMultiblock().getZ())continue;
                 Renderer2D.drawRect(x+Z*blockSize, y, x+(Z+1)*blockSize, y+blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
             }
         }

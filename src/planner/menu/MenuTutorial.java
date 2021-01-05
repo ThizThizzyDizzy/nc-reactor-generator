@@ -7,8 +7,8 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.tutorial.MenuComponentTutorial;
 import planner.menu.component.tutorial.MenuComponentTutorialCategory;
 import planner.menu.component.tutorial.MenuComponentTutorialDisplay;
-import planner.tutorial.Tutorial;
-import planner.tutorial.TutorialCategory;
+import planner.editor.tutorial.Tutorial;
+import planner.editor.tutorial.TutorialCategory;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuTutorial extends Menu{

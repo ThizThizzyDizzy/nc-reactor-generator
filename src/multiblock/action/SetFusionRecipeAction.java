@@ -1,15 +1,15 @@
 package multiblock.action;
 import java.util.ArrayList;
 import multiblock.configuration.overhaul.fusion.Recipe;
-import planner.menu.MenuEdit;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
+import planner.editor.Editor;
 public class SetFusionRecipeAction extends Action<OverhaulFusionReactor>{
     private Recipe was = null;
-    private final MenuEdit editor;
+    private final Editor editor;
     private final Recipe recipe;
-    public SetFusionRecipeAction(MenuEdit editor, Recipe recipe){
+    public SetFusionRecipeAction(Editor editor, Recipe recipe){
         this.editor = editor;
         this.recipe = recipe;
     }
@@ -17,12 +17,12 @@ public class SetFusionRecipeAction extends Action<OverhaulFusionReactor>{
     public void doApply(OverhaulFusionReactor multiblock, boolean allowUndo){
         if(allowUndo)was = multiblock.recipe;
         multiblock.recipe = recipe;
-        editor.overFuel.setSelectedIndex(multiblock.getConfiguration().overhaul.fusion.allRecipes.indexOf(((OverhaulFusionReactor)multiblock).recipe));
+        editor.setFusionRecipe(multiblock.getConfiguration().overhaul.fusion.allRecipes.indexOf(((OverhaulFusionReactor)multiblock).recipe));
     }
     @Override
     public void doUndo(OverhaulFusionReactor multiblock){
         multiblock.recipe = was;
-        editor.overFuel.setSelectedIndex(multiblock.getConfiguration().overhaul.fusion.allRecipes.indexOf(((OverhaulFusionReactor)multiblock).recipe));
+        editor.setFusionRecipe(multiblock.getConfiguration().overhaul.fusion.allRecipes.indexOf(((OverhaulFusionReactor)multiblock).recipe));
     }
     @Override
     public void getAffectedBlocks(OverhaulFusionReactor multiblock, ArrayList<Block> blocks){

@@ -1,10 +1,10 @@
-package planner.tool;
+package planner.editor.tool;
 import java.util.ArrayList;
-import planner.menu.MenuEdit;
+import planner.editor.Editor;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public abstract class EditorTool{
-    public final MenuEdit editor;
-    public EditorTool(MenuEdit editor){
+    public final Editor editor;
+    public EditorTool(Editor editor){
         this.editor = editor;
     }
     public abstract void render(double x, double y, double width, double height);

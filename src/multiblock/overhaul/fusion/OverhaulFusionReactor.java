@@ -19,14 +19,15 @@ import multiblock.ppe.SmartFillOverhaulFusion;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import planner.Core;
+import planner.editor.Editor;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.generator.MenuComponentFusionToggleBreedingBlanketRecipe;
-import planner.module.Module;
-import planner.suggestion.Suggestion;
-import planner.suggestion.Suggestor;
+import planner.editor.module.Module;
+import planner.editor.suggestion.Suggestion;
+import planner.editor.suggestion.Suggestor;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.opengl.gui.GUI;
@@ -797,6 +798,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public float get3DPreviewScale(){
         return 1.95f;
     }
+    @Deprecated
     @Override
     public void openResizeMenu(GUI gui, MenuEdit editor){
         gui.open(new MenuResizeFusion(gui, editor, this));

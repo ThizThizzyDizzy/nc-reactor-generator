@@ -13,12 +13,13 @@ import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.Configuration;
+import planner.editor.Editor;
 import planner.file.NCPFFile;
-import planner.menu.MenuEdit;
 import planner.menu.MenuResize;
 import planner.menu.component.MenuComponentMinimaList;
-import planner.module.Module;
-import planner.suggestion.Suggestor;
+import planner.editor.module.Module;
+import planner.editor.suggestion.Suggestor;
+import planner.menu.MenuEdit;
 import simplelibrary.Queue;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
@@ -773,6 +774,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public float get3DPreviewScale(){
         return 1;
     }
+    @Deprecated
     public void openResizeMenu(GUI gui, MenuEdit editor){
         gui.open(new MenuResize(gui, editor, this));
     }

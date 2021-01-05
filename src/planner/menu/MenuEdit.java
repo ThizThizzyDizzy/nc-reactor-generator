@@ -16,7 +16,7 @@ import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.editor.MenuComponentOverMSRFuel;
 import planner.menu.component.editor.MenuComponentOverSFRFuel;
 import planner.menu.component.editor.MenuComponentUnderFuel;
-import planner.tool.EditorTool;
+import planner.editor.tool.EditorTool;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.action.ClearSelectionAction;
@@ -40,6 +40,8 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import planner.editor.ClipboardEntry;
+import planner.editor.Editor;
 import planner.menu.component.MenuComponentDropdownList;
 import planner.menu.component.editor.MenuComponentEditorGrid;
 import planner.menu.component.editor.MenuComponentFusionBreedingBlanketRecipe;
@@ -50,24 +52,24 @@ import planner.menu.component.editor.MenuComponentSuggestor;
 import planner.menu.component.editor.MenuComponentTurbineBladeEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineCoilEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineRecipe;
-import planner.module.Module;
-import planner.suggestion.Suggestion;
-import planner.suggestion.Suggestor;
-import planner.tool.CopyTool;
-import planner.tool.CutTool;
-import planner.tool.LineTool;
-import planner.tool.MoveTool;
-import planner.tool.PasteTool;
-import planner.tool.PencilTool;
-import planner.tool.RectangleTool;
-import planner.tool.SelectionTool;
+import planner.editor.module.Module;
+import planner.editor.suggestion.Suggestion;
+import planner.editor.suggestion.Suggestor;
+import planner.editor.tool.CopyTool;
+import planner.editor.tool.CutTool;
+import planner.editor.tool.LineTool;
+import planner.editor.tool.MoveTool;
+import planner.editor.tool.PasteTool;
+import planner.editor.tool.PencilTool;
+import planner.editor.tool.RectangleTool;
+import planner.editor.tool.SelectionTool;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.opengl.ImageStash;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuEdit extends Menu{
+public class MenuEdit extends Menu implements Editor{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     public Framebuffer turbineGraph;
     public ArrayList<ClipboardEntry> clipboard = new ArrayList<>();
@@ -483,6 +485,7 @@ public class MenuEdit extends Menu{
             recalculateSuggestions();
         }
     }
+    @Override
     public Block getSelectedBlock(){
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
@@ -664,6 +667,7 @@ public class MenuEdit extends Menu{
             }
         }
     }
+    @Override
     public void setblocks(SetblocksAction set){
         for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
             int[] b = it.next();
@@ -708,6 +712,7 @@ public class MenuEdit extends Menu{
     public boolean isValid(Block selectedBlock, int x, int layer, int z){
         return multiblock.isValid(selectedBlock, x, layer, z);
     }
+    @Override
     public void select(int x1, int y1, int z1, int x2, int y2, int z2){
         ArrayList<int[]> is = new ArrayList<>();
         for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
@@ -719,6 +724,7 @@ public class MenuEdit extends Menu{
         }
         select(is);
     }
+    @Override
     public void deselect(int x1, int y1, int z1, int x2, int y2, int z2){
         ArrayList<int[]> is = new ArrayList<>();
         for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
@@ -747,6 +753,7 @@ public class MenuEdit extends Menu{
         }
         multiblock.action(new DeselectAction(this, is), true);
     }
+    @Override
     public boolean isSelected(int x, int y, int z){
         synchronized(selection){
             for(int[] s : selection){
@@ -761,6 +768,7 @@ public class MenuEdit extends Menu{
             return !selection.isEmpty();
         }
     }
+    @Override
     public void selectCluster(int x, int y, int z){
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
@@ -793,6 +801,7 @@ public class MenuEdit extends Menu{
             select(is);
         }
     }
+    @Override
     public void deselectCluster(int x, int y, int z){
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
@@ -825,6 +834,7 @@ public class MenuEdit extends Menu{
             deselect(is);
         }
     }
+    @Override
     public void selectGroup(int x, int y, int z){
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
@@ -837,6 +847,7 @@ public class MenuEdit extends Menu{
         }
         select(is);
     }
+    @Override
     public void deselectGroup(int x, int y, int z){
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
@@ -849,15 +860,19 @@ public class MenuEdit extends Menu{
         }
         deselect(is);
     }
+    @Override
     public void moveSelection(int x, int y, int z){
         multiblock.action(new MoveAction(this, selection, x, y, z), true);
     }
+    @Override
     public void cloneSelection(int x, int y, int z){
         multiblock.action(new CopyAction(this, selection, x, y, z), true);
     }
+    @Override
     public void clearSelection(){
         multiblock.action(new ClearSelectionAction(this), true);
     }
+    @Override
     public void addSelection(ArrayList<int[]> sel){
         synchronized(selection){
             for(int[] is : selection){
@@ -871,6 +886,7 @@ public class MenuEdit extends Menu{
             selection.addAll(sel);
         }
     }
+    @Override
     public void copySelection(int x, int y, int z){//like copySelection, but clipboardier
         synchronized(clipboard){
             clipboard.clear();
@@ -896,6 +912,7 @@ public class MenuEdit extends Menu{
             tools.setSelectedIndex(tools.components.size()-1);
         }
     }
+    @Override
     public void cutSelection(int x, int y, int z){
         synchronized(clipboard){
             clipboard.clear();
@@ -920,6 +937,7 @@ public class MenuEdit extends Menu{
         multiblock.action(ac, true);
         clearSelection();
     }
+    @Override
     public void pasteSelection(int x, int y, int z){
         synchronized(clipboard){
             multiblock.action(new PasteAction(clipboard, x, y, z), true);
@@ -941,19 +959,36 @@ public class MenuEdit extends Menu{
             suggestionList.add(new MenuComponentSuggestion(this, s));
         }
     }
-    public static class ClipboardEntry{
-        public int x;
-        public int y;
-        public int z;
-        public final Block block;
-        public ClipboardEntry(int[] xyz, Block b){
-            this(xyz[0], xyz[1], xyz[2], b);
-        }
-        public ClipboardEntry(int x, int y, int z, Block b){
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.block = b;
-        }
+    @Override
+    public ArrayList<int[]> getSelection(){
+        return selection;
+    }
+    @Override
+    public Multiblock getMultiblock(){
+        return multiblock;
+    }
+    @Override
+    public void setCoolantRecipe(int idx){
+        underFuelOrCoolantRecipe.setSelectedIndex(idx);
+    }
+    @Override
+    public void setUnderhaulFuel(int idx){
+        underFuelOrCoolantRecipe.setSelectedIndex(idx);
+    }
+    @Override
+    public void setFusionCoolantRecipe(int idx){
+        underFuelOrCoolantRecipe.setSelectedIndex(idx);
+    }
+    @Override
+    public void setFusionRecipe(int idx){
+        overFuel.setSelectedIndex(idx);
+    }
+    @Override
+    public void setTurbineRecipe(int idx){
+        underFuelOrCoolantRecipe.setSelectedIndex(idx);
+    }
+    @Override
+    public ArrayList<ClipboardEntry> getClipboard(){
+        return clipboard;
     }
 }

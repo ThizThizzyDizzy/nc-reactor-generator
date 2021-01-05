@@ -1,4 +1,4 @@
-package planner.tutorial;
+package planner.editor.tutorial;
 import java.util.ArrayList;
 public class TutorialCategory{
     public final String name;

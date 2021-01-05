@@ -6,15 +6,15 @@ import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
 import planner.Core;
-import planner.menu.MenuEdit;
+import planner.editor.Editor;
 public class CopyAction extends Action<Multiblock>{
-    private final MenuEdit editor;
+    private final Editor editor;
     private final ArrayList<int[]> selection = new ArrayList<>();
     private final HashMap<int[], Block> was = new HashMap<>();
     private final int dx;
     private final int dy;
     private final int dz;
-    public CopyAction(MenuEdit editor, Collection<int[]> selection, int dy, int dx, int dz){
+    public CopyAction(Editor editor, Collection<int[]> selection, int dy, int dx, int dz){
         this.selection.addAll(selection);
         this.dx = dy;
         this.dy = dx;
@@ -42,8 +42,8 @@ public class CopyAction extends Action<Multiblock>{
                 multiblock.setBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz, bl);
             }
         }
-        synchronized(editor.selection){
-            if(!Core.isShiftPressed())editor.selection.clear();
+        synchronized(editor.getSelection()){
+            if(!Core.isShiftPressed())editor.getSelection().clear();
         }
         editor.addSelection(movedSelection);
     }
@@ -52,9 +52,9 @@ public class CopyAction extends Action<Multiblock>{
         for(int[] loc : was.keySet()){
             multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
         }
-        synchronized(editor.selection){
-            editor.selection.clear();
-            editor.selection.addAll(selection);
+        synchronized(editor.getSelection()){
+            editor.getSelection().clear();
+            editor.getSelection().addAll(selection);
         }
     }
     @Override

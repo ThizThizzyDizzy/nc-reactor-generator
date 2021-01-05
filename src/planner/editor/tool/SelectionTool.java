@@ -1,11 +1,11 @@
-package planner.tool;
+package planner.editor.tool;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
-import planner.menu.MenuEdit;
+import planner.editor.Editor;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class SelectionTool extends EditorTool{
-    public SelectionTool(MenuEdit editor){
+    public SelectionTool(Editor editor){
         super(editor);
     }
     private int[] leftDragStart;
