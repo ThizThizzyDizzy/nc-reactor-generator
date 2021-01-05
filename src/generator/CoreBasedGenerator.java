@@ -203,6 +203,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         }
         if(coreSize<settings.workingCores){
             Multiblock inst = multiblock.blankCopy();
+            inst.recalculate();
             synchronized(workingCores){
                 workingCores.add(inst);
             }
@@ -290,7 +291,9 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             finalizeCore(mult);
             if(currentMultiblockCore.isBetterThan(mult, settings.corePriorities)){workingCores.set(coreIndex, currentMultiblockCore.copy());}
             else if(mult.millisSinceLastChange()>settings.timeout*1000){
-                workingCores.set(coreIndex, multiblock.blankCopy());
+                Multiblock m = multiblock.blankCopy();
+                m.recalculate();
+                workingCores.set(coreIndex, m);
             }
         }
     //</editor-fold>

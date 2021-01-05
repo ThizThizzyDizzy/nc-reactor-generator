@@ -12,6 +12,7 @@ public class MenuComponentModule extends MenuComponent{
     public MenuComponentModule(Module module){
         super(0, 0, 0, 64);
         this.module = module;
+        enabled = module.isActive();
     }
     @Override
     public void render(){

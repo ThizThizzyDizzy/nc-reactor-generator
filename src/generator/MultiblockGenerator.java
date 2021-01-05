@@ -1,5 +1,6 @@
 package generator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 import multiblock.Block;
@@ -20,6 +21,7 @@ public abstract class MultiblockGenerator{
     private Object threadronyzer = new Object();
     public final Multiblock multiblock;
     private ArrayList<UUID> threads = new ArrayList<>();
+    private HashMap<UUID, Long> crashedThreads = new HashMap<>();
     public MultiblockGenerator(Multiblock multiblock){
         this.multiblock = multiblock;
         if(multiblock!=null)priorities = multiblock.getGenerationPriorities();
@@ -63,6 +65,7 @@ public abstract class MultiblockGenerator{
                     }
                 }catch(Exception ex){
                     threads.remove(uid);
+                    crashedThreads.put(uid, System.nanoTime());
                     throw new RuntimeException(ex);
                 }
             });
@@ -109,5 +112,12 @@ public abstract class MultiblockGenerator{
         synchronized(iterationSynchronizer){
             iterations++;
         }
+    }
+    public int getCrashedThreads(long crashedThreadTime){
+        int crashed = 0;
+        for(UUID uid : crashedThreads.keySet()){
+            if(System.nanoTime()-crashedThreads.get(uid)<=crashedThreadTime)crashed++;
+        }
+        return crashed;
     }
 }

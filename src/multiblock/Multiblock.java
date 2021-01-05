@@ -17,6 +17,7 @@ import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResize;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.module.Module;
 import planner.suggestion.Suggestor;
 import simplelibrary.Queue;
 import simplelibrary.Stack;
@@ -31,6 +32,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public HashMap<String, String> metadata = new HashMap<>();
     public Boolean showDetails = null;//details override
     public Configuration configuration;
+    private boolean calculated = false;
+    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     {
         resetMetadata();
         lastChangeTime = System.nanoTime();
@@ -263,8 +266,19 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         for(T t : blocks){
             t.clearData();
         }
+        moduleData.clear();
     }
-    public abstract void calculate(List<T> blocks);
+    public abstract void doCalculate(List<T> blocks);
+    public void calculate(List<T> blocks){
+        doCalculate(blocks);
+        for(Module m : Core.modules){
+            if(m.isActive()){
+                Object result = m.calculateMultiblock(this);
+                if(result!=null)moduleData.put(m, result);
+            }
+        }
+        calculated = true;
+    }
     private ArrayList<T> lastBlocks = null;
     private boolean forceRescan = false;
     public ArrayList<T> getAbsoluteBlocks(){
@@ -304,6 +318,14 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     protected abstract T newCasing(int x, int y, int z);
     public abstract String getTooltip();
+    public String getModuleTooltip(){
+        String s = "";
+        for(Module m : moduleData.keySet()){
+            String str = m.getTooltip(this, moduleData.get(m));
+            if(str!=null)s+="\n"+str;
+        }
+        return s;
+    }
     public void draw3D(){
         ArrayList<T> blocks = getAbsoluteBlocks();
         Collections.sort(blocks, (T o1, T o2) -> o1.getName().compareTo(o2.getName()));
@@ -647,6 +669,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public Multiblock<T> copy(){
         Multiblock<T> copy = doCopy();
         copy.metadata = (HashMap<String, String>)metadata.clone();
+        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
+        copy.calculated = calculated;
         return copy;
     }
     public abstract Multiblock<T> doCopy();
@@ -776,4 +800,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return suggestors;
     }
     public abstract void getSuggestors(ArrayList<Suggestor> suggestors);
+    public boolean isCalculated(){
+        return calculated;
+    }
 }

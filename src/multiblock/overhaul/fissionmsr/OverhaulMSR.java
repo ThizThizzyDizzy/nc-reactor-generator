@@ -58,7 +58,6 @@ public class OverhaulMSR extends Multiblock<Block>{
     private int calculationStep = 0;//0 is initial calculation, 1 is shield check, 2 is shutdown factor check
     private ArrayList<VesselGroup> vesselGroupsWereActive = new ArrayList<>();//used for shield check
     private ArrayList<Block> vesselsWereActive = new ArrayList<>();//used for shield check
-    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public OverhaulMSR(){
         this(null);
     }
@@ -112,7 +111,7 @@ public class OverhaulMSR extends Multiblock<Block>{
         return getConfiguration().overhaul.fissionMSR.maxSize;
     }
     @Override
-    public synchronized void calculate(List<Block> blocks){
+    public synchronized void doCalculate(List<Block> blocks){
         HashMap<Block, Boolean> shieldsWere = new HashMap<>();
         List<Block> allBlocks = getBlocks();
         if(calculationStep!=1){//temporarily open all shields
@@ -252,9 +251,6 @@ public class OverhaulMSR extends Multiblock<Block>{
         if(calculationStep==0){
             shutdownFactor = calculateShutdownFactor();
         }
-        for(Module m : Core.modules){
-            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
-        }
     }
     private void calculatePartialShutdown(){
         int last = calculationStep;
@@ -310,11 +306,8 @@ public class OverhaulMSR extends Multiblock<Block>{
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
                     + "Total Irradiation: "+totalIrradiation+"\n"
-                    + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n";
-            for(Module m : moduleData.keySet()){
-                String str = m.getTooltip(this, moduleData.get(m));
-                if(str!=null)s+=str+"\n";
-            }
+                    + "Shutdown Factor: "+percent(shutdownFactor, 2);
+            s+=getModuleTooltip()+"\n";
             for(Fuel f : getConfiguration().overhaul.fissionMSR.allFuels){
                 int i = getFuelCount(f);
                 if(i>0)s+="\n"+f.name+": "+i;
@@ -618,7 +611,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
         });
         for(Module m : Core.modules){
-            m.getGenerationPriorities(this, priorities);
+            if(m.isActive())m.getGenerationPriorities(this, priorities);
         }
     }
     @Override
@@ -959,7 +952,6 @@ public class OverhaulMSR extends Multiblock<Block>{
         }
         totalOutput.clear();
         shutdownFactor = totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelVessels = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
-        moduleData.clear();
     }
     /**
      * Converts the tiered search returned by getBlocks into a list of blocks.<br>
@@ -1008,7 +1000,6 @@ public class OverhaulMSR extends Multiblock<Block>{
         copy.totalOutput.putAll(totalOutput);
         copy.totalTotalOutput = totalTotalOutput;
         copy.shutdownFactor = shutdownFactor;
-        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override
@@ -1108,7 +1099,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             }
             @Override
             public String getName(){
-                return "Addvanced Moderator Line Upgrader";
+                return "Advanced Moderator Line Upgrader";
             }
             @Override
             public String getDescription(){

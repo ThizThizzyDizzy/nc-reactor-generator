@@ -58,7 +58,6 @@ public class OverhaulSFR extends Multiblock<Block>{
     public float shutdownFactor;
     private int calculationStep = 0;//0 is initial calculation, 1 is shield check, 2 is shutdown factor check
     private ArrayList<Block> cellsWereActive = new ArrayList<>();//used for shield check
-    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public OverhaulSFR(){
         this(null);
     }
@@ -113,7 +112,7 @@ public class OverhaulSFR extends Multiblock<Block>{
         return getConfiguration().overhaul.fissionSFR.maxSize;
     }
     @Override
-    public void calculate(List<Block> blocks){
+    public void doCalculate(List<Block> blocks){
         HashMap<Block, Boolean> shieldsWere = new HashMap<>();
         List<Block> allBlocks = getBlocks();
         if(calculationStep!=1){//temporarily open all shields
@@ -235,9 +234,6 @@ public class OverhaulSFR extends Multiblock<Block>{
         if(calculationStep==0){
             shutdownFactor = calculateShutdownFactor();
         }
-        for(Module m : Core.modules){
-            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
-        }
     }
     private void calculatePartialShutdown(){
         int last = calculationStep;
@@ -285,11 +281,8 @@ public class OverhaulSFR extends Multiblock<Block>{
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
                     + "Total Irradiation: "+totalIrradiation+"\n"
-                    + "Shutdown Factor: "+percent(shutdownFactor, 2)+"\n";
-            for(Module m : moduleData.keySet()){
-                String str = m.getTooltip(this, moduleData.get(m));
-                if(str!=null)s+=str+"\n";
-            }
+                    + "Shutdown Factor: "+percent(shutdownFactor, 2);
+            s+=getModuleTooltip()+"\n";
             for(Fuel f : getConfiguration().overhaul.fissionSFR.allFuels){
                 int i = getFuelCount(f);
                 if(i>0)s+="\n"+f.name+": "+i;
@@ -572,7 +565,7 @@ public class OverhaulSFR extends Multiblock<Block>{
             }
         });
         for(Module m : Core.modules){
-            m.getGenerationPriorities(this, priorities);
+            if(m.isActive())m.getGenerationPriorities(this, priorities);
         }
     }
     @Override
@@ -674,7 +667,6 @@ public class OverhaulSFR extends Multiblock<Block>{
             clusters.clear();
         }
         shutdownFactor = totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelCells = rawOutput = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
-        moduleData.clear();
     }
     /**
      * Block search algorithm from my Tree Feller for Bukkit.
@@ -797,7 +789,6 @@ public class OverhaulSFR extends Multiblock<Block>{
         copy.functionalBlocks = functionalBlocks;
         copy.sparsityMult = sparsityMult;
         copy.shutdownFactor = shutdownFactor;
-        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override
@@ -901,7 +892,7 @@ public class OverhaulSFR extends Multiblock<Block>{
             }
             @Override
             public String getName(){
-                return "Addvanced Moderator Line Upgrader";
+                return "Advanced Moderator Line Upgrader";
             }
             @Override
             public String getDescription(){

@@ -38,6 +38,8 @@ public class MenuGenerator extends Menu{
     private MultiblockGenerator generator = null;
     private int lastIndex;
     private int threads = 0;
+    private int crashedThreadTicks = 200;//ns
+    private int crashedThreadThreshold = 10;
     public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
         super(gui, editor);
         this.multiblock = multiblock;
@@ -89,6 +91,11 @@ public class MenuGenerator extends Menu{
     public void tick(){
         super.tick();
         if(generator!=null){
+            if(threads>0&&generator.getCrashedThreads(crashedThreadTicks*50_000_000L)>crashedThreadThreshold){
+                threads = 0;
+                threadsLabel.text = threads+" Thread"+(threads==1?"":"s");
+                Sys.error(ErrorLevel.severe, "Stopping generation...", new RuntimeException(crashedThreadThreshold+" generation threads crashed in "+crashedThreadTicks+" ticks!"), ErrorCategory.threading);
+            }
             if(generator.getActiveThreads()<threads){
                 generator.startThread();
             }

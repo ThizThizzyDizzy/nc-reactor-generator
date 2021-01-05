@@ -49,7 +49,6 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public int functionalBlocks;
     private float sparsityMult;
     private float shieldinessFactor;
-    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     private static int getWidth(int innerRadius, int coreSize, int toroidWidth, int liningThickness){
         return coreSize+2+innerRadius*2+toroidWidth*2+liningThickness*4+4;
     }
@@ -158,7 +157,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         return getMaxX();
     }
     @Override
-    public void calculate(List<Block> blocks){
+    public void doCalculate(List<Block> blocks){
         List<Block> allBlocks = getBlocks();
         for(Block block : blocks){
             block.calculateBreedingBlanket(this);
@@ -243,9 +242,6 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         totalOutput*=sparsityMult;
         totalEfficiency*=sparsityMult;
         totalOutput/=coolantRecipe.heat/coolantRecipe.outputRatio;
-        for(Module m : Core.modules){
-            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
-        }
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -274,11 +270,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                     + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Shieldiness Factor: "+percent(shieldinessFactor, 1)+"\n"
-                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n";
-            for(Module m : moduleData.keySet()){
-                String str = m.getTooltip(this, moduleData.get(m));
-                if(str!=null)s+=str+"\n";
-            }
+                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()));
+            s+=getModuleTooltip()+"\n";
             if(showDetails){
                 HashMap<String, Integer> counts = new HashMap<>();
                 ArrayList<String> order = new ArrayList<>();
@@ -402,7 +395,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             }
         });
         for(Module m : Core.modules){
-            m.getGenerationPriorities(this, priorities);
+            if(m.isActive())m.getGenerationPriorities(this, priorities);
         }
     }
     @Override
@@ -581,7 +574,6 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             clusters.clear();
         }
         shieldinessFactor = totalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalHeatingBlankets = rawOutput = totalCooling = totalHeat = netHeat = functionalBlocks = 0;
-        moduleData.clear();
     }
     /**
      * Block search algorithm from my Tree Feller for Bukkit.
@@ -702,7 +694,6 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         copy.totalHeatMult = totalHeatMult;
         copy.functionalBlocks = functionalBlocks;
         copy.sparsityMult = sparsityMult;
-        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override

@@ -19,6 +19,8 @@ public abstract class Priority<T extends Multiblock>{
         return name;
     }
     public final double compare(T main, T other){
+        if(!main.isCalculated())throw new IllegalStateException("All multiblocks must be calculated before they can be compared!");
+        if(!other.isCalculated())throw new IllegalStateException("All multiblocks must be calculated before they can be compared!");
         if(main==null&&other==null)return 0;
         if(main==null&&other!=null)return -1;
         if(main!=null&&other==null)return 1;

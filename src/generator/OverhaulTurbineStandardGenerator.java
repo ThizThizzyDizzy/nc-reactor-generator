@@ -147,6 +147,7 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         }
         if(size<settings.workingMultiblocks){
             Multiblock inst = multiblock.blankCopy();
+            inst.recalculate();
             synchronized(workingMultiblocks){
                 workingMultiblocks.add(inst);
             }
@@ -264,7 +265,9 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
             finalize(mult);
             if(currentMultiblock.isBetterThan(mult, settings.priorities)){workingMultiblocks.set(idx, currentMultiblock.copy());}
             else if(mult.millisSinceLastChange()>settings.timeout*1000){
-                workingMultiblocks.set(idx, multiblock.blankCopy());
+                Multiblock m = multiblock.blankCopy();
+                m.recalculate();
+                workingMultiblocks.set(idx, m);
             }
         }
         countIteration();

@@ -28,7 +28,6 @@ public class UnderhaulSFR extends Multiblock<Block>{
     private float efficiency;
     public Fuel fuel;
     private double heatMult;
-    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public UnderhaulSFR(){
         this(null);
     }
@@ -83,7 +82,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return getConfiguration().underhaul.fissionSFR.maxSize;
     }
     @Override
-    public void calculate(List<Block> blocks){
+    public void doCalculate(List<Block> blocks){
         for(Block block : blocks){
             block.calculateCore(this);
         }
@@ -113,9 +112,6 @@ public class UnderhaulSFR extends Multiblock<Block>{
         power = (int) (totalEnergyMult*fuel.power);
         efficiency = totalEnergyMult/cells;
         if(Double.isNaN(efficiency))efficiency = 0;
-        for(Module m : Core.modules){
-            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
-        }
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -138,10 +134,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 + "Efficiency: "+percent(efficiency, 0)+"\n"
                 + "Heat multiplier: "+percent(heatMult, 0)+"\n"
                 + "Fuel cells: "+cells;
-        for(Module m : moduleData.keySet()){
-            String s = m.getTooltip(this, moduleData.get(m));
-            if(s!=null)tooltip+="\n"+s;
-        }
+        tooltip+=getModuleTooltip();
         return tooltip;
     }
     @Override
@@ -201,11 +194,6 @@ public class UnderhaulSFR extends Multiblock<Block>{
         configuration = to;
     }
     @Override
-    public void clearData(List<Block> blocks){
-        super.clearData(blocks);
-        moduleData.clear();
-    }
-    @Override
     public boolean validate(){
         return false;
     }
@@ -259,7 +247,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
             }
         });
         for(Module m : Core.modules){
-            m.getGenerationPriorities(this, priorities);
+            if(m.isActive())m.getGenerationPriorities(this, priorities);
         }
     }
     @Override
@@ -301,7 +289,6 @@ public class UnderhaulSFR extends Multiblock<Block>{
         copy.cells = cells;
         copy.efficiency = efficiency;
         copy.heatMult = heatMult;
-        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override

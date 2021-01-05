@@ -44,7 +44,6 @@ public class OverhaulTurbine extends Multiblock<Block>{
     public ArrayList<Multiblock> inputs = new ArrayList<>();
     public double[] idealExpansion;
     public double[] actualExpansion;
-    public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public OverhaulTurbine(){
         this(null);
     }
@@ -383,7 +382,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         future.clear();
     }
     @Override
-    public void calculate(List<Block> blocks){
+    public void doCalculate(List<Block> blocks){
         bladesValid = true;
         bladeCount = 0;
         Block[] blades = new Block[getZ()-2];
@@ -474,9 +473,6 @@ public class OverhaulTurbine extends Multiblock<Block>{
         totalOutput = (long)(totalFluidEfficiency*getInputRate());
         safeOutput = (long)(totalFluidEfficiency*maxInput);
         unsafeOutput = (long)(totalFluidEfficiency*maxUnsafeInput);
-        for(Module m : Core.modules){
-            if(m.isActive())moduleData.put(m, m.calculateMultiblock(this));
-        }
     }
     @Override
     protected Block newCasing(int x, int y, int z){
@@ -499,10 +495,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
                     + "Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
                     + "Coil Efficiency: "+percent(coilEfficiency, 2);
         }
-        for(Module m : moduleData.keySet()){
-            String s = m.getTooltip(this, moduleData.get(m));
-            if(s!=null)tooltip+="\n"+s;
-        }
+        tooltip+=getModuleTooltip();
         return tooltip;
     }
     @Override
@@ -595,7 +588,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
             }
         });
         for(Module m : Core.modules){
-            m.getGenerationPriorities(this, priorities);
+            if(m.isActive())m.getGenerationPriorities(this, priorities);
         }
     }
     @Override
@@ -622,7 +615,6 @@ public class OverhaulTurbine extends Multiblock<Block>{
         bladeCount = 0;
         idealityMultiplier = throughputEfficiency = totalEfficiency = totalFluidEfficiency = rotorEfficiency = coilEfficiency = 0;
         totalOutput = safeOutput = unsafeOutput = maxInput = maxUnsafeInput = 0;
-        moduleData.clear();
     }
     @Override
     public boolean exists(){
@@ -656,7 +648,6 @@ public class OverhaulTurbine extends Multiblock<Block>{
         copy.unsafeOutput = unsafeOutput;
         copy.maxInput = maxInput;
         copy.maxUnsafeInput = maxUnsafeInput;
-        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
         return copy;
     }
     @Override

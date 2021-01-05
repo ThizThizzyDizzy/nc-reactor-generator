@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +40,7 @@ import planner.module.Module;
 import planner.module.RainbowFactorModule;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
+import simplelibrary.config2.ConfigList;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorHandler;
 import simplelibrary.error.ErrorLevel;
@@ -359,6 +361,13 @@ public class Core extends Renderer2D{
             settings.load();
             System.out.println("Loading theme");
             setTheme(Theme.themes.get(settings.get("theme", 0)));
+            ConfigList modules = settings.get("modules", new ConfigList());
+            for(Iterator<String> it = modules.iterator(); it.hasNext();){
+                String str = it.next();
+                for(Module m : Core.modules){
+                    if(m.getName().equals(str))m.activate();
+                }
+            }
             tutorialShown = settings.get("tutorialShown", false);
         }
         if(Main.hasAWTAfterStartup){
@@ -382,6 +391,11 @@ public class Core extends Renderer2D{
             File f = new File("settings.dat").getAbsoluteFile();
             Config settings = Config.newConfig(f);
             settings.set("theme", Theme.themes.indexOf(theme));
+            ConfigList modules = new ConfigList();
+            for(Module m : Core.modules){
+                if(m.isActive())modules.add(m.getName());//TODO a programmer-friendly ID please
+            }
+            settings.set("modules", modules);
             settings.set("tutorialShown", tutorialShown);
             settings.save();
             if(Main.isBot){
