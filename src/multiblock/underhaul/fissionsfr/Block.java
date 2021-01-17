@@ -236,4 +236,9 @@ public class Block extends multiblock.Block{
     public boolean isEqual(multiblock.Block other){
         return other instanceof Block&&((Block)other).template==template;
     }
+    @Override
+    public void convertTo(Configuration to){
+        template = to.underhaul.fissionSFR.convert(template);
+        configuration = to;
+    }
 }

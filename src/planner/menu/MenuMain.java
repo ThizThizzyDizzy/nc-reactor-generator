@@ -20,6 +20,7 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import planner.file.FileFormat;
 import planner.Main;
+import planner.vr.VRCore;
 import simplelibrary.Queue;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
@@ -36,6 +37,7 @@ public class MenuMain extends Menu{
     private MenuComponentMinimalistButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", false, true).setTooltip("Save all multiblocks to a file"));
     private MenuComponentMinimalistButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", false, true).setTooltip("Load a file, replacing all current multiblocks"));
     private MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Edit metadata"));
+    private MenuComponentMinimalistButton vr = new MenuComponentMinimalistButton(0, 0, 0, 0, "VR", true, true).setTooltip("Enter VR");
     private MenuComponentMinimalistButton settings = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true){
         @Override
         public void drawText(){
@@ -154,6 +156,7 @@ public class MenuMain extends Menu{
     public OverhaulTurbine settingInputs = null;
     public MenuMain(GUI gui){
         super(gui, null);
+        if(Core.vr)add(vr);
         addMultiblock.textInset = 0;
         for(Multiblock m : Core.multiblockTypes){
             MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true).setTooltip(m.getDescriptionTooltip()));
@@ -273,6 +276,9 @@ public class MenuMain extends Menu{
         multiblockCancel.addActionListener((e) -> {
             adding = false;
         });
+        vr.addActionListener((e) -> {
+            VRCore.start();
+        });
     }
     @Override
     public void renderBackground(){
@@ -302,9 +308,10 @@ public class MenuMain extends Menu{
         exportMultiblock.x = importFile.width;
         saveFile.x = exportMultiblock.x+exportMultiblock.width;
         loadFile.x = saveFile.x+saveFile.width;
-        editMetadata.width = gui.helper.displayWidth()*2/3-gui.helper.displayHeight()/16;
-        importFile.height = exportMultiblock.height = saveFile.height = loadFile.height = editMetadata.height = settings.width = settings.height = gui.helper.displayHeight()/16;
+        editMetadata.width = gui.helper.displayWidth()*2/3-gui.helper.displayHeight()/16*(Core.vr?2:1);
+        importFile.height = exportMultiblock.height = saveFile.height = loadFile.height = editMetadata.height = vr.width = vr.height = settings.width = settings.height = gui.helper.displayHeight()/16;
         settings.x = gui.helper.displayWidth()-gui.helper.displayHeight()/16;
+        vr.x = settings.x-gui.helper.displayHeight()/16;
         multiblocks.y = gui.helper.displayHeight()/8;
         multiblocks.height = gui.helper.displayHeight()-multiblocks.y;
         multiblocks.width = gui.helper.displayWidth()/3;
@@ -342,6 +349,7 @@ public class MenuMain extends Menu{
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);
         settings.enabled = !(adding||metadating);
+        vr.enabled = !(adding||metadating);
         importFile.enabled = !(adding||metadating);
         exportMultiblock.enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
         saveFile.enabled = !Core.multiblocks.isEmpty()&&!(adding||metadating);

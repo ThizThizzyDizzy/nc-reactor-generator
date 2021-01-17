@@ -396,10 +396,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     public void convertTo(Configuration to){
         if(to.overhaul==null||to.overhaul.fissionMSR==null)return;
         for(Block block : getBlocks()){
-            if(block.template.fuelVessel)block.fuel = to.overhaul.fissionMSR.convert(block.fuel);
-            if(block.template.fuelVessel)block.source = to.overhaul.fissionMSR.convert(block.source);
-            if(block.template.irradiator)block.irradiatorRecipe = to.overhaul.fissionMSR.convert(block.irradiatorRecipe);
-            block.template = to.overhaul.fissionMSR.convert(block.template);
+            block.convertTo(to);
         }
         configuration = to;
     }

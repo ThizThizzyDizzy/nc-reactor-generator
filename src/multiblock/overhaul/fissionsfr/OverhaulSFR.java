@@ -372,10 +372,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     public void convertTo(Configuration to){
         if(to.overhaul==null||to.overhaul.fissionSFR==null)return;
         for(Block block : getBlocks()){
-            if(block.template.fuelCell)block.fuel = to.overhaul.fissionSFR.convert(block.fuel);
-            if(block.template.fuelCell)block.source = to.overhaul.fissionSFR.convert(block.source);
-            if(block.template.irradiator)block.irradiatorRecipe = to.overhaul.fissionSFR.convert(block.irradiatorRecipe);
-            block.template = to.overhaul.fissionSFR.convert(block.template);
+            block.convertTo(to);
         }
         coolantRecipe = to.overhaul.fissionSFR.convert(coolantRecipe);
         configuration = to;

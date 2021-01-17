@@ -32,43 +32,51 @@ public class Main{
     //other stuff
     public static boolean isBot = false;
     public static boolean headless = false;
+    public static String discordBotToken;
     private static void addRequiredLibrary(String url, String filename){
         requiredLibraries.add(new String[]{url,filename});
     }
     private static void addRequiredLibraries(){
-        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.3/SimpleLibraryPlus-1.3.jar", "SimpleLibraryPlus-1.3.jar");
+        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.4/SimpleLibraryPlus-1.4.jar", "SimpleLibraryPlus-1.4.jar");
+        addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/joml-1.10.0.jar", "joml-1.10.0.jar");
         if(isBot){
             addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies.jar", "JDA-4.2.0_168-withDependencies.jar");
         }
     }
     public static void main(String[] args){
         try{
-            if(args.length>=1&&args[0].equals("headless")||args.length>=2&&args[1].equals("headless")||args.length>=3&&args[2].equals("headless")){
-                hasAWT = false;
-                headless = true;
-            }
-            if(args.length>=1&&args[0].equals("noAWT")||args.length>=2&&args[1].equals("noAWT")||args.length>=3&&args[2].equals("noAWT")){
-                hasAWT = false;
-            }
-            if(args.length>=1&&args[0].equals("noAWTDuringStartup")||args.length>=2&&args[1].equals("noAWTDuringStartup")||args.length>=3&&args[2].equals("noAWTDuringStartup")){
-                hasAWT = false;
-                hasAWTAfterStartup = true;
-            }
-            if(args.length>=1&&args[0].equals("maybediscord")||args.length>=2&&args[1].equals("maybediscord")||args.length>=3&&args[2].equals("maybediscord")){
-                if(hasAWT){
-                    if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[1] = "discord";
-                }else{
-                    System.out.println("Bot or Planner? (B|P)\n> ");
-                    BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-                    String s = r.readLine();
-                    if(s==null)s = "";
-                    s = s.trim();
-                    r.close();
-                    if(s.equalsIgnoreCase("B")||s.equalsIgnoreCase("Bot")||s.equalsIgnoreCase("Discord"))args[1] = "discord";
+            for(int i = 0; i<args.length; i++){
+                switch(args[i]){
+                    case "headless":
+                        hasAWT = false;
+                        headless = true;
+                        break;
+                    case "noAWT":
+                        hasAWT = false;
+                        break;
+                    case "noAWTDuringStartup":
+                        hasAWT = false;
+                        hasAWTAfterStartup = true;
+                        break;
+                    case "maybediscord":
+                        if(hasAWT){
+                            if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[i] = "discord";
+                        }else{
+                            System.out.println("Bot or Planner? (B|P)\n> ");
+                            BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+                            String s = r.readLine();
+                            if(s==null)s = "";
+                            s = s.trim();
+                            r.close();
+                            if(s.equalsIgnoreCase("B")||s.equalsIgnoreCase("Bot")||s.equalsIgnoreCase("Discord"))args[i] = "discord";
+                        }
+                    case "discord":
+                        if(args[i].equals("discord")){
+                            isBot = true;
+                            discordBotToken = args[i+1];
+                        }
+                        break;
                 }
-            }
-            if(args.length>=1&&args[0].equals("discord")||args.length>=2&&args[1].equals("discord")||args.length>=3&&args[2].equals("discord")){
-                isBot = true;
             }
             System.out.println("Initializing...");
             args = update(args);
@@ -128,6 +136,8 @@ public class Main{
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-opengl.jar", "lwjgl-opengl.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-stb.jar", "lwjgl-stb.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjglx-debug-1.0.0.jar", "lwjglx-debug-1.0.0.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openvr.jar", "lwjgl-openvr.jar");
             String osName = System.getProperty("os.name");
             if(osName==null)osName = "null";
             osName = osName.toLowerCase(Locale.ENGLISH);
@@ -193,6 +203,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openal-natives-windows-x86.jar", "lwjgl-openal-natives-windows-x86.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-opengl-natives-windows-x86.jar", "lwjgl-opengl-natives-windows-x86.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-stb-natives-windows-x86.jar", "lwjgl-stb-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openvr-natives-windows-x86.jar", "lwjgl-openvr-natives-windows-x86.jar");
                                 break;
                             case ARCH_X64:
                                 System.out.println("OS Architecture: x64");
@@ -202,6 +213,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openal-natives-windows.jar", "lwjgl-openal-natives-windows.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-opengl-natives-windows.jar", "lwjgl-opengl-natives-windows.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-stb-natives-windows.jar", "lwjgl-stb-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openvr-natives-windows.jar", "lwjgl-openvr-natives-windows.jar");
                                 break;
                         }
                     }
@@ -214,6 +226,7 @@ public class Main{
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openal-natives-macos.jar", "lwjgl-openal-natives-macos.jar");
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-opengl-natives-macos.jar", "lwjgl-opengl-natives-macos.jar");
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-stb-natives-macos.jar", "lwjgl-stb-natives-macos.jar");
+                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openvr-natives-macos.jar", "lwjgl-openvr-natives-macos.jar");
                     break;
                 case OS_LINUX:
                     {
@@ -258,6 +271,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openal-natives-linux.jar", "lwjgl-openal-natives-linux.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-opengl-natives-linux.jar", "lwjgl-opengl-natives-linux.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-stb-natives-linux.jar", "lwjgl-stb-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openvr-natives-linux.jar", "lwjgl-openvr-natives-linux.jar");
                                 break;
                             case ARCH_ARM32:
                                 System.out.println("OS Architecture: arm32");

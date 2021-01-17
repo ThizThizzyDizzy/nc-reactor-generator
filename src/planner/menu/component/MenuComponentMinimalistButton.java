@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 import planner.Core;
 import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
-import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuComponentMinimalistButton extends MenuComponentButton{
     private final boolean darker;

@@ -8,7 +8,7 @@ import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 public abstract class Block extends MultiblockBit{
-    private final Configuration configuration;
+    protected Configuration configuration;
     public int x;
     public int y;
     public int z;
@@ -148,4 +148,5 @@ public abstract class Block extends MultiblockBit{
     public Configuration getConfiguration(){
         return configuration;
     }
+    public abstract void convertTo(Configuration to);
 }

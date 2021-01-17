@@ -591,4 +591,12 @@ public class Block extends multiblock.Block{
     public boolean isEqual(multiblock.Block other){
         return other instanceof Block&&((Block)other).template==template;
     }
+    @Override
+    public void convertTo(Configuration to){
+        if(template.fuelVessel)fuel = to.overhaul.fissionMSR.convert(fuel);
+        if(template.fuelVessel)source = to.overhaul.fissionMSR.convert(source);
+        if(template.irradiator)irradiatorRecipe = to.overhaul.fissionMSR.convert(irradiatorRecipe);
+        template = to.overhaul.fissionMSR.convert(template);
+        configuration = to;
+    }
 }

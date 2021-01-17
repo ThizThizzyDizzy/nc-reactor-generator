@@ -333,8 +333,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void convertTo(Configuration to){
         if(to.overhaul==null||to.overhaul.fusion==null)return;
         for(Block block : getBlocks()){
-            if(block.template.breedingBlanket)block.breedingBlanketRecipe = to.overhaul.fusion.convert(block.breedingBlanketRecipe);
-            block.template = to.overhaul.fusion.convert(block.template);
+            block.convertTo(to);
         }
         recipe = to.overhaul.fusion.convert(recipe);
         coolantRecipe = to.overhaul.fusion.convert(coolantRecipe);

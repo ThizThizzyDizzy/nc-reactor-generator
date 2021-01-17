@@ -383,4 +383,10 @@ public class Block extends multiblock.Block{
         if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
         return template.functional&&(isActive()||breedingBlanketValid);
     }
+    @Override
+    public void convertTo(Configuration to){
+        if(template.breedingBlanket)breedingBlanketRecipe = to.overhaul.fusion.convert(breedingBlanketRecipe);
+        template = to.overhaul.fusion.convert(template);
+        configuration = to;
+    }
 }

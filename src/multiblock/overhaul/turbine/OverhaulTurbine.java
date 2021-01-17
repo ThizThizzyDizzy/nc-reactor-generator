@@ -543,8 +543,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     public void convertTo(Configuration to){
         if(to.overhaul==null||to.overhaul.turbine==null)return;
         for(Block block : getBlocks()){
-            block.coil = to.overhaul.turbine.convert(block.coil);
-            block.blade = to.overhaul.turbine.convert(block.blade);
+            block.convertTo(to);
         }
         recipe = to.overhaul.turbine.convert(recipe);
         configuration = to;

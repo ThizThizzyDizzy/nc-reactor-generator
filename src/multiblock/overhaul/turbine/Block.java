@@ -207,4 +207,10 @@ public class Block extends multiblock.Block{
     public boolean isFullBlock(){
         return !isBlade();
     }
+    @Override
+    public void convertTo(Configuration to){
+        coil = to.overhaul.turbine.convert(coil);
+        blade = to.overhaul.turbine.convert(blade);
+        configuration = to;
+    }
 }

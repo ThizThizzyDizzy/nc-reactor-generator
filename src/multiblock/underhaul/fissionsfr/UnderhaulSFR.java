@@ -188,7 +188,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     public void convertTo(Configuration to){
         if(to.underhaul==null||to.underhaul.fissionSFR==null)return;
         for(Block block : getBlocks()){
-            block.template = to.underhaul.fissionSFR.convert(block.template);
+            block.convertTo(to);
         }
         fuel = to.underhaul.fissionSFR.convert(fuel);
         configuration = to;

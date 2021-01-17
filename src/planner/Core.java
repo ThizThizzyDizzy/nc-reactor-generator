@@ -29,6 +29,9 @@ import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.openvr.VR;
+import org.lwjgl.system.Callback;
 import planner.menu.error.MenuCriticalError;
 import planner.menu.MenuDiscord;
 import planner.menu.MenuLoadFile;
@@ -73,6 +76,8 @@ public class Core extends Renderer2D{
     public static boolean delCircle = false;
     public static int circleSize = 64;
     public static final ArrayList<Module> modules = new ArrayList<>();
+    public static boolean vr = false;
+    private static Callback callback;
     static{
         for(Configuration configuration : Configuration.configurations){
             if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
@@ -105,6 +110,7 @@ public class Core extends Renderer2D{
         metadata.put("Author", "");
     }
     public static void main(String[] args) throws NoSuchMethodException{
+        if(VR.VR_IsRuntimeInstalled()&&VR.VR_IsHmdPresent())vr = true;
         System.out.println("Initializing GameHelper");
         helper = new GameHelper();
         helper.setBackground(theme.getBackgroundColor());
@@ -343,6 +349,9 @@ public class Core extends Renderer2D{
                 return super.getResourceAsStream(name);
             }
         });
+        System.out.println("Creating GL Debug Callback");
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
+        callback = GLUtil.setupDebugMessageCallback();
         System.out.println("Initializing GUI");
         gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper);
         if(Main.isBot)gui.open(new MenuDiscord(gui));

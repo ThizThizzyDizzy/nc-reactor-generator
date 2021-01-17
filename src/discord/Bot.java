@@ -82,6 +82,7 @@ import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import planner.Core;
 import planner.Core.BufferRenderer;
+import planner.Main;
 import planner.file.FileReader;
 import planner.file.FileWriter;
 import planner.file.FormatWriter;
@@ -2157,16 +2158,17 @@ public class Bot extends ListenerAdapter{
     public static void start(String[] args){
         System.out.println("Loading S'more bank...");
         SmoreBot.load();
-        if(args[0].startsWith("noAWT")){
-            String[] rgs = new String[args.length-1];
-            for(int i = 0; i<rgs.length; i++){
-                rgs[i] = args[i+1];
-            }
-            args = rgs;
-        }
         System.out.println("Loading channels...");
-        for(int i = 2; i<args.length; i++){
+        for(int i = 0; i<args.length; i++){
             String arg = args[i];
+            switch(arg){
+                case "headless":
+                case "noAWT":
+                case "noAWTDuringStartup":
+                case "discord":
+                case "vr":
+                    continue;
+            }
             if(arg.startsWith("bot")){
                 long c = Long.parseLong(arg.substring(3));
                 botChannels.add(c);
@@ -2193,7 +2195,7 @@ public class Bot extends ListenerAdapter{
         config.load();
         cookies = config.get("cookies", 0);
         System.out.println("Starting bot...");
-        JDABuilder b = JDABuilder.createDefault(args[1]);
+        JDABuilder b = JDABuilder.createDefault(Main.discordBotToken);
         b.setActivity(Activity.watching("cookies accumulate ("+cookies+")"));
         b.addEventListeners(new Bot());
         try{
