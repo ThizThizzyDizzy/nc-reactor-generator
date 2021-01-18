@@ -23,6 +23,7 @@ import static org.lwjgl.openvr.VRSystem.VRSystem_GetProjectionMatrix;
 import static org.lwjgl.openvr.VRSystem.VRSystem_PollNextEvent;
 import planner.Core;
 import static planner.Core.helper;
+import planner.menu.MenuMain;
 import planner.vr.menu.VRMenuMain;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.game.GameHelper;
@@ -30,7 +31,8 @@ import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.Menu;
 public class VRCore{
     public static ArrayList<Long> VRFPStracker = new ArrayList<>();
-    public static Framebuffer vrBuffer;
+    public static Framebuffer leftEyeBuffer;
+    public static Framebuffer rightEyeBuffer;
     public static final int vrWidth = 2016;//*15/32;
     public static final int vrHeight = 2240;//*15/32;
     private static ArrayList<ArrayList<Integer>> pressedButtons = new ArrayList<>();
@@ -252,18 +254,20 @@ public class VRCore{
             @Override
             public void render(int millisSinceLastTick){
                 super.render(millisSinceLastTick);
-                if(vrBuffer==null){
-                    vrBuffer = new Framebuffer(helper, "VR Framebuffer", vrWidth, vrHeight);
+                ImageStash.instance.bindTexture(0);
+                GL11.glColor4f(1, 1, 1, 1);
+                if(leftEyeBuffer==null){
+                    leftEyeBuffer = new Framebuffer(helper, "Left Eye Framebuffer", vrWidth, vrHeight);
+                }
+                if(rightEyeBuffer==null){
+                    rightEyeBuffer = new Framebuffer(helper, "Right Eye Framebuffer", vrWidth, vrHeight);
                 }
                 Color background = Core.theme.getBackgroundColor();
-                glfwMakeContextCurrent(helper.getWindow());
-                GL.createCapabilities();
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
                 TrackedDevicePose.Buffer tdpb = TrackedDevicePose.create(k_unMaxTrackedDeviceCount);
                 TrackedDevicePose.Buffer tdpb2 = TrackedDevicePose.create(k_unMaxTrackedDeviceCount);
                 VRCompositor_WaitGetPoses(tdpb, tdpb2);
-//                vrBuffer.bindRenderTarget3D();
-                helper.renderTargetFramebuffer(vrBuffer.stash.getBuffer(vrBuffer.name), GameHelper.MODE_3D, vrBuffer.width, vrBuffer.height, 1);
+                helper.renderTargetFramebuffer(leftEyeBuffer.stash.getBuffer(leftEyeBuffer.name), GameHelper.MODE_3D, leftEyeBuffer.width, leftEyeBuffer.height, 1);
                 GL11.glClearColor(background.getRed()/255f, background.getGreen()/255f, background.getBlue()/255f, 1);
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
                 Matrix4f[] projectionMatrices = new Matrix4f[2];
@@ -286,7 +290,7 @@ public class VRCore{
                 VRCore.render(tdpb);
                 helper.renderTargetFramebuffer(0, 0, 0, 0, 0);//clearFramebuffer()
                 Texture textureLeft = Texture.create();
-                textureLeft.set(vrBuffer.getTexture(), ETextureType_TextureType_OpenGL, EColorSpace_ColorSpace_Auto);
+                textureLeft.set(leftEyeBuffer.getTexture(), ETextureType_TextureType_OpenGL, EColorSpace_ColorSpace_Auto);
                 int left = VRCompositor_Submit(EVREye_Eye_Left, textureLeft, null, EVRSubmitFlags_Submit_Default);
                 //<editor-fold defaultstate="collapsed" desc="Left Eye Error">
                 switch(left){
@@ -327,7 +331,7 @@ public class VRCore{
                         break;
                 }
     //</editor-fold>
-                helper.renderTargetFramebuffer(vrBuffer.stash.getBuffer(vrBuffer.name), GameHelper.MODE_3D, vrBuffer.width, vrBuffer.height, 1);
+                helper.renderTargetFramebuffer(rightEyeBuffer.stash.getBuffer(rightEyeBuffer.name), GameHelper.MODE_3D, rightEyeBuffer.width, rightEyeBuffer.height, 1);
                 GL11.glClearColor(background.getRed()/255f, background.getGreen()/255f, background.getBlue()/255f, 1);
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
                 GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -337,7 +341,7 @@ public class VRCore{
                 VRCore.render(tdpb2);
                 helper.renderTargetFramebuffer(0, 0, 0, 0, 0);//clearFramebuffer()
                 Texture textureRight = Texture.create();
-                textureRight.set(vrBuffer.getTexture(), ETextureType_TextureType_OpenGL, EColorSpace_ColorSpace_Auto);
+                textureRight.set(rightEyeBuffer.getTexture(), ETextureType_TextureType_OpenGL, EColorSpace_ColorSpace_Auto);
                 int right = VRCompositor_Submit(EVREye_Eye_Right, textureRight, null, EVRSubmitFlags_Submit_Default);
                 //<editor-fold defaultstate="collapsed" desc="Right Eye Error">
                 switch(right){
@@ -383,9 +387,8 @@ public class VRCore{
                     VRFPStracker.remove(0);
                 }
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
-                GLFW.glfwMakeContextCurrent(0);
                 GL11.glColor4d(1, 1, 1, 1);
-                drawRect(0, helper.displayHeight(), helper.displayWidth(), 0, vrBuffer.getTexture());
+                drawRect(0, helper.displayHeight(), helper.displayWidth(), 0, leftEyeBuffer.getTexture());
             }
         });
         vrgui.open(new VRMenuMain(vrgui));

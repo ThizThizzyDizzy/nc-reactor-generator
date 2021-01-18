@@ -580,7 +580,7 @@ public class Core extends Renderer2D{
     private static int f(byte imgData){
         return (imgData+256)&255;
     }
-    private static File lastOpenFolder = new File("file").getAbsoluteFile().getParentFile();
+    public static File lastOpenFolder = new File("file").getAbsoluteFile().getParentFile();
     public static void createFileChooser(FileChooserResultListener listener, FileFormat... formats){
         if(Main.hasAWT){
             new Thread(() -> {
