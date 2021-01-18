@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import multiblock.configuration.Configuration;
@@ -539,6 +540,10 @@ public class Core extends Renderer2D{
         GL11.glEnd();
     }
     public static BufferedImage makeImage(int width, int height, BufferRenderer r){
+        boolean cull = GL11.glIsEnabled(GL11.GL_CULL_FACE);
+        boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
+        if(cull)GL11.glDisable(GL11.GL_CULL_FACE);
+        if(depth)GL11.glDisable(GL11.GL_DEPTH_TEST);
         ByteBuffer bufferer = ImageStash.createDirectByteBuffer(width*height*4);
         Framebuffer buff = new Framebuffer(helper, null, width, height);
         buff.bindRenderTarget2D();
@@ -557,6 +562,8 @@ public class Core extends Renderer2D{
             imgRGBData[i]=(f(imgData[i*4])<<16)+(f(imgData[i*4+1])<<8)+(f(imgData[i*4+2]))+(f(imgData[i*4+3])<<24);//DO NOT Use RED, GREEN, or BLUE channel (here BLUE) for alpha data
         }
         img.setRGB(0, 0, width, height, imgRGBData, 0, width);
+        if(cull)GL11.glEnable(GL11.GL_CULL_FACE);
+        if(depth)GL11.glEnable(GL11.GL_DEPTH_TEST);
         return img;
     }
     public static File askForOverwrite(File file){

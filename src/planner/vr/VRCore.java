@@ -54,6 +54,7 @@ public class VRCore{
             }
             @Override
             public void tick(){
+                VRCore.tick();
                 //<editor-fold defaultstate="collapsed" desc="Process VREvents">
                 VREvent event;
                 while(VRSystem_PollNextEvent(event = VREvent.malloc())){
@@ -402,6 +403,9 @@ public class VRCore{
     }
     public static long getVRFPS(){
         return VRFPStracker.size()/5;
+    }
+    public static void tick(){
+        vrgui.tick();
     }
     public static void render(TrackedDevicePose.Buffer tdpb){
         vrgui.render(tdpb);
