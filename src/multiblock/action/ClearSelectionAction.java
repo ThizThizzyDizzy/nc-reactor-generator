@@ -7,20 +7,22 @@ import planner.editor.Editor;
 public class ClearSelectionAction extends Action<Multiblock>{
     public final ArrayList<int[]> was = new ArrayList<>();
     private final Editor editor;
-    public ClearSelectionAction(Editor editor){
+    private final int id;
+    public ClearSelectionAction(Editor editor, int id){
         this.editor = editor;
+        this.id = id;
     }
     @Override
     protected void doApply(Multiblock multiblock, boolean allowUndo){
-        synchronized(editor.getSelection()){
-            if(allowUndo)was.addAll(editor.getSelection());
-            editor.getSelection().clear();
+        synchronized(editor.getSelection(id)){
+            if(allowUndo)was.addAll(editor.getSelection(id));
+            editor.getSelection(id).clear();
         }
     }
     @Override
     protected void doUndo(Multiblock multiblock){
-        synchronized(editor.getSelection()){
-            editor.getSelection().addAll(was);
+        synchronized(editor.getSelection(id)){
+            editor.getSelection(id).addAll(was);
             was.clear();
         }
     }

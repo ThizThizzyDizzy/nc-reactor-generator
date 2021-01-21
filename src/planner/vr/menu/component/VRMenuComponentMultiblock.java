@@ -7,6 +7,7 @@ import org.lwjgl.openvr.VR;
 import planner.Core;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
+import planner.vr.menu.VRMenuEdit;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class VRMenuComponentMultiblock extends VRMenuComponent{
@@ -80,7 +81,7 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
     public void keyEvent(int device, int button, boolean pressed){
         super.keyEvent(device, button, pressed);
         if(pressed&&button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-//            gui.open(new VRMenuEdit(gui, main, multiblock));
+            gui.open(new VRMenuEdit(gui, parent, multiblock));
         }
     }
 }

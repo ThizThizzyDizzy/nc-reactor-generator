@@ -5,9 +5,9 @@ import multiblock.Multiblock;
 import multiblock.action.SetblocksAction;
 public interface Editor{
     public Multiblock getMultiblock();
-    public ArrayList<int[]> getSelection();
-    public void addSelection(ArrayList<int[]> sel);
-    public boolean isSelected(int x, int y, int z);
+    public ArrayList<int[]> getSelection(int id);
+    public void addSelection(int id, ArrayList<int[]> sel);
+    public boolean isSelected(int id, int x, int y, int z);
     @Deprecated
     public void setCoolantRecipe(int idx);
     @Deprecated
@@ -18,19 +18,31 @@ public interface Editor{
     public void setFusionRecipe(int idx);
     @Deprecated
     public void setTurbineRecipe(int idx);
-    public void clearSelection();
-    public void select(int x1, int y1, int z1, int x2, int y2, int z2);
-    public void copySelection(int x, int y, int z);
-    public void cutSelection(int x, int y, int z);
-    public Block getSelectedBlock();
-    public void setblocks(SetblocksAction set);
-    public void cloneSelection(int x, int y, int z);
-    public void moveSelection(int x, int y, int z);
-    public void pasteSelection(int x, int y, int z);
-    public ArrayList<ClipboardEntry> getClipboard();
-    public void selectGroup(int x, int y, int z);
-    public void deselectGroup(int x, int y, int z);
-    public void selectCluster(int x, int y, int z);
-    public void deselectCluster(int x, int y, int z);
-    public void deselect(int x1, int y1, int z1, int x2, int y2, int z2);
+    /**
+     * @deprecated use ClearSelectionAction instead?
+     */
+    @Deprecated
+    public void clearSelection(int id);
+    public void select(int id, int x1, int y1, int z1, int x2, int y2, int z2);
+    public void copySelection(int id, int x, int y, int z);
+    public void cutSelection(int id, int x, int y, int z);
+    public Block getSelectedBlock(int id);
+    public void setblocks(int id, SetblocksAction set);
+    /**
+     * @deprecated use CopyAction instead?
+     */
+    @Deprecated
+    public void cloneSelection(int id, int x, int y, int z);
+    /**
+     * @deprecated use MoveAction instead?
+     */
+    @Deprecated
+    public void moveSelection(int id, int x, int y, int z);
+    public void pasteSelection(int id, int x, int y, int z);
+    public ArrayList<ClipboardEntry> getClipboard(int id);
+    public void selectGroup(int id, int x, int y, int z);
+    public void deselectGroup(int id, int x, int y, int z);
+    public void selectCluster(int id, int x, int y, int z);
+    public void deselectCluster(int id, int x, int y, int z);
+    public void deselect(int id, int x1, int y1, int z1, int x2, int y2, int z2);
 }

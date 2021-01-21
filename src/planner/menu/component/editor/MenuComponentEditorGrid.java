@@ -99,8 +99,8 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 }
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
-                        if(editor.isValid(editor.getSelectedBlock(), x, layer, z)){
-                            editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
+                        if(editor.isValid(editor.getSelectedBlock(0), x, layer, z)){
+                            editor.getSelectedBlock(0).render(X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
                         }
                     }
                 }
@@ -185,7 +185,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 }
             }
         }
-        editor.getSelectedTool().drawGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
+        editor.getSelectedTool().drawGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
         synchronized(synchronizer){
             if(mouseover!=null){
                 double X = this.x+mouseover[0]*blockSize;
@@ -284,7 +284,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
         editor.getSelectedTool().mouseDragged(this, blockX, layer, blockZ, button);
     }
     public boolean isSelected(int x, int z){
-        return editor.isSelected(x,layer,z);
+        return editor.isSelected(0, x,layer,z);
     }
     @Override
     public String getTooltip(){

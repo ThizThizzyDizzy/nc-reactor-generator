@@ -3,10 +3,9 @@ import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.editor.Editor;
 import simplelibrary.opengl.Renderer2D;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class CopyTool extends EditorTool{
-    public CopyTool(Editor editor){
-        super(editor);
+    public CopyTool(Editor editor, int id){
+        super(editor, id);
     }
     private int[] dragStart;
     private int[] dragEnd;
@@ -82,21 +81,21 @@ public class CopyTool extends EditorTool{
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragStart = dragEnd = null;
     }
     @Override
-    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
-        editor.clearSelection();
+    public void mousePressed(Object layer, int x, int y, int z, int button){
+        editor.clearSelection(id);
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragStart = new int[]{x,y,z};
     }
     @Override
-    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
+    public void mouseReleased(Object layer, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&dragStart!=null){
-            editor.select(dragStart[0], dragStart[1], dragStart[2], x, y, z);
-            editor.copySelection((dragStart[0]+x)/2, (dragStart[1]+y)/2, (dragStart[2]+z)/2);
-            editor.clearSelection();
+            editor.select(id, dragStart[0], dragStart[1], dragStart[2], x, y, z);
+            editor.copySelection(id, (dragStart[0]+x)/2, (dragStart[1]+y)/2, (dragStart[2]+z)/2);
+            editor.clearSelection(id);
         }
         mouseReset(button);
     }
     @Override
-    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
+    public void mouseDragged(Object layer, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragEnd = new int[]{x,y,z};
     }
     @Override
@@ -108,7 +107,7 @@ public class CopyTool extends EditorTool{
         return "Copy tool\nUse this to select an area to copy\nOnce an area is selected, click to paste that selection";
     }
     @Override
-    public void mouseMoved(MenuComponent layer, int x, int y, int z){}
+    public void mouseMoved(Object obj, int x, int y, int z){}
     @Override
-    public void mouseMovedElsewhere(MenuComponent layer){}
+    public void mouseMovedElsewhere(Object obj){}
 }

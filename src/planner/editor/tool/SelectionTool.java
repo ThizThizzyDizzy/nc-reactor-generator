@@ -3,10 +3,9 @@ import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.editor.Editor;
 import simplelibrary.opengl.Renderer2D;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class SelectionTool extends EditorTool{
-    public SelectionTool(Editor editor){
-        super(editor);
+    public SelectionTool(Editor editor, int id){
+        super(editor, id);
     }
     private int[] leftDragStart;
     private int[] leftDragEnd;
@@ -124,31 +123,31 @@ public class SelectionTool extends EditorTool{
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = rightDragEnd = null;
     }
     @Override
-    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
+    public void mousePressed(Object obj, int x, int y, int z, int button){
         if(!Core.isControlPressed()){
-            editor.clearSelection();
+            editor.clearSelection(id);
         }
         if(Core.isShiftPressed()){
-            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectGroup(x,y,z);
-            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectGroup(x,y,z);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectGroup(id, x,y,z);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectGroup(id, x,y,z);
             return;
         }
         if(Core.isAltPressed()){
-            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectCluster(x,y,z);
-            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectCluster(x,y,z);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectCluster(id, x,y,z);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectCluster(id, x,y,z);
             return;
         }
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = new int[]{x,y,z};
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = new int[]{x,y,z};
     }
     @Override
-    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null)editor.select(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z);
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&rightDragStart!=null)editor.deselect(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z);
+    public void mouseReleased(Object obj, int x, int y, int z, int button){
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null)editor.select(id, leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&rightDragStart!=null)editor.deselect(id, rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z);
         mouseReset(button);
     }
     @Override
-    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
+    public void mouseDragged(Object obj, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragEnd = new int[]{x,y,z};
     }
@@ -161,7 +160,7 @@ public class SelectionTool extends EditorTool{
         return "Select tool (S)\nUse this to select areas of the reactor\nCtrl-click to select multiple selections\nShift-click to select Groups of blocks that require each other\nAlt-click to select clusters\nEdits can only be made inside of selections (unless there are no selections)\nPress Delete to delete the selected area\nPress Escape to clear selection";
     }
     @Override
-    public void mouseMoved(MenuComponent layer, int x, int y, int z){}
+    public void mouseMoved(Object obj, int x, int y, int z){}
     @Override
-    public void mouseMovedElsewhere(MenuComponent layer){}
+    public void mouseMovedElsewhere(Object obj){}
 }

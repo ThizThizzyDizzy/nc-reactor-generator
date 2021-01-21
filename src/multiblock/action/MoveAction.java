@@ -8,12 +8,13 @@ import multiblock.Multiblock;
 import planner.editor.Editor;
 public class MoveAction extends Action<Multiblock>{
     private final Editor editor;
+    private final int id;
     private final ArrayList<int[]> selection = new ArrayList<>();
     private final HashMap<int[], Block> was = new HashMap<>();
     private final int dx;
     private final int dy;
     private final int dz;
-    public MoveAction(Editor editor, Collection<int[]> selection, int dy, int dx, int dz){
+    public MoveAction(Editor editor, int id, Collection<int[]> selection, int dy, int dx, int dz){
         synchronized(selection){
             this.selection.addAll(selection);
         }
@@ -21,6 +22,7 @@ public class MoveAction extends Action<Multiblock>{
         this.dy = dx;
         this.dz = dz;
         this.editor = editor;
+        this.id = id;
     }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
@@ -47,9 +49,9 @@ public class MoveAction extends Action<Multiblock>{
                 multiblock.setBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz, bl);
             }
         }
-        synchronized(editor.getSelection()){
-            editor.getSelection().clear();
-            editor.getSelection().addAll(movedSelection);
+        synchronized(editor.getSelection(id)){
+            editor.getSelection(id).clear();
+            editor.getSelection(id).addAll(movedSelection);
         }
     }
     @Override
@@ -57,9 +59,9 @@ public class MoveAction extends Action<Multiblock>{
         for(int[] loc : was.keySet()){
             multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
         }
-        synchronized(editor.getSelection()){
-            editor.getSelection().clear();
-            editor.getSelection().addAll(selection);
+        synchronized(editor.getSelection(id)){
+            editor.getSelection(id).clear();
+            editor.getSelection(id).addAll(selection);
         }
     }
     @Override

@@ -78,8 +78,8 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
                 }
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
-                        if(editor.isValid(editor.getSelectedBlock(), x, y, layer)){
-                            editor.getSelectedBlock().render(X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
+                        if(editor.isValid(editor.getSelectedBlock(0), x, y, layer)){
+                            editor.getSelectedBlock(0).render(X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
                         }
                     }
                 }
@@ -119,7 +119,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
                 }
             }
         }
-        editor.getSelectedTool().drawCoilGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
+        editor.getSelectedTool().drawCoilGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
         if(mouseover!=null){
             double X = this.x+mouseover[0]*blockSize;
             double Y = this.y+mouseover[1]*blockSize;
@@ -165,8 +165,8 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockY = Math.max(0, Math.min(multiblock.getY()-1, (int) (y/blockSize)));
         if(pressed){
-            if(editor.getSelectedBlock() instanceof multiblock.overhaul.turbine.Block){
-                multiblock.overhaul.turbine.Block b = (multiblock.overhaul.turbine.Block)editor.getSelectedBlock();
+            if(editor.getSelectedBlock(0) instanceof multiblock.overhaul.turbine.Block){
+                multiblock.overhaul.turbine.Block b = (multiblock.overhaul.turbine.Block)editor.getSelectedBlock(0);
                 if(b.isBearing()&&button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
                     int dist = Math.min(Math.min(blockX,multiblock.getX()-blockX-1), Math.min(blockY,multiblock.getY()-blockY-1));
                     if(dist==0)return;
@@ -179,8 +179,8 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
             }
             editor.getSelectedTool().mousePressed(this, blockX, blockY, layer, button);
         }else{
-            if(editor.getSelectedBlock() instanceof multiblock.overhaul.turbine.Block){
-                multiblock.overhaul.turbine.Block b = (multiblock.overhaul.turbine.Block)editor.getSelectedBlock();
+            if(editor.getSelectedBlock(0) instanceof multiblock.overhaul.turbine.Block){
+                multiblock.overhaul.turbine.Block b = (multiblock.overhaul.turbine.Block)editor.getSelectedBlock(0);
                 if(b.isBearing()){
                     return;
                 }
@@ -192,8 +192,8 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
         if(button!=0&&button!=1)return;
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockY = Math.max(0, Math.min(multiblock.getY()-1, (int) (y/blockSize)));
-        if(editor.getSelectedBlock() instanceof multiblock.overhaul.turbine.Block){
-            multiblock.overhaul.turbine.Block b = (multiblock.overhaul.turbine.Block)editor.getSelectedBlock();
+        if(editor.getSelectedBlock(0) instanceof multiblock.overhaul.turbine.Block){
+            multiblock.overhaul.turbine.Block b = (multiblock.overhaul.turbine.Block)editor.getSelectedBlock(0);
             if(b.isBearing()){
                 return;
             }
@@ -201,7 +201,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
         editor.getSelectedTool().mouseDragged(this, blockX, blockY, layer, button);
     }
     public boolean isSelected(int x, int y){
-        return editor.isSelected(x,y,layer);
+        return editor.isSelected(0, x,y,layer);
     }
     @Override
     public String getTooltip(){

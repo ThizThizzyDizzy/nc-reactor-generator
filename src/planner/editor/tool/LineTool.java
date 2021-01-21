@@ -6,10 +6,9 @@ import org.lwjgl.glfw.GLFW;
 import planner.editor.Editor;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class LineTool extends EditorTool{
-    public LineTool(Editor editor){
-        super(editor);
+    public LineTool(Editor editor, int id){
+        super(editor, id);
     }
     private int[] leftDragStart;
     private int[] rightDragStart;
@@ -65,30 +64,30 @@ public class LineTool extends EditorTool{
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = rightDragEnd = null;
     }
     @Override
-    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
+    public void mousePressed(Object obj, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = new int[]{x,y,z};
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = leftDragEnd = new int[]{x,y,z};
     }
     @Override
-    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
+    public void mouseReleased(Object obj, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null){
-            SetblocksAction set = new SetblocksAction(editor.getSelectedBlock());
+            SetblocksAction set = new SetblocksAction(editor.getSelectedBlock(id));
             raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
                 set.add(X, Y, Z);
             });
-            editor.setblocks(set);
+            editor.setblocks(id, set);
         }
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&rightDragStart!=null){
             SetblocksAction set = new SetblocksAction(null);
             raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
                 set.add(X, Y, Z);
             });
-            editor.setblocks(set);
+            editor.setblocks(id, set);
         }
         mouseReset(button);
     }
     @Override
-    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
+    public void mouseDragged(Object obj, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragEnd = new int[]{x,y,z};
     }
@@ -101,7 +100,7 @@ public class LineTool extends EditorTool{
         return "Line tool (L)\nUse this tool to draw blocks in a line through the multiblock\nHold CTRL to only place blocks where they are valid";
     }
     @Override
-    public void mouseMoved(MenuComponent layer, int x, int y, int z){}
+    public void mouseMoved(Object obj, int x, int y, int z){}
     @Override
-    public void mouseMovedElsewhere(MenuComponent layer){}
+    public void mouseMovedElsewhere(Object obj){}
 }

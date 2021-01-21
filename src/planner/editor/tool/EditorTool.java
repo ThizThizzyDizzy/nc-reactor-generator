@@ -1,19 +1,20 @@
 package planner.editor.tool;
 import java.util.ArrayList;
 import planner.editor.Editor;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public abstract class EditorTool{
     public final Editor editor;
-    public EditorTool(Editor editor){
+    public final int id;
+    public EditorTool(Editor editor, int id){
         this.editor = editor;
+        this.id = id;
     }
     public abstract void render(double x, double y, double width, double height);
     public abstract void mouseReset(int button);
-    public abstract void mousePressed(MenuComponent layer, int x, int y, int z, int button);
-    public abstract void mouseReleased(MenuComponent layer, int x, int y, int z, int button);
-    public abstract void mouseDragged(MenuComponent layer, int x, int y, int z, int button);
-    public abstract void mouseMoved(MenuComponent layer, int x, int y, int z);
-    public abstract void mouseMovedElsewhere(MenuComponent layer);
+    public abstract void mousePressed(Object obj, int x, int y, int z, int button);
+    public abstract void mouseReleased(Object obj, int x, int y, int z, int button);
+    public abstract void mouseDragged(Object obj, int x, int y, int z, int button);
+    public abstract void mouseMoved(Object obj, int x, int y, int z);
+    public abstract void mouseMovedElsewhere(Object obj);
     public abstract void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
     public abstract void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
     public abstract void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture);

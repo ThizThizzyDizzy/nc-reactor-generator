@@ -3,13 +3,12 @@ import planner.Core;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
 import simplelibrary.opengl.Renderer2D;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class PasteTool extends EditorTool{
     private int mouseX;
     private int mouseY;
     private int mouseZ;
-    public PasteTool(Editor editor){
-        super(editor);
+    public PasteTool(Editor editor, int id){
+        super(editor, id);
     }
     @Override
     public void render(double x, double y, double width, double height){
@@ -25,13 +24,13 @@ public class PasteTool extends EditorTool{
     @Override
     public void mouseReset(int button){}
     @Override
-    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
-        if(button==0)editor.pasteSelection(x, y, z);
+    public void mousePressed(Object obj, int x, int y, int z, int button){
+        if(button==0)editor.pasteSelection(id, x, y, z);
     }
     @Override
-    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){}
+    public void mouseReleased(Object obj, int x, int y, int z, int button){}
     @Override
-    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){}
+    public void mouseDragged(Object obj, int x, int y, int z, int button){}
     @Override
     public boolean isEditTool(){
         return true;
@@ -40,8 +39,8 @@ public class PasteTool extends EditorTool{
     public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        synchronized(editor.getClipboard()){
-            for(ClipboardEntry entry : editor.getClipboard()){
+        synchronized(editor.getClipboard(id)){
+            for(ClipboardEntry entry : editor.getClipboard(id)){
                 if(entry.y+mouseY==layer){
                     int X = entry.x+mouseX;
                     int Z = entry.z+mouseZ;
@@ -57,8 +56,8 @@ public class PasteTool extends EditorTool{
     public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        synchronized(editor.getClipboard()){
-            for(ClipboardEntry entry : editor.getClipboard()){
+        synchronized(editor.getClipboard(id)){
+            for(ClipboardEntry entry : editor.getClipboard(id)){
                 if(entry.z+mouseZ==layer){
                     int X = entry.x+mouseX;
                     int Y = entry.y+mouseY;
@@ -74,8 +73,8 @@ public class PasteTool extends EditorTool{
     public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        synchronized(editor.getClipboard()){
-            for(ClipboardEntry entry : editor.getClipboard()){
+        synchronized(editor.getClipboard(id)){
+            for(ClipboardEntry entry : editor.getClipboard(id)){
                 int Z = entry.z+mouseZ;
                 if(Z<0||Z>=editor.getMultiblock().getZ())continue;
                 Renderer2D.drawRect(x+Z*blockSize, y, x+(Z+1)*blockSize, y+blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
@@ -88,13 +87,13 @@ public class PasteTool extends EditorTool{
         return "Paste tool\nSelect a region, and press Ctrl-X or Ctrl+C to cut or copy the selection and open this tool.\nThen click any location in your reactor to paste the selection in multiple places.\nPress Escape or select a different tool when done.\nPress Ctrl+V to ready the most recently copied selection";
     }
     @Override
-    public void mouseMoved(MenuComponent layer, int x, int y, int z){
+    public void mouseMoved(Object obj, int x, int y, int z){
         mouseX = x;
         mouseY = y;
         mouseZ = z;
     }
     @Override
-    public void mouseMovedElsewhere(MenuComponent layer){
+    public void mouseMovedElsewhere(Object obj){
         mouseX = mouseY = mouseZ = -1;
     }
 }

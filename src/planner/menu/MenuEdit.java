@@ -73,18 +73,18 @@ public class MenuEdit extends Menu implements Editor{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     public Framebuffer turbineGraph;
     public ArrayList<ClipboardEntry> clipboard = new ArrayList<>();
-    private EditorTool copy = new CopyTool(this);
+    private EditorTool copy = new CopyTool(this, 0);
     private MenuComponentEditorTool copyComp = new MenuComponentEditorTool(copy);
-    private EditorTool cut = new CutTool(this);
+    private EditorTool cut = new CutTool(this, 0);
     private MenuComponentEditorTool cutComp = new MenuComponentEditorTool(cut);
-    private EditorTool paste = new PasteTool(this);
-    private MenuComponentEditorTool pasteComp = new MenuComponentEditorTool(paste);;
+    private EditorTool paste = new PasteTool(this, 0);
+    private MenuComponentEditorTool pasteComp = new MenuComponentEditorTool(paste);
     {
-        editorTools.add(new MoveTool(this));
-        editorTools.add(new SelectionTool(this));
-        editorTools.add(new PencilTool(this));
-        editorTools.add(new LineTool(this));
-        editorTools.add(new RectangleTool(this));
+        editorTools.add(new MoveTool(this, 0));
+        editorTools.add(new SelectionTool(this, 0));
+        editorTools.add(new PencilTool(this, 0));
+        editorTools.add(new LineTool(this, 0));
+        editorTools.add(new RectangleTool(this, 0));
     }
     public final Multiblock multiblock;
     private final int partSize = 48;
@@ -486,7 +486,8 @@ public class MenuEdit extends Menu implements Editor{
         }
     }
     @Override
-    public Block getSelectedBlock(){
+    public Block getSelectedBlock(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
     }
@@ -530,10 +531,10 @@ public class MenuEdit extends Menu implements Editor{
         return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
     }
     public void setblock(int x, int y, int z, Block template){
-        if(hasSelection()&&!isSelected(x, y, z))return;
+        if(hasSelection()&&!isSelected(0, x, y, z))return;
         if(template==null){
             if(Core.isControlPressed()){
-                if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).matches(getSelectedBlock()))return;
+                if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).matches(getSelectedBlock(0)))return;
             }
             multiblock.action(new SetblockAction(x,y,z,null), true);
             return;
@@ -577,7 +578,7 @@ public class MenuEdit extends Menu implements Editor{
                 if(getSelectedTool() instanceof PasteTool||getSelectedTool() instanceof CopyTool||getSelectedTool() instanceof CutTool){
                     tools.setSelectedIndex(1);
                 }else{
-                    clearSelection();
+                    clearSelection(0);
                 }
             }
             if(key==GLFW.GLFW_KEY_DELETE){
@@ -588,7 +589,7 @@ public class MenuEdit extends Menu implements Editor{
                     }
                 }
                 multiblock.action(ac, true);
-                clearSelection();
+                clearSelection(0);
             }
             if(key==GLFW.GLFW_KEY_M||key==GLFW.GLFW_KEY_1)tools.setSelectedIndex(0);
             if(key==GLFW.GLFW_KEY_S||key==GLFW.GLFW_KEY_2)tools.setSelectedIndex(1);
@@ -605,7 +606,7 @@ public class MenuEdit extends Menu implements Editor{
                             }
                         }
                     }
-                    setSelection(sel);
+                    setSelection(0, sel);
                 }
                 if(key==GLFW.GLFW_KEY_Z){
                     multiblock.undo();
@@ -643,10 +644,10 @@ public class MenuEdit extends Menu implements Editor{
                         //do nothing
                     }else{
                         if(key==GLFW.GLFW_KEY_C){
-                            copySelection(x, y, z);
+                            copySelection(0, x, y, z);
                         }
                         if(key==GLFW.GLFW_KEY_X){
-                            cutSelection(x, y, z);
+                            cutSelection(0, x, y, z);
                         }
                         if(key==GLFW.GLFW_KEY_V){
                             if(!clipboard.isEmpty()&&!editorTools.contains(paste)){
@@ -658,23 +659,23 @@ public class MenuEdit extends Menu implements Editor{
                     }
                 }else{
                     if(key==GLFW.GLFW_KEY_C){
-                        copySelection(-1, -1, -1);
+                        copySelection(0, -1, -1, -1);
                     }
                     if(key==GLFW.GLFW_KEY_X){
-                        cutSelection(-1, -1, -1);
+                        cutSelection(0, -1, -1, -1);
                     }
                 }
             }
         }
     }
     @Override
-    public void setblocks(SetblocksAction set){
+    public void setblocks(int id, SetblocksAction set){
         for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
             int[] b = it.next();
-            if(hasSelection()&&!isSelected(b[0], b[1], b[2]))it.remove();
+            if(hasSelection()&&!isSelected(id, b[0], b[1], b[2]))it.remove();
             else if(Core.isControlPressed()){
                 if(set.block==null){
-                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock()))it.remove();
+                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock(0)))it.remove();
                 }else{
                     if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!Core.isShiftPressed()){
                         it.remove();
@@ -713,7 +714,8 @@ public class MenuEdit extends Menu implements Editor{
         return multiblock.isValid(selectedBlock, x, layer, z);
     }
     @Override
-    public void select(int x1, int y1, int z1, int x2, int y2, int z2){
+    public void select(int id, int x1, int y1, int z1, int x2, int y2, int z2){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         ArrayList<int[]> is = new ArrayList<>();
         for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
             for(int y = Math.min(y1,y2); y<=Math.max(y1,y2); y++){
@@ -722,10 +724,11 @@ public class MenuEdit extends Menu implements Editor{
                 }
             }
         }
-        select(is);
+        select(id, is);
     }
     @Override
-    public void deselect(int x1, int y1, int z1, int x2, int y2, int z2){
+    public void deselect(int id, int x1, int y1, int z1, int x2, int y2, int z2){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         ArrayList<int[]> is = new ArrayList<>();
         for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
             for(int y = Math.min(y1,y2); y<=Math.max(y1,y2); y++){
@@ -734,27 +737,31 @@ public class MenuEdit extends Menu implements Editor{
                 }
             }
         }
-        deselect(is);
+        deselect(id, is);
     }
-    public void select(ArrayList<int[]> is){
+    public void select(int id, ArrayList<int[]> is){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         if(Core.isControlPressed()){
-            multiblock.action(new SelectAction(this, is), true);
+            multiblock.action(new SelectAction(this, id, is), true);
         }else{
-            multiblock.action(new SetSelectionAction(this, is), true);
+            multiblock.action(new SetSelectionAction(this, id, is), true);
         }
     }
-    public void setSelection(ArrayList<int[]> is){
-        multiblock.action(new SetSelectionAction(this, is), true);
+    public void setSelection(int id, ArrayList<int[]> is){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
+        multiblock.action(new SetSelectionAction(this, id, is), true);
     }
-    public void deselect(ArrayList<int[]> is){
+    public void deselect(int id, ArrayList<int[]> is){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         if(!Core.isControlPressed()){
-            clearSelection();
+            clearSelection(id);
             return;
         }
-        multiblock.action(new DeselectAction(this, is), true);
+        multiblock.action(new DeselectAction(this, id, is), true);
     }
     @Override
-    public boolean isSelected(int x, int y, int z){
+    public boolean isSelected(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         synchronized(selection){
             for(int[] s : selection){
                 if(s==null)continue;//THIS SHOULD NEVER HAPPEN but it does anyway
@@ -769,7 +776,8 @@ public class MenuEdit extends Menu implements Editor{
         }
     }
     @Override
-    public void selectCluster(int x, int y, int z){
+    public void selectCluster(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
@@ -778,7 +786,7 @@ public class MenuEdit extends Menu implements Editor{
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
-            select(is);
+            select(id, is);
         }
         if(multiblock instanceof OverhaulMSR){
             OverhaulMSR omsr = (OverhaulMSR) multiblock;
@@ -788,7 +796,7 @@ public class MenuEdit extends Menu implements Editor{
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
-            select(is);
+            select(id, is);
         }
         if(multiblock instanceof OverhaulFusionReactor){
             OverhaulFusionReactor ofr = (OverhaulFusionReactor) multiblock;
@@ -798,11 +806,12 @@ public class MenuEdit extends Menu implements Editor{
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
-            select(is);
+            select(id, is);
         }
     }
     @Override
-    public void deselectCluster(int x, int y, int z){
+    public void deselectCluster(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
@@ -811,7 +820,7 @@ public class MenuEdit extends Menu implements Editor{
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
-            deselect(is);
+            deselect(id, is);
         }
         if(multiblock instanceof OverhaulMSR){
             OverhaulMSR omsr = (OverhaulMSR) multiblock;
@@ -821,7 +830,7 @@ public class MenuEdit extends Menu implements Editor{
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
-            deselect(is);
+            deselect(id, is);
         }
         if(multiblock instanceof OverhaulFusionReactor){
             OverhaulFusionReactor ofr = (OverhaulFusionReactor) multiblock;
@@ -831,49 +840,55 @@ public class MenuEdit extends Menu implements Editor{
             for(Block b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
-            deselect(is);
+            deselect(id, is);
         }
     }
     @Override
-    public void selectGroup(int x, int y, int z){
+    public void selectGroup(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
-            select(0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
+            select(id, 0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
         for(Block b : g){
             is.add(new int[]{b.x,b.y,b.z});
         }
-        select(is);
+        select(id, is);
     }
     @Override
-    public void deselectGroup(int x, int y, int z){
+    public void deselectGroup(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
-            deselect(0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
+            deselect(id, 0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
         for(Block b : g){
             is.add(new int[]{b.x,b.y,b.z});
         }
-        deselect(is);
+        deselect(id, is);
     }
     @Override
-    public void moveSelection(int x, int y, int z){
-        multiblock.action(new MoveAction(this, selection, x, y, z), true);
+    public void moveSelection(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
+        multiblock.action(new MoveAction(this, id, selection, x, y, z), true);
     }
     @Override
-    public void cloneSelection(int x, int y, int z){
-        multiblock.action(new CopyAction(this, selection, x, y, z), true);
+    public void cloneSelection(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
+        multiblock.action(new CopyAction(this, id, selection, x, y, z), true);
     }
     @Override
-    public void clearSelection(){
-        multiblock.action(new ClearSelectionAction(this), true);
+    public void clearSelection(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
+        multiblock.action(new ClearSelectionAction(this, id), true);
     }
     @Override
-    public void addSelection(ArrayList<int[]> sel){
+    public void addSelection(int id, ArrayList<int[]> sel){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         synchronized(selection){
             for(int[] is : selection){
                 for(Iterator<int[]> it = sel.iterator(); it.hasNext();){
@@ -887,7 +902,8 @@ public class MenuEdit extends Menu implements Editor{
         }
     }
     @Override
-    public void copySelection(int x, int y, int z){//like copySelection, but clipboardier
+    public void copySelection(int id, int x, int y, int z){//like copySelection, but clipboardier
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         synchronized(clipboard){
             clipboard.clear();
             synchronized(selection){
@@ -913,7 +929,8 @@ public class MenuEdit extends Menu implements Editor{
         }
     }
     @Override
-    public void cutSelection(int x, int y, int z){
+    public void cutSelection(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         synchronized(clipboard){
             clipboard.clear();
         }
@@ -927,7 +944,7 @@ public class MenuEdit extends Menu implements Editor{
                 return;
             }
         }
-        copySelection(x,y,z);
+        copySelection(id, x,y,z);
         SetblocksAction ac = new SetblocksAction(null);
         synchronized(selection){
             for(int[] i : selection){
@@ -935,10 +952,11 @@ public class MenuEdit extends Menu implements Editor{
             }
         }
         multiblock.action(ac, true);
-        clearSelection();
+        clearSelection(id);
     }
     @Override
-    public void pasteSelection(int x, int y, int z){
+    public void pasteSelection(int id, int x, int y, int z){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         synchronized(clipboard){
             multiblock.action(new PasteAction(clipboard, x, y, z), true);
         }
@@ -960,7 +978,8 @@ public class MenuEdit extends Menu implements Editor{
         }
     }
     @Override
-    public ArrayList<int[]> getSelection(){
+    public ArrayList<int[]> getSelection(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports 1 cursor!");
         return selection;
     }
     @Override
@@ -988,7 +1007,8 @@ public class MenuEdit extends Menu implements Editor{
         underFuelOrCoolantRecipe.setSelectedIndex(idx);
     }
     @Override
-    public ArrayList<ClipboardEntry> getClipboard(){
+    public ArrayList<ClipboardEntry> getClipboard(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports 1 cursor!");
         return clipboard;
     }
 }

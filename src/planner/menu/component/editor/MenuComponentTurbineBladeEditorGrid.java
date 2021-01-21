@@ -94,7 +94,7 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
                 }
             }
         }
-        editor.getSelectedTool().drawBladeGhosts(x, y, width, blockSize, blockSize, (editor.getSelectedBlock()==null?0:Core.getTexture(editor.getSelectedBlock().getTexture())));
+        editor.getSelectedTool().drawBladeGhosts(x, y, width, blockSize, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
         if(mouseover!=-1){
             double X = this.x+(mouseover-1)*blockSize;
             double border = blockSize/8;
@@ -181,7 +181,7 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
         editor.getSelectedTool().mouseDragged(this, multiblock.getX()/2, 0, blockZ, button);
     }
     public boolean isSelected(int z){
-        return editor.isSelected(multiblock.getX()/2, 0, z);
+        return editor.isSelected(0, multiblock.getX()/2, 0, z);
     }
     @Override
     public String getTooltip(){

@@ -8,15 +8,14 @@ import org.lwjgl.glfw.GLFW;
 import planner.editor.Editor;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class PencilTool extends EditorTool{
-    public PencilTool(Editor editor){
-        super(editor);
+    public PencilTool(Editor editor, int id){
+        super(editor, id);
     }
     private int[] leftDragStart;
-    private MenuComponent leftLayerStart = null;
+    private Object leftStart = null;
     private int[] rightDragStart;
-    private MenuComponent rightLayerStart = null;
+    private Object rightStart = null;
     private ArrayList<int[]> leftSelectedBlocks = new ArrayList<>();
     private ArrayList<int[]> rightSelectedBlocks = new ArrayList<>();
     @Override
@@ -44,47 +43,47 @@ public class PencilTool extends EditorTool{
     public void mouseReset(int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             leftDragStart = null;
-            leftLayerStart = null;
+            leftStart = null;
             synchronized(leftSelectedBlocks){
                 leftSelectedBlocks.clear();
             }
         }
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
             rightDragStart = null;
-            rightLayerStart = null;
+            rightStart = null;
             synchronized(rightSelectedBlocks){
                 rightSelectedBlocks.clear();
             }
         }
     }
     @Override
-    public void mousePressed(MenuComponent layer, int x, int y, int z, int button){
-        Block selected = editor.getSelectedBlock();
+    public void mousePressed(Object obj, int x, int y, int z, int button){
+        Block selected = editor.getSelectedBlock(id);
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             synchronized(leftSelectedBlocks){
                 leftSelectedBlocks.add(new int[]{x,y,z});
                 leftDragStart = new int[]{x,y,z};
-                leftLayerStart = layer;
+                leftStart = obj;
             }
         }
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
             synchronized(rightSelectedBlocks){
                 rightSelectedBlocks.add(new int[]{x,y,z});
                 rightDragStart = new int[]{x,y,z};
-                rightLayerStart = layer;
+                rightStart = obj;
             }
         }
     }
     @Override
-    public void mouseReleased(MenuComponent layer, int x, int y, int z, int button){
+    public void mouseReleased(Object obj, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
-            SetblocksAction set = new SetblocksAction(editor.getSelectedBlock());
+            SetblocksAction set = new SetblocksAction(editor.getSelectedBlock(id));
             synchronized(leftSelectedBlocks){
                 for(int[] i : leftSelectedBlocks){
                     set.add(i[0], i[1], i[2]);
                 }
             }
-            editor.setblocks(set);
+            editor.setblocks(id, set);
         }
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
             SetblocksAction set = new SetblocksAction(null);
@@ -93,16 +92,16 @@ public class PencilTool extends EditorTool{
                     set.add(i[0], i[1], i[2]);
                 }
             }
-            editor.setblocks(set);
+            editor.setblocks(id, set);
         }
         mouseReset(button);
     }
     @Override
-    public void mouseDragged(MenuComponent layer, int x, int y, int z, int button){
+    public void mouseDragged(Object obj, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
-            if(layer!=leftLayerStart){
+            if(obj!=leftStart){
                 leftDragStart = new int[]{x,y,z};
-                leftLayerStart = layer;
+                leftStart = obj;
             }
             if(leftDragStart!=null){
                 if(leftDragStart[0]==x&&leftDragStart[1]==y&&leftDragStart[2]==z)return;
@@ -119,9 +118,9 @@ public class PencilTool extends EditorTool{
             }
         }
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
-            if(layer!=rightLayerStart){
+            if(obj!=rightStart){
                 rightDragStart = new int[]{x,y,z};
-                rightLayerStart = layer;
+                rightStart = obj;
             }
             if(rightDragStart!=null){
                 if(rightDragStart[0]==x&&rightDragStart[1]==y&&rightDragStart[2]==z)return;
@@ -192,7 +191,7 @@ public class PencilTool extends EditorTool{
         return "Pencil tool (P)\nUse this tool to draw blocks one at a time\nHold CTRL to only place blocks where they are valid";
     }
     @Override
-    public void mouseMoved(MenuComponent layer, int x, int y, int z){}
+    public void mouseMoved(Object obj, int x, int y, int z){}
     @Override
-    public void mouseMovedElsewhere(MenuComponent layer){}
+    public void mouseMovedElsewhere(Object obj){}
 }

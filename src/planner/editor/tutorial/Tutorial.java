@@ -414,7 +414,7 @@ public abstract class Tutorial extends Renderer2D{
                 select = (MenuComponentEditorGrid)selectEditor.multibwauk.components.get(0);
                 move = (MenuComponentEditorGrid)moveEditor.multibwauk.components.get(0);
                 editors = new MenuComponentEditorGrid[]{pencil,line,box,select,move};
-                moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock()).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
+                moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
                 ArrayList<int[]> selection = new ArrayList<>();
                 selection.add(new int[]{0, 0, 1});
                 selection.add(new int[]{1, 0, 1});
@@ -425,7 +425,7 @@ public abstract class Tutorial extends Renderer2D{
                 selection.add(new int[]{0, 0, 3});
                 selection.add(new int[]{1, 0, 3});
                 selection.add(new int[]{2, 0, 3});
-                moveEditor.multiblock.action(new SetSelectionAction(moveEditor, selection), false);
+                moveEditor.multiblock.action(new SetSelectionAction(moveEditor, 0, selection), false);
             }
             @Override
             public double getHeight(double width){
@@ -486,7 +486,7 @@ public abstract class Tutorial extends Renderer2D{
                     for(MenuComponentEditorGrid grid : editors){
                         grid.editor.multiblock.undo();
                     }
-                    moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock()).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
+                    moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
                     ArrayList<int[]> selection = new ArrayList<>();
                     selection.add(new int[]{0, 0, 1});
                     selection.add(new int[]{1, 0, 1});
@@ -497,7 +497,7 @@ public abstract class Tutorial extends Renderer2D{
                     selection.add(new int[]{0, 0, 3});
                     selection.add(new int[]{1, 0, 3});
                     selection.add(new int[]{2, 0, 3});
-                    moveEditor.multiblock.action(new SetSelectionAction(moveEditor, selection), false);
+                    moveEditor.multiblock.action(new SetSelectionAction(moveEditor, 0, selection), false);
                 }
             }
             @Override
