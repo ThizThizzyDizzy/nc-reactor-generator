@@ -1081,6 +1081,42 @@ public class OverhaulMSR extends Multiblock<Block>{
         suggestors.add(new Suggestor<OverhaulMSR>(1000, 1_000){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
+                priorities.add(new Priority<OverhaulMSR>("Temperature", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return other.netHeat-main.netHeat;
+                    }
+                });
+            }
+            @Override
+            public String getName(){
+                return "Heatsink Suggestor";
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests adding or replacing heaters to cool the reactor";
+            }
+            @Override
+            public void generateSuggestions(OverhaulMSR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            for(Block newBlock : getAvailableBlocks()){
+                                if(newBlock.isHeater()){
+                                    Block block = multiblock.getBlock(x, y, z);
+                                    if(block==null||block.canBeQuickReplaced()){
+                                        if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        suggestors.add(new Suggestor<OverhaulMSR>(1000, 1_000){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
                 priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulMSR main, OverhaulMSR other){

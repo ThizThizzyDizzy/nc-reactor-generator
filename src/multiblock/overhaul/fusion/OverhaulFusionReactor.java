@@ -832,6 +832,42 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
+        suggestors.add(new Suggestor<OverhaulFusionReactor>(1000, 1_000){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<OverhaulFusionReactor>("Temperature", true, true){
+                    @Override
+                    protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
+                        return other.netHeat-main.netHeat;
+                    }
+                });
+            }
+            @Override
+            public String getName(){
+                return "Heatsink Suggestor";
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests adding or replacing heat sinks to cool the reactor";
+            }
+            @Override
+            public void generateSuggestions(OverhaulFusionReactor multiblock, Suggestor.SuggestionAcceptor suggestor){
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            for(Block newBlock : getAvailableBlocks()){
+                                if(newBlock.isHeatsink()){
+                                    Block block = multiblock.getBlock(x, y, z);
+                                    if(block==null||block.canBeQuickReplaced()){
+                                        if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
         for(Priority.Preset preset : getGenerationPriorityPresets()){
             suggestors.add(new Suggestor<OverhaulFusionReactor>(100, 1_000) {
                 @Override
