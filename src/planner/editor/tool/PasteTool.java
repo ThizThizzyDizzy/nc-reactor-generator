@@ -2,6 +2,7 @@ package planner.editor.tool;
 import planner.Core;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
+import planner.vr.VRCore;
 import simplelibrary.opengl.Renderer2D;
 public class PasteTool extends EditorTool{
     private int mouseX;
@@ -78,6 +79,23 @@ public class PasteTool extends EditorTool{
                 int Z = entry.z+mouseZ;
                 if(Z<0||Z>=editor.getMultiblock().getZ())continue;
                 Renderer2D.drawRect(x+Z*blockSize, y, x+(Z+1)*blockSize, y+blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
+            }
+        }
+        Core.applyWhite();
+    }
+    @Override
+    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+        if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        synchronized(editor.getClipboard(id)){
+            for(ClipboardEntry entry : editor.getClipboard(id)){
+                int X = entry.x+mouseX;
+                int Y = entry.y+mouseY;
+                int Z = entry.z+mouseZ;
+                if(X<0||X>=editor.getMultiblock().getX())continue;
+                if(Y<0||Y>=editor.getMultiblock().getY())continue;
+                if(Z<0||Z>=editor.getMultiblock().getZ())continue;
+                VRCore.drawCube(x+X*blockSize, y+Y*blockSize, z+Z*blockSize, x+(X+1)*blockSize, y+(Y+1)*blockSize, z+(Z+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
             }
         }
         Core.applyWhite();

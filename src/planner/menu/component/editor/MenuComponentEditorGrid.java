@@ -40,10 +40,10 @@ public class MenuComponentEditorGrid extends MenuComponent{
     @Override
     public void tick(){
         if(!(gui.mouseWereDown.contains(0))){
-            editor.getSelectedTool().mouseReset(0);
+            editor.getSelectedTool(0).mouseReset(0);
         }
         if(!(gui.mouseWereDown.contains(1))){
-            editor.getSelectedTool().mouseReset(1);
+            editor.getSelectedTool(0).mouseReset(1);
         }
         resonatingTick++;
         if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
@@ -99,7 +99,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 }
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
-                        if(editor.isValid(editor.getSelectedBlock(0), x, layer, z)){
+                        if(multiblock.isValid(editor.getSelectedBlock(0), x, layer, z)){
                             editor.getSelectedBlock(0).render(X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
                         }
                     }
@@ -185,7 +185,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 }
             }
         }
-        editor.getSelectedTool().drawGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
+        editor.getSelectedTool(0).drawGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
         synchronized(synchronizer){
             if(mouseover!=null){
                 double X = this.x+mouseover[0]*blockSize;
@@ -218,13 +218,13 @@ public class MenuComponentEditorGrid extends MenuComponent{
         }
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
-        editor.getSelectedTool().mouseMoved(selected, blockX, layer, blockZ);
+        editor.getSelectedTool(0).mouseMoved(this, blockX, layer, blockZ);
     }
     @Override
     public void onMouseMovedElsewhere(double x, double y){
         super.onMouseMovedElsewhere(x, y);
         synchronized(synchronizer){
-            if(mouseover!=null)editor.getSelectedTool().mouseMovedElsewhere(selected);
+            if(mouseover!=null)editor.getSelectedTool(0).mouseMovedElsewhere(this);
             mouseover = null;
         }
     }
@@ -237,7 +237,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
         if(pressed){
-            if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()&&!((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
+            if(editor.getSelectedTool(0).isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelCell()&&!((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
                 multiblock.overhaul.fissionsfr.Block b = (multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     int index = Core.configuration.overhaul.fissionSFR.allSources.indexOf(b.source);
@@ -246,7 +246,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.allSources.size()-1;
                     multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.allSources.get(index)), true);
                 }
-            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()&&!((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
+            }else if(editor.getSelectedTool(0).isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).isFuelVessel()&&!((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).fuel.selfPriming){
                 multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     int index = Core.configuration.overhaul.fissionMSR.allSources.indexOf(b.source);
@@ -255,13 +255,13 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     if(index<-1)index = Core.configuration.overhaul.fissionMSR.allSources.size()-1;
                     multiblock.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.allSources.get(index)), true);
                 }
-            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).template.shield){
+            }else if(editor.getSelectedTool(0).isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, layer, blockZ)).template.shield){
                 multiblock.overhaul.fissionsfr.Block b = (multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     if(Core.isControlPressed())multiblock.action(new SFRAllShieldsAction(!b.closed), true);
                     else multiblock.action(new SFRShieldAction(b), true);
                 }
-            }else if(editor.getSelectedTool().isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).template.shield){
+            }else if(editor.getSelectedTool(0).isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, layer, blockZ)).template.shield){
                 multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, layer, blockZ);
                 if(b!=null){
                     if(Core.isControlPressed())multiblock.action(new MSRAllShieldsAction(!b.closed), true);
@@ -271,17 +271,17 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
                     editor.setSelectedBlock(multiblock.getBlock(blockX, layer, blockZ));
                 }
-                editor.getSelectedTool().mousePressed(this, blockX, layer, blockZ, button);
+                editor.getSelectedTool(0).mousePressed(this, blockX, layer, blockZ, button);
             }
         }else{
-            editor.getSelectedTool().mouseReleased(this, blockX, layer, blockZ, button);
+            editor.getSelectedTool(0).mouseReleased(this, blockX, layer, blockZ, button);
         }
     }
     public void mouseDragged(double x, double y, int button){
         if(button!=0&&button!=1)return;
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (y/blockSize)));
-        editor.getSelectedTool().mouseDragged(this, blockX, layer, blockZ, button);
+        editor.getSelectedTool(0).mouseDragged(this, blockX, layer, blockZ, button);
     }
     public boolean isSelected(int x, int z){
         return editor.isSelected(0, x,layer,z);

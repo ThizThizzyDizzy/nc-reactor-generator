@@ -21,6 +21,7 @@ public class VRGUI{
         for(int i = 0; i<tdpb.limit(); i++){
             TrackedDevicePose tdp = tdpb.get(i);
             if(tdp.bDeviceIsConnected()&&tdp.bPoseIsValid()){
+                while(buttonsWereDown.size()<=i)buttonsWereDown.add(new ArrayList<>());
                 HmdMatrix34 m = tdp.mDeviceToAbsoluteTracking();
                 onDeviceMoved(i, new Matrix4f(VRCore.convert(m)));
             }
@@ -28,6 +29,9 @@ public class VRGUI{
         if(menu!=null)menu.render(tdpb);
     }
     public void onKeyEvent(int device, int button, boolean pressed){
+        while(buttonsWereDown.size()<=device)buttonsWereDown.add(new ArrayList<>());
+        if(pressed)buttonsWereDown.get(device).add((Integer)button);
+        else buttonsWereDown.get(device).remove((Integer)button);
         if(menu!=null)menu.keyEvent(device, button, pressed);
     }
     public synchronized void tick(){

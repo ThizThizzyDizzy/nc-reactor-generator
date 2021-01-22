@@ -410,10 +410,10 @@ public class Block extends multiblock.Block{
     @Override
     public void renderOverlay(double x, double y, double width, double height, Multiblock multiblock){
         if(!isValid()){
-            drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
+            drawOutline(x, y, width, height, Core.theme.getRed());
         }
         if(isModeratorActive()){
-            drawOutline(x, y, width, height, 1/32d, Core.theme.getGreen());
+            drawOutline(x, y, width, height, Core.theme.getGreen());
         }
         boolean self = fuel!=null&&fuel.selfPriming;
         if(source!=null||self){
@@ -498,6 +498,24 @@ public class Block extends multiblock.Block{
                 }
             }
         }
+    }
+    @Override
+    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock){
+        if(!isValid()){
+            drawOutline(x, y, z, width, height, depth, Core.theme.getRed());
+        }
+        if(isModeratorActive()){
+            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen());
+        }
+        boolean self = fuel!=null&&fuel.selfPriming;
+        if(source!=null||self){
+            float fac = self?1:(float) Math.pow(source.efficiency, 10);
+            float r = self?0:Math.min(1, -2*fac+2);
+            float g = self?0:Math.min(1, fac*2);
+            float b = self?1:0;
+            drawCircle(x, y, z, width, height, depth, Core.theme.getRGBA(r, g, b, 1));
+        }
+        //TODO VR: draw cluster markings
     }
     public boolean isInert(){
         if(isCasing())return true;

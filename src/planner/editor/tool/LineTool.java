@@ -4,6 +4,7 @@ import planner.Core;
 import multiblock.action.SetblocksAction;
 import org.lwjgl.glfw.GLFW;
 import planner.editor.Editor;
+import planner.vr.VRCore;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class LineTool extends EditorTool{
@@ -55,6 +56,20 @@ public class LineTool extends EditorTool{
         });
         if(rightDragEnd!=null&&rightDragStart!=null)raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
             if(X==0&&Y==0)Renderer2D.drawRect(x+(Z-1)*blockSize, y, x+Z*blockSize, y+blockSize, 0);
+        });
+        Core.applyWhite();
+    }
+    @Override
+    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .625f);
+        if(leftDragEnd!=null&&leftDragStart!=null)raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
+            double border = blockSize/64;
+            VRCore.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, texture);
+        });
+        if(rightDragEnd!=null&&rightDragStart!=null)raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
+            double border = blockSize/64;
+            if(editor.getMultiblock().getBlock(X, Y, Z)==null)return;
+            VRCore.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, 0);
         });
         Core.applyWhite();
     }

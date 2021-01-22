@@ -77,6 +77,10 @@ public class CopyTool extends EditorTool{
         Core.applyWhite();
     }
     @Override
+    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+        //TODO VR: Copy tool ghosts
+    }
+    @Override
     public void mouseReset(int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragStart = dragEnd = null;
     }

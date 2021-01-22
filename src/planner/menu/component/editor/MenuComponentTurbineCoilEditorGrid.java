@@ -29,10 +29,10 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
     @Override
     public void tick(){
         if(!(gui.mouseWereDown.contains(0))){
-            editor.getSelectedTool().mouseReset(0);
+            editor.getSelectedTool(0).mouseReset(0);
         }
         if(!(gui.mouseWereDown.contains(1))){
-            editor.getSelectedTool().mouseReset(1);
+            editor.getSelectedTool(0).mouseReset(1);
         }
         resonatingTick++;
         if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
@@ -78,7 +78,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
                 }
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
-                        if(editor.isValid(editor.getSelectedBlock(0), x, y, layer)){
+                        if(multiblock.isValid(editor.getSelectedBlock(0), x, y, layer)){
                             editor.getSelectedBlock(0).render(X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
                         }
                     }
@@ -119,7 +119,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
                 }
             }
         }
-        editor.getSelectedTool().drawCoilGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
+        editor.getSelectedTool(0).drawCoilGhosts(layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
         if(mouseover!=null){
             double X = this.x+mouseover[0]*blockSize;
             double Y = this.y+mouseover[1]*blockSize;
@@ -148,12 +148,12 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
         }
         int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
         int blockY = Math.max(0, Math.min(multiblock.getY()-1, (int) (y/blockSize)));
-        editor.getSelectedTool().mouseMoved(selected, blockX, blockY, layer);
+        editor.getSelectedTool(0).mouseMoved(selected, blockX, blockY, layer);
     }
     @Override
     public void onMouseMovedElsewhere(double x, double y){
         super.onMouseMovedElsewhere(x, y);
-        if(mouseover!=null)editor.getSelectedTool().mouseMovedElsewhere(selected);
+        if(mouseover!=null)editor.getSelectedTool(0).mouseMovedElsewhere(selected);
         mouseover = null;
     }
     @Override
@@ -177,7 +177,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
             if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
                 editor.setSelectedBlock(multiblock.getBlock(blockX, blockY, layer));
             }
-            editor.getSelectedTool().mousePressed(this, blockX, blockY, layer, button);
+            editor.getSelectedTool(0).mousePressed(this, blockX, blockY, layer, button);
         }else{
             if(editor.getSelectedBlock(0) instanceof multiblock.overhaul.turbine.Block){
                 multiblock.overhaul.turbine.Block b = (multiblock.overhaul.turbine.Block)editor.getSelectedBlock(0);
@@ -185,7 +185,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
                     return;
                 }
             }
-            editor.getSelectedTool().mouseReleased(this, blockX, blockY, layer, button);
+            editor.getSelectedTool(0).mouseReleased(this, blockX, blockY, layer, button);
         }
     }
     public void mouseDragged(double x, double y, int button){
@@ -198,7 +198,7 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
                 return;
             }
         }
-        editor.getSelectedTool().mouseDragged(this, blockX, blockY, layer, button);
+        editor.getSelectedTool(0).mouseDragged(this, blockX, blockY, layer, button);
     }
     public boolean isSelected(int x, int y){
         return editor.isSelected(0, x,y,layer);

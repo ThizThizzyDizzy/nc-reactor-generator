@@ -6,6 +6,7 @@ import multiblock.Block;
 import multiblock.action.SetblocksAction;
 import org.lwjgl.glfw.GLFW;
 import planner.editor.Editor;
+import planner.vr.VRCore;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class PencilTool extends EditorTool{
@@ -182,6 +183,24 @@ public class PencilTool extends EditorTool{
         synchronized(rightSelectedBlocks){
             for(int[] i : rightSelectedBlocks){
                 if(i[0]==0&&i[1]==0)Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
+            }
+        }
+        Core.applyWhite();
+    }
+    @Override
+    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .625f);
+        synchronized(leftSelectedBlocks){
+            for(int[] i : leftSelectedBlocks){
+                double border = blockSize/64;
+                VRCore.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, texture);
+            }
+        }
+        synchronized(rightSelectedBlocks){
+            for(int[] i : rightSelectedBlocks){
+                double border = blockSize/64;
+                if(editor.getMultiblock().getBlock(i[0], i[1], i[2])==null)continue;
+                VRCore.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, 0);
             }
         }
         Core.applyWhite();

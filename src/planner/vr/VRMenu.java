@@ -47,7 +47,7 @@ public class VRMenu{
         float y = pos.y;
         float z = pos.z;
         for(VRMenuComponent component : components){
-            Vector3f p = VRCore.convertPoint(x, y, z, component.x, component.y, component.z, component.xRot, component.yRot, component.zRot);
+            Vector3f p = VRCore.convertPointInverted(x, y, z, component.x, component.y, component.z, component.xRot, component.yRot, component.zRot);
             Matrix4f newMatrix = new Matrix4f(matrix);
             newMatrix.setTranslation(p.x, p.y, p.z);
             if(VRCore.isPointWithinBox(x, y, z, component.x, component.y, component.z, component.width, component.height, component.depth, component.xRot, component.yRot, component.zRot)){

@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.editor.Editor;
+import planner.vr.VRCore;
 import simplelibrary.opengl.Renderer2D;
 public class MoveTool extends EditorTool{
     public MoveTool(Editor editor, int id){
@@ -103,6 +104,29 @@ public class MoveTool extends EditorTool{
                     if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.getMultiblock().getX()||j[1]>=editor.getMultiblock().getY()||j[2]>=editor.getMultiblock().getZ())continue;
                     Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
                     Renderer2D.drawRect(x+(j[2]-1)*blockSize, y, x+j[2]*blockSize, y+blockSize, b==null?0:Core.getTexture(b.getTexture()));
+                }
+            }
+        }
+        Core.applyWhite();
+    }
+    @Override
+    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        if(leftDragStart!=null&&leftDragEnd!=null){
+            if(!Core.isControlPressed()){
+                synchronized(editor.getSelection(id)){
+                    for(int[] i : editor.getSelection(id)){
+                        VRCore.drawCube(x+i[0]*blockSize, y+i[1]*blockSize, z+i[2]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, z+(i[2]+1)*blockSize, 0);
+                    }
+                }
+            }
+            int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
+            synchronized(editor.getSelection(id)){
+                for(int[] i : editor.getSelection(id)){
+                    int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
+                    if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.getMultiblock().getX()||j[1]>=editor.getMultiblock().getY()||j[2]>=editor.getMultiblock().getZ())continue;
+                    Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
+                    VRCore.drawCube(x+j[0]*blockSize, y+j[1]*blockSize, z+j[2]*blockSize, x+(j[0]+1)*blockSize, y+(j[1]+1)*blockSize, z+(j[2]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
                 }
             }
         }

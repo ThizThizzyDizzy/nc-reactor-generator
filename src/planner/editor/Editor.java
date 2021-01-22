@@ -3,10 +3,12 @@ import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.action.SetblocksAction;
+import planner.editor.tool.EditorTool;
 public interface Editor{
     public Multiblock getMultiblock();
     public ArrayList<int[]> getSelection(int id);
     public void addSelection(int id, ArrayList<int[]> sel);
+    public boolean hasSelection(int id);
     public boolean isSelected(int id, int x, int y, int z);
     @Deprecated
     public void setCoolantRecipe(int idx);
@@ -45,4 +47,5 @@ public interface Editor{
     public void selectCluster(int id, int x, int y, int z);
     public void deselectCluster(int id, int x, int y, int z);
     public void deselect(int id, int x1, int y1, int z1, int x2, int y2, int z2);
+    public EditorTool getSelectedTool(int id);
 }

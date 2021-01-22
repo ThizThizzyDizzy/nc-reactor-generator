@@ -1,4 +1,5 @@
 package multiblock.underhaul.fissionsfr;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
@@ -161,10 +162,19 @@ public class Block extends multiblock.Block{
     @Override
     public void renderOverlay(double x, double y, double width, double height, Multiblock multiblock){
         if(!isValid()){
-            drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
+            drawOutline(x, y, width, height, Core.theme.getRed());
         }
         if(isActive()&&isModerator()){
-            drawOutline(x, y, width, height, 1/32d, Core.theme.getGreen());
+            drawOutline(x, y, width, height, Core.theme.getGreen());
+        }
+    }
+    @Override
+    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock){
+        if(!isValid()){
+            drawOutline(x, y, z, width, height, depth, Core.theme.getRed());
+        }
+        if(isActive()&&isModerator()){
+            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen());
         }
     }
     @Override

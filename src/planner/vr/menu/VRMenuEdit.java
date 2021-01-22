@@ -1,4 +1,5 @@
 package planner.vr.menu;
+import planner.vr.menu.component.VRMenuComponentEditorGrid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +16,10 @@ import multiblock.action.SetblocksAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.openvr.TrackedDevicePose;
+import org.lwjgl.openvr.VR;
 import planner.Core;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
@@ -27,6 +32,8 @@ import planner.editor.tool.PasteTool;
 import planner.editor.tool.PencilTool;
 import planner.editor.tool.RectangleTool;
 import planner.editor.tool.SelectionTool;
+import planner.vr.VRCore;
+import static planner.vr.VRCore.convert;
 import planner.vr.VRGUI;
 import planner.vr.VRMenu;
 public class VRMenuEdit extends VRMenu implements Editor{
@@ -37,9 +44,37 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private HashMap<Integer, EditorTool> copy = new HashMap<>();
     private HashMap<Integer, EditorTool> cut = new HashMap<>();
     private HashMap<Integer, EditorTool> paste = new HashMap<>();
+    private HashMap<Integer, Integer> selectedTool = new HashMap<>();
+    private HashMap<Integer, Integer> selectedBlock = new HashMap<>();
+    public VRMenuComponentEditorGrid grid;
     public VRMenuEdit(VRGUI gui, VRMenu parent, Multiblock multiblock){
         super(gui, parent);
         this.multiblock = multiblock;
+        grid = add(new VRMenuComponentEditorGrid(0, 1, 0, 1, this, multiblock));
+    }
+    @Override
+    public void onGUIOpened(){
+        super.onGUIOpened();
+        multiblock.recalculate();
+    }
+    @Override
+    public void render(TrackedDevicePose.Buffer tdpb){
+        super.render(tdpb);
+        //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
+        for(int i = 1; i<5; i++){
+            TrackedDevicePose pose = tdpb.get(i);
+            if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
+                Matrix4f matrix = new Matrix4f(convert(pose.mDeviceToAbsoluteTracking()));
+                GL11.glPushMatrix();
+                GL11.glMultMatrixf(matrix.get(new float[16]));
+                if(getSelectedBlock(i)!=null){
+                    Core.applyWhite();
+                    VRCore.drawCube(-.025, -.025, -.025, .025, .025, .025, Core.getTexture(getSelectedBlock(i).getTexture()));
+                }
+                GL11.glPopMatrix();
+            }
+        }
+//</editor-fold>
     }
     @Override
     public Multiblock getMultiblock(){
@@ -60,7 +95,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
         return selection.get(id);
     }
     private ArrayList<EditorTool> getTools(int id){
-        if(!selection.containsKey(id)){
+        if(!editorTools.containsKey(id)){
             createTools(id);
         }
         return editorTools.get(id);
@@ -72,10 +107,14 @@ public class VRMenuEdit extends VRMenu implements Editor{
         tools.add(new PencilTool(this, id));
         tools.add(new LineTool(this, id));
         tools.add(new RectangleTool(this, id));
+        selectedTool.put(id, 2);//pencil
+        selectedBlock.put(id, 2);//conductor for overhaul SFR
         editorTools.put(id, tools);
+        selection.put(id, new ArrayList<>());
         copy.put(id, new CopyTool(this, id));
         cut.put(id, new CutTool(this, id));
         paste.put(id, new PasteTool(this, id));
+        //TODO VR: add tool components
     }
     @Override
     public void addSelection(int id, ArrayList<int[]> sel){
@@ -102,24 +141,28 @@ public class VRMenuEdit extends VRMenu implements Editor{
         return false;
     }
     @Override
+    public boolean hasSelection(int id){
+        return !selection.get(id).isEmpty();
+    }
+    @Override
     public void setCoolantRecipe(int idx){
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO VR: set coolant recipe
     }
     @Override
     public void setUnderhaulFuel(int idx){
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO VR: set underhaul fuel
     }
     @Override
     public void setFusionCoolantRecipe(int idx){
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO VR: set fusion coolant recipe
     }
     @Override
     public void setFusionRecipe(int idx){
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO VR: set fusion recipe
     }
     @Override
     public void setTurbineRecipe(int idx){
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO VR: set turbine recipe
     }
     @Override
     public void clearSelection(int id){
@@ -143,8 +186,8 @@ public class VRMenuEdit extends VRMenu implements Editor{
             clipboard.get(id).clear();
             synchronized(selection){
                 if(selection.get(id).isEmpty()){
-                    if(!editorTools.get(id).contains(copy.get(id))){
-                        editorTools.get(id).add(copy.get(id));
+                    if(!getTools(id).contains(copy.get(id))){
+                        getTools(id).add(copy.get(id));
                         throw new UnsupportedOperationException("Add copy component");
                     }
                     return;
@@ -156,8 +199,8 @@ public class VRMenuEdit extends VRMenu implements Editor{
                 }
             }
         }
-        if(!editorTools.get(id).contains(paste.get(id))){
-            editorTools.get(id).add(paste.get(id));
+        if(!getTools(id).contains(paste.get(id))){
+            getTools(id).add(paste.get(id));
             throw new UnsupportedOperationException("Add paste component");
         }
     }
@@ -168,8 +211,8 @@ public class VRMenuEdit extends VRMenu implements Editor{
         }
         synchronized(selection){
             if(selection.get(id).isEmpty()){
-                if(!editorTools.get(id).contains(cut.get(id))){
-                    editorTools.get(id).add(cut.get(id));
+                if(!getTools(id).contains(cut.get(id))){
+                    getTools(id).add(cut.get(id));
                     throw new UnsupportedOperationException("Add cut component");
                 }
                 return;
@@ -187,11 +230,32 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }
     @Override
     public Block getSelectedBlock(int id){
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(!selectedBlock.containsKey(id))return null;
+        ArrayList<Block> blocks = new ArrayList<>();
+        multiblock.getAvailableBlocks(blocks);
+        return blocks.get(selectedBlock.get(id));
     }
     @Override
     public void setblocks(int id, SetblocksAction set){
-        throw new UnsupportedOperationException("Not supported yet.");
+        for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
+            int[] b = it.next();
+            if(hasSelection(id)&&!isSelected(id, b[0], b[1], b[2]))it.remove();
+            else if(isControlPressed(id)){
+                if(set.block==null){
+                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock(0)))it.remove();
+                }else{
+                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!isShiftPressed(id)){
+                        it.remove();
+                    }else if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).canBeQuickReplaced()){
+                        it.remove();
+                    }else if(multiblock.getBlock(b[0], b[1], b[2])==null||multiblock.getBlock(b[0], b[1], b[2])!=null&&isShiftPressed(id)){
+                        if(!multiblock.isValid(set.block, b[0], b[1], b[2]))it.remove();
+                    }
+                }
+            }
+        }
+        //TODO VR: set SFR&MSR Fuel&Irradiator recipes and fusion breeding blanket recipe
+        multiblock.action(set, true);
     }
     @Override
     public void cloneSelection(int id, int x, int y, int z){
@@ -328,7 +392,30 @@ public class VRMenuEdit extends VRMenu implements Editor{
         }
         multiblock.action(new DeselectAction(this, id, is), true);
     }
-    private boolean isControlPressed(int id){
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isControlPressed(int id){
+        return gui.buttonsWereDown.get(id).contains(VR.EVRButtonId_k_EButton_IndexController_A);
+    }
+    public boolean isShiftPressed(int id){
+        return gui.buttonsWereDown.get(id).contains(VR.EVRButtonId_k_EButton_IndexController_B);
+    }
+    @Override
+    public EditorTool getSelectedTool(int id){
+        EditorTool tool = getTools(id).get(selectedTool.get(id));
+        if(!(tool instanceof CutTool)){//selecting a non-copy tool, remove the cut tool!
+            getTools(id).remove(cut.get(id));
+            //TODO VR: remove component
+        }
+        if(!(tool instanceof CopyTool)){//selecting a non-copy tool, remove the copy tool!
+            getTools(id).remove(copy.get(id));
+            //TODO VR: remove component
+        }
+        if(!(tool instanceof PasteTool)){//selecting a non-paste tool, remove the paste tool!
+            getTools(id).remove(paste.get(id));
+            //TODO VR: remove component
+        }
+        return tool;
+    }
+    public int getCursorCount(){
+        return editorTools.size();
     }
 }

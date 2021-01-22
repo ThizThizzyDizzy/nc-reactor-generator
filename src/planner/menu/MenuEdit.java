@@ -498,7 +498,9 @@ public class MenuEdit extends Menu implements Editor{
             if(comp.block.isEqual(block))parts.setSelectedIndex(i);
         }
     }
-    public EditorTool getSelectedTool(){
+    @Override
+    public EditorTool getSelectedTool(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         if(tools.getSelectedIndex()==-1)return null;
         EditorTool tool = ((MenuComponentEditorTool) tools.components.get(tools.getSelectedIndex())).tool;
         if(!(tool instanceof CutTool)){//selecting a non-copy tool, remove the cut tool!
@@ -530,8 +532,9 @@ public class MenuEdit extends Menu implements Editor{
     public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(){
         return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
     }
+    @Deprecated //unused
     public void setblock(int x, int y, int z, Block template){
-        if(hasSelection()&&!isSelected(0, x, y, z))return;
+        if(hasSelection(0)&&!isSelected(0, x, y, z))return;
         if(template==null){
             if(Core.isControlPressed()){
                 if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).matches(getSelectedBlock(0)))return;
@@ -543,7 +546,7 @@ public class MenuEdit extends Menu implements Editor{
             if(multiblock.getBlock(x, y, z)!=null&&!Core.isShiftPressed())return;
             if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).canBeQuickReplaced())return;
             if(multiblock.getBlock(x, y, z)==null||multiblock.getBlock(x, y, z)!=null&&Core.isShiftPressed()){
-                if(!isValid(template, x, y, z))return;
+                if(!multiblock.isValid(template, x, y, z))return;
             }
         }
         Block blok = template.newInstance(x, y, z);
@@ -575,7 +578,7 @@ public class MenuEdit extends Menu implements Editor{
         super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
         if(isPress){
             if(key==GLFW.GLFW_KEY_ESCAPE){
-                if(getSelectedTool() instanceof PasteTool||getSelectedTool() instanceof CopyTool||getSelectedTool() instanceof CutTool){
+                if(getSelectedTool(0) instanceof PasteTool||getSelectedTool(0) instanceof CopyTool||getSelectedTool(0) instanceof CutTool){
                     tools.setSelectedIndex(1);
                 }else{
                     clearSelection(0);
@@ -672,7 +675,7 @@ public class MenuEdit extends Menu implements Editor{
     public void setblocks(int id, SetblocksAction set){
         for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
             int[] b = it.next();
-            if(hasSelection()&&!isSelected(id, b[0], b[1], b[2]))it.remove();
+            if(hasSelection(id)&&!isSelected(id, b[0], b[1], b[2]))it.remove();
             else if(Core.isControlPressed()){
                 if(set.block==null){
                     if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock(0)))it.remove();
@@ -682,7 +685,7 @@ public class MenuEdit extends Menu implements Editor{
                     }else if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).canBeQuickReplaced()){
                         it.remove();
                     }else if(multiblock.getBlock(b[0], b[1], b[2])==null||multiblock.getBlock(b[0], b[1], b[2])!=null&&Core.isShiftPressed()){
-                        if(!isValid(set.block, b[0], b[1], b[2]))it.remove();
+                        if(!multiblock.isValid(set.block, b[0], b[1], b[2]))it.remove();
                     }
                 }
             }
@@ -709,9 +712,6 @@ public class MenuEdit extends Menu implements Editor{
             }
         }
         multiblock.action(set, true);
-    }
-    public boolean isValid(Block selectedBlock, int x, int layer, int z){
-        return multiblock.isValid(selectedBlock, x, layer, z);
     }
     @Override
     public void select(int id, int x1, int y1, int z1, int x2, int y2, int z2){
@@ -770,7 +770,9 @@ public class MenuEdit extends Menu implements Editor{
         }
         return false;
     }
-    private boolean hasSelection(){
+    @Override
+    public boolean hasSelection(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         synchronized(selection){
             return !selection.isEmpty();
         }

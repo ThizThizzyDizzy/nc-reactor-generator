@@ -117,10 +117,10 @@ public class Block extends multiblock.Block{
     @Override
     public void renderOverlay(double x, double y, double width, double height, Multiblock multiblock){
         if(!isValid()){
-            drawOutline(x, y, width, height, 1/32d, Core.theme.getRed());
+            drawOutline(x, y, width, height, Core.theme.getRed());
         }
         if(isBreedingBlanketAugmented()){
-            drawOutline(x, y, width, height, 1/32d, Core.theme.getGreen());
+            drawOutline(x, y, width, height, Core.theme.getGreen());
         }
         OverhaulFusionReactor.Cluster cluster = this.cluster;
         if(cluster!=null){
@@ -197,6 +197,16 @@ public class Block extends multiblock.Block{
                 }
             }
         }
+    }
+    @Override
+    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock){
+        if(!isValid()){
+            drawOutline(x, y, z, width, height, depth, Core.theme.getRed());
+        }
+        if(isBreedingBlanketAugmented()){
+            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen());
+        }
+        //TODO VR: draw cluster markings
     }
     public boolean isInert(){
         return template.cluster&&!template.functional;

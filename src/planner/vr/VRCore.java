@@ -2,13 +2,9 @@ package planner.vr;
 import java.awt.Color;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Random;
 import org.joml.Matrix4f;
 import org.joml.Matrix4x3f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
-import static org.lwjgl.glfw.GLFW.*;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.HmdMatrix34;
 import org.lwjgl.openvr.HmdMatrix44;
@@ -23,7 +19,6 @@ import static org.lwjgl.openvr.VRSystem.VRSystem_GetProjectionMatrix;
 import static org.lwjgl.openvr.VRSystem.VRSystem_PollNextEvent;
 import planner.Core;
 import static planner.Core.helper;
-import planner.menu.MenuMain;
 import planner.vr.menu.VRMenuMain;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.game.GameHelper;
@@ -37,7 +32,7 @@ public class VRCore{
     public static final int vrHeight = 2240;//*15/32;
     private static ArrayList<ArrayList<Integer>> pressedButtons = new ArrayList<>();
     private static ArrayList<ArrayList<Integer>> touchedButtons = new ArrayList<>();
-    private static boolean[] isController = new boolean[5];
+    private static ArrayList<Boolean> isController = new ArrayList<>();
     public static VRGUI vrgui = new VRGUI();
     public static void start(){
         IntBuffer peError = IntBuffer.allocate(1);
@@ -79,27 +74,31 @@ public class VRCore{
                         System.out.println("- ButtonPress "+event.trackedDeviceIndex()+" "+event.data().controller().button());
                         while(event.trackedDeviceIndex()>=pressedButtons.size())pressedButtons.add(new ArrayList<>());
                         pressedButtons.get(event.trackedDeviceIndex()).add(event.data().controller().button());
-                        if(event.trackedDeviceIndex()>0)isController[event.trackedDeviceIndex()] = true;
+                        while(event.trackedDeviceIndex()>=isController.size())isController.add(false);
+                        if(event.trackedDeviceIndex()>0)isController.set(event.trackedDeviceIndex(), true);
                         vrgui.onKeyEvent(event.trackedDeviceIndex(), event.data().controller().button(), true);
                     }
                     if(type==EVREventType_VREvent_ButtonUnpress){
                         System.out.println("- ButtonUnpress "+event.trackedDeviceIndex()+" "+event.data().controller().button());
                         while(event.trackedDeviceIndex()>=pressedButtons.size())pressedButtons.add(new ArrayList<>());
                         pressedButtons.get(event.trackedDeviceIndex()).remove((Integer)event.data().controller().button());
-                        if(event.trackedDeviceIndex()>0)isController[event.trackedDeviceIndex()] = true;
+                        while(event.trackedDeviceIndex()>=isController.size())isController.add(false);
+                        if(event.trackedDeviceIndex()>0)isController.set(event.trackedDeviceIndex(), true);
                         vrgui.onKeyEvent(event.trackedDeviceIndex(), event.data().controller().button(), false);
                     }
                     if(type==EVREventType_VREvent_ButtonTouch){
                         System.out.println("- ButtonTouch "+event.trackedDeviceIndex()+" "+event.data().controller().button());
                         while(event.trackedDeviceIndex()>=touchedButtons.size())touchedButtons.add(new ArrayList<>());
                         touchedButtons.get(event.trackedDeviceIndex()).add(event.data().controller().button());
-                        if(event.trackedDeviceIndex()>0)isController[event.trackedDeviceIndex()] = true;
+                        while(event.trackedDeviceIndex()>=isController.size())isController.add(false);
+                        if(event.trackedDeviceIndex()>0)isController.set(event.trackedDeviceIndex(), true);
                     }
                     if(type==EVREventType_VREvent_ButtonUntouch){
                         System.out.println("- ButtonUntouch "+event.trackedDeviceIndex()+" "+event.data().controller().button());
                         while(event.trackedDeviceIndex()>=touchedButtons.size())touchedButtons.add(new ArrayList<>());
                         touchedButtons.get(event.trackedDeviceIndex()).remove((Integer)event.data().controller().button());
-                        if(event.trackedDeviceIndex()>0)isController[event.trackedDeviceIndex()] = true;
+                        while(event.trackedDeviceIndex()>=isController.size())isController.add(false);
+                        if(event.trackedDeviceIndex()>0)isController.set(event.trackedDeviceIndex(), true);
                     }
                     if(type==EVREventType_VREvent_DualAnalog_Press)System.out.println("- DualAnalog_Press");
                     if(type==EVREventType_VREvent_DualAnalog_Unpress)System.out.println("- DualAnalog_Unpress");
@@ -271,6 +270,7 @@ public class VRCore{
                 helper.renderTargetFramebuffer(leftEyeBuffer.stash.getBuffer(leftEyeBuffer.name), GameHelper.MODE_3D, leftEyeBuffer.width, leftEyeBuffer.height, 1);
                 GL11.glClearColor(background.getRed()/255f, background.getGreen()/255f, background.getBlue()/255f, 1);
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+                GL11.glColor4f(1, 1, 1, 1);
                 Matrix4f[] projectionMatrices = new Matrix4f[2];
                 for(int i = 0; i<2; i++){
                     projectionMatrices[i] = convert(VRSystem_GetProjectionMatrix(i, .01f, 1000, HmdMatrix44.calloc())).transpose();//near and far
@@ -290,6 +290,7 @@ public class VRCore{
                 GL11.glLoadMatrixf(eyeMatrices[0].get(new float[16]));
                 VRCore.render(tdpb);
                 helper.renderTargetFramebuffer(0, 0, 0, 0, 0);//clearFramebuffer()
+                GL11.glColor4f(1, 1, 1, 1);
                 Texture textureLeft = Texture.create();
                 textureLeft.set(leftEyeBuffer.getTexture(), ETextureType_TextureType_OpenGL, EColorSpace_ColorSpace_Auto);
                 int left = VRCompositor_Submit(EVREye_Eye_Left, textureLeft, null, EVRSubmitFlags_Submit_Default);
@@ -335,12 +336,14 @@ public class VRCore{
                 helper.renderTargetFramebuffer(rightEyeBuffer.stash.getBuffer(rightEyeBuffer.name), GameHelper.MODE_3D, rightEyeBuffer.width, rightEyeBuffer.height, 1);
                 GL11.glClearColor(background.getRed()/255f, background.getGreen()/255f, background.getBlue()/255f, 1);
                 GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+                GL11.glColor4f(1, 1, 1, 1);
                 GL11.glMatrixMode(GL11.GL_PROJECTION);
                 GL11.glLoadMatrixf(projectionMatrices[1].get(new float[16]));
                 GL11.glMatrixMode(GL11.GL_MODELVIEW);
                 GL11.glLoadMatrixf(eyeMatrices[1].get(new float[16]));
                 VRCore.render(tdpb2);
                 helper.renderTargetFramebuffer(0, 0, 0, 0, 0);//clearFramebuffer()
+                GL11.glColor4f(1, 1, 1, 1);
                 Texture textureRight = Texture.create();
                 textureRight.set(rightEyeBuffer.getTexture(), ETextureType_TextureType_OpenGL, EColorSpace_ColorSpace_Auto);
                 int right = VRCompositor_Submit(EVREye_Eye_Right, textureRight, null, EVRSubmitFlags_Submit_Default);
@@ -409,6 +412,7 @@ public class VRCore{
     }
     public static void render(TrackedDevicePose.Buffer tdpb){
         vrgui.render(tdpb);
+        GL11.glColor4f(1, 1, 1, 1);
         //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
         for(int i = 1; i<5; i++){
             TrackedDevicePose pose = tdpb.get(i);
@@ -416,11 +420,9 @@ public class VRCore{
                 Matrix4f matrix = new Matrix4f(convert(pose.mDeviceToAbsoluteTracking()));
                 GL11.glPushMatrix();
                 GL11.glMultMatrixf(matrix.get(new float[16]));
-                if(isController[i]){
+                if(isController.size()>i&&isController.get(i)){
                     GL11.glColor4f(0, 1, 0, 1);
-                    GL11.glBegin(GL11.GL_QUADS);
                     drawFlatCube(-.01f, -.01f, -.01f, .01f, .01f, .01f);
-                    GL11.glEnd();
                 }else{
                     GL11.glColor4f(1, 0, 0, 1);
                     GL11.glBegin(GL11.GL_QUADS);
@@ -436,6 +438,7 @@ public class VRCore{
 //</editor-fold>
     }
     public static void drawFlatCube(float minX, float minY, float minZ, float maxX, float maxY, float maxZ){
+        ImageStash.instance.bindTexture(0);
         GL11.glBegin(GL11.GL_QUADS);
         //-Y
         GL11.glVertex3f(minX, minY, minZ);
@@ -471,6 +474,7 @@ public class VRCore{
         GL11.glEnd();
     }
     public static void drawFlatCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ){
+        ImageStash.instance.bindTexture(0);
         GL11.glBegin(GL11.GL_QUADS);
         //-Y
         GL11.glVertex3d(minX, minY, minZ);
@@ -503,6 +507,65 @@ public class VRCore{
         GL11.glVertex3d(minX, maxY, maxZ);
         GL11.glVertex3d(maxX, maxY, maxZ);
 
+        GL11.glEnd();
+    }
+    public static void drawCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int texture){
+        ImageStash.instance.bindTexture(texture);
+        GL11.glBegin(GL11.GL_QUADS);
+        //xy +z
+        GL11.glTexCoord2d(0, 0);
+        GL11.glVertex3d(minX, minY, maxZ);
+        GL11.glTexCoord2d(0, 1);
+        GL11.glVertex3d(maxX, minY, maxZ);
+        GL11.glTexCoord2d(1, 1);
+        GL11.glVertex3d(maxX, maxY, maxZ);
+        GL11.glTexCoord2d(1, 0);
+        GL11.glVertex3d(minX, maxY, maxZ);
+        //xy -z
+        GL11.glTexCoord2d(0, 0);
+        GL11.glVertex3d(minX, minY, minZ);
+        GL11.glTexCoord2d(0, 1);
+        GL11.glVertex3d(minX, maxY, minZ);
+        GL11.glTexCoord2d(1, 1);
+        GL11.glVertex3d(maxX, maxY, minZ);
+        GL11.glTexCoord2d(1, 0);
+        GL11.glVertex3d(maxX, minY, minZ);
+        //xz +y
+        GL11.glTexCoord2d(0, 0);
+        GL11.glVertex3d(minX, maxY, minZ);
+        GL11.glTexCoord2d(0, 1);
+        GL11.glVertex3d(minX, maxY, maxZ);
+        GL11.glTexCoord2d(1, 1);
+        GL11.glVertex3d(maxX, maxY, maxZ);
+        GL11.glTexCoord2d(1, 0);
+        GL11.glVertex3d(maxX, maxY, minZ);
+        //xz -y
+        GL11.glTexCoord2d(0, 0);
+        GL11.glVertex3d(minX, minY, minZ);
+        GL11.glTexCoord2d(0, 1);
+        GL11.glVertex3d(maxX, minY, minZ);
+        GL11.glTexCoord2d(1, 1);
+        GL11.glVertex3d(maxX, minY, maxZ);
+        GL11.glTexCoord2d(1, 0);
+        GL11.glVertex3d(minX, minY, maxZ);
+        //yz +x
+        GL11.glTexCoord2d(0, 0);
+        GL11.glVertex3d(maxX, minY, minZ);
+        GL11.glTexCoord2d(0, 1);
+        GL11.glVertex3d(maxX, maxY, minZ);
+        GL11.glTexCoord2d(1, 1);
+        GL11.glVertex3d(maxX, maxY, maxZ);
+        GL11.glTexCoord2d(1, 0);
+        GL11.glVertex3d(maxX, minY, maxZ);
+        //yz -x
+        GL11.glTexCoord2d(0, 0);
+        GL11.glVertex3d(minX, minY, minZ);
+        GL11.glTexCoord2d(0, 1);
+        GL11.glVertex3d(minX, minY, maxZ);
+        GL11.glTexCoord2d(1, 1);
+        GL11.glVertex3d(minX, maxY, maxZ);
+        GL11.glTexCoord2d(1, 0);
+        GL11.glVertex3d(minX, maxY, minZ);
         GL11.glEnd();
     }
     public static double[] rotatePoint(double pointX, double pointY, double degrees, double originX, double originY){

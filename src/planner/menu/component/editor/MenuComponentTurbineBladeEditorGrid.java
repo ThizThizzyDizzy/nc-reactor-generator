@@ -29,10 +29,10 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
     @Override
     public void tick(){
         if(!(gui.mouseWereDown.contains(0))){
-            editor.getSelectedTool().mouseReset(0);
+            editor.getSelectedTool(0).mouseReset(0);
         }
         if(!(gui.mouseWereDown.contains(1))){
-            editor.getSelectedTool().mouseReset(1);
+            editor.getSelectedTool(0).mouseReset(1);
         }
         resonatingTick++;
         if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
@@ -94,7 +94,7 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
                 }
             }
         }
-        editor.getSelectedTool().drawBladeGhosts(x, y, width, blockSize, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
+        editor.getSelectedTool(0).drawBladeGhosts(x, y, width, blockSize, blockSize, (editor.getSelectedBlock(0)==null?0:Core.getTexture(editor.getSelectedBlock(0).getTexture())));
         if(mouseover!=-1){
             double X = this.x+(mouseover-1)*blockSize;
             double border = blockSize/8;
@@ -151,12 +151,12 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
             return;
         }
         int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (x/blockSize)));
-        editor.getSelectedTool().mouseMoved(selected, multiblock.getX()/2, 0, blockZ);
+        editor.getSelectedTool(0).mouseMoved(selected, multiblock.getX()/2, 0, blockZ);
     }
     @Override
     public void onMouseMovedElsewhere(double x, double y){
         super.onMouseMovedElsewhere(x, y);
-        if(mouseover!=-1)editor.getSelectedTool().mouseMovedElsewhere(selected);
+        if(mouseover!=-1)editor.getSelectedTool(0).mouseMovedElsewhere(selected);
         mouseover = -1;
     }
     @Override
@@ -170,15 +170,15 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
             if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
                 editor.setSelectedBlock(multiblock.getBlock(multiblock.getX()/2, 0, blockZ));
             }
-            editor.getSelectedTool().mousePressed(this, multiblock.getX()/2, 0, blockZ, button);
+            editor.getSelectedTool(0).mousePressed(this, multiblock.getX()/2, 0, blockZ, button);
         }else{
-            editor.getSelectedTool().mouseReleased(this, multiblock.getX()/2, 0, blockZ, button);
+            editor.getSelectedTool(0).mouseReleased(this, multiblock.getX()/2, 0, blockZ, button);
         }
     }
     public void mouseDragged(double x, double y, int button){
         if(button!=0&&button!=1)return;
         int blockZ = Math.max(1, Math.min(multiblock.getZ()-2, (int) (x/blockSize)+1));
-        editor.getSelectedTool().mouseDragged(this, multiblock.getX()/2, 0, blockZ, button);
+        editor.getSelectedTool(0).mouseDragged(this, multiblock.getX()/2, 0, blockZ, button);
     }
     public boolean isSelected(int z){
         return editor.isSelected(0, multiblock.getX()/2, 0, z);

@@ -18,6 +18,7 @@ public abstract class EditorTool{
     public abstract void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
     public abstract void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
     public abstract void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture);
+    public abstract void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture);
     public abstract boolean isEditTool();
     public abstract String getTooltip();
     public static interface TraceStep{

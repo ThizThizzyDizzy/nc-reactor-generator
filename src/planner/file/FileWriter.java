@@ -240,7 +240,7 @@ public class FileWriter{
                     }else throw new IllegalArgumentException(ncpf.multiblocks.get(0).getDefinitionName()+" is not supported by Hellrage JSON!");
                 }else{
                     //TODO config export?
-                    throw new UnsupportedOperationException("Not supported yet.");
+                    throw new UnsupportedOperationException("Cannot export NCPF configuration to Hellrage JSON format!");
                 }
             }
             @Override
