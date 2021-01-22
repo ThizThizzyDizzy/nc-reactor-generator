@@ -65,7 +65,7 @@ public class RectangleTool extends EditorTool{
     }
     @Override
     public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .625f);
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
             double border = blockSize/64;
             VRCore.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, texture);

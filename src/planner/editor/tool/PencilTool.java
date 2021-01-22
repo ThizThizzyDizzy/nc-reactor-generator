@@ -42,20 +42,7 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void mouseReset(int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
-            leftDragStart = null;
-            leftStart = null;
-            synchronized(leftSelectedBlocks){
-                leftSelectedBlocks.clear();
-            }
-        }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
-            rightDragStart = null;
-            rightStart = null;
-            synchronized(rightSelectedBlocks){
-                rightSelectedBlocks.clear();
-            }
-        }
+        mouseReleased(null, 0, 0, 0, button);//allow you to release outside the editor grid and still place blocks
     }
     @Override
     public void mousePressed(Object obj, int x, int y, int z, int button){
@@ -95,7 +82,20 @@ public class PencilTool extends EditorTool{
             }
             editor.setblocks(id, set);
         }
-        mouseReset(button);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
+            leftDragStart = null;
+            leftStart = null;
+            synchronized(leftSelectedBlocks){
+                leftSelectedBlocks.clear();
+            }
+        }
+        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+            rightDragStart = null;
+            rightStart = null;
+            synchronized(rightSelectedBlocks){
+                rightSelectedBlocks.clear();
+            }
+        }
     }
     @Override
     public void mouseDragged(Object obj, int x, int y, int z, int button){
@@ -189,7 +189,7 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .625f);
+        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         synchronized(leftSelectedBlocks){
             for(int[] i : leftSelectedBlocks){
                 double border = blockSize/64;
@@ -212,5 +212,7 @@ public class PencilTool extends EditorTool{
     @Override
     public void mouseMoved(Object obj, int x, int y, int z){}
     @Override
-    public void mouseMovedElsewhere(Object obj){}
+    public void mouseMovedElsewhere(Object obj){
+        leftStart = rightStart = null;
+    }
 }

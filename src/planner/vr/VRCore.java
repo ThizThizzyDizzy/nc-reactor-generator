@@ -34,6 +34,7 @@ public class VRCore{
     private static ArrayList<ArrayList<Integer>> touchedButtons = new ArrayList<>();
     private static ArrayList<Boolean> isController = new ArrayList<>();
     public static VRGUI vrgui = new VRGUI();
+    private static boolean running = true;
     public static void start(){
         IntBuffer peError = IntBuffer.allocate(1);
         int token = VR_InitInternal(peError, EVRApplicationType_VRApplication_Scene);
@@ -44,11 +45,13 @@ public class VRCore{
         Core.gui.open(new Menu(Core.gui, Core.gui.menu){
             @Override
             public void onGUIClosed(){
+                running = false;
                 OpenVR.destroy();
                 VR_ShutdownInternal();
             }
             @Override
             public void tick(){
+                if(!running)return;
                 VRCore.tick();
                 //<editor-fold defaultstate="collapsed" desc="Process VREvents">
                 VREvent event;

@@ -36,7 +36,9 @@ import planner.vr.VRCore;
 import static planner.vr.VRCore.convert;
 import planner.vr.VRGUI;
 import planner.vr.VRMenu;
+import planner.vr.menu.component.VRMenuComponentButton;
 public class VRMenuEdit extends VRMenu implements Editor{
+    public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.5, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
     private final HashMap<Integer, ArrayList<EditorTool>> editorTools = new HashMap<>();
     private final Multiblock multiblock;
     public HashMap<Integer, ArrayList<ClipboardEntry>> clipboard = new HashMap<>();
@@ -47,10 +49,21 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private HashMap<Integer, Integer> selectedTool = new HashMap<>();
     private HashMap<Integer, Integer> selectedBlock = new HashMap<>();
     public VRMenuComponentEditorGrid grid;
+    private boolean closing = false;//used for the closing menu animation
+    private long lastTick;
+    private int openProgress = 0;
+    private static final int openTime = 40;
+    private static final int openDist = 100;//fly in from 100m away
+    private static final float openSmooth = 5;//smooths out the incoming
+    private final double openTargetZ;
     public VRMenuEdit(VRGUI gui, VRMenu parent, Multiblock multiblock){
         super(gui, parent);
         this.multiblock = multiblock;
         grid = add(new VRMenuComponentEditorGrid(0, 1, 0, 1, this, multiblock));
+        openTargetZ = grid.z;
+        done.addActionListener((e) -> {
+            closing = true;
+        });
     }
     @Override
     public void onGUIOpened(){
@@ -58,7 +71,23 @@ public class VRMenuEdit extends VRMenu implements Editor{
         multiblock.recalculate();
     }
     @Override
+    public void tick(){
+        super.tick();
+        lastTick = System.nanoTime();
+        if(closing){
+            openProgress--;
+            if(openProgress<=0)gui.open(new VRMenuMain(gui));
+        }else if(openProgress<openTime){
+            openProgress++;
+        }
+    }
+    @Override
     public void render(TrackedDevicePose.Buffer tdpb){
+        long millisSinceLastTick = (System.nanoTime()-lastTick)/1_000_000;
+        float partialTick = millisSinceLastTick/50f;
+        float progress = closing?Math.max((openProgress-partialTick)/openTime,0):(Math.min((openProgress+partialTick)/openTime,1));
+        double dist = openDist-openDist*Math.pow(Math.sin(Math.PI*progress/2), 1/openSmooth);
+        grid.z = openTargetZ-dist;
         super.render(tdpb);
         //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
         for(int i = 1; i<5; i++){

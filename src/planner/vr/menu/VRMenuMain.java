@@ -1,6 +1,7 @@
 package planner.vr.menu;
 import java.util.ArrayList;
 import multiblock.Multiblock;
+import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 import planner.Core;
 import planner.menu.MenuMain;
@@ -13,6 +14,10 @@ public class VRMenuMain extends VRMenu{
     private ArrayList<VRMenuComponentMultiblock> multiblocks = new ArrayList<>();
     private ArrayList<VRMenuComponentButton> multiblockButtons = new ArrayList<>();
     private ArrayList<Multiblock> toAdd = new ArrayList<>();
+    public Multiblock opening = null;
+    private long lastTick;
+    private int openProgress = 0;
+    private static final int openTime = 10;
     public VRMenuMain(VRGUI gui){
         super(gui, null);
         for(int i = 0; i<Core.multiblockTypes.size(); i++){
@@ -32,9 +37,28 @@ public class VRMenuMain extends VRMenu{
     public void tick(){
         super.tick();
         for(Multiblock m : toAdd){
-            multiblocks.add(add(new VRMenuComponentMultiblock(m)));
+            multiblocks.add(add(new VRMenuComponentMultiblock(this, m)));
         }
         toAdd.clear();
+        lastTick = System.nanoTime();
+        if(opening!=null){
+            openProgress++;
+            if(openProgress>=openTime){
+                gui.open(new VRMenuEdit(gui, parent, opening));
+            }
+        }
+    }
+    @Override
+    public void render(TrackedDevicePose.Buffer tdpb){
+        long millisSinceLastTick = (System.nanoTime()-lastTick)/1_000_000;
+        float partialTick = millisSinceLastTick/50f;
+        if(opening!=null){
+            float progress = Math.min((openProgress+partialTick)/openTime,1);
+            for(VRMenuComponentMultiblock mb : multiblocks){
+                mb.scale = 1-progress;
+            }
+        }
+        super.render(tdpb);
     }
     @Override
     public void onGUIOpened(){
@@ -44,7 +68,8 @@ public class VRMenuMain extends VRMenu{
         components.removeAll(multiblocks);
         multiblocks.clear();
         for(Multiblock multi : Core.multiblocks){
-            VRMenuComponentMultiblock vrc = new VRMenuComponentMultiblock(multi);
+            VRMenuComponentMultiblock vrc = new VRMenuComponentMultiblock(this, multi);
+            vrc.boost = 20;
             vrc.y = 1.25;
             vrc.z = -1;
             multiblocks.add(add(vrc));
@@ -52,6 +77,7 @@ public class VRMenuMain extends VRMenu{
     }
     @Override
     public void keyEvent(int device, int button, boolean pressed){
+        if(opening!=null)return;
         super.keyEvent(device, button, pressed);
         if(button==VR.EVRButtonId_k_EButton_IndexController_A){
             if(pressed){

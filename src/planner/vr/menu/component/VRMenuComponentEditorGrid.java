@@ -29,7 +29,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     private static final float resonatingMin = .25f;
     private static final float resonatingMax = .75f;
     private int resonatingTick = 0;
-    private float resonatingScale = 0;
+    private float resonatingAlpha = 0;
     private long lastTick;
     private final HashMap<Integer, int[]> deviceover = new HashMap<>();
     private final double blockSize;
@@ -63,7 +63,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     public void render(TrackedDevicePose.Buffer tdpb){
         long millisSinceLastTick = (System.nanoTime()-lastTick)/1_000_000;
         float tick = resonatingTick+(Math.max(0, Math.min(1, millisSinceLastTick/50)));
-        resonatingScale = (float) (-Math.cos(2*Math.PI*tick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
+        resonatingAlpha = (float) (-Math.cos(2*Math.PI*tick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
         super.render(tdpb);
     }
     @Override
@@ -106,7 +106,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
 //                VRCore.drawFlatCube(X-border, Y-border, 0, X+border, Y+border, depth);
 //            }
 //        }
-        for(int x = 0; x<multiblock.getX(); x++){
+        for(int x = 0; x<multiblock.getX(); x++){//solid stuff
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
                     Block block = multiblock.getBlock(x, y, z);
@@ -116,6 +116,25 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     double border = blockSize/16;
                     if(block!=null){
                         block.render(X, Y, Z, blockSize, blockSize, blockSize, true, multiblock);
+                    }
+                    if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                        Core.applyWhite();
+                        VRCore.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"));
+                    }
+                    //TODO VR: draw selection box
+                    //TODO VR: draw suggestions
+                }
+            }
+        }
+        for(int x = 0; x<multiblock.getX(); x++){//transparent stuff
+            for(int y = 0; y<multiblock.getY(); y++){
+                for(int z = 0; z<multiblock.getZ(); z++){
+                    Block block = multiblock.getBlock(x, y, z);
+                    double X = x*blockSize;
+                    double Y = y*blockSize;
+                    double Z = z*blockSize;
+                    double border = blockSize/16;
+                    if(block!=null){
                         //TODO VR: draw same fuel markers
 //                            if((multiblock instanceof OverhaulMSR&&((multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel())||(multiblock instanceof OverhaulSFR&&((multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel())){
 //                                Core.applyColor(Core.theme.getSelectionColor(), resonatingAlpha);
@@ -127,8 +146,6 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                         VRCore.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"));
                     }
                     //TODO VR: draw quick-replace ghost blocks
-                    //TODO VR: draw selection box
-                    //TODO VR: draw suggestions
                 }
             }
         }

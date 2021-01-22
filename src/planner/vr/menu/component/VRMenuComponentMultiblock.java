@@ -7,10 +7,11 @@ import org.lwjgl.openvr.VR;
 import planner.Core;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
-import planner.vr.menu.VRMenuEdit;
+import planner.vr.menu.VRMenuMain;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class VRMenuComponentMultiblock extends VRMenuComponent{
+    private final VRMenuMain main;
     public final Multiblock multiblock;
     private static final double vel = 1/144f/25f;
     private Random rand = new Random();
@@ -24,13 +25,18 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
     public double snappingFactor = .01f;//1% of distance per render
     public double dx = 0;//destination X (rotation, radians)
     public double dy = 1.25;//destination Y (location, meters)
-    public VRMenuComponentMultiblock(Multiblock multiblock){
+    public float scale = 1;//used for animation
+    public int boost;
+    public VRMenuComponentMultiblock(VRMenuMain main, Multiblock multiblock){
         super(0, 2, 0, .25, .25, .25, 0, 0, 0);
+        this.main = main;
         this.multiblock = multiblock;
     }
     @Override
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
         angle+=angling;
+        double vel = this.vel*Math.exp(boost/20f);
+        boost*=.95;
         double[] dir = VRCore.rotatePoint(0, vel, angle, 0, 0);
         
         dx+=dir[0];
@@ -48,6 +54,10 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         else Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
         ImageStash.instance.bindTexture(0);
         GL11.glPushMatrix();
+        GL11.glTranslated(width/2, height/2, depth/2);
+        GL11.glScaled(scale, scale, scale);
+        GL11.glTranslated(-width/2, -height/2, -depth/2);
+        GL11.glPushMatrix();
         GL11.glScaled(width, height, depth);
         double size = Math.max(multiblock.getX(), Math.max(multiblock.getY(), multiblock.getZ()));
         size/=multiblock.get3DPreviewScale();
@@ -56,6 +66,7 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         GL11.glPopMatrix();
         Core.applyColor(Core.theme.getTextColor());
         drawText();
+        GL11.glPopMatrix();
     }
     @Override
     public void tick(){
@@ -81,7 +92,7 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
     public void keyEvent(int device, int button, boolean pressed){
         super.keyEvent(device, button, pressed);
         if(pressed&&button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-            gui.open(new VRMenuEdit(gui, parent, multiblock));
+            main.opening = multiblock;
         }
     }
 }
