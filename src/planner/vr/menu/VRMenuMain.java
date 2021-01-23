@@ -69,7 +69,7 @@ public class VRMenuMain extends VRMenu{
         multiblocks.clear();
         for(Multiblock multi : Core.multiblocks){
             VRMenuComponentMultiblock vrc = new VRMenuComponentMultiblock(this, multi);
-            vrc.boost = 20;
+            vrc.boost = 140;
             vrc.y = 1.25;
             vrc.z = -1;
             multiblocks.add(add(vrc));

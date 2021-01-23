@@ -26,7 +26,7 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
     public double dx = 0;//destination X (rotation, radians)
     public double dy = 1.25;//destination Y (location, meters)
     public float scale = 1;//used for animation
-    public int boost;
+    public float boost;
     public VRMenuComponentMultiblock(VRMenuMain main, Multiblock multiblock){
         super(0, 2, 0, .25, .25, .25, 0, 0, 0);
         this.main = main;

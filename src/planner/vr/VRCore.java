@@ -19,6 +19,7 @@ import static org.lwjgl.openvr.VRSystem.VRSystem_GetProjectionMatrix;
 import static org.lwjgl.openvr.VRSystem.VRSystem_PollNextEvent;
 import planner.Core;
 import static planner.Core.helper;
+import planner.menu.MenuMain;
 import planner.vr.menu.VRMenuMain;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.game.GameHelper;
@@ -51,11 +52,10 @@ public class VRCore{
             }
             @Override
             public void tick(){
-                if(!running)return;
                 VRCore.tick();
                 //<editor-fold defaultstate="collapsed" desc="Process VREvents">
                 VREvent event;
-                while(VRSystem_PollNextEvent(event = VREvent.malloc())){
+                while(running&&VRSystem_PollNextEvent(event = VREvent.malloc())){
                     int type = event.eventType();
                     System.out.println("VR Event type="+type);
                     if(type==EVREventType_VREvent_None)System.out.println("- None");
@@ -166,7 +166,10 @@ public class VRCore{
                     if(type==EVREventType_VREvent_Notification_Hidden)System.out.println("- Notification_Hidden");
                     if(type==EVREventType_VREvent_Notification_BeginInteraction)System.out.println("- Notification_BeginInteraction");
                     if(type==EVREventType_VREvent_Notification_Destroyed)System.out.println("- Notification_Destroyed");
-                    if(type==EVREventType_VREvent_Quit)System.out.println("- Quit");
+                    if(type==EVREventType_VREvent_Quit){
+                        System.out.println("- Quit");
+                        gui.open(new MenuMain(gui));
+                    }
                     if(type==EVREventType_VREvent_ProcessQuit)System.out.println("- ProcessQuit");
                     if(type==EVREventType_VREvent_QuitAborted_UserPrompt)System.out.println("- QuitAborted_UserPrompt");
                     if(type==EVREventType_VREvent_QuitAcknowledged)System.out.println("- QuitAcknowledged");
