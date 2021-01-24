@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.editor.Editor;
 import planner.vr.VRCore;
+import planner.vr.menu.VRMenuEdit;
 import simplelibrary.opengl.Renderer2D;
 public class MoveTool extends EditorTool{
     public MoveTool(Editor editor, int id){
@@ -44,7 +45,7 @@ public class MoveTool extends EditorTool{
     public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
-            if(!Core.isControlPressed()){
+            if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
                     for(int[] i : editor.getSelection(id)){
                         if(i[1]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[2]*blockSize, x+(i[0]+1)*blockSize, y+(i[2]+1)*blockSize, 0);
@@ -67,7 +68,7 @@ public class MoveTool extends EditorTool{
     public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
-            if(!Core.isControlPressed()){
+            if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
                     for(int[] i : editor.getSelection(id)){
                         if(i[2]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[1]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, 0);
@@ -90,7 +91,7 @@ public class MoveTool extends EditorTool{
     public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
-            if(!Core.isControlPressed()){
+            if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
                     for(int[] i : editor.getSelection(id)){
                         Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
@@ -113,10 +114,12 @@ public class MoveTool extends EditorTool{
     public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
-            if(!Core.isControlPressed()){
+            double border = blockSize/64;
+            if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
                     for(int[] i : editor.getSelection(id)){
-                        VRCore.drawCube(x+i[0]*blockSize, y+i[1]*blockSize, z+i[2]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, z+(i[2]+1)*blockSize, 0);
+                        if(editor.getMultiblock().getBlock(i[0], i[1], i[2])==null)continue;//already air
+                        VRCore.drawCube(x+i[0]*blockSize-border/2, y+i[1]*blockSize-border/2, z+i[2]*blockSize-border/2, x+(i[0]+1)*blockSize+border/2, y+(i[1]+1)*blockSize+border/2, z+(i[2]+1)*blockSize+border/2, 0);
                     }
                 }
             }
@@ -126,7 +129,8 @@ public class MoveTool extends EditorTool{
                     int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
                     if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.getMultiblock().getX()||j[1]>=editor.getMultiblock().getY()||j[2]>=editor.getMultiblock().getZ())continue;
                     Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
-                    VRCore.drawCube(x+j[0]*blockSize, y+j[1]*blockSize, z+j[2]*blockSize, x+(j[0]+1)*blockSize, y+(j[1]+1)*blockSize, z+(j[2]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
+                    if(b==null&&editor.getMultiblock().getBlock(j[0], j[1], j[2])==null)continue;//already air, don't need to higlight air again
+                    VRCore.drawCube(x+j[0]*blockSize-border, y+j[1]*blockSize-border, z+j[2]*blockSize-border, x+(j[0]+1)*blockSize+border, y+(j[1]+1)*blockSize+border, z+(j[2]+1)*blockSize+border, b==null?0:Core.getTexture(b.getTexture()));
                 }
             }
         }
@@ -143,7 +147,7 @@ public class MoveTool extends EditorTool{
     @Override
     public void mouseReleased(Object obj, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null&&leftDragEnd!=null){
-            if(Core.isControlPressed())editor.cloneSelection(id, leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
+            if(editor.isControlPressed(id))editor.cloneSelection(id, leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
             else editor.moveSelection(id, leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
         }
         mouseReset(button);

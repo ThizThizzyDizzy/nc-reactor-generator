@@ -128,15 +128,15 @@ public class SelectionTool extends EditorTool{
     }
     @Override
     public void mousePressed(Object obj, int x, int y, int z, int button){
-        if(!Core.isControlPressed()){
+        if(!editor.isControlPressed(id)){
             editor.clearSelection(id);
         }
-        if(Core.isShiftPressed()){
+        if(editor.isShiftPressed(id)){
             if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectGroup(id, x,y,z);
             if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectGroup(id, x,y,z);
             return;
         }
-        if(Core.isAltPressed()){
+        if(editor.isAltPressed(id)){
             if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectCluster(id, x,y,z);
             if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectCluster(id, x,y,z);
             return;

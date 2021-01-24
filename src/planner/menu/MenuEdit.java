@@ -1013,4 +1013,16 @@ public class MenuEdit extends Menu implements Editor{
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports 1 cursor!");
         return clipboard;
     }
+    @Override
+    public boolean isControlPressed(int id){
+        return Core.isControlPressed();
+    }
+    @Override
+    public boolean isShiftPressed(int id){
+        return Core.isShiftPressed();
+    }
+    @Override
+    public boolean isAltPressed(int id){
+        return Core.isAltPressed();
+    }
 }

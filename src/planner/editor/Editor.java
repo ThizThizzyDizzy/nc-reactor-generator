@@ -48,4 +48,7 @@ public interface Editor{
     public void deselectCluster(int id, int x, int y, int z);
     public void deselect(int id, int x1, int y1, int z1, int x2, int y2, int z2);
     public EditorTool getSelectedTool(int id);
+    public boolean isControlPressed(int id);
+    public boolean isShiftPressed(int id);
+    public boolean isAltPressed(int id);
 }

@@ -45,7 +45,7 @@ public class CopyAction extends Action<Multiblock>{
             }
         }
         synchronized(editor.getSelection(id)){
-            if(!Core.isShiftPressed())editor.getSelection(id).clear();
+            if(!editor.isShiftPressed(id))editor.getSelection(id).clear();
         }
         editor.addSelection(id, movedSelection);
     }

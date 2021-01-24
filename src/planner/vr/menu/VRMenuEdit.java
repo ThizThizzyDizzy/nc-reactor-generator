@@ -134,6 +134,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
         return editorTools.get(id);
     }
     private void createTools(int id){
+        if(id<0)throw new IllegalArgumentException("Cannot create tools with a negative ID!");
         ArrayList<EditorTool> tools = new ArrayList<>();
         tools.add(new MoveTool(this, id));
         tools.add(new SelectionTool(this, id));
@@ -425,11 +426,17 @@ public class VRMenuEdit extends VRMenu implements Editor{
         }
         multiblock.action(new DeselectAction(this, id, is), true);
     }
+    @Override
     public boolean isControlPressed(int id){
         return gui.buttonsWereDown.get(id).contains(VR.EVRButtonId_k_EButton_IndexController_A);
     }
+    @Override
     public boolean isShiftPressed(int id){
         return gui.buttonsWereDown.get(id).contains(VR.EVRButtonId_k_EButton_IndexController_B);
+    }
+    @Override
+    public boolean isAltPressed(int id){
+        return false;//TODO VR: what button for this?
     }
     @Override
     public EditorTool getSelectedTool(int id){
