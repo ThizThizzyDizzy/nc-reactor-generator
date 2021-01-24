@@ -15,7 +15,7 @@ public class VRMenuMain extends VRMenu{
     private ArrayList<VRMenuComponentButton> multiblockButtons = new ArrayList<>();
     private ArrayList<Multiblock> toAdd = new ArrayList<>();
     public Multiblock opening = null;
-    private long lastTick;
+    private long lastTick = -1;
     private int openProgress = 0;
     private static final int openTime = 10;
     public VRMenuMain(VRGUI gui){
@@ -50,7 +50,7 @@ public class VRMenuMain extends VRMenu{
     }
     @Override
     public void render(TrackedDevicePose.Buffer tdpb){
-        long millisSinceLastTick = (System.nanoTime()-lastTick)/1_000_000;
+        long millisSinceLastTick = lastTick==-1?0:(System.nanoTime()-lastTick)/1_000_000;
         float partialTick = millisSinceLastTick/50f;
         if(opening!=null){
             float progress = Math.min((openProgress+partialTick)/openTime,1);

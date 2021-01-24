@@ -30,7 +30,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     private static final float resonatingMax = .75f;
     private int resonatingTick = 0;
     private float resonatingAlpha = 0;
-    private long lastTick;
+    private long lastTick = -1;
     private final HashMap<Integer, int[]> deviceover = new HashMap<>();
     private final double blockSize;
     public VRMenuComponentEditorGrid(double x, double y, double z, double size, VRMenuEdit editor, Multiblock multiblock){
@@ -61,7 +61,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     }
     @Override
     public void render(TrackedDevicePose.Buffer tdpb){
-        long millisSinceLastTick = (System.nanoTime()-lastTick)/1_000_000;
+        long millisSinceLastTick = lastTick==-1?0:(System.nanoTime()-lastTick)/1_000_000;
         float tick = resonatingTick+(Math.max(0, Math.min(1, millisSinceLastTick/50)));
         resonatingAlpha = (float) (-Math.cos(2*Math.PI*tick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
         super.render(tdpb);

@@ -50,7 +50,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private HashMap<Integer, Integer> selectedBlock = new HashMap<>();
     public VRMenuComponentEditorGrid grid;
     private boolean closing = false;//used for the closing menu animation
-    private long lastTick;
+    private long lastTick = -1;
     private int openProgress = 0;
     private static final int openTime = 40;
     private static final int openDist = 100;//fly in from 100m away
@@ -83,7 +83,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }
     @Override
     public void render(TrackedDevicePose.Buffer tdpb){
-        long millisSinceLastTick = (System.nanoTime()-lastTick)/1_000_000;
+        long millisSinceLastTick = lastTick==-1?0:(System.nanoTime()-lastTick)/1_000_000;
         float partialTick = millisSinceLastTick/50f;
         float progress = closing?Math.max((openProgress-partialTick)/openTime,0):(Math.min((openProgress+partialTick)/openTime,1));
         double dist = openDist-openDist*Math.pow(Math.sin(Math.PI*progress/2), 1/openSmooth);
