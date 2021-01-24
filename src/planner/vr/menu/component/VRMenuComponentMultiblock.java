@@ -57,13 +57,20 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         GL11.glTranslated(width/2, height/2, depth/2);
         GL11.glScaled(scale, scale, scale);
         GL11.glTranslated(-width/2, -height/2, -depth/2);
-        GL11.glPushMatrix();
         GL11.glScaled(width, height, depth);
         double size = Math.max(multiblock.getX(), Math.max(multiblock.getY(), multiblock.getZ()));
         size/=multiblock.get3DPreviewScale();
         GL11.glScaled(1/size, 1/size, 1/size);
         multiblock.draw3D();
         GL11.glPopMatrix();
+    }
+    @Override
+    public void renderForeground(){
+        super.renderForeground();
+        GL11.glPushMatrix();
+        GL11.glTranslated(width/2, height/2, depth/2);
+        GL11.glScaled(scale, scale, scale);
+        GL11.glTranslated(-width/2, -height/2, -depth/2);
         Core.applyColor(Core.theme.getTextColor());
         drawText();
         GL11.glPopMatrix();

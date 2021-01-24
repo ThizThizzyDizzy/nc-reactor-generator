@@ -1025,4 +1025,8 @@ public class MenuEdit extends Menu implements Editor{
     public boolean isAltPressed(int id){
         return Core.isAltPressed();
     }
+    @Override
+    public Color convertToolColor(Color color, int id){
+        return color;//standard colors
+    }
 }

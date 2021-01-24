@@ -49,9 +49,9 @@ public class VRMenuComponentToolPanel extends VRMenuComponent{
         super.tick();
         if(refreshNeeded)refresh();
     }
-    public void refresh(){
+    public synchronized void refresh(){
         components.clear();
-        if(activeTool==-1)return;
+        if(activeTool<0)return;
         ArrayList<EditorTool> tools = editor.getTools(activeTool);
         double size = Math.min(depth,height/tools.size());
         for(int i = 0; i<tools.size(); i++){

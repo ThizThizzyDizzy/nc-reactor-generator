@@ -2,6 +2,7 @@ package planner.editor.tool;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.editor.Editor;
+import planner.vr.VRCore;
 import simplelibrary.opengl.Renderer2D;
 public class SelectionTool extends EditorTool{
     public SelectionTool(Editor editor, int id){
@@ -118,8 +119,32 @@ public class SelectionTool extends EditorTool{
         Core.applyWhite();
     }
     @Override
-    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
-        //TODO VR: selection tool ghosts
+    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double w, int texture){
+        if(leftDragEnd!=null&&leftDragStart!=null){
+            double border = w/16;
+            int minX = Math.min(leftDragStart[0], leftDragEnd[0]);
+            int minY = Math.min(leftDragStart[1], leftDragEnd[1]);
+            int minZ = Math.min(leftDragStart[2], leftDragEnd[2]);
+            int maxX = Math.max(leftDragStart[0], leftDragEnd[0]);
+            int maxY = Math.max(leftDragStart[1], leftDragEnd[1]);
+            int maxZ = Math.max(leftDragStart[2], leftDragEnd[2]);
+            Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), .5f);
+            VRCore.drawCube(x+w*minX-border/4, y+w*minY-border/4, z+w*minZ-border/4, x+w*(maxX+1)+border/4, y+w*(maxY+1)+border/4, z+w*(maxZ+1)+border/4, 0);
+            Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id));
+            VRCore.drawCubeOutline(x+w*minX-border, y+w*minY-border, z+w*minZ-border, x+w*(maxX+1)+border, y+w*(maxY+1)+border, z+w*(maxZ+1)+border, border);
+        }
+        if(rightDragEnd!=null&&rightDragStart!=null){
+            double border = w/16;
+            int minX = Math.min(rightDragStart[0], rightDragEnd[0]);
+            int minY = Math.min(rightDragStart[1], rightDragEnd[1]);
+            int minZ = Math.min(rightDragStart[2], rightDragEnd[2]);
+            int maxX = Math.max(rightDragStart[0], rightDragEnd[0]);
+            int maxY = Math.max(rightDragStart[1], rightDragEnd[1]);
+            int maxZ = Math.max(rightDragStart[2], rightDragEnd[2]);
+            Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id));
+            VRCore.drawCubeOutline(x+w*minX-border, y+w*minY-border, z+w*minZ-border, x+w*(maxX+1)+border, y+w*(maxY+1)+border, z+w*(maxZ+1)+border, border);
+        }
+        Core.applyWhite();
     }
     @Override
     public void mouseReset(int button){

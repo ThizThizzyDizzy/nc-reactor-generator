@@ -1,4 +1,5 @@
 package planner.editor;
+import java.awt.Color;
 import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Multiblock;
@@ -51,4 +52,5 @@ public interface Editor{
     public boolean isControlPressed(int id);
     public boolean isShiftPressed(int id);
     public boolean isAltPressed(int id);
+    public Color convertToolColor(Color color, int id);
 }

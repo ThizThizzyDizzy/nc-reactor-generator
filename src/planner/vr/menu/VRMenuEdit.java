@@ -1,4 +1,5 @@
 package planner.vr.menu;
+import java.awt.Color;
 import planner.vr.menu.component.VRMenuComponentEditorGrid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,7 +135,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
         return editorTools.get(id);
     }
     private void createTools(int id){
-        if(id<0)throw new IllegalArgumentException("Cannot create tools with a negative ID!");
+        if(id<0)throw new IllegalArgumentException("Cannot create tools with a negative ID! ("+id+")");
         ArrayList<EditorTool> tools = new ArrayList<>();
         tools.add(new MoveTool(this, id));
         tools.add(new SelectionTool(this, id));
@@ -462,4 +463,12 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public void setSelectedBlock(int device, int block){
         selectedBlock.put(device, block);
     }
+    @Override
+    public Color convertToolColor(Color color, int id){
+        float[] hsb = new float[3];
+        Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsb);
+        if(id%2==0)hsb[0]+=20/360f;//is this 0-1?
+        else hsb[0]-=20/360f;//is this 0-1?
+        return new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
+    }//doesn't do alpha
 }

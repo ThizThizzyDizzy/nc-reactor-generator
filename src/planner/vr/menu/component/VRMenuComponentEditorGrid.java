@@ -123,8 +123,34 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                             return b==null||b.isCasing();
                         });
                     }
-                    //TODO VR: draw selection box
+                    for(int id : editor.editorTools.keySet()){
+                        if(isSelected(id, x, y, z)){
+                            Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id));
+                            VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+                                boolean d1 = isSelected(id, xx+t[0].x, yy+t[0].y, zz+t[0].z);
+                                boolean d2 = isSelected(id, xx+t[1].x, yy+t[1].y, zz+t[1].z);
+                                boolean d3 = isSelected(id, xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                                if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                                if(!d1&&!d2)return true;//neither side
+                                return false;
+                            });
+                        }
+                    }
                     //TODO VR: draw suggestions
+                }
+            }
+        }
+        synchronized(deviceover){
+            for(int id : deviceover.keySet()){
+                if(id==VR.k_unTrackedDeviceIndex_Hmd)continue;//don't do mouseover for headset
+                int[] mouseover = deviceover.get(id);
+                if(mouseover!=null){
+                    double X = mouseover[0]*blockSize;
+                    double Y = mouseover[1]*blockSize;
+                    double Z = mouseover[2]*blockSize;
+                    double border = blockSize/16;
+                    Core.applyColor(Core.theme.getEditorListBorderColor());
+                    VRCore.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
                 }
             }
         }
@@ -153,15 +179,22 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                             return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA;
                         });
                     }
-                    for(int i : editor.editorTools.keySet()){
-                        if(editor.isControlPressed(i)){
-                            if(block==null||(editor.isShiftPressed(i)&&block.canBeQuickReplaced())){
-                                if(multiblock.isValid(editor.getSelectedBlock(i), x, y, z)){
-                                    editor.getSelectedBlock(i).render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, null, (t) -> {
+                    for(int id : editor.editorTools.keySet()){
+                        if(editor.isControlPressed(id)){
+                            if(block==null||(editor.isShiftPressed(id)&&block.canBeQuickReplaced())){
+                                if(multiblock.isValid(editor.getSelectedBlock(id), x, y, z)){
+                                    editor.getSelectedBlock(id).render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, null, (t) -> {
                                         return true;
                                     });
                                 }
                             }
+                        }
+                        if(isSelected(id, x, y, z)){
+                            Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), .5f);
+                            VRCore.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0, (t) -> {
+                                Block o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                                return !isSelected(id, xx+t.x, yy+t.y, zz+t.z)&&(o==null||o.isCasing());
+                            });
                         }
                     }
                 }
@@ -169,20 +202,6 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         }
         for(int i : editor.editorTools.keySet()){
             editor.getSelectedTool(i).drawVRGhosts(0, 0, 0, width, height, depth, blockSize, (editor.getSelectedBlock(i)==null?0:Core.getTexture(editor.getSelectedBlock(i).getTexture())));
-        }
-        synchronized(deviceover){
-            for(int id : deviceover.keySet()){
-                if(id==VR.k_unTrackedDeviceIndex_Hmd)continue;//don't do mouseover for headset
-                int[] mouseover = deviceover.get(id);
-                if(mouseover!=null){
-                    double X = mouseover[0]*blockSize;
-                    double Y = mouseover[1]*blockSize;
-                    double Z = mouseover[2]*blockSize;
-                    double border = blockSize/16;
-                    Core.applyColor(Core.theme.getEditorListBorderColor());
-                    VRCore.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
-                }
-            }
         }
     }
     @Override

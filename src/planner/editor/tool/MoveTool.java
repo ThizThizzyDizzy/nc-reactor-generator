@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.editor.Editor;
 import planner.vr.VRCore;
-import planner.vr.menu.VRMenuEdit;
 import simplelibrary.opengl.Renderer2D;
 public class MoveTool extends EditorTool{
     public MoveTool(Editor editor, int id){

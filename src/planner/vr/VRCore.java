@@ -448,31 +448,31 @@ public class VRCore{
     }
     /**
      * Draws a cube using one texture for all sides
-     * @param minX the lower X boundary
-     * @param minY the lower Y boundary
-     * @param minZ the lower Z boundary
-     * @param maxX the upper X boundary
-     * @param maxY the upper Y boundary
-     * @param maxZ the upper Z boundary
+     * @param x1 the lower X boundary
+     * @param y1 the lower Y boundary
+     * @param z1 the lower Z boundary
+     * @param x2 the upper X boundary
+     * @param y2 the upper Y boundary
+     * @param z2 the upper Z boundary
      * @param texture the texture used to render the cube
      */
-    public static void drawCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int texture){
-        drawCube(minX, minY, minZ, maxX, maxY, maxZ, texture, (t) -> {
+    public static void drawCube(double x1, double y1, double z1, double x2, double y2, double z2, int texture){
+        drawCube(x1, y1, z1, x2, y2, z2, texture, (t) -> {
             return true;
         });
     }
     /**
      * Draws a cube using one texture for all sides
-     * @param minX the lower X boundary
-     * @param minY the lower Y boundary
-     * @param minZ the lower Z boundary
-     * @param maxX the upper X boundary
-     * @param maxY the upper Y boundary
-     * @param maxZ the upper Z boundary
+     * @param x1 the lower X boundary
+     * @param y1 the lower Y boundary
+     * @param z1 the lower Z boundary
+     * @param x2 the upper X boundary
+     * @param y2 the upper Y boundary
+     * @param z2 the upper Z boundary
      * @param texture the texture used to render the cube
-     * @param faceRenderFunc A function that defines if each face should render (Given XYZ offset)
+     * @param faceRenderFunc A function that defines if each face should render (Given a Direction)
      */
-    public static void drawCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int texture, Function<Direction, Boolean> faceRenderFunc){
+    public static void drawCube(double x1, double y1, double z1, double x2, double y2, double z2, int texture, Function<Direction, Boolean> faceRenderFunc){
         boolean px = faceRenderFunc.apply(Direction.PX);
         boolean py = faceRenderFunc.apply(Direction.PY);
         boolean pz = faceRenderFunc.apply(Direction.PZ);
@@ -485,89 +485,115 @@ public class VRCore{
         //xy +z
         if(pz){
             if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(minX, minY, maxZ);
+            GL11.glVertex3d(x1, y1, z2);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(maxX, minY, maxZ);
+            GL11.glVertex3d(x2, y1, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(maxX, maxY, maxZ);
+            GL11.glVertex3d(x2, y2, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(minX, maxY, maxZ);
+            GL11.glVertex3d(x1, y2, z2);
         }
         //xy -z
         if(nz){
             if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(minX, minY, minZ);
+            GL11.glVertex3d(x1, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(minX, maxY, minZ);
+            GL11.glVertex3d(x1, y2, z1);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(maxX, maxY, minZ);
+            GL11.glVertex3d(x2, y2, z1);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(maxX, minY, minZ);
+            GL11.glVertex3d(x2, y1, z1);
         }
         //xz +y
         if(py){
             if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(minX, maxY, minZ);
+            GL11.glVertex3d(x1, y2, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(minX, maxY, maxZ);
+            GL11.glVertex3d(x1, y2, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(maxX, maxY, maxZ);
+            GL11.glVertex3d(x2, y2, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(maxX, maxY, minZ);
+            GL11.glVertex3d(x2, y2, z1);
         }
         //xz -y
         if(ny){
             if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(minX, minY, minZ);
+            GL11.glVertex3d(x1, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(maxX, minY, minZ);
+            GL11.glVertex3d(x2, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(maxX, minY, maxZ);
+            GL11.glVertex3d(x2, y1, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(minX, minY, maxZ);
+            GL11.glVertex3d(x1, y1, z2);
         }
         //yz +x
         if(px){
             if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(maxX, minY, minZ);
+            GL11.glVertex3d(x2, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(maxX, maxY, minZ);
+            GL11.glVertex3d(x2, y2, z1);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(maxX, maxY, maxZ);
+            GL11.glVertex3d(x2, y2, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(maxX, minY, maxZ);
+            GL11.glVertex3d(x2, y1, z2);
         }
         //yz -x
         if(nx){
             if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(minX, minY, minZ);
+            GL11.glVertex3d(x1, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(minX, minY, maxZ);
+            GL11.glVertex3d(x1, y1, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(minX, maxY, maxZ);
+            GL11.glVertex3d(x1, y2, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(minX, maxY, minZ);
+            GL11.glVertex3d(x1, y2, z1);
         }
         GL11.glEnd();
     }
+    /**
+     * Draws a solid-colored cube outline
+     * @param x1 the lower X boundary
+     * @param y1 the lower Y boundary
+     * @param z1 the lower Z boundary
+     * @param x2 the upper X boundary
+     * @param y2 the upper Y boundary
+     * @param z2 the upper Z boundary
+     * @param thickness the thickness of the outline
+     */
     public static void drawCubeOutline(double x1, double y1, double z1, double x2, double y2, double z2, double thickness){
+        drawCubeOutline(x1, y1, z1, x2, y2, z2, thickness, (t) -> {
+            return true;
+        });
+    }
+    /**
+     * Draws a solid-colored cube outline
+     * @param x1 the lower X boundary
+     * @param y1 the lower Y boundary
+     * @param z1 the lower Z boundary
+     * @param x2 the upper X boundary
+     * @param y2 the upper Y boundary
+     * @param z2 the upper Z boundary
+     * @param thickness the thickness of the outline
+     * @param edgeRenderFunc A function that defines if each edge should render (Given 2 Directions)
+     */
+    public static void drawCubeOutline(double x1, double y1, double z1, double x2, double y2, double z2, double thickness, Function<Direction[], Boolean> edgeRenderFunc){
         //111 to XYZ
-        drawCube(x1, y1, z1, x2, y1+thickness, z1+thickness, 0);
-        drawCube(x1, y1, z1, x1+thickness, y2, z1+thickness, 0);
-        drawCube(x1, y1, z1, x1+thickness, y1+thickness, z2, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NY,Direction.NZ}))drawCube(x1, y1, z1, x2, y1+thickness, z1+thickness, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NX,Direction.NZ}))drawCube(x1, y1, z1, x1+thickness, y2, z1+thickness, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NX,Direction.NY}))drawCube(x1, y1, z1, x1+thickness, y1+thickness, z2, 0);
         //X2 to YZ
-        drawCube(x2-thickness, y1, z1, x2, y2, z1+thickness, 0);
-        drawCube(x2-thickness, y1, z1, x2, y1+thickness, z2, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.NZ}))drawCube(x2-thickness, y1, z1, x2, y2, z1+thickness, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.NY}))drawCube(x2-thickness, y1, z1, x2, y1+thickness, z2, 0);
         //Y2 to XZ
-        drawCube(x1, y2-thickness, z1, x2, y2, z1+thickness, 0);
-        drawCube(x1, y2-thickness, z1, x1+thickness, y2, z2, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.NZ}))drawCube(x1, y2-thickness, z1, x2, y2, z1+thickness, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.NX}))drawCube(x1, y2-thickness, z1, x1+thickness, y2, z2, 0);
         //Z2 to XY
-        drawCube(x1, y1, z2-thickness, x2, y1+thickness, z2, 0);
-        drawCube(x1, y1, z2-thickness, x1+thickness, y2, z2, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PZ,Direction.NY}))drawCube(x1, y1, z2-thickness, x2, y1+thickness, z2, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PZ,Direction.NX}))drawCube(x1, y1, z2-thickness, x1+thickness, y2, z2, 0);
         //XYZ to 222
-        drawCube(x1, y2-thickness, z2-thickness, x2, y2, z2, 0);
-        drawCube(x2-thickness, y1, z2-thickness, x2, y2, z2, 0);
-        drawCube(x2-thickness, y2-thickness, z1, x2, y2, z2, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.PZ}))drawCube(x1, y2-thickness, z2-thickness, x2, y2, z2, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.PZ}))drawCube(x2-thickness, y1, z2-thickness, x2, y2, z2, 0);
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.PY}))drawCube(x2-thickness, y2-thickness, z1, x2, y2, z2, 0);
     }
     public static double[] rotatePoint(double pointX, double pointY, double degrees, double originX, double originY){
         double rX = pointX-originX, rY = pointY-originY;//Find relative coordinates; easier to rotate around the origin (0, 0) than any other point.
