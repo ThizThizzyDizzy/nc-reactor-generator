@@ -37,9 +37,10 @@ import static planner.vr.VRCore.convert;
 import planner.vr.VRGUI;
 import planner.vr.VRMenu;
 import planner.vr.menu.component.VRMenuComponentButton;
+import planner.vr.menu.component.VRMenuComponentToolPanel;
 public class VRMenuEdit extends VRMenu implements Editor{
-    public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.5, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
-    private final HashMap<Integer, ArrayList<EditorTool>> editorTools = new HashMap<>();
+    public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
+    public final HashMap<Integer, ArrayList<EditorTool>> editorTools = new HashMap<>();
     private final Multiblock multiblock;
     public HashMap<Integer, ArrayList<ClipboardEntry>> clipboard = new HashMap<>();
     public final HashMap<Integer, ArrayList<int[]>> selection = new HashMap<>();
@@ -48,6 +49,8 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private HashMap<Integer, EditorTool> paste = new HashMap<>();
     private HashMap<Integer, Integer> selectedTool = new HashMap<>();
     private HashMap<Integer, Integer> selectedBlock = new HashMap<>();
+    private VRMenuComponentToolPanel leftToolPanel  = add(new VRMenuComponentToolPanel(this, -.625, 1, -.9, .5, .5, .1, 0, 0, 0));
+    private VRMenuComponentToolPanel rightToolPanel  = add(new VRMenuComponentToolPanel(this, .125, 1, -.9, .5, .5, .1, 0, 0, 0));
     public VRMenuComponentEditorGrid grid;
     private boolean closing = false;//used for the closing menu animation
     private long lastTick = -1;
@@ -98,7 +101,8 @@ public class VRMenuEdit extends VRMenu implements Editor{
                 GL11.glMultMatrixf(matrix.get(new float[16]));
                 if(getSelectedBlock(i)!=null){
                     Core.applyWhite();
-                    VRCore.drawCube(-.025, -.025, -.025, .025, .025, .025, Core.getTexture(getSelectedBlock(i).getTexture()));
+                    double radius = grid.blockSize/4;
+                    VRCore.drawCube(-radius, -radius, -radius, radius, radius, radius, Core.getTexture(getSelectedBlock(i).getTexture()));
                 }
                 GL11.glPopMatrix();
             }
@@ -123,7 +127,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
         }
         return selection.get(id);
     }
-    private ArrayList<EditorTool> getTools(int id){
+    public ArrayList<EditorTool> getTools(int id){
         if(!editorTools.containsKey(id)){
             createTools(id);
         }
@@ -137,13 +141,13 @@ public class VRMenuEdit extends VRMenu implements Editor{
         tools.add(new LineTool(this, id));
         tools.add(new RectangleTool(this, id));
         selectedTool.put(id, 2);//pencil
-        selectedBlock.put(id, 2);//conductor for overhaul SFR
+        selectedBlock.put(id, 0);
         editorTools.put(id, tools);
         selection.put(id, new ArrayList<>());
         copy.put(id, new CopyTool(this, id));
         cut.put(id, new CutTool(this, id));
         paste.put(id, new PasteTool(this, id));
-        //TODO VR: add tool components
+        refreshToolPanels();
     }
     @Override
     public void addSelection(int id, ArrayList<int[]> sel){
@@ -431,20 +435,24 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public EditorTool getSelectedTool(int id){
         EditorTool tool = getTools(id).get(selectedTool.get(id));
         if(!(tool instanceof CutTool)){//selecting a non-copy tool, remove the cut tool!
-            getTools(id).remove(cut.get(id));
-            //TODO VR: remove component
+            if(getTools(id).remove(cut.get(id)))refreshToolPanels();
         }
         if(!(tool instanceof CopyTool)){//selecting a non-copy tool, remove the copy tool!
-            getTools(id).remove(copy.get(id));
-            //TODO VR: remove component
+            if(getTools(id).remove(copy.get(id)))refreshToolPanels();
         }
         if(!(tool instanceof PasteTool)){//selecting a non-paste tool, remove the paste tool!
-            getTools(id).remove(paste.get(id));
-            //TODO VR: remove component
+            if(getTools(id).remove(paste.get(id)))refreshToolPanels();
         }
         return tool;
     }
-    public int getCursorCount(){
-        return editorTools.size();
+    private void refreshToolPanels(){
+        leftToolPanel.activeTool = -2;
+        rightToolPanel.activeTool = -2;
+    }
+    public void setSelectedTool(EditorTool tool){
+        selectedTool.put(tool.id, getTools(tool.id).indexOf(tool));
+    }
+    public void setSelectedBlock(int device, int block){
+        selectedBlock.put(device, block);
     }
 }

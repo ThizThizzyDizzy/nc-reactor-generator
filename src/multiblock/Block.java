@@ -81,7 +81,7 @@ public abstract class Block extends MultiblockBit{
         }
         if(renderOverlay)renderOverlay(x,y,width,height, multiblock);
     }
-    public void render(double x, double y, double z, double width, double height, double depth, boolean renderOverlay, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+    public void render(double x, double y, double z, double width, double height, double depth, boolean renderOverlay, float alpha, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(getTexture()==null){
             Core.applyColor(Core.theme.getRGBA(1, 1, 0, 1));
             VRCore.drawCube(x, y, z, x+width, y+height, z+depth, 0, faceRenderFunc);

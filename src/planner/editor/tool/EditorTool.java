@@ -1,5 +1,6 @@
 package planner.editor.tool;
 import java.util.ArrayList;
+import org.lwjgl.opengl.GL11;
 import planner.editor.Editor;
 public abstract class EditorTool{
     public final Editor editor;
@@ -9,6 +10,13 @@ public abstract class EditorTool{
         this.id = id;
     }
     public abstract void render(double x, double y, double width, double height);
+    public void render(int x, int y, int z, double width, double height, double depth){
+        GL11.glPushMatrix();
+        GL11.glTranslated(x, y+height, z+depth+.001);//1mm
+        GL11.glScaled(1, -1, 1);//flip Y
+        render(0, 0, width, height);//draw 2D
+        GL11.glPopMatrix();
+    }//TODO VR: make this abstract fancy tool rendering
     public abstract void mouseReset(int button);
     public abstract void mousePressed(Object obj, int x, int y, int z, int button);
     public abstract void mouseReleased(Object obj, int x, int y, int z, int button);

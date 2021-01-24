@@ -6,6 +6,7 @@ import java.util.function.Function;
 import multiblock.Direction;
 import org.joml.Matrix4f;
 import org.joml.Matrix4x3f;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.HmdMatrix34;
@@ -549,6 +550,25 @@ public class VRCore{
         }
         GL11.glEnd();
     }
+    public static void drawCubeOutline(double x1, double y1, double z1, double x2, double y2, double z2, double thickness){
+        //111 to XYZ
+        drawCube(x1, y1, z1, x2, y1+thickness, z1+thickness, 0);
+        drawCube(x1, y1, z1, x1+thickness, y2, z1+thickness, 0);
+        drawCube(x1, y1, z1, x1+thickness, y1+thickness, z2, 0);
+        //X2 to YZ
+        drawCube(x2-thickness, y1, z1, x2, y2, z1+thickness, 0);
+        drawCube(x2-thickness, y1, z1, x2, y1+thickness, z2, 0);
+        //Y2 to XZ
+        drawCube(x1, y2-thickness, z1, x2, y2, z1+thickness, 0);
+        drawCube(x1, y2-thickness, z1, x1+thickness, y2, z2, 0);
+        //Z2 to XY
+        drawCube(x1, y1, z2-thickness, x2, y1+thickness, z2, 0);
+        drawCube(x1, y1, z2-thickness, x1+thickness, y2, z2, 0);
+        //XYZ to 222
+        drawCube(x1, y2-thickness, z2-thickness, x2, y2, z2, 0);
+        drawCube(x2-thickness, y1, z2-thickness, x2, y2, z2, 0);
+        drawCube(x2-thickness, y2-thickness, z1, x2, y2, z2, 0);
+    }
     public static double[] rotatePoint(double pointX, double pointY, double degrees, double originX, double originY){
         double rX = pointX-originX, rY = pointY-originY;//Find relative coordinates; easier to rotate around the origin (0, 0) than any other point.
         double rad = degrees*(Math.PI/180);//Angle in radians
@@ -600,5 +620,8 @@ public class VRCore{
     public static boolean isPointWithinBox(double x, double y, double z, double x0, double y0, double z0, double width, double height, double depth, double xRot, double yRot, double zRot){
         Vector3f p = convertPointInverted(x, y, z, x0, y0, z0, xRot, yRot, zRot);
         return p.x>0&&p.y>0&&p.z>0&&p.x<width&&p.y<height&&p.z<depth;
+    }
+    public static double distance(Vector3f v1, Vector3d v2){//I know one's float and one's double... don't worry about it
+        return Math.sqrt(Math.pow(v1.x-v2.x, 2)+Math.pow(v1.y-v2.y, 2)+Math.pow(v1.z-v2.z, 2));
     }
 }

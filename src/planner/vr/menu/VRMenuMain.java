@@ -10,7 +10,7 @@ import planner.vr.VRMenu;
 import planner.vr.menu.component.VRMenuComponentButton;
 import planner.vr.menu.component.VRMenuComponentMultiblock;
 public class VRMenuMain extends VRMenu{
-    public VRMenuComponentButton exit = add(new VRMenuComponentButton(-.25, 1.5, -1, .5, .125, .1, 0, 0, 0, "Exit VR", true, false));
+    public VRMenuComponentButton exit = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Exit VR", true, false));
     private ArrayList<VRMenuComponentMultiblock> multiblocks = new ArrayList<>();
     private ArrayList<VRMenuComponentButton> multiblockButtons = new ArrayList<>();
     private ArrayList<Multiblock> toAdd = new ArrayList<>();

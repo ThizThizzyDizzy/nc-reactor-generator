@@ -32,7 +32,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     private float resonatingAlpha = 0;
     private long lastTick = -1;
     private final HashMap<Integer, int[]> deviceover = new HashMap<>();
-    private final double blockSize;
+    public final double blockSize;
     public VRMenuComponentEditorGrid(double x, double y, double z, double size, VRMenuEdit editor, Multiblock multiblock){
         super(x, y, z, 0, 0, 0, 0, 0, 0);
         blockSize = size/Math.max(multiblock.getX(), Math.max(multiblock.getY(), multiblock.getZ()));
@@ -70,7 +70,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
         synchronized(deviceover){
             Core.applyColor(Core.theme.getEditorListBorderColor());
-            drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,width+blockSize/32,height+blockSize/32,depth+blockSize/32,blockSize/24);
+            VRCore.drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,width+blockSize/32,height+blockSize/32,depth+blockSize/32,blockSize/24);
             for(int id : deviceover.keySet()){
                 int[] mouseover = deviceover.get(id);
                 if(!isDeviceOver.contains(id))mouseover = null;
@@ -118,7 +118,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     double Z = z*blockSize;
                     double border = blockSize/16;
                     if(block!=null){
-                        block.render(X, Y, Z, blockSize, blockSize, blockSize, true, multiblock, (t) -> {
+                        block.render(X, Y, Z, blockSize, blockSize, blockSize, true, 1, multiblock, (t) -> {
                             Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                             return b==null||b.isCasing();
                         });
@@ -153,11 +153,21 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                             return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA;
                         });
                     }
-                    //TODO VR: draw quick-replace ghost blocks
+                    for(int i : editor.editorTools.keySet()){
+                        if(editor.isControlPressed(i)){
+                            if(block==null||(editor.isShiftPressed(i)&&block.canBeQuickReplaced())){
+                                if(multiblock.isValid(editor.getSelectedBlock(i), x, y, z)){
+                                    editor.getSelectedBlock(i).render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, null, (t) -> {
+                                        return true;
+                                    });
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        for(int i = 0; i<editor.getCursorCount(); i++){
+        for(int i : editor.editorTools.keySet()){
             editor.getSelectedTool(i).drawVRGhosts(0, 0, 0, width, height, depth, blockSize, (editor.getSelectedBlock(i)==null?0:Core.getTexture(editor.getSelectedBlock(i).getTexture())));
         }
         synchronized(deviceover){
@@ -170,7 +180,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     double Z = mouseover[2]*blockSize;
                     double border = blockSize/16;
                     Core.applyColor(Core.theme.getEditorListBorderColor());
-                    drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
+                    VRCore.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
                 }
             }
         }
@@ -208,6 +218,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         int mButton = -1;
         if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger)mButton = 0;
         if(button==VR.EVRButtonId_k_EButton_SteamVR_Touchpad)mButton = 1;
+        if(mButton==-1)return;
         int[] mouseover;
         synchronized(deviceover){
             if(!deviceover.containsKey(device))return;
@@ -222,7 +233,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 if(b!=null){
                     int index = Core.configuration.overhaul.fissionSFR.allSources.indexOf(b.source);
                     index--;
-                    if(index>=Core.configuration.overhaul.fissionSFR.allSources.size())index = 0;
+                    if(index>=Core.configuration.overhaul.fissionSFR.allSources.size())index = 0;//that's impossible, right?
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.allSources.size()-1;
                     multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.allSources.get(index)), true);
                 }
@@ -271,24 +282,5 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     }
     public boolean isSelected(int id, int x, int y, int z){
         return editor.isSelected(id, x, y, z);
-    }
-    private void drawCubeOutline(double x1, double y1, double z1, double x2, double y2, double z2, double thickness){
-        //111 to XYZ
-        VRCore.drawCube(x1, y1, z1, x2, y1+thickness, z1+thickness, 0);
-        VRCore.drawCube(x1, y1, z1, x1+thickness, y2, z1+thickness, 0);
-        VRCore.drawCube(x1, y1, z1, x1+thickness, y1+thickness, z2, 0);
-        //X2 to YZ
-        VRCore.drawCube(x2-thickness, y1, z1, x2, y2, z1+thickness, 0);
-        VRCore.drawCube(x2-thickness, y1, z1, x2, y1+thickness, z2, 0);
-        //Y2 to XZ
-        VRCore.drawCube(x1, y2-thickness, z1, x2, y2, z1+thickness, 0);
-        VRCore.drawCube(x1, y2-thickness, z1, x1+thickness, y2, z2, 0);
-        //Z2 to XY
-        VRCore.drawCube(x1, y1, z2-thickness, x2, y1+thickness, z2, 0);
-        VRCore.drawCube(x1, y1, z2-thickness, x1+thickness, y2, z2, 0);
-        //XYZ to 222
-        VRCore.drawCube(x1, y2-thickness, z2-thickness, x2, y2, z2, 0);
-        VRCore.drawCube(x2-thickness, y1, z2-thickness, x2, y2, z2, 0);
-        VRCore.drawCube(x2-thickness, y2-thickness, z1, x2, y2, z2, 0);
     }
 }
