@@ -42,6 +42,8 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void mouseReset(int button){
+        if(button==0&&leftDragStart==null)return;
+        if(button==1&&rightDragStart==null)return;
         mouseReleased(null, 0, 0, 0, button);//allow you to release outside the editor grid and still place blocks
     }
     @Override

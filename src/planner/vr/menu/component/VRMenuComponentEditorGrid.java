@@ -110,16 +110,18 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
                     Block block = multiblock.getBlock(x, y, z);
+                    int xx = x;
+                    int yy = y;
+                    int zz = z;
                     double X = x*blockSize;
                     double Y = y*blockSize;
                     double Z = z*blockSize;
                     double border = blockSize/16;
                     if(block!=null){
-                        block.render(X, Y, Z, blockSize, blockSize, blockSize, true, multiblock);
-                    }
-                    if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
-                        Core.applyWhite();
-                        VRCore.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"));
+                        block.render(X, Y, Z, blockSize, blockSize, blockSize, true, multiblock, (t) -> {
+                            Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                            return b==null||b.isCasing();
+                        });
                     }
                     //TODO VR: draw selection box
                     //TODO VR: draw suggestions
@@ -130,6 +132,9 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
                     Block block = multiblock.getBlock(x, y, z);
+                    int xx = x;
+                    int yy = y;
+                    int zz = z;
                     double X = x*blockSize;
                     double Y = y*blockSize;
                     double Z = z*blockSize;
@@ -143,7 +148,10 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     }
                     if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
                         Core.applyWhite();
-                        VRCore.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"));
+                        VRCore.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"), (t) -> {
+                            Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                            return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA;
+                        });
                     }
                     //TODO VR: draw quick-replace ghost blocks
                 }
@@ -266,21 +274,21 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     }
     private void drawCubeOutline(double x1, double y1, double z1, double x2, double y2, double z2, double thickness){
         //111 to XYZ
-        VRCore.drawFlatCube(x1, y1, z1, x2, y1+thickness, z1+thickness);
-        VRCore.drawFlatCube(x1, y1, z1, x1+thickness, y2, z1+thickness);
-        VRCore.drawFlatCube(x1, y1, z1, x1+thickness, y1+thickness, z2);
+        VRCore.drawCube(x1, y1, z1, x2, y1+thickness, z1+thickness, 0);
+        VRCore.drawCube(x1, y1, z1, x1+thickness, y2, z1+thickness, 0);
+        VRCore.drawCube(x1, y1, z1, x1+thickness, y1+thickness, z2, 0);
         //X2 to YZ
-        VRCore.drawFlatCube(x2-thickness, y1, z1, x2, y2, z1+thickness);
-        VRCore.drawFlatCube(x2-thickness, y1, z1, x2, y1+thickness, z2);
+        VRCore.drawCube(x2-thickness, y1, z1, x2, y2, z1+thickness, 0);
+        VRCore.drawCube(x2-thickness, y1, z1, x2, y1+thickness, z2, 0);
         //Y2 to XZ
-        VRCore.drawFlatCube(x1, y2-thickness, z1, x2, y2, z1+thickness);
-        VRCore.drawFlatCube(x1, y2-thickness, z1, x1+thickness, y2, z2);
+        VRCore.drawCube(x1, y2-thickness, z1, x2, y2, z1+thickness, 0);
+        VRCore.drawCube(x1, y2-thickness, z1, x1+thickness, y2, z2, 0);
         //Z2 to XY
-        VRCore.drawFlatCube(x1, y1, z2-thickness, x2, y1+thickness, z2);
-        VRCore.drawFlatCube(x1, y1, z2-thickness, x1+thickness, y2, z2);
+        VRCore.drawCube(x1, y1, z2-thickness, x2, y1+thickness, z2, 0);
+        VRCore.drawCube(x1, y1, z2-thickness, x1+thickness, y2, z2, 0);
         //XYZ to 222
-        VRCore.drawFlatCube(x1, y2-thickness, z2-thickness, x2, y2, z2);
-        VRCore.drawFlatCube(x2-thickness, y1, z2-thickness, x2, y2, z2);
-        VRCore.drawFlatCube(x2-thickness, y2-thickness, z1, x2, y2, z2);
+        VRCore.drawCube(x1, y2-thickness, z2-thickness, x2, y2, z2, 0);
+        VRCore.drawCube(x2-thickness, y1, z2-thickness, x2, y2, z2, 0);
+        VRCore.drawCube(x2-thickness, y2-thickness, z1, x2, y2, z2, 0);
     }
 }

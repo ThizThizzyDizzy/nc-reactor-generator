@@ -2,6 +2,7 @@ package multiblock.overhaul.fissionmsr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.function.Function;
 import planner.Core;
 import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
 import multiblock.Direction;
@@ -509,12 +510,12 @@ public class Block extends multiblock.Block{
         }
     }
     @Override
-    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock){
+    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getRed());
+            drawOutline(x, y, z, width, height, depth, Core.theme.getRed(), faceRenderFunc);
         }
         if(isModeratorActive()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen());
+            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen(), faceRenderFunc);
         }
         boolean self = fuel!=null&&fuel.selfPriming;
         if(source!=null||self){
@@ -522,7 +523,7 @@ public class Block extends multiblock.Block{
             float r = self?0:Math.min(1, -2*fac+2);
             float g = self?0:Math.min(1, fac*2);
             float b = self?1:0;
-            drawCircle(x, y, z, width, height, depth, Core.theme.getRGBA(r, g, b, 1));
+            drawCircle(x, y, z, width, height, depth, Core.theme.getRGBA(r, g, b, 1), faceRenderFunc);
         }
         //TODO VR: draw cluster markings
     }

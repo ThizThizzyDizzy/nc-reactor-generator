@@ -1,5 +1,7 @@
 package multiblock.overhaul.turbine;
 import java.awt.image.BufferedImage;
+import java.util.function.Function;
+import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
@@ -114,12 +116,12 @@ public class Block extends multiblock.Block{
         }
     }
     @Override
-    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock){
+    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getRed());
+            drawOutline(x, y, z, width, height, depth, Core.theme.getRed(), faceRenderFunc);
         }
         if(isActive()&&!isBearing()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen());
+            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen(), faceRenderFunc);
         }
     }
     @Override

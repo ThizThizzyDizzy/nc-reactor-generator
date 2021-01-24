@@ -2,6 +2,7 @@ package multiblock;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Locale;
+import java.util.function.Function;
 import multiblock.configuration.Configuration;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -80,15 +81,15 @@ public abstract class Block extends MultiblockBit{
         }
         if(renderOverlay)renderOverlay(x,y,width,height, multiblock);
     }
-    public void render(double x, double y, double z, double width, double height, double depth, boolean renderOverlay, Multiblock multiblock){
+    public void render(double x, double y, double z, double width, double height, double depth, boolean renderOverlay, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(getTexture()==null){
             Core.applyColor(Core.theme.getRGBA(1, 1, 0, 1));
-            VRCore.drawFlatCube(x, y, z, x+width, y+height, z+depth);
+            VRCore.drawCube(x, y, z, x+width, y+height, z+depth, 0, faceRenderFunc);
         }else{
             Core.applyWhite();
-            VRCore.drawCube(x, y, z, x+width, y+height, z+depth, Core.getTexture(getTexture()));
+            VRCore.drawCube(x, y, z, x+width, y+height, z+depth, Core.getTexture(getTexture()), faceRenderFunc);
         }
-        if(renderOverlay)renderOverlay(x,y,z,width,height,depth,multiblock);
+        if(renderOverlay)renderOverlay(x,y,z,width,height,depth,multiblock,faceRenderFunc);
     }
     public void renderGrayscale(double x, double y, double width, double height, boolean renderOverlay, Multiblock multiblock){
         renderGrayscale(x, y, width, height, renderOverlay, 1, multiblock);
@@ -108,51 +109,62 @@ public abstract class Block extends MultiblockBit{
         if(renderOverlay)renderOverlay(x,y,width,height, multiblock);
     }
     public abstract void renderOverlay(double x, double y, double width, double height, Multiblock multiblock);
-    public abstract void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock);
+    public abstract void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc);
     public void drawCircle(double x, double y, double width, double height, Color color){
         Core.applyColor(color);
         Renderer2D.drawRect(x, y, x+width, y+height, Core.sourceCircle);
         Core.applyWhite();
     }
-    public void drawCircle(double x, double y, double z, double width, double height, double depth, Color color){
+    public void drawCircle(double x, double y, double z, double width, double height, double depth, Color color, Function<Direction, Boolean> faceRenderFunc){
+        boolean px = faceRenderFunc.apply(Direction.PX);
+        boolean py = faceRenderFunc.apply(Direction.PY);
+        boolean pz = faceRenderFunc.apply(Direction.PZ);
+        boolean nx = faceRenderFunc.apply(Direction.NX);
+        boolean ny = faceRenderFunc.apply(Direction.NY);
+        boolean nz = faceRenderFunc.apply(Direction.NZ);
+        if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
         Core.applyColor(color);
-        //+y
-        drawCircleBit(x,y,z,width,height,depth);
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(90, 1, 0, 0);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawCircleBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(90, -1, 0, 0);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawCircleBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(90, 0, 0, 1);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawCircleBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(90, 0, 0, -1);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawCircleBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(180, 0, 0, 1);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawCircleBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
+        if(py)drawCircleBit(x,y,z,width,height,depth);
+        if(pz){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(90, 1, 0, 0);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawCircleBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
+        if(nz){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(90, -1, 0, 0);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawCircleBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
+        if(nx){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(90, 0, 0, 1);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawCircleBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
+        if(px){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(90, 0, 0, -1);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawCircleBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
+        if(ny){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(180, 0, 0, 1);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawCircleBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
         Core.applyWhite();
     }
     private void drawCircleBit(double x, double y, double z, double width, double height, double depth){
@@ -198,55 +210,67 @@ public abstract class Block extends MultiblockBit{
         Renderer2D.drawRect(x, y, x+width, y+height, Core.outlineSquare);
         Core.applyWhite();
     }
-    public void drawOutline(double x, double y, double z, double width, double height, double depth, Color color){
+    public void drawOutline(double x, double y, double z, double width, double height, double depth, Color color, Function<Direction, Boolean> faceRenderFunc){
+        boolean px = faceRenderFunc.apply(Direction.PX);
+        boolean py = faceRenderFunc.apply(Direction.PY);
+        boolean pz = faceRenderFunc.apply(Direction.PZ);
+        boolean nx = faceRenderFunc.apply(Direction.NX);
+        boolean ny = faceRenderFunc.apply(Direction.NY);
+        boolean nz = faceRenderFunc.apply(Direction.NZ);
+        if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
         Core.applyColor(color);
-        //+y
-        drawOutlineBit(x,y,z,width,height,depth);
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(90, 1, 0, 0);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawOutlineBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(90, -1, 0, 0);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawOutlineBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(90, 0, 0, 1);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawOutlineBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(90, 0, 0, -1);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawOutlineBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
-        GL11.glRotated(180, 0, 0, 1);
-        GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-        drawOutlineBit(x,y,z,width,height,depth);
-        GL11.glPopMatrix();
+        if(py)drawOutlineBit(x,y,z,width,height,depth);
+        if(pz){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(90, 1, 0, 0);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawOutlineBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
+        if(nz){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(90, -1, 0, 0);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawOutlineBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
+        if(nx){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(90, 0, 0, 1);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawOutlineBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
+        if(px){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(90, 0, 0, -1);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawOutlineBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
+        if(ny){
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
+            GL11.glRotated(180, 0, 0, 1);
+            GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
+            drawOutlineBit(x,y,z,width,height,depth);
+            GL11.glPopMatrix();
+        }
         Core.applyWhite();
     }
     private void drawOutlineBit(double x, double y, double z, double width, double height, double depth){
         double w = width/32d;//pixel
         double h = height/32d;//pixel
         double d = depth/32d;//pixel
-        VRCore.drawFlatCube(x+w/2, y+height, z+d/2, x+width-w/2, y+height+h/2, z+d*3/2);//top
-        VRCore.drawFlatCube(x+w/2, y+height, z+width-d*3/2, x+width-w/2, y+height+h/2, z+width-d/2);//bottom
-        VRCore.drawFlatCube(x+w/2, y+height, z+d*3/2, x+w*3/2, y+height+h/2, z+width-d*3/2);//left
-        VRCore.drawFlatCube(x+width-w*3/2, y+height, z+d*3/2, x+width-w/2, y+height+h/2, z+width-d*3/2);//right
+        Function<Direction, Boolean> func = (Direction t) -> t!=Direction.NY;//don't render the bottom face; this is rendering on top
+        VRCore.drawCube(x+w/2, y+height, z+d/2, x+width-w/2, y+height+h/2, z+d*3/2, 0, func);//top
+        VRCore.drawCube(x+w/2, y+height, z+width-d*3/2, x+width-w/2, y+height+h/2, z+width-d/2, 0, func);//bottom
+        VRCore.drawCube(x+w/2, y+height, z+d*3/2, x+w*3/2, y+height+h/2, z+width-d*3/2, 0, func);//left
+        VRCore.drawCube(x+width-w*3/2, y+height, z+d*3/2, x+width-w/2, y+height+h/2, z+width-d*3/2, 0, func);//right
     }
     public Block copy(int x, int y, int z){
         Block b = newInstance(x, y, z);

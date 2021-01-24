@@ -1,6 +1,7 @@
 package multiblock.underhaul.fissionsfr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.function.Function;
 import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import multiblock.Direction;
@@ -169,12 +170,12 @@ public class Block extends multiblock.Block{
         }
     }
     @Override
-    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock){
+    public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getRed());
+            drawOutline(x, y, z, width, height, depth, Core.theme.getRed(), faceRenderFunc);
         }
         if(isActive()&&isModerator()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen());
+            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen(), faceRenderFunc);
         }
     }
     @Override

@@ -2,6 +2,8 @@ package planner.vr;
 import java.awt.Color;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.function.Function;
+import multiblock.Direction;
 import org.joml.Matrix4f;
 import org.joml.Matrix4x3f;
 import org.joml.Vector3f;
@@ -428,7 +430,7 @@ public class VRCore{
                 GL11.glMultMatrixf(matrix.get(new float[16]));
                 if(isController.size()>i&&isController.get(i)){
                     GL11.glColor4f(0, 1, 0, 1);
-                    drawFlatCube(-.01f, -.01f, -.01f, .01f, .01f, .01f);
+                    drawCube(-.01f, -.01f, -.01f, .01f, .01f, .01f, 0);
                 }else{
                     GL11.glColor4f(1, 0, 0, 1);
                     GL11.glBegin(GL11.GL_QUADS);
@@ -443,135 +445,108 @@ public class VRCore{
         }
 //</editor-fold>
     }
-    public static void drawFlatCube(float minX, float minY, float minZ, float maxX, float maxY, float maxZ){
-        ImageStash.instance.bindTexture(0);
-        GL11.glBegin(GL11.GL_QUADS);
-        //-Y
-        GL11.glVertex3f(minX, minY, minZ);
-        GL11.glVertex3f(maxX, minY, minZ);
-        GL11.glVertex3f(maxX, minY, maxZ);
-        GL11.glVertex3f(minX, minY, maxZ);
-        //-Z
-        GL11.glVertex3f(minX, minY, minZ);
-        GL11.glVertex3f(maxX, minY, minZ);
-        GL11.glVertex3f(maxX, maxY, minZ);
-        GL11.glVertex3f(minX, maxY, minZ);
-        //+X
-        GL11.glVertex3f(maxX, minY, minZ);
-        GL11.glVertex3f(maxX, minY, maxZ);
-        GL11.glVertex3f(maxX, maxY, maxZ);
-        GL11.glVertex3f(maxX, maxY, minZ);
-        //+Z
-        GL11.glVertex3f(maxX, minY, maxZ);
-        GL11.glVertex3f(minX, minY, maxZ);
-        GL11.glVertex3f(minX, maxY, maxZ);
-        GL11.glVertex3f(maxX, maxY, maxZ);
-        //-X
-        GL11.glVertex3f(minX, minY, maxZ);
-        GL11.glVertex3f(minX, minY, minZ);
-        GL11.glVertex3f(minX, maxY, minZ);
-        GL11.glVertex3f(minX, maxY, maxZ);
-        //+Y
-        GL11.glVertex3f(maxX, maxY, minZ);
-        GL11.glVertex3f(minX, maxY, minZ);
-        GL11.glVertex3f(minX, maxY, maxZ);
-        GL11.glVertex3f(maxX, maxY, maxZ);
-
-        GL11.glEnd();
-    }
-    public static void drawFlatCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ){
-        ImageStash.instance.bindTexture(0);
-        GL11.glBegin(GL11.GL_QUADS);
-        //-Y
-        GL11.glVertex3d(minX, minY, minZ);
-        GL11.glVertex3d(maxX, minY, minZ);
-        GL11.glVertex3d(maxX, minY, maxZ);
-        GL11.glVertex3d(minX, minY, maxZ);
-        //-Z
-        GL11.glVertex3d(minX, minY, minZ);
-        GL11.glVertex3d(maxX, minY, minZ);
-        GL11.glVertex3d(maxX, maxY, minZ);
-        GL11.glVertex3d(minX, maxY, minZ);
-        //+X
-        GL11.glVertex3d(maxX, minY, minZ);
-        GL11.glVertex3d(maxX, minY, maxZ);
-        GL11.glVertex3d(maxX, maxY, maxZ);
-        GL11.glVertex3d(maxX, maxY, minZ);
-        //+Z
-        GL11.glVertex3d(maxX, minY, maxZ);
-        GL11.glVertex3d(minX, minY, maxZ);
-        GL11.glVertex3d(minX, maxY, maxZ);
-        GL11.glVertex3d(maxX, maxY, maxZ);
-        //-X
-        GL11.glVertex3d(minX, minY, maxZ);
-        GL11.glVertex3d(minX, minY, minZ);
-        GL11.glVertex3d(minX, maxY, minZ);
-        GL11.glVertex3d(minX, maxY, maxZ);
-        //+Y
-        GL11.glVertex3d(maxX, maxY, minZ);
-        GL11.glVertex3d(minX, maxY, minZ);
-        GL11.glVertex3d(minX, maxY, maxZ);
-        GL11.glVertex3d(maxX, maxY, maxZ);
-
-        GL11.glEnd();
-    }
+    /**
+     * Draws a cube using one texture for all sides
+     * @param minX the lower X boundary
+     * @param minY the lower Y boundary
+     * @param minZ the lower Z boundary
+     * @param maxX the upper X boundary
+     * @param maxY the upper Y boundary
+     * @param maxZ the upper Z boundary
+     * @param texture the texture used to render the cube
+     */
     public static void drawCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int texture){
+        drawCube(minX, minY, minZ, maxX, maxY, maxZ, texture, (t) -> {
+            return true;
+        });
+    }
+    /**
+     * Draws a cube using one texture for all sides
+     * @param minX the lower X boundary
+     * @param minY the lower Y boundary
+     * @param minZ the lower Z boundary
+     * @param maxX the upper X boundary
+     * @param maxY the upper Y boundary
+     * @param maxZ the upper Z boundary
+     * @param texture the texture used to render the cube
+     * @param faceRenderFunc A function that defines if each face should render (Given XYZ offset)
+     */
+    public static void drawCube(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int texture, Function<Direction, Boolean> faceRenderFunc){
+        boolean px = faceRenderFunc.apply(Direction.PX);
+        boolean py = faceRenderFunc.apply(Direction.PY);
+        boolean pz = faceRenderFunc.apply(Direction.PZ);
+        boolean nx = faceRenderFunc.apply(Direction.NX);
+        boolean ny = faceRenderFunc.apply(Direction.NY);
+        boolean nz = faceRenderFunc.apply(Direction.NZ);
+        if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
         ImageStash.instance.bindTexture(texture);
         GL11.glBegin(GL11.GL_QUADS);
         //xy +z
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(minX, minY, maxZ);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(maxX, minY, maxZ);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(maxX, maxY, maxZ);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(minX, maxY, maxZ);
+        if(pz){
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(minX, minY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(maxX, minY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(maxX, maxY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(minX, maxY, maxZ);
+        }
         //xy -z
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(minX, minY, minZ);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(minX, maxY, minZ);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(maxX, maxY, minZ);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(maxX, minY, minZ);
+        if(nz){
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(minX, minY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(minX, maxY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(maxX, maxY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(maxX, minY, minZ);
+        }
         //xz +y
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(minX, maxY, minZ);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(minX, maxY, maxZ);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(maxX, maxY, maxZ);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(maxX, maxY, minZ);
+        if(py){
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(minX, maxY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(minX, maxY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(maxX, maxY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(maxX, maxY, minZ);
+        }
         //xz -y
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(minX, minY, minZ);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(maxX, minY, minZ);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(maxX, minY, maxZ);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(minX, minY, maxZ);
+        if(ny){
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(minX, minY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(maxX, minY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(maxX, minY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(minX, minY, maxZ);
+        }
         //yz +x
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(maxX, minY, minZ);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(maxX, maxY, minZ);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(maxX, maxY, maxZ);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(maxX, minY, maxZ);
+        if(px){
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(maxX, minY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(maxX, maxY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(maxX, maxY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(maxX, minY, maxZ);
+        }
         //yz -x
-        GL11.glTexCoord2d(0, 0);
-        GL11.glVertex3d(minX, minY, minZ);
-        GL11.glTexCoord2d(0, 1);
-        GL11.glVertex3d(minX, minY, maxZ);
-        GL11.glTexCoord2d(1, 1);
-        GL11.glVertex3d(minX, maxY, maxZ);
-        GL11.glTexCoord2d(1, 0);
-        GL11.glVertex3d(minX, maxY, minZ);
+        if(nx){
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
+            GL11.glVertex3d(minX, minY, minZ);
+            if(texture!=0)GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(minX, minY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 1);
+            GL11.glVertex3d(minX, maxY, maxZ);
+            if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(minX, maxY, minZ);
+        }
         GL11.glEnd();
     }
     public static double[] rotatePoint(double pointX, double pointY, double degrees, double originX, double originY){

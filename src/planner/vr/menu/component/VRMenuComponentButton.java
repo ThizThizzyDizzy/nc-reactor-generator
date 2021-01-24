@@ -48,7 +48,7 @@ public class VRMenuComponentButton extends VRMenuComponent{
         }
         Core.applyColor(col);
         ImageStash.instance.bindTexture(0);
-        VRCore.drawFlatCube(0, 0, -depth/2, width, height, depth/2);
+        VRCore.drawCube(0, 0, -depth/2, width, height, depth/2, 0);
         Core.applyColor(textColor.get());
         drawText();
     }
