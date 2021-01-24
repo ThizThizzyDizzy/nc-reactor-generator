@@ -88,7 +88,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 double border = blockSize/8;
                 if(block!=null){
                     block.render(X, Y, blockSize, blockSize, true, multiblock);
-                    if((multiblock instanceof OverhaulMSR&&((multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel())||(multiblock instanceof OverhaulSFR&&((multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel())){
+                    if((multiblock instanceof OverhaulMSR&&((multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel(0))||(multiblock instanceof OverhaulSFR&&((multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel(0))){
                         Core.applyColor(Core.theme.getSelectionColor(), resonatingAlpha);
                         Renderer2D.drawRect(X, Y, X+blockSize, Y+blockSize, 0);
                     }

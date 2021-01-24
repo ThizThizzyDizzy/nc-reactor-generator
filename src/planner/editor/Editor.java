@@ -53,4 +53,9 @@ public interface Editor{
     public boolean isShiftPressed(int id);
     public boolean isAltPressed(int id);
     public Color convertToolColor(Color color, int id);
+    public multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(int id);
+    public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(int id);
+    public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id);
+    public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id);
+    public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id);
 }

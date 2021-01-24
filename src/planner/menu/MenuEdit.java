@@ -517,61 +517,30 @@ public class MenuEdit extends Menu implements Editor{
         }
         return tool;
     }
-    public multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(){
+    @Override
+    public multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         return ((MenuComponentFusionBreedingBlanketRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
     }
-    public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(){
+    @Override
+    public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         return ((MenuComponentOverSFRFuel) overFuel.getSelectedComponent()).fuel;
     }
-    public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(){
+    @Override
+    public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         return ((MenuComponentSFRIrradiatorRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
     }
-    public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(){
+    @Override
+    public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         return ((MenuComponentOverMSRFuel) overFuel.getSelectedComponent()).fuel;
     }
-    public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(){
+    @Override
+    public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
-    }
-    @Deprecated //unused
-    public void setblock(int x, int y, int z, Block template){
-        if(hasSelection(0)&&!isSelected(0, x, y, z))return;
-        if(template==null){
-            if(Core.isControlPressed()){
-                if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).matches(getSelectedBlock(0)))return;
-            }
-            multiblock.action(new SetblockAction(x,y,z,null), true);
-            return;
-        }
-        if(Core.isControlPressed()){
-            if(multiblock.getBlock(x, y, z)!=null&&!Core.isShiftPressed())return;
-            if(multiblock.getBlock(x, y, z)!=null&&!multiblock.getBlock(x, y, z).canBeQuickReplaced())return;
-            if(multiblock.getBlock(x, y, z)==null||multiblock.getBlock(x, y, z)!=null&&Core.isShiftPressed()){
-                if(!multiblock.isValid(template, x, y, z))return;
-            }
-        }
-        Block blok = template.newInstance(x, y, z);
-        if(multiblock instanceof OverhaulSFR){
-            if(((multiblock.overhaul.fissionsfr.Block)blok).isFuelCell()){
-                ((multiblock.overhaul.fissionsfr.Block)blok).fuel = getSelectedOverSFRFuel();
-            }
-            if(((multiblock.overhaul.fissionsfr.Block)blok).isIrradiator()){
-                ((multiblock.overhaul.fissionsfr.Block)blok).irradiatorRecipe = getSelectedSFRIrradiatorRecipe();
-            }
-        }
-        if(multiblock instanceof OverhaulMSR){
-            if(((multiblock.overhaul.fissionmsr.Block)blok).isFuelVessel()){
-                ((multiblock.overhaul.fissionmsr.Block)blok).fuel = getSelectedOverMSRFuel();
-            }
-            if(((multiblock.overhaul.fissionmsr.Block)blok).isIrradiator()){
-                ((multiblock.overhaul.fissionmsr.Block)blok).irradiatorRecipe = getSelectedMSRIrradiatorRecipe();
-            }
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            if(((multiblock.overhaul.fusion.Block)blok).isBreedingBlanket()){
-                ((multiblock.overhaul.fusion.Block)blok).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe();
-            }
-        }
-        multiblock.action(new SetblockAction(x,y,z,blok), true);
     }
     @Override
     public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
@@ -692,23 +661,23 @@ public class MenuEdit extends Menu implements Editor{
         }
         if(set.block!=null&&multiblock instanceof OverhaulSFR){
             if(((multiblock.overhaul.fissionsfr.Block)set.block).isFuelCell()){
-                ((multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel();
+                ((multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel(id);
             }
             if(((multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
-                ((multiblock.overhaul.fissionsfr.Block)set.block).irradiatorRecipe = getSelectedSFRIrradiatorRecipe();
+                ((multiblock.overhaul.fissionsfr.Block)set.block).irradiatorRecipe = getSelectedSFRIrradiatorRecipe(id);
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulMSR){
             if(((multiblock.overhaul.fissionmsr.Block)set.block).isFuelVessel()){
-                ((multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel();
+                ((multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel(id);
             }
             if(((multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
-                ((multiblock.overhaul.fissionmsr.Block)set.block).irradiatorRecipe = getSelectedMSRIrradiatorRecipe();
+                ((multiblock.overhaul.fissionmsr.Block)set.block).irradiatorRecipe = getSelectedMSRIrradiatorRecipe(id);
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulFusionReactor){
             if(((multiblock.overhaul.fusion.Block)set.block).isBreedingBlanket()){
-                ((multiblock.overhaul.fusion.Block)set.block).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe();
+                ((multiblock.overhaul.fusion.Block)set.block).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe(id);
             }
         }
         multiblock.action(set, true);

@@ -166,11 +166,12 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     double Z = z*blockSize;
                     double border = blockSize/16;
                     if(block!=null){
-                        //TODO VR: draw same fuel markers
-//                            if((multiblock instanceof OverhaulMSR&&((multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel())||(multiblock instanceof OverhaulSFR&&((multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel())){
-//                                Core.applyColor(Core.theme.getSelectionColor(), resonatingAlpha);
-//                                Renderer2D.drawRect(X, Y, X+blockSize, Y+blockSize, 0);
-//                            }
+                        for(int id : editor.editorTools.keySet()){
+                            if((multiblock instanceof OverhaulMSR&&((multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel(id))||(multiblock instanceof OverhaulSFR&&((multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel(id))){
+                                Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), resonatingAlpha);
+                                VRCore.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0);
+                            }
+                        }
                     }
                     if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
                         Core.applyWhite();

@@ -14,6 +14,9 @@ import multiblock.action.PasteAction;
 import multiblock.action.SelectAction;
 import multiblock.action.SetSelectionAction;
 import multiblock.action.SetblocksAction;
+import multiblock.configuration.overhaul.fissionsfr.Fuel;
+import multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe;
+import multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
@@ -289,7 +292,27 @@ public class VRMenuEdit extends VRMenu implements Editor{
                 }
             }
         }
-        //TODO VR: set SFR&MSR Fuel&Irradiator recipes and fusion breeding blanket recipe
+        if(set.block!=null&&multiblock instanceof OverhaulSFR){
+            if(((multiblock.overhaul.fissionsfr.Block)set.block).isFuelCell()){
+                ((multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel(id);
+            }
+            if(((multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
+                ((multiblock.overhaul.fissionsfr.Block)set.block).irradiatorRecipe = getSelectedSFRIrradiatorRecipe(id);
+            }
+        }
+        if(set.block!=null&&multiblock instanceof OverhaulMSR){
+            if(((multiblock.overhaul.fissionmsr.Block)set.block).isFuelVessel()){
+                ((multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel(id);
+            }
+            if(((multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
+                ((multiblock.overhaul.fissionmsr.Block)set.block).irradiatorRecipe = getSelectedMSRIrradiatorRecipe(id);
+            }
+        }
+        if(set.block!=null&&multiblock instanceof OverhaulFusionReactor){
+            if(((multiblock.overhaul.fusion.Block)set.block).isBreedingBlanket()){
+                ((multiblock.overhaul.fusion.Block)set.block).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe(id);
+            }
+        }
         multiblock.action(set, true);
     }
     @Override
@@ -471,4 +494,24 @@ public class VRMenuEdit extends VRMenu implements Editor{
         else hsb[0]-=20/360f;//is this 0-1?
         return new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
     }//doesn't do alpha
+    @Override
+    public BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(int id){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    @Override
+    public Fuel getSelectedOverSFRFuel(int id){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    @Override
+    public IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    @Override
+    public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    @Override
+    public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
