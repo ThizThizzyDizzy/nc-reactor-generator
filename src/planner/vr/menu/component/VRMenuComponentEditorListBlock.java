@@ -37,7 +37,7 @@ public class VRMenuComponentEditorListBlock extends VRMenuComponent{
         super.keyEvent(device, button, pressed);
         if(pressed){
             if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-                editor.setSelectedBlock(id, blockID);
+                editor.selectedBlock.put(id, blockID);
             }
         }
     }

@@ -57,10 +57,12 @@ public abstract class VRMenuComponent extends VRMenu{
         GL11.glRotated(yRot, 0, 1, 0);
         GL11.glRotated(xRot, 1, 0, 0);
         GL11.glRotated(zRot, 0, 0, 1);
+        renderBackground();
         draw(tdpb);
         for(VRMenuComponent c : components){
             c.render(tdpb);
         }
+        renderForeground();
         GL11.glPopMatrix();
     }
     public void onDeviceMoved(int device, Matrix4f matrix){

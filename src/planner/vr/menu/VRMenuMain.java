@@ -24,8 +24,9 @@ public class VRMenuMain extends VRMenu{
             Multiblock m = Core.multiblockTypes.get(i);
             VRMenuComponentButton button = new VRMenuComponentButton(-.375/2, 1.25-.1*i, -.75, .375, .075, .05, 0, 0, 0, m.getDefinitionName(), true, false);
             button.addActionListener((e) -> {
-                Core.multiblocks.add(m.newInstance());
-                toAdd.add(m.newInstance());
+                Multiblock multi = m.newInstance();
+                Core.multiblocks.add(multi);
+                toAdd.add(multi);
             });
             multiblockButtons.add(button);
         }

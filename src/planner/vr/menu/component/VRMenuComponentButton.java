@@ -48,7 +48,7 @@ public class VRMenuComponentButton extends VRMenuComponent{
         }
         Core.applyColor(col);
         ImageStash.instance.bindTexture(0);
-        VRCore.drawCube(0, 0, -depth/2, width, height, depth/2, 0);
+        VRCore.drawCube(0, 0, 0, width, height, depth, 0);
         Core.applyColor(textColor.get());
         drawText();
     }
@@ -57,7 +57,7 @@ public class VRMenuComponentButton extends VRMenuComponent{
         double scale = Math.min(1, (width-textInset*2)/textLength);
         double textHeight = ((height-textInset*2)*scale)-.005;
         GL11.glPushMatrix();
-        GL11.glTranslated(0, height/2, depth/2+textOffset);
+        GL11.glTranslated(0, height/2, depth+textOffset);
         GL11.glScaled(1, -1, 1);
         Renderer2D.drawCenteredText(0, -textHeight/2, width, textHeight/2, text);
         GL11.glPopMatrix();

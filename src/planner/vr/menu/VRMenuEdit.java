@@ -41,6 +41,9 @@ import static planner.vr.VRCore.convert;
 import planner.vr.VRGUI;
 import planner.vr.VRMenu;
 import planner.vr.menu.component.VRMenuComponentButton;
+import planner.vr.menu.component.VRMenuComponentMultiblockOutputPanel;
+import planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;
+import planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import planner.vr.menu.component.VRMenuComponentToolPanel;
 public class VRMenuEdit extends VRMenu implements Editor{
     public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
@@ -52,9 +55,18 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private HashMap<Integer, EditorTool> cut = new HashMap<>();
     private HashMap<Integer, EditorTool> paste = new HashMap<>();
     private HashMap<Integer, Integer> selectedTool = new HashMap<>();
-    private HashMap<Integer, Integer> selectedBlock = new HashMap<>();
+    public HashMap<Integer, Integer> selectedBlock = new HashMap<>();
+    public HashMap<Integer, Integer> selectedFusionBreedingBlanketRecipe = new HashMap<>();
+    public HashMap<Integer, Integer> selectedOverSFRFuel = new HashMap<>();
+    public HashMap<Integer, Integer> selectedSFRIrradiatorRecipe = new HashMap<>();
+    public HashMap<Integer, Integer> selectedOverMSRFuel = new HashMap<>();
+    public HashMap<Integer, Integer> selectedMSRIrradiatorRecipe = new HashMap<>();
     private VRMenuComponentToolPanel leftToolPanel  = add(new VRMenuComponentToolPanel(this, -.625, 1, -.9, .5, .5, .1, 0, 0, 0));
     private VRMenuComponentToolPanel rightToolPanel  = add(new VRMenuComponentToolPanel(this, .125, 1, -.9, .5, .5, .1, 0, 0, 0));
+    private VRMenuComponentSpecialPanel leftSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -.9, .625, -.125, .5, 1, .1, 0, 90, 0));
+    private VRMenuComponentSpecialPanel rightSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -.9, .625, .625, .5, 1, .1, 0, 90, 0));
+    private VRMenuComponentMultiblockSettingsPanel multiblockSettingsPanel  = add(new VRMenuComponentMultiblockSettingsPanel(this, .9, .625, -.5, 1, 1, .1, 0, -90, 0));
+    private VRMenuComponentMultiblockOutputPanel multiblockOutputPanel  = add(new VRMenuComponentMultiblockOutputPanel(this, .5, .25, 1.2, 1, 1.5, .05, 0, 180, 0));
     public VRMenuComponentEditorGrid grid;
     private boolean closing = false;//used for the closing menu animation
     private long lastTick = -1;
@@ -147,6 +159,11 @@ public class VRMenuEdit extends VRMenu implements Editor{
         tools.add(new RectangleTool(this, id));
         selectedTool.put(id, 2);//pencil
         selectedBlock.put(id, 0);
+        selectedFusionBreedingBlanketRecipe.put(id, 0);
+        selectedOverSFRFuel.put(id, 0);
+        selectedSFRIrradiatorRecipe.put(id, 0);
+        selectedOverMSRFuel.put(id, 0);
+        selectedMSRIrradiatorRecipe.put(id, 0);
         editorTools.put(id, tools);
         selection.put(id, new ArrayList<>());
         copy.put(id, new CopyTool(this, id));
@@ -183,25 +200,15 @@ public class VRMenuEdit extends VRMenu implements Editor{
         return !selection.get(id).isEmpty();
     }
     @Override
-    public void setCoolantRecipe(int idx){
-        //TODO VR: set coolant recipe
-    }
+    public void setCoolantRecipe(int idx){}
     @Override
-    public void setUnderhaulFuel(int idx){
-        //TODO VR: set underhaul fuel
-    }
+    public void setUnderhaulFuel(int idx){}
     @Override
-    public void setFusionCoolantRecipe(int idx){
-        //TODO VR: set fusion coolant recipe
-    }
+    public void setFusionCoolantRecipe(int idx){}
     @Override
-    public void setFusionRecipe(int idx){
-        //TODO VR: set fusion recipe
-    }
+    public void setFusionRecipe(int idx){}
     @Override
-    public void setTurbineRecipe(int idx){
-        //TODO VR: set turbine recipe
-    }
+    public void setTurbineRecipe(int idx){}
     @Override
     public void clearSelection(int id){
         multiblock.action(new ClearSelectionAction(this, id), true);
@@ -479,12 +486,11 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private void refreshToolPanels(){
         leftToolPanel.activeTool = -2;
         rightToolPanel.activeTool = -2;
+        leftSpecialPanel.activeTool = -2;
+        rightSpecialPanel.activeTool = -2;
     }
     public void setSelectedTool(EditorTool tool){
         selectedTool.put(tool.id, getTools(tool.id).indexOf(tool));
-    }
-    public void setSelectedBlock(int device, int block){
-        selectedBlock.put(device, block);
     }
     @Override
     public Color convertToolColor(Color color, int id){
@@ -496,22 +502,22 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }//doesn't do alpha
     @Override
     public BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(int id){
-        throw new UnsupportedOperationException("Not supported yet.");
+        return multiblock.getConfiguration().overhaul.fusion.allBreedingBlanketRecipes.get(selectedFusionBreedingBlanketRecipe.get(id));
     }
     @Override
     public Fuel getSelectedOverSFRFuel(int id){
-        throw new UnsupportedOperationException("Not supported yet.");
+        return multiblock.getConfiguration().overhaul.fissionSFR.allFuels.get(selectedOverSFRFuel.get(id));
     }
     @Override
     public IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id){
-        throw new UnsupportedOperationException("Not supported yet.");
+        return multiblock.getConfiguration().overhaul.fissionSFR.allIrradiatorRecipes.get(selectedSFRIrradiatorRecipe.get(id));
     }
     @Override
     public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id){
-        throw new UnsupportedOperationException("Not supported yet.");
+        return multiblock.getConfiguration().overhaul.fissionMSR.allFuels.get(selectedOverMSRFuel.get(id));
     }
     @Override
     public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id){
-        throw new UnsupportedOperationException("Not supported yet.");
+        return multiblock.getConfiguration().overhaul.fissionMSR.allIrradiatorRecipes.get(selectedMSRIrradiatorRecipe.get(id));
     }
 }
