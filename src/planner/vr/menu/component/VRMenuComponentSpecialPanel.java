@@ -27,7 +27,7 @@ public class VRMenuComponentSpecialPanel extends VRMenuComponent{
             if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
                 Matrix4f matrix = new Matrix4f(VRCore.convert(pose.mDeviceToAbsoluteTracking()));
                 Vector3f translation = matrix.getTranslation(new Vector3f());
-                double distance = VRCore.distance(translation, new Vector3d(x+depth/2, y+height/2, z+width/2));
+                double distance = VRCore.distance(translation, new Vector3d(x-depth/2, y+height/2, z-width/2));
                 if(closest==-1||distance<closestDistance){
                     closest = i;
                     closestDistance = distance;

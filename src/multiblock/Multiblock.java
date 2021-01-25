@@ -20,6 +20,9 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.editor.module.Module;
 import planner.editor.suggestion.Suggestor;
 import planner.menu.MenuEdit;
+import planner.vr.VRGUI;
+import planner.vr.menu.VRMenuEdit;
+import planner.vr.menu.VRMenuResize;
 import simplelibrary.Queue;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
@@ -777,6 +780,10 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     @Deprecated
     public void openResizeMenu(GUI gui, MenuEdit editor){
         gui.open(new MenuResize(gui, editor, this));
+    }
+    @Deprecated
+    public void openVRResizeMenu(VRGUI gui, VRMenuEdit editor){
+        gui.open(new VRMenuResize(gui, editor, this));
     }
     public boolean areBlocksEqual(Multiblock other){
         if(getX()!=other.getX())return false;

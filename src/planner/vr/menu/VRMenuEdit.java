@@ -47,6 +47,7 @@ import planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import planner.vr.menu.component.VRMenuComponentToolPanel;
 public class VRMenuEdit extends VRMenu implements Editor{
     public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
+    public VRMenuComponentButton resize = add(new VRMenuComponentButton(1, 1.625, -.5, 1, .125, .1, 0, -90, 0, "Resize", true, false));
     public final HashMap<Integer, ArrayList<EditorTool>> editorTools = new HashMap<>();
     private final Multiblock multiblock;
     public HashMap<Integer, ArrayList<ClipboardEntry>> clipboard = new HashMap<>();
@@ -61,11 +62,11 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public HashMap<Integer, Integer> selectedSFRIrradiatorRecipe = new HashMap<>();
     public HashMap<Integer, Integer> selectedOverMSRFuel = new HashMap<>();
     public HashMap<Integer, Integer> selectedMSRIrradiatorRecipe = new HashMap<>();
-    private VRMenuComponentToolPanel leftToolPanel  = add(new VRMenuComponentToolPanel(this, -.625, 1, -.9, .5, .5, .1, 0, 0, 0));
-    private VRMenuComponentToolPanel rightToolPanel  = add(new VRMenuComponentToolPanel(this, .125, 1, -.9, .5, .5, .1, 0, 0, 0));
-    private VRMenuComponentSpecialPanel leftSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -.9, .625, -.125, .5, 1, .1, 0, 90, 0));
-    private VRMenuComponentSpecialPanel rightSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -.9, .625, .625, .5, 1, .1, 0, 90, 0));
-    private VRMenuComponentMultiblockSettingsPanel multiblockSettingsPanel  = add(new VRMenuComponentMultiblockSettingsPanel(this, .9, .625, -.5, 1, 1, .1, 0, -90, 0));
+    private VRMenuComponentToolPanel leftToolPanel  = add(new VRMenuComponentToolPanel(this, -.625, 1, -1, .5, .5, .1, 0, 0, 0));
+    private VRMenuComponentToolPanel rightToolPanel  = add(new VRMenuComponentToolPanel(this, .125, 1, -1, .5, .5, .1, 0, 0, 0));
+    private VRMenuComponentSpecialPanel leftSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -1, .625, -.125, .5, 1, .1, 0, 90, 0));
+    private VRMenuComponentSpecialPanel rightSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -1, .625, .625, .5, 1, .1, 0, 90, 0));
+    private VRMenuComponentMultiblockSettingsPanel multiblockSettingsPanel  = add(new VRMenuComponentMultiblockSettingsPanel(this, 1, .625, -.5, 1, 1, .1, 0, -90, 0));
     private VRMenuComponentMultiblockOutputPanel multiblockOutputPanel  = add(new VRMenuComponentMultiblockOutputPanel(this, .5, .25, 1.2, 1, 1.5, .05, 0, 180, 0));
     public VRMenuComponentEditorGrid grid;
     private boolean closing = false;//used for the closing menu animation
@@ -75,13 +76,16 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private static final int openDist = 100;//fly in from 100m away
     private static final float openSmooth = 5;//smooths out the incoming
     private final double openTargetZ;
-    public VRMenuEdit(VRGUI gui, VRMenu parent, Multiblock multiblock){
-        super(gui, parent);
+    public VRMenuEdit(VRGUI gui, Multiblock multiblock){
+        super(gui, null);
         this.multiblock = multiblock;
         grid = add(new VRMenuComponentEditorGrid(0, 1, 0, 1, this, multiblock));
         openTargetZ = grid.z;
         done.addActionListener((e) -> {
             closing = true;
+        });
+        resize.addActionListener((e) -> {
+            multiblock.openVRResizeMenu(gui, this);
         });
     }
     @Override
@@ -519,5 +523,9 @@ public class VRMenuEdit extends VRMenu implements Editor{
     @Override
     public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id){
         return multiblock.getConfiguration().overhaul.fissionMSR.allIrradiatorRecipes.get(selectedMSRIrradiatorRecipe.get(id));
+    }
+    public VRMenu alreadyOpen(){
+        openProgress = openTime;
+        return this;
     }
 }

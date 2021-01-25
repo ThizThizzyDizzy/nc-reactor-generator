@@ -45,7 +45,7 @@ public class VRMenuMain extends VRMenu{
         if(opening!=null){
             openProgress++;
             if(openProgress>=openTime){
-                gui.open(new VRMenuEdit(gui, parent, opening));
+                gui.open(new VRMenuEdit(gui, opening));
             }
         }
     }

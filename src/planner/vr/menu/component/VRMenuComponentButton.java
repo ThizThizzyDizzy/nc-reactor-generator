@@ -15,13 +15,13 @@ import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class VRMenuComponentButton extends VRMenuComponent{
     private String text;
-    private boolean enabled;
+    public boolean enabled;
     private boolean darker;
     private float textInset = .01f;//1cm
     private Supplier<Color> textColor = () -> {
         return Core.theme.getTextColor();
     };
-    private boolean isPressed;
+    public boolean isPressed;
     private final ArrayList<ActionListener> listeners = new ArrayList<>();
     /**
      * How far in front of the button the text should hover

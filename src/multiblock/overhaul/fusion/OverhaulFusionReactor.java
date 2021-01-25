@@ -19,7 +19,6 @@ import multiblock.ppe.SmartFillOverhaulFusion;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import planner.Core;
-import planner.editor.Editor;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
@@ -28,6 +27,9 @@ import planner.menu.component.generator.MenuComponentFusionToggleBreedingBlanket
 import planner.editor.module.Module;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
+import planner.vr.VRGUI;
+import planner.vr.menu.VRMenuEdit;
+import planner.vr.menu.VRMenuResizeFusion;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.opengl.gui.GUI;
@@ -801,6 +803,11 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     @Override
     public void openResizeMenu(GUI gui, MenuEdit editor){
         gui.open(new MenuResizeFusion(gui, editor, this));
+    }
+    @Deprecated
+    @Override
+    public void openVRResizeMenu(VRGUI gui, VRMenuEdit editor){
+        gui.open(new VRMenuResizeFusion(gui, editor, this));
     }
     public boolean isLocationValid(Block block, int x, int y, int z){
         switch(getLocationCategory(x, y, z)){

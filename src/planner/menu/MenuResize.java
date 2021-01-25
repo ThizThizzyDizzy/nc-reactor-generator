@@ -140,8 +140,8 @@ public class MenuResize extends Menu{
                 }
             }
         }
-        MenuComponentMinimalistButton layerBottom = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE+CELL_SIZE*(multiblock.getY()*(multiblock.getZ()+5)), CELL_SIZE*(multiblock.getX()+4), CELL_SIZE, "+", multiblock.getY()<multiblock.getMaxY(), true)).setTextColor(() -> {return Core.theme.getGreen();}).setTooltip("Insert a blank layer");
-        layerBottom.addActionListener((e) -> {
+        MenuComponentMinimalistButton layerTop = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE+CELL_SIZE*(multiblock.getY()*(multiblock.getZ()+5)), CELL_SIZE*(multiblock.getX()+4), CELL_SIZE, "+", multiblock.getY()<multiblock.getMaxY(), true)).setTextColor(() -> {return Core.theme.getGreen();}).setTooltip("Insert a blank layer");
+        layerTop.addActionListener((e) -> {
             expand(0,1,0);
         });
         multibwauk.add(new MenuComponent(0, 0, 0, 0){
