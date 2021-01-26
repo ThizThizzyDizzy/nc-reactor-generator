@@ -189,9 +189,9 @@ public class MenuMain extends Menu{
                 if(ncpf.configuration==null||ncpf.configuration.isPartial()){
                     if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
                         if(Main.hasAWT){
-                            javax.swing.JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
+                            javax.swing.JOptionPane.showMessageDialog(null, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
                         }else{
-                            Sys.error(ErrorLevel.minor, "Configuration mismatch detected!", null, ErrorCategory.other);
+                            Sys.error(ErrorLevel.minor, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
                         }
                         return;
                     }
@@ -412,9 +412,9 @@ public class MenuMain extends Menu{
         if(ncpf==null)return;
         if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
             if(Main.hasAWT){
-                javax.swing.JOptionPane.showMessageDialog(null, "Configuration mismatch detected!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
             }else{
-                Sys.error(ErrorLevel.minor, "Configuration mismatch detected!", null, ErrorCategory.other);
+                Sys.error(ErrorLevel.minor, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
             }
             return;
         }
