@@ -138,8 +138,8 @@ public class MenuComponentEditorGrid extends MenuComponent{
                         Renderer2D.drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
                     }
                 }
-                //TODO there's a MUCH better way do do this, but this'll do for now
-                for(Suggestion s : editor.suggestions){
+                //TODO there's a better way do do this, but this'll do for now
+                for(Suggestion s : editor.getSuggestions()){
                     if(s.affects(x, layer, z)){
                         if(s.selected&&s.result!=null){
                             Block b = s.result.getBlock(x, layer, z);

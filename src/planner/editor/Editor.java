@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.action.SetblocksAction;
+import planner.editor.suggestion.Suggestion;
 import planner.editor.tool.EditorTool;
 public interface Editor{
     public Multiblock getMultiblock();
@@ -58,4 +59,5 @@ public interface Editor{
     public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id);
     public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id);
     public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id);
+    public abstract ArrayList<Suggestion> getSuggestions();
 }

@@ -18,6 +18,7 @@ import org.joml.Vector3f;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 import planner.Core;
+import planner.editor.suggestion.Suggestion;
 import planner.editor.tool.EditorTool;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
@@ -83,30 +84,6 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             }
         }
         Core.applyColor(Core.theme.getTextColor());
-//        for(int y = 0; y<=multiblock.getY(); y++){
-//            for(int z = 0; z<=multiblock.getZ(); z++){
-//                double border = blockSize/64d;
-//                double Y = y*blockSize;
-//                double Z = z*blockSize;
-//                VRCore.drawFlatCube(0, Y-border, Z-border, width, Y+border, Z+border);
-//            }
-//        }
-//        for(int x = 0; x<=multiblock.getX(); x++){
-//            for(int z = 0; z<=multiblock.getZ(); z++){
-//                double border = blockSize/64d;
-//                double X = x*blockSize;
-//                double Z = z*blockSize;
-//                VRCore.drawFlatCube(X-border, 0, Z-border, X+border, height, Z+border);
-//            }
-//        }
-//        for(int x = 0; x<=multiblock.getX(); x++){
-//            for(int y = 0; y<=multiblock.getY(); y++){
-//                double border = blockSize/64d;
-//                double X = x*blockSize;
-//                double Y = y*blockSize;
-//                VRCore.drawFlatCube(X-border, Y-border, 0, X+border, Y+border, depth);
-//            }
-//        }
         for(int x = 0; x<multiblock.getX(); x++){//solid stuff
             for(int y = 0; y<multiblock.getY(); y++){
                 for(int z = 0; z<multiblock.getZ(); z++){
@@ -137,7 +114,34 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                             });
                         }
                     }
-                    //TODO VR: draw suggestions
+                    for(Suggestion s : editor.getSuggestions()){
+                        if(s.affects(x, y, z)){
+                            if(s.selected&&s.result!=null){
+                                Block b = s.result.getBlock(x, y, z);
+                                Core.applyWhite(resonatingAlpha+.5f);
+                                double brdr = blockSize/64;
+                                if(b==null){
+                                    VRCore.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, 0);
+                                }else{
+                                    b.render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
+                                        return true;
+                                    });
+                                }
+                            }
+                            Core.applyColor(Core.theme.getGreen());
+                            border = blockSize/40f;
+                            if(s.selected)border*=3;
+                            VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+                                boolean d1 = s.affects(xx+t[0].x, yy+t[0].y, zz+t[0].z);
+                                boolean d2 = s.affects(xx+t[1].x, yy+t[1].y, zz+t[1].z);
+                                boolean d3 = s.affects(xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                                if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                                if(!d1&&!d2)return true;//neither side
+                                return false;
+                            });
+                        }
+                    }
+                    //TODO There's a better way to do this, but this'll do for now
                 }
             }
         }

@@ -595,6 +595,134 @@ public class VRCore{
         if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.PZ}))drawCube(x2-thickness, y1, z2-thickness, x2, y2, z2, 0);
         if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.PY}))drawCube(x2-thickness, y2-thickness, z1, x2, y2, z2, 0);
     }
+    public static void drawPrimaryCubeOutline(double x1, double y1, double z1, double x2, double y2, double z2, double thickness, double thickness2, Function<Direction[], Boolean> edgeRenderFunc){
+        double xm = (x1+x2)/2;
+        double ym = (y1+y2)/2;
+        double zm = (z1+z2)/2;
+        //111 to XYZ
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NY,Direction.NZ})){
+            drawCube(x1, y1, z1, x1+thickness, y1+thickness, z1+thickness, 0);//first corner
+            drawCube(xm-thickness2, y1, z1, xm+thickness2, y1+thickness, z1+thickness, 0);//edge
+            drawCube(x2-thickness, y1, z1, x2, y1+thickness, z1+thickness, 0);//second corner
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NX,Direction.NZ})){
+            drawCube(x1, y1, z1, x1+thickness, y1+thickness, z1+thickness, 0);//first corner
+            drawCube(x1, ym-thickness2, z1, x1+thickness, ym+thickness2, z1+thickness, 0);//edge
+            drawCube(x1, y2-thickness, z1, x1+thickness, y2, z1+thickness, 0);//second corner
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NX,Direction.NY})){
+            drawCube(x1, y1, z1, x1+thickness, y1+thickness, z1+thickness, 0);//first corner
+            drawCube(x1, y1, zm-thickness2, x1+thickness, y1+thickness, zm+thickness2, 0);//edge
+            drawCube(x1, y1, z2-thickness, x1+thickness, y1+thickness, z2, 0);//second corner
+        }
+        //X2 to YZ
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.NZ})){
+            drawCube(x2-thickness, y1, z1, x2, y1+thickness, z1+thickness, 0);//first corner
+            drawCube(x2-thickness, ym-thickness2, z1, x2, ym+thickness2, z1+thickness, 0);//edge
+            drawCube(x2-thickness, y2-thickness, z1, x2, y2, z1+thickness, 0);//second corner
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.NY})){
+            drawCube(x2-thickness, y1, z1, x2, y1+thickness, z1+thickness, 0);//first corner
+            drawCube(x2-thickness, y1, zm-thickness2, x2, y1+thickness, zm+thickness2, 0);//edge
+            drawCube(x2-thickness, y1, z2-thickness, x2, y1+thickness, z2, 0);//second corner
+        }
+        //Y2 to XZ
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.NZ})){
+            drawCube(x1, y2-thickness, z1, x1+thickness, y2, z1+thickness, 0);//first corner
+            drawCube(xm-thickness2, y2-thickness, z1, xm+thickness2, y2, z1+thickness, 0);//edge
+            drawCube(x2-thickness, y2-thickness, z1, x2, y2, z1+thickness, 0);//second corner
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.NX})){
+            drawCube(x1, y2-thickness, z1, x1+thickness, y2, z1+thickness, 0);//first corner
+            drawCube(x1, y2-thickness, zm-thickness2, x1+thickness, y2, zm+thickness2, 0);//edge
+            drawCube(x1, y2-thickness, z2-thickness, x1+thickness, y2, z2, 0);//second corner
+        }
+        //Z2 to XY
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PZ,Direction.NY})){
+            drawCube(x1, y1, z2-thickness, x1+thickness, y1+thickness, z2, 0);//first corner
+            drawCube(xm-thickness2, y1, z2-thickness, xm+thickness2, y1+thickness, z2, 0);//edge
+            drawCube(x2-thickness, y1, z2-thickness, x2, y1+thickness, z2, 0);//second corner
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PZ,Direction.NX})){
+            drawCube(x1, y1, z2-thickness, x1+thickness, y1+thickness, z2, 0);//first corner
+            drawCube(x1, ym-thickness2, z2-thickness, x1+thickness, ym+thickness2, z2, 0);//edge
+            drawCube(x1, y2-thickness, z2-thickness, x1+thickness, y2, z2, 0);//second corner
+        }
+        //XYZ to 222
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.PZ})){
+            drawCube(x1, y2-thickness, z2-thickness, x1+thickness, y2, z2, 0);//first corner
+            drawCube(xm-thickness2, y2-thickness, z2-thickness, xm+thickness2, y2, z2, 0);//edge
+            drawCube(x2-thickness, y2-thickness, z2-thickness, x2, y2, z2, 0);//second corner
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.PZ})){
+            drawCube(x2-thickness, y1, z2-thickness, x2, y1+thickness, z2, 0);//first corner
+            drawCube(x2-thickness, ym-thickness2, z2-thickness, x2, ym+thickness2, z2, 0);//edge
+            drawCube(x2-thickness, y2-thickness, z2-thickness, x2, y2, z2, 0);//second corner
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.PY})){
+            drawCube(x2-thickness, y2-thickness, z1, x2, y2, z1+thickness, 0);//first corner
+            drawCube(x2-thickness, y2-thickness, zm-thickness2, x2, y2, zm+thickness2, 0);//edge
+            drawCube(x2-thickness, y2-thickness, z2-thickness, x2, y2, z2, 0);//second corner
+        }
+    }
+    public static void drawSecondaryCubeOutline(double x1, double y1, double z1, double x2, double y2, double z2, double thickness, double thickness2, Function<Direction[], Boolean> edgeRenderFunc){
+        double xm = (x1+x2)/2;
+        double ym = (y1+y2)/2;
+        double zm = (z1+z2)/2;
+        //111 to XYZ
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NY,Direction.NZ})){
+            drawCube(x1+thickness, y1, z1, xm-thickness2, y1+thickness, z1+thickness, 0);//first sub-edge
+            drawCube(xm+thickness2, y1, z1, x2-thickness, y1+thickness, z1+thickness, 0);//second sub-edge
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NX,Direction.NZ})){
+            drawCube(x1, y1+thickness, z1, x1+thickness, ym-thickness2, z1+thickness, 0);//first sub-edge
+            drawCube(x1, ym+thickness2, z1, x1+thickness, y2-thickness, z1+thickness, 0);//second sub-edge
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.NX,Direction.NY})){
+            drawCube(x1, y1, z1+thickness, x1+thickness, y1+thickness, zm-thickness2, 0);//first sub-edge
+            drawCube(x1, y1, zm+thickness2, x1+thickness, y1+thickness, z2-thickness, 0);//second sub-edge
+        }
+        //X2 to YZ
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.NZ})){
+            drawCube(x2-thickness, y1+thickness, z1, x2, ym-thickness2, z1+thickness, 0);//first sub-edge
+            drawCube(x2-thickness, ym+thickness2, z1, x2, y2-thickness, z1+thickness, 0);//second sub-edge
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.NY})){
+            drawCube(x2-thickness, y1, z1+thickness, x2, y1+thickness, zm-thickness2, 0);//first sub-edge
+            drawCube(x2-thickness, y1, zm+thickness2, x2, y1+thickness, z2-thickness, 0);//second sub-edge
+        }
+        //Y2 to XZ
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.NZ})){
+            drawCube(x1+thickness, y2-thickness, z1, xm-thickness2, y2, z1+thickness, 0);//first sub-edge
+            drawCube(xm+thickness2, y2-thickness, z1, x2-thickness, y2, z1+thickness, 0);//second sub-edge
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.NX})){
+            drawCube(x1, y2-thickness, z1+thickness, x1+thickness, y2, zm-thickness2, 0);//first sub-edge
+            drawCube(x1, y2-thickness, zm+thickness2, x1+thickness, y2, z2-thickness, 0);//second sub-edge
+        }
+        //Z2 to XY
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PZ,Direction.NY})){
+            drawCube(x1+thickness, y1, z2-thickness, xm-thickness2, y1+thickness, z2, 0);//first sub-edge
+            drawCube(xm+thickness2, y1, z2-thickness, x2-thickness, y1+thickness, z2, 0);//second sub-edge
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PZ,Direction.NX})){
+            drawCube(x1, y1+thickness, z2-thickness, x1+thickness, ym-thickness2, z2, 0);//first sub-edge
+            drawCube(x1, ym+thickness2, z2-thickness, x1+thickness, y2-thickness, z2, 0);//second sub-edge
+        }
+        //XYZ to 222
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PY,Direction.PZ})){
+            drawCube(x1+thickness, y2-thickness, z2-thickness, xm-thickness2, y2, z2, 0);//first sub-edge
+            drawCube(xm+thickness2, y2-thickness, z2-thickness, x2-thickness, y2, z2, 0);//second sub-edge
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.PZ})){
+            drawCube(x2-thickness, y1+thickness, z2-thickness, x2, ym-thickness2, z2, 0);//first sub-edge
+            drawCube(x2-thickness, ym+thickness2, z2-thickness, x2, y2-thickness, z2, 0);//second sub-edge
+        }
+        if(edgeRenderFunc.apply(new Direction[]{Direction.PX,Direction.PY})){
+            drawCube(x2-thickness, y2-thickness, z1+thickness, x2, y2, zm-thickness2, 0);//first sub-edge
+            drawCube(x2-thickness, y2-thickness, zm+thickness2, x2, y2, z2-thickness, 0);//second sub-edge
+        }
+    }
     public static double[] rotatePoint(double pointX, double pointY, double degrees, double originX, double originY){
         double rX = pointX-originX, rY = pointY-originY;//Find relative coordinates; easier to rotate around the origin (0, 0) than any other point.
         double rad = degrees*(Math.PI/180);//Angle in radians

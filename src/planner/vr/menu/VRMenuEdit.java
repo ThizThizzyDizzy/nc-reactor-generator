@@ -27,6 +27,8 @@ import org.lwjgl.openvr.VR;
 import planner.Core;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
+import planner.editor.suggestion.Suggestion;
+import planner.editor.suggestion.Suggestor;
 import planner.editor.tool.CopyTool;
 import planner.editor.tool.CutTool;
 import planner.editor.tool.EditorTool;
@@ -76,6 +78,9 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private static final int openDist = 100;//fly in from 100m away
     private static final float openSmooth = 5;//smooths out the incoming
     private final double openTargetZ;
+    private long lastChange = 0;
+    public ArrayList<Suggestion> suggestions = new ArrayList<>();
+    private ArrayList<Suggestor> suggestors = new ArrayList<>();
     public VRMenuEdit(VRGUI gui, Multiblock multiblock){
         super(gui, null);
         this.multiblock = multiblock;
@@ -97,6 +102,10 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public void tick(){
         super.tick();
         lastTick = System.nanoTime();
+        if(lastChange!=multiblock.lastChangeTime){
+            lastChange = multiblock.lastChangeTime;
+            recalculateSuggestions();
+        }
         if(closing){
             openProgress--;
             if(openProgress<=0)gui.open(new VRMenuMain(gui));
@@ -527,5 +536,25 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public VRMenu alreadyOpen(){
         openProgress = openTime;
         return this;
+    }
+    @Override
+    public ArrayList<Suggestion> getSuggestions(){
+        return suggestions;
+    }
+    private void recalculateSuggestions(){
+        suggestions.clear();
+        //TODO VR: clear suggestions list
+        for(Suggestor s : suggestors){
+            if(s.isActive()){
+                s.generateSuggestions(multiblock, suggestions);
+            }
+        }
+        for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
+            Suggestion s = it.next();
+            if(!s.test(multiblock))it.remove();
+        }
+        for(Suggestion s : suggestions){
+            //TODO VR: add to suggestions list
+        }
     }
 }

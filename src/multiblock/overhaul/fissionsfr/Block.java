@@ -9,6 +9,7 @@ import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.Source;
+import planner.vr.VRCore;
 import simplelibrary.Queue;
 import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
@@ -516,7 +517,46 @@ public class Block extends multiblock.Block{
             float b = self?1:0;
             drawCircle(x, y, z, width, height, depth, Core.theme.getRGBA(r, g, b, 1), faceRenderFunc);
         }
-        //TODO VR: draw cluster markings
+        OverhaulSFR.Cluster cluster = this.cluster;
+        if(cluster!=null){
+            double border = width/16;
+            Color primaryColor = null;
+            if(cluster.netHeat>0){
+                primaryColor = Color.red;
+            }
+            if(cluster.coolingPenaltyMult<1){
+                primaryColor = Color.blue;
+            }
+            if(primaryColor!=null){
+                Core.applyColor(Core.theme.getRGBA(primaryColor));
+                VRCore.drawPrimaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
+                    boolean d1 = cluster.contains(this.x+t[0].x, this.y+t[0].y, this.z+t[0].z);
+                    boolean d2 = cluster.contains(this.x+t[1].x, this.y+t[1].y, this.z+t[1].z);
+                    boolean d3 = cluster.contains(this.x+t[0].x+t[1].x, this.y+t[0].y+t[1].y, this.z+t[0].z+t[1].z);
+                    if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                    if(!d1&&!d2)return true;//neither side
+                    return false;
+                });
+            }
+            Color secondaryColor = null;
+            if(!cluster.isConnectedToWall){
+                secondaryColor = Color.white;
+            }
+            if(!cluster.isCreated()){
+                secondaryColor = Color.pink;
+            }
+            if(secondaryColor!=null){
+                Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor));
+                VRCore.drawSecondaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
+                    boolean d1 = cluster.contains(this.x+t[0].x, this.y+t[0].y, this.z+t[0].z);
+                    boolean d2 = cluster.contains(this.x+t[1].x, this.y+t[1].y, this.z+t[1].z);
+                    boolean d3 = cluster.contains(this.x+t[0].x+t[1].x, this.y+t[0].y+t[1].y, this.z+t[0].z+t[1].z);
+                    if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                    if(!d1&&!d2)return true;//neither side
+                    return false;
+                });
+            }
+        }
     }
     public boolean isInert(){
         if(isCasing())return true;

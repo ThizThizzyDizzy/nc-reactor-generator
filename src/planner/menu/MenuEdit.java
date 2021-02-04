@@ -120,7 +120,7 @@ public class MenuEdit extends Menu implements Editor{
         }
     });
     public final ArrayList<int[]> selection = new ArrayList<>();
-    public ArrayList<Suggestion> suggestions = new ArrayList<>();
+    private ArrayList<Suggestion> suggestions = new ArrayList<>();
     private ArrayList<Suggestor> suggestors = new ArrayList<>();
     private double scale = 4;
     private double minScale = 0.5;
@@ -996,5 +996,9 @@ public class MenuEdit extends Menu implements Editor{
     @Override
     public Color convertToolColor(Color color, int id){
         return color;//standard colors
+    }
+    @Override
+    public ArrayList<Suggestion> getSuggestions(){
+        return suggestions;
     }
 }
