@@ -23,4 +23,10 @@ public class MenuComponentUnderFuel extends MenuComponent{
         double textHeight = (int)(height*scale)-1;
         drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, fuel.name);
     }
+    @Override
+    public String getTooltip(){
+        return "Base Power: "+fuel.power+"\n"
+             + "Base Heat: "+fuel.heat+"\n"
+             + "Base Time: "+fuel.time;
+    }
 }

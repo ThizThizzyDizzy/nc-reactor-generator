@@ -23,4 +23,11 @@ public class MenuComponentOverFusionRecipe extends MenuComponent{
         double textHeight = (int)(height*scale)-1;
         drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.name);
     }
+    @Override    
+    public String getTooltip(){
+        return "Efficiency: "+recipe.efficiency+"\n"
+             + "Base Heat: "+recipe.heat+"\n"
+             + "Fluxiness: "+recipe.fluxiness+"\n"
+             + "Base Time: "+recipe.time;
+    }
 }

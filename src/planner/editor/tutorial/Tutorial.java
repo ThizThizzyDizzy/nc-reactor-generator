@@ -623,7 +623,7 @@ public abstract class Tutorial extends Renderer2D{
                 drawText(.05, .35, .95, .375, "Press Escape to exit the paste tool.");
                 drawText(.05, .375, .95, .4, "Press Ctrl+V to open the paste tool with the most recently copied selection.");
                 drawCenteredText(.05, .45, .95, .475, "Undo/Redo");
-                drawText(.05, .475, .95, .5, "Press Ctrl+Z to undo the most recent action. Press Ctrl+Y to redo.");
+                drawText(.05, .475, .95, .5, "Press Ctrl+"+(Core.invertUndoRedo?"Y":"Z")+" to undo the most recent action. Press Ctrl+"+(Core.invertUndoRedo?"Z":"Y")+" to redo.");
                 drawText(.05, .5, .95, .525, "Some actions, such as resizing the multiblock, will clear all undo/redo history");
                 //copy/paste, undo/redo, etc.
             }

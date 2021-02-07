@@ -23,4 +23,9 @@ public class MenuComponentFusionBreedingBlanketRecipe extends MenuComponent{
         double textHeight = (int)(height*scale)-1;
         drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.name);
     }
+    @Override    
+    public String getTooltip(){
+        return "Efficiency: "+recipe.efficiency+"\n"
+             + "Heat: "+recipe.heat;
+    }
 }

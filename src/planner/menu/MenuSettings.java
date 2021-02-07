@@ -30,6 +30,7 @@ public class MenuSettings extends Menu{
     private final MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Close the settings menu"));
     private final MenuComponentMinimalistButton tutorials = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Tutorials", true, true));
     private final MenuComponentMinimalistButton modules = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Modules", true, true));
+    private final MenuComponentMinimalistButton controls = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Controls", true, true));
     private final ArrayList<MenuComponentMinimalistButton> buttons = new ArrayList<>();
     public MenuSettings(GUI gui, Menu parent){
         super(gui, parent);
@@ -77,6 +78,9 @@ public class MenuSettings extends Menu{
         modules.addActionListener((e) -> {
             gui.open(new MenuModules(gui, this));
         });
+        controls.addActionListener((e) -> {
+            gui.open(new MenuControls(gui, this));
+        });
         edit.addActionListener((e) -> {
             gui.open(new MenuConfiguration(gui, this, Core.configuration));
         });
@@ -99,8 +103,8 @@ public class MenuSettings extends Menu{
             b.height = gui.helper.displayHeight()/16;
             b.y = b.height*i;
         }
-        modules.width = tutorials.width = currentConfig.width = theme.width = load.width = save.width = done.width = edit.width = gui.helper.displayWidth();
-        modules.height = tutorials.height = currentConfig.height = theme.height = load.height = save.height = done.height = edit.height = gui.helper.displayHeight()/16;
+        controls.width = modules.width = tutorials.width = currentConfig.width = theme.width = load.width = save.width = done.width = edit.width = gui.helper.displayWidth();
+        controls.height = modules.height = tutorials.height = currentConfig.height = theme.height = load.height = save.height = done.height = edit.height = gui.helper.displayHeight()/16;
         currentConfig.y = load.height*(Configuration.configurations.size());
         load.y = currentConfig.y+currentConfig.height;
         save.y = load.y+load.height;
@@ -109,6 +113,7 @@ public class MenuSettings extends Menu{
         theme.y = done.y-theme.height;
         tutorials.y = theme.y-theme.height;
         modules.y = tutorials.y-tutorials.height;
+        controls.y = modules.y-modules.height;
         if(Theme.themes.indexOf(Core.theme)!=theme.getIndex()){
             try{
                 Core.setTheme(Theme.themes.get(theme.getIndex()));

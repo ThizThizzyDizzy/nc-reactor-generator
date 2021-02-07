@@ -23,4 +23,9 @@ public class MenuComponentCoolantRecipe extends MenuComponent{
         double textHeight = (int)(height*scale)-1;
         drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, coolantRecipe.name);
     }
+    @Override
+    public String getTooltip(){
+        return "Heat: "+coolantRecipe.heat+"\n"
+             + "Output Ratio: "+coolantRecipe.outputRatio;
+    }
 }

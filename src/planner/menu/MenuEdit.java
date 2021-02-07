@@ -89,6 +89,22 @@ public class MenuEdit extends Menu implements Editor{
     private final int partSize = 48;
     private final int partsWide = 7;
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true).setTooltip("Stop editing this multiblock and return to the main menu"));
+    private final MenuComponentMinimalistButton undo = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Undo", false, true){
+        @Override
+        public void drawText(){
+            double tallness = height*3/2;
+            Core.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 0, 151, 10);
+            Core.drawRegularPolygon(x+width/4, y+height*.5625, width/4, 3, -5, 0);
+        }
+    }.setTooltip("Undo (Ctrl+"+(Core.invertUndoRedo?"Y":"Z")+")"));
+    private final MenuComponentMinimalistButton redo = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Redo", false, true){
+        @Override
+        public void drawText(){
+            double tallness = height*3/2;
+            Core.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 0, 150, 9);
+            Core.drawRegularPolygon(x+width*3/4, y+height*.5625, width/4, 3, 5, 0);
+        }
+    }.setTooltip("Redo (Ctrl+"+(Core.invertUndoRedo?"Z":"Y")+")"));
     public final MenuComponentMulticolumnMinimaList parts = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, partSize, partSize, partSize/2));
     public final MenuComponentMinimalistScrollable multibwauk = add(new MenuComponentMinimalistScrollable(0, 0, 0, 0, 32, 32));
     private final MenuComponentMinimalistButton zoomOut = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom out", true, true));
@@ -192,6 +208,12 @@ public class MenuEdit extends Menu implements Editor{
         back.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(1, 0), 5));
         });
+        undo.addActionListener((e) -> {
+            multiblock.undo();
+        });
+        redo.addActionListener((e) -> {
+            multiblock.redo();
+        });
         resize.addActionListener((e) -> {
             multiblock.openResizeMenu(gui, this);
         });
@@ -284,8 +306,14 @@ public class MenuEdit extends Menu implements Editor{
         parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
         tools.width = partSize;
         parts.x = tools.width+partSize/4;
-        generate.x = editMetadata.x = textBox.width = multibwauk.x = back.width = parts.x+parts.width;
+        generate.x = editMetadata.x = textBox.width = multibwauk.x = parts.x+parts.width;
         suggestorSettings.preferredHeight = generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
+        back.width = parts.x+parts.width-back.height*2;
+        undo.width = undo.height = redo.width = redo.height = back.height;
+        undo.x = back.width;
+        redo.x = undo.x+undo.width;
+        undo.enabled = !multiblock.history.isEmpty();
+        redo.enabled = !multiblock.future.isEmpty();
         generate.y = gui.helper.displayHeight()-generate.height;
         tools.height = editorTools.size()*partSize;
         tools.height = parts.height = Math.max(tools.height, Math.min(gui.helper.displayHeight()/2, ((parts.components.size()+5)/partsWide)*partSize));
@@ -434,7 +462,10 @@ public class MenuEdit extends Menu implements Editor{
             }
         }
         super.render(millisSinceLastTick);
-        if(multiblock instanceof UnderhaulSFR){
+    }
+    @Override    
+    public void renderForeground(){
+        if(multiblock instanceof UnderhaulSFR){//so this is below the tooltip
             Core.applyColor(Core.theme.getDarkButtonColor());
             drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
             Core.applyColor(Core.theme.getTextColor());
@@ -475,6 +506,7 @@ public class MenuEdit extends Menu implements Editor{
             drawCenteredText(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, "Breeding Blanket Recipe");
         }
         Core.applyWhite();
+        super.renderForeground();
     }
     @Override
     public void tick(){
@@ -579,10 +611,10 @@ public class MenuEdit extends Menu implements Editor{
                     }
                     setSelection(0, sel);
                 }
-                if(key==GLFW.GLFW_KEY_Z){
+                if(key==(Core.invertUndoRedo?GLFW.GLFW_KEY_Y:GLFW.GLFW_KEY_Z)){
                     multiblock.undo();
                 }
-                if(key==GLFW.GLFW_KEY_Y){
+                if(key==(Core.invertUndoRedo?GLFW.GLFW_KEY_Z:GLFW.GLFW_KEY_Y)){
                     multiblock.redo();
                 }
                 MenuComponent grid = null;
