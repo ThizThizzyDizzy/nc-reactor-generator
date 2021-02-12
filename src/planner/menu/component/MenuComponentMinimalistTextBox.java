@@ -1,7 +1,6 @@
 package planner.menu.component;
 import planner.Core;
 import static simplelibrary.opengl.Renderer2D.drawRect;
-import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentTextBox;
 public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
     private static final int NONE = 0;

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
-import planner.Core;
 import planner.editor.Editor;
 public class CopyAction extends Action<Multiblock>{
     private final Editor editor;

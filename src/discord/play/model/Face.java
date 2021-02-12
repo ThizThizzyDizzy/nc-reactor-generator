@@ -1,7 +1,7 @@
 package discord.play.model;
 import java.awt.Color;
 import java.util.ArrayList;
-public class Face {
+public class Face{
     public final ArrayList<Integer> verticies;
     public final ArrayList<Integer> textureCoords;
     public final ArrayList<Integer> normals;

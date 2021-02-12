@@ -13,7 +13,6 @@ import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.Configuration;
-import planner.editor.Editor;
 import planner.file.NCPFFile;
 import planner.menu.MenuResize;
 import planner.menu.component.MenuComponentMinimaList;

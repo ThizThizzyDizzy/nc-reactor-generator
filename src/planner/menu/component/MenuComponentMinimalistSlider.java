@@ -2,7 +2,6 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
-import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentSlider;
 public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     private final boolean darker;

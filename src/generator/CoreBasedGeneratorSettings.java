@@ -1,6 +1,4 @@
 package generator;
-import generator.Priority;
-import generator.Settings;
 import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Range;

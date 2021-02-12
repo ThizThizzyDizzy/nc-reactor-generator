@@ -1,7 +1,6 @@
 package planner.vr.menu.component;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.action.MSRAllShieldsAction;

@@ -44,8 +44,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
 import multiblock.Block;
 import multiblock.Multiblock;

@@ -1,5 +1,4 @@
 package multiblock.underhaul.fissionsfr;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.function.Function;
 import planner.Core;
