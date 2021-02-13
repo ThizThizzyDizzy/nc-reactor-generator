@@ -6,6 +6,7 @@ import java.util.UUID;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.Range;
+import planner.FormattedText;
 import planner.menu.component.MenuComponentMinimaList;
 public abstract class MultiblockGenerator{
     public int iterations = 0;
@@ -93,9 +94,9 @@ public abstract class MultiblockGenerator{
         if(list.isEmpty())return null;
         return list.get(0);
     }
-    public String getMainMultiblockTooltip(){
+    public FormattedText getMainMultiblockTooltip(){
         Multiblock main = getMainMultiblock();
-        if(main==null)return "";
+        if(main==null)return new FormattedText("");
         main.metadata.put("Author", "S'plodo-bot");
         return main.getTooltip();
     }

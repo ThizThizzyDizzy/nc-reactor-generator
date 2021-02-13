@@ -713,4 +713,159 @@ public class Core extends Renderer2D{
             listener.approved(new File("export."+formats[0].extensions[0]), formats[0]);//TODO proper save
         }
     }
+    /**
+     * Draws formatted text.
+     * @param left left edge
+     * @param top top edge
+     * @param right right edge
+     * @param bottom bottom edge
+     * @param text The <code>FormattedText</code> to draw.
+     * @param snap Which side to snap the text to. Defaults to left. -1 = left. 0 = center. 1 = right
+     */
+    public static void drawFormattedText(double left, double top, double right, double bottom, FormattedText text, int snap){
+        if(FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)>right-left){
+            text.trimSlightly();
+            drawFormattedText(left, top, right, bottom, text, snap);
+            return;
+        }
+        if(snap==0){
+            left = (left+right)/2-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)/2;
+        }
+        if(snap>0){
+            left = right-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)/2;
+        }
+        while(text!=null){
+            if(text.color!=null)GL11.glColor3f(text.color.getRed()/255f, text.color.getGreen()/255f, text.color.getBlue()/255f);
+            double textWidth = FontManager.getLengthForStringWithHeight(text.text, bottom-top);
+            if(text.italic){
+                drawItalicText(left, top, right, bottom, text.text);
+            }else{
+                drawText(left, top, right, bottom, text.text);
+            }
+            if(text.bold){
+                double offset = (bottom-top)/20;
+                for(int x = 0; x<offset+1; x++){
+                    for(int y = 0; y<offset+1; y++){
+                        if(text.italic){
+                            drawItalicText(left+x, top, right+x, bottom, text.text);
+                            drawItalicText(left+x, top-y, right+x, bottom-y, text.text);
+                            drawItalicText(left, top-y, right, bottom-y, text.text);
+                        }else{
+                            drawText(left+x, top, right+x, bottom, text.text);
+                            drawText(left+x, top-y, right+x, bottom-y, text.text);
+                            drawText(left, top-y, right, bottom-y, text.text);
+                        }
+                    }
+                }
+            }
+            if(text.strikethrough){
+                double topIndent = (bottom-top)*.6;
+                double bottomIndent = (bottom-top)*.3;
+                drawRect(left, top+topIndent, left+textWidth, bottom-bottomIndent, 0);
+            }
+            if(text.underline){
+                double indent = (bottom-top)*.9;
+                drawRect(left, top+indent, left+textWidth, bottom, 0);
+            }
+            left+=textWidth;
+            text = text.next;
+        }
+    }
+    public static FormattedText drawFormattedTextWithWrap(double left, double top, double right, double bottom, FormattedText text, int snap){
+        if(FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)>right-left){
+            String txt = text.text;
+            text.trimSlightlyWithoutElipses();
+            FormattedText also = drawFormattedTextWithWrap(left, top, right, bottom, text, snap);
+            txt = txt.substring(text.text.length());
+            return new FormattedText(also!=null?also.text+txt:txt, text.color, text.bold, text.italic, text.underline, text.strikethrough);
+        }
+        if(snap==0){
+            left = (left+right)/2-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)/2;
+        }
+        if(snap>0){
+            left = right-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)/2;
+        }
+        if(text.color!=null)GL11.glColor3f(text.color.getRed()/255f, text.color.getGreen()/255f, text.color.getBlue()/255f);
+        double textWidth = FontManager.getLengthForStringWithHeight(text.text, bottom-top);
+        if(text.italic){
+            drawItalicText(left, top, right, bottom, text.text);
+        }else{
+            drawText(left, top, right, bottom, text.text);
+        }
+        if(text.bold){
+            double offset = (bottom-top)/20;
+            for(int x = 0; x<offset+1; x++){
+                for(int y = 0; y<offset+1; y++){
+                    if(text.italic){
+                        drawItalicText(left+x, top, right+x, bottom, text.text);
+                        drawItalicText(left+x, top-y, right+x, bottom-y, text.text);
+                        drawItalicText(left, top-y, right, bottom-y, text.text);
+                    }else{
+                        drawText(left+x, top, right+x, bottom, text.text);
+                        drawText(left+x, top-y, right+x, bottom-y, text.text);
+                        drawText(left, top-y, right, bottom-y, text.text);
+                    }
+                }
+            }
+        }
+        if(text.strikethrough){
+            double topIndent = (bottom-top)*.6;
+            double bottomIndent = (bottom-top)*.3;
+            drawRect(left, top+topIndent, left+textWidth, bottom-bottomIndent, 0);
+        }
+        if(text.underline){
+            double indent = (bottom-top)*.9;
+            drawRect(left, top+indent, left+textWidth, bottom, 0);
+        }
+        left+=textWidth;
+        if(text.next!=null){
+            return drawFormattedTextWithWrap(left+textWidth, top, right, bottom, text, snap);
+        }
+        return null;
+    }
+    /**
+     * Draws formatted text with word-wrapping.
+     * @param leftEdge left edge
+     * @param topEdge top edge
+     * @param rightPossibleEdge right possible edge
+     * @param bottomEdge bottom edge
+     * @param text The <code>FormattedText</code> to draw.
+     * @param snap Which side to snap the text to. Defaults to left. -1 = left. 0 = center. 1 = right
+     * @return the portion of text wrapped to the next line
+     */
+    public static FormattedText drawFormattedTextWithWordWrap(double leftEdge, double topEdge, double rightPossibleEdge, double bottomEdge, FormattedText text, int snap){
+        ArrayList<FormattedText> words = text.split(" ");
+        String str = words.get(0).text;
+        double height = bottomEdge-topEdge;
+        double length = rightPossibleEdge-leftEdge;
+        for(int i = 1; i<words.size(); i++){
+            String string = str+" "+words.get(i).text;
+            if(FontManager.getLengthForStringWithHeight(string.trim(), height)>=length){
+                drawFormattedTextWithWrap(leftEdge, topEdge, rightPossibleEdge, bottomEdge, new FormattedText(str, text.color, text.bold, text.italic, text.underline, text.strikethrough), snap);
+                return new FormattedText(text.text.replaceFirst("\\Q"+str, "").trim());
+            }else{
+                str = string;
+            }
+        }
+        return drawFormattedTextWithWrap(leftEdge, topEdge, rightPossibleEdge, bottomEdge, text, snap);
+    }
+    private static void drawItalicText(double left, double top, double right, double bottom, String text){
+        ImageStash.instance.bindTexture(FontManager.getFontImage());
+        GL11.glBegin(GL11.GL_QUADS);
+        for(char c : text.toCharArray()){
+            double[] texLoc = FontManager.getTextureLocationForChar(c);
+            double tilt = (bottom-top)*.25;
+            double len = FontManager.getLengthForStringWithHeight(c+"", bottom-top);
+            GL11.glTexCoord2d(texLoc[0], texLoc[1]);
+            GL11.glVertex2d(left+tilt, top);
+            GL11.glTexCoord2d(texLoc[2], texLoc[1]);
+            GL11.glVertex2d(left+len+tilt, top);
+            GL11.glTexCoord2d(texLoc[2], texLoc[3]);
+            GL11.glVertex2d(left+len, bottom);
+            GL11.glTexCoord2d(texLoc[0], texLoc[3]);
+            GL11.glVertex2d(left, bottom);
+            left+=len;
+        }
+        GL11.glEnd();
+    }
 }

@@ -1,5 +1,6 @@
 package multiblock.overhaul.fusion;
 import generator.Priority;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import multiblock.ppe.SmartFillOverhaulFusion;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import planner.Core;
+import planner.FormattedText;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
@@ -251,21 +253,21 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         return null;
     }
     @Override
-    public synchronized String getTooltip(){
+    public synchronized FormattedText getTooltip(){
         return tooltip(true);
     }
     @Override
     public String getExtraBotTooltip(){
-        return tooltip(false);
+        return tooltip(false).text;
     }
-    public String tooltip(boolean showDetails){
+    public FormattedText tooltip(boolean showDetails){
         if(this.showDetails!=null)showDetails = this.showDetails;
         synchronized(clusters){
             int validClusters = 0;
             for(Cluster c : clusters){
                 if(c.isValid())validClusters++;
             }
-            String s = "Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
+            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
                     + "Net Heat: "+netHeat+"H/t\n"
@@ -273,10 +275,11 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                     + "Overall Heat Multiplier: "+percent(totalHeatMult, 0)+"\n"
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Shieldiness Factor: "+percent(shieldinessFactor, 1)+"\n"
-                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()));
-            s+=getModuleTooltip()+"\n";
+                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size())));
+            text.addText(getModuleTooltip()+"\n");
             if(showDetails){
                 HashMap<String, Integer> counts = new HashMap<>();
+                HashMap<String, Color> colors = new HashMap<>();
                 ArrayList<String> order = new ArrayList<>();
                 for(Cluster c : clusters){
                     String str = c.getTooltip();
@@ -286,16 +289,24 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                         counts.put(str, 1);
                         order.add(str);
                     }
+                    if(!c.isCreated()){
+                        colors.put(str, Core.theme.getRGBA(Color.white));
+                    }else if(!c.isConnectedToWall){
+                        colors.put(str, Core.theme.getRGBA(Color.pink));
+                    }else if(c.netHeat>0)colors.put(str, Core.theme.getRed());
+                    else if(c.coolingPenaltyMult!=1)colors.put(str, Core.theme.getBlue());
                 }
                 for(String str : order){
                     int count = counts.get(str);
-                    if(count==1)s+="\n\n"+str;
+                    String s;
+                    if(count==1)s="\n\n"+str;
                     else{
-                        s+="\n\n"+count+" similar clusters:\n\n"+str;
+                        s="\n\n"+count+" similar clusters:\n\n"+str;
                     }
+                    text.addText(s, colors.get(str));
                 }
             }
-            return s;
+            return text;
         }
     }
     @Override

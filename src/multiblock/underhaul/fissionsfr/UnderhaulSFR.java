@@ -15,6 +15,7 @@ import multiblock.ppe.SmartFillUnderhaulSFR;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import planner.Core;
+import planner.FormattedText;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.editor.module.Module;
@@ -123,10 +124,10 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     protected String getExtraBotTooltip(){
-        return getTooltip();
+        return getTooltip().text;
     }
     @Override
-    public String getTooltip(){
+    public FormattedText getTooltip(){
         String tooltip = "Power Generation: "+power+"RF/t\n"
                 + "Total Heat: "+heat+"H/t\n"
                 + "Total Cooling: "+cooling+"H/t\n"
@@ -135,7 +136,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 + "Heat multiplier: "+percent(heatMult, 0)+"\n"
                 + "Fuel cells: "+cells;
         tooltip+=getModuleTooltip();
-        return tooltip;
+        return new FormattedText(tooltip, heat<0?null:Core.theme.getRed());
     }
     @Override
     public int getMultiblockID(){

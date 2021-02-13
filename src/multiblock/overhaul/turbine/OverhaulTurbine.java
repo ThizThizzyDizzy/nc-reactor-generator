@@ -19,6 +19,7 @@ import multiblock.symmetry.CoilSymmetry;
 import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.FormattedText;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.editor.module.Module;
@@ -479,7 +480,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         return Block.casing(getConfiguration(), x, y, z);
     }
     @Override
-    public String getTooltip(){
+    public FormattedText getTooltip(){
         String tooltip;
         if(bladesValid){
             tooltip = "Total output: "+totalOutput+" RF/t\n"
@@ -496,11 +497,11 @@ public class OverhaulTurbine extends Multiblock<Block>{
                     + "Coil Efficiency: "+percent(coilEfficiency, 2);
         }
         tooltip+=getModuleTooltip();
-        return tooltip;
+        return new FormattedText(tooltip, bladesValid?null:Core.theme.getRed());
     }
     @Override
     protected String getExtraBotTooltip(){
-        return getTooltip();
+        return getTooltip().text;
     }
     @Override
     public int getMultiblockID(){

@@ -5,6 +5,7 @@ import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
 import planner.Core;
+import planner.FormattedText;
 import planner.vr.VRCore;
 import planner.vr.VRGUI;
 import planner.vr.VRMenu;
@@ -63,7 +64,7 @@ public class VRMenuResizeFusion extends VRMenu{
         Core.applyColor(Core.theme.getEditorListBorderColor());
         VRCore.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getX()+1/16f, multiblock.getY()+1/16f, multiblock.getZ()+1/16f, 1/16f);
         GL11.glPopMatrix();
-        textPanel.text = "["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]\n"+multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ();
+        textPanel.text = new FormattedText("["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]\n"+multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ());
         super.render(tdpb);
     }
     public void expand(int x, int y, int z){

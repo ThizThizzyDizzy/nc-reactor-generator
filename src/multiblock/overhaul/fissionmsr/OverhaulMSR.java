@@ -1,6 +1,7 @@
 package multiblock.overhaul.fissionmsr;
 import discord.Bot;
 import generator.Priority;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import multiblock.configuration.overhaul.fissionmsr.Source;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.SmartFillOverhaulMSR;
 import planner.Core;
+import planner.FormattedText;
 import planner.Main;
 import planner.file.NCPFFile;
 import planner.menu.component.generator.MenuComponentMSRToggleFuel;
@@ -277,14 +279,14 @@ public class OverhaulMSR extends Multiblock<Block>{
         return new Block(getConfiguration(), x, y, z, null);
     }
     @Override
-    public synchronized String getTooltip(){
+    public synchronized FormattedText getTooltip(){
         return tooltip(true);
     }
     @Override
     public String getExtraBotTooltip(){
-        return tooltip(false);
+        return tooltip(false).text;
     }
-    public String tooltip(boolean showDetails){
+    public FormattedText tooltip(boolean showDetails){
         if(this.showDetails!=null)showDetails = this.showDetails;
         String outs = "";
         ArrayList<String> outputList = new ArrayList<>(totalOutput.keySet());
@@ -297,7 +299,7 @@ public class OverhaulMSR extends Multiblock<Block>{
             for(Cluster c : clusters){
                 if(c.isValid())validClusters++;
             }
-            String s = "Total output: "+Math.round(totalTotalOutput)+" mb/t"+outs+"\n"
+            FormattedText text = new FormattedText("Total output: "+Math.round(totalTotalOutput)+" mb/t"+outs+"\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
                     + "Net Heat: "+netHeat+"H/t\n"
@@ -306,14 +308,15 @@ public class OverhaulMSR extends Multiblock<Block>{
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
                     + "Total Irradiation: "+totalIrradiation+"\n"
-                    + "Shutdown Factor: "+percent(shutdownFactor, 2);
-            s+=getModuleTooltip()+"\n";
+                    + "Shutdown Factor: "+percent(shutdownFactor, 2));
+            text.addText(getModuleTooltip()+"\n");
             for(Fuel f : getConfiguration().overhaul.fissionMSR.allFuels){
                 int i = getFuelCount(f);
-                if(i>0)s+="\n"+f.name+": "+i;
+                if(i>0)text.addText("\n"+f.name+": "+i);
             }
             if(showDetails){
                 HashMap<String, Integer> counts = new HashMap<>();
+                HashMap<String, Color> colors = new HashMap<>();
                 ArrayList<String> order = new ArrayList<>();
                 for(Cluster c : clusters){
                     String str = c.getTooltip();
@@ -323,16 +326,24 @@ public class OverhaulMSR extends Multiblock<Block>{
                         counts.put(str, 1);
                         order.add(str);
                     }
+                    if(!c.isCreated()){
+                        colors.put(str, Core.theme.getRGBA(Color.white));
+                    }else if(!c.isConnectedToWall){
+                        colors.put(str, Core.theme.getRGBA(Color.pink));
+                    }else if(c.netHeat>0)colors.put(str, Core.theme.getRed());
+                    else if(c.coolingPenaltyMult!=1)colors.put(str, Core.theme.getBlue());
                 }
                 for(String str : order){
                     int count = counts.get(str);
-                    if(count==1)s+="\n\n"+str;
+                    String s;
+                    if(count==1)s="\n\n"+str;
                     else{
-                        s+="\n\n"+count+" similar clusters:\n\n"+str;
+                        s="\n\n"+count+" similar clusters:\n\n"+str;
                     }
+                    text.addText(s, colors.get(str));
                 }
             }
-            return s;
+            return text;
         }
     }
     @Override

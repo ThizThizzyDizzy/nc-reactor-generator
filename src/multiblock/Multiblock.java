@@ -13,6 +13,7 @@ import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.Configuration;
+import planner.FormattedText;
 import planner.file.NCPFFile;
 import planner.menu.MenuResize;
 import planner.menu.component.MenuComponentMinimaList;
@@ -320,7 +321,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return lastBlocks = lastBlox;
     }
     protected abstract T newCasing(int x, int y, int z);
-    public abstract String getTooltip();
+    public abstract FormattedText getTooltip();
     public String getModuleTooltip(){
         String s = "";
         for(Module m : moduleData.keySet()){

@@ -5,6 +5,7 @@ import multiblock.Multiblock;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
 import planner.Core;
+import planner.FormattedText;
 import planner.vr.VRCore;
 import planner.vr.VRGUI;
 import planner.vr.VRMenu;
@@ -101,7 +102,7 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         Core.applyColor(Core.theme.getEditorListBorderColor());
         VRCore.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getX()+1/16f, multiblock.getY()+1/16f, multiblock.getZ()+1/16f, 1/16f);
         GL11.glPopMatrix();
-        textPanel.text = multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ();
+        textPanel.text = new FormattedText(multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ());
         super.render(tdpb);
     }
     public void expand(int x, int y, int z){
