@@ -1,0 +1,41 @@
+ncpt 1
+title Introduction
+margin 0 2
+translate 2
+text 2 Welcome to the tutorials!
+text 1 Select a category and tutorial on the left to get started
+text 1 or press Done to exit the tutorials
+translate 2
+columns 2
+margin 0 0
+text 2 Underhaul
+text 2 Overhaul
+margin 2 4
+translate 2
+imgsq tutorials/planner/introduction/underhaul_example.png
+translate 2
+imgsq tutorials/planner/introduction/overhaul_example.png
+margin 0 2
+text .8 Example SFR
+text .8 Example SFR
+columns 1
+translate 1.2
+text 1 If you're playing a modpack, you most likely are playing Underhaul
+text 1 Such modpacks include (but are not limited to):
+text 1 Enigmatica 2
+text 1 Project Ozone 3
+text 1 Sky Factory 4
+translate 1
+columns 2
+margin 0 0
+text 1 If you're playing underhaul, this is called a
+text 1 If you're playing overhaul, this is called a
+text 1 Water Cooler
+text 1 Water Fission Heat Sink
+margin 8 8
+translate 2
+imgsq underhaul/water.png
+translate 2
+imgsq overhaul/water.png
+columns 1
+translate 2

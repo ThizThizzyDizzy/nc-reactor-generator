@@ -1,0 +1,130 @@
+ncpt 1
+title Basics
+translate 2
+text 2 Loading alternate configurations
+translate 2
+margin 0 2
+special menu/settings false
+ltext 1 If you are playing a modpack such as E2E or PO3, you will need to load the
+ltext 1 modpack configuration. Some modpacks' configurations are included and can
+ltext 1 be accessed through the settings menu. Alternatively, you can load your pack's
+ltext 1 nuclearcraft.cfg with the Load Configuration button
+translate 2
+text 2 Adding, Editing, and Removing Multiblocks
+translate 2
+columns 2
+margin 2 2
+special menu/multiblocks/add true
+margin 0 0
+ltext 1 To add a multiblock, press the + button next
+skip
+ltext 1 to the multiblocks list, then select a multiblock
+translate 4
+margin 0 2
+ltext 1 To edit a multiblock, press the edit button
+translate 2
+margin 2 2
+special menu/multiblocks/edit true
+margin -2 2
+ltext 1 highlighted here.
+skip
+ltext 1 For more information, see the editing tutorial
+translate 2
+margin 0 2
+ltext 1 To delete a multiblock, select it and
+margin 2 2
+translate 3
+special menu/multiblocks/select true
+margin 0 2
+ltext 1 shift-click the delete button
+skip
+translate 2
+special menu/multiblocks/delete true
+columns 1
+translate 2
+text 2 Resizing Multiblocks
+translate 2
+columns 2
+ltext 1 To resize a multiblock, first click the
+margin 2 2
+special editor/resize true
+margin 0 2
+ltext 1 resize button
+skip
+translate 2
+margin 2 2
+special resize true
+margin 0 2
+translate 4
+ltext 1 Buttons with a + will increase the size,
+skip
+ltext 1 while buttons with a - will decrease the
+skip
+ltext 1 size.
+skip
+translate 1
+ltext 1 The highlighted buttons will add a layer
+skip
+ltext 1 above or below this layer.
+skip
+translate 1
+ltext 1 Hovering over any other button will show
+skip
+ltext 1 what blocks will be added or removed.
+skip
+translate 1
+ltext 1 The size of the multiblock is shown
+skip
+ltext 1 on the right.
+columns 1
+translate 2
+text 2 Metadata
+translate 2
+ltext 1 Metadata refers to any information stored about multiblocks, such as name and
+ltext 1 author. It is recommended to set the name and author for each multiblock.
+translate 1
+ltext 1 To manage metadata for each multiblock, press the center button at the top of
+ltext 1 the edit menu, shown below.
+translate 1
+special editor/header true
+translate 2
+special editor/metadata true
+translate 1
+ltext 1 To manage the metadata for the group of multiblocks, press the center button at
+ltext 1 the top of the main menu, shown below.
+translate 1
+special menu/header/metadata true
+translate 2
+special menu/metadata true
+translate 2
+text 2 Saving and loading multiblocks
+translate 2
+columns 2
+ltext 1 The import button adds multiblocks from
+margin 2 2
+special menu/file true
+margin -1 2
+ltext 1 a file
+skip
+ltext 1 The export button saves the selected
+skip
+ltext 1 multiblock to a file
+skip
+ltext 1 The save button saves the entire list of
+skip
+ltext 1 multiblocks to one .ncpf file
+skip
+ltext 1 The load button replaces the current
+skip
+ltext 1 multiblock list with those loaded from a file
+columns 1
+translate 1
+ltext 1 Alternatively, Drag-and-drop files onto the planner to import them
+translate 2
+text 1 Export formats
+ltext 1 NCPF - Stores all multiblocks and metadata. This is the standard save format for
+ltext 1 this planner
+ltext 1 Hellrage JSON - Stores Overhaul and Underhaul SFRs. These can be loaded into
+ltext 1 Hellrage's reactor planner
+ltext 1 PNG - Exports an image detailing the multiblock design
+translate 2

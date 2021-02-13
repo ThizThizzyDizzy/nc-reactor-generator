@@ -1,0 +1,140 @@
+ncpt 1
+title Editing
+margin 0 2
+translate 2
+text 2 Editing Overview
+translate 1
+ltext 1 There are many panels in the editor window.
+ltext 1 The tools panel is found on the top left, and contains all of the editing tools.
+ltext 1 The parts panel is found next to the tools panel, and contains all blocks that can
+ltext 1 be used in the multiblock.
+ltext 1 The info panel is found on the bottom left, and contains the overall multiblock info.
+ltext 1 The settings panel is found on the right, and contains multiblock-specific settings
+ltext 1 such as fuels and recipes
+translate 1
+text .8 Shown below: The editor window for a blank Underhaul SFR
+translate .2
+special editor true
+translate 2
+text 2 The Pencil Tool
+translate 1
+columns 2
+special editor/tool/pencil true
+margin 2 2
+ltext 1 The pencil tool lets you freely draw
+skip
+ltext 1 in the editor window. Click and drag
+skip
+ltext 1 to draw across the editor with the
+skip
+ltext 1 selected block
+margin 0 2
+columns 1
+translate 2
+text 2 The Line Tool
+translate 1
+columns 2
+special editor/tool/line true
+margin 2 0
+ltext 1 The line tool lets you draw straight
+skip
+ltext 1 lines of blocks through the
+skip
+ltext 1 multiblock. Click and drag from one
+skip
+ltext 1 point to another to draw a line
+skip
+ltext 1 between them. Lines can be drawn
+skip
+ltext 1 across layers, and will be drawn as
+skip
+ltext 1 a straight line of blocks through the multiblock
+margin 0 2
+columns 1
+translate 2
+text 2 The Box Tool
+translate 1
+columns 2
+special editor/tool/box true
+margin 2 0
+ltext 1 The box tool lets you draw
+skip
+ltext 1 rectangles (or cuboids) in the
+skip
+ltext 1 multiblock. Click and drag from one
+skip
+ltext 1 corner to another to draw a cuboid
+skip
+ltext 1 between them.
+margin 0 2
+columns 1
+translate 2
+text 2 The Selection Tool
+translate 1
+columns 2
+special editor/tool/select true
+margin 2 0
+ltext 1 The selection tool lets you select
+skip
+ltext 1 areas of the multiblock. When an
+skip
+ltext 1 area is selected, edits will only be
+skip
+ltext 1 applied within the selection.
+skip
+ltext 1 Hold Ctrl to select multiple areas, or
+skip
+ltext 1 Ctrl+Right click to deselect an area.
+skip
+ltext 1 Press delete to remove all blocks in
+skip
+ltext 1 the selection.
+skip
+ltext 1 Press Ctrl+A to select the entire
+skip
+ltext 1 multiblock.
+skip
+ltext 1 Press escape to deselect everything.
+columns 1
+ltext 1 In some multiblocks, Shift-click and Alt-click may have special functions, such as
+ltext 1 selecting clusters or groups of heatsinks
+margin 0 2
+columns 1
+translate 2
+text 2 The Move Tool
+translate 1
+columns 2
+special editor/tool/move true
+margin 2 0
+ltext 1 The move tool lets you move or
+skip
+ltext 1 copy any selected areas. Click and
+skip
+ltext 1 drag to move a selection. Hold Ctrl
+skip
+ltext 1 to copy the selected blocks. Hold
+skip
+ltext 1 Ctrl+Shift to copy and keep the
+skip
+ltext 1 selection.
+margin 0 2
+columns 1
+translate 2
+text 2 Other functions
+translate 1
+ltext 1 With any editing tool (pencil, line, box) you can hold Ctrl to highlight possible
+ltext 1 placements for blocks with placement rules (such as heatsinks)
+ltext 1 Hold Ctrl to only place blocks in these locations.
+ltext 1 Hold Ctrl+Shift to allow other blocks to be overwritten.
+translate 1
+text 1 Copy/Paste
+ltext 1 Press Ctrl+X or Ctrl+C to switch to the Cut or Copy tools. Selecting any area will
+ltext 1 cut or copy it and switch to the paste tool.
+ltext 1 With the paste tool selected, Click to place copies of the original selected area.
+ltext 1 Press Escape to exit the paste tool.
+ltext 1 Press Ctrl+V to open the paste tool with the most recently copied selection.
+translate 2
+text 1 Undo/Redo
+ltext 1 Press Ctrl+Z to undo the most recent action. Press Ctrl+Y to redo.
+ltext 1 Some actions, such as resizing the multiblock, will clear all undo/redo history.
+translate 2

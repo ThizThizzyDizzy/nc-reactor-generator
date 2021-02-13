@@ -7,8 +7,8 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.tutorial.MenuComponentTutorial;
 import planner.menu.component.tutorial.MenuComponentTutorialCategory;
 import planner.menu.component.tutorial.MenuComponentTutorialDisplay;
-import planner.editor.tutorial.Tutorial;
-import planner.editor.tutorial.TutorialCategory;
+import planner.tutorial.Tutorial;
+import planner.tutorial.TutorialCategory;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuTutorial extends Menu{
@@ -57,7 +57,8 @@ public class MenuTutorial extends Menu{
         tutorialList.width = gui.helper.displayWidth()-tutorialList.x;
         tutorialList.height = gui.helper.displayHeight()-tutorialList.y;
         tutorialDisplay.width = tutorialList.width-tutorialList.vertScrollbarWidth;
-        tutorialDisplay.height = selectedTutorial.getHeight(tutorialDisplay.width);
+        selectedTutorial.preRender();//this is just to initialize components...
+        tutorialDisplay.height = selectedTutorial.getHeight()*tutorialDisplay.width;
         if(selectedCategory!=Tutorial.categories.get(categoryBox.getSelectedIndex())){
             selectedCategory = Tutorial.categories.get(categoryBox.getSelectedIndex());
             onCategoryChanged();
