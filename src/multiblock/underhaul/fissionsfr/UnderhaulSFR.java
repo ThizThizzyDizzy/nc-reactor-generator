@@ -136,7 +136,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 + "Heat multiplier: "+percent(heatMult, 0)+"\n"
                 + "Fuel cells: "+cells;
         tooltip+=getModuleTooltip();
-        return new FormattedText(tooltip, heat<0?null:Core.theme.getRed());
+        return new FormattedText(tooltip, heat<=0?null:Core.theme.getRed());
     }
     @Override
     public int getMultiblockID(){
