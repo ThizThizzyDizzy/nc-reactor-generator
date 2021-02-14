@@ -30,6 +30,14 @@ public class FormattedText{
         if(next==null)return text;
         return text+next.toString();
     }
+    public FormattedText addText(FormattedText text){
+        if(next==null){
+            next = text;
+        }else{
+            next.addText(text);
+        }
+        return this;
+    }
     public FormattedText addText(String text, Color color, boolean bold, boolean italic, boolean underline, boolean strikethrough){
         if(next==null){
             next = new FormattedText(text, color, bold, italic, underline, strikethrough);

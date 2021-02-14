@@ -559,21 +559,21 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public void setBlockExact(int x, int y, int z, Block exact){
         blocks[x][y][z] = exact;
     }
-    public String getSaveTooltip(){
-        String s = getConfiguration().name+" ("+(getDefinitionName().contains("Underhaul")?getConfiguration().underhaulVersion:getConfiguration().overhaulVersion)+")\n";
+    public FormattedText getSaveTooltip(){
+        FormattedText s = new FormattedText(getConfiguration().name+" ("+(getDefinitionName().contains("Underhaul")?getConfiguration().underhaulVersion:getConfiguration().overhaulVersion)+")\n");
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
-                s+=metadata.get(key)+"\n";
+                s.addText(metadata.get(key)+"\n");
             }
         }
-        s+=getDefinitionName()+"\n";
+        s.addText(getDefinitionName()+"\n");
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name"))continue;
-            if(metadata.get(key)!=null)s+=key+": "+metadata.get(key)+"\n";
+            if(metadata.get(key)!=null)s.addText(key+": "+metadata.get(key)+"\n");
         }
-        s+="\n";
-        String extra = getExtraSaveTooltip();
-        return extra.isEmpty()?(s+getTooltip()):(s+getExtraSaveTooltip()+"\n"+getTooltip());
+        s.addText("\n");
+        FormattedText extra = getExtraSaveTooltip();
+        return extra.isEmpty()?(s.addText(getTooltip())):(s.addText(getExtraSaveTooltip()).addText("\n").addText(getTooltip()));
     }
     public String getBotTooltip(){
         String s = getConfiguration().name+" ("+(getDefinitionName().contains("Underhaul")?getConfiguration().underhaulVersion:getConfiguration().overhaulVersion)+")\n";
@@ -590,8 +590,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         s+="\n";
         return s+getExtraBotTooltip();
     }
-    protected String getExtraSaveTooltip(){
-        return "";
+    protected FormattedText getExtraSaveTooltip(){
+        return new FormattedText();
     }
     protected abstract String getExtraBotTooltip();
     public abstract void addGeneratorSettings(MenuComponentMinimaList multiblockSettings);

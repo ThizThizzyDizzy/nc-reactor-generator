@@ -119,8 +119,8 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return new Block(getConfiguration(), x, y, z, null);
     }
     @Override
-    protected String getExtraSaveTooltip(){
-        return "Fuel: "+fuel.name;
+    protected FormattedText getExtraSaveTooltip(){
+        return new FormattedText("Fuel: "+fuel.name);
     }
     @Override
     protected String getExtraBotTooltip(){

@@ -17,6 +17,9 @@ public class PartCount implements Comparable<PartCount>{
     @Override
     public int compareTo(PartCount o){
         if(o==null)return 0-count;
+        if(o.count==count){
+            return name.compareTo(o.name);
+        }
         return o.count-count;
     }
 }

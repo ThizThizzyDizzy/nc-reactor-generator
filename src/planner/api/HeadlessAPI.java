@@ -125,7 +125,7 @@ public class HeadlessAPI{
      * @return the first multiblock's information
      */
     public static String getInfo(NCPFFile ncpf){
-        return ncpf.multiblocks.get(0).getSaveTooltip();
+        return ncpf.multiblocks.get(0).getSaveTooltip().text;
     }
     /**
      * Loads a file and returns the multiblock information for the first contained multiblock
@@ -151,7 +151,7 @@ public class HeadlessAPI{
     public static String[] getInfos(NCPFFile ncpf){
         String[] infos = new String[ncpf.multiblocks.size()];
         for(int i = 0; i<ncpf.multiblocks.size(); i++){
-            infos[i] = ncpf.multiblocks.get(i).getSaveTooltip();
+            infos[i] = ncpf.multiblocks.get(i).getSaveTooltip().text;
         }
         return infos;
     }

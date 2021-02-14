@@ -16,6 +16,7 @@ import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.FormattedText;
 import simplelibrary.config2.Config;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.ImageStash;
@@ -305,13 +306,13 @@ public class FileWriter{
                     int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image
                     final int blockSize = blSiz;
                     ArrayList<PartCount> parts = multi.getPartsList();
-                    String s = multi.getSaveTooltip();
-                    String[] strs = s.split("\n");
-                    int totalTextHeight = Math.max(textHeight*strs.length,textHeight*parts.size());
+                    FormattedText s = multi.getSaveTooltip();
+                    ArrayList<FormattedText> strs = s.split("\n");
+                    int totalTextHeight = Math.max(textHeight*strs.size(),textHeight*parts.size());
                     double textWidth = 0;
-                    for(int i = 0; i<strs.length; i++){
-                        String str = strs[i];
-                        textWidth = Math.max(textWidth, FontManager.getLengthForStringWithHeight(str, textHeight));
+                    for(int i = 0; i<strs.size(); i++){
+                        FormattedText str = strs.get(i);
+                        textWidth = Math.max(textWidth, FontManager.getLengthForStringWithHeight(str.text, textHeight));
                     }
                     double partsWidth = 0;
                     for(PartCount c : parts){
@@ -334,10 +335,11 @@ public class FileWriter{
                         Core.applyColor(Core.theme.getEditorListBorderColor());
                         Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
                         Core.applyColor(Core.theme.getTextColor());
-                        for(int i = 0; i<strs.length; i++){
-                            String str = strs[i];
-                            Renderer2D.drawText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str);
+                        for(int i = 0; i<strs.size(); i++){
+                            FormattedText str = strs.get(i);
+                            Core.drawFormattedText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str, -1);
                         }
+                        Core.applyColor(Core.theme.getTextColor());
                         for(int i = 0; i<parts.size(); i++){
                             PartCount c = parts.get(i);
                             Renderer2D.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
