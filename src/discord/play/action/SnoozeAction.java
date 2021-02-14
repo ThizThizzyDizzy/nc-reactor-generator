@@ -1,5 +1,6 @@
 package discord.play.action;
 import discord.play.Action;
+import discord.play.SmoreBot;
 import java.util.Random;
 import net.dv8tion.jda.api.entities.MessageChannel;
 public class SnoozeAction extends Action{
@@ -8,7 +9,7 @@ public class SnoozeAction extends Action{
     }
     @Override
     protected String getBeginMessage(){
-        return "You slowly doze off, the warmth of the campfire helping you to fall asleep.";
+        return "You slowly doze off, the warmth of the "+SmoreBot.getCampfire(user.getIdLong())+" helping you to fall asleep.";
     }
     @Override
     protected String getFinishedMessage(){

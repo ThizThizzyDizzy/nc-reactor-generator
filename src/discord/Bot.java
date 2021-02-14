@@ -19,8 +19,10 @@ import discord.play.action.SmoreLordAction;
 import discord.play.action.SnoozeAction;
 import discord.play.game.Hangman;
 import discord.play.smivilization.Hut;
+import discord.play.smivilization.HutBunch;
 import discord.play.smivilization.HutThing;
 import discord.play.smivilization.HutThingColorable;
+import discord.play.smivilization.HutType;
 import discord.play.smivilization.Placement;
 import generator.CoreBasedGenerator;
 import generator.CoreBasedGeneratorSettings;
@@ -1180,103 +1182,6 @@ public class Bot extends ListenerAdapter{
                 SmoreBot.addSmores(targetUser, amt);
             }
         });
-        playCommands.add(new SecretCommand("seteat"){
-            @Override
-            public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
-                args = args.trim();
-                if(args.isEmpty()){
-                    return;
-                }
-                String[] argses = args.split(" ");
-                if(argses.length==1){
-                    return;
-                }
-                String target = argses[0];
-                long targetID = 0;
-                if(target.startsWith("<@")&&target.endsWith(">")){
-                    if(target.contains("!"))target = target.substring(1);
-                    try{
-                        targetID = Long.parseLong(target.substring(2, target.length()-1));
-                    }catch(Exception ex){
-                        return;
-                    }
-                }else{
-                    try{
-                        targetID = Long.parseLong(target);
-                    }catch(Exception ex){
-                        return;
-                    }
-                }
-                User targetUser;
-                try{
-                    targetUser = jda.retrieveUserById(targetID).complete();
-                    if(targetUser==null){
-                        return;
-                    }
-                }catch(Exception ex){
-                    return;
-                }
-                long amt = 0;
-                try{
-                    amt = Long.parseLong(argses[1]);
-                }catch(Exception ex){
-                    return;
-                }
-                if(amt<0){
-                    return;
-                }
-                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" eated smore"+(amt==1?"":"s")+".").queue();
-                SmoreBot.eaten.put(targetUser.getIdLong(), amt);
-            }
-        });
-        playCommands.add(new SecretCommand("setsmores"){
-            @Override
-            public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
-                args = args.trim();
-                if(args.isEmpty()){
-                    return;
-                }
-                String[] argses = args.split(" ");
-                if(argses.length==1){
-                    return;
-                }
-                String target = argses[0];
-                long targetID = 0;
-                if(target.startsWith("<@")&&target.endsWith(">")){
-                    if(target.contains("!"))target = target.substring(1);
-                    try{
-                        targetID = Long.parseLong(target.substring(2, target.length()-1));
-                    }catch(Exception ex){
-                        return;
-                    }
-                }else{
-                    try{
-                        targetID = Long.parseLong(target);
-                    }catch(Exception ex){
-                        return;
-                    }
-                }
-                User targetUser;
-                try{
-                    targetUser = jda.retrieveUserById(targetID).complete();
-                    if(targetUser==null){
-                        return;
-                    }
-                }catch(Exception ex){
-                    return;
-                }
-                long amt = 0;
-                try{
-                    amt = Long.parseLong(argses[1]);
-                }catch(Exception ex){
-                    return;
-                }
-                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" smore"+(amt==1?"":"s")+".").queue();
-                SmoreBot.smores.put(targetUser.getIdLong(), amt);
-            }
-        });
         playCommands.add(new Command("eat", "nom"){
             @Override
             public String getHelpText(){
@@ -1345,6 +1250,13 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new SecretCommand("glowshroom"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
+                Hut hut = SmoreBot.getHut(user.getIdLong());
+                if(hut.hasGlowshroom()){
+                    channel.sendMessage("You bend down and carefully pick the glowshroom").queue();
+                    hut.pickGlowshroom();
+                    SmoreBot.addGlowshroom(user);
+                    return;
+                }
                 channel.sendMessage("You don't see a glowshroom").queue();
             }
         });
@@ -1377,6 +1289,16 @@ public class Bot extends ListenerAdapter{
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 channel.sendMessage(SmoreBot.getSmoreCountS(user.getIdLong())).queue();
+            }
+        });
+        playCommands.add(new SecretCommand("glowshrooms", "glows", "shrooms"){
+            @Override
+            public String getHelpText(){
+                return "Displays the amount of glowshrooms currently in your possession";
+            }
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(SmoreBot.getGlowshroomCount(user.getIdLong())>0)channel.sendMessage(SmoreBot.getGlowshroomCountS(user.getIdLong())).queue();
             }
         });
         playCommands.add(new Command("smoreboard", "leaderboard", "s'moreboard", "s’moreboard"){
@@ -1430,6 +1352,24 @@ public class Bot extends ListenerAdapter{
                 channel.sendMessage(builder.addField("Top S'nomnomnommers", mess, false).build()).queue();
             }
         });
+        playCommands.add(new SecretCommand("glowboard", "glowshroomboard", "shroomboard"){
+            @Override
+            public String getHelpText(){
+                return "Displays the top 5 glowshroom pickers";
+            }
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                ArrayList<Long> glowshroompilers = new ArrayList<>(SmoreBot.glowshrooms.keySet());
+                Collections.sort(glowshroompilers, (Long o1, Long o2) -> (int)(SmoreBot.glowshrooms.get(o2)-SmoreBot.glowshrooms.get(o1)));
+                EmbedBuilder builder = createEmbed("Glowboard");
+                String mess = "";
+                for(int i = 0; i<Math.min(5, glowshroompilers.size()); i++){
+                    mess+=nick(guild.retrieveMemberById(glowshroompilers.get(i)).complete())+": "+SmoreBot.getGlowshroomCountS(glowshroompilers.get(i))+"\n";
+                }
+                channel.sendMessage(builder.addField("Top Glowshroom Pickers", mess, false).build()).queue();
+            }
+        });
+        //hut commands
         playCommands.add(new SecretCommand("hutdump"){
             @Override
             public String getHelpText(){
@@ -1437,8 +1377,8 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(SmoreBot.huts.containsKey(user.getIdLong())){
-                    Hut hut = SmoreBot.huts.get(user.getIdLong());
+                if(SmoreBot.hutBunches.containsKey(user.getIdLong())){
+                    Hut hut = SmoreBot.getHut(user.getIdLong());
                     String mess = "";
                     for(HutThing thing : hut.getFurniture()){
                         float scale = hut.getScale(thing.y+thing.getDimY()/2f);
@@ -1477,8 +1417,8 @@ public class Bot extends ListenerAdapter{
                 }
                 if(targetUser==null){
                     long id = user.getIdLong();
-                    if(SmoreBot.huts.containsKey(id)){
-                        Hut hut = SmoreBot.huts.get(id);
+                    if(SmoreBot.hutBunches.containsKey(id)){
+                        Hut hut = SmoreBot.getHut(id);
                         hut.sendExteriorImage(channel);
                         hut.sendInteriorImage(channel);
                     }else{
@@ -1486,140 +1426,14 @@ public class Bot extends ListenerAdapter{
                     }
                 }else{
                     long id = targetUser.getIdLong();
-                    if(SmoreBot.huts.containsKey(id)){
-                        Hut hut = SmoreBot.huts.get(id);
+                    if(SmoreBot.hutBunches.containsKey(id)){
+                        Hut hut = SmoreBot.getHut(id);
                         hut.sendExteriorImage(channel);
-                        if(hut.isAllowedInside(user)){
-                            hut.sendInteriorImage(channel);
-                        }
+                        hut.sendInteriorImage(channel);
                     }else{
                         channel.sendMessage("You look for a hut belonging to "+nick(guild.retrieveMember(targetUser).complete())+", but you don't find one").queue();
                     }
                 }
-            }
-        });
-        playCommands.add(new SecretCommand("transferhut"){
-            @Override
-            public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
-                args = args.trim();
-                if(args.isEmpty()){
-                    return;
-                }
-                String[] argses = args.split(" ");
-                if(argses.length==1){
-                    return;
-                }
-                String target1 = argses[0];
-                long target1ID = 0;
-                if(target1.startsWith("<@")&&target1.endsWith(">")){
-                    if(target1.contains("!"))target1 = target1.substring(1);
-                    try{
-                        target1ID = Long.parseLong(target1.substring(2, target1.length()-1));
-                    }catch(Exception ex){
-                        return;
-                    }
-                }else{
-                    try{
-                        target1ID = Long.parseLong(target1);
-                    }catch(Exception ex){
-                        return;
-                    }
-                }
-                User target1User;
-                try{
-                    target1User = jda.retrieveUserById(target1ID).complete();
-                    if(target1User==null){
-                        return;
-                    }
-                }catch(Exception ex){
-                    return;
-                }
-                String target2 = argses[1];
-                long target2ID = 0;
-                if(target2.startsWith("<@")&&target2.endsWith(">")){
-                    if(target2.contains("!"))target2 = target2.substring(1);
-                    try{
-                        target2ID = Long.parseLong(target2.substring(2, target2.length()-1));
-                    }catch(Exception ex){
-                        return;
-                    }
-                }else{
-                    try{
-                        target2ID = Long.parseLong(target2);
-                    }catch(Exception ex){
-                        return;
-                    }
-                }
-                User target2User;
-                try{
-                    target2User = jda.retrieveUserById(target2ID).complete();
-                    if(target2User==null){
-                        return;
-                    }
-                }catch(Exception ex){
-                    return;
-                }
-                target1ID = target1User.getIdLong();
-                target2ID = target2User.getIdLong();
-                if(!SmoreBot.huts.containsKey(target1ID)){
-                    channel.sendMessage(nick(guild.retrieveMember(target1User).complete())+" doesn't have a hut!").queue();
-                    return;
-                }
-                if(SmoreBot.huts.containsKey(target2ID)){
-                    channel.sendMessage(nick(guild.retrieveMember(target2User).complete())+" already has a hut!").queue();
-                    return;
-                }
-                if(SmoreBot.huts.containsKey(target1ID)){
-                    Hut hut = SmoreBot.huts.get(target1ID);
-                    SmoreBot.huts.remove(target1ID);
-                    hut.owner = target2ID;
-                    SmoreBot.huts.put(target2ID, hut);
-                }
-            }
-        });
-        playCommands.add(new SecretCommand("delete"){
-            @Override
-            public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
-                args = args.trim();
-                if(args.isEmpty()){
-                    return;
-                }
-                String[] argses = args.split(" ");
-                if(argses.length!=1){
-                    return;
-                }
-                String target = argses[0];
-                long targetID = 0;
-                if(target.startsWith("<@")&&target.endsWith(">")){
-                    if(target.contains("!"))target = target.substring(1);
-                    try{
-                        targetID = Long.parseLong(target.substring(2, target.length()-1));
-                    }catch(Exception ex){
-                        return;
-                    }
-                }else{
-                    try{
-                        targetID = Long.parseLong(target);
-                    }catch(Exception ex){
-                        return;
-                    }
-                }
-                User targetUser;
-                try{
-                    targetUser = jda.retrieveUserById(targetID).complete();
-                    if(targetUser==null){
-                        return;
-                    }
-                }catch(Exception ex){
-                    return;
-                }
-                targetID = targetUser.getIdLong();
-                if(SmoreBot.getSmoreCount(targetID)!=0)throw new NonZeroSmoreException(nick(guild.retrieveMember(targetUser).complete())+" has non-zero s'mores!");
-                if(SmoreBot.getEatenCount(targetID)!=0)throw new NonZeroEatenException(nick(guild.retrieveMember(targetUser).complete())+" has non-zero eaten s'mores!");
-                SmoreBot.smores.remove(targetID);
-                SmoreBot.eaten.remove(targetID);
             }
         });
         playCommands.add(new Command("move"){
@@ -1630,8 +1444,8 @@ public class Bot extends ListenerAdapter{
             @Override
             public void run(User user, MessageChannel channel, String commandArg, boolean debug){
                 String[] args = commandArg.trim().split(" ");
-                if(SmoreBot.huts.containsKey(user.getIdLong())){
-                    Hut hut = SmoreBot.huts.get(user.getIdLong());
+                if(SmoreBot.hutBunches.containsKey(user.getIdLong())){
+                    Hut hut = SmoreBot.getHut(user.getIdLong());
                     if(commandArg.isEmpty()){
                         channel.sendMessage("Move what?").queue();
                         return;
@@ -1733,24 +1547,37 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(SmoreBot.huts.containsKey(user.getIdLong())){
-                    EmbedBuilder builder = createEmbed("S'tore");
-                    String names = "";
-                    String prices = "";
-                    String colors = "";
+                EmbedBuilder builder = createEmbed("S'tore");
+                String names = "";
+                String prices = "";
+                String colors = "";
+                HutBunch bunch = SmoreBot.hutBunches.get(user.getIdLong());
+                if(bunch==null){
+                    for(HutType type : HutType.values()){
+                        names+=type.name+"\n";
+                        prices+=type.getPrice()+"\n";
+                        colors+="\n";
+                    }
+                }else{
+                    FOR:for(HutType type : HutType.values()){
+                        for(Hut hut : bunch.huts){
+                            if(hut.type==type)continue FOR;
+                        }
+                        names+=type.name+"\n";
+                        prices+=type.getPrice()+"\n";
+                        colors+="\n";
+                    }
                     FOR:for(HutThing thing : Hut.allFurniture){
                         if(!thing.isSellable())continue;
                         names+=thing.getName()+"\n";
                         prices+=thing.getPrice()+"\n";
                         colors+=(thing instanceof HutThingColorable?"Colorable":"​​​​​​​")+"\n";
                     }
-                    builder.addField("Item", names, true);
-                    builder.addField(smoremoji(), prices, true);
-                    builder.addField("", colors, true);
-                    channel.sendMessage(builder.build()).queue();
-                }else{
-                    channel.sendMessage(createEmbed("S'tore").addField("Hut", smoremoji()+" "+Hut.PRICE, false).build()).queue();
                 }
+                builder.addField("Item", names, true);
+                builder.addField(smoremoji(), prices, true);
+                builder.addField("", colors, true);
+                channel.sendMessage(builder.build()).queue();
             }
         });
         playCommands.add(new Command("buy", "purchace", "get"){
@@ -1762,8 +1589,27 @@ public class Bot extends ListenerAdapter{
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 long price = -1;
                 Runnable onBuy = null;
-                if(SmoreBot.huts.containsKey(user.getIdLong())){
-                    Hut hut = SmoreBot.huts.get(user.getIdLong());
+                for(HutType type : HutType.values()){
+                    if(args.trim().equalsIgnoreCase(type.name)){
+                        if(SmoreBot.hasHut(user.getIdLong(), type)){
+                            channel.sendMessage("You already have a "+type.name+"!").queue();
+                        }
+                        price = type.getPrice();
+                        onBuy = () -> {
+                            if(SmoreBot.hutBunches.containsKey(user.getIdLong())){
+                                HutBunch bunch = SmoreBot.hutBunches.get(user.getIdLong());
+                                bunch.huts.add(new Hut(bunch, type));
+                                channel.sendMessage("You buy a "+type.name+" nearby the "+type.campfireName+". It's currently empty, but you can get stuff to put in it.").queue();
+                            }else{
+                                HutBunch bunch = new HutBunch(user.getIdLong());
+                                bunch.huts.add(new Hut(bunch, type));
+                                SmoreBot.hutBunches.put(user.getIdLong(), bunch);
+                            }
+                        };
+                    }
+                }
+                if(SmoreBot.hutBunches.containsKey(user.getIdLong())){
+                    Hut hut = SmoreBot.getHut(user.getIdLong());
                     FOR:for(HutThing thing : Hut.allFurniture){
                         if(!thing.isSellable())continue;
                         if(args.trim().equalsIgnoreCase(thing.getName())){
@@ -1805,14 +1651,6 @@ public class Bot extends ListenerAdapter{
                             }
                         }
                     }
-                }else{
-                    if(args.trim().equalsIgnoreCase("hut")){
-                        price = Hut.PRICE;
-                        onBuy = () -> {
-                            channel.sendMessage("You buy a hut nearby the campfire. It's currently empty, but you can get stuff to put in it.").queue();
-                            SmoreBot.huts.put(user.getIdLong(), new Hut(user.getIdLong()));
-                        };
-                    }
                 }
                 if(onBuy==null){
                     channel.sendMessage("That's not for sale!").queue();
@@ -1834,12 +1672,14 @@ public class Bot extends ListenerAdapter{
             @Override
             public void run(User user, MessageChannel channel, String commandArg, boolean debug){
                 String[] args = commandArg.trim().split(" ");
-                if(SmoreBot.huts.containsKey(user.getIdLong())){
-                    if(commandArg.trim().equalsIgnoreCase("hut")){
-                        channel.sendMessage("You can't sell your hut!").queue();
-                        return;
+                if(SmoreBot.hutBunches.containsKey(user.getIdLong())){
+                    for(Hut hut : SmoreBot.hutBunches.get(user.getIdLong()).huts){
+                        if(commandArg.trim().equalsIgnoreCase(hut.type.name)){
+                            channel.sendMessage("You can't sell your hut!").queue();
+                            return;
+                        }
                     }
-                    Hut hut = SmoreBot.huts.get(user.getIdLong());
+                    Hut hut = SmoreBot.getHut(user.getIdLong());
                     if(commandArg.isEmpty()){
                         channel.sendMessage("Sell what?").queue();
                         return;
@@ -1912,36 +1752,186 @@ public class Bot extends ListenerAdapter{
                 }
             }
         });
-        playCommands.add(new Command("invite"){
+        playCommands.add(new Command("switch", "switchhut", "moveto", "movein", "changehut"){
             @Override
             public String getHelpText(){
-                return "Invite someone into to your hut!";
+                return "Move to a different hut";
             }
             @Override
-            public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(!SmoreBot.huts.containsKey(user.getIdLong())){
+            public void run(User user, MessageChannel channel, String commandArg, boolean debug){
+                HutBunch bunch = SmoreBot.hutBunches.get(user.getIdLong());
+                if(bunch==null){
                     channel.sendMessage("You don't have a hut!").queue();
                     return;
                 }
-                args = args.trim();
-                if(args.isEmpty()){
-                    channel.sendMessage("You invite nobody.").queue();
+                if(bunch.huts.size()==1){
+                    channel.sendMessage("You don't have another hut!").queue();
                     return;
                 }
-                long targetID = 0;
-                if(args.startsWith("<@")&&args.endsWith(">")){
-                    if(args.contains("!"))args = args.substring(1);
+                for(HutType type : HutType.values()){
+                    if(commandArg.trim().equalsIgnoreCase(type.name)||commandArg.trim().equalsIgnoreCase(type.name())){
+                        Hut hut = null;
+                        for(Hut h : bunch.huts){
+                            if(h.type==type)hut = h;
+                        }
+                        if(hut==null){
+                            channel.sendMessage("You don't have a "+type.name+"!").queue();
+                        }else{
+                            int idx = bunch.huts.indexOf(hut);
+                            if(bunch.mainHut==idx){
+                                channel.sendMessage("You're already in your "+type.name).queue();
+                            }else{
+                                bunch.mainHut = idx;
+                                channel.sendMessage("You move to your "+type.name).queue();
+                            }
+                        }
+                        return;
+                    }
+                }
+                String huts = "";
+                for(Hut hut : bunch.huts){
+                    huts+=", "+hut.type.name;
+                }
+                channel.sendMessage("Switch to which?\n"+huts.substring(2)).queue();
+            }
+        });
+        playCommands.add(new Command("lights", "light", "lightswitch"){
+            @Override
+            public String getHelpText(){
+                return "Turn on/off lights";
+            }
+            @Override
+            public void run(User user, MessageChannel channel, String commandArg, boolean debug){
+                Hut hut = SmoreBot.getHut(user.getIdLong());
+                if(hut==null){
+                    channel.sendMessage("You don't have a hut!").queue();
+                    return;
+                }
+                Boolean lights = null;
+                for(HutThing thing : hut.furniture){
+                    if(thing.isLightSwitch()){
+                        lights = thing.isOn();
+                    }
+                }
+                if(lights==null){
+                    channel.sendMessage("You don't have a light switch!").queue();
+                    return;
+                }
+                boolean on = !lights;
+                channel.sendMessage("You turn "+(on?"on":"off")+" the lights").queue();
+                for(HutThing thing : hut.furniture){
+                    if(thing.isLightSwitch()||thing.isLamp()){
+                        thing.setOn(on);
+                    }
+                }
+            }
+        });
+        //admin commands
+        playCommands.add(new SecretCommand("transferhut"){
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                args = args.trim();
+                if(args.isEmpty()){
+                    return;
+                }
+                String[] argses = args.split(" ");
+                if(argses.length==1){
+                    return;
+                }
+                String target1 = argses[0];
+                long target1ID = 0;
+                if(target1.startsWith("<@")&&target1.endsWith(">")){
+                    if(target1.contains("!"))target1 = target1.substring(1);
                     try{
-                        targetID = Long.parseLong(args.substring(2, args.length()-1));
+                        target1ID = Long.parseLong(target1.substring(2, target1.length()-1));
                     }catch(Exception ex){
-                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }else{
                     try{
-                        targetID = Long.parseLong(args);
+                        target1ID = Long.parseLong(target1);
                     }catch(Exception ex){
-                        channel.sendMessage("Who?").queue();
+                        return;
+                    }
+                }
+                User target1User;
+                try{
+                    target1User = jda.retrieveUserById(target1ID).complete();
+                    if(target1User==null){
+                        return;
+                    }
+                }catch(Exception ex){
+                    return;
+                }
+                String target2 = argses[1];
+                long target2ID = 0;
+                if(target2.startsWith("<@")&&target2.endsWith(">")){
+                    if(target2.contains("!"))target2 = target2.substring(1);
+                    try{
+                        target2ID = Long.parseLong(target2.substring(2, target2.length()-1));
+                    }catch(Exception ex){
+                        return;
+                    }
+                }else{
+                    try{
+                        target2ID = Long.parseLong(target2);
+                    }catch(Exception ex){
+                        return;
+                    }
+                }
+                User target2User;
+                try{
+                    target2User = jda.retrieveUserById(target2ID).complete();
+                    if(target2User==null){
+                        return;
+                    }
+                }catch(Exception ex){
+                    return;
+                }
+                target1ID = target1User.getIdLong();
+                target2ID = target2User.getIdLong();
+                if(!SmoreBot.hutBunches.containsKey(target1ID)){
+                    channel.sendMessage(nick(guild.retrieveMember(target1User).complete())+" doesn't have a hut!").queue();
+                    return;
+                }
+                if(SmoreBot.hutBunches.containsKey(target2ID)){
+                    channel.sendMessage(nick(guild.retrieveMember(target2User).complete())+" already has a hut!").queue();
+                    return;
+                }
+                if(SmoreBot.hutBunches.containsKey(target1ID)){
+                    HutBunch bunch = SmoreBot.hutBunches.get(target1ID);
+                    SmoreBot.hutBunches.remove(target1ID);
+                    bunch.owner = target2ID;
+                    SmoreBot.hutBunches.put(target2ID, bunch);
+                }
+            }
+        });
+        playCommands.add(new SecretCommand("delete"){
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                args = args.trim();
+                if(args.isEmpty()){
+                    return;
+                }
+                String[] argses = args.split(" ");
+                if(argses.length!=1){
+                    return;
+                }
+                String target = argses[0];
+                long targetID = 0;
+                if(target.startsWith("<@")&&target.endsWith(">")){
+                    if(target.contains("!"))target = target.substring(1);
+                    try{
+                        targetID = Long.parseLong(target.substring(2, target.length()-1));
+                    }catch(Exception ex){
+                        return;
+                    }
+                }else{
+                    try{
+                        targetID = Long.parseLong(target);
+                    }catch(Exception ex){
                         return;
                     }
                 }
@@ -1949,52 +1939,43 @@ public class Bot extends ListenerAdapter{
                 try{
                     targetUser = jda.retrieveUserById(targetID).complete();
                     if(targetUser==null){
-                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }catch(Exception ex){
-                    channel.sendMessage("Who?").queue();
                     return;
                 }
-                Hut hut = SmoreBot.huts.get(user.getIdLong());
-                if(hut.invited.contains(targetID)){
-                    channel.sendMessage(nick(guild.retrieveMember(targetUser).complete())+" is already invited!").queue();
-                    return;
-                }
-                channel.sendMessage("You invite "+nick(guild.retrieveMember(targetUser).complete())+" to your hut.").queue();
-                hut.invited.add(targetID);
+                targetID = targetUser.getIdLong();
+                if(SmoreBot.getSmoreCount(targetID)!=0)throw new NonZeroSmoreException(nick(guild.retrieveMember(targetUser).complete())+" has non-zero s'mores!");
+                if(SmoreBot.getEatenCount(targetID)!=0)throw new NonZeroEatenException(nick(guild.retrieveMember(targetUser).complete())+" has non-zero eaten s'mores!");
+                SmoreBot.smores.remove(targetID);
+                SmoreBot.eaten.remove(targetID);
             }
         });
-        playCommands.add(new Command("uninvite", "kick"){
-            @Override
-            public String getHelpText(){
-                return "Retract your invitiation from someone!";
-            }
+        playCommands.add(new SecretCommand("seteat"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(!SmoreBot.huts.containsKey(user.getIdLong())){
-                    channel.sendMessage("You don't have a hut!").queue();
-                    return;
-                }
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
-                    channel.sendMessage("Nobody wasn't invited.").queue();
                     return;
                 }
+                String[] argses = args.split(" ");
+                if(argses.length==1){
+                    return;
+                }
+                String target = argses[0];
                 long targetID = 0;
-                if(args.startsWith("<@")&&args.endsWith(">")){
-                    if(args.contains("!"))args = args.substring(1);
+                if(target.startsWith("<@")&&target.endsWith(">")){
+                    if(target.contains("!"))target = target.substring(1);
                     try{
-                        targetID = Long.parseLong(args.substring(2, args.length()-1));
+                        targetID = Long.parseLong(target.substring(2, target.length()-1));
                     }catch(Exception ex){
-                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }else{
                     try{
-                        targetID = Long.parseLong(args);
+                        targetID = Long.parseLong(target);
                     }catch(Exception ex){
-                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }
@@ -2002,50 +1983,116 @@ public class Bot extends ListenerAdapter{
                 try{
                     targetUser = jda.retrieveUserById(targetID).complete();
                     if(targetUser==null){
-                        channel.sendMessage("Who?").queue();
                         return;
                     }
                 }catch(Exception ex){
-                    channel.sendMessage("Who?").queue();
                     return;
                 }
-                Hut hut = SmoreBot.huts.get(user.getIdLong());
-                if(!hut.invited.contains(targetID)){
-                    channel.sendMessage(nick(guild.retrieveMember(targetUser).complete())+" isn't invited!").queue();
+                long amt = 0;
+                try{
+                    amt = Long.parseLong(argses[1]);
+                }catch(Exception ex){
                     return;
                 }
-                channel.sendMessage("You rectract your invitation from "+nick(guild.retrieveMember(targetUser).complete())+" to your hut.").queue();
-                hut.invited.remove(targetID);
+                if(amt<0){
+                    return;
+                }
+                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" eated smore"+(amt==1?"":"s")+".").queue();
+                SmoreBot.eaten.put(targetUser.getIdLong(), amt);
             }
         });
-        playCommands.add(new Command("open"){
-            @Override
-            public String getHelpText(){
-                return "Invite everyone into to your hut!";
-            }
+        playCommands.add(new SecretCommand("setsmores"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(!SmoreBot.huts.containsKey(user.getIdLong())){
-                    channel.sendMessage("You don't have a hut!").queue();
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                args = args.trim();
+                if(args.isEmpty()){
                     return;
                 }
-                SmoreBot.huts.get(user.getIdLong()).open = true;
-                channel.sendMessage("You open your hut to visitors.").queue();
+                String[] argses = args.split(" ");
+                if(argses.length==1){
+                    return;
+                }
+                String target = argses[0];
+                long targetID = 0;
+                if(target.startsWith("<@")&&target.endsWith(">")){
+                    if(target.contains("!"))target = target.substring(1);
+                    try{
+                        targetID = Long.parseLong(target.substring(2, target.length()-1));
+                    }catch(Exception ex){
+                        return;
+                    }
+                }else{
+                    try{
+                        targetID = Long.parseLong(target);
+                    }catch(Exception ex){
+                        return;
+                    }
+                }
+                User targetUser;
+                try{
+                    targetUser = jda.retrieveUserById(targetID).complete();
+                    if(targetUser==null){
+                        return;
+                    }
+                }catch(Exception ex){
+                    return;
+                }
+                long amt = 0;
+                try{
+                    amt = Long.parseLong(argses[1]);
+                }catch(Exception ex){
+                    return;
+                }
+                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" smore"+(amt==1?"":"s")+".").queue();
+                SmoreBot.smores.put(targetUser.getIdLong(), amt);
             }
         });
-        playCommands.add(new Command("close"){
-            @Override
-            public String getHelpText(){
-                return "Retract your invitiation from everyone!";
-            }
+        playCommands.add(new SecretCommand("setglowshrooms"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(!SmoreBot.huts.containsKey(user.getIdLong())){
-                    channel.sendMessage("You don't have a hut!").queue();
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                args = args.trim();
+                if(args.isEmpty()){
                     return;
                 }
-                SmoreBot.huts.get(user.getIdLong()).open = false;
-                channel.sendMessage("You close your hut to visitors.").queue();
+                String[] argses = args.split(" ");
+                if(argses.length==1){
+                    return;
+                }
+                String target = argses[0];
+                long targetID = 0;
+                if(target.startsWith("<@")&&target.endsWith(">")){
+                    if(target.contains("!"))target = target.substring(1);
+                    try{
+                        targetID = Long.parseLong(target.substring(2, target.length()-1));
+                    }catch(Exception ex){
+                        return;
+                    }
+                }else{
+                    try{
+                        targetID = Long.parseLong(target);
+                    }catch(Exception ex){
+                        return;
+                    }
+                }
+                User targetUser;
+                try{
+                    targetUser = jda.retrieveUserById(targetID).complete();
+                    if(targetUser==null){
+                        return;
+                    }
+                }catch(Exception ex){
+                    return;
+                }
+                long amt = 0;
+                try{
+                    amt = Long.parseLong(argses[1]);
+                }catch(Exception ex){
+                    return;
+                }
+                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" glowshroom"+(amt==1?"":"s")+".").queue();
+                SmoreBot.glowshrooms.put(targetUser.getIdLong(), amt);
             }
         });
     }
@@ -2159,6 +2206,7 @@ public class Bot extends ListenerAdapter{
         System.out.println("Loading channels...");
         for(int i = 0; i<args.length; i++){
             String arg = args[i];
+            if(arg.equalsIgnoreCase(Main.discordBotToken))continue;
             switch(arg){
                 case "headless":
                 case "noAWT":

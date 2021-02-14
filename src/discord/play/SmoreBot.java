@@ -1,5 +1,7 @@
 package discord.play;
 import discord.play.smivilization.Hut;
+import discord.play.smivilization.HutBunch;
+import discord.play.smivilization.HutType;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +10,11 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import simplelibrary.config2.Config;
 public class SmoreBot{
+    public static HashMap<Long, Long> glowshrooms = new HashMap<>();
     public static HashMap<Long, Long> smores = new HashMap<>();//MONEY
     public static HashMap<Long, Long> eaten = new HashMap<>();//MONEY
     public static HashMap<Long, Action> actions = new HashMap<>();
-    public static HashMap<Long, Hut> huts = new HashMap<>();
+    public static HashMap<Long, HutBunch> hutBunches = new HashMap<>();
     public static void action(User user, MessageChannel channel, Action action){
         if(actions.containsKey(user.getIdLong())){
             channel.sendMessage("You can't do that many things at once!").queue();
@@ -25,6 +28,12 @@ public class SmoreBot{
     }
     public static String getSmoreCountS(long id){
         return "<:smore:493612965195677706> "+getSmoreCount(id);
+    }
+    public static long getGlowshroomCount(long id){
+        return glowshrooms.containsKey(id)?glowshrooms.get(id):0;
+    }
+    public static String getGlowshroomCountS(long id){
+        return "<:glowshroom:722491690094690324> "+getGlowshroomCount(id);
     }
     public static long getEatenCount(long id){
         return eaten.containsKey(id)?eaten.get(id):0;
@@ -45,9 +54,14 @@ public class SmoreBot{
             yums.set(id+"", eaten.get(id));
         }
         config.set("yums", yums);
+        Config glows = Config.newConfig();
+        for(Long id : glowshrooms.keySet()){
+            glows.set(id+"", glowshrooms.get(id));
+        }
+        config.set("glows", glows);
         Config theHuts = Config.newConfig();
-        for(Long id : huts.keySet()){
-            theHuts.set(id+"", huts.get(id).save(Config.newConfig()));
+        for(Long id : hutBunches.keySet()){
+            theHuts.set(id+"", hutBunches.get(id).save(Config.newConfig()));
         }
         config.set("huts", theHuts);
         config.save();
@@ -65,9 +79,13 @@ public class SmoreBot{
         for(String key : yums.properties()){
             eaten.put(Long.parseLong(key), yums.get(key));
         }
+        Config glows = config.get("glows", Config.newConfig());
+        for(String key : glows.properties()){
+            glowshrooms.put(Long.parseLong(key), glows.get(key));
+        }
         Config theHuts = config.get("huts", Config.newConfig());
         for(String key : theHuts.properties()){
-            huts.put(Long.parseLong(key), Hut.load(theHuts.get(key, Config.newConfig())));
+            hutBunches.put(Long.parseLong(key), HutBunch.load(theHuts.get(key)));
         }
     }
     public static void addSmore(User user){
@@ -102,6 +120,29 @@ public class SmoreBot{
             eaten.put(id, count);
         }
     }
+    public static void addGlowshroom(User user){
+        addGlowshrooms(user, 1);
+    }
+    public static void addGlowshrooms(User user, long count){
+        if(count<0)throw new IllegalArgumentException("You can't add a negative amount of glowshrooms! use `removeGlowshrooms` instead!");
+        if(count==0)throw new IllegalArgumentException("You can't add no glowshrooms!");
+        long id = user.getIdLong();
+        if(glowshrooms.containsKey(id)){
+            glowshrooms.put(id, glowshrooms.get(id)+count);
+        }else{
+            glowshrooms.put(id, count);
+        }
+    }
+    public static void removeGlowshrooms(User user, long count){
+        if(count<0)throw new IllegalArgumentException("You can't remove a negative amount of glowshrooms! use `addGlowshrooms` instead!");
+        if(count==0)throw new IllegalArgumentException("You can't remove no glowshrooms!");
+        long id = user.getIdLong();
+        if(glowshrooms.containsKey(id)){
+            glowshrooms.put(id, glowshrooms.get(id)-count);
+        }else{
+            glowshrooms.put(id, -count);
+        }
+    }
     public static int getSmorePlacement(long owner){
         ArrayList<Long> smorepilers = new ArrayList<>(smores.keySet());
         Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(smores.get(o2)-smores.get(o1)));
@@ -111,5 +152,25 @@ public class SmoreBot{
         ArrayList<Long> smorepilers = new ArrayList<>(eaten.keySet());
         Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(eaten.get(o2)-eaten.get(o1)));
         return smorepilers.indexOf(owner)+1;
+    }
+    public static Hut getHut(long user){
+        HutBunch bunch = hutBunches.get(user);
+        if(bunch==null)return null;
+        return bunch.huts.get(bunch.mainHut);
+    }
+    public static boolean hasHut(long user, HutType type){
+        if(hutBunches.containsKey(user)){
+            for(Hut hut : hutBunches.get(user).huts){
+                if(hut.type==type)return true;
+            }
+        }
+        return false;
+    }
+    public static boolean hasHut(long user){
+        return getHut(user)==null;
+    }
+    public static String getCampfire(long user){
+        Hut hut = getHut(user);
+        return hut==null?"campfire":hut.type.campfireName;
     }
 }

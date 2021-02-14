@@ -9,7 +9,7 @@ public class SmoreLordAction extends Action{
     }
     @Override
     protected String getBeginMessage(){
-        return "You sit down by the campfire and cook a S'morelord. This could take quite a while.";
+        return "You sit down by the "+SmoreBot.getCampfire(user.getIdLong())+" and cook a S'morelord. This could take quite a while.";
     }
     @Override
     protected String getFinishedMessage(){
@@ -17,7 +17,7 @@ public class SmoreLordAction extends Action{
     }
     @Override
     protected String getCanceledMessage(){
-        return "You stop making your S'morelord, leaving it by the campfire to burn, reduced to atoms floating through the atmosphere, never to be seen again.\nThe fire grows into a massive bonfire, burning down a nearby hut\nYou are forced to pay 64 S'mores in damages";
+        return "You stop making your S'morelord, leaving it by the "+SmoreBot.getCampfire(user.getIdLong())+" to burn, reduced to atoms floating through the atmosphere, never to be seen again.\nThe fire grows into a massive bonfire, burning down a nearby hut\nYou are forced to pay 64 S'mores in damages";
     }
     @Override
     protected String getName(){

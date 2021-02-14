@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.ImageStash;
 public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
-    int frameType = 1;
+    int frameType = 2;
     public GlowshroomGlowshroomGlowshroomPoster(UUID uuid, Hut hut){
         super(uuid, hut, "Glowshroom Glowshroom Glowshroom Poster", "glowshroom poster", 744517680824057896l, -1);
     }

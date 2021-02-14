@@ -55,4 +55,16 @@ public class Lamp extends HutThing{
     public Wall[] getAllowedWalls(){
         return new Wall[]{Wall.CIELING};
     }
+    @Override
+    public boolean isLamp(){
+        return true;
+    }
+    @Override
+    public boolean isOn(){
+        return on;
+    }
+    @Override
+    public void setOn(boolean on){
+        this.on = on;
+    }
 }

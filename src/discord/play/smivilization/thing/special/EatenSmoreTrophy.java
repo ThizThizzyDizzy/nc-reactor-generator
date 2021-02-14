@@ -15,7 +15,7 @@ public class EatenSmoreTrophy extends HutThing{
     @Override
     public String getTexture(){
         String type;
-        switch(SmoreBot.getEatenPlacement(hut.owner)){
+        switch(SmoreBot.getEatenPlacement(hut.parent.owner)){
             case 1:
                 type = "gold eaten smore";
                 break;

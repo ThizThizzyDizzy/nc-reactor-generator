@@ -191,4 +191,16 @@ public abstract class HutThing implements Comparable<HutThing>{
     public boolean isBackgroundObject(){
         return false;
     }
+    public boolean isLamp(){
+        return false;
+    }
+    public boolean isLightSwitch(){
+        return false;
+    }
+    public boolean isOn(){
+        throw new IllegalArgumentException("This HutThing is a light switch or lamp, but doesn't know when it's on or not!");
+    }
+    public void setOn(boolean on){
+        throw new IllegalArgumentException("This HutThing is a light switch or lamp, but doesn't know how to set if it's on or not!");
+    }
 }

@@ -10,21 +10,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import javax.imageio.ImageIO;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import simplelibrary.CircularStream;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class Hut{
-    public static long PRICE = 32;
     /**
      * Only used to initalize new ones. do not use directly.
      */
@@ -33,17 +31,26 @@ public class Hut{
      * Only used to initalize new ones. do not use directly.
      */
     private static final EatenSmoreTrophy nomTrophy;
-    public long owner;
     public static final ArrayList<HutThing> allFurniture = new ArrayList<>();
     static{
         allFurniture.add(new Lamp(null, null));
+        allFurniture.add(new SpaceLamp(null, null));
         allFurniture.add(new LightSwitch(null, null));
         allFurniture.add(new Shelf(null, null));
+        allFurniture.add(new SpaceShelf(null, null));
+        allFurniture.add(new TropicalShelf(null, null));
+        allFurniture.add(new WastelandShelf(null, null));
         allFurniture.add(new Couch(null, null));
         allFurniture.add(new Bed(null, null));
+        allFurniture.add(new SpaceBed(null, null));
+        allFurniture.add(new TropicalBed(null, null));
+        allFurniture.add(new WastelandBed(null, null));
         allFurniture.add(new PurpleTriflorice(null, null));
         allFurniture.add(new PuLaptop(null, null));
         allFurniture.add(new Table(null, null));
+        allFurniture.add(new SpaceTable(null, null));
+        allFurniture.add(new TropicalTable(null, null));
+        allFurniture.add(new WastelandTable(null, null));
         allFurniture.add(new Television(null, null));
         allFurniture.add(new TelevisionRemote(null, null));
         allFurniture.add(new CoffeeTable(null, null));
@@ -54,61 +61,55 @@ public class Hut{
         allFurniture.add(trophy = new SmoreTrophy(null, null));
         allFurniture.add(nomTrophy = new EatenSmoreTrophy(null, null));
     }
-    public ArrayList<Long> invited = new ArrayList<>();
+    public HutBunch parent;
     public ArrayList<HutThing> furniture = new ArrayList<>();
-    public boolean open;
-    public Hut(long owner){
-        this.owner = owner;
+    public final HutType type;
+    private long glowshroomAt;//when a glowshroom will appear
+    private int glowshroomMin = 1_000*60*60;//1 hour
+    private int glowshroomMax = 1_000*60*60*24;//1 day
+    private Random rand = new Random();
+    public Hut(HutBunch parent, HutType type){
+        this.parent = parent;
         addExclusives();
+        this.type = type;
+        if(type==HutType.WASTELAND)pickGlowshroom();
     }
     private void addExclusives(){
         addOnce(trophy.newInstance(this));
         addOnce(nomTrophy.newInstance(this));
         for(HutThing thing : allFurniture){
             if(thing instanceof HutThingExclusive){
-                if(((HutThingExclusive)thing).exclusiveOwner==owner){
+                if(((HutThingExclusive)thing).exclusiveOwner==parent.owner){
                     addOnce(thing.newInstance(this));
                 }
             }
         }
     }
     public Config save(Config config){
-        config.set("owner", owner);
-        ConfigNumberList inviteds = new ConfigNumberList();
-        for(Long l : invited){
-            inviteds.add(l);
-        }
-        config.set("invited", inviteds);
+        config.set("type", type.name());
         ConfigList furn = new ConfigList();
         for(HutThing thing : furniture){
             furn.add(thing.save(Config.newConfig()));
         }
         config.set("furniture", furn);
-        config.set("open", open);
+        config.set("glowshroom", glowshroomAt);
         return config;
     }
-    public static Hut load(Config config){
-        Hut hut = new Hut(config.get("owner"));
+    public static Hut load(HutBunch parent, Config config){
+        Hut hut = new Hut(parent, HutType.valueOf(config.get("type", HutType.STANDARD.name())));
         hut.furniture.clear();
-        ConfigNumberList inviteds = config.get("invited");
-        for(int i = 0; i<inviteds.size(); i++){
-            hut.invited.add(inviteds.get(i));
-        }
         ConfigList furn = config.get("furniture", new ConfigList());
         for(Object c : furn.iterable()){
             HutThing thing = HutThing.load((Config)c, hut);
             if(thing instanceof HutThingExclusive){
-                if(hut.owner!=((HutThingExclusive)thing).exclusiveOwner)continue;
+                if(hut.parent.owner!=((HutThingExclusive)thing).exclusiveOwner)continue;
             }
             hut.furniture.add(thing);
         }
-        hut.open = config.get("open", false);
+//        hut.glowshroomAt = config.get("glowshroom", -1L);
+//        if(hut.glowshroomAt==-1)hut.pickGlowshroom();
         hut.addExclusives();
         return hut;
-    }
-    public boolean isAllowedInside(User user){
-        if(open)return true;
-        return invited.contains(user.getIdLong());
     }
     public void sendImage(MessageChannel channel, String name, Core.BufferRenderer renderer){
         sendImage(channel, name, 512, 512, renderer);
@@ -127,16 +128,31 @@ public class Hut{
     }
     public void sendExteriorImage(MessageChannel channel){
         sendImage(channel, "outside", (buff) -> {
-            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/outside.png"));
+            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside.png"));
+            boolean hasLamp = false;
+            for(HutThing thing : furniture){
+                if(thing.isLamp()&&thing.isOn())hasLamp = true;
+            }
+            if(type==HutType.NIGHT&&hasLamp){
+                Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside glow.png"));
+            }
+            if(hasGlowshroom()){
+                Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/glowshroom.png"));
+            }
         });
     }
     public void sendInteriorImage(MessageChannel channel){
         sendImage(channel, "inside", (buff) -> {
-            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/inside.png"));
+            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
+            boolean hasLamp = false;
             for(HutThing thing : furn){
+                if(thing.isLamp()&&thing.isOn())hasLamp = true;
                 thing.render(.25f);
+            }
+            if(type==HutType.NIGHT){
+                Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));
             }
 //            try{
 //                drawa3DModelLikeTotalMagic(8, 0, 5, OBJLoader.loadModel("C:/Users/Thiz/Desktop/untitled.obj"));
@@ -148,11 +164,16 @@ public class Hut{
     }
     public void sendHighlightImage(MessageChannel channel, List<HutThing> highlights){
         sendImage(channel, "inside", (buff) -> {
-            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/inside.png"));
+            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
+            boolean hasLamp = false;
             for(HutThing thing : furn){
+                if(thing.isLamp()&&thing.isOn())hasLamp = true;
                 thing.render(.25f);
+            }
+            if(type==HutType.NIGHT){
+                Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));
             }
             for(HutThing thing : furn){
                 float x,y,z;
@@ -239,11 +260,16 @@ public class Hut{
     }
     public void sendPlacementHighlightImage(MessageChannel channel, HutThing highlightedThing, List<Placement> highlights){
         sendImage(channel, "inside", (buff) -> {
-            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/inside.png"));
+            Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
+            boolean hasLamp = false;
             for(HutThing thing : furn){
+                if(thing.isLamp()&&thing.isOn())hasLamp = true;
                 thing.render(.25f);
+            }
+            if(type==HutType.NIGHT){
+                Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));
             }
             for(Placement placement : highlights){
                 float x,y,z;
@@ -706,5 +732,12 @@ public class Hut{
             }
         }
         return possibles;
+    }
+    public boolean hasGlowshroom(){
+        if(type!=HutType.WASTELAND)return false;
+        return glowshroomAt<System.currentTimeMillis();
+    }
+    public void pickGlowshroom(){
+        glowshroomAt = System.currentTimeMillis()+rand.nextInt(glowshroomMax-glowshroomMin)+glowshroomMin;
     }
 }

@@ -15,7 +15,7 @@ public class SmoreTrophy extends HutThing{
     @Override
     public String getTexture(){
         String type;
-        switch(SmoreBot.getSmorePlacement(hut.owner)){
+        switch(SmoreBot.getSmorePlacement(hut.parent.owner)){
             case 1:
                 type = "gold smore";
                 break;

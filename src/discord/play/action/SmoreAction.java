@@ -8,7 +8,7 @@ public class SmoreAction extends Action{
     }
     @Override
     protected String getBeginMessage(){
-        return "You sit down by the campfire and cook a S'more. This could take some time.";
+        return "You sit down by the "+SmoreBot.getCampfire(user.getIdLong())+" and cook a S'more. This could take some time.";
     }
     @Override
     protected String getFinishedMessage(){
@@ -16,7 +16,7 @@ public class SmoreAction extends Action{
     }
     @Override
     protected String getCanceledMessage(){
-        return "You stop making your S'more, leaving it by the campfire to burn, reduced to atoms floating through the atmosphere, never to be seen again.";
+        return "You stop making your S'more, leaving it by the "+SmoreBot.getCampfire(user.getIdLong())+" to burn, reduced to atoms floating through the atmosphere, never to be seen again.";
     }
     @Override
     protected String getName(){

@@ -5,59 +5,58 @@ import discord.play.smivilization.Wall;
 import java.util.UUID;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
-public class LightSwitch extends HutThing{
+public class SpaceLamp extends HutThing{
     private boolean on = true;
-    public LightSwitch(UUID uuid, Hut hut){
-        super(uuid, hut, "Light Switch", "light switch", 2);
-        mirrorIf = 1;
+    public SpaceLamp(UUID uuid, Hut hut){
+        super(uuid, hut, "Space Lamp", "space lamp", 18);
     }
     @Override
     public HutThing newInstance(UUID uuid, Hut hut){
-        return new LightSwitch(uuid, hut);
+        return new SpaceLamp(uuid, hut);
     }
     @Override
     public void draw(double left, double top, double right, double bottom){
-        Renderer2D.drawRect(left, top, right, bottom, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch casing.png"));
-        Renderer2D.drawRect(left, top, right, bottom, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch "+(on?"on":"off")+".png"));
+        Renderer2D.drawRect(left, top, right, bottom, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/space lamp/lamp.png"));
+        if(on)Renderer2D.drawRect(left, top, right, bottom, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/space lamp/lamp glow.png"));
     }
     @Override
     public int[] getDimensions(){
-        return new int[]{1,1,1};
+        return new int[]{2,2,2};
     }
     @Override
     public int[] getDefaultLocation(){
-        return  new int[]{0,9,4};
+        return new int[]{4,6,9};
     }
     @Override
     public Wall getDefaultWall(){
-        return Wall.LEFT;
+        return Wall.CIELING;
     }
     @Override
     public float getRenderWidth(){
-        return 118;
+        return 809;
     }
     @Override
     public float getRenderHeight(){
-        return 257;
+        return 679;
     }
     @Override
     public float getRenderOriginX(){
-        return 36;
+        return 407;
     }
     @Override
     public float getRenderOriginY(){
-        return 123;
+        return 70;
     }
     @Override
     public float getRenderScale(){
-        return 1/2.0375257f;
+        return 1/1.7644925f;
     }
     @Override
     public Wall[] getAllowedWalls(){
-        return new Wall[]{Wall.LEFT,Wall.RIGHT};
+        return new Wall[]{Wall.CIELING};
     }
     @Override
-    public boolean isLightSwitch(){
+    public boolean isLamp(){
         return true;
     }
     @Override
