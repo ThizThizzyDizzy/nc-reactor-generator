@@ -1,15 +1,17 @@
 package planner.editor.suggestion;
 import planner.Task;
 public class SuggestorTask extends Task{
-    private final Suggestor suggestor;
     public int num = 0;
     public long time;
+    public int max;
+    public long maxTime;
     public SuggestorTask(Suggestor suggestor){
-        super(suggestor.getName());
-        this.suggestor = suggestor;
+        super(suggestor.name);
+        max = suggestor.limit;
+        maxTime = suggestor.timeLimit;
     }
     @Override
     public double getProgressD(){
-        return Math.max(num/(double)suggestor.limit, time/(double)suggestor.timeLimit);
+        return Math.max(num/(double)max, time/(double)maxTime);
     }
 }

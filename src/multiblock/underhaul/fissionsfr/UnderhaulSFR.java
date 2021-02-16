@@ -2,13 +2,17 @@ package multiblock.underhaul.fissionsfr;
 import generator.Priority;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import multiblock.Action;
+import multiblock.Direction;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.action.SetblockAction;
+import multiblock.action.SetblocksAction;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.ppe.SmartFillUnderhaulSFR;
@@ -109,15 +113,16 @@ public class UnderhaulSFR extends Multiblock<Block>{
         }while(somethingChanged);
         coolers.finish();
         cooling = 0;
-        for(int i = 0; i<blocks.size(); i++){
-            Block block = blocks.get(i);
+        ArrayList<Block> allBlocks = getBlocks();
+        for(int i = 0; i<allBlocks.size(); i++){
+            Block block = allBlocks.get(i);
             if(block.isFuelCell()){
                 totalHeatMult+=block.heatMult;
                 totalEnergyMult+=block.energyMult;
                 cells++;
             }
             if(block.isCooler()&&block.isActive())cooling+=block.getCooling();
-            stats.progress = i/(double)blocks.size();
+            stats.progress = i/(double)allBlocks.size();
         }
         this.heatMult = totalHeatMult/cells;
         if(Double.isNaN(heatMult))heatMult = 0;
@@ -150,7 +155,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
                 + "Heat multiplier: "+percent(heatMult, 0)+"\n"
                 + "Fuel cells: "+cells;
         tooltip+=getModuleTooltip();
-        return new FormattedText(tooltip, heat<=0?null:Core.theme.getRed());
+        return new FormattedText(tooltip, netHeat>0?Core.theme.getRed():null);
     }
     @Override
     public int getMultiblockID(){
@@ -330,32 +335,290 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
-        for(Priority.Preset preset : getGenerationPriorityPresets()){
-            suggestors.add(new Suggestor<UnderhaulSFR>(100, 1_000) {
-                @Override
-                public String getName(){
-                    return "Random Block Suggestor ("+preset.name+")";
+        suggestors.add(new Suggestor<UnderhaulSFR>("Full Cell Suggestor", -1, -1){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<UnderhaulSFR>("Efficiency", true, true){
+                    @Override
+                    protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                        return main.efficiency-other.efficiency;
+                    }
+                });
+                priorities.add(new Priority<UnderhaulSFR>("Power", true, true){
+                    @Override
+                    protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                        return main.power-other.power;
+                    }
+                });
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests adding Fuel cells with moderators to increase efficiency and output";
+            }
+            @Override
+            public void generateSuggestions(UnderhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> cells = new ArrayList<>();
+                multiblock.getAvailableBlocks(cells);
+                for(Iterator<Block> it = cells.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isFuelCell())it.remove();
                 }
-                @Override
-                public String getDescription(){
-                    return "Generates random single-block suggestions";
+                ArrayList<Block> moderators = new ArrayList<>();
+                multiblock.getAvailableBlocks(moderators);
+                for(Iterator<Block> it = moderators.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isModerator())it.remove();
                 }
-                @Override
-                public void generateSuggestions(UnderhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
-                    Random rand = new Random();
-                    while(suggestor.acceptingSuggestions()){
-                        int x = rand.nextInt(multiblock.getX());
-                        int y = rand.nextInt(multiblock.getY());
-                        int z = rand.nextInt(multiblock.getZ());
-                        ArrayList<Block> blocks = new ArrayList<>();
-                        multiblock.getAvailableBlocks(blocks);
-                        Block was = multiblock.getBlock(x, y, z);
-                        for(Block b : blocks){
-                            suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                int cellCount = 0;
+                for(int y = 0; y<multiblock.getY(); y++){
+                    for(int z = 0; z<multiblock.getZ(); z++){
+                        for(int x = 0; x<multiblock.getX(); x++){
+                            Block b = multiblock.getBlock(x, y, z);
+                            if(b!=null&&b.isFuelCell())cellCount++;
                         }
                     }
                 }
-            });
-        }
+                suggestor.setCount(multiblock.getX()*multiblock.getY()*multiblock.getZ()*cells.size()*moderators.size()-cellCount);
+                for(Block cell : cells){
+                    for(Block moderator : moderators){
+                        for(int y = 0; y<multiblock.getY(); y++){
+                            for(int z = 0; z<multiblock.getZ(); z++){
+                                for(int x = 0; x<multiblock.getX(); x++){
+                                    Block was = multiblock.getBlock(x, y, z);
+                                    if(was!=null&&was.isFuelCell())continue;
+                                    ArrayList<Action> actions = new ArrayList<>();
+                                    actions.add(new SetblockAction(x, y, z, cell.newInstance(x, y, z)));
+                                    SetblocksAction multi = new SetblocksAction(moderator);
+                                    DIRECTION:for(Direction d : directions){
+                                        ArrayList<int[]> toSet = new ArrayList<>();
+                                        boolean yep = false;
+                                        for(int i = 1; i<=configuration.underhaul.fissionSFR.neutronReach+1; i++){
+                                            int X = x+d.x*i;
+                                            int Y = y+d.y*i;
+                                            int Z = z+d.z*i;
+                                            Block b = multiblock.getBlock(X, Y, Z);
+                                            if(b!=null){
+                                                if(b.isCasing())break;//end of the line
+                                                if(b.isModerator())continue;//already a moderator
+                                                if(b.isFuelCell()){
+                                                    yep = true;
+                                                    break;
+                                                }
+                                            }
+                                            if(i<=configuration.underhaul.fissionSFR.neutronReach){
+                                                toSet.add(new int[]{X,Y,Z});
+                                            }
+                                        }
+                                        if(!toSet.isEmpty()){
+                                            if(yep){
+                                                for(int[] b : toSet)multi.add(b[0], b[1], b[2]);
+                                            }else{
+                                                int[] b = toSet.get(0);
+                                                multi.add(b[0], b[1], b[2]);
+                                            }
+                                        }
+                                    }
+                                    if(!multi.isEmpty())actions.add(multi);
+                                    if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion("Add "+cell.getName()+(multi.isEmpty()?"":" with "+moderator.getName()), actions, priorities));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        suggestors.add(new Suggestor<UnderhaulSFR>("Lone Cell Suggestor", -1, -1){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<UnderhaulSFR>("Power", true, true){
+                    @Override
+                    protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                        return main.power-other.power;
+                    }
+                });
+                priorities.add(new Priority<UnderhaulSFR>("Efficiency", true, true){
+                    @Override
+                    protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                        return main.efficiency-other.efficiency;
+                    }
+                });
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests adding Fuel cells to increase output";
+            }
+            @Override
+            public void generateSuggestions(UnderhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(blocks);
+                for(Iterator<Block> it = blocks.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isFuelCell())it.remove();
+                }
+                int cellCount = 0;
+                for(int y = 0; y<multiblock.getY(); y++){
+                    for(int z = 0; z<multiblock.getZ(); z++){
+                        for(int x = 0; x<multiblock.getX(); x++){
+                            Block b = multiblock.getBlock(x, y, z);
+                            if(b!=null&&b.isFuelCell())cellCount++;
+                        }
+                    }
+                }
+                suggestor.setCount(multiblock.getX()*multiblock.getY()*multiblock.getZ()*blocks.size()-cellCount);
+                for(Block b : blocks){
+                    for(int x = 0; x<multiblock.getX(); x++){
+                        for(int y = 0; y<multiblock.getY(); y++){
+                            for(int z = 0; z<multiblock.getZ(); z++){
+                                Block was = multiblock.getBlock(x, y, z);
+                                if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), priorities));
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        suggestors.add(new Suggestor<UnderhaulSFR>("Moderator Suggestor", -1, -1){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<UnderhaulSFR>("Efficiency", true, true){
+                    @Override
+                    protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                        return main.efficiency-other.efficiency;
+                    }
+                });
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests adding Moderator blocks to increase efficiency";
+            }
+            @Override
+            public void generateSuggestions(UnderhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(blocks);
+                for(Iterator<Block> it = blocks.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isModerator())it.remove();
+                }
+                int modCount = 0;
+                for(int y = 0; y<multiblock.getY(); y++){
+                    for(int z = 0; z<multiblock.getZ(); z++){
+                        for(int x = 0; x<multiblock.getX(); x++){
+                            Block b = multiblock.getBlock(x, y, z);
+                            if(b!=null&&b.isModerator())modCount++;
+                        }
+                    }
+                }
+                suggestor.setCount(multiblock.getX()*multiblock.getY()*multiblock.getZ()*blocks.size()-modCount);
+                for(Block b : blocks){
+                    for(int x = 0; x<multiblock.getX(); x++){
+                        for(int y = 0; y<multiblock.getY(); y++){
+                            for(int z = 0; z<multiblock.getZ(); z++){
+                                Block was = multiblock.getBlock(x, y, z);
+                                if(was!=null&&was.isModerator())continue;
+                                if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), priorities));
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        suggestors.add(new Suggestor<UnderhaulSFR>("Passive Cooler Suggestor", -1, -1){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<UnderhaulSFR>("Temperature", true, true){
+                    @Override
+                    protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                        return other.netHeat-main.netHeat;
+                    }
+                });
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests adding or replacing passive coolers to cool the reactor";
+            }
+            @Override
+            public void generateSuggestions(UnderhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(blocks);
+                for(Iterator<Block> it = blocks.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isCooler()||b.template.active!=null)it.remove();
+                }
+                int count = 0;
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            Block block = multiblock.getBlock(x, y, z);
+                            if(block==null||block.canBeQuickReplaced()){
+                                count++;
+                            }
+                        }
+                    }
+                }
+                suggestor.setCount(count*blocks.size());
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            for(Block newBlock : blocks){
+                                Block block = multiblock.getBlock(x, y, z);
+                                if(block==null||block.canBeQuickReplaced()){
+                                    if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                    else suggestor.task.max--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        suggestors.add(new Suggestor<UnderhaulSFR>("Active Cooler Suggestor", -1, -1){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<UnderhaulSFR>("Temperature", true, true){
+                    @Override
+                    protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
+                        return other.netHeat-main.netHeat;
+                    }
+                });
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests adding or replacing active coolers to cool the reactor";
+            }
+            @Override
+            public void generateSuggestions(UnderhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(blocks);
+                for(Iterator<Block> it = blocks.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isCooler()||b.template.active==null)it.remove();
+                }
+                int count = 0;
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            Block block = multiblock.getBlock(x, y, z);
+                            if(block==null||block.canBeQuickReplaced()){
+                                count++;
+                            }
+                        }
+                    }
+                }
+                suggestor.setCount(count*blocks.size());
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            for(Block newBlock : blocks){
+                                Block block = multiblock.getBlock(x, y, z);
+                                if(block==null||block.canBeQuickReplaced()){
+                                    if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                    else suggestor.task.max--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 }

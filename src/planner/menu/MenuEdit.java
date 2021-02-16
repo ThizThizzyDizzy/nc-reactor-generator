@@ -266,7 +266,7 @@ public class MenuEdit extends Menu implements Editor{
             }
         }
         for(Suggestor suggestor : suggestors){
-            suggestorSettings.add(new MenuComponentSuggestor(suggestor));
+            suggestorSettings.add(new MenuComponentSuggestor(this, suggestor));
         }
     }
     @Override
@@ -960,66 +960,79 @@ public class MenuEdit extends Menu implements Editor{
             action(new PasteAction(clipboard, x, y, z), true);
         }
     }
-    private void recalculateSuggestions(){
+    public void recalculateSuggestions(){
         suggestions.clear();
         suggestionList.components.clear();
         Thread thread = new Thread(() -> {
-            ArrayList<Suggestion> suggestions = new ArrayList<>();
             Task theTask = suggestionTask = new Task("Calculating suggestions");
             Task genTask = suggestionTask.addSubtask(new Task("Generating suggestions"));
             HashMap<Suggestor, SuggestorTask> genTasks = new HashMap<>();
+            HashMap<Suggestor, Task> sortTasks = new HashMap<>();
+            HashMap<Suggestor, Task> consolidateTasks = new HashMap<>();
             ArrayList<Suggestor> suggestors = new ArrayList<>(this.suggestors);//no modifying mid-suggestion
             for(Suggestor s : suggestors){
                 if(s.isActive()){
                     genTasks.put(s, genTask.addSubtask(new SuggestorTask(s)));
+                    consolidateTasks.put(s, genTask.addSubtask(new Task("Consolidating suggestions")));
+                    sortTasks.put(s, genTask.addSubtask(new Task("Sorting suggestions")));
                 }
             }
-            Task consolidateTask = suggestionTask.addSubtask(new Task("Consolidating suggestions"));
-            Task sortTask = suggestionTask.addSubtask(new Task("Sorting suggestions"));
+            ArrayList<Suggestion> allSuggestions = new ArrayList<>();
             for(Suggestor s : suggestors){
+                ArrayList<Suggestion> suggestions = new ArrayList<>();
                 if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
                 if(s.isActive()){
                     SuggestorTask task = genTasks.get(s);
-                    s.generateSuggestions(multiblock, s.new SuggestionAcceptor(multiblock){
+                    Task consolidateTask = consolidateTasks.get(s);
+                    Task sortTask = sortTasks.get(s);
+                    s.generateSuggestions(multiblock, s.new SuggestionAcceptor(multiblock, task){
+                        int passed = 0;
+                        int total = 0;
                         @Override
                         protected void accepted(Suggestion suggestion){
                             suggestions.add(suggestion);
-                            task.num++;
-                            task.time = elapsedTime();
+                            passed++;
+                            total++;
+                            if(passed>s.pruneAt){
+                                task.name = "Pruning Suggestions";
+                                Collections.sort(suggestions);
+                                while(passed>s.pruneTo){
+                                    suggestions.remove(suggestions.size()-1);
+                                    passed--;
+                                }
+                            }
+                            task.name = s.name+" ("+passed+"|"+(total)+")";
                         }
                         @Override
                         protected void denied(Suggestion suggestion){
-                            task.time = elapsedTime();
+                            total++;
+                            task.name = s.name+" ("+passed+"|"+(total)+")";
                         }
                     });
                     task.finish();
+                    int total = suggestions.size();
+                    for(int i = 0; i<suggestions.size(); i++){
+                        if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+                        Suggestion suggestion = suggestions.get(i);
+                        for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
+                            Suggestion sugg = it.next();
+                            if(sugg==suggestion)continue;//literally the same exact thing
+                            if(sugg.equals(suggestion))it.remove();
+                            consolidateTask.progress = 1-(suggestions.size()/(double)total);
+                        }
+                    }
+                    consolidateTask.finish();
+                    if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+                    Collections.sort(suggestions);
+                    if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+                    sortTask.finish();
+                    allSuggestions.addAll(suggestions);
                 }
             }
-            //why test them again? they've already been accepted.
-//            for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
-//                Suggestion s = it.next();
-//                if(!s.test(multiblock))it.remove();
-//            }
-            int total = suggestions.size();
-            for(int i = 0; i<suggestions.size(); i++){
-                if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
-                Suggestion suggestion = suggestions.get(i);
-                for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
-                    Suggestion s = it.next();
-                    if(s==suggestion)continue;//literally the same exact thing
-                    if(s.equals(suggestion))it.remove();
-                    consolidateTask.progress = 1-(suggestions.size()/(double)total);
-                }
-            }
-            consolidateTask.finish();
-            if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
-            Collections.sort(suggestions);
-            if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
-            sortTask.finish();
-            for(Suggestion s : suggestions){
+            for(Suggestion s : allSuggestions){
                 suggestionList.add(new MenuComponentSuggestion(this, s));
             }
-            this.suggestions = suggestions;
+            this.suggestions = allSuggestions;
             suggestionTask = null;
         }, "Suggestion calculation thread");
         thread.setDaemon(true);

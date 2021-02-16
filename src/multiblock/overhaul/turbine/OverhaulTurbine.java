@@ -3,6 +3,7 @@ import generator.Priority;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import multiblock.Multiblock;
@@ -823,32 +824,75 @@ public class OverhaulTurbine extends Multiblock<Block>{
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
-        for(Priority.Preset preset : getGenerationPriorityPresets()){
-            suggestors.add(new Suggestor<OverhaulTurbine>(100, 1_000) {
-                @Override
-                public String getName(){
-                    return "Random Block Suggestor ("+preset.name+")";
+        suggestors.add(new Suggestor<OverhaulTurbine>("Coil Suggestor", -1, -1){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<OverhaulTurbine>("Efficiency", true, true){
+                    @Override
+                    protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
+                        return other.totalEfficiency-main.totalEfficiency;
+                    }
+                });
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests adding, removing, or replacing coils for higher efficiency";
+            }
+            @Override
+            public void generateSuggestions(OverhaulTurbine multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(blocks);
+                for(Iterator<Block> it = blocks.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isCoil())it.remove();
                 }
-                @Override
-                public String getDescription(){
-                    return "Generates random single-block suggestions";
-                }
-                @Override
-                public void generateSuggestions(OverhaulTurbine multiblock, Suggestor.SuggestionAcceptor suggestor){
-                    Random rand = new Random();
-                    while(suggestor.acceptingSuggestions()){
-                        int x = rand.nextInt(multiblock.getX());
-                        int y = rand.nextInt(multiblock.getY());
-                        int z = rand.nextInt(multiblock.getZ());
-                        ArrayList<Block> blocks = new ArrayList<>();
-                        multiblock.getAvailableBlocks(blocks);
-                        Block was = multiblock.getBlock(x, y, z);
-                        for(Block b : blocks){
-                            suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                suggestor.setCount((multiblock.getX()*multiblock.getY()-(multiblock.bearingDiameter*multiblock.bearingDiameter))*(blocks.size()+1));
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<2; z++){
+                            if(z==1)z = multiblock.getZ()-1;
+                            Block block = multiblock.getBlock(x, y, z);
+                            for(Block newBlock : blocks){
+                                if(newBlock.coil.efficiency>(block==null?0:block.coil.efficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                else suggestor.task.max--;
+                            }
+                            if(block!=null)suggestor.suggest(new Suggestion("Remove "+block.getName(), new SetblockAction(x, y, z, null), priorities));
                         }
                     }
                 }
-            });
-        }
+            }
+        });
+        suggestors.add(new Suggestor<OverhaulTurbine>("Blade Suggestor", -1, -1){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<OverhaulTurbine>("Efficiency", true, true){
+                    @Override
+                    protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
+                        return other.totalEfficiency-main.totalEfficiency;
+                    }
+                });
+            }
+            @Override
+            public String getDescription(){
+                return "Suggests blades and stators for higher total efficiency";
+            }
+            @Override
+            public void generateSuggestions(OverhaulTurbine multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blades = new ArrayList<>();
+                multiblock.getAvailableBlocks(blades);
+                for(Iterator<Block> it = blades.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isBlade())it.remove();
+                }
+                int x = multiblock.getX()/2;
+                int y = 0;
+                for(int z = 1; z<getZ()-1; z++){
+                    Block block = multiblock.getBlock(x, y, z);
+                    for(Block newBlock : blades){
+                        suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                    }
+                }
+            }
+        });
     }
 }

@@ -3,6 +3,7 @@ import generator.Priority;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import multiblock.Direction;
@@ -875,7 +876,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
-        suggestors.add(new Suggestor<OverhaulFusionReactor>(1000, 1_000){
+        suggestors.add(new Suggestor<OverhaulFusionReactor>("Heatsink Suggestor", -1, -1){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
                 priorities.add(new Priority<OverhaulFusionReactor>("Temperature", true, true){
@@ -886,24 +887,37 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                 });
             }
             @Override
-            public String getName(){
-                return "Heatsink Suggestor";
-            }
-            @Override
             public String getDescription(){
                 return "Suggests adding or replacing heat sinks to cool the reactor";
             }
             @Override
             public void generateSuggestions(OverhaulFusionReactor multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(blocks);
+                for(Iterator<Block> it = blocks.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isHeatsink())it.remove();
+                }
+                int count = 0;
                 for(int x = 0; x<multiblock.getX(); x++){
                     for(int y = 0; y<multiblock.getY(); y++){
                         for(int z = 0; z<multiblock.getZ(); z++){
-                            for(Block newBlock : getAvailableBlocks()){
-                                if(newBlock.isHeatsink()){
-                                    Block block = multiblock.getBlock(x, y, z);
-                                    if(block==null||block.canBeQuickReplaced()){
-                                        if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
-                                    }
+                            Block block = multiblock.getBlock(x, y, z);
+                            if(block==null||block.canBeQuickReplaced()){
+                                count++;
+                            }
+                        }
+                    }
+                }
+                suggestor.setCount(count*blocks.size());
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            for(Block newBlock : blocks){
+                                Block block = multiblock.getBlock(x, y, z);
+                                if(block==null||block.canBeQuickReplaced()){
+                                    if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                    else suggestor.task.max--;
                                 }
                             }
                         }
@@ -911,32 +925,5 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                 }
             }
         });
-        for(Priority.Preset preset : getGenerationPriorityPresets()){
-            suggestors.add(new Suggestor<OverhaulFusionReactor>(100, 1_000) {
-                @Override
-                public String getName(){
-                    return "Random Block Suggestor ("+preset.name+")";
-                }
-                @Override
-                public String getDescription(){
-                    return "Generates random single-block suggestions";
-                }
-                @Override
-                public void generateSuggestions(OverhaulFusionReactor multiblock, Suggestor.SuggestionAcceptor suggestor){
-                    Random rand = new Random();
-                    while(suggestor.acceptingSuggestions()){
-                        int x = rand.nextInt(multiblock.getX());
-                        int y = rand.nextInt(multiblock.getY());
-                        int z = rand.nextInt(multiblock.getZ());
-                        ArrayList<Block> blocks = new ArrayList<>();
-                        multiblock.getAvailableBlocks(blocks);
-                        Block was = multiblock.getBlock(x, y, z);
-                        for(Block b : blocks){
-                            suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
-                        }
-                    }
-                }
-            });
-        }
     }
 }

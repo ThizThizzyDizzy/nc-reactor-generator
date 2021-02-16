@@ -2,13 +2,16 @@ package planner.menu.component.editor;
 import planner.Core;
 import org.lwjgl.glfw.GLFW;
 import planner.editor.suggestion.Suggestor;
+import planner.menu.MenuEdit;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentSuggestor extends MenuComponent{
+    private final MenuEdit editor;
     public final Suggestor suggestor;
     public boolean enabled = false;
-    public MenuComponentSuggestor(Suggestor suggestor){
+    public MenuComponentSuggestor(MenuEdit editor, Suggestor suggestor){
         super(0, 0, 0, 64);
+        this.editor = editor;
         this.suggestor = suggestor;
     }
     @Override
@@ -17,7 +20,7 @@ public class MenuComponentSuggestor extends MenuComponent{
         else Core.applyColor(enabled?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(Core.theme.getTextColor());
-        drawText(suggestor.getName()+" ("+(suggestor.isActive()?"On":"Off")+")");
+        drawText(suggestor.name+" ("+(suggestor.isActive()?"On":"Off")+")");
     }
     public void drawText(String text){
         double textLength = FontManager.getLengthForStringWithHeight(text, height);
@@ -35,6 +38,7 @@ public class MenuComponentSuggestor extends MenuComponent{
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed){
             enabled = !enabled;
             suggestor.setActive(enabled);
+            editor.recalculateSuggestions();
         }
     }
 }

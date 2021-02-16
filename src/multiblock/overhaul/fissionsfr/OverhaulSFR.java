@@ -4,6 +4,7 @@ import generator.Priority;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,7 @@ import multiblock.Range;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.action.SFRAllShieldsAction;
 import multiblock.action.SetblockAction;
+import multiblock.action.SetblocksAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.SFRFill;
@@ -27,6 +29,7 @@ import multiblock.symmetry.Symmetry;
 import multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe;
 import multiblock.configuration.overhaul.fissionsfr.Source;
 import multiblock.ppe.SmartFillOverhaulSFR;
+import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.Core;
 import planner.Core.BufferRenderer;
 import planner.FormattedText;
@@ -950,34 +953,91 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
-        suggestors.add(new Suggestor<OverhaulSFR>(1000, 1_000){
+        suggestors.add(new Suggestor<OverhaulSFR>("Fuel Cell Suggestor", -1, -1){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
-                priorities.add(new Priority<OverhaulSFR>("Temperature", true, true){
+                priorities.add(new Priority<OverhaulSFR>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                        return other.netHeat-main.netHeat;
+                        return main.totalEfficiency-other.totalEfficiency;
+                    }
+                });
+                priorities.add(new Priority<OverhaulSFR>("Output", true, true){
+                    @Override
+                    protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                        return main.totalOutput-other.totalOutput;
                     }
                 });
             }
             @Override
-            public String getName(){
-                return "Heatsink Suggestor";
-            }
-            @Override
             public String getDescription(){
-                return "Suggests adding or replacing heat sinks to cool the reactor";
+                return "Suggests adding Fuel cells with moderators to increase efficiency and output";
             }
             @Override
             public void generateSuggestions(OverhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
-                            for(Block newBlock : getAvailableBlocks()){
-                                if(newBlock.isHeatsink()){
-                                    Block block = multiblock.getBlock(x, y, z);
-                                    if(block==null||block.canBeQuickReplaced()){
-                                        if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                ArrayList<Block> cells = new ArrayList<>();
+                multiblock.getAvailableBlocks(cells);
+                for(Iterator<Block> it = cells.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isFuelCell())it.remove();
+                }
+                ArrayList<Block> moderators = new ArrayList<>();
+                multiblock.getAvailableBlocks(moderators);
+                for(Iterator<Block> it = moderators.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isModerator())it.remove();
+                }
+                HashSet<Fuel> fuels = new HashSet<>();
+                int cellCount = 0;
+                for(int y = 0; y<multiblock.getY(); y++){
+                    for(int z = 0; z<multiblock.getZ(); z++){
+                        for(int x = 0; x<multiblock.getX(); x++){
+                            Block b = multiblock.getBlock(x, y, z);
+                            if(b!=null&&b.isFuelCell())cellCount++;
+                            if(b!=null&&b.fuel!=null)fuels.add(b.fuel);
+                        }
+                    }
+                }
+                suggestor.setCount((multiblock.getX()*multiblock.getY()*multiblock.getZ()-cellCount)*cells.size()*moderators.size());
+                for(Block cell : cells){
+                    for(Block moderator : moderators){
+                        for(int y = 0; y<multiblock.getY(); y++){
+                            for(int z = 0; z<multiblock.getZ(); z++){
+                                for(int x = 0; x<multiblock.getX(); x++){
+                                    Block was = multiblock.getBlock(x, y, z);
+                                    if(was!=null&&was.isFuelCell())continue;
+                                    for(Fuel fuel : fuels){
+                                        ArrayList<Action> actions = new ArrayList<>();
+                                        Block ce = (Block)cell.newInstance(x, y, z);
+                                        ce.fuel = fuel;
+                                        actions.add(new SetblockAction(x, y, z, ce));
+                                        SetblocksAction multi = new SetblocksAction(moderator);
+                                        DIRECTION:for(Direction d : directions){
+                                            ArrayList<int[]> toSet = new ArrayList<>();
+                                            boolean yep = false;
+                                            for(int i = 1; i<=configuration.overhaul.fissionSFR.neutronReach+1; i++){
+                                                int X = x+d.x*i;
+                                                int Y = y+d.y*i;
+                                                int Z = z+d.z*i;
+                                                Block b = multiblock.getBlock(X, Y, Z);
+                                                if(b!=null){
+                                                    if(b.isCasing())break;//end of the line
+                                                    if(b.isModerator())continue;//already a moderator
+                                                    if(b.isFuelCell()){
+                                                        yep = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if(i<=configuration.overhaul.fissionSFR.neutronReach){
+                                                    toSet.add(new int[]{X,Y,Z});
+                                                }
+                                            }
+                                            if(yep){
+                                                for(int[] b : toSet)multi.add(b[0], b[1], b[2]);
+                                            }
+                                        }
+                                        if(!multi.isEmpty())actions.add(multi);
+                                        if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion("Add "+cell.getName()+(multi.isEmpty()?"":" with "+moderator.getName()), actions, priorities));
                                     }
                                 }
                             }
@@ -986,7 +1046,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                 }
             }
         });
-        suggestors.add(new Suggestor<OverhaulSFR>(1000, 1_000){
+        suggestors.add(new Suggestor<OverhaulSFR>("Moderator Line Upgrader", -1, -1){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
                 priorities.add(new Priority<OverhaulSFR>("Efficiency", true, true){
@@ -1003,10 +1063,6 @@ public class OverhaulSFR extends Multiblock<Block>{
                 });
             }
             @Override
-            public String getName(){
-                return "Advanced Moderator Line Upgrader";
-            }
-            @Override
             public String getDescription(){
                 return "Suggests changing moderator lines to increase efficiency or irradiation";
             }
@@ -1018,6 +1074,11 @@ public class OverhaulSFR extends Multiblock<Block>{
                     Block block = it.next();
                     if(!block.isModerator()||block.template.flux<=0)it.remove();
                 }
+                int count = 0;
+                for(Block block : multiblock.getBlocks()){
+                    if(block.isFuelCell())count++;
+                }
+                suggestor.setCount(count*6*moderators.size());
                 for(Block block : multiblock.getBlocks()){
                     if(!block.isFuelCell())continue;
                     DIRECTION:for(Direction d : directions){
@@ -1030,87 +1091,21 @@ public class OverhaulSFR extends Multiblock<Block>{
                             y+=d.y;
                             z+=d.z;
                             Block b = multiblock.getBlock(x, y, z);
-                            if(b==null)continue DIRECTION;
+                            if(b==null){
+                                suggestor.task.max--;
+                                continue DIRECTION;
+                            }
                             if(!b.isModerator()){
                                 if(b.isFuelCell()||b.isIrradiator()||b.isReflector())break;
+                                suggestor.task.max--;
                                 continue DIRECTION;
                             }
                             line.add(b);
                         }
-                        if(line.size()>getConfiguration().overhaul.fissionSFR.neutronReach)continue;//too long
-                        if(moderators.size()==1){
-                            ArrayList<Action> actions = new ArrayList<>();
-                            for(Block b : line){
-                                actions.add(new SetblockAction(b.x, b.y, b.z, moderators.get(0).newInstance(b.x, b.y, b.z)));
-                            }
-                            suggestor.suggest(new Suggestion("Replace Moderator Line", actions, priorities));
-                        }
-                        for(long i = 0; i<Math.pow(moderators.size(), line.size()); i++){
-                            ArrayList<Action> actions = new ArrayList<>();
-                            String str = Long.toString(i, moderators.size());
-                            while(str.length()<line.size())str = "0"+str;
-                            for(int j = 0; j<line.size(); j++){
-                                Block lin = line.get(j);
-                                actions.add(new SetblockAction(lin.x, lin.y, lin.z, moderators.get(Integer.parseInt(str.charAt(j)+"",moderators.size())).newInstance(lin.x, lin.y, lin.z)));
-                            }
-                            suggestor.suggest(new Suggestion("Replace Moderator Line", actions, priorities));
-                        }
-                    }
-                }
-            }
-        });
-        suggestors.add(new Suggestor<OverhaulSFR>(1000, 1_000){
-            ArrayList<Priority> priorities = new ArrayList<>();
-            {
-                priorities.add(new Priority<OverhaulSFR>("Efficiency", true, true){
-                    @Override
-                    protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                        return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
-                    }
-                });
-                priorities.add(new Priority<OverhaulSFR>("Irradiation", true, true){
-                    @Override
-                    protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                        return main.totalIrradiation-other.totalIrradiation;
-                    }
-                });
-            }
-            @Override
-            public String getName(){
-                return "Simple Moderator Line Upgrader";
-            }
-            @Override
-            public String getDescription(){
-                return "Suggests changing moderator lines to increase efficiency or irradiation";
-            }
-            @Override
-            public void generateSuggestions(OverhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
-                ArrayList<Block> moderators = new ArrayList<>();
-                multiblock.getAvailableBlocks(moderators);
-                for(Iterator<Block> it = moderators.iterator(); it.hasNext();){
-                    Block block = it.next();
-                    if(!block.isModerator()||block.template.flux<=0)it.remove();
-                }
-                for(Block block : multiblock.getBlocks()){
-                    if(!block.isFuelCell())continue;
-                    DIRECTION:for(Direction d : directions){
-                        ArrayList<Block> line = new ArrayList<>();
-                        int x = block.x;
-                        int y = block.y;
-                        int z = block.z;
-                        for(int i = 0; i<getConfiguration().overhaul.fissionSFR.neutronReach+1; i++){
-                            x+=d.x;
-                            y+=d.y;
-                            z+=d.z;
-                            Block b = multiblock.getBlock(x, y, z);
-                            if(b==null)continue DIRECTION;
-                            if(!b.isModerator()){
-                                if(b.isFuelCell()||b.isIrradiator()||b.isReflector())break;
-                                continue DIRECTION;
-                            }
-                            line.add(b);
-                        }
-                        if(line.size()>getConfiguration().overhaul.fissionSFR.neutronReach)continue;//too long
+                        if(line.size()>getConfiguration().overhaul.fissionSFR.neutronReach){
+                            suggestor.task.max--;
+                            continue;
+                        }//too long
                         for(Block mod : moderators){
                             ArrayList<Action> actions = new ArrayList<>();
                             for(Block b : line){
@@ -1122,7 +1117,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                 }
             }
         });
-        suggestors.add(new Suggestor<OverhaulSFR>(1000, 1_000){
+        suggestors.add(new Suggestor<OverhaulSFR>("Single Moderator Upgrader", -1, -1){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
                 priorities.add(new Priority<OverhaulSFR>("Efficiency", true, true){
@@ -1139,87 +1134,78 @@ public class OverhaulSFR extends Multiblock<Block>{
                 });
             }
             @Override
-            public String getName(){
-                return "Single Moderator Upgrader";
-            }
-            @Override
             public String getDescription(){
                 return "Suggests changing single moderators to increase efficiency or irradiation";
             }
             @Override
             public void generateSuggestions(OverhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(blocks);
+                for(Iterator<Block> it = blocks.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isModerator()||b.template.flux<=0)it.remove();
+                }
+                int count = 0;
+                for(Block b : multiblock.getBlocks()){
+                    if(b.isModerator())count++;
+                }
+                suggestor.setCount(count*blocks.size());
                 for(Block block : multiblock.getBlocks()){
                     if(!block.isModerator())continue;
-                    ArrayList<Block> blocks = new ArrayList<>();
-                    multiblock.getAvailableBlocks(blocks);
                     for(Block b : blocks){
-                        if(!b.isModerator())continue;
-                        if(b.template.flux<=0)continue;
                         suggestor.suggest(new Suggestion("Upgrade Moderator from "+block.getName().replace(" Moderator", "")+" to "+b.getName().replace(" Moderator", ""), new SetblockAction(block.x, block.y, block.z, b.newInstance(block.x, block.y, block.z)), priorities));
                     }
                 }
             }
         });
-        for(Priority.Preset<OverhaulSFR> preset : getGenerationPriorityPresets()){
-            ArrayList<Priority<OverhaulSFR>> prior = preset.getPriorities();
-            for(Iterator<Priority<OverhaulSFR>> it = prior.iterator(); it.hasNext();){
-                Priority<OverhaulSFR> next = it.next();
-                if(next.name.toLowerCase(Locale.ENGLISH).contains("shutdown"))it.remove();
+        suggestors.add(new Suggestor<OverhaulSFR>("Heatsink Suggestor", -1, -1){
+            ArrayList<Priority> priorities = new ArrayList<>();
+            {
+                priorities.add(new Priority<OverhaulSFR>("Temperature", true, true){
+                    @Override
+                    protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                        return other.netHeat-main.netHeat;
+                    }
+                });
             }
-            suggestors.add(new Suggestor<OverhaulSFR>(1000, 1_000) {
-                @Override
-                public String getName(){
-                    return "Random Suggestor ("+preset.name+")";
+            @Override
+            public String getDescription(){
+                return "Suggests adding or replacing heat sinks to cool the reactor";
+            }
+            @Override
+            public void generateSuggestions(OverhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
+                ArrayList<Block> blocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(blocks);
+                for(Iterator<Block> it = blocks.iterator(); it.hasNext();){
+                    Block b = it.next();
+                    if(!b.isHeatsink())it.remove();
                 }
-                @Override
-                public String getDescription(){
-                    return "Generates random single-block suggestions";
-                }
-                @Override
-                public void generateSuggestions(OverhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
-                    Random rand = new Random();
-                    while(suggestor.acceptingSuggestions()){
-                        int x = rand.nextInt(multiblock.getX());
-                        int y = rand.nextInt(multiblock.getY());
-                        int z = rand.nextInt(multiblock.getZ());
-                        ArrayList<Block> blocks = new ArrayList<>();
-                        multiblock.getAvailableBlocks(blocks);
-                        Block was = multiblock.getBlock(x, y, z);
-                        for(Block b : blocks){
-                            if(b.isFuelCell())continue;
-                            suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), prior));
+                int count = 0;
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            Block block = multiblock.getBlock(x, y, z);
+                            if(block==null||block.canBeQuickReplaced()){
+                                count++;
+                            }
                         }
                     }
                 }
-            });
-        }
-        for(Priority.Preset preset : getGenerationPriorityPresets()){
-            suggestors.add(new Suggestor<OverhaulSFR>(1000, 1_000) {
-                @Override
-                public String getName(){
-                    return "Random Suggestor (Shutdownable, "+preset.name+")";
-                }
-                @Override
-                public String getDescription(){
-                    return "Generates random single-block suggestions";
-                }
-                @Override
-                public void generateSuggestions(OverhaulSFR multiblock, Suggestor.SuggestionAcceptor suggestor){
-                    Random rand = new Random();
-                    while(suggestor.acceptingSuggestions()){
-                        int x = rand.nextInt(multiblock.getX());
-                        int y = rand.nextInt(multiblock.getY());
-                        int z = rand.nextInt(multiblock.getZ());
-                        ArrayList<Block> blocks = new ArrayList<>();
-                        multiblock.getAvailableBlocks(blocks);
-                        Block was = multiblock.getBlock(x, y, z);
-                        for(Block b : blocks){
-                            if(b.isFuelCell())continue;
-                            suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), preset.getPriorities()));
+                suggestor.setCount(count*blocks.size());
+                for(int x = 0; x<multiblock.getX(); x++){
+                    for(int y = 0; y<multiblock.getY(); y++){
+                        for(int z = 0; z<multiblock.getZ(); z++){
+                            for(Block newBlock : blocks){
+                                Block block = multiblock.getBlock(x, y, z);
+                                if(block==null||block.canBeQuickReplaced()){
+                                    if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                    else suggestor.task.max--;
+                                }
+                            }
                         }
                     }
                 }
-            });
-        }
+            }
+        });
     }
 }

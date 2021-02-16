@@ -481,6 +481,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public abstract boolean exists();
     public void undo(){
         if(!history.isEmpty()){
+            lastChangeTime = System.nanoTime();
             Action a = history.pop();
             recalculate(a.undo(this));
             future.push(a);
@@ -488,6 +489,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     public void redo(){
         if(!future.isEmpty()){
+            lastChangeTime = System.nanoTime();
             Action a = future.pop();
             recalculate(a.apply(this, true));
             history.push(a);
@@ -544,16 +546,25 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }while(somethingChanged);
         return group;
     }
+    ArrayList<ArrayList<T>> groupCache = new ArrayList<>();
+    private ArrayList<T> getGroupWithCache(T block){
+        for(ArrayList<T> group : groupCache){
+            if(group.contains(block))return group;
+        }
+        ArrayList<T> group = getGroup(block);
+        groupCache.add(group);
+        return group;
+    }
     public ArrayList<T> getAffectedGroups(ArrayList<T> blocks){
         ArrayList<T> group = new ArrayList<>();
+        groupCache.clear();
         for(int i = 0; i<blocks.size(); i++){
             T block = blocks.get(i);
-            ArrayList<T> g = getGroup(block);
+            ArrayList<T> g = getGroupWithCache(block);
             if(g==null)return getBlocks();
             for(T b : g){
                 if(!group.contains(b))group.add(b);
             }
-            blocks.removeAll(g);
         }
         return group;
     }

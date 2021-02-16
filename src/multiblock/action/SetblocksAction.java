@@ -35,4 +35,7 @@ public class SetblocksAction extends Action<Multiblock>{
             if(b!=null)blocks.add(b);
         }
     }
+    public boolean isEmpty(){
+        return locations.isEmpty();
+    }
 }

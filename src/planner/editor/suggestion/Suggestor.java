@@ -1,10 +1,14 @@
 package planner.editor.suggestion;
-import java.util.ArrayList;
+import java.util.function.Consumer;
 import multiblock.Multiblock;
 public abstract class Suggestor<T extends Multiblock>{
+    public final String name;
     public final int limit;
     public final long timeLimit;
-    public Suggestor(int limit, long timeLimit){
+    public int pruneAt = 1024;
+    public int pruneTo = 512;
+    public Suggestor(String name, int limit, long timeLimit){
+        this.name = name;
         this.limit = limit==-1?Integer.MAX_VALUE:limit;
         this.timeLimit = timeLimit==-1?Long.MAX_VALUE:timeLimit;
     }
@@ -22,7 +26,6 @@ public abstract class Suggestor<T extends Multiblock>{
     }
     protected void onActivated(){}
     protected void onDeactivated(){}
-    public abstract String getName();
     public abstract String getDescription();
     public void setActive(boolean active){
         if(active)activate();
@@ -33,10 +36,16 @@ public abstract class Suggestor<T extends Multiblock>{
         private int num = 0;
         private final T multiblock;
         private long startTime;
-        public SuggestionAcceptor(T multiblock){
+        public final SuggestorTask task;
+        private boolean countSet = false;
+        public SuggestionAcceptor(T multiblock, SuggestorTask task){
             this.multiblock = multiblock;
+            this.task = task;
         }
         public void suggest(Suggestion<T> suggestion){
+            suggest(suggestion, null);
+        }
+        public void suggest(Suggestion<T> suggestion, Consumer<SuggestorTask> updateTask){
             if(!acceptingSuggestions()){
                 denied(suggestion);
                 return;
@@ -45,8 +54,17 @@ public abstract class Suggestor<T extends Multiblock>{
             if(suggestion.test(multiblock)){
                 accepted(suggestion);
                 num++;
+                task.num++;
+            }else{
+                denied(suggestion);
+                if(countSet)task.num++;
             }
-            else denied(suggestion);
+            if(updateTask!=null)updateTask.accept(task);
+            task.time = elapsedTime();
+        }
+        public void setCount(int count){
+            countSet = true;
+            task.max = count;
         }
         protected abstract void accepted(Suggestion<T> suggestion);
         protected abstract void denied(Suggestion<T> suggestion);

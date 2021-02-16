@@ -32,6 +32,7 @@ import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
+import planner.editor.suggestion.SuggestorTask;
 import planner.editor.tool.CopyTool;
 import planner.editor.tool.CutTool;
 import planner.editor.tool.EditorTool;
@@ -84,6 +85,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private long lastChange = 0;
     public ArrayList<Suggestion> suggestions = new ArrayList<>();
     private ArrayList<Suggestor> suggestors = new ArrayList<>();
+    private Task suggestionTask;
     public VRMenuEdit(VRGUI gui, Multiblock multiblock){
         super(gui, null);
         this.multiblock = multiblock;
@@ -547,32 +549,69 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private void recalculateSuggestions(){
         suggestions.clear();
         //TODO VR: clear suggestions list
-        for(Suggestor s : suggestors){
-            if(s.isActive()){
-                s.generateSuggestions(multiblock, s.new SuggestionAcceptor(multiblock){
-                    @Override
-                    protected void accepted(Suggestion suggestion){
-                        suggestions.add(suggestion);
-                    }
-                    @Override
-                    protected void denied(Suggestion suggestion){}
-                });
+        Thread thread = new Thread(() -> {
+            ArrayList<Suggestion> suggestions = new ArrayList<>();
+            Task theTask = suggestionTask = new Task("Calculating suggestions");
+            Task genTask = suggestionTask.addSubtask(new Task("Generating suggestions"));
+            HashMap<Suggestor, SuggestorTask> genTasks = new HashMap<>();
+            ArrayList<Suggestor> suggestors = new ArrayList<>(this.suggestors);//no modifying mid-suggestion
+            for(Suggestor s : suggestors){
+                if(s.isActive()){
+                    genTasks.put(s, genTask.addSubtask(new SuggestorTask(s)));
+                }
             }
-        }
-        for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
-            Suggestion s = it.next();
-            if(!s.test(multiblock))it.remove();
-        }
-        Collections.sort(suggestions);
-        for(Suggestion s : suggestions){
-            //TODO VR: add to suggestions list
-        }
+            Task consolidateTask = suggestionTask.addSubtask(new Task("Consolidating suggestions"));
+            Task sortTask = suggestionTask.addSubtask(new Task("Sorting suggestions"));
+            for(Suggestor s : suggestors){
+                if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+                if(s.isActive()){
+                    SuggestorTask task = genTasks.get(s);
+                    s.generateSuggestions(multiblock, s.new SuggestionAcceptor(multiblock, task){
+                        @Override
+                        protected void accepted(Suggestion suggestion){
+                            suggestions.add(suggestion);
+                        }
+                        @Override
+                        protected void denied(Suggestion suggestion){}
+                    });
+                    task.finish();
+                }
+            }
+            //why test them again? they've already been accepted.
+//            for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
+//                Suggestion s = it.next();
+//                if(!s.test(multiblock))it.remove();
+//            }
+            int total = suggestions.size();
+            for(int i = 0; i<suggestions.size(); i++){
+                if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+                Suggestion suggestion = suggestions.get(i);
+                for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
+                    Suggestion s = it.next();
+                    if(s==suggestion)continue;//literally the same exact thing
+                    if(s.equals(suggestion))it.remove();
+                    consolidateTask.progress = 1-(suggestions.size()/(double)total);
+                }
+            }
+            consolidateTask.finish();
+            if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+            Collections.sort(suggestions);
+            if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+            sortTask.finish();
+            for(Suggestion s : suggestions){
+                //TODO VR: add to suggestions list
+            }
+            this.suggestions = suggestions;
+            suggestionTask = null;
+        }, "Suggestion calculation thread");
+        thread.setDaemon(true);
+        thread.start();
     }
     @Override
     public Task getTask(){
         Task task = multiblock.getTask();
-        if(task!=null)return task;
-        return null;//TODO VR: suggestions
+        if(task==null)task = suggestionTask;
+        return task;
     }
     @Override
     public void action(Action action, boolean allowUndo){
