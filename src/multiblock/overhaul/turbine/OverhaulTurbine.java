@@ -20,6 +20,7 @@ import multiblock.symmetry.Symmetry;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.FormattedText;
+import planner.Task;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.editor.module.Module;
@@ -384,6 +385,9 @@ public class OverhaulTurbine extends Multiblock<Block>{
     }
     @Override
     public void doCalculate(List<Block> blocks){
+        Task calcRotor = calculateTask.addSubtask(new Task("Calculating Rotor"));
+        Task calcCoils = calculateTask.addSubtask(new Task("Calculating Coils"));
+        Task calcStats = calculateTask.addSubtask(new Task("Calculating Stats"));
         bladesValid = true;
         bladeCount = 0;
         Block[] blades = new Block[getZ()-2];
@@ -438,13 +442,19 @@ public class OverhaulTurbine extends Multiblock<Block>{
             throughputEfficiency = (1+getConfiguration().overhaul.turbine.powerBonus*Math.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
             idealityMultiplier = Math.min(expansionSoFar, recipe.coefficient)/Math.max(expansionSoFar, recipe.coefficient);
         }
+        calcRotor.finish();
         boolean somethingChanged;
+        int n = 0;
         do{
             somethingChanged = false;
-            for(Block block : blocks){
-                if(block.calculateCoil(this))somethingChanged = true;
+            n++;
+            calcCoils.name = "Calculating Coils"+(n>1?" ("+n+")":"");
+            for(int i = 0; i<blocks.size(); i++){
+                if(blocks.get(i).calculateCoil(this))somethingChanged = true;
+                calcCoils.progress = i/(double)blocks.size();
             }
         }while(somethingChanged);
+        calcCoils.finish();
         float inputEff = 0;
         float outputEff = 0;
         int inputCoils = 0;
@@ -474,6 +484,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
         totalOutput = (long)(totalFluidEfficiency*getInputRate());
         safeOutput = (long)(totalFluidEfficiency*maxInput);
         unsafeOutput = (long)(totalFluidEfficiency*maxUnsafeInput);
+        calcStats.finish();
     }
     @Override
     protected Block newCasing(int x, int y, int z){

@@ -55,4 +55,12 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
             multiblock.action(a, true);
         }
     }
+    @Override
+    public boolean equals(Object obj){
+        if(obj instanceof Suggestion){
+            Suggestion other = (Suggestion)obj;
+            return suggestedActions.equals(other.suggestedActions);
+        }
+        return false;
+    }
 }

@@ -29,4 +29,12 @@ public class SetblockAction extends Action{
         Block b = multiblock.getBlock(x, y, z);
         if(b!=null)blocks.add(b);
     }
+    @Override
+    public boolean equals(Object obj){
+        if(obj instanceof SetblockAction){
+            SetblockAction other = (SetblockAction)obj;
+            return x==other.x&&y==other.y&&z==other.z&&block.isEqual(other.block);
+        }
+        return false;
+    }
 }

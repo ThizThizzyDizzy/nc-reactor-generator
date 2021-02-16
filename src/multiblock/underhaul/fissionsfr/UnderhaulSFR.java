@@ -16,6 +16,7 @@ import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import planner.Core;
 import planner.FormattedText;
+import planner.Task;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.editor.module.Module;
@@ -84,27 +85,39 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void doCalculate(List<Block> blocks){
-        for(Block block : blocks){
-            block.calculateCore(this);
+        Task core = calculateTask.addSubtask(new Task("Calculating Core"));
+        Task coolers = calculateTask.addSubtask(new Task("Calculating Coolers"));
+        Task stats = calculateTask.addSubtask(new Task("Calculating Stats"));
+        for(int i = 0; i<blocks.size(); i++){
+            blocks.get(i).calculateCore(this);
+            core.progress = i/(double)blocks.size();
         }
+        core.finish();
         float totalHeatMult = 0;
         float totalEnergyMult = 0;
         cells = 0;
         boolean somethingChanged;
+        int n = 0;
         do{
             somethingChanged = false;
-            for(Block block : blocks){
-                if(block.calculateCooler(this))somethingChanged = true;
+            n++;
+            coolers.name = "Calculating Coolers"+(n>1?" ("+n+")":"");
+            for(int i = 0; i<blocks.size(); i++){
+                if(blocks.get(i).calculateCooler(this))somethingChanged = true;
+                coolers.progress = i/(double)blocks.size();
             }
         }while(somethingChanged);
+        coolers.finish();
         cooling = 0;
-        for(Block block : getBlocks()){
+        for(int i = 0; i<blocks.size(); i++){
+            Block block = blocks.get(i);
             if(block.isFuelCell()){
                 totalHeatMult+=block.heatMult;
                 totalEnergyMult+=block.energyMult;
                 cells++;
             }
             if(block.isCooler()&&block.isActive())cooling+=block.getCooling();
+            stats.progress = i/(double)blocks.size();
         }
         this.heatMult = totalHeatMult/cells;
         if(Double.isNaN(heatMult))heatMult = 0;
@@ -113,6 +126,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
         power = (int) (totalEnergyMult*fuel.power);
         efficiency = totalEnergyMult/cells;
         if(Double.isNaN(efficiency))efficiency = 0;
+        stats.finish();
     }
     @Override
     protected Block newCasing(int x, int y, int z){

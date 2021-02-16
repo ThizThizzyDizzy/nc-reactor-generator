@@ -1,13 +1,12 @@
 package planner.editor.suggestion;
 import java.util.ArrayList;
-import java.util.Collections;
 import multiblock.Multiblock;
 public abstract class Suggestor<T extends Multiblock>{
-    private final int limit;
-    private final long timeLimit;
+    public final int limit;
+    public final long timeLimit;
     public Suggestor(int limit, long timeLimit){
-        this.limit = limit;
-        this.timeLimit = timeLimit;
+        this.limit = limit==-1?Integer.MAX_VALUE:limit;
+        this.timeLimit = timeLimit==-1?Long.MAX_VALUE:timeLimit;
     }
     private boolean active = false;
     public void activate(){
@@ -29,19 +28,8 @@ public abstract class Suggestor<T extends Multiblock>{
         if(active)activate();
         else deactivate();
     }
-    public final void generateSuggestions(T multiblock, ArrayList<Suggestion<T>> suggestions){
-        generateSuggestions(multiblock, new SuggestionAcceptor(multiblock) {
-            @Override
-            protected void accepted(Suggestion<T> suggestion){
-                suggestions.add(suggestion);
-            }
-            @Override
-            protected void denied(Suggestion<T> suggestion){}
-        });
-        Collections.sort(suggestions);
-    }
     public abstract void generateSuggestions(T multiblock, SuggestionAcceptor suggestor);
-    protected abstract class SuggestionAcceptor{
+    public abstract class SuggestionAcceptor{
         private int num = 0;
         private final T multiblock;
         private long startTime;
@@ -63,8 +51,11 @@ public abstract class Suggestor<T extends Multiblock>{
         protected abstract void accepted(Suggestion<T> suggestion);
         protected abstract void denied(Suggestion<T> suggestion);
         public boolean acceptingSuggestions(){
-            if(startTime!=0&&System.nanoTime()>startTime+timeLimit*1_000_000)return false;
+            if(startTime!=0&&elapsedTime()>timeLimit)return false;
             return num<limit;
+        }
+        public long elapsedTime(){
+            return (System.nanoTime()-startTime)/1_000_000;
         }
     }
 }

@@ -84,7 +84,5 @@ public class SetBearingDiameterAction extends Action<OverhaulTurbine>{
         }
     }
     @Override
-    public void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<multiblock.Block> blocks){
-        blocks.addAll(multiblock.getBlocks());
-    }
+    public void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<multiblock.Block> blocks){}
 }

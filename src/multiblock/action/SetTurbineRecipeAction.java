@@ -25,7 +25,5 @@ public class SetTurbineRecipeAction extends Action<OverhaulTurbine>{
         editor.setTurbineRecipe(multiblock.getConfiguration().overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
     }
     @Override
-    public void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<Block> blocks){
-        blocks.addAll(multiblock.getBlocks());
-    }
+    public void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<Block> blocks){}
 }

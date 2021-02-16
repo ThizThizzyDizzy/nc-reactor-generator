@@ -21,6 +21,7 @@ import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import planner.Core;
 import planner.FormattedText;
+import planner.Task;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
@@ -163,23 +164,39 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     public void doCalculate(List<Block> blocks){
+        Task calcBreeding = calculateTask.addSubtask(new Task("Calculating Breeding Blankets"));
+        Task calcHeating = calculateTask.addSubtask(new Task("Calculating Breeding Blankets"));
+        Task calcHeatsinks = calculateTask.addSubtask(new Task("Calculating Heatsinks"));
+        Task buildClusters = calculateTask.addSubtask(new Task("Building Clusters"));
+        Task calcClusters = calculateTask.addSubtask(new Task("Calculating Clusters"));
+        Task calcStats = calculateTask.addSubtask(new Task("Calculating Stats"));
         List<Block> allBlocks = getBlocks();
-        for(Block block : blocks){
-            block.calculateBreedingBlanket(this);
+        for(int i = 0; i<blocks.size(); i++){
+            blocks.get(i).calculateBreedingBlanket(this);
+            calcBreeding.progress = i/(double)blocks.size();
         }
-        for(Block block : blocks){
-            block.calculateHeatingBlanket(this);
+        calcBreeding.finish();
+        for(int i = 0; i<blocks.size(); i++){
+            blocks.get(i).calculateHeatingBlanket(this);
+            calcHeating.progress = i/(double)blocks.size();
         }
+        calcHeating.finish();
         boolean somethingChanged;
+        int n = 0;
         do{
             somethingChanged = false;
-            for(Block block : blocks){
-                if(block.calculateHeatsink(this))somethingChanged = true;
+            n++;
+            calcHeatsinks.name = "Calculating Heatsinks"+(n>1?" ("+n+")":"");
+            for(int i = 0; i<blocks.size(); i++){
+                if(blocks.get(i).calculateHeatsink(this))somethingChanged = true;
+                calcHeatsinks.progress = i/(double)blocks.size();
             }
         }while(somethingChanged);
+        calcHeatsinks.finish();
         clusters.clear();
         shieldinessFactor = 0;
-        for(Block block : allBlocks){//detect clusters and shieldniness too
+        for(int i = 0; i<allBlocks.size(); i++){
+            Block block = allBlocks.get(i);//detect clusters and shieldniness too
             if(block.isShielding())shieldinessFactor+=block.template.shieldiness;
             Cluster cluster = getCluster(block);
             if(cluster==null)continue;//that's not a cluster!
@@ -187,12 +204,16 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                 if(clusters.contains(cluster))continue;//already know about that one!
                 clusters.add(cluster);
             }
+            buildClusters.progress = i/(double)allBlocks.size();
         }
+        buildClusters.finish();
         shieldinessFactor/=getPlasmaSurfaceArea();
         synchronized(clusters){
-            for(Cluster cluster : clusters){
+            for(int i = 0; i<clusters.size(); i++){
+                Cluster cluster = clusters.get(i);
                 int heatingBlankets = 0;
-                for(Block b : cluster.blocks){
+                for(int j = 0; j<cluster.blocks.size(); j++){
+                    Block b = cluster.blocks.get(j);
                     if(b.isHeatingBlanketActive()){
                         heatingBlankets++;
                         cluster.totalOutput += recipe.heat*b.efficiency;
@@ -203,6 +224,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                     if(b.isHeatsinkActive()){
                         cluster.totalCooling+=b.template.cooling;
                     }
+                    calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                 }
                 cluster.efficiency/=heatingBlankets;
                 cluster.heatMult/=heatingBlankets;
@@ -221,8 +243,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                 netHeat+=cluster.netHeat;
                 totalEfficiency+=cluster.efficiency*heatingBlankets;
                 totalHeatMult+=cluster.heatMult*heatingBlankets;
+                calcClusters.progress = (i+1)/(double)clusters.size();
             }
         }
+        calcClusters.finish();
         totalEfficiency/=totalHeatingBlankets;
         totalHeatMult/=totalHeatingBlankets;
         if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
@@ -247,6 +271,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         totalOutput*=sparsityMult;
         totalEfficiency*=sparsityMult;
         totalOutput/=coolantRecipe.heat/coolantRecipe.outputRatio;
+        calcStats.finish();
     }
     @Override
     protected Block newCasing(int x, int y, int z){

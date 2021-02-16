@@ -1,7 +1,12 @@
 package planner.menu;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import multiblock.Action;
 import planner.Core;
 import planner.menu.component.editor.MenuComponentCoolantRecipe;
 import planner.menu.component.editor.MenuComponentEditorListBlock;
@@ -39,6 +44,7 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import planner.Task;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
 import planner.menu.component.MenuComponentDropdownList;
@@ -54,6 +60,8 @@ import planner.menu.component.editor.MenuComponentTurbineRecipe;
 import planner.editor.module.Module;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
+import planner.editor.suggestion.Suggestor.SuggestionAcceptor;
+import planner.editor.suggestion.SuggestorTask;
 import planner.editor.tool.CopyTool;
 import planner.editor.tool.CutTool;
 import planner.editor.tool.LineTool;
@@ -62,6 +70,7 @@ import planner.editor.tool.PasteTool;
 import planner.editor.tool.PencilTool;
 import planner.editor.tool.RectangleTool;
 import planner.editor.tool.SelectionTool;
+import planner.menu.component.editor.MenuComponentMultiblockProgressBar;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.opengl.ImageStash;
 import static simplelibrary.opengl.Renderer2D.drawRect;
@@ -78,6 +87,7 @@ public class MenuEdit extends Menu implements Editor{
     private MenuComponentEditorTool cutComp = new MenuComponentEditorTool(cut);
     private EditorTool paste = new PasteTool(this, 0);
     private MenuComponentEditorTool pasteComp = new MenuComponentEditorTool(paste);
+    private Task suggestionTask;
     {
         editorTools.add(new MoveTool(this, 0));
         editorTools.add(new SelectionTool(this, 0));
@@ -117,6 +127,7 @@ public class MenuEdit extends Menu implements Editor{
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Modify the multiblock metadata"));
     public final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
     private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", true, true).setTooltip("Generate or improve this multiblock"));
+    private final MenuComponentMultiblockProgressBar progress = add(new MenuComponentMultiblockProgressBar(this, 0, 0, 0, 0));;
     private final MenuComponentMinimaList suggestionList = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
     private final MenuComponentDropdownList suggestorSettings = add(new MenuComponentDropdownList(0, 0, 0, 0){
         @Override
@@ -145,6 +156,9 @@ public class MenuEdit extends Menu implements Editor{
     private int LAYER_GAP = CELL_SIZE/2;
     private int multisPerRow = 0;
     private long lastChange = 0;
+    private Action currentAction;
+    private boolean currentUndo;
+    private boolean closed = false;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         if(multiblock instanceof UnderhaulSFR){
@@ -296,6 +310,24 @@ public class MenuEdit extends Menu implements Editor{
             }
         }
         multiblock.recalculate();
+        Thread t = new Thread(() -> {
+            while(!closed){
+                if(currentAction!=null){
+                    multiblock.action(currentAction, currentUndo);
+                    currentAction = null;
+                }else{
+                    try{
+                        Thread.sleep(1);
+                    }catch(InterruptedException ex){}
+                }
+            }
+        }, "Recalculation thread");
+        t.setDaemon(true);
+        t.start();
+    }
+    @Override
+    public void onGUIClosed(){
+        closed = true;
     }
     @Override
     public void render(int millisSinceLastTick){
@@ -353,49 +385,14 @@ public class MenuEdit extends Menu implements Editor{
             overFuel.y = resize.height*2+overFuel.preferredHeight;
             irradiatorRecipe.y = overFuel.y+overFuel.height+irradiatorRecipe.preferredHeight;
         }
-        if(multiblock instanceof UnderhaulSFR){
-            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.allFuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
-                if(((UnderhaulSFR)multiblock).fuel!=fuel){
-                    multiblock.action(new SetFuelAction(this, fuel), true);
-                }
-            }
-        }
-        if(multiblock instanceof OverhaulSFR){
-            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
-                if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
-                    multiblock.action(new SetCoolantRecipeAction(this, recipe), true);
-                }
-            }
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                multiblock.configuration.overhaul.fusion.CoolantRecipe recipe = Core.configuration.overhaul.fusion.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
-                if(((OverhaulFusionReactor)multiblock).coolantRecipe!=recipe){
-                    multiblock.action(new SetFusionCoolantRecipeAction(this, recipe), true);
-                }
-            }
-            if(overFuel.getSelectedIndex()>-1){
-                multiblock.configuration.overhaul.fusion.Recipe recipe = Core.configuration.overhaul.fusion.allRecipes.get(overFuel.getSelectedIndex());
-                if(((OverhaulFusionReactor)multiblock).recipe!=recipe){
-                    multiblock.action(new SetFusionRecipeAction(this, recipe), true);
-                }
-            }
-        }
-        if(multiblock instanceof OverhaulTurbine){
-            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                multiblock.configuration.overhaul.turbine.Recipe recipe = Core.configuration.overhaul.turbine.allRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
-                if(((OverhaulTurbine)multiblock).recipe!=recipe){
-                    multiblock.action(new SetTurbineRecipeAction(this, recipe), true);
-                }
-            }
-        }
         suggestionList.y = Math.max(underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height, Math.max(overFuel.y+overFuel.height, irradiatorRecipe.y+irradiatorRecipe.height));
         suggestionList.height = gui.helper.displayHeight()-suggestionList.y;
         multibwauk.height = gui.helper.displayHeight()-multibwauk.y-generate.height;
+        progress.y = generate.y-generate.height;
+        progress.width = textBox.width;
+        progress.height = generate.height*2;
         textBox.y = parts.y+parts.height;
-        textBox.height = gui.helper.displayHeight()-textBox.y;
+        textBox.height = gui.helper.displayHeight()-textBox.y-progress.height;
         if(multiblock instanceof OverhaulTurbine){
             OverhaulTurbine turbine = (OverhaulTurbine)multiblock;
             double width = turbine.getDisplayZ()*CELL_SIZE;
@@ -591,7 +588,7 @@ public class MenuEdit extends Menu implements Editor{
                         ac.add(i[0], i[1], i[2]);
                     }
                 }
-                multiblock.action(ac, true);
+                action(ac, true);
                 clearSelection(0);
             }
             if(key==GLFW.GLFW_KEY_M||key==GLFW.GLFW_KEY_1)tools.setSelectedIndex(0);
@@ -711,7 +708,7 @@ public class MenuEdit extends Menu implements Editor{
                 ((multiblock.overhaul.fusion.Block)set.block).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe(id);
             }
         }
-        multiblock.action(set, true);
+        action(set, true);
     }
     @Override
     public void select(int id, int x1, int y1, int z1, int x2, int y2, int z2){
@@ -742,14 +739,14 @@ public class MenuEdit extends Menu implements Editor{
     public void select(int id, ArrayList<int[]> is){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         if(Core.isControlPressed()){
-            multiblock.action(new SelectAction(this, id, is), true);
+            action(new SelectAction(this, id, is), true);
         }else{
-            multiblock.action(new SetSelectionAction(this, id, is), true);
+            action(new SetSelectionAction(this, id, is), true);
         }
     }
     public void setSelection(int id, ArrayList<int[]> is){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        multiblock.action(new SetSelectionAction(this, id, is), true);
+        action(new SetSelectionAction(this, id, is), true);
     }
     public void deselect(int id, ArrayList<int[]> is){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
@@ -757,7 +754,7 @@ public class MenuEdit extends Menu implements Editor{
             clearSelection(id);
             return;
         }
-        multiblock.action(new DeselectAction(this, id, is), true);
+        action(new DeselectAction(this, id, is), true);
     }
     @Override
     public boolean isSelected(int id, int x, int y, int z){
@@ -876,17 +873,17 @@ public class MenuEdit extends Menu implements Editor{
     @Override
     public void moveSelection(int id, int x, int y, int z){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        multiblock.action(new MoveAction(this, id, selection, x, y, z), true);
+        action(new MoveAction(this, id, selection, x, y, z), true);
     }
     @Override
     public void cloneSelection(int id, int x, int y, int z){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        multiblock.action(new CopyAction(this, id, selection, x, y, z), true);
+        action(new CopyAction(this, id, selection, x, y, z), true);
     }
     @Override
     public void clearSelection(int id){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        multiblock.action(new ClearSelectionAction(this, id), true);
+        action(new ClearSelectionAction(this, id), true);
     }
     @Override
     public void addSelection(int id, ArrayList<int[]> sel){
@@ -953,31 +950,80 @@ public class MenuEdit extends Menu implements Editor{
                 ac.add(i[0], i[1], i[2]);
             }
         }
-        multiblock.action(ac, true);
+        action(ac, true);
         clearSelection(id);
     }
     @Override
     public void pasteSelection(int id, int x, int y, int z){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         synchronized(clipboard){
-            multiblock.action(new PasteAction(clipboard, x, y, z), true);
+            action(new PasteAction(clipboard, x, y, z), true);
         }
     }
     private void recalculateSuggestions(){
         suggestions.clear();
         suggestionList.components.clear();
-        for(Suggestor s : suggestors){
-            if(s.isActive()){
-                s.generateSuggestions(multiblock, suggestions);
+        Thread thread = new Thread(() -> {
+            ArrayList<Suggestion> suggestions = new ArrayList<>();
+            Task theTask = suggestionTask = new Task("Calculating suggestions");
+            Task genTask = suggestionTask.addSubtask(new Task("Generating suggestions"));
+            HashMap<Suggestor, SuggestorTask> genTasks = new HashMap<>();
+            ArrayList<Suggestor> suggestors = new ArrayList<>(this.suggestors);//no modifying mid-suggestion
+            for(Suggestor s : suggestors){
+                if(s.isActive()){
+                    genTasks.put(s, genTask.addSubtask(new SuggestorTask(s)));
+                }
             }
-        }
-        for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
-            Suggestion s = it.next();
-            if(!s.test(multiblock))it.remove();
-        }
-        for(Suggestion s : suggestions){
-            suggestionList.add(new MenuComponentSuggestion(this, s));
-        }
+            Task consolidateTask = suggestionTask.addSubtask(new Task("Consolidating suggestions"));
+            Task sortTask = suggestionTask.addSubtask(new Task("Sorting suggestions"));
+            for(Suggestor s : suggestors){
+                if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+                if(s.isActive()){
+                    SuggestorTask task = genTasks.get(s);
+                    s.generateSuggestions(multiblock, s.new SuggestionAcceptor(multiblock){
+                        @Override
+                        protected void accepted(Suggestion suggestion){
+                            suggestions.add(suggestion);
+                            task.num++;
+                            task.time = elapsedTime();
+                        }
+                        @Override
+                        protected void denied(Suggestion suggestion){
+                            task.time = elapsedTime();
+                        }
+                    });
+                    task.finish();
+                }
+            }
+            //why test them again? they've already been accepted.
+//            for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
+//                Suggestion s = it.next();
+//                if(!s.test(multiblock))it.remove();
+//            }
+            int total = suggestions.size();
+            for(int i = 0; i<suggestions.size(); i++){
+                if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+                Suggestion suggestion = suggestions.get(i);
+                for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
+                    Suggestion s = it.next();
+                    if(s==suggestion)continue;//literally the same exact thing
+                    if(s.equals(suggestion))it.remove();
+                    consolidateTask.progress = 1-(suggestions.size()/(double)total);
+                }
+            }
+            consolidateTask.finish();
+            if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+            Collections.sort(suggestions);
+            if(suggestionTask!=theTask)return;//somethin' else is making suggestions!
+            sortTask.finish();
+            for(Suggestion s : suggestions){
+                suggestionList.add(new MenuComponentSuggestion(this, s));
+            }
+            this.suggestions = suggestions;
+            suggestionTask = null;
+        }, "Suggestion calculation thread");
+        thread.setDaemon(true);
+        thread.start();
     }
     @Override
     public ArrayList<int[]> getSelection(int id){
@@ -1032,5 +1078,61 @@ public class MenuEdit extends Menu implements Editor{
     @Override
     public ArrayList<Suggestion> getSuggestions(){
         return suggestions;
+    }
+    @Override
+    public Task getTask(){
+        Task task = multiblock.getTask();
+        if(task==null)task = suggestionTask;
+        return task;
+    }
+    @Override
+    public void action(Action action, boolean allowUndo){
+        multiblock.action(action, allowUndo);
+//        if(currentAction==null){
+//            currentAction = action;
+//            currentUndo = allowUndo;
+//        }
+    }
+    @Override
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(multiblock instanceof UnderhaulSFR){
+            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
+                multiblock.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.allFuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                if(((UnderhaulSFR)multiblock).fuel!=fuel){
+                    action(new SetFuelAction(this, fuel), true);
+                }
+            }
+        }
+        if(multiblock instanceof OverhaulSFR){
+            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
+                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
+                    action(new SetCoolantRecipeAction(this, recipe), true);
+                }
+            }
+        }
+        if(multiblock instanceof OverhaulFusionReactor){
+            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
+                multiblock.configuration.overhaul.fusion.CoolantRecipe recipe = Core.configuration.overhaul.fusion.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                if(((OverhaulFusionReactor)multiblock).coolantRecipe!=recipe){
+                    action(new SetFusionCoolantRecipeAction(this, recipe), true);
+                }
+            }
+            if(overFuel.getSelectedIndex()>-1){
+                multiblock.configuration.overhaul.fusion.Recipe recipe = Core.configuration.overhaul.fusion.allRecipes.get(overFuel.getSelectedIndex());
+                if(((OverhaulFusionReactor)multiblock).recipe!=recipe){
+                    action(new SetFusionRecipeAction(this, recipe), true);
+                }
+            }
+        }
+        if(multiblock instanceof OverhaulTurbine){
+            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
+                multiblock.configuration.overhaul.turbine.Recipe recipe = Core.configuration.overhaul.turbine.allRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                if(((OverhaulTurbine)multiblock).recipe!=recipe){
+                    action(new SetTurbineRecipeAction(this, recipe), true);
+                }
+            }
+        }
     }
 }

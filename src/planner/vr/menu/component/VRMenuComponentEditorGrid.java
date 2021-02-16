@@ -259,7 +259,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     index--;
                     if(index>=Core.configuration.overhaul.fissionSFR.allSources.size())index = 0;//that's impossible, right?
                     if(index<-1)index = Core.configuration.overhaul.fissionSFR.allSources.size()-1;
-                    multiblock.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.allSources.get(index)), true);
+                    editor.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.allSources.get(index)), true);
                 }
             }else if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulMSR&&editor.isShiftPressed(device)&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ)).isFuelVessel()&&!((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ)).fuel.selfPriming){
                 multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, blockY, blockZ);
@@ -268,19 +268,19 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     index--;
                     if(index>=Core.configuration.overhaul.fissionMSR.allSources.size())index = 0;
                     if(index<-1)index = Core.configuration.overhaul.fissionMSR.allSources.size()-1;
-                    multiblock.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.allSources.get(index)), true);
+                    editor.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.allSources.get(index)), true);
                 }
             }else if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulSFR&&editor.isShiftPressed(device)&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ)).template.shield){
                 multiblock.overhaul.fissionsfr.Block b = (multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, blockY, blockZ);
                 if(b!=null){
-                    if(editor.isControlPressed(device))multiblock.action(new SFRAllShieldsAction(!b.closed), true);
-                    else multiblock.action(new SFRShieldAction(b), true);
+                    if(editor.isControlPressed(device))editor.action(new SFRAllShieldsAction(!b.closed), true);
+                    else editor.action(new SFRShieldAction(b), true);
                 }
             }else if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulMSR&&editor.isShiftPressed(device)&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ)).template.shield){
                 multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, blockY, blockZ);
                 if(b!=null){
-                    if(editor.isControlPressed(device))multiblock.action(new MSRAllShieldsAction(!b.closed), true);
-                    else multiblock.action(new MSRShieldAction(b), true);
+                    if(editor.isControlPressed(device))editor.action(new MSRAllShieldsAction(!b.closed), true);
+                    else editor.action(new MSRShieldAction(b), true);
                 }
             }else{
                 //TODO VR: PICK BLOCK

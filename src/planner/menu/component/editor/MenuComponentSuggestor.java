@@ -23,7 +23,7 @@ public class MenuComponentSuggestor extends MenuComponent{
         double textLength = FontManager.getLengthForStringWithHeight(text, height);
         double scale = Math.min(1, width/textLength);
         double textHeight = (int)(height*scale)-1;
-        drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+        drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override
     public String getTooltip(){

@@ -31,6 +31,7 @@ import planner.Core;
 import planner.Core.BufferRenderer;
 import planner.FormattedText;
 import planner.Main;
+import planner.Task;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.generator.MenuComponentSFRToggleFuel;
@@ -115,6 +116,46 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public void doCalculate(List<Block> blocks){
+        Task propogateFlux = new Task("Propogating Neutron Flux");
+        Task rePropogateFlux = new Task("Re-propogating Neutron Flux");
+        Task postFluxCalc = new Task("Performing Post-Flux Calculations");
+        Task calcHeatsinks = new Task("Calculating Heatsinks");
+        Task buildClusters = new Task("Building Clusters");
+        Task calcClusters = new Task("Calculating Clusters");
+        Task calcStats = new Task("Calculating Stats");
+        Task calcPartialShutdown = new Task("Calculating Partial Shutdown");
+        Task calcShutdown = new Task("Calculating Shutdown Factor");
+        switch(calculationStep){
+            case 0:
+                calculateTask.addSubtask(propogateFlux);
+                calculateTask.addSubtask(rePropogateFlux);
+                calculateTask.addSubtask(postFluxCalc);
+                calculateTask.addSubtask(calcHeatsinks);
+                calculateTask.addSubtask(buildClusters);
+                calculateTask.addSubtask(calcClusters);
+                calculateTask.addSubtask(calcStats);
+                break;
+            case 1:
+                calcPartialShutdown.addSubtask(propogateFlux);
+                calcPartialShutdown.addSubtask(rePropogateFlux);
+                calcPartialShutdown.addSubtask(postFluxCalc);
+                calcPartialShutdown.addSubtask(calcHeatsinks);
+                calcPartialShutdown.addSubtask(buildClusters);
+                calcPartialShutdown.addSubtask(calcClusters);
+                calcPartialShutdown.addSubtask(calcStats);
+                calculateTask.addSubtask(calcPartialShutdown);
+                break;
+            case 2:
+                calcShutdown.addSubtask(propogateFlux);
+                calcShutdown.addSubtask(rePropogateFlux);
+                calcShutdown.addSubtask(postFluxCalc);
+                calcShutdown.addSubtask(calcHeatsinks);
+                calcShutdown.addSubtask(buildClusters);
+                calcShutdown.addSubtask(calcClusters);
+                calcShutdown.addSubtask(calcStats);
+                calculateTask.addSubtask(calcShutdown);
+                break;
+        }
         HashMap<Block, Boolean> shieldsWere = new HashMap<>();
         List<Block> allBlocks = getBlocks();
         if(calculationStep!=1){//temporarily open all shields
@@ -123,11 +164,17 @@ public class OverhaulSFR extends Multiblock<Block>{
                 block.closed = false;
             }
         }
-        for(Block block : blocks){
+        for(int i = 0; i<blocks.size(); i++){
+            Block block = blocks.get(i);
             block.propogateNeutronFlux(this, calculationStep==1&&cellsWereActive.contains(block));
+            propogateFlux.progress = i/(double)blocks.size();
         }
+        propogateFlux.finish();
         int lastActive, nowActive;
+        int n = 0;
         do{
+            n++;
+            rePropogateFlux.name = "Re-propogating Neutron Flux"+(n>1?" ("+n+")":"");
             lastActive = 0;
             for(Block block : blocks){
                 boolean wasActive = block.isFuelCellActive();
@@ -136,8 +183,10 @@ public class OverhaulSFR extends Multiblock<Block>{
                 if(wasActive)lastActive++;
                 block.wasActive = wasActive;
             }
-            for(Block block : blocks){
+            for(int i = 0; i<blocks.size(); i++){
+                Block block = blocks.get(i);
                 block.rePropogateNeutronFlux(this, calculationStep==1&&cellsWereActive.contains(block));
+                rePropogateFlux.progress = i/(double)blocks.size();
             }
             nowActive = 0;
             for(Block block : blocks){
@@ -147,34 +196,47 @@ public class OverhaulSFR extends Multiblock<Block>{
                 }
             }
         }while(nowActive!=lastActive);
-        for(Block block : blocks){
+        rePropogateFlux.finish();
+        for(int i = 0; i<blocks.size(); i++){
+            Block block = blocks.get(i);
             if(block.isFuelCell())block.postFluxCalc(this);
+            postFluxCalc.progress = i/(double)blocks.size();
         }
+        postFluxCalc.finish();
         boolean somethingChanged;
+        n = 0;
         do{
             somethingChanged = false;
-            for(Block block : blocks){
-                if(block.calculateHeatsink(this))somethingChanged = true;
+            n++;
+            calcHeatsinks.name = "Calculating Heatsinks"+(n>1?" ("+n+")":"");
+            for(int i = 0; i<blocks.size(); i++){
+                if(blocks.get(i).calculateHeatsink(this))somethingChanged = true;
+                calcHeatsinks.progress = i/(double)blocks.size();
             }
         }while(somethingChanged);
+        calcHeatsinks.finish();
         for(Block block : blocks){//set cell efficiencies
             if(block.isFuelCell()){
                 float criticalityModifier = (float) (1/(1+Math.exp(2*(block.neutronFlux-2*block.fuel.criticality))));
                 block.efficiency = block.fuel.efficiency*block.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier;
             }
         }
-        for(Block block : allBlocks){//detect clusters
-            Cluster cluster = getCluster(block);
+        for(int i = 0; i<allBlocks.size(); i++){//detect clusters
+            Cluster cluster = getCluster(allBlocks.get(i));
             if(cluster==null)continue;//that's not a cluster!
             synchronized(clusters){
                 if(clusters.contains(cluster))continue;//already know about that one!
                 clusters.add(cluster);
             }
+            buildClusters.progress = i/(double)allBlocks.size();
         }
+        buildClusters.finish();
         synchronized(clusters){
-            for(Cluster cluster : clusters){
+            for(int i = 0; i<clusters.size(); i++){
+                Cluster cluster = clusters.get(i);
                 int fuelCells = 0;
-                for(Block b : cluster.blocks){
+                for(int j = 0; j<cluster.blocks.size(); j++){
+                    Block b = cluster.blocks.get(j);
                     if(b.isFuelCellActive()){
                         fuelCells++;
                         cluster.totalOutput+=b.fuel.heat*b.efficiency;
@@ -193,6 +255,7 @@ public class OverhaulSFR extends Multiblock<Block>{
                         cluster.irradiation+=b.neutronFlux;
                         if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.neutronFlux;
                     }
+                    calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                 }
                 cluster.efficiency/=fuelCells;
                 cluster.heatMult/=fuelCells;
@@ -212,8 +275,10 @@ public class OverhaulSFR extends Multiblock<Block>{
                 totalEfficiency+=cluster.efficiency*fuelCells;
                 totalHeatMult+=cluster.heatMult*fuelCells;
                 totalIrradiation+=cluster.irradiation;
+                calcClusters.progress = (i+1)/(double)clusters.size();
             }
         }
+        calcClusters.finish();
         totalEfficiency/=totalFuelCells;
         totalHeatMult/=totalFuelCells;
         if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
@@ -227,15 +292,18 @@ public class OverhaulSFR extends Multiblock<Block>{
         totalOutput*=sparsityMult;
         totalEfficiency*=sparsityMult;
         totalOutput/=coolantRecipe.heat/coolantRecipe.outputRatio;
+        calcStats.finish();
         for(Block b : shieldsWere.keySet()){
             b.closed = shieldsWere.get(b);
         }
         if(calculationStep!=1){
             calculatePartialShutdown();
         }
+        calcPartialShutdown.finish();
         if(calculationStep==0){
             shutdownFactor = calculateShutdownFactor();
         }
+        calcShutdown.finish();
     }
     private void calculatePartialShutdown(){
         int last = calculationStep;

@@ -25,7 +25,5 @@ public class SetFuelAction extends Action<UnderhaulSFR>{
         editor.setUnderhaulFuel(multiblock.getConfiguration().underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
     }
     @Override
-    public void getAffectedBlocks(UnderhaulSFR multiblock, ArrayList<Block> blocks){
-        blocks.addAll(multiblock.getBlocks());
-    }
+    public void getAffectedBlocks(UnderhaulSFR multiblock, ArrayList<Block> blocks){}
 }

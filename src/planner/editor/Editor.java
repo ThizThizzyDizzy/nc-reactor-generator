@@ -1,13 +1,16 @@
 package planner.editor;
 import java.awt.Color;
 import java.util.ArrayList;
+import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.action.SetblocksAction;
+import planner.Task;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.tool.EditorTool;
 public interface Editor{
     public Multiblock getMultiblock();
+    public void action(Action action, boolean allowUndo);
     public ArrayList<int[]> getSelection(int id);
     public void addSelection(int id, ArrayList<int[]> sel);
     public boolean hasSelection(int id);
@@ -59,5 +62,6 @@ public interface Editor{
     public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id);
     public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id);
     public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id);
-    public abstract ArrayList<Suggestion> getSuggestions();
+    public ArrayList<Suggestion> getSuggestions();
+    public Task getTask();
 }

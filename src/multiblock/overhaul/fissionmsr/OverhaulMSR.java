@@ -30,6 +30,7 @@ import multiblock.ppe.SmartFillOverhaulMSR;
 import planner.Core;
 import planner.FormattedText;
 import planner.Main;
+import planner.Task;
 import planner.file.NCPFFile;
 import planner.menu.component.generator.MenuComponentMSRToggleFuel;
 import planner.menu.component.generator.MenuComponentMSRToggleSource;
@@ -114,6 +115,50 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public synchronized void doCalculate(List<Block> blocks){
+        Task buildGroups = new Task("Building Vessel Groups");
+        Task propogateFlux = new Task("Propogating Neutron Flux");
+        Task rePropogateFlux = new Task("Re-propogating Neutron Flux");
+        Task postFluxCalc = new Task("Performing Post-Flux Calculations");
+        Task calcHeaters = new Task("Calculating Heaters");
+        Task buildClusters = new Task("Building Clusters");
+        Task calcClusters = new Task("Calculating Clusters");
+        Task calcStats = new Task("Calculating Stats");
+        Task calcPartialShutdown = new Task("Calculating Partial Shutdown");
+        Task calcShutdown = new Task("Calculating Shutdown Factor");
+        switch(calculationStep){
+            case 0:
+                calculateTask.addSubtask(buildGroups);
+                calculateTask.addSubtask(propogateFlux);
+                calculateTask.addSubtask(rePropogateFlux);
+                calculateTask.addSubtask(postFluxCalc);
+                calculateTask.addSubtask(calcHeaters);
+                calculateTask.addSubtask(buildClusters);
+                calculateTask.addSubtask(calcClusters);
+                calculateTask.addSubtask(calcStats);
+                break;
+            case 1:
+                calcPartialShutdown.addSubtask(buildGroups);
+                calcPartialShutdown.addSubtask(propogateFlux);
+                calcPartialShutdown.addSubtask(rePropogateFlux);
+                calcPartialShutdown.addSubtask(postFluxCalc);
+                calcPartialShutdown.addSubtask(calcHeaters);
+                calcPartialShutdown.addSubtask(buildClusters);
+                calcPartialShutdown.addSubtask(calcClusters);
+                calcPartialShutdown.addSubtask(calcStats);
+                calculateTask.addSubtask(calcPartialShutdown);
+                break;
+            case 2:
+                calcShutdown.addSubtask(buildGroups);
+                calcShutdown.addSubtask(propogateFlux);
+                calcShutdown.addSubtask(rePropogateFlux);
+                calcShutdown.addSubtask(postFluxCalc);
+                calcShutdown.addSubtask(calcHeaters);
+                calcShutdown.addSubtask(buildClusters);
+                calcShutdown.addSubtask(calcClusters);
+                calcShutdown.addSubtask(calcStats);
+                calculateTask.addSubtask(calcShutdown);
+                break;
+        }
         HashMap<Block, Boolean> shieldsWere = new HashMap<>();
         List<Block> allBlocks = getBlocks();
         if(calculationStep!=1){//temporarily open all shields
@@ -126,17 +171,26 @@ public class OverhaulMSR extends Multiblock<Block>{
         for(Block b : allBlocks){
             b.vesselGroup = null;
         }
-        for(Block block : allBlocks){//detect groups
+        for(int i = 0; i<allBlocks.size(); i++){
+            Block block = allBlocks.get(i);//detect groups
             VesselGroup group = getVesselGroup(block);
             if(group==null)continue;//that's not a vessel group!
             if(vesselGroups.contains(group))continue;//already know about that one!
             vesselGroups.add(group);
+            buildGroups.progress = i/(double)allBlocks.size();
         }
-        for(VesselGroup group : vesselGroups){
+        buildGroups.finish();
+        for(int i = 0; i<vesselGroups.size(); i++){
+            VesselGroup group = vesselGroups.get(i);
             group.propogateNeutronFlux(this, calculationStep==1&&vesselGroupsWereActive.contains(group));
+            propogateFlux.progress = i/(double)vesselGroups.size();
         }
+        propogateFlux.finish();
         int lastActive, nowActive;
+        int n = 0;
         do{
+            n++;
+            rePropogateFlux.name = "Re-propogating Neutron Flux"+(n>1?" ("+n+")":"");
             lastActive = 0;
             for(VesselGroup group : vesselGroups){
                 boolean wasActive = group.isActive();
@@ -145,8 +199,10 @@ public class OverhaulMSR extends Multiblock<Block>{
                 if(wasActive)lastActive+=group.size();
                 group.wasActive = wasActive;
             }
-            for(Block block : blocks){//why not vessel groups...?
+            for(int i = 0; i<blocks.size(); i++){
+                Block block = blocks.get(i);//why not vessel groups...?
                 block.rePropogateNeutronFlux(this, calculationStep==1&&vesselsWereActive.contains(block));
+                rePropogateFlux.progress = i/(double)blocks.size();
             }
             nowActive = 0;
             for(VesselGroup group : vesselGroups){
@@ -156,16 +212,25 @@ public class OverhaulMSR extends Multiblock<Block>{
                 }
             }
         }while(nowActive!=lastActive);
-        for(Block block : blocks){
+        rePropogateFlux.finish();
+        for(int i = 0; i<blocks.size(); i++){
+            Block block = blocks.get(i);
             if(block.isFuelVessel())block.postFluxCalc(this);
+            postFluxCalc.progress = i/(double)blocks.size();
         }
+        postFluxCalc.finish();
         boolean somethingChanged;
+        n = 0;
         do{
             somethingChanged = false;
-            for(Block block : blocks){
-                if(block.calculateHeater(this))somethingChanged = true;
+            n++;
+            calcHeaters.name = "Calculating Heaters"+(n>1?" ("+n+")":"");
+            for(int i = 0; i<blocks.size(); i++){
+                if(blocks.get(i).calculateHeater(this))somethingChanged = true;
+                calcHeaters.progress = i/(double)blocks.size();
             }
         }while(somethingChanged);
+        calcHeaters.finish();
         for(VesselGroup group : vesselGroups){
             group.positionalEfficiency*=group.getBunchingFactor();
             for(Block block : group.blocks){
@@ -173,19 +238,23 @@ public class OverhaulMSR extends Multiblock<Block>{
                 block.efficiency = block.fuel.efficiency*group.positionalEfficiency*(block.source==null?1:block.source.efficiency)*criticalityModifier;
             }
         }
-        for(Block block : allBlocks){//detect clusters
-            Cluster cluster = getCluster(block);
+        for(int i = 0; i<allBlocks.size(); i++){
+            Cluster cluster = getCluster(allBlocks.get(i));//detect clusters
             if(cluster==null)continue;//that's not a cluster!
             synchronized(clusters){
                 if(clusters.contains(cluster))continue;//already know about that one!
                 clusters.add(cluster);
             }
+            buildClusters.progress = i/(double)allBlocks.size();
         }
+        buildClusters.finish();
         synchronized(clusters){
-            for(Cluster cluster : clusters){
+            for(int i = 0; i<clusters.size(); i++){
+                Cluster cluster = clusters.get(i);
                 int fuelVessels = 0;
                 ArrayList<VesselGroup> alreadyProcessedGroups = new ArrayList<>();
-                for(Block b : cluster.blocks){
+                for(int j = 0; j<cluster.blocks.size(); j++){
+                    Block b = cluster.blocks.get(j);
                     if(b.isFuelVesselActive()){
                         if(alreadyProcessedGroups.contains(b.vesselGroup))continue;
                         alreadyProcessedGroups.add(b.vesselGroup);
@@ -204,6 +273,7 @@ public class OverhaulMSR extends Multiblock<Block>{
                         cluster.irradiation+=b.flux;
                         if(b.irradiatorRecipe!=null)cluster.totalHeat+=b.irradiatorRecipe.heat*b.flux;
                     }
+                    calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                 }
                 cluster.efficiency/=fuelVessels;
                 cluster.heatMult/=fuelVessels;
@@ -220,8 +290,10 @@ public class OverhaulMSR extends Multiblock<Block>{
                 totalEfficiency+=cluster.efficiency*fuelVessels;
                 totalHeatMult+=cluster.heatMult*fuelVessels;
                 totalIrradiation+=cluster.irradiation;
+                calcClusters.progress = (i+1)/(double)clusters.size();
             }
         }
+        calcClusters.finish();
         totalEfficiency/=totalFuelVessels;
         totalHeatMult/=totalFuelVessels;
         if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
@@ -244,15 +316,18 @@ public class OverhaulMSR extends Multiblock<Block>{
                 }
             }
         }
+        calcStats.finish();
         for(Block b : shieldsWere.keySet()){
             b.closed = shieldsWere.get(b);
         }
         if(calculationStep!=1){
             calculatePartialShutdown();
         }
+        calcPartialShutdown.finish();
         if(calculationStep==0){
             shutdownFactor = calculateShutdownFactor();
         }
+        calcShutdown.finish();
     }
     private void calculatePartialShutdown(){
         int last = calculationStep;

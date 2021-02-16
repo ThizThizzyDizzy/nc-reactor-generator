@@ -2,8 +2,10 @@ package planner.vr.menu;
 import java.awt.Color;
 import planner.vr.menu.component.VRMenuComponentEditorGrid;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.action.ClearSelectionAction;
@@ -25,6 +27,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 import planner.Core;
+import planner.Task;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
 import planner.editor.suggestion.Suggestion;
@@ -224,7 +227,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public void setTurbineRecipe(int idx){}
     @Override
     public void clearSelection(int id){
-        multiblock.action(new ClearSelectionAction(this, id), true);
+        action(new ClearSelectionAction(this, id), true);
     }
     @Override
     public void select(int id, int x1, int y1, int z1, int x2, int y2, int z2){
@@ -283,7 +286,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
                 ac.add(i[0], i[1], i[2]);
             }
         }
-        multiblock.action(ac, true);
+        action(ac, true);
         clearSelection(id);
     }
     @Override
@@ -333,20 +336,20 @@ public class VRMenuEdit extends VRMenu implements Editor{
                 ((multiblock.overhaul.fusion.Block)set.block).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe(id);
             }
         }
-        multiblock.action(set, true);
+        action(set, true);
     }
     @Override
     public void cloneSelection(int id, int x, int y, int z){
-        multiblock.action(new CopyAction(this, id, selection.get(id), x, y, z), true);
+        action(new CopyAction(this, id, selection.get(id), x, y, z), true);
     }
     @Override
     public void moveSelection(int id, int x, int y, int z){
-        multiblock.action(new MoveAction(this, id, selection.get(id), x, y, z), true);
+        action(new MoveAction(this, id, selection.get(id), x, y, z), true);
     }
     @Override
     public void pasteSelection(int id, int x, int y, int z){
         synchronized(clipboard){
-            multiblock.action(new PasteAction(clipboard.get(id), x, y, z), true);
+            action(new PasteAction(clipboard.get(id), x, y, z), true);
         }
     }
     @Override
@@ -455,20 +458,20 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }
     public void select(int id, ArrayList<int[]> is){
         if(isControlPressed(id)){
-            multiblock.action(new SelectAction(this, id, is), true);
+            action(new SelectAction(this, id, is), true);
         }else{
-            multiblock.action(new SetSelectionAction(this, id, is), true);
+            action(new SetSelectionAction(this, id, is), true);
         }
     }
     public void setSelection(int id, ArrayList<int[]> is){
-        multiblock.action(new SetSelectionAction(this, id, is), true);
+        action(new SetSelectionAction(this, id, is), true);
     }
     public void deselect(int id, ArrayList<int[]> is){
         if(!isControlPressed(id)){
             clearSelection(id);
             return;
         }
-        multiblock.action(new DeselectAction(this, id, is), true);
+        action(new DeselectAction(this, id, is), true);
     }
     @Override
     public boolean isControlPressed(int id){
@@ -546,15 +549,33 @@ public class VRMenuEdit extends VRMenu implements Editor{
         //TODO VR: clear suggestions list
         for(Suggestor s : suggestors){
             if(s.isActive()){
-                s.generateSuggestions(multiblock, suggestions);
+                s.generateSuggestions(multiblock, s.new SuggestionAcceptor(multiblock){
+                    @Override
+                    protected void accepted(Suggestion suggestion){
+                        suggestions.add(suggestion);
+                    }
+                    @Override
+                    protected void denied(Suggestion suggestion){}
+                });
             }
         }
         for(Iterator<Suggestion> it = suggestions.iterator(); it.hasNext();){
             Suggestion s = it.next();
             if(!s.test(multiblock))it.remove();
         }
+        Collections.sort(suggestions);
         for(Suggestion s : suggestions){
             //TODO VR: add to suggestions list
         }
+    }
+    @Override
+    public Task getTask(){
+        Task task = multiblock.getTask();
+        if(task!=null)return task;
+        return null;//TODO VR: suggestions
+    }
+    @Override
+    public void action(Action action, boolean allowUndo){
+        action(action, allowUndo);
     }
 }

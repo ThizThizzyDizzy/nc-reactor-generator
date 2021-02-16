@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import multiblock.configuration.Configuration;
 import planner.FormattedText;
+import planner.Task;
 import planner.file.NCPFFile;
 import planner.menu.MenuResize;
 import planner.menu.component.MenuComponentMinimaList;
@@ -38,6 +39,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public Configuration configuration;
     private boolean calculated = false;
     public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
+    public Task calculateTask;
     {
         resetMetadata();
         lastChangeTime = System.nanoTime();
@@ -274,6 +276,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     }
     public abstract void doCalculate(List<T> blocks);
     public void calculate(List<T> blocks){
+        calculateTask = new Task("Calculating Multiblock");
         doCalculate(blocks);
         for(Module m : Core.modules){
             if(m.isActive()){
@@ -282,6 +285,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             }
         }
         calculated = true;
+        calculateTask = null;
     }
     private ArrayList<T> lastBlocks = null;
     private boolean forceRescan = false;
@@ -506,8 +510,9 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         ArrayList<T> affectedGroups = result.getAffectedGroups();
         recalculate(affectedGroups==null?getBlocks(true):affectedGroups);
         forceRescan = false;
+        calculateTask = null;
     }
-    private void recalculate(List<T> blox){
+    private void recalculate(ArrayList<T> blox){
         forceRescan = true;
         clearData(blox);
         if(validate()){
@@ -539,14 +544,16 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }while(somethingChanged);
         return group;
     }
-    public ArrayList<T> getAffectedGroups(List<T> blocks){
+    public ArrayList<T> getAffectedGroups(ArrayList<T> blocks){
         ArrayList<T> group = new ArrayList<>();
-        for(T block : blocks){
+        for(int i = 0; i<blocks.size(); i++){
+            T block = blocks.get(i);
             ArrayList<T> g = getGroup(block);
             if(g==null)return getBlocks();
             for(T b : g){
                 if(!group.contains(b))group.add(b);
             }
+            blocks.removeAll(g);
         }
         return group;
     }
@@ -811,5 +818,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public abstract void getSuggestors(ArrayList<Suggestor> suggestors);
     public boolean isCalculated(){
         return calculated;
+    }
+    public Task getTask(){
+        return calculateTask;
     }
 }

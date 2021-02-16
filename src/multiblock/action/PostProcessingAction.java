@@ -39,6 +39,6 @@ public class PostProcessingAction extends Action<Multiblock>{
     }
     @Override
     public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
-        blocks.addAll(multiblock.getBlocks());//TODO only list the actually affected blocks
+        //TODO only list the actually affected blocks
     }
 }
