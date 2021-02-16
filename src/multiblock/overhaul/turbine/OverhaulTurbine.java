@@ -830,13 +830,13 @@ public class OverhaulTurbine extends Multiblock<Block>{
                 priorities.add(new Priority<OverhaulTurbine>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
-                        return other.totalEfficiency-main.totalEfficiency;
+                        return main.coilEfficiency-other.coilEfficiency;
                     }
                 });
             }
             @Override
             public String getDescription(){
-                return "Suggests adding, removing, or replacing coils for higher efficiency";
+                return "Suggests adding, removing, or replacing coils for higher coil efficiency";
             }
             @Override
             public void generateSuggestions(OverhaulTurbine multiblock, Suggestor.SuggestionAcceptor suggestor){
@@ -846,12 +846,13 @@ public class OverhaulTurbine extends Multiblock<Block>{
                     Block b = it.next();
                     if(!b.isCoil())it.remove();
                 }
-                suggestor.setCount((multiblock.getX()*multiblock.getY()-(multiblock.bearingDiameter*multiblock.bearingDiameter))*(blocks.size()+1));
+                suggestor.setCount((multiblock.getX()*multiblock.getY()-(multiblock.bearingDiameter*multiblock.bearingDiameter))*2*(blocks.size()+1));
                 for(int x = 0; x<multiblock.getX(); x++){
                     for(int y = 0; y<multiblock.getY(); y++){
                         for(int z = 0; z<2; z++){
                             if(z==1)z = multiblock.getZ()-1;
                             Block block = multiblock.getBlock(x, y, z);
+                            if(block!=null&&block.isBearing())continue;
                             for(Block newBlock : blocks){
                                 if(newBlock.coil.efficiency>(block==null?0:block.coil.efficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
                                 else suggestor.task.max--;
@@ -868,13 +869,13 @@ public class OverhaulTurbine extends Multiblock<Block>{
                 priorities.add(new Priority<OverhaulTurbine>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
-                        return other.totalEfficiency-main.totalEfficiency;
+                        return (main.rotorEfficiency*main.idealityMultiplier)-(other.rotorEfficiency*other.idealityMultiplier);
                     }
                 });
             }
             @Override
             public String getDescription(){
-                return "Suggests blades and stators for higher total efficiency";
+                return "Suggests blades and stators for higher rotor efficiency and ideality";
             }
             @Override
             public void generateSuggestions(OverhaulTurbine multiblock, Suggestor.SuggestionAcceptor suggestor){

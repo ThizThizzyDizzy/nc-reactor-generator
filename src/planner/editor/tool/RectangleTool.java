@@ -56,10 +56,10 @@ public class RectangleTool extends EditorTool{
     public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
-            if(X==0&&Y==0)Renderer2D.drawRect(x+(Z-1)*blockSize, y, x+Z*blockSize, y+blockSize, texture);
+            if(X==editor.getMultiblock().getX()/2&&Y==0)Renderer2D.drawRect(x+(Z-1)*blockSize, y, x+Z*blockSize, y+blockSize, texture);
         });
         if(rightDragEnd!=null&&rightDragStart!=null)foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
-            if(X==0&&Y==0)Renderer2D.drawRect(x+(Z-1)*blockSize, y, x+Z*blockSize, y+blockSize, 0);
+            if(X==editor.getMultiblock().getX()/2&&Y==0)Renderer2D.drawRect(x+(Z-1)*blockSize, y, x+Z*blockSize, y+blockSize, 0);
         });
         Core.applyWhite();
     }

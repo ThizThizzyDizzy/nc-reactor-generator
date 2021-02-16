@@ -179,12 +179,12 @@ public class PencilTool extends EditorTool{
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         synchronized(leftSelectedBlocks){
             for(int[] i : leftSelectedBlocks){
-                if(i[0]==0&&i[1]==0)Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, texture);
+                if(i[0]==editor.getMultiblock().getX()/2&&i[1]==0)Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, texture);
             }
         }
         synchronized(rightSelectedBlocks){
             for(int[] i : rightSelectedBlocks){
-                if(i[0]==0&&i[1]==0)Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
+                if(i[0]==editor.getMultiblock().getX()/2&&i[1]==0)Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
             }
         }
         Core.applyWhite();

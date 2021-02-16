@@ -1,11 +1,12 @@
 package multiblock.action;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
 public class SetblocksAction extends Action<Multiblock>{
-    public final ArrayList<int[]> locations = new ArrayList<>();
+    public final HashSet<int[]> locations = new HashSet<>();
     public final Block block;
     private final HashMap<int[], Block> was = new HashMap<>();
     public SetblocksAction(Block block){
@@ -37,5 +38,16 @@ public class SetblocksAction extends Action<Multiblock>{
     }
     public boolean isEmpty(){
         return locations.isEmpty();
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj instanceof SetblocksAction){
+            SetblocksAction other = (SetblocksAction)obj;
+            if(block==null&&other.block!=null)return false;
+            if(block==null||block.isEqual(other.block)){
+                return locations.equals(other.locations);
+            }
+        }
+        return false;
     }
 }

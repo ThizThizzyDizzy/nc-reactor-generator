@@ -33,7 +33,8 @@ public class SetblockAction extends Action{
     public boolean equals(Object obj){
         if(obj instanceof SetblockAction){
             SetblockAction other = (SetblockAction)obj;
-            return x==other.x&&y==other.y&&z==other.z&&block.isEqual(other.block);
+            if(block==null&&other.block!=null)return false;
+            return x==other.x&&y==other.y&&z==other.z&&(block==null||block.isEqual(other.block));
         }
         return false;
     }
