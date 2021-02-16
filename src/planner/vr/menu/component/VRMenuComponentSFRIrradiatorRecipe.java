@@ -57,4 +57,9 @@ public class VRMenuComponentSFRIrradiatorRecipe extends VRMenuComponent{
             }
         }
     }
+    @Override    
+    public String getTooltip(int device){
+        return "Efficiency: "+recipe.efficiency+"\n"
+             + "Heat: "+recipe.heat;
+    }
 }

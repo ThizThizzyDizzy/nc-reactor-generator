@@ -24,6 +24,17 @@ public class VRMenu{
         }
     }
     public void render(TrackedDevicePose.Buffer tdpb){
+        VRCore.leftMultitool.tooltip = VRCore.rightMultitool.tooltip = null;
+        for(VRMenuComponent c : getAllComponents()){
+            String tooltip = c.getTooltip(VRCore.leftMultitool.device);
+            if(c.isDeviceOver.contains(VRCore.leftMultitool.device)&&tooltip!=null){
+                VRCore.leftMultitool.tooltip = tooltip;
+            }
+            tooltip = c.getTooltip(VRCore.rightMultitool.device);
+            if(c.isDeviceOver.contains(VRCore.rightMultitool.device)&&tooltip!=null){
+                VRCore.rightMultitool.tooltip = tooltip;
+            }
+        }
         renderBackground();
         for(VRMenuComponent component : components){
             component.render(tdpb);
@@ -56,5 +67,15 @@ public class VRMenu{
                 component.onDeviceMovedElsewhere(device, newMatrix);
             }
         }
+    }
+    /**
+     * @return A list containing every component on this menu, including subcomponents
+     */
+    public ArrayList<VRMenuComponent> getAllComponents(){
+        ArrayList<VRMenuComponent> comps = new ArrayList<>(components);
+        for(VRMenuComponent c : components){
+            comps.addAll(c.getAllComponents());
+        }
+        return comps;
     }
 }

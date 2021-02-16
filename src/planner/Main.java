@@ -37,7 +37,7 @@ public class Main{
         requiredLibraries.add(new String[]{url,filename});
     }
     private static void addRequiredLibraries(){
-        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.4/SimpleLibraryPlus-1.4.jar", "SimpleLibraryPlus-1.4.jar");
+        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.4.1/SimpleLibraryPlus-1.4.1.jar", "SimpleLibraryPlus-1.4.1.jar");
         addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/joml-1.10.0.jar", "joml-1.10.0.jar");
         if(isBot){
             addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies.jar", "JDA-4.2.0_168-withDependencies.jar");

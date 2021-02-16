@@ -307,4 +307,11 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     public boolean isSelected(int id, int x, int y, int z){
         return editor.isSelected(id, x, y, z);
     }
+    @Override
+    public String getTooltip(int device){
+        if(!deviceover.containsKey(device))return null;
+        int[] mouseover = deviceover.get(device);
+        Block block = multiblock.getBlock(mouseover[0],mouseover[1],mouseover[2]);
+        return block==null?null:block.getTooltip(multiblock);
+    }
 }

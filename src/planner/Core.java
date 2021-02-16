@@ -477,6 +477,15 @@ public class Core extends Renderer2D{
         double valDiff = val2-val1;
         return percent*valDiff+val1;
     }
+    public static float getValueBetweenTwoValues(float pos1, float val1, float pos2, float val2, float pos){
+        if(pos1>pos2){
+            return getValueBetweenTwoValues(pos2, val2, pos1, val1, pos);
+        }
+        float posDiff = pos2-pos1;
+        float percent = pos/posDiff;
+        float valDiff = val2-val1;
+        return percent*valDiff+val1;
+    }
     private static final HashMap<BufferedImage, Integer> imgs = new HashMap<>();
     public static int getTexture(BufferedImage image){
         if(image==null)return -1;

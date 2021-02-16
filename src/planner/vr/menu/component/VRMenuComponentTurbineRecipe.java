@@ -55,4 +55,9 @@ public class VRMenuComponentTurbineRecipe extends VRMenuComponent{
             }
         }
     }
+    @Override    
+    public String getTooltip(int device){
+        return "Expansion Coefficient: "+recipe.coefficient+"\n"
+             + "Energy Density (RF/mb): "+recipe.power;
+    }
 }

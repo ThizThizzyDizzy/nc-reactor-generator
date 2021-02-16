@@ -55,4 +55,10 @@ public class VRMenuComponentUnderFuel extends VRMenuComponent{
             }
         }
     }
+    @Override
+    public String getTooltip(int device){
+        return "Base Power: "+fuel.power+"\n"
+             + "Base Heat: "+fuel.heat+"\n"
+             + "Base Time: "+fuel.time;
+    }
 }

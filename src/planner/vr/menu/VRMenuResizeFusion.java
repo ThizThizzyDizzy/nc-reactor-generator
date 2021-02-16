@@ -17,6 +17,7 @@ public class VRMenuResizeFusion extends VRMenu{
     private final OverhaulFusionReactor multiblock;
     public VRMenuResizeFusion(VRGUI gui, VRMenu parent, OverhaulFusionReactor multiblock){
         super(gui, parent);
+        done.setTooltip("Finish resizing and return to the editor screen");
         done.addActionListener((e) -> {
             gui.open(new VRMenuEdit(gui, multiblock).alreadyOpen());
         });
@@ -24,35 +25,35 @@ public class VRMenuResizeFusion extends VRMenu{
         add(new VRMenuComponentPlusButton(-.25, 1.25, -.875, .125, .125, .125, true, (e) -> {
             multiblock.increaseInnerRadius();
             onGUIOpened();
-        }));
+        }).setTooltip("Increase Inner Radius"));
         add(new VRMenuComponentPlusButton(-.125, 1.25, -.875, .125, .125, .125, true, (e) -> {
             multiblock.increaseCoreSize();
             onGUIOpened();
-        }));
+        }).setTooltip("Increase Core Size"));
         add(new VRMenuComponentPlusButton(0, 1.25, -.875, .125, .125, .125, true, (e) -> {
             multiblock.increaseToroidWidth();
             onGUIOpened();
-        }));
+        }).setTooltip("Increase Toroid Width"));
         add(new VRMenuComponentPlusButton(.125, 1.25, -.875, .125, .125, .125, true, (e) -> {
             multiblock.increaseLiningThickness();
             onGUIOpened();
-        }));
+        }).setTooltip("Increase Lining Thickness"));
         add(new VRMenuComponentMinusButton(-.25, 1.125, -.875, .125, .125, .125, true, (e) -> {
             multiblock.decreaseInnerRadius();
             onGUIOpened();
-        }));
+        }).setTooltip("Decrease Inner Radius"));
         add(new VRMenuComponentMinusButton(-.125, 1.125, -.875, .125, .125, .125, true, (e) -> {
             multiblock.decreaseCoreSize();
             onGUIOpened();
-        }));
+        }).setTooltip("Decrase Core Size"));
         add(new VRMenuComponentMinusButton(0, 1.125, -.875, .125, .125, .125, true, (e) -> {
             multiblock.decreaseToroidWidth();
             onGUIOpened();
-        }));
+        }).setTooltip("Decrease Toroid Width"));
         add(new VRMenuComponentMinusButton(.125, 1.125, -.875, .125, .125, .125, true, (e) -> {
             multiblock.decreaseLiningThickness();
             onGUIOpened();
-        }));
+        }).setTooltip("Decrease Lining Thickness"));
     }
     @Override
     public void render(TrackedDevicePose.Buffer tdpb){

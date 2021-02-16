@@ -1,8 +1,15 @@
 package planner.vr;
 import java.awt.Color;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.function.Function;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import multiblock.Direction;
 import org.joml.Matrix4f;
 import org.joml.Matrix4x3f;
@@ -17,11 +24,13 @@ import org.lwjgl.openvr.TrackedDevicePose;
 import static org.lwjgl.openvr.VR.*;
 import static org.lwjgl.openvr.VRCompositor.*;
 import org.lwjgl.openvr.VREvent;
+import org.lwjgl.openvr.VRSystem;
 import static org.lwjgl.openvr.VRSystem.VRSystem_GetEyeToHeadTransform;
 import static org.lwjgl.openvr.VRSystem.VRSystem_GetProjectionMatrix;
 import static org.lwjgl.openvr.VRSystem.VRSystem_PollNextEvent;
 import planner.Core;
 import static planner.Core.helper;
+import planner.Main;
 import planner.menu.MenuMain;
 import planner.vr.menu.VRMenuMain;
 import simplelibrary.game.Framebuffer;
@@ -36,9 +45,10 @@ public class VRCore{
     public static final int vrHeight = 2240;//*15/32;
     private static ArrayList<ArrayList<Integer>> pressedButtons = new ArrayList<>();
     private static ArrayList<ArrayList<Integer>> touchedButtons = new ArrayList<>();
-    private static ArrayList<Boolean> isController = new ArrayList<>();
     public static VRGUI vrgui = new VRGUI();
     private static boolean running = true;
+    public static Multitool leftMultitool = new Multitool();
+    public static Multitool rightMultitool = new Multitool();
     public static void start(){
         IntBuffer peError = IntBuffer.allocate(1);
         int token = VR_InitInternal(peError, EVRApplicationType_VRApplication_Scene);
@@ -80,31 +90,23 @@ public class VRCore{
                         System.out.println("- ButtonPress "+event.trackedDeviceIndex()+" "+event.data().controller().button());
                         while(event.trackedDeviceIndex()>=pressedButtons.size())pressedButtons.add(new ArrayList<>());
                         pressedButtons.get(event.trackedDeviceIndex()).add(event.data().controller().button());
-                        while(event.trackedDeviceIndex()>=isController.size())isController.add(false);
-                        if(event.trackedDeviceIndex()>0)isController.set(event.trackedDeviceIndex(), true);
                         vrgui.onKeyEvent(event.trackedDeviceIndex(), event.data().controller().button(), true);
                     }
                     if(type==EVREventType_VREvent_ButtonUnpress){
                         System.out.println("- ButtonUnpress "+event.trackedDeviceIndex()+" "+event.data().controller().button());
                         while(event.trackedDeviceIndex()>=pressedButtons.size())pressedButtons.add(new ArrayList<>());
                         pressedButtons.get(event.trackedDeviceIndex()).remove((Integer)event.data().controller().button());
-                        while(event.trackedDeviceIndex()>=isController.size())isController.add(false);
-                        if(event.trackedDeviceIndex()>0)isController.set(event.trackedDeviceIndex(), true);
                         vrgui.onKeyEvent(event.trackedDeviceIndex(), event.data().controller().button(), false);
                     }
                     if(type==EVREventType_VREvent_ButtonTouch){
                         System.out.println("- ButtonTouch "+event.trackedDeviceIndex()+" "+event.data().controller().button());
                         while(event.trackedDeviceIndex()>=touchedButtons.size())touchedButtons.add(new ArrayList<>());
                         touchedButtons.get(event.trackedDeviceIndex()).add(event.data().controller().button());
-                        while(event.trackedDeviceIndex()>=isController.size())isController.add(false);
-                        if(event.trackedDeviceIndex()>0)isController.set(event.trackedDeviceIndex(), true);
                     }
                     if(type==EVREventType_VREvent_ButtonUntouch){
                         System.out.println("- ButtonUntouch "+event.trackedDeviceIndex()+" "+event.data().controller().button());
                         while(event.trackedDeviceIndex()>=touchedButtons.size())touchedButtons.add(new ArrayList<>());
                         touchedButtons.get(event.trackedDeviceIndex()).remove((Integer)event.data().controller().button());
-                        while(event.trackedDeviceIndex()>=isController.size())isController.add(false);
-                        if(event.trackedDeviceIndex()>0)isController.set(event.trackedDeviceIndex(), true);
                     }
                     if(type==EVREventType_VREvent_DualAnalog_Press)System.out.println("- DualAnalog_Press");
                     if(type==EVREventType_VREvent_DualAnalog_Unpress)System.out.println("- DualAnalog_Unpress");
@@ -423,25 +425,26 @@ public class VRCore{
         vrgui.render(tdpb);
         GL11.glColor4f(1, 1, 1, 1);
         //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
-        for(int i = 1; i<5; i++){
+        for(int i = 1; i<tdpb.limit(); i++){
             TrackedDevicePose pose = tdpb.get(i);
             if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
-                Matrix4f matrix = new Matrix4f(convert(pose.mDeviceToAbsoluteTracking()));
-                GL11.glPushMatrix();
-                GL11.glMultMatrixf(matrix.get(new float[16]));
-                if(isController.size()>i&&isController.get(i)){
-                    GL11.glColor4f(0, 1, 0, 1);
-                    drawCube(-.01f, -.01f, -.01f, .01f, .01f, .01f, 0);
-                }else{
-                    GL11.glColor4f(1, 0, 0, 1);
-                    GL11.glBegin(GL11.GL_QUADS);
-                    GL11.glVertex3d(-.01, -.01, 0);
-                    GL11.glVertex3d(.01, -.01, 0);
-                    GL11.glVertex3d(.01, .01, 0);
-                    GL11.glVertex3d(-.01, .01, 0);
-                    GL11.glEnd();
+                IntBuffer pError = IntBuffer.allocate(1);
+                int role = VRSystem.VRSystem_GetInt32TrackedDeviceProperty(i, ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32, pError);
+                if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand||role==ETrackedControllerRole_TrackedControllerRole_RightHand){
+                    Matrix4f matrix = new Matrix4f(convert(pose.mDeviceToAbsoluteTracking()));
+                    GL11.glPushMatrix();
+                    GL11.glMultMatrixf(matrix.get(new float[16]));
+                    if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand){
+                        GL11.glScaled(-1, 1, 1);
+                        leftMultitool.device = i;
+                        leftMultitool.render();
+                    }
+                    if(role==ETrackedControllerRole_TrackedControllerRole_RightHand){
+                        rightMultitool.device = i;
+                        rightMultitool.render();
+                    }
+                    GL11.glPopMatrix();
                 }
-                GL11.glPopMatrix();
             }
         }
 //</editor-fold>
@@ -777,5 +780,25 @@ public class VRCore{
     }
     public static double distance(Vector3f v1, Vector3d v2){//I know one's float and one's double... don't worry about it
         return Math.sqrt(Math.pow(v1.x-v2.x, 2)+Math.pow(v1.y-v2.y, 2)+Math.pow(v1.z-v2.z, 2));
+    }
+    public static InputStream getInputStream(String path){
+        try{
+            if(new File("nbproject").exists()){
+                return new FileInputStream(new File("src/"+path.replace("/", "/")));
+            }else{
+                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
+                Enumeration enumEntries = jar.entries();
+                while(enumEntries.hasMoreElements()){
+                    JarEntry file = (JarEntry)enumEntries.nextElement();
+                    if(file.getName().equals(path.replace("/", "/"))){
+                        return jar.getInputStream(file);
+                    }
+                }
+            }
+            throw new IllegalArgumentException("Cannot find file: "+path);
+        }catch(IOException ex){
+            System.err.println("Couldn't read file: "+path);
+            return null;
+        }
     }
 }

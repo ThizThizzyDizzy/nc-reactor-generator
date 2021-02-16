@@ -57,4 +57,11 @@ public class VRMenuComponentOverSFRFuel extends VRMenuComponent{
             }
         }
     }
+    @Override    
+    public String getTooltip(int device){
+        return "Efficiency: "+fuel.efficiency+"\n"
+             + "Base Heat: "+fuel.heat+"\n"
+             + "Criticality: "+fuel.criticality+"\n"
+             + "Base Time: "+fuel.time+(fuel.selfPriming?"\nSelf-Priming":"");
+    }
 }

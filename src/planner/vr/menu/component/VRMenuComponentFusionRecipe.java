@@ -55,4 +55,11 @@ public class VRMenuComponentFusionRecipe extends VRMenuComponent{
             }
         }
     }
+    @Override    
+    public String getTooltip(int device){
+        return "Efficiency: "+recipe.efficiency+"\n"
+             + "Base Heat: "+recipe.heat+"\n"
+             + "Fluxiness: "+recipe.fluxiness+"\n"
+             + "Base Time: "+recipe.time;
+    }
 }

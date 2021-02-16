@@ -5,6 +5,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.lwjgl.openvr.TrackedDevicePose;
 import planner.Core;
+import planner.vr.Multitool;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.VRMenuEdit;
@@ -25,7 +26,7 @@ public class VRMenuComponentSpecialPanel extends VRMenuComponent{
         for(int i = 1; i<tdpb.limit(); i++){//don't include HMD
             TrackedDevicePose pose = tdpb.get(i);
             if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
-                Matrix4f matrix = new Matrix4f(VRCore.convert(pose.mDeviceToAbsoluteTracking()));
+                Matrix4f matrix = new Matrix4f(VRCore.convert(pose.mDeviceToAbsoluteTracking())).mul(Multitool.editOffsetmatrix);
                 Vector3f translation = matrix.getTranslation(new Vector3f());
                 double distance = VRCore.distance(translation, new Vector3d(x-depth/2, y+height/2, z-width/2));
                 if(closest==-1||distance<closestDistance){

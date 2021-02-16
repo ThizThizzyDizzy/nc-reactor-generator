@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import multiblock.Action;
 import planner.Core;
 import planner.menu.component.editor.MenuComponentCoolantRecipe;
@@ -156,8 +154,6 @@ public class MenuEdit extends Menu implements Editor{
     private int LAYER_GAP = CELL_SIZE/2;
     private int multisPerRow = 0;
     private long lastChange = 0;
-    private Action currentAction;
-    private boolean currentUndo;
     private boolean closed = false;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
@@ -310,20 +306,6 @@ public class MenuEdit extends Menu implements Editor{
             }
         }
         multiblock.recalculate();
-        Thread t = new Thread(() -> {
-            while(!closed){
-                if(currentAction!=null){
-                    multiblock.action(currentAction, currentUndo);
-                    currentAction = null;
-                }else{
-                    try{
-                        Thread.sleep(1);
-                    }catch(InterruptedException ex){}
-                }
-            }
-        }, "Recalculation thread");
-        t.setDaemon(true);
-        t.start();
     }
     @Override
     public void onGUIClosed(){
@@ -1101,10 +1083,6 @@ public class MenuEdit extends Menu implements Editor{
     @Override
     public void action(Action action, boolean allowUndo){
         multiblock.action(action, allowUndo);
-//        if(currentAction==null){
-//            currentAction = action;
-//            currentUndo = allowUndo;
-//        }
     }
     @Override
     public void onMouseButton(double x, double y, int button, boolean pressed, int mods){

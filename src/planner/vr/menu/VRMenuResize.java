@@ -18,6 +18,7 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
     private boolean refreshNeeded;
     public VRMenuResize(VRGUI gui, VRMenu parent, Multiblock multiblock){
         super(gui, parent);
+        done.setTooltip("Finish resizing and return to the editor screen");
         done.addActionListener((e) -> {
             gui.open(new VRMenuEdit(gui, multiblock).alreadyOpen());
         });

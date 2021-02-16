@@ -14,13 +14,13 @@ import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 public class VRMenuComponentFusionCoolantRecipe extends VRMenuComponent{
     private final VRMenuEdit editor;
-    private final CoolantRecipe recipe;
+    private final CoolantRecipe coolantRecipe;
     private float textInset = 0;
     private double textOffset = .001f;//1mm
     public VRMenuComponentFusionCoolantRecipe(VRMenuEdit editor, double x, double y, double z, double width, double height, double depth, CoolantRecipe recipe){
         super(x, y, z, width, height, depth, 0, 0, 0);
         this.editor = editor;
-        this.recipe = recipe;
+        this.coolantRecipe = recipe;
     }
     @Override
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
@@ -31,10 +31,10 @@ public class VRMenuComponentFusionCoolantRecipe extends VRMenuComponent{
         Core.applyColor(col);
         VRCore.drawCube(0, 0, 0, width, height, depth, 0);
         Core.applyColor(Core.theme.getTextColor());
-        if(((OverhaulFusionReactor)editor.getMultiblock()).coolantRecipe.equals(recipe)){
+        if(((OverhaulFusionReactor)editor.getMultiblock()).coolantRecipe.equals(coolantRecipe)){
             VRCore.drawCubeOutline(-.0025, -.0025, -.0025, width+.0025, height+.0025, depth+.0025, .0025);//2.5mm
         }
-        drawText(recipe.name);
+        drawText(coolantRecipe.name);
     }
     public void drawText(String text){
         double textLength = FontManager.getLengthForStringWithHeight(text, height);
@@ -51,8 +51,13 @@ public class VRMenuComponentFusionCoolantRecipe extends VRMenuComponent{
         super.keyEvent(device, button, pressed);
         if(pressed){
             if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-                editor.getMultiblock().action(new SetFusionCoolantRecipeAction(editor, recipe), true);
+                editor.getMultiblock().action(new SetFusionCoolantRecipeAction(editor, coolantRecipe), true);
             }
         }
+    }
+    @Override
+    public String getTooltip(int device){
+        return "Heat: "+coolantRecipe.heat+"\n"
+             + "Output Ratio: "+coolantRecipe.outputRatio;
     }
 }

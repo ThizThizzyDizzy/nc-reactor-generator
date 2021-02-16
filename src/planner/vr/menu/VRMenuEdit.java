@@ -1,5 +1,6 @@
 package planner.vr.menu;
 import java.awt.Color;
+import java.nio.IntBuffer;
 import planner.vr.menu.component.VRMenuComponentEditorGrid;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,10 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
+import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_LeftHand;
+import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_RightHand;
+import static org.lwjgl.openvr.VR.ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32;
+import org.lwjgl.openvr.VRSystem;
 import planner.Core;
 import planner.Task;
 import planner.editor.ClipboardEntry;
@@ -42,6 +47,7 @@ import planner.editor.tool.PasteTool;
 import planner.editor.tool.PencilTool;
 import planner.editor.tool.RectangleTool;
 import planner.editor.tool.SelectionTool;
+import planner.vr.Multitool;
 import planner.vr.VRCore;
 import static planner.vr.VRCore.convert;
 import planner.vr.VRGUI;
@@ -91,6 +97,8 @@ public class VRMenuEdit extends VRMenu implements Editor{
         this.multiblock = multiblock;
         grid = add(new VRMenuComponentEditorGrid(0, 1, 0, 1, this, multiblock));
         openTargetZ = grid.z;
+        done.setTooltip("Stop editing this multiblock and return to the main menu");
+        resize.setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)");
         done.addActionListener((e) -> {
             closing = true;
         });
@@ -127,18 +135,23 @@ public class VRMenuEdit extends VRMenu implements Editor{
         grid.z = openTargetZ-dist;
         super.render(tdpb);
         //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
-        for(int i = 1; i<5; i++){
+        for(int i = 1; i<tdpb.limit(); i++){
             TrackedDevicePose pose = tdpb.get(i);
             if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
-                Matrix4f matrix = new Matrix4f(convert(pose.mDeviceToAbsoluteTracking()));
-                GL11.glPushMatrix();
-                GL11.glMultMatrixf(matrix.get(new float[16]));
-                if(getSelectedBlock(i)!=null){
-                    Core.applyWhite();
-                    double radius = grid.blockSize/4;
-                    VRCore.drawCube(-radius, -radius, -radius, radius, radius, radius, Core.getTexture(getSelectedBlock(i).getTexture()));
+                IntBuffer pError = IntBuffer.allocate(1);
+                int role = VRSystem.VRSystem_GetInt32TrackedDeviceProperty(i, ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32, pError);
+                if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand||role==ETrackedControllerRole_TrackedControllerRole_RightHand){
+                    Matrix4f matrix = new Matrix4f(convert(pose.mDeviceToAbsoluteTracking()));
+                    GL11.glPushMatrix();
+                    GL11.glMultMatrixf(matrix.get(new float[16]));
+                    GL11.glMultMatrixf(Multitool.editOffsetmatrix.get(new float[16]));
+                    if(getSelectedBlock(i)!=null){
+                        Core.applyWhite();
+                        double radius = grid.blockSize/4;
+                        VRCore.drawCube(-radius, -radius, -radius, radius, radius, radius, Core.getTexture(getSelectedBlock(i).getTexture()));
+                    }
+                    GL11.glPopMatrix();
                 }
-                GL11.glPopMatrix();
             }
         }
 //</editor-fold>
@@ -615,6 +628,6 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }
     @Override
     public void action(Action action, boolean allowUndo){
-        action(action, allowUndo);
+        multiblock.action(action, allowUndo);
     }
 }

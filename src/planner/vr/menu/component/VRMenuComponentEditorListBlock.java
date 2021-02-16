@@ -41,4 +41,8 @@ public class VRMenuComponentEditorListBlock extends VRMenuComponent{
             }
         }
     }
+    @Override
+    public String getTooltip(int device){
+        return block.getListTooltip();
+    }
 }

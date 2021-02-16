@@ -18,6 +18,7 @@ public abstract class VRMenuComponent extends VRMenu{
     public double xRot;
     public double yRot;
     public double zRot;
+    public String tooltip;
     public VRMenuComponent(double x, double y, double z, double width, double height, double depth, double rx, double ry, double rz){
         super(null, null);
         this.x = x;
@@ -94,5 +95,12 @@ public abstract class VRMenuComponent extends VRMenu{
             newMatrix.setTranslation(p.x, p.y, p.z);
             component.onDeviceMovedElsewhere(device, newMatrix);
         }
+    }
+    public VRMenuComponent setTooltip(String tooltip){
+        this.tooltip = tooltip;
+        return this;
+    }
+    public String getTooltip(int device){
+        return tooltip;
     }
 }

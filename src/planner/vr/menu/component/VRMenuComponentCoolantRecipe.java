@@ -55,4 +55,9 @@ public class VRMenuComponentCoolantRecipe extends VRMenuComponent{
             }
         }
     }
+    @Override
+    public String getTooltip(int device){
+        return "Heat: "+recipe.heat+"\n"
+             + "Output Ratio: "+recipe.outputRatio;
+    }
 }
