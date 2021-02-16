@@ -6,6 +6,7 @@ import multiblock.Block;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import planner.editor.suggestion.Suggestion;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
@@ -91,6 +92,41 @@ public class MenuComponentTurbineBladeEditorGrid extends MenuComponent{
                 Renderer2D.drawRect(X, y+blockSize-border, X+border, y+blockSize, 0);
                 if(!left){//left
                     Renderer2D.drawRect(X, y+border, X+border, y+blockSize-border, 0);
+                }
+            }
+            //TODO there's a better way to this this, but this'll do for now
+            int xx = multiblock.getX()/2;
+            int yy = 0;
+            for(Suggestion s : editor.getSuggestions()){
+                if(s.affects(0, yy, z)){
+                    if(s.selected&&s.result!=null){
+                        Block b = s.result.getBlock(xx, yy, z);
+                        Core.applyWhite(resonatingAlpha+.5f);
+                        if(b==null){
+                            drawRect(X, y, X+blockSize, y+blockSize, 0);
+                        }else{
+                            b.render(X, y, blockSize, blockSize, false, resonatingAlpha+.5f, s.result);
+                        }
+                    }
+                    Core.applyColor(Core.theme.getGreen());
+                    float border = blockSize/40f;
+                    if(s.selected)border*=3;
+                    boolean right = s.affects(xx, yy, z+1);
+                    boolean left = s.affects(xx, yy, z-1);
+                    //top
+                    Renderer2D.drawRect(X, y, X+border, y+border, 0);
+                    Renderer2D.drawRect(X+border, y, X+blockSize-border, y+border, 0);
+                    Renderer2D.drawRect(X+blockSize-border, y, X+blockSize, y+border, 0);
+                    if(!right){//right
+                        Renderer2D.drawRect(X+blockSize-border, y+border, X+blockSize, y+blockSize-border, 0);
+                    }
+                    //bottom
+                    Renderer2D.drawRect(X+blockSize-border, y+blockSize-border, X+blockSize, y+blockSize, 0);
+                    Renderer2D.drawRect(X+border, y+blockSize-border, X+blockSize-border, y+blockSize, 0);
+                    Renderer2D.drawRect(X, y+blockSize-border, X+border, y+blockSize, 0);
+                    if(!left){//left
+                        Renderer2D.drawRect(X, y+border, X+border, y+blockSize-border, 0);
+                    }
                 }
             }
         }

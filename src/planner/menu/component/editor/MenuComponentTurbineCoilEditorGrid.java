@@ -5,6 +5,7 @@ import multiblock.Block;
 import multiblock.action.SetBearingDiameterAction;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
+import planner.editor.suggestion.Suggestion;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -115,6 +116,51 @@ public class MenuComponentTurbineCoilEditorGrid extends MenuComponent{
                     }
                     if(!left){//left
                         Renderer2D.drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
+                    }
+                }
+                //TODO there's a better way do do this, but this'll do for now
+                for(Suggestion s : editor.getSuggestions()){
+                    if(s.affects(x, y, layer)){
+                        if(s.selected&&s.result!=null){
+                            Block b = s.result.getBlock(x, y, layer);
+                            Core.applyWhite(resonatingAlpha+.5f);
+                            if(b==null){
+                                drawRect(X, Y, X+blockSize, Y+blockSize, 0);
+                            }else{
+                                b.render(X, Y, blockSize, blockSize, false, resonatingAlpha+.5f, s.result);
+                            }
+                        }
+                        Core.applyColor(Core.theme.getGreen());
+                        border = blockSize/40f;
+                        if(s.selected)border*=3;
+                        boolean top = s.affects(x, y-1, layer);
+                        boolean right = s.affects(x+1, y, layer);
+                        boolean bottom = s.affects(x, y+1, layer);
+                        boolean left = s.affects(x-1, y, layer);
+                        if(!top||!left||!s.affects(x-1, y-1, layer)){//top left
+                            Renderer2D.drawRect(X, Y, X+border, Y+border, 0);
+                        }
+                        if(!top){//top
+                            Renderer2D.drawRect(X+border, Y, X+blockSize-border, Y+border, 0);
+                        }
+                        if(!top||!right||!s.affects(x+1, y-1, layer)){//top right
+                            Renderer2D.drawRect(X+blockSize-border, Y, X+blockSize, Y+border, 0);
+                        }
+                        if(!right){//right
+                            Renderer2D.drawRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border, 0);
+                        }
+                        if(!bottom||!right||!s.affects(x+1, y+1, layer)){//bottom right
+                            Renderer2D.drawRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize, 0);
+                        }
+                        if(!bottom){//bottom
+                            Renderer2D.drawRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize, 0);
+                        }
+                        if(!bottom||!left||!s.affects(x-1, y+1, layer)){//bottom left
+                            Renderer2D.drawRect(X, Y+blockSize-border, X+border, Y+blockSize, 0);
+                        }
+                        if(!left){//left
+                            Renderer2D.drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
+                        }
                     }
                 }
             }
