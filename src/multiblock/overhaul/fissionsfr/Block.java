@@ -367,7 +367,7 @@ public class Block extends multiblock.Block{
                     if(length==0)break;
                     block.reflectorActive = true;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b)*(1+block.template.reflectivity);
+                        b.neutronFlux+=flux*(1+block.template.reflectivity);
                     }
                     for(Block b : toActivate)b.moderatorActive = true;
                     for(Block b : toValidate)b.moderatorValid = true;
