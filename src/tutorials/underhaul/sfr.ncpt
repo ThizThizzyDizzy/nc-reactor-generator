@@ -1,0 +1,391 @@
+ncpt 1
+title SFRs
+translate 2
+margin 0 2
+text 2 Underhaul Solid-Fueled Fission Reactors
+translate 2
+columns 2
+margin 2 2
+imgsq tutorials/planner/introduction/underhaul_example.png
+margin 0 2
+ltext 1.5 External Structure
+skip
+translate 1
+ltext 1 Underhaul SFRs are built with a cuboidal
+skip
+ltext 1 casing (without edges). Transparent and
+skip
+ltext 1 standard casings are interchangable.
+skip
+ltext 1 The Fission Controller can be placed on
+skip
+ltext 1 any edge or corner of the casing.
+skip
+ltext 1 Fuel and power can be piped in/out of
+skip
+ltext 1 the controller, or any Fission Reactor
+skip
+ltext 1 Port. (Ports can be used in place of any
+skip
+ltext 1 casing block, excluding the top and
+skip
+ltext 1 bottom faces)
+skip
+ltext 1 The reactor can be turned on with a
+skip
+ltext 1 redstone signal to the controller.
+skip
+ltext 1 A comparator will read the total heat
+skip
+ltext 1 (if net heat>0) or power (if net heat <=0)
+skip
+ltext 1 stored in the reactor.
+columns 1
+translate 1
+text 1.5 Fuels
+translate 1.5
+ltext 1 Fuels are inserted directly into the reactor controller or through a reactor port
+ltext 1 Each fuel has 3 stats:
+ltext 1 Base Power: The base power generation per cell (in RF/t)
+ltext 1 Base Heat: The base heat generation per cell.
+ltext 1 Base Time: The time, in ticks, that one fuel item will last in one fuel cell.
+translate 1
+text 1.5 Internal Structure
+translate 1.5
+ltext 1 Fission reactors are composed of Fuel Cells, Moderators, and Coolers
+translate 1
+columns 4
+margin 3.25 3.25
+imgsq underhaul/cell.png
+imgsq underhaul/graphite.png
+imgsq underhaul/beryllium.png
+imgsq underhaul/water.png
+margin 2 2
+text .75 Reactor Cell
+text .75 Graphite Block
+text .75 Beryllium Block
+text .75 Water Cooler
+text .75 (Fuel Cell)
+text .75 (Moderator)
+text .75 (Moderator)
+text .75 (Cooler)
+columns 1
+text .5 Graphite and Beryllium moderators are interchangable
+translate 1
+text 1.5 Fuel Cells
+translate 1.5
+ltext 1 Fuel cells and Moderators make up the "Core" of every reactor.
+ltext 1 Fuel cells have no special requirements, and can be placed anywhere. If placed
+ltext 1 adjacent to each other, separated by up to 4 moderators, cells will generate
+ltext 1 extra energy and heat. Energy increases linearly by 100% for each adjacent cell.
+ltext 1 The base heat multiplier is (n+1)(n+2)/2, where n is the number of adjacent cells.
+translate 1
+columns 2
+text 1 Efficiency multiplier
+text 1 Heat multiplier
+margin 0 3
+translate .5
+columns 4
+text .75 # of adjacent cells
+text .75 Efficiency multiplier
+text .75 # of adjacent cells
+text .75 Heat multiplier
+text 1 0
+text 1 100%
+text 1 0
+text 1 100%
+text 1 1
+text 1 200%
+text 1 1
+text 1 300%
+text 1 2
+text 1 300%
+text 1 2
+text 1 600%
+text 1 3
+text 1 400%
+text 1 3
+text 1 1000%
+text 1 4
+text 1 500%
+text 1 4
+text 1 1500%
+text 1 5
+text 1 600%
+text 1 5
+text 1 2100%
+text 1 6
+text 1 700%
+text 1 6
+text 1 2800%
+columns 1
+text .5 (Actual values may vary based on mod configuration)
+translate 1
+text 1 For example:
+translate .5
+columns 15
+margin 0 0
+skip
+skip
+skip
+imgsq underhaul/cell.png
+imgsq underhaul/cell.png
+skip
+imgsq underhaul/cell.png
+imgsq underhaul/graphite.png
+imgsq underhaul/graphite.png
+imgsq underhaul/graphite.png
+imgsq underhaul/graphite.png
+imgsq underhaul/cell.png
+columns 1
+margin 0 2
+translate .5
+text 1 Each cell above will receive a bonus for 1 adjacent cell.
+translate 1.5
+text 1.5 Moderators
+translate 1.5
+ltext 1 Moderators not only link cells together (as seen above), but also provide extra
+ltext 1 efficiency and heat bonuses to adjacent cells.
+ltext 1 (Moderators do not have to form a line between cells)
+ltext 1 The moderator efficiency and heat bonuses are both linear. With n adjacent
+ltext 1 moderators, The efficiency bonus is n/6, while the heat bonus is n/3
+translate 1
+columns 2
+text 1 Efficiency bonus
+text 1 Heat bonus
+margin 0 3
+translate .5
+columns 4
+text .75 # of adjacent cells
+text .75 Efficiency increase
+text .75 # of adjacent cells
+text .75 Heat increase
+text 1 0
+text 1 0%
+text 1 0
+text 1 0%
+text 1 1
+text 1 17%
+text 1 1
+text 1 33%
+text 1 2
+text 1 33%
+text 1 2
+text 1 67%
+text 1 3
+text 1 50%
+text 1 3
+text 1 100%
+text 1 4
+text 1 67%
+text 1 4
+text 1 133%
+text 1 5
+text 1 83%
+text 1 5
+text 1 167%
+text 1 6
+text 1 100%
+text 1 6
+text 1 200%
+columns 1
+text .5 (Actual values may vary based on mod configuration)
+translate 1
+text 1 For example:
+translate .5
+columns 17
+margin 0 0
+skip
+skip
+imgsq underhaul/cell.png
+imgsq underhaul/graphite.png
+skip
+imgsq underhaul/cell.png
+imgsq underhaul/graphite.png
+imgsq underhaul/cell.png
+skip
+imgsq underhaul/cell.png
+imgsq underhaul/graphite.png
+imgsq underhaul/graphite.png
+imgsq underhaul/graphite.png
+imgsq underhaul/graphite.png
+imgsq underhaul/cell.png
+columns 1
+margin 0 2
+translate .5
+text 1 Each cell above will receive a bonus for 1 adjacent moderator.
+translate 1
+text 1 Moderators can also support coolers, but only if they are adjacent to a cell.
+text .75 (shown below as beryllium)
+translate .5
+columns 16
+margin 0 0
+skip
+imgsq underhaul/beryllium.png
+imgsq underhaul/cell.png
+imgsq underhaul/beryllium.png
+imgsq underhaul/beryllium.png
+imgsq underhaul/cell.png
+imgsq underhaul/beryllium.png
+imgsq underhaul/graphite.png
+imgsq underhaul/beryllium.png
+imgsq underhaul/cell.png
+imgsq underhaul/beryllium.png
+imgsq underhaul/graphite.png
+imgsq underhaul/graphite.png
+imgsq underhaul/beryllium.png
+imgsq underhaul/cell.png
+columns 1
+margin 0 2
+translate 2
+text 1.5 Coolers
+translate 1.5
+ltext 1 Coolers are placed in the reactor to cool it down. Each cooler has placement rules
+ltext 1 and a cooling rate. If its rules are met, the cooler becomes active, and can
+ltext 1 support other coolers
+ltext 1 Here is a list of all coolers and their stats:
+translate 1
+margin -3 0
+translate .5
+columns 5
+skip
+text 1 Cooler
+text 1 Cooling Rate
+text 1 Requirements
+translate 1
+skip
+skip
+text .75 Water Cooler
+text .75 60 H/t
+text .75 1 Fuel Cell or 1 Moderator
+margin -24 31.25
+imgsq underhaul/water.png
+margin -3 0
+skip
+text .75 Redstone Cooler
+text .75 90 H/t
+text .75 1 Fuel Cell
+margin -24 31.25
+imgsq underhaul/redstone.png
+margin -3 0
+skip
+text .75 Quartz Cooler
+text .75 90 H/t
+text .75 1 Moderator
+margin -24 31.25
+imgsq underhaul/quartz.png
+margin -3 0
+skip
+text .75 Gold Cooler
+text .75 120 H/t
+text .75 1 Water Cooler and 1 Redstone Cooler
+margin -24 31.25
+imgsq underhaul/gold.png
+margin -3 0
+skip
+text .75 Glowstone Cooler
+text .75 130 H/t
+text .75 2 Moderators
+margin -24 31.25
+imgsq underhaul/glowstone.png
+margin -3 0
+skip
+text .75 Lapis Cooler
+text .75 120 H/t
+text .75 1 Fuel Cell and 1 Casing
+margin -24 31.25
+imgsq underhaul/lapis.png
+margin -3 0
+skip
+text .75 Diamond Cooler
+text .75 150 H/t
+text .75 1 Water Cooler and 1 Quartz Cooler
+margin -24 31.25
+imgsq underhaul/diamond.png
+margin -3 0
+skip
+text .75 Helium Cooler
+text .75 140 H/t
+text .75 Exactly 1 Redstone Cooler and 1 Casing
+margin -24 31.25
+imgsq underhaul/helium.png
+margin -3 0
+skip
+text .75 Enderium Cooler
+text .75 120 H/t
+text .75 Exactly 3 Casing at one vertex
+margin -24 31.25
+imgsq underhaul/enderium.png
+margin -3 0
+skip
+text .75 Cryotheum Cooler
+text .75 160 H/t
+text .75 2 Fuel Cells
+margin -24 31.25
+imgsq underhaul/cryotheum.png
+margin -3 0
+skip
+text .75 Iron Cooler
+text .75 80 H/t
+text .75 1 Gold Cooler
+margin -24 31.25
+imgsq underhaul/iron.png
+margin -3 0
+skip
+text .75 Emerald Cooler
+text .75 160 H/t
+text .75 1 Moderator and 1 Fuel Cell
+margin -24 31.25
+imgsq underhaul/emerald.png
+margin -3 0
+skip
+text .75 Copper Cooler
+text .75 80 H/t
+text .75 1 Glowstone Cooler
+margin -24 31.25
+imgsq underhaul/copper.png
+margin -3 0
+skip
+text .75 Tin Cooler
+text .75 120 H/t
+text .75 Axial Lapis Coolers
+margin -24 31.25
+imgsq underhaul/tin.png
+margin -3 0
+skip
+text .75 Magnesium Cooler
+text .75 110 H/t
+text .75 1 Casing and 1 Moderator
+margin -24 31.25
+imgsq underhaul/magnesium.png
+margin -3 0
+columns 1
+text .5 (Actual values may vary based on mod configuration)
+translate 1
+margin 0 2
+ltext 1 There are a few types of placement rules:
+ltext 1 '2 Fuel Cells' requires 2 or more fuel cells directly adjacent to this cooler.
+ltext 1 'Exactly 1 Redstone Cooler' requires exactly 1 Redstone Cooler directly adjacent.
+ltext 1 'Axial Lapis Coolers' requires 2 lapis coolers on opposite sides of this cooler.
+text .5 (There can be more than 2 lapis coolers, but at least 2 of the must be on opposite sides)
+translate .5
+ltext 1 'Exactly 3 Casing at one vertex' Requires exactly 3 casings that meet at one
+ltext 1 corner of this cooler. This means that Enderium Coolers can only be placed in the
+ltext 1 corners of reactors that are 2x2x2 or larger
+translate .5
+ltext 1 Note that you cannot have casing blocks inside the reactor; Coolers that require
+ltext 1 casings must be on the outer edges of the reactor.
+translate 1.5
+text 1.5 Active Cooling
+translate 1.5
+ltext 1 Active Coolers require a constant flow of liquid, but provide a massive boost in
+ltext 1 cooling. Most active coolers require the molten form of their passive counterpart
+ltext 1 (ex. Active Iron Coolers require Molten Iron). However, Active Enderium Coolers
+ltext 1 require Molten Ender Pearls instead of Molten Enderium.
+ltext 1 Active Coolers require 10mb/s of fluid (.5mb/t)
+ltext 1 Active Coolers have the same placement requirements as their passive
+ltext 1 counterparts, but they cannot support other coolers.
+translate .5
+ltext 1 In the planner, active coolers are separate blocks, but ingame, there is one
+ltext 1 "Active Cooler" block that you can feed any of these fluids into.
+translate 2

@@ -3,12 +3,12 @@ font name=high resolution
 font type=ASCII
 char_20_width=12= 
 char_21_width=8=!
-char_22_width=20="
+char_22_width=16="
 char_23_width=26=#
 char_24_width=20=$
 char_25_width=24=%
 char_26_width=26=&
-char_27_width=10='
+char_27_width=8='
 char_28_width=12=(
 char_29_width=12=)
 char_2A_width=14=*
@@ -96,4 +96,4 @@ char_7B_width=18={
 char_7C_width=8="
 char_7D_width=18=}
 char_7E_width=30=~
-char_C9_width=20=É
+char_C9_width=20=

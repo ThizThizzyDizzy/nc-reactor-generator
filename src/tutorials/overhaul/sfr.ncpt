@@ -1,0 +1,731 @@
+ncpt 1
+title SFRs
+translate 2
+margin 0 2
+text 2 Overhaul Solid-Fueled Fission Reactors
+translate 2
+columns 2
+margin 2 2
+imgsq tutorials/planner/introduction/overhaul_example.png
+margin 0 2
+ltext 1.5 External Structure
+skip
+translate 1
+ltext 1 Overhaul SFRs are built with a cuboidal
+skip
+ltext 1 casing. The edges must be Reactor
+skip
+ltext 1 Casings, but the faces can also be made
+skip
+ltext 1 with Reactor Glass.
+skip
+ltext 1 Fuel can be piped in/out via Fission
+skip
+ltext 1 Fuel Cell Ports placed in the casing
+skip
+ltext 1 Coolant can be piped in/out via Fission
+skip
+ltext 1 Reactor Vents
+skip
+ltext 1 Right click any port or vent to switch it
+skip
+ltext 1 between Input and Output mode.
+skip
+ltext 1 In output mode, they will push their
+skip
+ltext 1 contents to adjacent pipes or
+skip
+ltext 1 inventories. (Do not use a servo, as
+skip
+ltext 1 they limit the output rate)
+columns 1
+ltext 1 Items for irradiator recipes can be piped in/out via a Neutron Irradiator Port.
+translate .5
+ltext 1 Neutron sources are placed in the casing (seen behind the levers above)
+ltext 1 To turn on a reactor, provide it with fuel, coolant, and a redstone signal to all
+ltext 1 neutron sources.
+ltext 1 To turn off a reactor, the design must include Neutron Shields, which can be
+ltext 1 toggled with a Fission Neutron Shield Manager.
+text .75 (see Neutron Shields below for more info)
+translate 1.25
+text 1.5 Coolant
+translate 1.5
+ltext 1 Coolant is inserted via a Fission Reactor Vent
+translate .5
+columns 4
+margin 0 2
+text 1 Input
+text 1 Output
+text 1 Heat
+text 1 Output Ratio
+text .75 Water
+text .75 High Pressure Steam
+text .75 64
+text .75 4
+text .75 Preheated Water
+text .75 High Pressure Steam
+text .75 32
+text .75 4
+text .75 IC2 Coolant
+text .75 Hot IC2 Coolant
+text .75 160
+text .75 1
+columns 1
+text .5 (Actual values may vary based on mod configuration)
+margin 0 2
+translate 1.5
+text 1.5 Fuels
+translate 1.5
+ltext 1 Fuel Pellets are inserted via a Fission Fuel Cell Port
+ltext 1 Each fuel has 4 stats:
+ltext 1 Efficiency: The base efficiency of the fuel
+ltext 1 Base Heat: The base heat generation of the fuel
+ltext 1 Criticality: The amount of neutron flux required to activate a fuel cell.
+ltext 1 Base Time: The time, in ticks, that one fuel pellet will last in one fuel cell.
+ltext 1 Some fuels are also self-priming, so they do not require neutron sources.
+translate 1
+text 1.5 Internal Structure
+translate 1.5
+ltext 1 Every Fission reactor contains Fuel Cells, Moderators, and Heat sinks.
+ltext 1 They may also contain Reflectors, Irradiators, Neutron Shields, and Conductors
+translate 1
+columns 9
+margin .5 .5
+skip
+imgsq overhaul/cell.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/beryllium-carbon.png
+imgsq overhaul/irradiator.png
+imgsq overhaul/boron-silver.png
+imgsq overhaul/water.png
+imgsq overhaul/conductor.png
+skip
+skip
+margin 0 0
+text .525 Fuel Cell
+text .525 Heavy Water
+text .525 Beryllium-Carbon
+text .525 Neutron Irradiator
+text .525 Boron-Silver
+text .525 Water Heat Sink
+text .525 Conductor
+skip
+skip
+skip
+text .525 Moderator
+text .525 Reflector
+skip
+text .525 Neutron Shield
+skip
+columns 1
+translate 1
+margin 0 2
+text 1.5 Fuel Cells
+translate 1.5
+ltext 1 Each fuel cell can have a different fuel. To filter a fuel cell or port, right click it
+ltext 1 with a fuel pellet (filtered cells are accessed through filtered ports)
+translate .5
+ltext 1 Fuel cells must be activated for the reactor to start. They are activated when
+ltext 1 they receive enough neutron flux. (when flux >= fuel criticality)
+translate 1
+ltext 1 Neutron flux spreads through the reactor's core through moderator lines.
+ltext 1 Neutron flux originates from cells that are primed with a neutron source. To prime
+ltext 1 a cell in the planner, shift-click it to cycle through neutron sources.
+ltext 1 To prime a cell ingame, place a neutron source on the casing with line-of-sight to
+ltext 1 the cell you want to prime. (Line-of-sight is obstructed by cells, reflectors,
+ltext 1 and irradiators, but not by heat sinks, moderators, or conductors)
+text 1 For example:
+columns 13
+margin 0 0
+skip
+imgsq overhaul/casing.png
+imgsq overhaul/beryllium-carbon.png
+imgsq overhaul/beryllium.png
+imgsq overhaul/cell.png
+imgsq overhaul/graphite.png
+imgsq overhaul/graphite.png
+imgsq overhaul/graphite.png
+imgsq overhaul/cell.png
+imgsq overhaul/water.png
+imgsq overhaul/copper.png
+imgsq overhaul/californium.png
+skip
+skip
+margin -1 1
+text .5 Casing
+text .5 Reflector
+text .5 Moderator
+text .5 Fuel Cell
+text .5 Moderator
+text .5 Moderator
+text .5 Moderator
+text .5 Fuel Cell
+text .5 Heat Sink
+text .5 Heat Sink
+text .5 Neutron Source
+columns 1
+text 1 (The leftmost cell has no LOS, but the rightmost cell has LOS to the source on the right)
+translate .5
+ltext 1 Once a cell is activated, it will transmit neutron flux through all its moderator lines.
+ltext 1 Fuel Cells will not stay active unless they have enough sustained neutron flux from
+ltext 1 other active cells.
+ltext 1 Cells gain a heat multiplier and efficiency multiplier from all connected moderator lines
+ltext 1 The heat multiplier is equal to the number of adjacent moderator lines, while the
+ltext 1 positional efficiency is the sum of each line's average efficiency.
+ltext 1 The total efficiency multiplier is the positional efficiency multiplied by fuel efficiency.
+text 1 For example:
+columns 13
+margin 0 0
+skip
+imgsq overhaul/cell.png
+imgsq overhaul/graphite.png
+imgsq overhaul/graphite.png
+imgsq overhaul/graphite.png
+imgsq overhaul/graphite.png
+imgsq overhaul/cell.png
+imgsq overhaul/graphite.png
+imgsq overhaul/beryllium.png
+imgsq overhaul/beryllium.png
+imgsq overhaul/graphite.png
+imgsq overhaul/cell.png
+skip
+skip
+text .5 Fuel Cell
+text .5 Graphite
+text .5 Graphite
+text .5 Graphite
+text .5 Graphite
+text .5 Fuel Cell
+text .5 Graphite
+text .5 Beryllium
+text .5 Beryllium
+text .5 Graphite
+text .5 Fuel Cell
+columns 1
+margin 0 2
+translate .1
+ltext 1 The fuel cell in the center has 2 adjacent moderator lines, thus has a heat
+ltext 1 multiplier of 200%. The left moderator line has an average efficiency factor of 1.1,
+ltext 1 while the right moderator line has an average efficiency factor of 1.075.
+ltext 1 The positional efficiency of the center fuel cell is calculated to be 2.175%.
+text .5 (Actual values may vary based on mod configuration)
+translate 1.5
+text 1.5 Moderators
+translate 1.5
+ltext 1 Moderators transmit neutron flux between Fuel Cells, Reflectors, and Irradiators.
+ltext 1 Each moderator has a Flux factor and an Efficiency factor.
+ltext 1 Moderator lines can be a maximum of 4 blocks long.
+ltext 1 Here is a list of all moderators' stats:
+margin -3 0
+translate .5
+columns 4
+text 1 Moderator
+text 1 Flux Factor
+text 1 Efficiency Factor
+translate 1
+skip
+text .75 Graphite Moderator
+text .75 10
+text .75 1.1
+margin -28.25 37.5
+imgsq overhaul/graphite.png
+margin -3 0
+text .75 Beryllium Moderator
+text .75 22
+text .75 1.05
+margin -28.25 37.5
+imgsq overhaul/beryllium.png
+margin -3 0
+text .75 Heavy Water Moderator
+text .75 36
+text .75 1
+margin -28.25 37.5
+imgsq overhaul/heavy water.png
+columns 1
+margin 0 2
+text .5 (Actual values may vary based on mod configuration)
+translate .5
+margin 0 2
+ltext 1 The total flux of a moderator line is the sum of each moderator's flux factor.
+ltext 1 The total efficiency of a moderator line is the average of each moderator's
+ltext 1 efficiency factor.
+text 1 For example:
+translate .5
+columns 12
+margin 0 0
+skip
+skip
+skip
+imgsq overhaul/cell.png
+imgsq overhaul/graphite.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/graphite.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/cell.png
+columns 1
+margin 0 2
+translate .25
+text .75 This moderator line has a flux factor of 92 (10+36+10+36) and an efficiency of 105% ((1.1+1.0+1.1+1.0)/4)
+translate 1
+text .9 The ends of moderator lines can also support heat sinks, but only if they are adjacent to a cell
+text .75 (shown below as beryllium)
+translate .5
+columns 14
+margin 0 0
+skip
+imgsq overhaul/cell.png
+imgsq overhaul/beryllium.png
+imgsq overhaul/beryllium.png
+imgsq overhaul/cell.png
+imgsq overhaul/beryllium.png
+imgsq overhaul/graphite.png
+imgsq overhaul/graphite.png
+imgsq overhaul/beryllium.png
+imgsq overhaul/cell.png
+imgsq overhaul/beryllium.png
+imgsq overhaul/graphite.png
+imgsq overhaul/beryllium-carbon.png
+columns 1
+margin 0 2
+translate 1.5
+text 1.5 Reflectors
+translate 1.5
+ltext 1 Reflectors will reflect neutron flux back to cells through moderator lines.
+ltext 1 Each reflector has a Reflectivity and Efficiency factor.
+ltext 1 Moderator lines to reflectors can only be 2 blocks long, as the neutron flux is
+ltext 1 traveling to the reflector, then back (a total of 4 blocks)
+ltext 1 The Neutron flux of these moderators is also doubled for the same reason.
+ltext 1 The moderator line's neutron flux is then multiplied by the reflector's reflectivity.
+ltext 1 The moderators line's efficiency is also multiplied by the reflector's efficiency.
+ltext 1 Here is a list of all reflectors' stats:
+margin -3 0
+translate .5
+columns 4
+text 1 Reflector
+text 1 Reflectivity
+text 1 Efficiency Factor
+translate 1
+skip
+text .75 Lead-Steel
+text .75 .5
+text .75 .25
+margin -27.25 36.5
+imgsq overhaul/lead-steel.png
+margin -3 0
+text .75 Beryllium-Carbon
+text .75 1
+text .75 .5
+margin -27.25 36.5
+imgsq overhaul/beryllium-carbon.png
+columns 1
+margin 0 2
+text .5 (Actual values may vary based on mod configuration)
+translate .5
+margin 0 2
+text 1 For example:
+translate .5
+columns 13
+margin 0 0
+skip
+skip
+skip
+imgsq overhaul/beryllium-carbon.png
+imgsq overhaul/graphite.png
+imgsq overhaul/graphite.png
+imgsq overhaul/cell.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/lead-steel.png
+columns 1
+margin 0 2
+translate .25
+ltext 1 The moderator line on the left provides 40 neutron flux (10+10)*2*1 and has an
+ltext 1 efficiency of 55% ((1.1+1.1)/2*.5), while the moderator line on the right provides
+ltext 1 72 neutron flux (36+36)*2*.5 and has an efficiency of 25% ((1+1)/2*.25)
+translate 1.5
+text 1.5 Irradiators
+translate 1.5
+ltext 1 Irradiators are placed in a reactor to perform recipes using neutron flux.
+ltext 1 Irradiators are placed at the end of a moderator line. Each irradiator recipe
+ltext 1 requires a specific amount of neutrons, so more neutron flux will speed up the
+ltext 1 recipes. (although one moderator is enough for a very slow irradiator)
+text 1 For example:
+translate .5
+columns 12
+margin 0 0
+skip
+skip
+skip
+imgsq overhaul/cell.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/irradiator.png
+columns 1
+margin 0 2
+translate .25
+ltext 1 The irradiator above will receive 144 neutron flux from the fuel cell (the fuel cell
+ltext 1 gains no flux from this moderator line)
+ltext 1 Each Irradiator recipe has an efficiency multiplier. The moderator line's efficiency
+ltext 1 is multiplied by the irradiator recipe's efficiency multiplier.
+ltext 1 Irradiator recipes can also produce heat. If so, the irradiator will generate heat
+ltext 1 for each point of neutron flux provided to the irradiator.
+ltext 1 Here is a list of all Irradiator recipes' stats:
+margin -3 0
+translate .5
+columns 4
+text 1 Input
+text 1 Output
+text 1 Efficiency
+text 1 Heat Per Flux
+text .75 Thorium
+text .75 Protactinium-Enriched Thorium
+text .75 0
+text .75 0
+text .75 Protactinium-Enriched Thorium
+text .75 Protactinium-233
+text .75 0
+text .75 0
+text .75 Bismuth Dust
+text .75 Polonium Dust
+text .75 .5
+text .75 0
+margin 0 2
+columns 1
+text .5 (Actual values may vary based on mod configuration)
+margin 0 2
+translate 1.5
+text 1.5 Neutron Shields
+translate 1.5
+ltext 1 Neutron shields can be used to toggle moderator lines and shut down reactors.
+ltext 1 Neutron shields can be placed in place of any moderator, though they have a
+ltext 1 neutron flux of 0. The shield efficiency is also used as moderator efficiency.
+ltext 1 Here is a list of all shields' stats:
+margin -3 0
+translate .5
+columns 4
+text 1 Shield
+text 1 Efficiency
+text 1 Heat Per Flux
+translate 1
+skip
+text .75 Boron-Silver
+text .75 .5
+text .75 5
+margin -27.25 36.5
+imgsq overhaul/boron-silver.png
+margin -3 0
+columns 1
+margin 0 2
+text .5 (Actual values may vary based on mod configuration)
+translate .5
+margin 0 2
+ltext 1 Shields generate heat for each point of neutron flux passing through them.
+ltext 1 Only some of this heat will count towards heating coolant (Heat*shield efficiency)
+ltext 1 Shields can be closed with a Shield Controller, which will shut down its moderator
+ltext 1 line, blocking neutron flux from neighboring cells. If a cell's flux falls below its
+ltext 1 criticality, it will shut down as well.
+translate .5
+text 1 For example:
+translate .5
+columns 16
+margin 0 0
+skip
+imgsq overhaul/beryllium-carbon.png
+imgsq overhaul/graphite.png
+imgsq overhaul/boron-silver.png
+imgsq overhaul/cell.png
+imgsq overhaul/graphite.png
+imgsq overhaul/graphite.png
+imgsq overhaul/boron-silver.png
+imgsq overhaul/graphite.png
+imgsq overhaul/cell.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/boron-silver.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/heavy water.png
+imgsq overhaul/irradiator.png
+columns 1
+margin 0 2
+translate .25
+ltext 1 The left shield will generate 100 heat, from 20 flux passing through it (10 on the
+ltext 1 way to the reflector, 10 on the way back)
+ltext 1 The middle shield will generate 150 heat, from the 30 flux passing through it
+ltext 1 (20 from the left, 10 from the right)
+ltext 1 The right shield will generate 180 heat, from the 36 flux passing through it (the
+ltext 1 moderators to its right do not provide it flux, as the irradiator absorbs it)
+translate 1.5
+text 1.5 Heat Sinks
+translate 1.5
+ltext 1 Heat Sinks are placed in the reactor to cool it down. Each Heat Sink has placement
+ltext 1 rules and a cooling rate. If its rules are met, the Heat Sink becomes active, and
+ltext 1 can support other Sinks
+ltext 1 Here is a list of all Heat Sinks and their stats:
+translate 1
+margin -3 0
+translate .5
+columns 5
+skip
+text 1 Heat Sink
+text 1 Cooling Rate
+text 1 Requirements
+translate 1
+skip
+skip
+text .75 Water Heat Sink
+text .75 55 H/t
+text .75 1 Fuel Cell
+margin -25 32.25
+imgsq overhaul/water.png
+margin -3 0
+skip
+text .75 Iron Heat Sink
+text .75 50 H/t
+text .75 1 Moderator
+margin -25 32.25
+imgsq overhaul/iron.png
+margin -3 0
+skip
+text .75 Redstone Heat Sink
+text .75 85 H/t
+text .75 1 Fuel Cell and 1 Moderator
+margin -25 32.25
+imgsq overhaul/redstone.png
+margin -3 0
+skip
+text .75 Quartz Heat Sink
+text .75 80 H/t
+text .75 1 Redstone Heat Sink
+margin -25 32.25
+imgsq overhaul/quartz.png
+margin -3 0
+skip
+text .75 Obsidian Heat Sink
+text .75 70 H/t
+text .75 Axial Glowstone Heat Sinks
+margin -25 32.25
+imgsq overhaul/obsidian.png
+margin -3 0
+skip
+text .75 Nether Brick Heat Sink
+text .75 105 H/t
+text .75 1 Obsidian Heat Sink
+margin -25 32.25
+imgsq overhaul/nether brick.png
+margin -3 0
+skip
+text .75 Glowstone Heat Sink
+text .75 90 H/t
+text .75 2 Moderators
+margin -25 32.25
+imgsq overhaul/glowstone.png
+margin -3 0
+skip
+text .75 Lapis Heat Sink
+text .75 100 H/t
+text .75 1 Fuel Cell and 1 Casing
+margin -25 32.25
+imgsq overhaul/lapis.png
+margin -3 0
+skip
+text .75 Gold Heat Sink
+text .75 110 H/t
+text .75 Exactly 2 Iron Heat Sinks
+margin -25 32.25
+imgsq overhaul/gold.png
+margin -3 0
+skip
+text .75 Prismarine Heat Sink
+text .75 115 H/t
+text .75 2 Water Heat Sinks
+margin -25 32.25
+imgsq overhaul/prismarine.png
+margin -3 0
+skip
+text .75 Slime Heat Sink
+text .75 145 H/t
+text .75 Exactly 1 Water and 2 Lead Heat Sinks
+margin -25 32.25
+imgsq overhaul/slime.png
+margin -3 0
+skip
+text .75 End Stone Heat Sink
+text .75 65 H/t
+text .75 1 Reflector
+margin -25 32.25
+imgsq overhaul/end stone.png
+margin -3 0
+skip
+text .75 Purpur Heat Sink
+text .75 95 H/t
+text .75 1 Reflector and 1 Iron Heat Sink
+margin -25 32.25
+imgsq overhaul/purpur.png
+margin -3 0
+skip
+text .75 Diamond Heat Sink
+text .75 200 H/t
+text .75 1 Fuel Cell and 1 Gold Heat Sink
+margin -25 32.25
+imgsq overhaul/diamond.png
+margin -3 0
+skip
+text .75 Emerald Heat Sink
+text .75 195 H/t
+text .75 1 Moderator and 1 Prismarine Heat Sink
+margin -25 32.25
+imgsq overhaul/emerald.png
+margin -3 0
+skip
+text .75 Copper Heat Sink
+text .75 75 H/t
+text .75 1 Water Heat Sink
+margin -25 32.25
+imgsq overhaul/copper.png
+margin -3 0
+skip
+text .75 Tin Heat Sink
+text .75 120 H/t
+text .75 Axial Lapis Heat Sinks
+margin -25 32.25
+imgsq overhaul/tin.png
+margin -3 0
+skip
+text .75 Lead Heat Sink
+text .75 60 H/t
+text .75 1 Iron Heat Sink
+margin -25 32.25
+imgsq overhaul/lead.png
+margin -3 0
+skip
+text .75 Boron Heat Sink
+text .75 160 H/t
+text .75 1 Quartz Heat Sink and 1 Casing
+margin -25 32.25
+imgsq overhaul/boron.png
+margin -3 0
+skip
+text .75 Lithium Heat Sink
+text .75 130 H/t
+text .75 Exact-Axial Lead Heat Sinks and 1 Casing
+margin -25 32.25
+imgsq overhaul/lithium.png
+margin -3 0
+skip
+text .75 Magnesium Heat Sink
+text .75 125 H/t
+text .75 Exactly 1 Moderator and 1 Casing
+margin -25 32.25
+imgsq overhaul/magnesium.png
+margin -3 0
+skip
+text .75 Manganese Heat Sink
+text .75 150 H/t
+text .75 2 Fuel Cells
+margin -25 32.25
+imgsq overhaul/manganese.png
+margin -3 0
+skip
+text .75 Aluminum Heat Sink
+text .75 175 H/t
+text .75 1 Quartz and 1 Lapis Heat Sinks
+margin -25 32.25
+imgsq overhaul/aluminum.png
+margin -3 0
+skip
+text .75 Silver Heat Sink
+text .75 170 H/t
+text .75 2 Glowstone and 1 Tin Heat Sinks
+margin -25 32.25
+imgsq overhaul/silver.png
+margin -3 0
+skip
+text .75 Fluorite Heat Sink
+text .75 165 H/t
+text .75 1 Gold and 1 Prismarine Heat Sinks
+margin -25 32.25
+imgsq overhaul/fluorite.png
+margin -3 0
+skip
+text .75 Villiaumite Heat Sink
+text .75 180 H/t
+text .75 1 Redstone and 1 End Stone Heat Sinks
+margin -25 32.25
+imgsq overhaul/villiaumite.png
+margin -3 0
+skip
+text .75 Carobbiite Heat Sink
+text .75 140 H/t
+text .75 1 End Stone and 1 Copper Heat Sinks
+margin -25 32.25
+imgsq overhaul/carobbiite.png
+margin -3 0
+skip
+text .75 Arsenic Heat Sink
+text .75 135 H/t
+text .75 Axial Reflectors
+margin -25 32.25
+imgsq overhaul/arsenic.png
+margin -3 0
+skip
+text .75 Liquid Nitrogen Heat Sink
+text .75 185 H/t
+text .75 2 Copper and 1 Purpur Heat Sinks
+margin -25 32.25
+imgsq overhaul/nitrogen.png
+margin -3 0
+skip
+text .75 Liquid Helium Heat Sink
+text .75 190 H/t
+text .75 Exactly 2 Redstone Heat Sinks
+margin -25 32.25
+imgsq overhaul/helium.png
+margin -3 0
+skip
+text .75 Enderium Heat Sink
+text .75 155 H/t
+text .75 3 Moderators
+margin -25 32.25
+imgsq overhaul/enderium.png
+margin -3 0
+skip
+text .75 Cryotheum Heat Sink
+text .75 205 H/t
+text .75 3 Fuel Cells
+margin -25 32.25
+imgsq overhaul/cryotheum.png
+margin -3 0
+columns 1
+text .5 (Actual values may vary based on mod configuration)
+translate 1
+margin 0 2
+ltext 1 There are a few types of placement rules:
+ltext 1 '2 Fuel Cells' requires 2 or more fuel cells directly adjacent to this heat sink.
+ltext 1 'Exactly 2 Redstone Heat Sinks' requires exactly 2 adjacent Redstone Heat Sinks.
+ltext 1 'Axial Lapis Heat Sinks' requires 2 lapis heat sinks on opposite sides.
+text .5 (There can be more than 2 lapis heat sinks, but at least 2 of the must be on opposite sides)
+translate .5
+ltext 1 'Exact-Axial Lead Heat Sinks' requires exactly 2 lead heat sinks on opposite sides.
+text .5 (There can not be more than 2 adjacent lead heat sinks)
+translate .5
+ltext 1 Note that you cannot have casing blocks inside the reactor; Heat Sinks that require
+ltext 1 casings must be on the outer edges of the reactor.
+translate 1.5
+text 1.5 Clusters
+translate 1.5
+ltext 1 Clusters are groups of cells, irradiators, shields, heat sinks that are connected
+ltext 1 together. Every cluster must be connected to the casing. Clusters can be
+ltext 1 connected to each other and to the casing with Conductors.
+ltext 1 If a cluster has a net heat of >10, all its fuel cells will run through fuel faster
+ltext 1 than normal. (The cluster will also melt down once its heat buffer fills up)
+ltext 1 If a cluster has a net heat of <-10, it will get an extra penalty to efficiency.
+text .5 (Actual values may vary based on mod configuration)
+translate 1.5
+text 1.5 Sparsity Penalty
+translate 1.5
+ltext 1 If the reactor is less than 75% full of functional blocks, it will get an extra
+ltext 1 penalty to efficiency. Functional blocks include all valid cells, moderators,
+ltext 1 reflectors, irradiators, shields, and heat sinks, but not conductors.
+text .5 (Actual values may vary based on mod configuration)
+translate 2

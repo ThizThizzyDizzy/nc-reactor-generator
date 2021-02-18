@@ -1,0 +1,209 @@
+ncpt 1
+title Turbines
+translate 2
+margin 0 2
+text 2 Overhaul Turbines
+translate 2
+columns 2
+margin 2 2
+imgsq tutorials/planner/introduction/overhaul_turbine.png
+margin 0 2
+ltext 1.5 External Structure
+skip
+translate 1
+ltext 1 Overhaul turbines are built with a
+skip
+ltext 1 cuboidal casing. The edges must be
+skip
+ltext 1 Turbine Casings, but the faces can also
+skip
+ltext 1 be made with Turbine Glass. Fluid can be
+skip
+ltext 1 piped in/out via a Turbine Fluid
+skip
+ltext 1 Inlet/Outlet. The outlet will push its
+skip
+ltext 1 contents to adjacent pipes. (Do not use
+skip
+ltext 1 a servo, as they limit the output rate)
+skip
+ltext 1 The turbine can be turned on with a
+skip
+ltext 1 redstone signal to the controller.
+columns 1
+translate .5
+text 1.5 Recipes
+translate 1.5
+ltext 1 Turbines process steam to generate power. Each recipe has an expansion
+ltext 1 coefficient and energy density (RF/mb)
+translate .5
+columns 4
+margin 0 2
+text 1 Input
+text 1 Output
+text 1 Expansion Coefficient
+text 1 Energy Density
+text .75 High Pressure Steam
+text .75 Exhaust Steam
+text .75 4
+text .75 16
+text .75 Low Pressure Steam
+text .75 Low Quality Steam
+text .75 2
+text .75 4
+text .75 Steam
+text .75 Low Quality Steam
+text .75 2
+text .75 4
+columns 1
+text .5 (Actual values may vary based on mod configuration)
+margin 0 2
+translate 1.5
+text 1.5 The Rotor
+translate 1.5
+ltext 1 The turbine rotor consists of bearings, the rotor shaft, and rotor blades/stators
+ltext 1 The bearing diameter must be between 1 and turbine diameter-2. If the turbine
+ltext 1 diameter is odd, the bearing diameter must also be odd. (likewise for even diameters)
+ltext 1 The bearing is placed in the casing centered on either end of the turbine.
+text .5 (To resize the bearing in the planner, click inside the multiblock with the bearing block selected)
+translate .25
+ltext 1 The rotor shaft is inside the turbine, between the two bearings.
+ltext 1 Rotor blades and stators are placed on the rotor shaft. As in the image above,
+ltext 1 each layer of blades/stators must be the same type, and must extend to the casing.
+translate 1.5
+text 1.5 Blades and Stators
+translate 1.5
+ltext 1 The ideal expansion for the recipe on layer n is equal to c^((n-.5)/length), where c
+ltext 1 is the recipe's expansion coefficient.
+ltext 1 Blades and stators increase and decrease the expansion exponentially based on
+ltext 1 their expansion coefficients. A graph is displayed in the planner showing the ideal
+ltext 1 and actual expansion for the current rotor configuration.
+translate .25
+ltext 1 The rotor efficiency is based on how close the actual expansion is to the ideal
+ltext 1 expansion values. The efficiency at each blade is multiplied by the efficiency of
+ltext 1 the blade. The expansion graph also shows the efficiency ranges at each point.
+translate .25
+ltext 1 The turbine's maximum safe input is equal to 100mb/t multiplied by the number of
+ltext 1 blade blocks. The turbine will accept up to twice this amount of steam, but it will
+ltext 1 spin too fast and the rotor may explode.
+translate .25
+ltext 1 In the planner, you can set the input rate on the main menu by selecting the
+ltext 1 turbine, clicking "Set Inputs", and selecting a multiblock to input steam from.
+translate .25
+ltext 1 The turbine rotor also has a throughput efficiency multiplier based on how much
+ltext 1 fluid the turbine is currently processing. Providing fluid rates closer to the
+ltext 1 turbine's maximum fluid rate will result in a higher throughput efficiency.
+translate .25
+ltext 1 The turbine has an additional ideality multiplier based on how close the final
+ltext 1 expansion is to the recipe's expansion coefficient.
+translate .25
+ltext 1 Here is a list of all blades' and stators' stats:
+margin -3 0
+translate .5
+columns 4
+text 1 Blade/Stator
+text 1 Expansion Coefficient
+text 1 Efficiency
+translate 1
+skip
+text .75 Steel Rotor Blade
+text .75 1.4
+text .75 1
+margin -28.5 37.75
+imgsq overhaul/turbine/steel.png
+margin -3 0
+text .75 Extreme Alloy Rotor Blade
+text .75 1.6
+text .75 1.1
+margin -28.5 37.75
+imgsq overhaul/turbine/extreme.png
+margin -3 0
+text .75 SiC-SiC CMC Rotor Blade
+text .75 1.8
+text .75 1.2
+margin -28.5 37.75
+imgsq overhaul/turbine/sic.png
+margin -3 0
+text .75 Rotor Stator
+text .75 0.75
+text .75 N/A
+margin -28.5 37.75
+imgsq overhaul/turbine/stator.png
+columns 1
+margin 0 2
+text .5 (Actual values may vary based on mod configuration)
+translate .5
+margin 0 2
+translate 1.5
+text 1.5 The Dynamo
+translate 1.5
+ltext 1 The dynamo is made up of coils on either end of the turbine. Each coil has
+ltext 1 placement rules and an efficiency multiplier. If its rules are met, the coil becomes
+ltext 1 active, and can support other coils.
+translate .25
+ltext 1 Coils are connected to the bearing. You can extend them further out using
+ltext 1 Dynamo Coil Connectors connected to any valid coil.
+translate .25
+ltext 1 The total dynamo efficiency is calculated as the average of each side's efficiency.
+ltext 1 Each side's efficiency is calculated as the average of all the coils, with a penalty
+ltext 1 if there are fewer coils than bearing blocks.
+ltext 1 (More specifically, it's the sum of the coils' efficiencies divided by the total number
+ltext 1 of coils or number of bearing blocks, whichever is larger)
+translate .25
+ltext 1 Here is a list of all Coils and their stats:
+translate 1
+margin -3 0
+translate .5
+columns 5
+skip
+text 1 Coil
+text 1 Efficiency Multiplier
+text 1 Requirements
+translate 1
+skip
+skip
+text .75 Magnesium Dynamo Coil
+text .75 0.88
+text .75 1 Bearing or Connector
+margin -25 32.25
+imgsq overhaul/turbine/magnesium.png
+margin -3 0
+skip
+text .75 Beryllium Dynamo Coil
+text .75 0.9
+text .75 1 Magnesium Coil
+margin -25 32.25
+imgsq overhaul/turbine/beryllium.png
+margin -3 0
+skip
+text .75 Aluminum Dynamo Coil
+text .75 1.0
+text .75 2 Magnesium Coils
+margin -25 32.25
+imgsq overhaul/turbine/aluminum.png
+margin -3 0
+skip
+text .75 Gold Dynamo Coil
+text .75 1.04
+text .75 1 Aluminum Coil
+margin -25 32.25
+imgsq overhaul/turbine/gold.png
+margin -3 0
+skip
+text .75 Copper Dynamo Coil
+text .75 1.06
+text .75 1 Beryllium Coil
+margin -25 32.25
+imgsq overhaul/turbine/copper.png
+margin -3 0
+skip
+text .75 Silver Dynamo Coil
+text .75 1.12
+text .75 1 Gold and 1 Copper Coils
+margin -25 32.25
+imgsq overhaul/turbine/silver.png
+margin -3 0
+columns 1
+text .5 (Actual values may vary based on mod configuration)
+margin 0 2
+translate 2
