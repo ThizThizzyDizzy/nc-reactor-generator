@@ -1,7 +1,6 @@
 package planner.file;
 import discord.Bot;
 import java.awt.image.BufferedImage;
-import planner.JSON;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.FormattedText;
+import planner.JSON;
 import simplelibrary.config2.Config;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.ImageStash;

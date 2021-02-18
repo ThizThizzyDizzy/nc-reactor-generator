@@ -8,11 +8,11 @@ import planner.file.FileReader;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
-import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
+import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuAddonsConfiguration extends Menu{
     private final MenuComponentMinimaList list = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));

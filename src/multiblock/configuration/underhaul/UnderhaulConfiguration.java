@@ -1,11 +1,11 @@
 package multiblock.configuration.underhaul;
 import java.util.ArrayList;
 import java.util.Objects;
-import multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
 import multiblock.Multiblock;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
 import simplelibrary.config2.Config;
 public class UnderhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;

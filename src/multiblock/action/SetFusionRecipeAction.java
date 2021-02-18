@@ -1,8 +1,8 @@
 package multiblock.action;
 import java.util.ArrayList;
-import multiblock.configuration.overhaul.fusion.Recipe;
 import multiblock.Action;
 import multiblock.Block;
+import multiblock.configuration.overhaul.fusion.Recipe;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import planner.editor.Editor;
 public class SetFusionRecipeAction extends Action<OverhaulFusionReactor>{

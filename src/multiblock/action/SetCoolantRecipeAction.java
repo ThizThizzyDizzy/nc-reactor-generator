@@ -1,8 +1,8 @@
 package multiblock.action;
 import java.util.ArrayList;
-import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import multiblock.Action;
 import multiblock.Block;
+import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.editor.Editor;
 public class SetCoolantRecipeAction extends Action<OverhaulSFR>{

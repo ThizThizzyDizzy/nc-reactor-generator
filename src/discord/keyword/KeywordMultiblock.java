@@ -2,8 +2,8 @@ package discord.keyword;
 import discord.Keyword;
 import java.awt.Color;
 import java.util.Locale;
-import planner.Core;
 import multiblock.Multiblock;
+import planner.Core;
 public class KeywordMultiblock extends Keyword{
     public String text;
     public KeywordMultiblock(){

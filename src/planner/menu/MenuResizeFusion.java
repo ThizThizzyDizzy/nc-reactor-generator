@@ -1,11 +1,11 @@
 package planner.menu;
 import java.util.ArrayList;
+import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistScrollable;
 import planner.menu.component.editor.MenuComponentVisibleBlock;
-import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;

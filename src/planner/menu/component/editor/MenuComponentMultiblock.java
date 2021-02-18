@@ -1,9 +1,9 @@
 package planner.menu.component.editor;
-import org.lwjgl.opengl.GL11;
-import planner.Core;
 import multiblock.Multiblock;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+import planner.Core;
 import planner.menu.MenuMain;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;

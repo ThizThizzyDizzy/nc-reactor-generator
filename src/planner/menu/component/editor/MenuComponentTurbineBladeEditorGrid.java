@@ -1,12 +1,12 @@
 package planner.menu.component.editor;
 import java.awt.Color;
-import planner.Core;
-import planner.menu.MenuEdit;
 import multiblock.Block;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import planner.Core;
 import planner.editor.suggestion.Suggestion;
+import planner.menu.MenuEdit;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;

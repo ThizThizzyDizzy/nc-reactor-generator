@@ -1,6 +1,6 @@
 package planner.menu.configuration.overhaul.fissionsfr;
-import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
+import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;

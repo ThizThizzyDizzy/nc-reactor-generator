@@ -1,8 +1,8 @@
 package planner.menu.component.editor;
 import java.awt.Color;
+import multiblock.Block;
 import planner.Core;
 import planner.menu.MenuEdit;
-import multiblock.Block;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorListBlock extends MenuComponent{
     private final MenuEdit editor;

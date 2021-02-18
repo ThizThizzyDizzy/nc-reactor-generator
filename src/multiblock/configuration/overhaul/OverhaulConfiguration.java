@@ -1,14 +1,14 @@
 package multiblock.configuration.overhaul;
 import java.util.ArrayList;
 import java.util.Objects;
-import multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
-import multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration;
-import multiblock.configuration.overhaul.turbine.TurbineConfiguration;
 import multiblock.Multiblock;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration;
+import multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
 import multiblock.configuration.overhaul.fusion.FusionConfiguration;
+import multiblock.configuration.overhaul.turbine.TurbineConfiguration;
 import simplelibrary.config2.Config;
 public class OverhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;

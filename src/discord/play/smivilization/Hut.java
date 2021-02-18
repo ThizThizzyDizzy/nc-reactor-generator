@@ -1,9 +1,9 @@
 package discord.play.smivilization;
-import discord.play.smivilization.thing.*;
 import discord.Bot;
 import discord.play.model.Face;
 import discord.play.model.Model;
 import discord.play.model.Vector3f;
+import discord.play.smivilization.thing.*;
 import discord.play.smivilization.thing.special.*;
 import java.awt.Color;
 import java.util.ArrayList;

@@ -2,8 +2,8 @@ package planner.menu.configuration.underhaul;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
 import planner.Core;
-import planner.menu.configuration.underhaul.fissionsfr.MenuFissionSFRConfiguration;
 import planner.menu.component.MenuComponentMinimalistButton;
+import planner.menu.configuration.underhaul.fissionsfr.MenuFissionSFRConfiguration;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuUnderhaulConfiguration extends Menu{

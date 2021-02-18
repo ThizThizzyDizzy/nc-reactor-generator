@@ -1,11 +1,11 @@
 package multiblock.underhaul.fissionsfr;
 import java.awt.image.BufferedImage;
 import java.util.function.Function;
-import planner.Core;
-import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
+import planner.Core;
 import simplelibrary.Queue;
 public class Block extends multiblock.Block{
     /**

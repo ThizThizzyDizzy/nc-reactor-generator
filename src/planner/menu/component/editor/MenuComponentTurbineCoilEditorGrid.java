@@ -1,11 +1,11 @@
 package planner.menu.component.editor;
-import planner.Core;
-import planner.menu.MenuEdit;
 import multiblock.Block;
 import multiblock.action.SetBearingDiameterAction;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
+import planner.Core;
 import planner.editor.suggestion.Suggestion;
+import planner.menu.MenuEdit;
 import simplelibrary.opengl.Renderer2D;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;

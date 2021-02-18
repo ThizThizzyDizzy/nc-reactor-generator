@@ -1,7 +1,7 @@
 package planner.menu.configuration.overhaul.turbine;
+import multiblock.configuration.overhaul.turbine.Blade;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import multiblock.configuration.overhaul.turbine.Blade;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentBladeConfiguration extends MenuComponent{

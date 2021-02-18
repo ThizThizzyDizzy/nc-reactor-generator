@@ -1,10 +1,10 @@
 package planner.editor.tool;
 import java.util.ArrayList;
-import org.lwjgl.opengl.GL11;
-import planner.Core;
 import multiblock.Block;
 import multiblock.action.SetblocksAction;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+import planner.Core;
 import planner.editor.Editor;
 import planner.vr.VRCore;
 import simplelibrary.opengl.ImageStash;

@@ -1,7 +1,7 @@
 package planner.menu.configuration.overhaul.fusion;
+import multiblock.configuration.overhaul.fusion.PlacementRule;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import multiblock.configuration.overhaul.fusion.PlacementRule;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentPlacementRuleConfiguration extends MenuComponent{

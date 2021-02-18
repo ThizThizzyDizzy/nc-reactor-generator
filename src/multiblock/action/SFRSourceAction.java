@@ -1,7 +1,7 @@
 package multiblock.action;
 import java.util.ArrayList;
-import multiblock.configuration.overhaul.fissionsfr.Source;
 import multiblock.Action;
+import multiblock.configuration.overhaul.fissionsfr.Source;
 import multiblock.overhaul.fissionsfr.Block;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 public class SFRSourceAction extends Action<OverhaulSFR>{

@@ -1,6 +1,6 @@
 package planner.menu.configuration.overhaul.turbine;
-import multiblock.configuration.overhaul.turbine.RuleContainer;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
+import multiblock.configuration.overhaul.turbine.RuleContainer;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;

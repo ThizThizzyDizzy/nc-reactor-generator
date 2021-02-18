@@ -1,6 +1,6 @@
 package planner.menu.configuration.overhaul.fusion;
-import planner.Core;
 import multiblock.configuration.overhaul.fusion.PlacementRule;
+import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistSlider;

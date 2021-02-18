@@ -1,6 +1,6 @@
 package planner.menu.configuration.overhaul.fusion;
-import planner.Core;
 import multiblock.configuration.overhaul.fusion.Recipe;
+import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import simplelibrary.opengl.gui.GUI;

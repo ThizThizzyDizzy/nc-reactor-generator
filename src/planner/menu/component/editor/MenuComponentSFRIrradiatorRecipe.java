@@ -1,6 +1,6 @@
 package planner.menu.component.editor;
-import planner.Core;
 import multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe;
+import planner.Core;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentSFRIrradiatorRecipe extends MenuComponent{

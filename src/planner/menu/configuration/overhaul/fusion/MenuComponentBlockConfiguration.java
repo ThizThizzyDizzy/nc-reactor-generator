@@ -1,8 +1,8 @@
 package planner.menu.configuration.overhaul.fusion;
 import java.util.ArrayList;
+import multiblock.configuration.overhaul.fusion.Block;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import multiblock.configuration.overhaul.fusion.Block;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentBlockConfiguration extends MenuComponent{

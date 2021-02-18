@@ -1,7 +1,7 @@
 package planner.menu.component.editor;
-import planner.Core;
 import multiblock.Block;
 import multiblock.Multiblock;
+import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentVisibleBlock extends MenuComponent{
     public final Multiblock multiblock;

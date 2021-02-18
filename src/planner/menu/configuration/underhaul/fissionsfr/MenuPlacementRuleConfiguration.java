@@ -1,6 +1,6 @@
 package planner.menu.configuration.underhaul.fissionsfr;
-import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
+import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistSlider;

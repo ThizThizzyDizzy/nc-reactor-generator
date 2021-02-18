@@ -1,12 +1,12 @@
 package planner.menu;
 import java.util.ArrayList;
+import multiblock.Block;
+import multiblock.Multiblock;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistScrollable;
 import planner.menu.component.editor.MenuComponentVisibleBlock;
-import multiblock.Block;
-import multiblock.Multiblock;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;

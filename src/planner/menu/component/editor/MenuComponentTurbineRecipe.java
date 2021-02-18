@@ -1,6 +1,6 @@
 package planner.menu.component.editor;
-import planner.Core;
 import multiblock.configuration.overhaul.turbine.Recipe;
+import planner.Core;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentTurbineRecipe extends MenuComponent{

@@ -1,7 +1,7 @@
 package planner.menu.configuration.underhaul.fissionsfr;
 import multiblock.configuration.Configuration;
-import planner.Core;
 import multiblock.configuration.underhaul.fissionsfr.Block;
+import planner.Core;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;

@@ -1,7 +1,7 @@
 package multiblock.action;
 import java.util.ArrayList;
-import multiblock.configuration.overhaul.fissionmsr.Source;
 import multiblock.Action;
+import multiblock.configuration.overhaul.fissionmsr.Source;
 import multiblock.overhaul.fissionmsr.Block;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 public class MSRSourceAction extends Action<OverhaulMSR>{

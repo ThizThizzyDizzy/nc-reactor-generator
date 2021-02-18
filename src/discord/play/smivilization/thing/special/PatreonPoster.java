@@ -1,7 +1,7 @@
 package discord.play.smivilization.thing.special;
-import discord.play.smivilization.HutThingExclusive;
 import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
+import discord.play.smivilization.HutThingExclusive;
 import discord.play.smivilization.Wall;
 import java.util.UUID;
 import org.lwjgl.opengl.GL11;

@@ -1,7 +1,7 @@
 package planner.menu.component.editor;
 import planner.Core;
-import planner.menu.MenuEdit;
 import planner.editor.suggestion.Suggestion;
+import planner.menu.MenuEdit;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentSuggestion extends MenuComponent{

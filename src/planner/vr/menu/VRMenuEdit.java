@@ -1,7 +1,6 @@
 package planner.vr.menu;
 import java.awt.Color;
 import java.nio.IntBuffer;
-import planner.vr.menu.component.VRMenuComponentEditorGrid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,6 +52,7 @@ import static planner.vr.VRCore.convert;
 import planner.vr.VRGUI;
 import planner.vr.VRMenu;
 import planner.vr.menu.component.VRMenuComponentButton;
+import planner.vr.menu.component.VRMenuComponentEditorGrid;
 import planner.vr.menu.component.VRMenuComponentMultiblockOutputPanel;
 import planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;
 import planner.vr.menu.component.VRMenuComponentSpecialPanel;

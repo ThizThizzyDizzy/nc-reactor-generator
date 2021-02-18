@@ -1,11 +1,11 @@
 package planner.menu;
-import planner.menu.component.MenuComponentMulticolumnMinimaList;
-import planner.menu.component.MenuComponentMinimalistButton;
-import planner.menu.component.MenuComponentMinimalistTextBox;
 import java.util.ArrayList;
-import planner.Core;
 import multiblock.Block;
 import multiblock.Multiblock;
+import planner.Core;
+import planner.menu.component.MenuComponentMinimalistButton;
+import planner.menu.component.MenuComponentMinimalistTextBox;
+import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuMultiblockMetadata extends Menu{

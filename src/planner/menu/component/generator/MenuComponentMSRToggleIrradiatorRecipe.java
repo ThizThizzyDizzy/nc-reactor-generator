@@ -1,7 +1,7 @@
 package planner.menu.component.generator;
-import planner.Core;
 import multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe;
 import org.lwjgl.glfw.GLFW;
+import planner.Core;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMSRToggleIrradiatorRecipe extends MenuComponent{

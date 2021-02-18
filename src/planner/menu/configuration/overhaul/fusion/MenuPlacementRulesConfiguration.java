@@ -1,6 +1,6 @@
 package planner.menu.configuration.overhaul.fusion;
-import multiblock.configuration.overhaul.fusion.RuleContainer;
 import multiblock.configuration.overhaul.fusion.PlacementRule;
+import multiblock.configuration.overhaul.fusion.RuleContainer;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;

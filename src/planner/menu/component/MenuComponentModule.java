@@ -1,6 +1,6 @@
 package planner.menu.component;
-import planner.Core;
 import org.lwjgl.glfw.GLFW;
+import planner.Core;
 import planner.editor.module.Module;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;

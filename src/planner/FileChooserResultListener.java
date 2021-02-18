@@ -1,6 +1,6 @@
 package planner;
-import planner.file.FileFormat;
 import java.io.File;
+import planner.file.FileFormat;
 public interface FileChooserResultListener{
     public void approved(File file, FileFormat format);
 }

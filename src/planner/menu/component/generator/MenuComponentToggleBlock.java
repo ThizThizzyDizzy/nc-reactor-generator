@@ -1,8 +1,8 @@
 package planner.menu.component.generator;
 import java.awt.Color;
-import planner.Core;
 import multiblock.Block;
 import org.lwjgl.glfw.GLFW;
+import planner.Core;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentToggleBlock extends MenuComponent{

@@ -1,8 +1,8 @@
 package multiblock.action;
 import java.util.ArrayList;
-import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.Action;
 import multiblock.Block;
+import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.editor.Editor;
 public class SetFuelAction extends Action<UnderhaulSFR>{

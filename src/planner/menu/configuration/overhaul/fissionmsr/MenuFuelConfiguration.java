@@ -1,6 +1,6 @@
 package planner.menu.configuration.overhaul.fissionmsr;
-import planner.Core;
 import multiblock.configuration.overhaul.fissionmsr.Fuel;
+import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;

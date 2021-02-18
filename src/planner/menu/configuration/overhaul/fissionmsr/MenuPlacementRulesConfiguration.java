@@ -1,6 +1,6 @@
 package planner.menu.configuration.overhaul.fissionmsr;
-import multiblock.configuration.overhaul.fissionmsr.RuleContainer;
 import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
+import multiblock.configuration.overhaul.fissionmsr.RuleContainer;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.GUI;
