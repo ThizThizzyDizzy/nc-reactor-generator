@@ -86,6 +86,9 @@ public class MenuEdit extends Menu implements Editor{
     private EditorTool paste = new PasteTool(this, 0);
     private MenuComponentEditorTool pasteComp = new MenuComponentEditorTool(paste);
     private Task suggestionTask;
+    private float scrollMagnitude = 1;
+    private double zoomScrollMagnitude = 0.5;
+    private double scaleFac = 1.5;
     {
         editorTools.add(new MoveTool(this, 0));
         editorTools.add(new SelectionTool(this, 0));
@@ -214,7 +217,7 @@ public class MenuEdit extends Menu implements Editor{
             irradiatorRecipe.setSelectedIndex(0);
         }
         this.multiblock = multiblock;
-        multibwauk.setScrollMagnitude(CELL_SIZE/2);
+        multibwauk.setScrollMagnitude(CELL_SIZE*scrollMagnitude);
         back.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(1, 0), 5));
         });
@@ -228,18 +231,10 @@ public class MenuEdit extends Menu implements Editor{
             multiblock.openResizeMenu(gui, this);
         });
         zoomOut.addActionListener((e) -> {
-            scale = Math.max(minScale, Math.min(maxScale, scale/1.5));
-            CELL_SIZE = (int) (16*scale);
-            LAYER_GAP = CELL_SIZE/2;
-            multibwauk.setScrollMagnitude(CELL_SIZE/2);multibwauk.setScrollWheelMagnitude(CELL_SIZE/2);
-            onGUIOpened();
+            zoomOut(1);
         });
         zoomIn.addActionListener((e) -> {
-            scale = Math.max(minScale, Math.min(maxScale, scale*1.5));
-            CELL_SIZE = (int) (16*scale);
-            LAYER_GAP = CELL_SIZE/2;
-            multibwauk.setScrollMagnitude(CELL_SIZE/2);multibwauk.setScrollWheelMagnitude(CELL_SIZE/2);
-            onGUIOpened();
+            zoomIn(1);
         });
         editMetadata.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
@@ -1125,5 +1120,28 @@ public class MenuEdit extends Menu implements Editor{
                 }
             }
         }
+    }
+    @Override
+    public boolean onMouseScrolled(double x, double y, double dx, double dy){
+        if(Core.isControlPressed()&&dy!=0){
+            zoom(dy*zoomScrollMagnitude);
+            return true;
+        }
+        return super.onMouseScrolled(x, y, dx, dy);
+    }
+    private void zoom(double zoom){
+        for(int i = 0; i<Math.abs(zoom); i++){
+            scale = Math.max(minScale, Math.min(maxScale, scale*Math.pow(scaleFac, zoom)));
+        }
+        CELL_SIZE = (int) (16*scale);
+        LAYER_GAP = CELL_SIZE/2;
+        multibwauk.setScrollMagnitude(CELL_SIZE*scrollMagnitude);multibwauk.setScrollWheelMagnitude(CELL_SIZE*scrollMagnitude);
+        onGUIOpened();
+    }
+    private void zoomOut(double amount){
+        zoom(-amount);
+    }
+    private void zoomIn(double amount){
+        zoom(amount);
     }
 }

@@ -103,4 +103,12 @@ public class MenuComponentMinimalistScrollable extends MenuComponentScrollable{
 //        }
 //        return true;
 //    }
+    @Override
+    public boolean onMouseScrolled(double x, double y, double dx, double dy){
+        if(Core.isShiftPressed()){
+            dx = dy;
+            dy = 0;
+        }
+        return super.onMouseScrolled(x, y, dx, dy);
+    }
 }
