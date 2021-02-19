@@ -1023,7 +1023,7 @@ public class Bot extends ListenerAdapter{
 //            }
         });
         //smore commands
-        playCommands.add(new Command("help", "smelp", "s'melp", "s’melp"){
+        playCommands.add(new Command("help", "smelp"){
             @Override
             public String getHelpText(){
                 return "Shows this help window";
@@ -1075,7 +1075,7 @@ public class Bot extends ListenerAdapter{
                 channel.sendMessage("There's no game running!").queue();
             }
         });
-        playCommands.add(new Command("smore", "s'more", "s’more"){
+        playCommands.add(new Command("smore"){
             @Override
             public String getHelpText(){
                 return "Mmmm, s'mores";
@@ -1219,19 +1219,19 @@ public class Bot extends ListenerAdapter{
                 SmoreBot.eatSmores(user, eat);
             }
         });
-        playCommands.add(new SecretCommand("moresmore", "mores'more", "mores’more", "doublesmore", "doubles'more", "doubles’more"){
+        playCommands.add(new SecretCommand("moresmore", "doublesmore"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 channel.sendMessage("If you tried making two s'mores at once, your arms would get tired and you'd drop them! You wouldn't want that, would you?").queue();
             }
         });
-        playCommands.add(new SecretCommand("foursmore", "fours'more", "fours’more", "quadsmore", "quads'more", "quads’more"){
+        playCommands.add(new SecretCommand("foursmore", "quadsmore"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 channel.sendMessage("To make four s'mores at once, you'd need four arms. You don't have four arms.").queue();
             }
         });
-        playCommands.add(new SecretCommand("smorelord", "s'morelord", "s’morelord"){
+        playCommands.add(new SecretCommand("smorelord"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 for(Role role : guild.retrieveMember(user).complete().getRoles()){
@@ -1281,7 +1281,7 @@ public class Bot extends ListenerAdapter{
                 channel.sendMessage(SmoreBot.getEatenCountS(user.getIdLong())).queue();
             }
         });
-        playCommands.add(new Command("smores", "s'mores", "s’mores", "bal", "balance", "money"){
+        playCommands.add(new Command("smores", "bal", "balance", "money"){
             @Override
             public String getHelpText(){
                 return "Displays the amount of s'mores currently in your possession";
@@ -1301,7 +1301,7 @@ public class Bot extends ListenerAdapter{
                 if(SmoreBot.getGlowshroomCount(user.getIdLong())>0)channel.sendMessage(SmoreBot.getGlowshroomCountS(user.getIdLong())).queue();
             }
         });
-        playCommands.add(new Command("smoreboard", "leaderboard", "s'moreboard", "s’moreboard"){
+        playCommands.add(new Command("smoreboard", "leaderboard"){
             @Override
             public String getHelpText(){
                 return "Displays the top 5 s'more stockpilers";
@@ -1318,7 +1318,7 @@ public class Bot extends ListenerAdapter{
                 channel.sendMessage(builder.addField("Top S'more Stockpilers", mess, false).build()).queue();
             }
         });
-        playCommands.add(new SecretCommand("snoreboard", "s'noreboard", "s’noreboard"){
+        playCommands.add(new SecretCommand("snoreboard"){
             @Override
             public String getHelpText(){
                 return "Displays the bottom 5 s'more stockpilers";
@@ -1335,7 +1335,7 @@ public class Bot extends ListenerAdapter{
                 channel.sendMessage(builder.addField("Top S'more Debtors", mess, false).build()).queue();
             }
         });
-        playCommands.add(new Command("omnomboard", "nomboard", "yumboard", "eatboard", "s’nomnomnomboard", "s'nomnomnomboard", "nomnomnomboard", "omnomnomboard"){
+        playCommands.add(new Command("omnomboard", "nomboard", "yumboard", "eatboard", "snomnomnomboard", "nomnomnomboard", "omnomnomboard"){
             @Override
             public String getHelpText(){
                 return "Displays the top 5 s'nomnomnommers";
@@ -2269,10 +2269,6 @@ public class Bot extends ListenerAdapter{
         }
     }
     @Override
-    public void onMessageReceived(MessageReceivedEvent event){
-        super.onMessageReceived(event);
-    }
-    @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event){
         guild = event.getGuild();
         if(dataChannels.contains(event.getChannel().getIdLong()))storeMultiblocks(event.getMessage());//store own posts too :3
@@ -2288,6 +2284,7 @@ public class Bot extends ListenerAdapter{
                 }
             }
             if(!hasPrefix)return;
+            command = command.replace("’", "'").replace("s'", "s");
             try{
                 for(Command cmd : botCommands){
                     for(String alt : cmd.alternates){
@@ -2319,6 +2316,7 @@ public class Bot extends ListenerAdapter{
                 }
             }
             if(!hasPrefix)return;
+            command = command.replace("’", "'").replace("s'", "s");
             try{
                 for(Command cmd : playCommands){
                     for(String alt : cmd.alternates){
