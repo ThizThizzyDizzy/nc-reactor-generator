@@ -42,6 +42,7 @@ public class MenuUnderhaulConfiguration extends Menu{
             deleteSFR.enabled = Core.isShiftPressed();
         }
         deleteSFR.label = (configuration.underhaul.fissionSFR==null?"Create":"Delete")+" (Shift)";
+        deleteSFR.setTooltip((configuration.underhaul.fissionSFR==null?"Create":"Delete")+" the Underhaul SFR configuration");
         back.width = gui.helper.displayWidth();
         fissionSFR.width = gui.helper.displayWidth()*3/4;
         deleteSFR.width = gui.helper.displayWidth()/4;

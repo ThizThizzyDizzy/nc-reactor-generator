@@ -33,6 +33,7 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
     }
     @Override
     public void onMouseMovedElsewhere(double x, double y){
+        super.onMouseMovedElsewhere(x, y);
         isPressed = isRightPressed = false;
     }
     @Override

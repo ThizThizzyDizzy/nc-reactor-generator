@@ -142,6 +142,8 @@ public class MenuConfiguration extends Menu{
         }
         deleteOverhaul.label = (configuration.overhaul==null?"Create":"Delete")+" (Alt+Shift)";
         deleteUnderhaul.label = (configuration.underhaul==null?"Create":"Delete")+" (Ctrl+Shift)";
+        deleteOverhaul.setTooltip((configuration.overhaul==null?"Create":"Delete")+" the overhaul configuration");
+        deleteUnderhaul.setTooltip((configuration.underhaul==null?"Create":"Delete")+" the underhaul configuration");
         configGuidelines.width = underhaul.width = overhaul.width = done.width = addons.width = gui.helper.displayWidth();
         configGuidelines.height = name.height = overhaulVersion.height = underhaulVersion.height = addons.height = underhaul.height = overhaul.height = done.height = deleteUnderhaul.height = deleteOverhaul.height = gui.helper.displayHeight()/16;
         name.width = gui.helper.displayWidth()*.75;

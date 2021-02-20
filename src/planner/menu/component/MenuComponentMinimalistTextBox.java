@@ -30,6 +30,48 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
         }
     }
     @Override
+    public void onCharTyped(char c){
+        String lastText = text;
+        super.onCharTyped(c);
+        if(filter==INT){
+            if(text.trim().isEmpty())text = "0";
+            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+            if(text.startsWith("--"))text = text.substring(2);
+            try{
+                int val = Integer.parseInt(text);
+                if(min!=null&&val<min.intValue()){
+                    text = min.toString();
+                }
+                if(max!=null&&val>max.intValue()){
+                    text = max.toString();
+                }
+            }catch(NumberFormatException ex){
+                text = lastText;
+            }
+        }
+        if(filter==FLOAT){
+            if(text.trim().isEmpty())text = "0";
+            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+            if(text.startsWith("--"))text = text.substring(2);
+            try{
+                float val = Float.parseFloat(text);
+                if(min!=null&&val<min.floatValue()){
+                    text = min.toString();
+                }
+                if(max!=null&&val>max.floatValue()){
+                    text = max.toString();
+                }
+            }catch(NumberFormatException ex){
+                text = lastText;
+            }
+        }
+        while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
+        if(text.startsWith(".")){
+            while(text.endsWith("0"))text = text.substring(0, text.length()-1);
+            if(text.equals("."))text = "0";
+        }
+    }
+    @Override
     public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
         String lastText = text;
         super.keyEvent(key, scancode, isPress, isRepeat, modifiers);

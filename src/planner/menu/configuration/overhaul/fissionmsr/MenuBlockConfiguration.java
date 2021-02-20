@@ -182,8 +182,8 @@ public class MenuBlockConfiguration extends Menu{
         drawText(0, gui.helper.displayHeight()/numComps*3, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*4, "Cooling");
         drawText(0, gui.helper.displayHeight()/numComps*4, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*5, "Input Fluid");
         drawText(0, gui.helper.displayHeight()/numComps*5, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*6, "Output Fluid");
-        drawText(0, gui.helper.displayHeight()/numComps*6, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*7, "Input Fluid");
-        drawText(0, gui.helper.displayHeight()/numComps*7, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*8, "Output Fluid");
+        drawText(0, gui.helper.displayHeight()/numComps*6, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*7, "Input Rate");
+        drawText(0, gui.helper.displayHeight()/numComps*7, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*8, "Output Rate");
         drawText(0, gui.helper.displayHeight()/numComps*17, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*18, "Neutron Flux");
         drawText(0, gui.helper.displayHeight()/numComps*18, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*19, "Efficiency");
         drawText(0, gui.helper.displayHeight()/numComps*19, gui.helper.displayWidth()*.25, gui.helper.displayHeight()/numComps*20, "Reflectivity");

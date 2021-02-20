@@ -111,6 +111,10 @@ public class MenuOverhaulConfiguration extends Menu{
         deleteMSR.label = (configuration.overhaul.fissionMSR==null?"Create":"Delete")+" (Shift)";
         deleteTurbine.label = (configuration.overhaul.turbine==null?"Create":"Delete")+" (Shift)";
         deleteFusion.label = (configuration.overhaul.fusion==null?"Create":"Delete")+" (Shift)";
+        deleteSFR.setTooltip((configuration.overhaul.fissionSFR==null?"Create":"Delete")+" the Overhaul SFR configuration");
+        deleteMSR.setTooltip((configuration.overhaul.fissionMSR==null?"Create":"Delete")+" the Overhaul MSR configuration");
+        deleteTurbine.setTooltip((configuration.overhaul.turbine==null?"Create":"Delete")+" the Overhaul Turbine configuration");
+        deleteFusion.setTooltip((configuration.overhaul.fusion==null?"Create":"Delete")+" the Overhaul Fusion Reactor configuration");
         back.width = gui.helper.displayWidth();
         fissionSFR.width = fissionMSR.width = turbine.width = fusion.width = gui.helper.displayWidth()*3/4;
         deleteSFR.width = deleteMSR.width = deleteTurbine.width = deleteFusion.width = gui.helper.displayWidth()/4;
