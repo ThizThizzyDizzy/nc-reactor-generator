@@ -1251,7 +1251,7 @@ public class Bot extends ListenerAdapter{
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 Hut hut = SmoreBot.getHut(user.getIdLong());
-                if(hut.hasGlowshroom()){
+                if(hut!=null&&hut.hasGlowshroom()){
                     channel.sendMessage("You bend down and carefully pick the glowshroom").queue();
                     hut.pickGlowshroom();
                     SmoreBot.addGlowshroom(user);
@@ -1593,6 +1593,7 @@ public class Bot extends ListenerAdapter{
                     if(args.trim().equalsIgnoreCase(type.name)){
                         if(SmoreBot.hasHut(user.getIdLong(), type)){
                             channel.sendMessage("You already have a "+type.name+"!").queue();
+                            return;
                         }
                         price = type.getPrice();
                         onBuy = () -> {
