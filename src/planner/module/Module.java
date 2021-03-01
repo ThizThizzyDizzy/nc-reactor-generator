@@ -1,17 +1,26 @@
-package planner.editor.module;
+package planner.module;
 import generator.Priority;
 import java.util.ArrayList;
 import multiblock.Multiblock;
+import planner.Core;
 import planner.editor.suggestion.Suggestor;
 public abstract class Module<T>{
-    private boolean active = false;
-    public void activate(){
+    private boolean active;
+    public Module(){
+        this(false);
+    }
+    public Module(boolean defaultActive){
+        active = defaultActive;
+    }
+    public final void activate(){
         active = true;
         onActivated();
+        Core.refreshModules();
     }
-    public void deactivate(){
+    public final void deactivate(){
         active = false;
         onDeactivated();
+        Core.refreshModules();
     }
     public boolean isActive(){
         return active;
@@ -25,8 +34,12 @@ public abstract class Module<T>{
      * @param m the multiblock to calculate
      * @return a String to add to the tooltip, or `null` if there is none
      */
-    public abstract T calculateMultiblock(Multiblock m);
-    public abstract String getTooltip(Multiblock m, T o);
+    public T calculateMultiblock(Multiblock m){
+        return null;
+    }
+    public String getTooltip(Multiblock m, T o){
+        return null;
+    }
     protected String percent(double n, int digits){
         double fac = Math.pow(10, digits);
         double d = (Math.round(n*fac*100)/(double)Math.round(fac));
@@ -37,10 +50,12 @@ public abstract class Module<T>{
         double d = Math.round(n*fac)/(double)Math.round(fac);
         return (digits==0?Math.round(d):d)+"";
     }
-    public abstract void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities);
-    public abstract void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors);
+    public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){}
+    public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}
+    public void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){}
     public void setActive(boolean active){
         if(active)activate();
         else deactivate();
     }
+    public void addTutorials(){}
 }

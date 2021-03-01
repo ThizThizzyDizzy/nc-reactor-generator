@@ -307,56 +307,54 @@ public class Bot extends ListenerAdapter{
                     return;
                 }
                 Object fuels = null;
-                switch(multiblock.getMultiblockID()){
-                    case 0://underhaul SFR
-                        multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
-                        FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
-                                if(f.name.equalsIgnoreCase(str)){
-                                    if(fuel!=null){
-                                        channel.sendMessage("Underhaul SFRs can only have one fuel!").queue();
-                                        return;
-                                    }
-                                    fuel = f;
-                                    continue FUEL;
+                if(multiblock instanceof UnderhaulSFR){
+                    multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
+                    FUEL:for(String str : fuelStrings){
+                        for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
+                            if(f.name.equalsIgnoreCase(str)){
+                                if(fuel!=null){
+                                    channel.sendMessage("Underhaul SFRs can only have one fuel!").queue();
+                                    return;
                                 }
+                                fuel = f;
+                                continue FUEL;
                             }
-                            channel.sendMessage("Unknown fuel: "+str).queue();
-                            return;
                         }
-                        if(fuel==null)fuel = configuration.underhaul.fissionSFR.allFuels.get(0);
-                        fuels = fuel;
-                        break;
-                    case 1://overhaul SFR
-                        ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel> sfrFuels = new ArrayList<>();
-                        FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.overhaul.fissionsfr.Fuel f : configuration.overhaul.fissionSFR.allFuels){
-                                if(f.name.equalsIgnoreCase(str)){
-                                    sfrFuels.add(f);
-                                    continue FUEL;
-                                }
+                        channel.sendMessage("Unknown fuel: "+str).queue();
+                        return;
+                    }
+                    if(fuel==null)fuel = configuration.underhaul.fissionSFR.allFuels.get(0);
+                    fuels = fuel;
+                }
+                if(multiblock instanceof OverhaulSFR){
+                    ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel> sfrFuels = new ArrayList<>();
+                    FUEL:for(String str : fuelStrings){
+                        for(multiblock.configuration.overhaul.fissionsfr.Fuel f : configuration.overhaul.fissionSFR.allFuels){
+                            if(f.name.equalsIgnoreCase(str)){
+                                sfrFuels.add(f);
+                                continue FUEL;
                             }
-                            channel.sendMessage("Unknown fuel: "+str).queue();
-                            return;
                         }
-                        if(sfrFuels.isEmpty())sfrFuels.add(configuration.overhaul.fissionSFR.allFuels.get(0));
-                        fuels = sfrFuels;
-                        break;
-                    case 2://overhaul MSR
-                        ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel> msrFuels = new ArrayList<>();
-                        FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.overhaul.fissionmsr.Fuel f : configuration.overhaul.fissionMSR.allFuels){
-                                if(f.name.equalsIgnoreCase(str)){
-                                    msrFuels.add(f);
-                                    continue FUEL;
-                                }
+                        channel.sendMessage("Unknown fuel: "+str).queue();
+                        return;
+                    }
+                    if(sfrFuels.isEmpty())sfrFuels.add(configuration.overhaul.fissionSFR.allFuels.get(0));
+                    fuels = sfrFuels;
+                }
+                if(multiblock instanceof OverhaulMSR){
+                    ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel> msrFuels = new ArrayList<>();
+                    FUEL:for(String str : fuelStrings){
+                        for(multiblock.configuration.overhaul.fissionmsr.Fuel f : configuration.overhaul.fissionMSR.allFuels){
+                            if(f.name.equalsIgnoreCase(str)){
+                                msrFuels.add(f);
+                                continue FUEL;
                             }
-                            channel.sendMessage("Unknown fuel: "+str).queue();
-                            return;
                         }
-                        if(msrFuels.isEmpty())msrFuels.add(configuration.overhaul.fissionMSR.allFuels.get(0));
-                        fuels = msrFuels;
-                        break;
+                        channel.sendMessage("Unknown fuel: "+str).queue();
+                        return;
+                    }
+                    if(msrFuels.isEmpty())msrFuels.add(configuration.overhaul.fissionMSR.allFuels.get(0));
+                    fuels = msrFuels;
                 }
                 Priority.Preset priority = null;
                 ArrayList<Priority> priorities = multiblock.getGenerationPriorities();
@@ -552,7 +550,7 @@ public class Bot extends ListenerAdapter{
                     synchronized(storedMultiblocks){
                         for(NCPFFile file : storedMultiblocks){
                             for(Multiblock m : file.multiblocks){
-                                if(m.getMultiblockID()==generator.multiblock.getMultiblockID()){
+                                if(m.getDefinitionName().equals(generator.multiblock.getDefinitionName())){
                                     try{
                                         generator.importMultiblock(m);
                                     }catch(Exception ex){
@@ -756,49 +754,47 @@ public class Bot extends ListenerAdapter{
                     return;
                 }
                 Object fuels = null;
-                switch(multiblock.getMultiblockID()){
-                    case 0://underhaul SFR
-                        ArrayList<multiblock.configuration.underhaul.fissionsfr.Fuel> underFuels = new ArrayList<>();
-                        FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
-                                if(f.name.equalsIgnoreCase(str)){
-                                    underFuels.add(f);
-                                    continue FUEL;
-                                }
+                if(multiblock instanceof UnderhaulSFR){
+                    ArrayList<multiblock.configuration.underhaul.fissionsfr.Fuel> underFuels = new ArrayList<>();
+                    FUEL:for(String str : fuelStrings){
+                        for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
+                            if(f.name.equalsIgnoreCase(str)){
+                                underFuels.add(f);
+                                continue FUEL;
                             }
-                            channel.sendMessage("Unknown fuel: "+str).queue();
-                            return;
                         }
-                        fuels = underFuels.isEmpty()?null:underFuels;
-                        break;
-                    case 1://overhaul SFR
-                        ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel> sfrFuels = new ArrayList<>();
-                        FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.overhaul.fissionsfr.Fuel f : configuration.overhaul.fissionSFR.allFuels){
-                                if(f.name.equalsIgnoreCase(str)){
-                                    sfrFuels.add(f);
-                                    continue FUEL;
-                                }
+                        channel.sendMessage("Unknown fuel: "+str).queue();
+                        return;
+                    }
+                    fuels = underFuels.isEmpty()?null:underFuels;
+                }
+                if(multiblock instanceof OverhaulSFR){
+                    ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel> sfrFuels = new ArrayList<>();
+                    FUEL:for(String str : fuelStrings){
+                        for(multiblock.configuration.overhaul.fissionsfr.Fuel f : configuration.overhaul.fissionSFR.allFuels){
+                            if(f.name.equalsIgnoreCase(str)){
+                                sfrFuels.add(f);
+                                continue FUEL;
                             }
-                            channel.sendMessage("Unknown fuel: "+str).queue();
-                            return;
                         }
-                        fuels = sfrFuels.isEmpty()?null:sfrFuels;
-                        break;
-                    case 2://overhaul MSR
-                        ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel> msrFuels = new ArrayList<>();
-                        FUEL:for(String str : fuelStrings){
-                            for(multiblock.configuration.overhaul.fissionmsr.Fuel f : configuration.overhaul.fissionMSR.allFuels){
-                                if(f.name.equalsIgnoreCase(str)){
-                                    msrFuels.add(f);
-                                    continue FUEL;
-                                }
+                        channel.sendMessage("Unknown fuel: "+str).queue();
+                        return;
+                    }
+                    fuels = sfrFuels.isEmpty()?null:sfrFuels;
+                }
+                if(multiblock instanceof OverhaulMSR){
+                    ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel> msrFuels = new ArrayList<>();
+                    FUEL:for(String str : fuelStrings){
+                        for(multiblock.configuration.overhaul.fissionmsr.Fuel f : configuration.overhaul.fissionMSR.allFuels){
+                            if(f.name.equalsIgnoreCase(str)){
+                                msrFuels.add(f);
+                                continue FUEL;
                             }
-                            channel.sendMessage("Unknown fuel: "+str).queue();
-                            return;
                         }
-                        fuels = msrFuels.isEmpty()?null:msrFuels;
-                        break;
+                        channel.sendMessage("Unknown fuel: "+str).queue();
+                        return;
+                    }
+                    fuels = msrFuels.isEmpty()?null:msrFuels;
                 }
                 Priority.Preset priority = null;
                 ArrayList<Priority> priorities = multiblock.getGenerationPriorities();
@@ -883,7 +879,7 @@ public class Bot extends ListenerAdapter{
                                 }catch(Exception ex){
                                     continue;
                                 }
-                                if(m.getMultiblockID()!=mb.getMultiblockID())continue;//wrong multiblock type
+                                if(!m.getDefinitionName().equals(mb.getDefinitionName()))continue;//wrong multiblock type
                                 if(X!=0&&Y!=0&&Z!=0){
                                     if(m.getX()!=X||m.getY()!=Y||m.getZ()!=Z)continue;//wrong size
                                 }

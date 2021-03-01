@@ -20,11 +20,11 @@ import multiblock.symmetry.Symmetry;
 import planner.Core;
 import planner.FormattedText;
 import planner.Task;
-import planner.editor.module.Module;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.module.Module;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class UnderhaulSFR extends Multiblock<Block>{
@@ -41,7 +41,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     public UnderhaulSFR(Configuration configuration, int x, int y, int z, Fuel fuel){
         super(configuration, x, y, z);
-        this.fuel = fuel==null?getConfiguration().underhaul.fissionSFR.allFuels.get(0):fuel;
+        this.fuel = fuel==null?(exists()?getConfiguration().underhaul.fissionSFR.allFuels.get(0):null):fuel;
     }
     @Override
     public String getDefinitionName(){
@@ -218,7 +218,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public boolean exists(){
-        return getConfiguration().underhaul!=null&&getConfiguration().underhaul.fissionSFR!=null;
+        return super.exists()&&getConfiguration().underhaul!=null&&getConfiguration().underhaul.fissionSFR!=null;
     }
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){}

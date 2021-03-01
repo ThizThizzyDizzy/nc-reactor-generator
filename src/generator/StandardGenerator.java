@@ -8,7 +8,6 @@ import multiblock.action.SetblockAction;
 import multiblock.action.SymmetryAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
-import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.Symmetry;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
@@ -243,7 +242,6 @@ public class StandardGenerator extends MultiblockGenerator{
         countIteration();
     }
     private Block applyMultiblockSpecificSettings(Multiblock currentMultiblock, Block randBlock){
-        if(multiblock instanceof UnderhaulSFR)return randBlock;//no block-specifics here!
         if(multiblock instanceof OverhaulSFR){
             multiblock.overhaul.fissionsfr.Block block = (multiblock.overhaul.fissionsfr.Block)randBlock;
             if(block.isFuelCell()){
@@ -255,7 +253,6 @@ public class StandardGenerator extends MultiblockGenerator{
             if(block.isIrradiator()){
                 block.irradiatorRecipe = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidIrradiatorRecipes());
             }
-            return randBlock;
         }
         if(multiblock instanceof OverhaulMSR){
             multiblock.overhaul.fissionmsr.Block block = (multiblock.overhaul.fissionmsr.Block)randBlock;
@@ -268,10 +265,8 @@ public class StandardGenerator extends MultiblockGenerator{
             if(block.isIrradiator()){
                 block.irradiatorRecipe = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidIrradiatorRecipes());
             }
-            return randBlock;
         }
-        if(multiblock instanceof OverhaulTurbine)return randBlock;//also no block-specifics!
-        throw new IllegalArgumentException("Unknown multiblock: "+multiblock.getDefinitionName());
+        return randBlock;
     }
     private void finalize(Multiblock worst){
         if(worst==null)return;

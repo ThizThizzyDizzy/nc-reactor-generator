@@ -1,9 +1,9 @@
 package planner.menu;
 import planner.Core;
-import planner.editor.module.Module;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentModule;
+import planner.module.Module;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuModules extends Menu{

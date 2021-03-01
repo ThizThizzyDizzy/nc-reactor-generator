@@ -152,6 +152,7 @@ public class NCPTTutorial extends Tutorial{
             private Random rand = new Random();
             @Override
             public void preRender(){
+                if(Core.multiblockTypes.isEmpty())return;
                 switch(name){
                     case "editor":
                         if(editorImage==-1){
@@ -234,6 +235,7 @@ public class NCPTTutorial extends Tutorial{
             }
             @Override
             public void tick(int tick){
+                if(Core.multiblockTypes.isEmpty())return;
                 if(name.startsWith("editor/tool")){
                     MenuComponentEditorGrid grid;
                     switch(name){
@@ -293,6 +295,7 @@ public class NCPTTutorial extends Tutorial{
             }
             @Override
             public void draw(float resonatingBrightness, float frame, boolean draw){
+                if(Core.multiblockTypes.isEmpty())return;
                 float colLeft = column/(float)columns;
                 float colRight = (column+1f)/columns;
                 if(column==0)colLeft+=outerMargin;

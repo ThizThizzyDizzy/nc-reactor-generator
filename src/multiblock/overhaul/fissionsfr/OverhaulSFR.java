@@ -32,7 +32,7 @@ import planner.Core.BufferRenderer;
 import planner.FormattedText;
 import planner.Main;
 import planner.Task;
-import planner.editor.module.Module;
+import planner.module.Module;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
 import planner.file.NCPFFile;
@@ -69,7 +69,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     public OverhaulSFR(Configuration configuration, int x, int y, int z, CoolantRecipe coolantRecipe){
         super(configuration, x, y, z);
-        this.coolantRecipe = coolantRecipe==null?getConfiguration().overhaul.fissionSFR.allCoolantRecipes.get(0):coolantRecipe;
+        this.coolantRecipe = coolantRecipe==null?(exists()?getConfiguration().overhaul.fissionSFR.allCoolantRecipes.get(0):null):coolantRecipe;
     }
     @Override
     public String getDefinitionName(){
@@ -831,7 +831,7 @@ public class OverhaulSFR extends Multiblock<Block>{
     }
     @Override
     public boolean exists(){
-        return getConfiguration().overhaul!=null&&getConfiguration().overhaul.fissionSFR!=null;
+        return super.exists()&&getConfiguration().overhaul!=null&&getConfiguration().overhaul.fissionSFR!=null;
     }
     @Override
     public OverhaulSFR blankCopy(){

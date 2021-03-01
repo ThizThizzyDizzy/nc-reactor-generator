@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -19,19 +20,12 @@ import java.util.logging.Logger;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
-import multiblock.overhaul.fissionmsr.OverhaulMSR;
-import multiblock.overhaul.fissionsfr.OverhaulSFR;
-import multiblock.overhaul.fusion.OverhaulFusionReactor;
-import multiblock.overhaul.turbine.OverhaulTurbine;
-import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.system.Callback;
-import planner.editor.module.Module;
-import planner.editor.module.RainbowFactorModule;
 import planner.file.FileFormat;
 import planner.menu.MenuDiscord;
 import planner.menu.MenuLoadFile;
@@ -41,6 +35,12 @@ import planner.menu.error.MenuCriticalError;
 import planner.menu.error.MenuMinorError;
 import planner.menu.error.MenuModerateError;
 import planner.menu.error.MenuSevereError;
+import planner.module.FusionTestModule;
+import planner.module.Module;
+import planner.module.OverhaulModule;
+import planner.module.RainbowFactorModule;
+import planner.module.UnderhaulModule;
+import planner.tutorial.Tutorial;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -94,12 +94,10 @@ public class Core extends Renderer2D{
             }
         }
         Configuration.configurations.get(0).impose(configuration);
-        multiblockTypes.add(new UnderhaulSFR());
-        multiblockTypes.add(new OverhaulSFR());
-        multiblockTypes.add(new OverhaulMSR());
-        multiblockTypes.add(new OverhaulTurbine());
-        multiblockTypes.add(new OverhaulFusionReactor());
         resetMetadata();
+        modules.add(new UnderhaulModule());
+        modules.add(new OverhaulModule());
+        modules.add(new FusionTestModule());
         modules.add(new RainbowFactorModule());
     }
     public static void addModule(Module m){
@@ -353,6 +351,32 @@ public class Core extends Renderer2D{
         System.out.println("Creating GL Debug Callback");
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
         callback = GLUtil.setupDebugMessageCallback();
+        System.out.println("Loading settings");
+        File f = new File("settings.dat").getAbsoluteFile();
+        if(f.exists()){
+            Config settings = Config.newConfig(f);
+            settings.load();
+            System.out.println("Loading theme");
+            setTheme(Theme.themes.get(settings.get("theme", 0)));
+            ConfigList modules = settings.get("modules", new ConfigList());
+            HashSet<Module> activeModules = new HashSet<>();
+            for(Iterator<String> it = modules.iterator(); it.hasNext();){
+                String str = it.next();
+                for(Module m : Core.modules){
+                    if(m.getName().equals(str))activeModules.add(m);
+                }
+            }
+            for(Module m : Core.modules){
+                if(m.isActive()){
+                    if(!activeModules.contains(m))m.deactivate();
+                }else{
+                    if(activeModules.contains(m))m.activate();
+                }
+            }
+            tutorialShown = settings.get("tutorialShown", false);
+            invertUndoRedo = settings.get("invertUndoRedo", false);
+        }
+        refreshModules();
         System.out.println("Initializing GUI");
         gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper);
         if(Main.isBot)gui.open(new MenuDiscord(gui));
@@ -364,23 +388,6 @@ public class Core extends Renderer2D{
         if(Main.headless)GLFW.glfwHideWindow(helper.getWindow());
         System.out.println("Activating GUI");
         helper.assignGUI(gui);
-        System.out.println("Loading settings");
-        File f = new File("settings.dat").getAbsoluteFile();
-        if(f.exists()){
-            Config settings = Config.newConfig(f);
-            settings.load();
-            System.out.println("Loading theme");
-            setTheme(Theme.themes.get(settings.get("theme", 0)));
-            ConfigList modules = settings.get("modules", new ConfigList());
-            for(Iterator<String> it = modules.iterator(); it.hasNext();){
-                String str = it.next();
-                for(Module m : Core.modules){
-                    if(m.getName().equals(str))m.activate();
-                }
-            }
-            tutorialShown = settings.get("tutorialShown", false);
-            invertUndoRedo = settings.get("invertUndoRedo", false);
-        }
         if(Main.hasAWTAfterStartup){
             Main.hasAWT = true;
         }
@@ -653,6 +660,16 @@ public class Core extends Renderer2D{
             }
         }
         return file;
+    }
+    public static void refreshModules(){
+        multiblockTypes.clear();
+        Tutorial.init();
+        for(Module m : modules){
+            if(m.isActive()){
+                m.addMultiblockTypes(multiblockTypes);
+                m.addTutorials();
+            }
+        }
     }
     public static interface BufferRenderer{
         void render(Framebuffer buff);

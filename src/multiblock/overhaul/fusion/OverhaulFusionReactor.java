@@ -22,7 +22,6 @@ import multiblock.symmetry.Symmetry;
 import planner.Core;
 import planner.FormattedText;
 import planner.Task;
-import planner.editor.module.Module;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
 import planner.file.NCPFFile;
@@ -30,6 +29,7 @@ import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.generator.MenuComponentFusionToggleBreedingBlanketRecipe;
+import planner.module.Module;
 import planner.vr.VRGUI;
 import planner.vr.menu.VRMenuEdit;
 import planner.vr.menu.VRMenuResizeFusion;
@@ -700,7 +700,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     public boolean exists(){
-        return getConfiguration().overhaul!=null&&getConfiguration().overhaul.fusion!=null;
+        return super.exists()&&getConfiguration().overhaul!=null&&getConfiguration().overhaul.fusion!=null;
     }
     @Override
     public OverhaulFusionReactor blankCopy(){

@@ -1,7 +1,7 @@
 package planner.menu.component;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
-import planner.editor.module.Module;
+import planner.module.Module;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentModule extends MenuComponent{

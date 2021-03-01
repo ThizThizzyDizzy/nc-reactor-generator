@@ -31,7 +31,7 @@ import planner.Core;
 import planner.FormattedText;
 import planner.Main;
 import planner.Task;
-import planner.editor.module.Module;
+import planner.module.Module;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
 import planner.file.NCPFFile;
@@ -1049,7 +1049,7 @@ public class OverhaulMSR extends Multiblock<Block>{
     }
     @Override
     public boolean exists(){
-        return getConfiguration().overhaul!=null&&getConfiguration().overhaul.fissionMSR!=null;
+        return super.exists()&&getConfiguration().overhaul!=null&&getConfiguration().overhaul.fissionMSR!=null;
     }
     @Override
     public OverhaulMSR blankCopy(){

@@ -12,7 +12,7 @@ ltext 1 The info panel is found on the bottom left, and contains the overall mul
 ltext 1 The settings panel is found on the right, and contains multiblock-specific settings
 ltext 1 such as fuels and recipes
 translate 1
-text .8 Shown below: The editor window for a blank Underhaul SFR
+text .8 Shown below: The editor window for a blank multiblock
 translate .2
 special editor true
 translate 2

@@ -7,7 +7,6 @@ import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.Core;
 import planner.Theme;
-import planner.editor.module.Module;
 import planner.file.FileFormat;
 import planner.file.FileReader;
 import planner.file.NCPFFile;
@@ -15,6 +14,7 @@ import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.configuration.MenuConfiguration;
+import planner.module.Module;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -85,7 +85,7 @@ public class MenuSettings extends Menu{
             gui.open(new MenuConfiguration(gui, this, Core.configuration));
         });
         done.addActionListener((e) -> {
-            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(0, -1), 4));
+            gui.open(new MenuTransition(gui, this, new MenuMain(gui), MenuTransition.SlideTransition.slideTo(0, -1), 4));
         });
     }
     @Override

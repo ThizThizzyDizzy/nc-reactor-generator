@@ -15,12 +15,12 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.FormattedText;
 import planner.Task;
-import planner.editor.module.Module;
 import planner.editor.suggestion.Suggestor;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResize;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.module.Module;
 import planner.vr.VRGUI;
 import planner.vr.menu.VRMenuEdit;
 import planner.vr.menu.VRMenuResize;
@@ -478,7 +478,14 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public String getName(){
         return metadata.containsKey("Name")?metadata.get("Name"):"";
     }
-    public abstract boolean exists();
+    public boolean exists(){
+        for(Multiblock m : Core.multiblockTypes){
+            if(m.getDefinitionName().equals(getDefinitionName())){
+                return true;
+            }
+        }
+        return false;
+    }
     public void undo(){
         if(!history.isEmpty()){
             lastChangeTime = System.nanoTime();

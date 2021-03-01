@@ -3,24 +3,23 @@ import java.util.ArrayList;
 import simplelibrary.opengl.Renderer2D;
 public abstract class Tutorial extends Renderer2D{
     public static final ArrayList<TutorialCategory> categories = new ArrayList<>();
-    private static final TutorialCategory underhaul;
-    private static final TutorialCategory overhaul;
-    private static final TutorialCategory planner;
     public final String name;
     public boolean live = false;
-    static{
-        categories.add(planner = new TutorialCategory("Planner"));
-        planner.add(TutorialFileReader.read("tutorials/planner/introduction.ncpt"));
-        planner.add(TutorialFileReader.read("tutorials/planner/basics.ncpt"));
-        planner.add(TutorialFileReader.read("tutorials/planner/editing.ncpt"));
-        categories.add(underhaul = new TutorialCategory("Underhaul"));
-        categories.add(overhaul = new TutorialCategory("Overhaul"));
-        underhaul.add(TutorialFileReader.read("tutorials/underhaul/sfr.ncpt"));
-        overhaul.add(TutorialFileReader.read("tutorials/overhaul/sfr.ncpt"));
-        overhaul.add(TutorialFileReader.read("tutorials/overhaul/msr.ncpt"));
-        overhaul.add(TutorialFileReader.read("tutorials/overhaul/turbine.ncpt"));
-        //TODO tutorial on modifying configs and whatnot (first redo config system
+    public static void init(){
+        categories.clear();
+        addTutorials("Planner",
+                TutorialFileReader.read("tutorials/planner/introduction.ncpt"),
+                TutorialFileReader.read("tutorials/planner/basics.ncpt"),
+                TutorialFileReader.read("tutorials/planner/editing.ncpt"));
+        //TODO tutorial on modifying configs and whatnot (first redo config system)
         //TODO tutorial on using the generator
+    }
+    public static void addTutorials(String categoryName, Tutorial... tutorials){
+        TutorialCategory category = new TutorialCategory(categoryName);
+        for(Tutorial t : tutorials){
+            category.add(t);
+        }
+        categories.add(category);
     }
     public Tutorial(String name){
         this.name = name;

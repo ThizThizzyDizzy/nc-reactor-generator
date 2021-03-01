@@ -21,11 +21,11 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.FormattedText;
 import planner.Task;
-import planner.editor.module.Module;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.module.Module;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 public class OverhaulTurbine extends Multiblock<Block>{
@@ -58,8 +58,8 @@ public class OverhaulTurbine extends Multiblock<Block>{
             throw new IllegalArgumentException("Bearing size is "+(bearingDiameter%2==0?"even":"odd")+"!, but turbine diameter is not!");
         }
         this.bearingDiameter = bearingDiameter;
-        this.recipe = recipe==null?getConfiguration().overhaul.turbine.allRecipes.get(0):recipe;
-        updateBlockLocations();
+        this.recipe = recipe==null?(exists()?getConfiguration().overhaul.turbine.allRecipes.get(0):null):recipe;
+        if(exists())updateBlockLocations();
     }
     @Override
     public String getDefinitionName(){
@@ -629,7 +629,7 @@ public class OverhaulTurbine extends Multiblock<Block>{
     }
     @Override
     public boolean exists(){
-        return getConfiguration().overhaul!=null&&getConfiguration().overhaul.turbine!=null;
+        return super.exists()&&getConfiguration().overhaul!=null&&getConfiguration().overhaul.turbine!=null;
     }
     @Override
     public OverhaulTurbine blankCopy(){

@@ -128,7 +128,7 @@ public class TutorialFileReader{
             }
         });
     }
-    static Tutorial read(String path){
+    public static Tutorial read(String path){
         return new UpdatingTutorial(() -> {
             return getInputStream(path);
         });
