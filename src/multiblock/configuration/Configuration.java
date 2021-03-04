@@ -25,20 +25,16 @@ public class Configuration{
     public String underhaulVersion;
     public boolean addon;
     public ArrayList<Configuration> addons = new ArrayList<>();
-    public static ArrayList<Configuration> configurations = new ArrayList<>();
-    static{
-        configurations.add(FileReader.read(() -> {
+    public static final ArrayList<Configuration> configurations = new ArrayList<>();
+    private static final Configuration NUCLEARCRAFT = FileReader.read(() -> {
             return getInputStream("configurations/nuclearcraft.ncpf");
-        }).configuration.addAlternative("").addAlternative("SF4"));
-        configurations.add(FileReader.read(() -> {
-            return getInputStream("configurations/po3.ncpf");
-        }).configuration.addAlternative("PO3"));
-        configurations.add(FileReader.read(() -> {
-            return getInputStream("configurations/e2e.ncpf");
-        }).configuration.addAlternative("E2E"));
-        configurations.add(FileReader.read(() -> {
-            return getInputStream("configurations/fusion_test.ncpf");
-        }).configuration.addAlternative("Fusion"));
+        }).configuration.addAlternative("").addAlternative("SF4");
+    static{
+        configurations.add(NUCLEARCRAFT);
+    }
+    public static void clearConfigurations(){
+        configurations.clear();
+        configurations.add(NUCLEARCRAFT);
     }
     public ArrayList<String> alternatives = new ArrayList<>();
     public Configuration(String name, String version, String underhaulVersion){

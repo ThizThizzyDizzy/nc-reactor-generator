@@ -665,10 +665,12 @@ public class Core extends Renderer2D{
     public static void refreshModules(){
         multiblockTypes.clear();
         Tutorial.init();
+        Configuration.clearConfigurations();
         for(Module m : modules){
             if(m.isActive()){
                 m.addMultiblockTypes(multiblockTypes);
                 m.addTutorials();
+                m.addConfigurations();
             }
         }
     }

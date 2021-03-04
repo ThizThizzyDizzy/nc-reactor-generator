@@ -58,4 +58,5 @@ public abstract class Module<T>{
         else deactivate();
     }
     public void addTutorials(){}
+    public void addConfigurations(){}
 }

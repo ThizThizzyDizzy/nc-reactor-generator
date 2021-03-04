@@ -12,7 +12,7 @@ public class MenuModules extends Menu{
     public MenuModules(GUI gui, Menu parent){
         super(gui, parent);
         done.addActionListener((e) -> {
-            gui.open(parent);
+            gui.open(new MenuSettings(gui, parent.parent));
         });
     }
     @Override
