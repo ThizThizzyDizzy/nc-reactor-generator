@@ -1067,7 +1067,7 @@ public class MenuEdit extends Menu implements Editor{
     }
     @Override
     public ArrayList<Suggestion> getSuggestions(){
-        return suggestions;
+        return new ArrayList<>(suggestions);
     }
     @Override
     public Task getTask(){

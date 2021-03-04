@@ -28,8 +28,10 @@ import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import simplelibrary.Sys;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.error.ErrorCategory;
 public class FileReader{
     public static final ArrayList<FormatReader> formats = new ArrayList<>();
     static{
@@ -785,6 +787,12 @@ public class FileReader{
                 multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
                 for(multiblock.configuration.underhaul.fissionsfr.Fuel fool : Core.configuration.underhaul.fissionSFR.allFuels){
                     if(fool.name.equalsIgnoreCase(fuelName))fuel = fool;
+                }
+                if(fuel==null){
+                    for(multiblock.configuration.underhaul.fissionsfr.Fuel fool : Core.configuration.underhaul.fissionSFR.allFuels){
+                        if(fool.heat==usedFuel.getFloat("BaseHeat")
+                                &&fool.power==usedFuel.getFloat("BasePower"))fuel = fool;
+                    }
                 }
                 if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+fuelName);
                 UnderhaulSFR sfr = new UnderhaulSFR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), fuel);

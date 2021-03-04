@@ -439,7 +439,11 @@ public class MenuMain extends Menu{
     @Override
     public boolean onFilesDropped(double x, double y, String[] files){
         for(String fil : files){
-            importMultiblocks(new File(fil));
+            try{
+                importMultiblocks(new File(fil));
+            }catch(Exception ex){
+                Sys.error(ErrorLevel.severe, "Failed to load file "+fil+"!", ex, ErrorCategory.fileIO);
+            }
         }
         onGUIOpened();
         return true;

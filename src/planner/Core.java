@@ -464,6 +464,7 @@ public class Core extends Renderer2D{
             }
             GL11.glPopMatrix();
         }
+        clearBoundStack();
         if(is3D&&enableCullFace) GL11.glDisable(GL11.GL_CULL_FACE);
         gui.render(millisSinceLastTick);
         if(is3D&&enableCullFace) GL11.glEnable(GL11.GL_CULL_FACE);
