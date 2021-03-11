@@ -38,7 +38,7 @@ public class MenuResizeFusion extends Menu{
         this.multiblock = multiblock;
         multibwauk.setScrollMagnitude(CELL_SIZE/2);
         done.addActionListener((e) -> {
-            gui.open(parent);
+            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(1, 0), 5));
         });
         increaseInnerRadius.addActionListener((e) -> {
             multiblock.increaseInnerRadius();

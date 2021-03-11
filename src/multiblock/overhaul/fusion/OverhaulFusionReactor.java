@@ -36,6 +36,7 @@ import planner.vr.menu.VRMenuResizeFusion;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 public class OverhaulFusionReactor extends Multiblock<Block>{
     public CoolantRecipe coolantRecipe;
     public int innerRadius;
@@ -837,8 +838,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Deprecated
     @Override
-    public void openResizeMenu(GUI gui, MenuEdit editor){
-        gui.open(new MenuResizeFusion(gui, editor, this));
+    public Menu getResizeMenu(GUI gui, MenuEdit editor){
+        return new MenuResizeFusion(gui, editor, this);
     }
     @Deprecated
     @Override

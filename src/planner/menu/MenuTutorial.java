@@ -28,7 +28,7 @@ public class MenuTutorial extends Menu{
             categoryBox.add(new MenuComponentTutorialCategory(category));
         }
         done.addActionListener((e) -> {
-            gui.open(parent);
+            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransition.slideOut(done.width/gui.helper.displayWidth()), 4));
         });
     }
     @Override
@@ -46,6 +46,7 @@ public class MenuTutorial extends Menu{
     }
     @Override
     public void renderBackground(){
+        categoryLabel.x = tutorialLabel.x = categoryBox.x = tutorialBox.x = done.x = 0;
         tutorialList.x = categoryLabel.width = tutorialLabel.width = categoryBox.width = tutorialBox.width = done.width = title.x = 300;
         title.width = gui.helper.displayWidth()-title.x;
         categoryLabel.height = tutorialLabel.height = 48;
@@ -67,8 +68,8 @@ public class MenuTutorial extends Menu{
             selectedTutorial = selectedCategory.tutorials.get(tutorialBox.getSelectedIndex());
             onTutorialChanged();
         }
-        Core.applyAverageColor(Core.theme.getDarkButtonColor(),Core.theme.getBackgroundColor());
-        drawRect(0, 0, done.width, gui.helper.displayHeight(), 0);
+//        Core.applyAverageColor(Core.theme.getDarkButtonColor(),Core.theme.getBackgroundColor());
+//        drawRect(0, 0, done.width, gui.helper.displayHeight(), 0);
         super.renderBackground();
     }
 }

@@ -1,6 +1,7 @@
 package multiblock.configuration.overhaul.fissionmsr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
@@ -88,6 +89,8 @@ public class Block extends RuleContainer{
         return block;
     }
     public String name;
+    public String displayName;
+    public ArrayList<String> legacyNames = new ArrayList<>();
     public int cooling = 0;
     public String input;
     public String output;
@@ -118,6 +121,12 @@ public class Block extends RuleContainer{
     public Config save(Configuration parent, FissionMSRConfiguration configuration, boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
+        if(displayName!=null)config.set("displayName", displayName);
+        if(!legacyNames.isEmpty()){
+            ConfigList lst = new ConfigList();
+            for(String s : legacyNames)lst.add(s);
+            config.set("legacyNames", lst);
+        }
         if(cooling!=0)config.set("cooling", cooling);
         if(input!=null)config.set("input", input);
         if(output!=null)config.set("output", output);

@@ -29,6 +29,7 @@ import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public long lastChangeTime;
     public Stack<Action> history = new Stack<>();
@@ -803,8 +804,8 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return 1;
     }
     @Deprecated
-    public void openResizeMenu(GUI gui, MenuEdit editor){
-        gui.open(new MenuResize(gui, editor, this));
+    public Menu getResizeMenu(GUI gui, MenuEdit editor){
+        return new MenuResize(gui, editor, this);
     }
     @Deprecated
     public void openVRResizeMenu(VRGUI gui, VRMenuEdit editor){

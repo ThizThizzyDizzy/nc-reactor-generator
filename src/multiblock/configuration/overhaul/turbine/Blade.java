@@ -1,9 +1,11 @@
 package multiblock.configuration.overhaul.turbine;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
 import simplelibrary.config2.Config;
+import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 public class Blade{
     public static Blade blade(String name, float efficiency, float expansion, String texture){
@@ -22,6 +24,8 @@ public class Blade{
         return blade;
     }
     public String name;
+    public String displayName;
+    public ArrayList<String> legacyNames = new ArrayList<>();
     public float efficiency;
     public float expansion;
     public boolean stator = false;
@@ -33,6 +37,12 @@ public class Blade{
     public Config save(boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
+        if(displayName!=null)config.set("displayName", displayName);
+        if(!legacyNames.isEmpty()){
+            ConfigList lst = new ConfigList();
+            for(String s : legacyNames)lst.add(s);
+            config.set("legacyNames", lst);
+        }
         config.set("efficiency", efficiency);
         config.set("expansion", expansion);
         config.set("stator", stator);

@@ -1,6 +1,7 @@
 package multiblock.configuration.overhaul.turbine;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
@@ -27,6 +28,8 @@ public class Coil extends RuleContainer{
         return coil;
     }
     public String name;
+    public String displayName;
+    public ArrayList<String> legacyNames = new ArrayList<>();
     public float efficiency;
     public boolean bearing;
     public boolean connector;
@@ -38,6 +41,12 @@ public class Coil extends RuleContainer{
     public Config save(Configuration parent, TurbineConfiguration configuration, boolean partial){
         Config config = Config.newConfig();
         config.set("name", name);
+        if(displayName!=null)config.set("displayName", displayName);
+        if(!legacyNames.isEmpty()){
+            ConfigList lst = new ConfigList();
+            for(String s : legacyNames)lst.add(s);
+            config.set("legacyNames", lst);
+        }
         config.set("efficiency", efficiency);
         config.set("bearing", bearing);
         config.set("connector", connector);

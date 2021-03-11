@@ -97,8 +97,8 @@ public class MenuEdit extends Menu implements Editor{
         editorTools.add(new RectangleTool(this, 0));
     }
     public final Multiblock multiblock;
-    private final int partSize = 48;
-    private final int partsWide = 7;
+    public static final int partSize = 48;
+    public static final int partsWide = 7;
     private final MenuComponentMinimalistButton back = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Back", true, true).setTooltip("Stop editing this multiblock and return to the main menu"));
     private final MenuComponentMinimalistButton undo = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Undo", false, true){
         @Override
@@ -219,7 +219,7 @@ public class MenuEdit extends Menu implements Editor{
         this.multiblock = multiblock;
         multibwauk.setScrollMagnitude(CELL_SIZE*scrollMagnitude);
         back.addActionListener((e) -> {
-            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SlideTransition.slideTo(1, 0), 5));
+            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransition.slideOut((parts.x+parts.width)/gui.helper.displayWidth()), 5));
         });
         undo.addActionListener((e) -> {
             multiblock.undo();
@@ -228,7 +228,7 @@ public class MenuEdit extends Menu implements Editor{
             multiblock.redo();
         });
         resize.addActionListener((e) -> {
-            multiblock.openResizeMenu(gui, this);
+            gui.open(new MenuTransition(gui, this, multiblock.getResizeMenu(gui, this), MenuTransition.SlideTransition.slideFrom(1, 0), 5));
         });
         zoomOut.addActionListener((e) -> {
             zoomOut(1);
@@ -240,7 +240,7 @@ public class MenuEdit extends Menu implements Editor{
             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
         });
         generate.addActionListener((e) -> {
-            gui.open(new MenuGenerator(gui, this, multiblock));
+            gui.open(new MenuTransition(gui, this, new MenuGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
         });
         for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
             parts.add(new MenuComponentEditorListBlock(this, availableBlock));
@@ -312,6 +312,7 @@ public class MenuEdit extends Menu implements Editor{
         if(multisPerRow!=Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)))){
             onGUIOpened();
         }
+        tools.x = textBox.x = back.x = progress.x = 0;
         parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
         tools.width = partSize;
         parts.x = tools.width+partSize/4;

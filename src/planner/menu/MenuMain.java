@@ -398,7 +398,7 @@ public class MenuMain extends Menu{
         for(simplelibrary.opengl.gui.components.MenuComponent c : multiblocks.components){
             if(c instanceof MenuComponentMultiblock){
                 if(button==((MenuComponentMultiblock) c).edit){
-                    gui.open(/*new MenuTransition(gui, this, */new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock)/*, MenuTransition.SlideTransition.slideFrom(1, 0), 5)*/);
+                    gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock), MenuTransition.SplitTransition.slideIn((MenuEdit.partSize+MenuEdit.partSize/4d+MenuEdit.partsWide*MenuEdit.partSize)/gui.helper.displayWidth()), 5));
                 }
             }
         }

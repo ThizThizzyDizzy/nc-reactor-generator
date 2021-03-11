@@ -73,7 +73,7 @@ public class MenuSettings extends Menu{
             }, FileFormat.NCPF);
         });
         tutorials.addActionListener((e) -> {
-            gui.open(new MenuTutorial(gui, this));
+            gui.open(new MenuTransition(gui, this, new MenuTutorial(gui, this), MenuTransition.SplitTransition.slideIn(300d/gui.helper.displayWidth()), 4));
         });
         modules.addActionListener((e) -> {
             gui.open(new MenuModules(gui, this));
