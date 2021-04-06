@@ -11,6 +11,9 @@ public class MenuComponentToggleBox extends MenuComponent{
     public boolean isToggledOn = false;//because isSelected is taken
     private double boxInset = 0.15;
     public boolean enabled = true;
+    public MenuComponentToggleBox(double x, double y, double width, double height, String label){
+        this(x, y, width, height, label, false);
+    }
     public MenuComponentToggleBox(double x, double y, double width, double height, String label, boolean isToggledOn){
         this(x, y, width, height, label, isToggledOn, false);
     }
