@@ -69,8 +69,8 @@ public class CoreBasedGeneratorSettings implements Settings{
         postProcessingEffects = newEffects;
         changeChancePercent = Float.parseFloat(generator.changeChance.text);
         morphChancePercent = Float.parseFloat(generator.morphChance.text);
-        variableRate = generator.variableRate.enabled;
-        fillAir = generator.fillAir.enabled;
+        variableRate = generator.variableRate.isToggledOn;
+        fillAir = generator.fillAir.isToggledOn;
     }
     public float getChangeChance(){
         return changeChancePercent/100;

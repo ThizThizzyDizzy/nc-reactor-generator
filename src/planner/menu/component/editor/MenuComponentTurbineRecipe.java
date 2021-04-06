@@ -1,9 +1,11 @@
 package planner.menu.component.editor;
+import java.util.ArrayList;
 import multiblock.configuration.overhaul.turbine.Recipe;
 import planner.Core;
+import planner.menu.component.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentTurbineRecipe extends MenuComponent{
+public class MenuComponentTurbineRecipe extends MenuComponent implements Searchable{
     private final Recipe recipe;
     public MenuComponentTurbineRecipe(Recipe recipe){
         super(0, 0, 0, 0);
@@ -18,14 +20,20 @@ public class MenuComponentTurbineRecipe extends MenuComponent{
         drawText();
     }
     public void drawText(){
-        double textLength = FontManager.getLengthForStringWithHeight(recipe.name, height);
+        double textLength = FontManager.getLengthForStringWithHeight(recipe.getInputDisplayName(), height);
         double scale = Math.min(1, width/textLength);
         double textHeight = (int)(height*scale)-1;
-        drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.name);
+        drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.getInputDisplayName());
     }
     @Override    
     public String getTooltip(){
         return "Expansion Coefficient: "+recipe.coefficient+"\n"
              + "Energy Density (RF/mb): "+recipe.power;
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> lst = recipe.getLegacyNames();
+        lst.add(recipe.getInputDisplayName());
+        return lst;
     }
 }

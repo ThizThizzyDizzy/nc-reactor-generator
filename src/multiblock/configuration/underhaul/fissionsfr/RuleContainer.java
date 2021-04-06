@@ -1,6 +1,7 @@
 package multiblock.configuration.underhaul.fissionsfr;
 import java.util.ArrayList;
-public abstract class RuleContainer{
+import multiblock.MultiblockBit;
+public abstract class RuleContainer extends MultiblockBit{
     public ArrayList<PlacementRule> rules = new ArrayList<>();
     @Override
     public boolean equals(Object obj){

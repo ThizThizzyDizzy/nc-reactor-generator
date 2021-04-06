@@ -2,34 +2,37 @@ package multiblock.symmetry;
 import java.util.ArrayList;
 import java.util.Locale;
 import multiblock.Block;
-import multiblock.Multiblock;
-public abstract class AxialSymmetry extends Symmetry{
+import multiblock.CuboidalMultiblock;
+public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
     public static AxialSymmetry X = new AxialSymmetry("X"){
         @Override
-        public void apply(Multiblock multiblock){
+        public void apply(CuboidalMultiblock multiblock){
             ArrayList<Block> bls = multiblock.getBlocks(true);
             for(Block b : bls){
-                int X = multiblock.getX()-b.x-1;
+                if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
+                int X = multiblock.getExternalWidth()-b.x-1;
                 multiblock.setBlock(X, b.y, b.z, multiblock.getBlock(b.x, b.y, b.z));
             }
         }
     };
     public static AxialSymmetry Y = new AxialSymmetry("Y"){
         @Override
-        public void apply(Multiblock multiblock){
+        public void apply(CuboidalMultiblock multiblock){
             ArrayList<Block> bls = multiblock.getBlocks(true);
             for(Block b : bls){
-                int Y = multiblock.getY()-b.y-1;
+                if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
+                int Y = multiblock.getExternalHeight()-b.y-1;
                 multiblock.setBlock(b.x, Y, b.z, multiblock.getBlock(b.x, b.y, b.z));
             }
         }
     };
     public static AxialSymmetry Z = new AxialSymmetry("Z"){
         @Override
-        public void apply(Multiblock multiblock){
+        public void apply(CuboidalMultiblock multiblock){
             ArrayList<Block> bls = multiblock.getBlocks(true);
             for(Block b : bls){
-                int Z = multiblock.getZ()-b.z-1;
+                if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
+                int Z = multiblock.getExternalDepth()-b.z-1;
                 multiblock.setBlock(b.x, b.y, Z, multiblock.getBlock(b.x, b.y, b.z));
             }
         }

@@ -1,8 +1,11 @@
 package planner.menu.component;
+import java.awt.Color;
+import java.util.function.Supplier;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponentList;
 public class MenuComponentMinimaList extends MenuComponentList{
+    private Supplier<Color> backgroundColor;
     public MenuComponentMinimaList(double x, double y, double width, double height, double scrollbarWidth){
         this(x, y, width, height, scrollbarWidth, false);
     }
@@ -84,6 +87,12 @@ public class MenuComponentMinimaList extends MenuComponentList{
     }
     @Override
     public void renderBackground(){
+        if(backgroundColor!=null){
+            Color c = backgroundColor.get();
+            GL11.glColor4f(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, c.getAlpha()/255f);
+            drawRect(x, y, x+width, y+height, 0);
+            GL11.glColor4f(1, 1, 1, 1);
+        }
         setScrollMagnitude(Math.min(width, height)/20);
         for(int i = 0; i<components.size(); i++){
             components.get(i).isSelected = getSelectedIndex()==i;
@@ -95,5 +104,8 @@ public class MenuComponentMinimaList extends MenuComponentList{
         super.setSelectedIndex(index);
         if(index<0||index>=components.size()) selected = null;
         else selected = components.get(index);
+    }
+    public void setBackgroundColor(Supplier<Color> c){
+        backgroundColor = c;
     }
 }

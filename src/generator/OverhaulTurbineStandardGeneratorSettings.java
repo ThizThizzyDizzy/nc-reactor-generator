@@ -54,9 +54,9 @@ public class OverhaulTurbineStandardGeneratorSettings implements Settings{
         }
         postProcessingEffects = newEffects;
         changeChancePercent = Float.parseFloat(generator.changeChance.text);
-        variableRate = generator.variableRate.enabled;
-        lockCore = generator.lockCore.enabled;
-        fillAir = generator.fillAir.enabled;
+        variableRate = generator.variableRate.isToggledOn;
+        lockCore = generator.lockCore.isToggledOn;
+        fillAir = generator.fillAir.isToggledOn;
     }
     public float getChangeChance(){
         return changeChancePercent/100;

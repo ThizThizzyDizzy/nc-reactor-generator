@@ -113,11 +113,10 @@ ltext 1 criticality is the fuel's criticality multiplied by the number of vessel
 translate 1
 ltext 1 Neutron flux spreads through the reactor's core through moderator lines.
 ltext 1 Neutron flux originates from vessels that are primed with a neutron source. To
-ltext 1 prime a vessel in the planner, shift-click it to cycle through neutron sources.
-ltext 1 Vessel groups require a number of neutron sources >= the Surface Factor.
-ltext 1 To prime a vessel ingame, place a neutron source on the casing with line-of-sight to
-ltext 1 the vessel you want to prime. (Line-of-sight is obstructed by vessels, reflectors,
-ltext 1 and irradiators, but not by heaters, moderators, or conductors)
+ltext 1 prime a vessel, place a neutron source on the casing with line-of-sight to the
+ltext 1 vessel you want to prime. (Line-of-sight is obstructed by vessels, reflectors, and
+ltext 1 irradiators, but not by heaters, moderators, or conductors)
+ltext 1 You can also prime a cell in the planner by shift-clicking it.
 text 1 For example:
 columns 13
 margin 0 0
@@ -132,7 +131,7 @@ imgsq overhaul/graphite.png
 imgsq overhaul/msr/vessel.png
 imgsq overhaul/msr/standard.png
 imgsq overhaul/msr/copper.png
-imgsq overhaul/californium.png
+imgsq overhaul/cf-252.png
 skip
 skip
 margin -1 1

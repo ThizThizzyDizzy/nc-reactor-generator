@@ -1,25 +1,35 @@
 package planner;
 import discord.Bot;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import multiblock.BoundingBox;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.PartialConfiguration;
 import multiblock.configuration.TextureManager;
+import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import multiblock.overhaul.fusion.OverhaulFusionReactor;
+import multiblock.overhaul.turbine.OverhaulTurbine;
+import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -27,7 +37,11 @@ import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.system.Callback;
 import planner.file.FileFormat;
+import planner.file.FileWriter;
+import planner.file.NCPFFile;
+import planner.menu.MenuCredits;
 import planner.menu.MenuDiscord;
+import planner.menu.MenuEdit;
 import planner.menu.MenuLoadFile;
 import planner.menu.MenuMain;
 import planner.menu.MenuTutorial;
@@ -43,7 +57,6 @@ import planner.module.UnderhaulModule;
 import planner.tutorial.Tutorial;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorHandler;
 import simplelibrary.error.ErrorLevel;
@@ -80,20 +93,6 @@ public class Core extends Renderer2D{
     private static Callback callback;
     public static boolean invertUndoRedo;
     static{
-        for(Configuration configuration : Configuration.configurations){
-            if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
-                for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-                    if(b.cooling!=0&&!b.name.contains("Standard")){
-                        try{
-                            b.setInternalTexture(TextureManager.getImage("overhaul/"+b.name.toLowerCase(Locale.ENGLISH).replace(" coolant heater", "").replace("liquid ", "")));
-                        }catch(Exception ex){
-                            Sys.error(ErrorLevel.warning, "Failed to load internal texture for MSR Block: "+b.name, ex, ErrorCategory.fileIO);
-                        }
-                    }
-                }
-            }
-        }
-        Configuration.configurations.get(0).impose(configuration);
         resetMetadata();
         modules.add(new UnderhaulModule());
         modules.add(new OverhaulModule());
@@ -184,7 +183,7 @@ public class Core extends Renderer2D{
                             gui.open(new MenuMain(gui));
                             break;
                         case 2:
-                            helper.running = false;
+                            autoSaveAndExit();
                             break;
                         case 1:
                         default:
@@ -225,7 +224,7 @@ public class Core extends Renderer2D{
                             gui.open(new MenuMain(gui));
                             break;
                         case 2:
-                            helper.running = false;
+                            autoSaveAndExit();
                             break;
                         case 1:
                         default:
@@ -266,7 +265,7 @@ public class Core extends Renderer2D{
                             gui.open(new MenuMain(gui));
                             break;
                         case 2:
-                            helper.running = false;
+                            autoSaveAndExit();
                             break;
                         case 1:
                         default:
@@ -308,7 +307,7 @@ public class Core extends Renderer2D{
                             break;
                         case 1:
                         default:
-                            helper.running = false;
+                            autoSaveAndExit();
                             break;
                     }
                 }else{
@@ -329,6 +328,7 @@ public class Core extends Renderer2D{
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glEnable(GL13.GL_MULTISAMPLE);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.01f);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_BLEND);
         if(is3D){
@@ -358,25 +358,41 @@ public class Core extends Renderer2D{
             settings.load();
             System.out.println("Loading theme");
             setTheme(Theme.themes.get(settings.get("theme", 0)));
-            ConfigList modules = settings.get("modules", new ConfigList());
-            HashSet<Module> activeModules = new HashSet<>();
-            for(Iterator<String> it = modules.iterator(); it.hasNext();){
-                String str = it.next();
+            try{
+                Config modules = settings.get("modules", Config.newConfig());
+                HashMap<Module, Boolean> moduleStates = new HashMap<>();
+                for(String key : modules.properties()){
+                    for(Module m : Core.modules){
+                        if(m.name.equals(key))moduleStates.put(m, modules.getBoolean(key));
+                    }
+                }
                 for(Module m : Core.modules){
-                    if(m.getName().equals(str))activeModules.add(m);
+                    if(!moduleStates.containsKey(m))continue;
+                    if(m.isActive()){
+                        if(!moduleStates.get(m))m.deactivate();
+                    }else{
+                        if(moduleStates.get(m))m.activate();
+                    }
                 }
-            }
-            for(Module m : Core.modules){
-                if(m.isActive()){
-                    if(!activeModules.contains(m))m.deactivate();
-                }else{
-                    if(activeModules.contains(m))m.activate();
-                }
-            }
+            }catch(Exception ex){}
             tutorialShown = settings.get("tutorialShown", false);
             invertUndoRedo = settings.get("invertUndoRedo", false);
         }
         refreshModules();
+        for(Configuration configuration : Configuration.configurations){
+            if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
+                for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
+                    if(b.heater&&!b.getDisplayName().contains("Standard")){
+                        try{
+                            b.setInternalTexture(TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ENGLISH).replace(" coolant heater", "").replace("liquid ", "")));
+                        }catch(Exception ex){
+                            Sys.error(ErrorLevel.warning, "Failed to load internal texture for MSR Block: "+b.name, ex, ErrorCategory.fileIO);
+                        }
+                    }
+                }
+            }
+        }
+        Configuration.configurations.get(0).impose(configuration);
         System.out.println("Initializing GUI");
         gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper);
         if(Main.isBot)gui.open(new MenuDiscord(gui));
@@ -409,9 +425,9 @@ public class Core extends Renderer2D{
             File f = new File("settings.dat").getAbsoluteFile();
             Config settings = Config.newConfig(f);
             settings.set("theme", Theme.themes.indexOf(theme));
-            ConfigList modules = new ConfigList();
+            Config modules = Config.newConfig();
             for(Module m : Core.modules){
-                if(m.isActive())modules.add(m.getName());//TODO a programmer-friendly ID please
+                modules.set(m.name, m.isActive());
             }
             settings.set("modules", modules);
             settings.set("tutorialShown", tutorialShown);
@@ -456,13 +472,47 @@ public class Core extends Renderer2D{
             GL11.glRotated(xRot, 0, 1, 0);
             Multiblock mb = ((MenuMain)gui.menu).getSelectedMultiblock();
             if(mb!=null){
-                double size = Math.max(mb.getX(), Math.max(mb.getY(), mb.getZ()));
+                BoundingBox bbox = mb.getBoundingBox();
+                double size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
                 size/=mb.get3DPreviewScale();
                 GL11.glScaled(1/size, 1/size, 1/size);
-                GL11.glTranslated(-mb.getX()/2d, -mb.getY()/2d, -mb.getZ()/2d);
+                GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
                 mb.draw3D();
             }
             GL11.glPopMatrix();
+        }
+        if(gui.menu instanceof MenuEdit){
+            MenuEdit editor = (MenuEdit)gui.menu;
+            if(editor.toggle3D.isToggledOn){
+                GL11.glMatrixMode(GL11.GL_PROJECTION);
+                GL11.glPushMatrix();
+                GL11.glLoadIdentity();
+                GL11.glOrtho(0, gui.helper.displayWidth()*gui.helper.guiScale, 0, gui.helper.displayHeight()*gui.helper.guiScale, 1f, 10000F);
+                GL11.glMatrixMode(GL11.GL_MODELVIEW);
+                GL11.glPushMatrix();
+                GL11.glTranslated(editor.toggle3D.x+editor.toggle3D.width/2, gui.helper.displayHeight()-(editor.toggle3D.y-editor.toggle3D.width/2), -1000);
+//                GL11.glTranslated((double)gui.helper.displayWidth()/gui.helper.displayHeight()-.25, 0, -1);
+                GL11.glScaled(.625, .625, .625);
+                GL11.glScaled(editor.toggle3D.width, editor.toggle3D.width, editor.toggle3D.width);
+                GL11.glRotated(yRot, 1, 0, 0);
+                GL11.glRotated(xRot, 0, 1, 0);
+                Multiblock mb = editor.getMultiblock();
+                if(mb!=null){
+                    BoundingBox bbox = mb.getBoundingBox();
+                    double size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
+                    size/=mb.get3DPreviewScale();
+                    GL11.glScaled(1/size, 1/size, 1/size);
+                    GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
+                    editor.draw3D();
+                }
+                GL11.glPopMatrix();
+                GL11.glMatrixMode(GL11.GL_PROJECTION);
+                GL11.glPopMatrix();
+                GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            }
+        }
+        if(gui.menu instanceof MenuCredits){
+            ((MenuCredits)gui.menu).render3D(millisSinceLastTick);
         }
         clearBoundStack();
         if(is3D&&enableCullFace) GL11.glDisable(GL11.GL_CULL_FACE);
@@ -495,6 +545,7 @@ public class Core extends Renderer2D{
         return percent*valDiff+val1;
     }
     private static final HashMap<BufferedImage, Integer> imgs = new HashMap<>();
+    private static final HashMap<BufferedImage, Boolean> alphas = new HashMap<>();
     public static int getTexture(BufferedImage image){
         if(image==null)return -1;
         if(!imgs.containsKey(image)){
@@ -672,6 +723,96 @@ public class Core extends Renderer2D{
                 m.addTutorials();
                 m.addConfigurations();
             }
+        }
+    }
+    public static boolean hasUnderhaulSFR(){
+        for(Multiblock m : multiblockTypes){
+            if(m instanceof UnderhaulSFR)return true;
+        }
+        return false;
+    }
+    public static boolean hasOverhaulSFR(){
+        for(Multiblock m : multiblockTypes){
+            if(m instanceof OverhaulSFR)return true;
+        }
+        return false;
+    }
+    public static boolean hasOverhaulMSR(){
+        for(Multiblock m : multiblockTypes){
+            if(m instanceof OverhaulMSR)return true;
+        }
+        return false;
+    }
+    public static boolean hasOverhaulTurbine(){
+        for(Multiblock m : multiblockTypes){
+            if(m instanceof OverhaulTurbine)return true;
+        }
+        return false;
+    }
+    public static boolean hasOverhaulFusion(){
+        for(Multiblock m : multiblockTypes){
+            if(m instanceof OverhaulFusionReactor)return true;
+        }
+        return false;
+    }
+    public static boolean hasAlpha(BufferedImage image){
+        if(image==null)return false;
+        if(!alphas.containsKey(image)){
+            boolean hasAlpha = false;
+            FOR:for(int x = 0; x<image.getWidth(); x++){
+                for(int y = 0; y<image.getHeight(); y++){
+                    if(new Color(image.getRGB(x, y), true).getAlpha()!=255){
+                        hasAlpha = true;
+                        break FOR;
+                    }
+                }
+            }
+            alphas.put(image, hasAlpha);
+        }
+        return alphas.get(image);
+    }
+    public static int autosave(){
+        File file = new File("autosave.ncpf");
+        File cfgFile = new File("config_autosave.ncpf");
+        int num = 1;
+        while(file.exists()||cfgFile.exists()){
+            file = new File("autosave"+num+".ncpf");
+            cfgFile = new File("config_autosave"+num+".ncpf");
+            num++;
+        }
+        {//multiblocks
+            NCPFFile ncpf = new NCPFFile();
+            ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
+            ncpf.multiblocks.addAll(Core.multiblocks);
+            ncpf.metadata.putAll(Core.metadata);
+            FileWriter.write(ncpf, file, FileWriter.NCPF);
+        }
+        {//configuration
+            try(FileOutputStream stream = new FileOutputStream(cfgFile)){
+                Config header = Config.newConfig();
+                header.set("version", NCPFFile.SAVE_VERSION);
+                header.set("count", 0);
+                header.save(stream);
+                Core.configuration.save(null, Config.newConfig()).save(stream);
+            }catch(IOException ex){
+                throw new RuntimeException(ex);
+            }
+        }
+        return num;
+    }
+    public static void openWebpage(String link){
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try{
+                Desktop.getDesktop().browse(new URI(link));
+            }catch(URISyntaxException|IOException ex){
+                if(Main.hasAWT){
+                    javax.swing.JOptionPane.showMessageDialog(null, link, "Failed to open webpage", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }else{
+                    Sys.error(ErrorLevel.minor, "Failed to open webpage\n"+link, null, ErrorCategory.InternetIO, false);
+                }
+            }
+        }else{
+            Sys.error(ErrorLevel.minor, "Desktop Browse is not supported\n"+link, null, ErrorCategory.InternetIO, false);
         }
     }
     public static interface BufferRenderer{
@@ -864,6 +1005,7 @@ public class Core extends Renderer2D{
      */
     public static FormattedText drawFormattedTextWithWordWrap(double leftEdge, double topEdge, double rightPossibleEdge, double bottomEdge, FormattedText text, int snap){
         ArrayList<FormattedText> words = text.split(" ");
+        if(words.isEmpty())return drawFormattedTextWithWrap(leftEdge, topEdge, rightPossibleEdge, bottomEdge, text, snap);
         String str = words.get(0).text;
         double height = bottomEdge-topEdge;
         double length = rightPossibleEdge-leftEdge;
@@ -896,5 +1038,62 @@ public class Core extends Renderer2D{
             left+=len;
         }
         GL11.glEnd();
+    }
+    public static boolean areImagesEqual(BufferedImage img1, BufferedImage img2) {
+        if(img1==img2)return true;
+        if(img1==null||img2==null)return false;
+        if(img1.getWidth()!=img2.getWidth())return false;
+        if(img1.getHeight()!=img2.getHeight())return false;
+        for(int x = 0; x<img1.getWidth(); x++){
+            for(int y = 0; y<img1.getHeight(); y++){
+                if(img1.getRGB(x, y)!=img2.getRGB(x, y))return false;
+            }
+        }
+        return true;
+    }
+    public static int logBase(int base, int n){
+        return (int)(Math.log(n)/Math.log(base));
+    }
+    public static void autoSaveAndExit(){
+        Throwable error = null;
+        int num = 0;
+        try{
+            num = autosave();
+        }catch(Throwable t){error = t;}
+        if(error==null){
+            if(Main.hasAWT){
+                javax.swing.JOptionPane.showMessageDialog(null, "Saved to autosave"+num+".ncpf", "Autosave successful!", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }else{
+                System.err.println("Autosave failed!");
+                error.printStackTrace();
+            }
+            
+        }else{
+            if(Main.hasAWT){
+                String details = "";
+                while(error!=null){
+                    details+=error.getClass().getName()+" "+error.getMessage();
+                    StackTraceElement[] stackTrace = error.getStackTrace();
+                    for(StackTraceElement e : stackTrace){
+                        if(e.getClassName().startsWith("net."))continue;
+                        if(e.getClassName().startsWith("com."))continue;
+                        String[] splitClassName = e.getClassName().split("\\Q.");
+                        String filename = splitClassName[splitClassName.length-1]+".java";
+                        String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
+                        if((details+nextLine).length()+4>1024){
+                            details+="\n...";
+                            break;
+                        }else details+=nextLine;
+                    }
+                    error = error.getCause();
+                    if(error!=null)details+="\nCaused by ";
+                }
+                javax.swing.JOptionPane.showMessageDialog(null, details, "Autosave failed!", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }else{
+                System.err.println("Autosave failed!");
+                error.printStackTrace();
+            }
+        }
+        helper.running = false;
     }
 }

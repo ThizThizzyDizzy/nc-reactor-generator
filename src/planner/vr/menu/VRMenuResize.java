@@ -1,7 +1,7 @@
 package planner.vr.menu;
 import java.awt.Color;
 import java.awt.event.ActionListener;
-import multiblock.Multiblock;
+import multiblock.CuboidalMultiblock;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
 import planner.Core;
@@ -14,9 +14,9 @@ import planner.vr.menu.component.VRMenuComponentTextPanel;
 public class VRMenuResize extends VRMenu{//TODO center the multiblock
     public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
     private VRMenuComponentTextPanel textPanel = add(new VRMenuComponentTextPanel(.25, 1, 1.2, .5, .25, .05, 0, 180, 0, "Size"));
-    private final Multiblock multiblock;
+    private final CuboidalMultiblock multiblock;
     private boolean refreshNeeded;
-    public VRMenuResize(VRGUI gui, VRMenu parent, Multiblock multiblock){
+    public VRMenuResize(VRGUI gui, VRMenu parent, CuboidalMultiblock multiblock){
         super(gui, parent);
         done.setTooltip("Finish resizing and return to the editor screen");
         done.addActionListener((e) -> {
@@ -34,60 +34,60 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
             components.clear();
             add(done);
             add(textPanel);
-            double blockSize = 1d/Math.max(multiblock.getX(), Math.max(multiblock.getY(), multiblock.getZ()));
-            for(int y = 0; y<multiblock.getY(); y++){
+            double blockSize = 1d/Math.max(multiblock.getInternalWidth(), Math.max(multiblock.getInternalHeight(), multiblock.getInternalDepth()));
+            for(int y = 0; y<multiblock.getInternalHeight(); y++){
                 final int Y = y;
-                add(new VRMenuComponentPlusButton(multiblock.getX(), Y+.5, multiblock.getZ(), blockSize, multiblock.getY()<multiblock.getMaxY(), (e) -> {
+                add(new VRMenuComponentPlusButton(multiblock.getInternalWidth(), Y+.5, multiblock.getInternalDepth(), blockSize, multiblock.getInternalHeight()<multiblock.getMaxY(), (e) -> {
                     insertY(Y);
                 }, () -> {
-                    VRCore.drawCube(-.01, Y+.49, -.01, multiblock.getX()+.01, Y+1.51, multiblock.getZ()+.01, 0);
+                    VRCore.drawCube(-.01, Y+.49, -.01, multiblock.getInternalWidth()+.01, Y+1.51, multiblock.getInternalDepth()+.01, 0);
                 }));
-                add(new VRMenuComponentMinusButton(-1, Y, -1, blockSize, multiblock.getY()>multiblock.getMinY(), true, (e) -> {
+                add(new VRMenuComponentMinusButton(-1, Y, -1, blockSize, multiblock.getInternalHeight()>multiblock.getMinY(), true, (e) -> {
                     deleteY(Y);
                 }, () -> {
-                    VRCore.drawCube(-.01, Y-.01, -.01, multiblock.getX()+.01, Y+1.01, multiblock.getZ()+.01, 0);
+                    VRCore.drawCube(-.01, Y-.01, -.01, multiblock.getInternalWidth()+.01, Y+1.01, multiblock.getInternalDepth()+.01, 0);
                 }));
             }
-            add(new VRMenuComponentPlusButton(multiblock.getX(), -.5, multiblock.getZ(), blockSize, multiblock.getY()<multiblock.getMaxY(), (e) -> {
+            add(new VRMenuComponentPlusButton(multiblock.getInternalWidth(), -.5, multiblock.getInternalDepth(), blockSize, multiblock.getInternalHeight()<multiblock.getMaxY(), (e) -> {
                 expand(0, 1, 0);
             }, () -> {
-                VRCore.drawCube(-.01, -.51, -.01, multiblock.getX()+.01, .51, multiblock.getZ()+.01, 0);
+                VRCore.drawCube(-.01, -.51, -.01, multiblock.getInternalWidth()+.01, .51, multiblock.getInternalDepth()+.01, 0);
             }));
-            for(int x = 0; x<multiblock.getX(); x++){
+            for(int x = 0; x<multiblock.getInternalWidth(); x++){
                 final int X = x;
-                add(new VRMenuComponentMinusButton(x, multiblock.getY()/2d, -1, blockSize, true, true, (e) -> {
+                add(new VRMenuComponentMinusButton(x, multiblock.getInternalHeight()/2d, -1, blockSize, true, true, (e) -> {
                     deleteX(X);
                 }, () -> {
-                    VRCore.drawCube(X-.01, -.01, -.01, X+1.01, multiblock.getY()+.01, multiblock.getZ()+.01, 0);
+                    VRCore.drawCube(X-.01, -.01, -.01, X+1.01, multiblock.getInternalHeight()+.01, multiblock.getInternalDepth()+.01, 0);
                 }));
             }
-            for(int z = 0; z<multiblock.getZ(); z++){
+            for(int z = 0; z<multiblock.getInternalDepth(); z++){
                 final int Z = z;
-                add(new VRMenuComponentMinusButton(-1, multiblock.getY()/2d, z, blockSize, true, false, (e) -> {
+                add(new VRMenuComponentMinusButton(-1, multiblock.getInternalHeight()/2d, z, blockSize, true, false, (e) -> {
                     deleteZ(Z);
                 }, () -> {
-                    VRCore.drawCube(-.01, -.01, Z-.01, multiblock.getX()+.01, multiblock.getY()+.01, Z+1.01, 0);
+                    VRCore.drawCube(-.01, -.01, Z-.01, multiblock.getInternalWidth()+.01, multiblock.getInternalHeight()+.01, Z+1.01, 0);
                 }));
             }
-            add(new VRMenuComponentPlusButton(-2, multiblock.getY()/2d-.5, multiblock.getZ()/2d-.5, blockSize, true, (e) -> {
+            add(new VRMenuComponentPlusButton(-2, multiblock.getInternalHeight()/2d-.5, multiblock.getInternalDepth()/2d-.5, blockSize, true, (e) -> {
                 expand(-1, 0, 0);
             }, () -> {
-                VRCore.drawCube(-1.01, -.01, -.01, .01, multiblock.getY()+.01, multiblock.getZ()+.01, 0);
+                VRCore.drawCube(-1.01, -.01, -.01, .01, multiblock.getInternalHeight()+.01, multiblock.getInternalDepth()+.01, 0);
             }));
-            add(new VRMenuComponentPlusButton(multiblock.getX()/2d-.5, multiblock.getY()/2d-.5, -2, blockSize, true, (e) -> {
+            add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()/2d-.5, multiblock.getInternalHeight()/2d-.5, -2, blockSize, true, (e) -> {
                 expand(0, 0, -1);
             }, () -> {
-                VRCore.drawCube(-.01, -.01, -1.01, multiblock.getX()+.01, multiblock.getY()+.01, .01, 0);
+                VRCore.drawCube(-.01, -.01, -1.01, multiblock.getInternalWidth()+.01, multiblock.getInternalHeight()+.01, .01, 0);
             }));
-            add(new VRMenuComponentPlusButton(multiblock.getX()+1, multiblock.getY()/2d-.5, multiblock.getZ()/2d-.5, blockSize, true, (e) -> {
+            add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()+1, multiblock.getInternalHeight()/2d-.5, multiblock.getInternalDepth()/2d-.5, blockSize, true, (e) -> {
                 expand(1, 0, 0);
             }, () -> {
-                VRCore.drawCube(multiblock.getX()-.01, -.01, -.01, multiblock.getX()+1.01, multiblock.getY()+.01, multiblock.getZ()+.01, 0);
+                VRCore.drawCube(multiblock.getInternalWidth()-.01, -.01, -.01, multiblock.getInternalWidth()+1.01, multiblock.getInternalHeight()+.01, multiblock.getInternalDepth()+.01, 0);
             }));
-            add(new VRMenuComponentPlusButton(multiblock.getX()/2d-.5, multiblock.getY()/2d-.5, multiblock.getZ()+1, blockSize, true, (e) -> {
+            add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()/2d-.5, multiblock.getInternalHeight()/2d-.5, multiblock.getInternalDepth()+1, blockSize, true, (e) -> {
                 expand(0, 0, 1);
             }, () -> {
-                VRCore.drawCube(-.01, -.01, multiblock.getZ()-.01, multiblock.getX()+.01, multiblock.getY()+.01, multiblock.getZ()+1.01, 0);
+                VRCore.drawCube(-.01, -.01, multiblock.getInternalDepth()-.01, multiblock.getInternalWidth()+.01, multiblock.getInternalHeight()+.01, multiblock.getInternalDepth()+1.01, 0);
             }));
             refreshNeeded = false;
         }
@@ -97,13 +97,13 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
     public void render(TrackedDevicePose.Buffer tdpb){
         GL11.glPushMatrix();
         GL11.glTranslated(-.5, .5, -.5);
-        double size = Math.max(multiblock.getX(), Math.max(multiblock.getY(), multiblock.getZ()));
+        double size = Math.max(multiblock.getInternalWidth(), Math.max(multiblock.getInternalHeight(), multiblock.getInternalDepth()));
         GL11.glScaled(1/size, 1/size, 1/size);
         multiblock.draw3D();
         Core.applyColor(Core.theme.getEditorListBorderColor());
-        VRCore.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getX()+1/16f, multiblock.getY()+1/16f, multiblock.getZ()+1/16f, 1/16f);
+        VRCore.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getInternalWidth()+1/16f, multiblock.getInternalHeight()+1/16f, multiblock.getInternalDepth()+1/16f, 1/16f);
         GL11.glPopMatrix();
-        textPanel.text = new FormattedText(multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ());
+        textPanel.text = new FormattedText(multiblock.getDimensionsStr());
         super.render(tdpb);
     }
     public void expand(int x, int y, int z){

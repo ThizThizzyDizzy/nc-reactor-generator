@@ -13,7 +13,6 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FusionConfiguration{
     public ArrayList<Block> allBlocks = new ArrayList<>();
-    public ArrayList<BreedingBlanketRecipe> allBreedingBlanketRecipes = new ArrayList<>();
     public ArrayList<Recipe> allRecipes = new ArrayList<>();
     public ArrayList<CoolantRecipe> allCoolantRecipes = new ArrayList<>();
     /**
@@ -21,11 +20,6 @@ public class FusionConfiguration{
      */
     @Deprecated
     public ArrayList<Block> blocks = new ArrayList<>();
-    /**
-     * @deprecated You should probably be using allBreedingBlanketRecipes
-     */
-    @Deprecated
-    public ArrayList<BreedingBlanketRecipe> breedingBlanketRecipes = new ArrayList<>();
     /**
      * @deprecated You should probably be using allRecipes
      */
@@ -69,42 +63,33 @@ public class FusionConfiguration{
         config.set("blocks", blocks);
         ConfigList recipes = new ConfigList();
         for(Recipe recipe : this.recipes){
-            recipes.add(recipe.save());
+            recipes.add(recipe.save(partial));
         }
         config.set("recipes", recipes);
         ConfigList coolantRecipes = new ConfigList();
         for(CoolantRecipe coolantRecipe : this.coolantRecipes){
-            coolantRecipes.add(coolantRecipe.save());
+            coolantRecipes.add(coolantRecipe.save(partial));
         }
         config.set("coolantRecipes", coolantRecipes);
-        ConfigList breedingBlanketRecipes = new ConfigList();
-        for(BreedingBlanketRecipe recipe : this.breedingBlanketRecipes){
-            breedingBlanketRecipes.add(recipe.save());
-        }
-        config.set("breedingBlanketRecipes", breedingBlanketRecipes);
         return config;
     }
     public void apply(FusionConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         Set<Block> usedBlocks = new HashSet<>();
-        Set<BreedingBlanketRecipe> usedBreedingBlanketRecipes = new HashSet<>();
         Set<Recipe> usedRecipes = new HashSet<>();
         Set<CoolantRecipe> usedCoolantRecipes = new HashSet<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulFusionReactor){
                 for(multiblock.overhaul.fusion.Block b : ((OverhaulFusionReactor)mb).getBlocks()){
                     usedBlocks.add(b.template);
-                    if(b.breedingBlanketRecipe!=null)usedBreedingBlanketRecipes.add(b.breedingBlanketRecipe);
                 }
                 usedRecipes.add(((OverhaulFusionReactor)mb).recipe);
                 usedCoolantRecipes.add(((OverhaulFusionReactor)mb).coolantRecipe);
             }
         }
         partial.blocks.addAll(usedBlocks);
-        partial.breedingBlanketRecipes.addAll(usedBreedingBlanketRecipes);
         partial.recipes.addAll(usedRecipes);
         partial.coolantRecipes.addAll(usedCoolantRecipes);
         parent.overhaul.fusion.allBlocks.addAll(usedBlocks);
-        parent.overhaul.fusion.allBreedingBlanketRecipes.addAll(usedBreedingBlanketRecipes);
         parent.overhaul.fusion.allRecipes.addAll(usedRecipes);
         parent.overhaul.fusion.allCoolantRecipes.addAll(usedCoolantRecipes);
     }
@@ -155,8 +140,6 @@ public class FusionConfiguration{
                 }
             }
         }
-        addon.self.overhaul.fusion.breedingBlanketRecipes.addAll(breedingBlanketRecipes);
-        parent.overhaul.fusion.allBreedingBlanketRecipes.addAll(breedingBlanketRecipes);
         addon.self.overhaul.fusion.recipes.addAll(recipes);
         parent.overhaul.fusion.allRecipes.addAll(recipes);
         addon.self.overhaul.fusion.coolantRecipes.addAll(coolantRecipes);
@@ -165,49 +148,50 @@ public class FusionConfiguration{
     public Block convert(Block template){
         if(template==null)return null;
         for(Block block : allBlocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+            for(String name : block.getLegacyNames()){
+                if(name.equals(template.name))return block;
+            }
         }
         for(Block block : blocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+            for(String name : block.getLegacyNames()){
+                if(name.equals(template.name))return block;
+            }
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
-    }
-    public BreedingBlanketRecipe convert(BreedingBlanketRecipe template){
-        if(template==null)return null;
-        for(BreedingBlanketRecipe breedingBlanketRecipe : allBreedingBlanketRecipes){
-            if(breedingBlanketRecipe.name.trim().equalsIgnoreCase(template.name.trim()))return breedingBlanketRecipe;
-        }
-        for(BreedingBlanketRecipe breedingBlanketRecipe : breedingBlanketRecipes){
-            if(breedingBlanketRecipe.name.trim().equalsIgnoreCase(template.name.trim()))return breedingBlanketRecipe;
-        }
-        throw new IllegalArgumentException("Failed to find match for breeding blanket recipe "+template.name+"!");
     }
     public Recipe convert(Recipe template){
         if(template==null)return null;
         for(Recipe recipe : allRecipes){
-            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+            for(String name : recipe.getLegacyNames()){
+                if(name.equals(template.inputName))return recipe;
+            }
         }
         for(Recipe recipe : recipes){
-            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+            for(String name : recipe.getLegacyNames()){
+                if(name.equals(template.inputName))return recipe;
+            }
         }
-        throw new IllegalArgumentException("Failed to find match for recipe "+template.name+"!");
+        throw new IllegalArgumentException("Failed to find match for recipe "+template.inputName+"!");
     }
     public CoolantRecipe convert(CoolantRecipe template){
         if(template==null)return null;
         for(CoolantRecipe coolantRecipe : allCoolantRecipes){
-            if(coolantRecipe.name.trim().equalsIgnoreCase(template.name.trim()))return coolantRecipe;
+            for(String name : coolantRecipe.getLegacyNames()){
+                if(name.equals(template.inputName))return coolantRecipe;
+            }
         }
         for(CoolantRecipe coolantRecipe : coolantRecipes){
-            if(coolantRecipe.name.trim().equalsIgnoreCase(template.name.trim()))return coolantRecipe;
+            for(String name : coolantRecipe.getLegacyNames()){
+                if(name.equals(template.inputName))return coolantRecipe;
+            }
         }
-        throw new IllegalArgumentException("Failed to find match for coolant recipe "+template.name+"!");
+        throw new IllegalArgumentException("Failed to find match for coolant recipe "+template.inputName+"!");
     }
     @Override
     public boolean equals(Object obj){
         if(obj!=null&&obj instanceof FusionConfiguration){
             FusionConfiguration fc = (FusionConfiguration)obj;
             return Objects.equals(fc.blocks, blocks)
-                    &&Objects.equals(fc.breedingBlanketRecipes, breedingBlanketRecipes)
                     &&Objects.equals(fc.recipes, recipes)
                     &&Objects.equals(fc.coolantRecipes, coolantRecipes)
                     &&minInnerRadius==fc.minInnerRadius

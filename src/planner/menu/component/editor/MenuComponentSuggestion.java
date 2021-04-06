@@ -1,15 +1,19 @@
 package planner.menu.component.editor;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
 import planner.Core;
 import planner.editor.suggestion.Suggestion;
 import planner.menu.MenuEdit;
+import planner.menu.component.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentSuggestion extends MenuComponent{
+public class MenuComponentSuggestion extends MenuComponent implements Searchable{
     private final MenuEdit editor;
     public final Suggestion suggestion;
     public boolean enabled = false;
     public MenuComponentSuggestion(MenuEdit editor, Suggestion suggestion){
-        super(0, 0, 0, 64);
+        super(0, 0, 0, 32);
         this.editor = editor;
         this.suggestion = suggestion;
     }
@@ -18,14 +22,20 @@ public class MenuComponentSuggestion extends MenuComponent{
         if(isMouseOver&&!enabled)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
         else Core.applyColor(enabled?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
+        int i = 0;
+        Core.applyWhite();
+        for(BufferedImage image : suggestion.getImages()){
+            drawRect(x+height*i, y, x+height*(i+1), y+height, Core.getTexture(image));
+            i++;
+        }
         Core.applyColor(Core.theme.getTextColor());
         drawText(suggestion.getName());
     }
     public void drawText(String text){
         double textLength = FontManager.getLengthForStringWithHeight(text, height);
-        double scale = Math.min(1, width/textLength);
+        double scale = Math.min(1, (width-height*suggestion.getImages().length)/textLength);
         double textHeight = (int)(height*scale)-1;
-        drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+        drawText(x+height*suggestion.getImages().length, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override
     public String getTooltip(){
@@ -52,5 +62,9 @@ public class MenuComponentSuggestion extends MenuComponent{
                 suggestion.apply(editor.multiblock);
             }
         }
+    }
+    @Override
+    public List<String> getSearchableNames(){
+        return Arrays.asList(suggestion.getName());
     }
 }

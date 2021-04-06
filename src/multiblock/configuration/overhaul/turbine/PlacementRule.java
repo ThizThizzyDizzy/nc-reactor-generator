@@ -32,7 +32,10 @@ public class PlacementRule extends RuleContainer{
         boolean exactly = str.startsWith("exactly");
         if(exactly)str = str.substring(7).trim();
         int amount = 0;
-        if(str.startsWith("one")){
+        if(str.startsWith("zero")){
+            amount = 0;
+            str = str.substring(4).trim();
+        }else if(str.startsWith("one")){
             amount = 1;
             str = str.substring(3).trim();
         }else if(str.startsWith("two")){
@@ -49,20 +52,27 @@ public class PlacementRule extends RuleContainer{
         if(axial)str = str.substring(5).trim();
         if(str.startsWith("of "))str = str.substring(3);
         if(str.startsWith("any "))str = str.substring(4);
-        CoilType type = null;
-        Coil coil = null;
-        if(str.startsWith("coil"))type = CoilType.COIL;
-        else if(str.startsWith("bearing"))type = CoilType.BEARING;
-        else if(str.startsWith("connector"))type = CoilType.CONNECTOR;
-        else if(str.startsWith("casing"))type = CoilType.CASING;
+        BlockType type = null;
+        Block block = null;
+        int shortest = 0;
+        if(str.startsWith("coil"))type = BlockType.COIL;
+        else if(str.startsWith("bearing"))type = BlockType.BEARING;
+        else if(str.startsWith("connector"))type = BlockType.CONNECTOR;
+        else if(str.startsWith("casing"))type = BlockType.CASING;
         else{
             String[] strs = str.split(" ");
             if(strs.length!=2||!strs[1].startsWith("coil")){
                 throw new IllegalArgumentException("Unknown rule bit: "+str);
             }
-            for(Coil c : configuration.allCoils){
-                if(c.name.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH).replace("_", " "))){
-                    coil = c;
+            for(Block b : configuration.allBlocks){
+                for(String s : b.getLegacyNames()){
+                    if(s.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH).replace("_", " "))||s.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH))){
+                        int len = s.length();
+                        if(block==null||len<shortest){
+                            block = b;
+                            shortest = len;
+                        }
+                    }
                 }
             }
         }
@@ -74,11 +84,11 @@ public class PlacementRule extends RuleContainer{
             if(type!=null){
                 rul1.ruleType = RuleType.BETWEEN_GROUP;
                 rul2.ruleType = RuleType.AXIAL_GROUP;
-                rul1.coilType = rul2.coilType = type;
+                rul1.blockType = rul2.blockType = type;
             }else{
                 rul1.ruleType = RuleType.BETWEEN;
                 rul2.ruleType = RuleType.AXIAL;
-                rul1.coil = rul2.coil = coil;
+                rul1.block = rul2.block = block;
             }
             rul1.min = rul1.max = (byte) amount;
             rul2.min = rul2.max = (byte) (amount/2);
@@ -92,10 +102,10 @@ public class PlacementRule extends RuleContainer{
         PlacementRule rule = new PlacementRule();
         if(type!=null){
             rule.ruleType = axial?RuleType.AXIAL_GROUP:RuleType.BETWEEN_GROUP;
-            rule.coilType = type;
+            rule.blockType = type;
         }else{
             rule.ruleType = axial?RuleType.AXIAL:RuleType.BETWEEN;
-            rule.coil = coil;
+            rule.block = block;
         }
         if(axial){
             min/=2;
@@ -106,50 +116,50 @@ public class PlacementRule extends RuleContainer{
         return rule;
     }
     public RuleType ruleType = RuleType.BETWEEN;
-    public CoilType coilType = CoilType.CASING;
-    public Coil coil;
+    public BlockType blockType = BlockType.CASING;
+    public Block block;
     public byte min;
     public byte max;
     public Config save(Configuration parent, TurbineConfiguration configuration){
         Config config = Config.newConfig();
-        byte coilIndex = (byte)(configuration.coils.indexOf(coil)+1);
+        byte blockIndex = (byte)(configuration.blocks.indexOf(block)+1);
         if(parent!=null){
-            coilIndex = (byte)(parent.overhaul.turbine.allCoils.indexOf(coil)+1);
+            blockIndex = (byte)(parent.overhaul.turbine.allBlocks.indexOf(block)+1);
         }
         switch(ruleType){
             case BETWEEN:
                 config.set("type", (byte)0);
-                config.set("block", coilIndex);
+                config.set("block", blockIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case AXIAL:
                 config.set("type", (byte)1);
-                config.set("block", coilIndex);
+                config.set("block", blockIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case EDGE:
                 config.set("type", (byte)2);
-                config.set("block", coilIndex);
+                config.set("block", blockIndex);
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case BETWEEN_GROUP:
                 config.set("type", (byte)3);
-                config.set("block", (byte)coilType.ordinal());
+                config.set("block", (byte)blockType.ordinal());
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case AXIAL_GROUP:
                 config.set("type", (byte)4);
-                config.set("block", (byte)coilType.ordinal());
+                config.set("block", (byte)blockType.ordinal());
                 config.set("min", min);
                 config.set("max", max);
                 break;
             case EDGE_GROUP:
                 config.set("type", (byte)5);
-                config.set("block", (byte)coilType.ordinal());
+                config.set("block", (byte)blockType.ordinal());
                 config.set("min", min);
                 config.set("max", max);
                 break;
@@ -176,25 +186,25 @@ public class PlacementRule extends RuleContainer{
     public String toString(){
         switch(ruleType){
             case BETWEEN:
-                if(max==6)return "At least "+min+" "+coil.name;
-                if(min==max)return "Exactly "+min+" "+coil.name;
-                return "Between "+min+" and "+max+" "+coil.name;
+                if(max==6)return "At least "+min+" "+block.getDisplayName();
+                if(min==max)return "Exactly "+min+" "+block.getDisplayName();
+                return "Between "+min+" and "+max+" "+block.getDisplayName();
             case BETWEEN_GROUP:
-                if(max==6)return "At least "+min+" "+coilType.name;
-                if(min==max)return "Exactly "+min+" "+coilType.name;
-                return "Between "+min+" and "+max+" "+coilType.name;
+                if(max==6)return "At least "+min+" "+blockType.name;
+                if(min==max)return "Exactly "+min+" "+blockType.name;
+                return "Between "+min+" and "+max+" "+blockType.name;
             case AXIAL:
-                if(max==6)return "At least "+min+" Axial pairs of "+coil.name;
-                if(min==max)return "Exactly "+min+" Axial pairs of "+coil.name;
-                return "Between "+min+" and "+max+" Axial pairs of "+coil.name;
+                if(max==6)return "At least "+min+" Axial pairs of "+block.getDisplayName();
+                if(min==max)return "Exactly "+min+" Axial pairs of "+block.getDisplayName();
+                return "Between "+min+" and "+max+" Axial pairs of "+block.getDisplayName();
             case AXIAL_GROUP:
-                if(max==6)return "At least "+min+" Axial pairs of "+coilType.name;
-                if(min==max)return "Exactly "+min+" Axial pairs of "+coilType.name;
-                return "Between "+min+" and "+max+" Axial pairs of "+coilType.name;
+                if(max==6)return "At least "+min+" Axial pairs of "+blockType.name;
+                if(min==max)return "Exactly "+min+" Axial pairs of "+blockType.name;
+                return "Between "+min+" and "+max+" Axial pairs of "+blockType.name;
             case EDGE:
-                return "Two "+coil.name+" at the same edge";
+                return "Two "+block.getDisplayName()+" at the same edge";
             case EDGE_GROUP:
-                return "Two "+coilType.name+" at the same edge";
+                return "Two "+blockType.name+" at the same edge";
             case AND:
                 String s = "";
                 for(PlacementRule rule : rules){
@@ -210,22 +220,22 @@ public class PlacementRule extends RuleContainer{
         }
         return "Unknown Rule";
     }
-    public boolean isValid(multiblock.overhaul.turbine.Block coil, OverhaulTurbine turbine){
+    public boolean isValid(multiblock.overhaul.turbine.Block block, OverhaulTurbine turbine){
         int num = 0;
         switch(ruleType){
             case BETWEEN:
-                for(multiblock.overhaul.turbine.Block b : coil.getActiveAdjacent(turbine)){
-                    if(b.coil==this.coil)num++;
+                for(multiblock.overhaul.turbine.Block b : block.getActiveAdjacent(turbine)){
+                    if(b.template==this.block)num++;
                 }
                 return num>=min&&num<=max;
             case BETWEEN_GROUP:
-                switch(coilType){
+                switch(blockType){
                     case CASING:
-                        num = 6-coil.getAdjacent(turbine).size();
+                        num = 6-block.getAdjacent(turbine).size();
                         break;
                     default:
-                        for(multiblock.overhaul.turbine.Block b : coil.getActiveAdjacent(turbine)){
-                            switch(coilType){
+                        for(multiblock.overhaul.turbine.Block b : block.getActiveAdjacent(turbine)){
+                            switch(blockType){
                                 case BEARING:
                                     if(b.isBearing())num++;
                                     break;
@@ -241,31 +251,31 @@ public class PlacementRule extends RuleContainer{
                 }
                 return num>=min&&num<=max;
             case AXIAL:
-                for(Axis axis : Axis.values()){
+                for(Axis axis : axes){
                     if(axis==Axis.Z)continue;
-                    multiblock.overhaul.turbine.Block b1 = turbine.getBlock(coil.x-axis.x, coil.y-axis.y, coil.z-axis.z);
-                    multiblock.overhaul.turbine.Block b2 = turbine.getBlock(coil.x+axis.x, coil.y+axis.y, coil.z+axis.z);
-                    if(b1!=null&&b1.coil==this.coil&&b1.isActive()&&b2!=null&&b2.coil==this.coil&&b2.isActive())num++;
+                    multiblock.overhaul.turbine.Block b1 = turbine.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                    multiblock.overhaul.turbine.Block b2 = turbine.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
+                    if(b1!=null&&b1.template==this.block&&b1.isActive()&&b2!=null&&b2.template==this.block&&b2.isActive())num++;
                 }
                 return num>=min&&num<=max;
             case AXIAL_GROUP:
-                switch(coilType){
+                switch(blockType){
                     case CASING:
-                        for(Axis axis : Axis.values()){
+                        for(Axis axis : axes){
                             if(axis==Axis.Z)continue;
-                            multiblock.overhaul.turbine.Block b1 = turbine.getBlock(coil.x-axis.x, coil.y-axis.y, coil.z-axis.z);
-                            multiblock.overhaul.turbine.Block b2 = turbine.getBlock(coil.x+axis.x, coil.y+axis.y, coil.z+axis.z);
+                            multiblock.overhaul.turbine.Block b1 = turbine.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                            multiblock.overhaul.turbine.Block b2 = turbine.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null&&b2==null)num++;
                         }
                         break;
                     default:
-                        for(Axis axis : Axis.values()){
+                        for(Axis axis : axes){
                             if(axis==Axis.Z)continue;
-                            multiblock.overhaul.turbine.Block b1 = turbine.getBlock(coil.x-axis.x, coil.y-axis.y, coil.z-axis.z);
-                            multiblock.overhaul.turbine.Block b2 = turbine.getBlock(coil.x+axis.x, coil.y+axis.y, coil.z+axis.z);
+                            multiblock.overhaul.turbine.Block b1 = turbine.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
+                            multiblock.overhaul.turbine.Block b2 = turbine.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null||b2==null)continue;
                             if(!b1.isActive()||!b2.isActive())continue;
-                            switch(coilType){
+                            switch(blockType){
                                 case BEARING:
                                     if(b1.isBearing()&&b2.isBearing())num++;
                                     break;
@@ -283,8 +293,8 @@ public class PlacementRule extends RuleContainer{
             case EDGE:
                 ArrayList<Direction> dirs = new ArrayList<>();
                 for(Direction d : Direction.values()){
-                    multiblock.overhaul.turbine.Block b = turbine.getBlock(coil.x+d.x, coil.y+d.y, coil.z+d.z);
-                    if(b.coil==this.coil)dirs.add(d);
+                    multiblock.overhaul.turbine.Block b = turbine.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                    if(b.template==this.block)dirs.add(d);
                 }
                 for(Edge e : Edge.values()){
                     boolean missingOne = false;
@@ -297,8 +307,8 @@ public class PlacementRule extends RuleContainer{
             case EDGE_GROUP:
                 dirs = new ArrayList<>();
                 for(Direction d : Direction.values()){
-                    multiblock.overhaul.turbine.Block b = turbine.getBlock(coil.x+d.x, coil.y+d.y, coil.z+d.z);
-                    switch(coilType){
+                    multiblock.overhaul.turbine.Block b = turbine.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                    switch(blockType){
                         case CASING:
                             if(b==null){
                                 dirs.add(d);
@@ -315,7 +325,7 @@ public class PlacementRule extends RuleContainer{
                             if(b!=null&&!b.isConnector())continue;
                             break;
                     }
-                    if(b.coil==this.coil)dirs.add(d);
+                    if(b.template==this.block)dirs.add(d);
                 }
                 for(Edge e : Edge.values()){
                     boolean missingOne = false;
@@ -327,12 +337,12 @@ public class PlacementRule extends RuleContainer{
                 return false;
             case AND:
                 for(PlacementRule rule : rules){
-                    if(!rule.isValid(coil, turbine))return false;
+                    if(!rule.isValid(block, turbine))return false;
                 }
                 return true;
             case OR:
                 for(PlacementRule rule : rules){
-                    if(rule.isValid(coil, turbine))return true;
+                    if(rule.isValid(block, turbine))return true;
                 }
                 return false;
         }
@@ -347,7 +357,7 @@ public class PlacementRule extends RuleContainer{
         EDGE_GROUP("Edge (Group)"),
         OR("Or"),
         AND("And");
-        private final String name;
+        public final String name;
         private RuleType(String name){
             this.name = name;
         }
@@ -355,38 +365,24 @@ public class PlacementRule extends RuleContainer{
         public String toString(){
             return name;
         }
-        public static String[] getStringList(){
-            String[] strs = new String[values().length];
-            for(int i = 0; i<strs.length; i++){
-                strs[i] = values()[i].toString();
-            }
-            return strs;
-        }
     }
-    public static enum CoilType{
+    public static enum BlockType{
         CASING("Casing"),
         COIL("Coil"),
         BEARING("Bearing"),
         CONNECTOR("Connector");
-        private final String name;
-        private CoilType(String name){
+        public final String name;
+        private BlockType(String name){
             this.name = name;
         }
         @Override
         public String toString(){
             return name;
         }
-        public static String[] getStringList(){
-            String[] strs = new String[values().length];
-            for(int i = 0; i<strs.length; i++){
-                strs[i] = values()[i].toString();
-            }
-            return strs;
-        }
     }
     @Override
     public boolean stillEquals(RuleContainer rc){
         PlacementRule pr = (PlacementRule)rc;
-        return pr.ruleType==ruleType&&Objects.equals(pr.coil,coil)&&pr.min==min&&pr.max==max;
+        return pr.ruleType==ruleType&&Objects.equals(pr.block,block)&&pr.min==min&&pr.max==max;
     }
 }

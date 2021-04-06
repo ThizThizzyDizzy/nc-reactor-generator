@@ -92,9 +92,11 @@ public class FormattedText{
     }
     public ArrayList<FormattedText> split(String string){
         ArrayList<FormattedText> result = new ArrayList<>();
-        String[] strs = text.split(string);
-        for(String s : strs){
-            result.add(new FormattedText(s, color, bold, italic, underline, strikethrough));
+        if(!text.isEmpty()){
+            String[] strs = text.split(string);
+            for(String s : strs){
+                result.add(new FormattedText(s, color, bold, italic, underline, strikethrough));
+            }
         }
         if(next!=null)result.addAll(next.split(string));
         return result;

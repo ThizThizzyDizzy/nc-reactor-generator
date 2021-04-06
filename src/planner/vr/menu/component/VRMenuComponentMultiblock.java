@@ -1,5 +1,6 @@
 package planner.vr.menu.component;
 import java.util.Random;
+import multiblock.BoundingBox;
 import multiblock.Multiblock;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
@@ -58,7 +59,8 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         GL11.glScaled(scale, scale, scale);
         GL11.glTranslated(-width/2, -height/2, -depth/2);
         GL11.glScaled(width, height, depth);
-        double size = Math.max(multiblock.getX(), Math.max(multiblock.getY(), multiblock.getZ()));
+        BoundingBox bbox = multiblock.getBoundingBox();
+        double size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
         GL11.glScaled(1/size, 1/size, 1/size);
         multiblock.draw3D();
         GL11.glPopMatrix();

@@ -8,10 +8,10 @@ import planner.tutorial.Tutorial;
 import planner.tutorial.TutorialFileReader;
 public class UnderhaulModule extends Module{
     public UnderhaulModule(){
-        super(true);
+        super("underhaul", true);
     }
     @Override
-    public String getName(){
+    public String getDisplayName(){
         return "Underhaul";
     }
     @Override

@@ -8,9 +8,12 @@ public abstract class Action<T extends Multiblock>{
         if(blocks.isEmpty())blocks = null;
         doApply(multiblock, allowUndo);
         if(blocks!=null){
-            getAffectedBlocks(multiblock, blocks);
-            if(blocks.contains(null))throw new NullPointerException("Null cannot be affected! "+getClass().getName());
-            if(blocks.isEmpty())blocks = null;
+            ArrayList<Block> blox = new ArrayList<>();
+            getAffectedBlocks(multiblock, blox);
+            if(blox.contains(null))throw new NullPointerException("Null cannot be affected! "+getClass().getName());
+            if(blox.isEmpty())blox = null;
+            if(blox!=null)blocks.addAll(blox);
+            else blocks = null;
         }
         return new ActionResult<>(multiblock, blocks);
     }
@@ -22,9 +25,12 @@ public abstract class Action<T extends Multiblock>{
         if(blocks.isEmpty())blocks = null;
         doUndo(multiblock);
         if(blocks!=null){
-            getAffectedBlocks(multiblock, blocks);
-            if(blocks.contains(null))throw new NullPointerException("Null cannot be affected! "+getClass().getName());
-            if(blocks.isEmpty())blocks = null;
+            ArrayList<Block> blox = new ArrayList<>();
+            getAffectedBlocks(multiblock, blox);
+            if(blox.contains(null))throw new NullPointerException("Null cannot be affected! "+getClass().getName());
+            if(blox.isEmpty())blox = null;
+            if(blox!=null)blocks.addAll(blox);
+            else blocks = null;
         }
         return new ActionResult<>(multiblock, blocks);
     }

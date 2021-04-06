@@ -1,6 +1,8 @@
 package planner.editor.tool;
 import java.util.ArrayList;
+import multiblock.Axis;
 import multiblock.Block;
+import multiblock.EditorSpace;
 import multiblock.action.SetblocksAction;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -41,17 +43,17 @@ public class PencilTool extends EditorTool{
         GL11.glEnd();
     }
     @Override
-    public void mouseReset(int button){
+    public void mouseReset(EditorSpace editorSpace, int button){
         if(button==0&&leftDragStart==null)return;
         if(button==1&&rightDragStart==null)return;
-        mouseReleased(null, 0, 0, 0, button);//allow you to release outside the editor grid and still place blocks
+        mouseReleased(null, editorSpace, 0, 0, 0, button);//allow you to release outside the editor grid and still place blocks
     }
     @Override
-    public void mousePressed(Object obj, int x, int y, int z, int button){
+    public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
         Block selected = editor.getSelectedBlock(id);
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             synchronized(leftSelectedBlocks){
-                leftSelectedBlocks.add(new int[]{x,y,z});
+                if(editorSpace.isSpaceValid(selected, x, y, z))leftSelectedBlocks.add(new int[]{x,y,z});
                 leftDragStart = new int[]{x,y,z};
                 leftStart = obj;
             }
@@ -65,7 +67,7 @@ public class PencilTool extends EditorTool{
         }
     }
     @Override
-    public void mouseReleased(Object obj, int x, int y, int z, int button){
+    public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock(id));
             synchronized(leftSelectedBlocks){
@@ -100,7 +102,7 @@ public class PencilTool extends EditorTool{
         }
     }
     @Override
-    public void mouseDragged(Object obj, int x, int y, int z, int button){
+    public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
             if(obj!=leftStart){
                 leftDragStart = new int[]{x,y,z};
@@ -110,6 +112,7 @@ public class PencilTool extends EditorTool{
                 if(leftDragStart[0]==x&&leftDragStart[1]==y&&leftDragStart[2]==z)return;
                 raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
                     if(X==leftDragStart[0]&&Y==leftDragStart[1]&&Z==leftDragStart[2])return;
+                    if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), X, Y, Z))return;
                     synchronized(leftSelectedBlocks){
                         for(int[] i : leftSelectedBlocks){
                             if(i[0]==X&&i[1]==Y&&i[2]==Z)return;
@@ -145,52 +148,44 @@ public class PencilTool extends EditorTool{
         return true;
     }
     @Override
-    public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
+    public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         synchronized(leftSelectedBlocks){
             for(int[] i : leftSelectedBlocks){
-                if(i[1]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[2]*blockSize, x+(i[0]+1)*blockSize, y+(i[2]+1)*blockSize, texture);
+                int bx = i[0];
+                int by = i[1];
+                int bz = i[2];
+                Axis xAxis = axis.get2DXAxis();
+                Axis yAxis = axis.get2DYAxis();
+                int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
+                int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
+                int sz = bx*axis.x+by*axis.y+bz*axis.z;
+                if(sz!=layer)continue;
+                if(sx<x1||sx>x2)continue;
+                if(sy<y1||sy>y2)continue;
+                Renderer2D.drawRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, texture);
             }
         }
         synchronized(rightSelectedBlocks){
             for(int[] i : rightSelectedBlocks){
-                if(i[1]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[2]*blockSize, x+(i[0]+1)*blockSize, y+(i[2]+1)*blockSize, 0);
+                int bx = i[0];
+                int by = i[1];
+                int bz = i[2];
+                Axis xAxis = axis.get2DXAxis();
+                Axis yAxis = axis.get2DYAxis();
+                int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
+                int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
+                int sz = bx*axis.x+by*axis.y+bz*axis.z;
+                if(sz!=layer)continue;
+                if(sx<x1||sx>x2)continue;
+                if(sy<y1||sy>y2)continue;
+                Renderer2D.drawRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, 0);
             }
         }
         Core.applyWhite();
     }
     @Override
-    public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        synchronized(leftSelectedBlocks){
-            for(int[] i : leftSelectedBlocks){
-                if(i[2]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[1]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, texture);
-            }
-        }
-        synchronized(rightSelectedBlocks){
-            for(int[] i : rightSelectedBlocks){
-                if(i[2]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[1]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, 0);
-            }
-        }
-        Core.applyWhite();
-    }
-    @Override
-    public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        synchronized(leftSelectedBlocks){
-            for(int[] i : leftSelectedBlocks){
-                if(i[0]==editor.getMultiblock().getX()/2&&i[1]==0)Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, texture);
-            }
-        }
-        synchronized(rightSelectedBlocks){
-            for(int[] i : rightSelectedBlocks){
-                if(i[0]==editor.getMultiblock().getX()/2&&i[1]==0)Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
-            }
-        }
-        Core.applyWhite();
-    }
-    @Override
-    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+    public void drawVRGhosts(EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         double border = blockSize/64;
         synchronized(leftSelectedBlocks){
@@ -211,9 +206,9 @@ public class PencilTool extends EditorTool{
         return "Pencil tool (P)\nUse this tool to draw blocks one at a time\nHold CTRL to only place blocks where they are valid";
     }
     @Override
-    public void mouseMoved(Object obj, int x, int y, int z){}
+    public void mouseMoved(Object obj, EditorSpace editorSpace, int x, int y, int z){}
     @Override
-    public void mouseMovedElsewhere(Object obj){
+    public void mouseMovedElsewhere(Object obj, EditorSpace editorSpace){
         leftStart = rightStart = null;
     }
 }

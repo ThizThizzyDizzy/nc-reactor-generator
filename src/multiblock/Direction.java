@@ -14,4 +14,14 @@ public enum Direction{
         this.y = y;
         this.z = z;
     }
+    public Direction getOpposite(){
+        for(Direction d : values()){
+            if(d.x==-x&&d.y==-y&&d.z==-z)return d;
+        }
+        return null;
+    }
+    @Override
+    public String toString(){
+        return super.toString().replace("N", "-").replace("P", "+");
+    }
 }

@@ -6,10 +6,12 @@ import planner.Core;
 import planner.editor.suggestion.Suggestor;
 public abstract class Module<T>{
     private boolean active;
-    public Module(){
-        this(false);
+    public final String name;
+    public Module(String name){
+        this(name, false);
     }
-    public Module(boolean defaultActive){
+    public Module(String name, boolean defaultActive){
+        this.name = name;
         active = defaultActive;
     }
     public final void activate(){
@@ -27,7 +29,7 @@ public abstract class Module<T>{
     }
     protected void onActivated(){}
     protected void onDeactivated(){}
-    public abstract String getName();
+    public abstract String getDisplayName();
     public abstract String getDescription();
     /**
      * Calculate this module for a specified multiblock

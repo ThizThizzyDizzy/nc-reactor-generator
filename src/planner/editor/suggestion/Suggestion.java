@@ -1,5 +1,6 @@
 package planner.editor.suggestion;
 import generator.Priority;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
@@ -16,13 +17,16 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
     }
     public boolean selected = false;
     private final String name;
-    public Suggestion(String name, Action<T> suggestedAction, ArrayList<Priority<T>> priorities){
+    private BufferedImage[] images;
+    public Suggestion(String name, Action<T> suggestedAction, ArrayList<Priority<T>> priorities, BufferedImage... images){
         this(name, box(suggestedAction), priorities);
+        this.images = images;
     }
-    public Suggestion(String name, ArrayList<Action<T>> suggestedActions, ArrayList<Priority<T>> priorities){
+    public Suggestion(String name, ArrayList<Action<T>> suggestedActions, ArrayList<Priority<T>> priorities, BufferedImage... images){
         this.suggestedActions = suggestedActions;
         this.priorities = priorities;
         this.name = name;
+        this.images = images;
     }
     public boolean test(T multiblock){
         result = (T)multiblock.copy();
@@ -62,5 +66,8 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
             return suggestedActions.equals(other.suggestedActions);
         }
         return false;
+    }
+    public BufferedImage[] getImages(){
+        return images;
     }
 }

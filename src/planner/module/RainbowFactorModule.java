@@ -13,8 +13,11 @@ import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
 public class RainbowFactorModule extends Module<Float>{
+    public RainbowFactorModule(){
+        super("rainbow_factor");
+    }
     @Override
-    public String getName(){
+    public String getDisplayName(){
         return "Rainbow Factor";
     }
     @Override
@@ -38,7 +41,7 @@ public class RainbowFactorModule extends Module<Float>{
         if(m instanceof OverhaulSFR){
             float totalSinks = 0;
             for(multiblock.configuration.overhaul.fissionsfr.Block b : m.getConfiguration().overhaul.fissionSFR.allBlocks){
-                if(b.cooling!=0)totalSinks++;
+                if(b.heatsinkCooling!=0)totalSinks++;
             }
             Set<multiblock.configuration.overhaul.fissionsfr.Block> unique = new HashSet<>();
             for(multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)m).getBlocks()){
@@ -50,7 +53,7 @@ public class RainbowFactorModule extends Module<Float>{
         if(m instanceof OverhaulMSR){
             float totalSinks = 0;
             for(multiblock.configuration.overhaul.fissionmsr.Block b : m.getConfiguration().overhaul.fissionMSR.allBlocks){
-                if(b.cooling!=0)totalSinks++;
+                if(b.heaterCooling!=0)totalSinks++;
             }
             Set<multiblock.configuration.overhaul.fissionmsr.Block> unique = new HashSet<>();
             for(multiblock.overhaul.fissionmsr.Block b : ((OverhaulMSR)m).getBlocks()){
@@ -62,7 +65,7 @@ public class RainbowFactorModule extends Module<Float>{
         if(m instanceof OverhaulFusionReactor){
             float totalSinks = 0;
             for(multiblock.configuration.overhaul.fusion.Block b : m.getConfiguration().overhaul.fusion.allBlocks){
-                if(b.cooling!=0)totalSinks++;
+                if(b.heatsinkCooling!=0)totalSinks++;
             }
             Set<multiblock.configuration.overhaul.fusion.Block> unique = new HashSet<>();
             for(multiblock.overhaul.fusion.Block b : ((OverhaulFusionReactor)m).getBlocks()){
@@ -139,31 +142,23 @@ public class RainbowFactorModule extends Module<Float>{
                         multiblock.underhaul.fissionsfr.Block b = it.next();
                         if(!b.isCooler()||b.template.active!=null)it.remove();
                     }
-                    int count = 0;
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                multiblock.underhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
-                                if(block==null||block.canBeQuickReplaced()){
-                                    count++;
-                                }
+                    int[] count = new int[1];
+                    multiblock.forEachPosition((x, y, z) -> {
+                        multiblock.underhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
+                        if(block==null||block.canBeQuickReplaced()){
+                            count[0]++;
+                        }
+                    });
+                    suggestor.setCount(count[0]*blocks.size());
+                    multiblock.forEachPosition((x, y, z) -> {
+                        for(multiblock.underhaul.fissionsfr.Block newBlock : blocks){
+                            multiblock.underhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
+                            if(block==null||block.canBeQuickReplaced()){
+                                if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                else suggestor.task.max--;
                             }
                         }
-                    }
-                    suggestor.setCount(count*blocks.size());
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                for(multiblock.underhaul.fissionsfr.Block newBlock : blocks){
-                                    multiblock.underhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
-                                    if(block==null||block.canBeQuickReplaced()){
-                                        if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
-                                        else suggestor.task.max--;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    });
                 }
             });
         }
@@ -190,31 +185,23 @@ public class RainbowFactorModule extends Module<Float>{
                         multiblock.overhaul.fissionsfr.Block b = it.next();
                         if(!b.isHeatsink())it.remove();
                     }
-                    int count = 0;
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                multiblock.overhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
-                                if(block==null||block.canBeQuickReplaced()){
-                                    count++;
-                                }
+                    int[] count = new int[1];
+                    multiblock.forEachPosition((x, y, z) -> {
+                        multiblock.overhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
+                        if(block==null||block.canBeQuickReplaced()){
+                            count[0]++;
+                        }
+                    });
+                    suggestor.setCount(count[0]*blocks.size());
+                    multiblock.forEachPosition((x, y, z) -> {
+                        for(multiblock.overhaul.fissionsfr.Block newBlock : blocks){
+                            multiblock.overhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
+                            if(block==null||block.canBeQuickReplaced()){
+                                if(newBlock.template.heatsinkCooling>(block==null?0:block.template.heatsinkCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                else suggestor.task.max--;
                             }
                         }
-                    }
-                    suggestor.setCount(count*blocks.size());
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                for(multiblock.overhaul.fissionsfr.Block newBlock : blocks){
-                                    multiblock.overhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
-                                    if(block==null||block.canBeQuickReplaced()){
-                                        if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
-                                        else suggestor.task.max--;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    });
                 }
             });
         }
@@ -241,84 +228,68 @@ public class RainbowFactorModule extends Module<Float>{
                         multiblock.overhaul.fissionmsr.Block b = it.next();
                         if(!b.isHeater())it.remove();
                     }
-                    int count = 0;
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                multiblock.overhaul.fissionmsr.Block block = multiblock.getBlock(x, y, z);
-                                if(block==null||block.canBeQuickReplaced()){
-                                    count++;
-                                }
+                    int[] count = new int[1];
+                    multiblock.forEachPosition((x, y, z) -> {
+                        multiblock.overhaul.fissionmsr.Block block = multiblock.getBlock(x, y, z);
+                        if(block==null||block.canBeQuickReplaced()){
+                            count[0]++;
+                        }
+                    });
+                    suggestor.setCount(count[0]*blocks.size());
+                    multiblock.forEachPosition((x, y, z) -> {
+                        for(multiblock.overhaul.fissionmsr.Block newBlock : blocks){
+                            multiblock.overhaul.fissionmsr.Block block = multiblock.getBlock(x, y, z);
+                            if(block==null||block.canBeQuickReplaced()){
+                                if(newBlock.template.heaterCooling>(block==null?0:block.template.heaterCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                else suggestor.task.max--;
                             }
                         }
-                    }
-                    suggestor.setCount(count*blocks.size());
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                for(multiblock.overhaul.fissionmsr.Block newBlock : blocks){
-                                    multiblock.overhaul.fissionmsr.Block block = multiblock.getBlock(x, y, z);
-                                    if(block==null||block.canBeQuickReplaced()){
-                                        if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
-                                        else suggestor.task.max--;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    });
                 }
             });
         }
         if(multiblock instanceof OverhaulFusionReactor){
-        suggestors.add(new Suggestor<OverhaulFusionReactor>("Rainbowificator", -1, -1){
-            ArrayList<Priority> priorities = new ArrayList<>();
-            {
-                priorities.add(new Priority<OverhaulFusionReactor>("Rainbow", false, true){
-                    @Override
-                    protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
-                        return (float)main.moduleData.get(that)-(float)other.moduleData.get(that);
-                    }
-                });
-            }
-            @Override
-            public String getDescription(){
-                return "Suggests adding or replacing heat sinks to increase the reactor's rainbow factor";
-            }
-            @Override
-            public void generateSuggestions(OverhaulFusionReactor multiblock, Suggestor.SuggestionAcceptor suggestor){
-                ArrayList<multiblock.overhaul.fusion.Block> blocks = new ArrayList<>();
-                multiblock.getAvailableBlocks(blocks);
-                for(Iterator<multiblock.overhaul.fusion.Block> it = blocks.iterator(); it.hasNext();){
-                    multiblock.overhaul.fusion.Block b = it.next();
-                    if(!b.isHeatsink())it.remove();
+            suggestors.add(new Suggestor<OverhaulFusionReactor>("Rainbowificator", -1, -1){
+                ArrayList<Priority> priorities = new ArrayList<>();
+                {
+                    priorities.add(new Priority<OverhaulFusionReactor>("Rainbow", false, true){
+                        @Override
+                        protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
+                            return (float)main.moduleData.get(that)-(float)other.moduleData.get(that);
+                        }
+                    });
                 }
-                int count = 0;
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
+                @Override
+                public String getDescription(){
+                    return "Suggests adding or replacing heat sinks to increase the reactor's rainbow factor";
+                }
+                @Override
+                public void generateSuggestions(OverhaulFusionReactor multiblock, Suggestor.SuggestionAcceptor suggestor){
+                    ArrayList<multiblock.overhaul.fusion.Block> blocks = new ArrayList<>();
+                    multiblock.getAvailableBlocks(blocks);
+                    for(Iterator<multiblock.overhaul.fusion.Block> it = blocks.iterator(); it.hasNext();){
+                        multiblock.overhaul.fusion.Block b = it.next();
+                        if(!b.isHeatsink())it.remove();
+                    }
+                    int[] count = new int[1];
+                    multiblock.forEachPosition((x, y, z) -> {
+                        multiblock.overhaul.fusion.Block block = multiblock.getBlock(x, y, z);
+                        if(block==null||block.canBeQuickReplaced()){
+                            count[0]++;
+                        }
+                    });
+                    suggestor.setCount(count[0]*blocks.size());
+                    multiblock.forEachPosition((x, y, z) -> {
+                        for(multiblock.overhaul.fusion.Block newBlock : blocks){
                             multiblock.overhaul.fusion.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                count++;
+                                if(newBlock.template.heatsinkCooling>(block==null?0:block.template.heatsinkCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                else suggestor.task.max--;
                             }
                         }
-                    }
+                    });
                 }
-                suggestor.setCount(count*blocks.size());
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
-                            for(multiblock.overhaul.fusion.Block newBlock : blocks){
-                                multiblock.overhaul.fusion.Block block = multiblock.getBlock(x, y, z);
-                                if(block==null||block.canBeQuickReplaced()){
-                                    if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
-                                    else suggestor.task.max--;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
+            });
         }
     }
 }

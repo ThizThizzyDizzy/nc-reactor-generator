@@ -13,6 +13,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 public class Main{
     private static final String versionListURL = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt";
     public static final String applicationName = "Nuclearcraft Reactor Generator";
@@ -22,6 +24,7 @@ public class Main{
     private static int total;
     private static int current;
     //OS details
+    
     public static boolean hasAWT = true;
     public static boolean hasAWTAfterStartup = false;
     private static final int OS_UNKNOWN = -1;
@@ -37,7 +40,7 @@ public class Main{
         requiredLibraries.add(new String[]{url,filename});
     }
     private static void addRequiredLibraries(){
-        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.4.1/SimpleLibraryPlus-1.4.1.jar", "SimpleLibraryPlus-1.4.1.jar");
+        addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.4.2/SimpleLibraryPlus-1.4.2.jar", "SimpleLibraryPlus-1.4.2.jar");
         addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/joml-1.10.0.jar", "joml-1.10.0.jar");
         if(isBot){
             addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies.jar", "JDA-4.2.0_168-withDependencies.jar");
@@ -85,16 +88,21 @@ public class Main{
             }
             Core.main(args);
         }catch(Exception ex){
+            boolean saved = false;
+            try{
+                Core.autosave();
+                saved = true;
+            }catch(Exception e){}
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+")", ex);
             if(hasAWT){
                 String trace = "";
                 for(StackTraceElement e : ex.getStackTrace()){
                     trace+="\n"+e.toString();
                 }
                 trace = trace.isEmpty()?trace:trace.substring(1);
-                javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread!", javax.swing.JOptionPane.ERROR_MESSAGE);
-            }else{
-                throw new RuntimeException("Exception on main thread!", ex);
+                javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread! (Autosave "+(saved?"Successful":"Failed")+")", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
+            System.exit(0);
         }
     }
     private static String getLibraryRoot(){

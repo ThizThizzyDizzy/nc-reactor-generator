@@ -1,5 +1,6 @@
 package planner.menu;
 import java.util.ArrayList;
+import multiblock.BoundingBox;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -81,13 +82,11 @@ public class MenuResizeFusion extends Menu{
     public void tick(){
         if(refreshNeeded){
             multibwauk.components.clear();
-            for(int y = 0; y<multiblock.getY(); y++){
-                for(int z = 0; z<multiblock.getZ(); z++){
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        multibwauk.add(new MenuComponentVisibleBlock((x+1)*CELL_SIZE, (1+z+(y*(multiblock.getZ()+1)))*CELL_SIZE, CELL_SIZE, CELL_SIZE, multiblock, x, y, z));
-                    }
-                }
-            }
+            BoundingBox bbox = multiblock.getBoundingBox();
+            int depth = bbox.getDepth();
+            multiblock.forEachPosition((x, y, z) -> {
+                multibwauk.add(new MenuComponentVisibleBlock((x+1)*CELL_SIZE, (1+z+(y*(depth+1)))*CELL_SIZE, CELL_SIZE, CELL_SIZE, multiblock, x, y, z));
+            });
             multibwauk.add(new MenuComponent(0, 0, 0, 0){
                 @Override
                 public void render(){}
@@ -115,44 +114,12 @@ public class MenuResizeFusion extends Menu{
         super.render(millisSinceLastTick);
         Core.applyColor(Core.theme.getTextColor());
         drawCenteredText(done.x, done.height, done.x+done.width, done.height+40, "["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]");
-        drawCenteredText(done.x, done.height+40, done.x+done.width, done.height+80, multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ());
+        BoundingBox bbox = multiblock.getBoundingBox();
+        drawCenteredText(done.x, done.height+40, done.x+done.width, done.height+80, bbox.getWidth()+"x"+bbox.getHeight()+"x"+bbox.getDepth());
         drawCenteredText(increaseInnerRadius.x, increaseInnerRadius.y+-40, increaseInnerRadius.x+done.width, increaseInnerRadius.y, "Inner Radius");
         drawCenteredText(increaseCoreSize.x, increaseCoreSize.y+-40, increaseCoreSize.x+done.width, increaseCoreSize.y, "Core Size");
         drawCenteredText(increaseToroidWidth.x, increaseToroidWidth.y+-40, increaseToroidWidth.x+done.width, increaseToroidWidth.y, "Toroid Width");
         drawCenteredText(increaseLiningThickness.x, increaseLiningThickness.y+-40, increaseLiningThickness.x+done.width, increaseLiningThickness.y, "Lining Thickness");
-    }
-    public void expand(int x, int y, int z){
-        if(x>0)multiblock.expandRight(x);
-        if(x<0)multiblock.expandLeft(-x);
-        if(y>0)multiblock.expandUp(y);
-        if(y<0)multiblock.exandDown(-y);
-        if(z>0)multiblock.expandToward(z);
-        if(z<0)multiblock.expandAway(-z);
-        onGUIOpened();
-    }
-    private void deleteX(int x){
-        multiblock.deleteX(x);
-        onGUIOpened();
-    }
-    private void deleteY(int y){
-        multiblock.deleteY(y);
-        onGUIOpened();
-    }
-    private void deleteZ(int z){
-        multiblock.deleteZ(z);
-        onGUIOpened();
-    }
-    private void insertX(int x){
-        multiblock.insertX(x);
-        onGUIOpened();
-    }
-    private void insertY(int y){
-        multiblock.insertY(y);
-        onGUIOpened();
-    }
-    private void insertZ(int z){
-        multiblock.insertZ(z);
-        onGUIOpened();
     }
     public static ArrayList<double[]> rects = new ArrayList<>();
     public static void addRect(double r, double g, double b, double a, double left, double top, double right, double bottom){

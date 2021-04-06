@@ -14,7 +14,7 @@ public class Block extends multiblock.Block{
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
     public multiblock.configuration.overhaul.fusion.Block template;
-    public multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe breedingBlanketRecipe;
+    public multiblock.configuration.overhaul.fusion.BlockRecipe recipe;
     private boolean breedingBlanketValid;
     private boolean breedingBlanketAugmented;
     private boolean heatsinkValid;
@@ -25,6 +25,7 @@ public class Block extends multiblock.Block{
     public OverhaulFusionReactor.Cluster cluster;
     public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.overhaul.fusion.Block template){
         super(configuration, x, y, z);
+        if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
@@ -33,7 +34,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public void copyProperties(multiblock.Block other){
-        ((Block)other).breedingBlanketRecipe = breedingBlanketRecipe;
+        ((Block)other).recipe = recipe;
     }
     @Override
     public BufferedImage getBaseTexture(){
@@ -45,7 +46,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public String getName(){
-        return template.name;
+        return template.getDisplayName();
     }
     @Override
     public void clearData(){
@@ -56,6 +57,9 @@ public class Block extends multiblock.Block{
     @Override
     public String getTooltip(Multiblock multiblock){
         String tip = getName();
+        if(recipe!=null){
+            tip+="\n"+recipe.getInputDisplayName();
+        }
         OverhaulFusionReactor fusion = (OverhaulFusionReactor)multiblock;
         if(isHeatingBlanket()){
             tip+="\nHeating Blanket "+(isHeatingBlanketActive()?"Active":"Inactive");
@@ -66,16 +70,21 @@ public class Block extends multiblock.Block{
             }
         }
         if(isBreedingBlanket()){
-            tip+="\nBreeding Blanket "+(breedingBlanketAugmented?"Augmented":(breedingBlanketValid?"Valid":"Invalid"))+"\n"
-                    +"Recipe: "+breedingBlanketRecipe.name
-                    + "Efficiency multiplier: "+round(efficiencyMult, 2)+"\n";
+            if(recipe==null||!template.breedingBlanketHasBaseStats)tip+="\nNo Recipe";
+            tip+="\nBreeding Blanket "+(breedingBlanketAugmented?"Augmented":(breedingBlanketValid?"Valid":"Invalid"))
+                    + "\nEfficiency multiplier: "+round(efficiencyMult, 2)+"\n";
         }
         if(isReflector()){
-            tip+="\nReflector "+(reflectorValid?"Valid":"Invalid")+"\n"
-                    + "Efficiency: "+template.efficiency;
+            if(recipe==null&&!template.reflectorHasBaseStats)tip+="\nNo Recipe";
+            tip+="\nReflector "+(reflectorValid?"Valid":"Invalid");
+            if(template.reflectorHasBaseStats||recipe!=null){
+                tip+="\nEfficiency: "+(recipe==null?template.reflectorEfficiency:recipe.reflectorEfficiency);
+            }
         }
         if(isHeatsink()){
+            if(recipe==null&&!template.heatsinkHasBaseStats)tip+="\nNo Recipe";
             tip+="\nHeatsink "+(heatsinkValid?"Valid":"Invalid");
+            //TODO show heatsink validity check errors
         }
         OverhaulFusionReactor.Cluster cluster = this.cluster;
         if(cluster!=null){
@@ -97,20 +106,38 @@ public class Block extends multiblock.Block{
     @Override
     public String getListTooltip(){
         String tip = getName();
-        if(template.core&&template.name.contains("ium")){
+        if(template.core&&template.getDisplayName().contains("ium")){
             tip+="\nThe stuff that Cores are made out of\n(Not to be confused with Corium)";
         }
         if(isConnector())tip+="\nConnector";
         if(isElectromagnet())tip+="\nElectromagnet";
         if(isConductor())tip+="\nConductor";
         if(isHeatingBlanket())tip+="\nHeating Blanket";
-        if(isBreedingBlanket())tip+="\nBreeding Blanket";
-        if(isReflector())tip+="\nReflector"
-                + "\nEfficiency: "+template.efficiency;
-        if(isShielding())tip+="\nShielding"
-                + "\nShieldiness: "+template.shieldiness;
-        if(isHeatsink())tip+="\nHeatsink"
-                + "\nCooling: "+template.cooling+"H/t";
+        if(isBreedingBlanket()){
+            tip+="\nBreeding Blanket";
+            if(template.breedingBlanketHasBaseStats){
+                tip+="\nEfficiency: "+template.breedingBlanketEfficiency;
+                tip+="\nHeat: "+template.breedingBlanketHeat;
+            }
+        }
+        if(isReflector()){
+            tip+="\nReflector";
+            if(template.reflectorHasBaseStats){
+                tip+="\nEfficiency: "+template.reflectorEfficiency;
+            }
+        }
+        if(isShielding()){
+            tip+="\nShielding";
+            if(template.shieldingHasBaseStats){
+                tip+="\nShieldiness: "+template.shieldingShieldiness;
+            }
+        }
+        if(isHeatsink()){
+            tip+="\nHeatsink";
+            if(template.heatsinkHasBaseStats){
+                tip+="\nCooling: "+template.heatsinkCooling+"H/t";
+            }
+        }
         for(PlacementRule rule : template.rules){
             tip+="\nRequires "+rule.toString();
         }
@@ -267,7 +294,8 @@ public class Block extends multiblock.Block{
         return template.connector;
     }
     public boolean isBreedingBlanketAugmented(){
-        return isBreedingBlanket()&&breedingBlanketAugmented&&template.augmentedBreedingBlanket;
+        if(!template.breedingBlanketHasBaseStats&&recipe==null)return false;
+        return isBreedingBlanket()&&breedingBlanketAugmented&&(recipe==null?template.breedingBlanketAugmented:recipe.breedingBlanketAugmented);
     }
     public boolean isBreedingBlanket(){
         return template.breedingBlanket;
@@ -279,10 +307,11 @@ public class Block extends multiblock.Block{
         return template.heatingBlanket;
     }
     public boolean isHeatsinkActive(){
+        if(!template.heatsinkHasBaseStats&&recipe==null)return false;
         return isHeatsink()&&heatsinkValid;
     }
     public boolean isHeatsink(){
-        return template.cooling!=0;
+        return template.heatsink;
     }
     public boolean isShielding(){
         return template.shielding;
@@ -296,10 +325,6 @@ public class Block extends multiblock.Block{
     @Override
     public boolean isCore(){
         return isReflector()||isBreedingBlanket()||isHeatingBlanket();
-    }
-    @Override
-    public boolean isCasing(){
-        return false;//no casings!
     }
     @Override
     public boolean hasRules(){
@@ -324,7 +349,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean requires(multiblock.Block oth, Multiblock mb){
-        if(template.cooling==0)return false;
+        if(!template.heatsink)return false;
         Block other = (Block) oth;
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
         if(totalDist>1)return false;//too far away
@@ -345,15 +370,16 @@ public class Block extends multiblock.Block{
     @Override
     public boolean canGroup(){
         if(template.breedingBlanket)return false;
-        return template.cooling!=0;
+        return template.heatsink;
     }
     @Override
     public boolean canBeQuickReplaced(){
-        return template.cooling!=0;
+        return template.heatsink;
     }
     @Override
     public multiblock.Block copy(){
         Block copy = new Block(getConfiguration(), x, y, z, template);
+        copy.recipe = recipe;
         copy.breedingBlanketValid = breedingBlanketValid;
         copy.breedingBlanketAugmented = breedingBlanketAugmented;
         copy.heatsinkValid = heatsinkValid;
@@ -376,6 +402,7 @@ public class Block extends multiblock.Block{
     }
     public void calculateBreedingBlanket(OverhaulFusionReactor reactor){
         if(!template.breedingBlanket)return;
+        if(!template.breedingBlanketHasBaseStats&&recipe==null)return;//empty breeding blanket
         breedingBlanketValid = true;//shrug
         efficiencyMult = 1;
         FOR:for(Direction d : directions){
@@ -393,8 +420,9 @@ public class Block extends multiblock.Block{
             Block b = reactor.getBlock(X, Y, Z);
             if(b==null)continue;
             if(b.isReflector()){
+                if(!b.template.reflectorHasBaseStats&&b.recipe==null)continue;//empty reflector
                 b.reflectorValid = true;
-                efficiencyMult += (b.template.efficiency)-1;
+                efficiencyMult += (b.recipe==null?b.template.reflectorEfficiency:b.recipe.reflectorEfficiency)-1;
                 breedingBlanketAugmented = true;
             }
         }
@@ -407,8 +435,9 @@ public class Block extends multiblock.Block{
             Block b = reactor.getBlock(x+d.x, y+d.y, z+d.z);
             if(b==null)continue;
             if(b.isBreedingBlanket()){
-                efficiency+=b.breedingBlanketRecipe.efficiency*b.efficiencyMult;
-                heatMult+=b.breedingBlanketRecipe.efficiency*b.efficiencyMult;
+                if(!b.template.breedingBlanketHasBaseStats&&b.recipe==null)continue;//empty reflector
+                efficiency+=(b.recipe==null?b.template.breedingBlanketEfficiency:b.recipe.breedingBlanketEfficiency)*b.efficiencyMult;
+                heatMult+=(b.recipe==null?b.template.breedingBlanketEfficiency:b.recipe.breedingBlanketEfficiency)*b.efficiencyMult;
             }
         }
     }
@@ -418,7 +447,8 @@ public class Block extends multiblock.Block{
      * @return <code>true</code> if the heatsink state has changed
      */
     public boolean calculateHeatsink(OverhaulFusionReactor reactor){
-        if(template.cooling==0)return false;
+        if(!isHeatsink())return false;
+        if(!template.heatsinkHasBaseStats&&recipe==null)return false;//empty heatsink
         boolean wasValid = heatsinkValid;
         for(PlacementRule rule : template.rules){
             if(!rule.isValid(this, reactor)){
@@ -430,14 +460,17 @@ public class Block extends multiblock.Block{
         return wasValid!=heatsinkValid;
     }
     public boolean isFunctional(){
-        if(isCasing())return false;
         if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
         return template.functional&&(isActive()||breedingBlanketValid);
     }
     @Override
     public void convertTo(Configuration to){
-        if(template.breedingBlanket)breedingBlanketRecipe = to.overhaul.fusion.convert(breedingBlanketRecipe);
         template = to.overhaul.fusion.convert(template);
+        recipe = template.convert(recipe);
         configuration = to;
+    }
+    @Override
+    public Iterable<String> getSearchableNames(){
+        return template.getSearchableNames();
     }
 }

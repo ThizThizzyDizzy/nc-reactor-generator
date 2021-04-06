@@ -11,7 +11,7 @@ public abstract class Tutorial extends Renderer2D{
                 TutorialFileReader.read("tutorials/planner/introduction.ncpt"),
                 TutorialFileReader.read("tutorials/planner/basics.ncpt"),
                 TutorialFileReader.read("tutorials/planner/editing.ncpt"));
-        //TODO tutorial on modifying configs and whatnot (first redo config system)
+        //TODO tutorial on modifying configs and whatnot
         //TODO tutorial on using the generator
     }
     public static void addTutorials(String categoryName, Tutorial... tutorials){

@@ -35,16 +35,6 @@ public interface Editor{
     public void cutSelection(int id, int x, int y, int z);
     public Block getSelectedBlock(int id);
     public void setblocks(int id, SetblocksAction set);
-    /**
-     * @deprecated use CopyAction instead?
-     */
-    @Deprecated
-    public void cloneSelection(int id, int x, int y, int z);
-    /**
-     * @deprecated use MoveAction instead?
-     */
-    @Deprecated
-    public void moveSelection(int id, int x, int y, int z);
     public void pasteSelection(int id, int x, int y, int z);
     public ArrayList<ClipboardEntry> getClipboard(int id);
     public void selectGroup(int id, int x, int y, int z);
@@ -57,11 +47,9 @@ public interface Editor{
     public boolean isShiftPressed(int id);
     public boolean isAltPressed(int id);
     public Color convertToolColor(Color color, int id);
-    public multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(int id);
-    public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(int id);
-    public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id);
-    public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id);
-    public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id);
+    public multiblock.configuration.overhaul.fusion.BlockRecipe getSelectedOverhaulFusionBlockRecipe(int id);
+    public multiblock.configuration.overhaul.fissionsfr.BlockRecipe getSelectedOverhaulSFRBlockRecipe(int id);
+    public multiblock.configuration.overhaul.fissionmsr.BlockRecipe getSelectedOverhaulMSRBlockRecipe(int id);
     public ArrayList<Suggestion> getSuggestions();
     public Task getTask();
 }

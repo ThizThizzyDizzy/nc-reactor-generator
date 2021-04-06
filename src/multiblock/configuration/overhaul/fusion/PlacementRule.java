@@ -159,7 +159,7 @@ public class PlacementRule extends RuleContainer{
                 }
                 return num>=min&&num<=max;
             case AXIAL:
-                for(Axis axis : Axis.values()){
+                for(Axis axis : axes){
                     multiblock.overhaul.fusion.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                     multiblock.overhaul.fusion.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                     if(b1!=null&&b1.template==this.block&&b1.isActive()&&b2!=null&&b2.template==this.block&&b2.isActive())num++;
@@ -168,14 +168,14 @@ public class PlacementRule extends RuleContainer{
             case AXIAL_GROUP:
                 switch(blockType){
                     case AIR:
-                        for(Axis axis : Axis.values()){
+                        for(Axis axis : axes){
                             multiblock.overhaul.fusion.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                             multiblock.overhaul.fusion.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null&&b2==null)num++;
                         }
                         break;
                     default:
-                        for(Axis axis : Axis.values()){
+                        for(Axis axis : axes){
                             multiblock.overhaul.fusion.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                             multiblock.overhaul.fusion.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null||b2==null)continue;

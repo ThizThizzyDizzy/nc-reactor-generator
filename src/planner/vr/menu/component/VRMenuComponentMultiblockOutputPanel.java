@@ -10,7 +10,7 @@ public class VRMenuComponentMultiblockOutputPanel extends VRMenuComponentTextPan
     }
     @Override
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
-        text = editor.getMultiblock().getTooltip();
+        text = editor.getMultiblock().getFullTooltip();
         super.renderComponent(tdpb);
     }
 }

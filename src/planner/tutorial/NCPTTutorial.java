@@ -152,11 +152,11 @@ public class NCPTTutorial extends Tutorial{
             private Random rand = new Random();
             @Override
             public void preRender(){
-                if(Core.multiblockTypes.isEmpty())return;
+                if(Core.multiblockTypes.size()<2)return;
                 switch(name){
                     case "editor":
                         if(editorImage==-1){
-                            MenuEdit editor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance());
+                            MenuEdit editor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance());
                             GL11.glPushMatrix();
                             GL11.glScaled(0, 0, 0);
                             editor.render(0);
@@ -171,7 +171,7 @@ public class NCPTTutorial extends Tutorial{
                         break;
                     case "editor/tool/pencil":
                         if(pencilEditor==null){
-                            pencilEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+                            pencilEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
                             pencilEditor.onGUIOpened();
                             pencilEditor.tools.setSelectedIndex(2);
                             pencil = (MenuComponentEditorGrid)pencilEditor.multibwauk.components.get(0);
@@ -181,7 +181,7 @@ public class NCPTTutorial extends Tutorial{
                         break;
                     case "editor/tool/line":
                         if(lineEditor==null){
-                            lineEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+                            lineEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
                             lineEditor.onGUIOpened();
                             lineEditor.tools.setSelectedIndex(3);
                             line = (MenuComponentEditorGrid)lineEditor.multibwauk.components.get(0);
@@ -191,7 +191,7 @@ public class NCPTTutorial extends Tutorial{
                         break;
                     case "editor/tool/box":
                         if(boxEditor==null){
-                            boxEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+                            boxEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
                             boxEditor.onGUIOpened();
                             boxEditor.tools.setSelectedIndex(4);
                             box = (MenuComponentEditorGrid)boxEditor.multibwauk.components.get(0);
@@ -201,7 +201,7 @@ public class NCPTTutorial extends Tutorial{
                         break;
                     case "editor/tool/select":
                         if(selectEditor==null){
-                            selectEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+                            selectEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
                             selectEditor.onGUIOpened();
                             selectEditor.tools.setSelectedIndex(1);
                             select = (MenuComponentEditorGrid)selectEditor.multibwauk.components.get(0);
@@ -211,9 +211,10 @@ public class NCPTTutorial extends Tutorial{
                         break;
                     case "editor/tool/move":
                         if(moveEditor==null){
-                            moveEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(0).newInstance(null, 9, 1, 5));
+                            moveEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
                             moveEditor.onGUIOpened();
                             moveEditor.tools.setSelectedIndex(0);
+                            moveEditor.parts.setSelectedIndex(1);
                             move = (MenuComponentEditorGrid)moveEditor.multibwauk.components.get(0);
                             moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
                             ArrayList<int[]> selection = new ArrayList<>();
@@ -265,7 +266,7 @@ public class NCPTTutorial extends Tutorial{
                         double Y = y*grid.blockSize;
                         grid.onMouseMove(X, Y);
                         if(t==0){
-                            grid.editor.parts.setSelectedIndex(rand.nextInt(grid.editor.parts.components.size()));
+                            grid.editor.parts.setSelectedIndex(1);
                             grid.onMouseButton(X, Y, 0, true, 0);
                         }
                         else if(t==squiggleLength){

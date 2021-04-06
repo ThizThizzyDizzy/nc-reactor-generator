@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import multiblock.Action;
 import multiblock.Block;
+import multiblock.BoundingBox;
+import multiblock.Decal;
+import multiblock.EditorSpace;
 import multiblock.Multiblock;
 import multiblock.action.ClearSelectionAction;
-import multiblock.action.CopyAction;
 import multiblock.action.DeselectAction;
-import multiblock.action.MoveAction;
 import multiblock.action.PasteAction;
 import multiblock.action.SelectAction;
 import multiblock.action.SetCoolantRecipeAction;
@@ -48,33 +51,34 @@ import planner.menu.component.MenuComponentDropdownList;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistScrollable;
+import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.component.MenuComponentMinimalistTextView;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
+import planner.menu.component.MenuComponentToggleBox;
+import planner.menu.component.Searchable;
 import planner.menu.component.editor.MenuComponentCoolantRecipe;
 import planner.menu.component.editor.MenuComponentEditorGrid;
 import planner.menu.component.editor.MenuComponentEditorListBlock;
 import planner.menu.component.editor.MenuComponentEditorTool;
-import planner.menu.component.editor.MenuComponentFusionBreedingBlanketRecipe;
 import planner.menu.component.editor.MenuComponentFusionCoolantRecipe;
-import planner.menu.component.editor.MenuComponentMSRIrradiatorRecipe;
 import planner.menu.component.editor.MenuComponentMultiblockProgressBar;
-import planner.menu.component.editor.MenuComponentOverFusionRecipe;
-import planner.menu.component.editor.MenuComponentOverMSRFuel;
-import planner.menu.component.editor.MenuComponentOverSFRFuel;
-import planner.menu.component.editor.MenuComponentSFRIrradiatorRecipe;
+import planner.menu.component.editor.MenuComponentOverhaulFusionBlockRecipe;
+import planner.menu.component.editor.MenuComponentOverhaulFusionRecipe;
+import planner.menu.component.editor.MenuComponentOverhaulMSRBlockRecipe;
+import planner.menu.component.editor.MenuComponentOverhaulSFRBlockRecipe;
 import planner.menu.component.editor.MenuComponentSuggestion;
 import planner.menu.component.editor.MenuComponentSuggestor;
-import planner.menu.component.editor.MenuComponentTurbineBladeEditorGrid;
-import planner.menu.component.editor.MenuComponentTurbineCoilEditorGrid;
 import planner.menu.component.editor.MenuComponentTurbineRecipe;
 import planner.menu.component.editor.MenuComponentUnderFuel;
 import planner.module.Module;
+import planner.vr.VRCore;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.opengl.ImageStash;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
+import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuEdit extends Menu implements Editor{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     public Framebuffer turbineGraph;
@@ -89,6 +93,7 @@ public class MenuEdit extends Menu implements Editor{
     private float scrollMagnitude = 1;
     private double zoomScrollMagnitude = 0.5;
     private double scaleFac = 1.5;
+    private Block lastSelectedBlock;
     {
         editorTools.add(new MoveTool(this, 0));
         editorTools.add(new SelectionTool(this, 0));
@@ -117,17 +122,42 @@ public class MenuEdit extends Menu implements Editor{
         }
     }.setTooltip("Redo (Ctrl+"+(Core.invertUndoRedo?"Z":"Y")+")"));
     public final MenuComponentMulticolumnMinimaList parts = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, partSize, partSize, partSize/2));
+    public final MenuComponentMinimalistTextBox partsSearch = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true, "Search"){
+        @Override
+        public void onCharTyped(char c){
+            super.onCharTyped(c);
+            refreshPartsList();
+        }
+        @Override
+        public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
+            super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
+            refreshPartsList();
+        }
+        @Override
+        public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+            super.onMouseButton(x, y, button, pressed, mods);
+            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&pressed){
+                text = "";
+                refreshPartsList();
+                MenuEdit.this.selected = this;
+                isSelected = true;
+            }
+        }
+    });
     public final MenuComponentMinimalistScrollable multibwauk = add(new MenuComponentMinimalistScrollable(0, 0, 0, 0, 32, 32));
     private final MenuComponentMinimalistButton zoomOut = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom out", true, true));
     private final MenuComponentMinimalistButton zoomIn = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Zoom in", true, true));
     private final MenuComponentMinimalistButton resize = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Resize", true, true).setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)"));
-    public final MenuComponentDropdownList underFuelOrCoolantRecipe = new MenuComponentDropdownList(0, 0, 0, 32);
-    public final MenuComponentDropdownList overFuel = new MenuComponentDropdownList(0, 0, 0, 32);
-    private final MenuComponentDropdownList irradiatorRecipe = new MenuComponentDropdownList(0, 0, 0, 32);
+    public final MenuComponentDropdownList underFuelOrCoolantRecipe = new MenuComponentDropdownList(0, 0, 0, 32, true);
+    public final MenuComponentDropdownList fusionRecipe = new MenuComponentDropdownList(0, 0, 0, 32, true);
+    public final MenuComponentDropdownList blockRecipe = new MenuComponentDropdownList(0, 0, 0, 32, true);
     private final MenuComponentMinimalistTextView textBox = add(new MenuComponentMinimalistTextView(0, 0, 0, 0, 24, 24));
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Modify the multiblock metadata"));
     public final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
-    private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", true, true).setTooltip("Generate or improve this multiblock"));
+    private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", true, true, true).setTooltip("Generate or improve this multiblock"));
+    private final MenuComponentMinimalistButton recalc = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Recalculate", true, true).setTooltip("Recalculate the entire multiblock"));
+    private final MenuComponentMinimalistButton calcStep = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Step", true, true).setTooltip("Perform one step of calculation"));
+    public final MenuComponentToggleBox toggle3D = add(new MenuComponentToggleBox(0, 0, 0, 0, "3D View", false).setTooltip("Toggle 3D multiblock view\n(Rotate with arrow keys)"));
     private final MenuComponentMultiblockProgressBar progress = add(new MenuComponentMultiblockProgressBar(this, 0, 0, 0, 0));;
     private final MenuComponentMinimaList suggestionList = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
     private final MenuComponentDropdownList suggestorSettings = add(new MenuComponentDropdownList(0, 0, 0, 0){
@@ -155,71 +185,13 @@ public class MenuEdit extends Menu implements Editor{
     private double maxScale = 16;
     public int CELL_SIZE = (int) (16*scale);
     private int LAYER_GAP = CELL_SIZE/2;
-    private int multisPerRow = 0;
     private long lastChange = 0;
-    private boolean closed = false;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
-        if(multiblock instanceof UnderhaulSFR){
-            add(underFuelOrCoolantRecipe);
-            for(multiblock.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.allFuels){
-                underFuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
-            }
-        }
-        if(multiblock instanceof OverhaulSFR){
-            add(underFuelOrCoolantRecipe);
-            for(multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
-                underFuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
-            }
-            add(overFuel);
-            for(multiblock.configuration.overhaul.fissionsfr.Fuel fuel : Core.configuration.overhaul.fissionSFR.allFuels){
-                overFuel.add(new MenuComponentOverSFRFuel(fuel));
-            }
-            overFuel.setSelectedIndex(0);
-            add(irradiatorRecipe);
-            for(multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionSFR.allIrradiatorRecipes){
-                irradiatorRecipe.add(new MenuComponentSFRIrradiatorRecipe(recipe));
-            }
-            irradiatorRecipe.setSelectedIndex(0);
-        }
-        if(multiblock instanceof OverhaulTurbine){
-            add(underFuelOrCoolantRecipe);
-            for(multiblock.configuration.overhaul.turbine.Recipe recipe : Core.configuration.overhaul.turbine.allRecipes){
-                underFuelOrCoolantRecipe.add(new MenuComponentTurbineRecipe(recipe));
-            }
-        }
-        if(multiblock instanceof OverhaulMSR){
-            add(overFuel);
-            for(multiblock.configuration.overhaul.fissionmsr.Fuel fuel : Core.configuration.overhaul.fissionMSR.allFuels){
-                overFuel.add(new MenuComponentOverMSRFuel(fuel));
-            }
-            overFuel.setSelectedIndex(0);
-            add(irradiatorRecipe);
-            for(multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe recipe : Core.configuration.overhaul.fissionMSR.allIrradiatorRecipes){
-                irradiatorRecipe.add(new MenuComponentMSRIrradiatorRecipe(recipe));
-            }
-            irradiatorRecipe.setSelectedIndex(0);
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            add(underFuelOrCoolantRecipe);
-            for(multiblock.configuration.overhaul.fusion.CoolantRecipe recipe : Core.configuration.overhaul.fusion.allCoolantRecipes){
-                underFuelOrCoolantRecipe.add(new MenuComponentFusionCoolantRecipe(recipe));
-            }
-            add(overFuel);
-            for(multiblock.configuration.overhaul.fusion.Recipe recipe : Core.configuration.overhaul.fusion.allRecipes){
-                overFuel.add(new MenuComponentOverFusionRecipe(recipe));
-            }
-            overFuel.setSelectedIndex(0);
-            add(irradiatorRecipe);
-            for(multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe recipe : Core.configuration.overhaul.fusion.allBreedingBlanketRecipes){
-                irradiatorRecipe.add(new MenuComponentFusionBreedingBlanketRecipe(recipe));
-            }
-            irradiatorRecipe.setSelectedIndex(0);
-        }
         this.multiblock = multiblock;
         multibwauk.setScrollMagnitude(CELL_SIZE*scrollMagnitude);
         back.addActionListener((e) -> {
-            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransition.slideOut((parts.x+parts.width)/gui.helper.displayWidth()), 5));
+            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransitionX.slideOut((parts.x+parts.width)/gui.helper.displayWidth()), 5));
         });
         undo.addActionListener((e) -> {
             multiblock.undo();
@@ -242,10 +214,42 @@ public class MenuEdit extends Menu implements Editor{
         generate.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, new MenuGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
         });
-        for(Block availableBlock : ((Multiblock<Block>)multiblock).getAvailableBlocks()){
-            parts.add(new MenuComponentEditorListBlock(this, availableBlock));
+        refreshPartsList();
+        if(multiblock instanceof UnderhaulSFR){
+            add(underFuelOrCoolantRecipe);
+            for(multiblock.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.allFuels){
+                underFuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
+            }
         }
-        parts.setSelectedIndex(0);
+        if(multiblock instanceof OverhaulSFR){
+            add(underFuelOrCoolantRecipe);
+            for(multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
+                underFuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
+            }
+            add(blockRecipe);
+        }
+        if(multiblock instanceof OverhaulTurbine){
+            add(underFuelOrCoolantRecipe);
+            for(multiblock.configuration.overhaul.turbine.Recipe recipe : Core.configuration.overhaul.turbine.allRecipes){
+                underFuelOrCoolantRecipe.add(new MenuComponentTurbineRecipe(recipe));
+            }
+        }
+        if(multiblock instanceof OverhaulMSR){
+            add(blockRecipe);
+        }
+        if(multiblock instanceof OverhaulFusionReactor){
+            add(underFuelOrCoolantRecipe);
+            for(multiblock.configuration.overhaul.fusion.CoolantRecipe recipe : Core.configuration.overhaul.fusion.allCoolantRecipes){
+                underFuelOrCoolantRecipe.add(new MenuComponentFusionCoolantRecipe(recipe));
+            }
+            add(fusionRecipe);
+            for(multiblock.configuration.overhaul.fusion.Recipe recipe : Core.configuration.overhaul.fusion.allRecipes){
+                fusionRecipe.add(new MenuComponentOverhaulFusionRecipe(recipe));
+            }
+            fusionRecipe.setSelectedIndex(0);
+            add(blockRecipe);
+        }
+        refreshBlockRecipes();
         for(EditorTool tool : editorTools){
             tools.add(new MenuComponentEditorTool(tool));
         }
@@ -260,6 +264,7 @@ public class MenuEdit extends Menu implements Editor{
             suggestorSettings.add(new MenuComponentSuggestor(this, suggestor));
         }
     }
+    private boolean recalculateOnOpen = true;
     @Override
     public void onGUIOpened(){
         Core.delCircle = true;
@@ -278,55 +283,71 @@ public class MenuEdit extends Menu implements Editor{
             underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fusion.allCoolantRecipes.indexOf(((OverhaulFusionReactor)multiblock).coolantRecipe));
         }
         multibwauk.components.clear();
-        multisPerRow = Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)));
-        if(multiblock instanceof OverhaulTurbine){
-            int nextY = 0;
-            for(int z = 0; z<2; z++){
-                int column = z%multisPerRow;
-                int row = z/multisPerRow;
-                int layerWidth = multiblock.getX()*CELL_SIZE+LAYER_GAP;
-                int layerHeight = multiblock.getY()*CELL_SIZE+LAYER_GAP;
-                nextY = (row+1)*layerHeight+LAYER_GAP/2;
-                if(z==1)z = multiblock.getZ()-1;//the coils
-                multibwauk.add(new MenuComponentTurbineCoilEditorGrid(column*layerWidth+LAYER_GAP/2, row*layerHeight+LAYER_GAP/2, CELL_SIZE, this, (OverhaulTurbine)multiblock, z));
-            }
-            multibwauk.add(new MenuComponentTurbineBladeEditorGrid(LAYER_GAP/2, nextY, CELL_SIZE, this, (OverhaulTurbine)multiblock));
-        }else{
-            for(int y = 0; y<multiblock.getY(); y++){
-                int column = y%multisPerRow;
-                int row = y/multisPerRow;
-                int layerWidth = multiblock.getX()*CELL_SIZE+LAYER_GAP;
-                int layerHeight = multiblock.getZ()*CELL_SIZE+LAYER_GAP;
-                multibwauk.add(new MenuComponentEditorGrid(column*layerWidth+LAYER_GAP/2, row*layerHeight+LAYER_GAP/2, CELL_SIZE, this, multiblock, y));
+        ArrayList<EditorSpace> editorSpaces = multiblock.getEditorSpaces();
+        double lastX = 0;
+        double lastY = 0;
+        double nextY = 0;
+        for(EditorSpace space : editorSpaces){
+            ArrayList<MenuComponent> comps = new ArrayList<>();
+            space.createComponents(this, comps, CELL_SIZE);
+            for(int i = 0; i<comps.size(); i++){
+                MenuComponent comp = comps.get(i);
+                multibwauk.add(comp);
+                if(lastX!=0&&lastX+LAYER_GAP+comp.width>multibwauk.width-multibwauk.horizScrollbarHeight){
+                    lastY = nextY;
+                    lastX = 0;
+                }
+                comp.x = lastX+LAYER_GAP/2;
+                lastX += comp.width+LAYER_GAP;
+                comp.y = lastY+LAYER_GAP/2;
+                nextY = lastY+comp.height+LAYER_GAP;
             }
         }
-        multiblock.recalculate();
+        if(recalculateOnOpen)multiblock.recalculate();
+        recalculateOnOpen = true;
     }
     @Override
     public void onGUIClosed(){
-        closed = true;
+        if(multiblock.calculationPaused)multiblock.recalculate();
+        super.onGUIClosed();
     }
     @Override
     public void render(int millisSinceLastTick){
-        textBox.setText(multiblock.getTooltip());
-        if(multisPerRow!=Math.max(1, (int)((multibwauk.width-multibwauk.horizScrollbarHeight)/(CELL_SIZE*multiblock.getX()+LAYER_GAP)))){
-            onGUIOpened();
+        textBox.setText(multiblock.getFullTooltip());
+        double lastX = 0;
+        double lastY = 0;
+        double nextY = 0;
+        for(int i = 0; i<multibwauk.components.size(); i++){
+            MenuComponent comp = multibwauk.components.get(i);
+            if(lastX!=0&&lastX+LAYER_GAP+comp.width>multibwauk.width-multibwauk.horizScrollbarHeight){
+                lastY = nextY;
+                lastX = 0;
+            }
+            comp.x = lastX+LAYER_GAP/2;
+            lastX += comp.width+LAYER_GAP;
+            comp.y = lastY+LAYER_GAP/2;
+            nextY = lastY+comp.height+LAYER_GAP;
         }
         tools.x = textBox.x = back.x = progress.x = 0;
-        parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
+        partsSearch.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
         tools.width = partSize;
-        parts.x = tools.width+partSize/4;
+        partsSearch.x = parts.x = tools.width+partSize/4;
         generate.x = editMetadata.x = textBox.width = multibwauk.x = parts.x+parts.width;
-        suggestorSettings.preferredHeight = generate.height = tools.y = multibwauk.y = parts.y = editMetadata.height = back.height = 48;
+        recalc.width = calcStep.width = textBox.width/2;
+        toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = generate.height = tools.y = multibwauk.y = editMetadata.height = back.height = 48;
+        partsSearch.height = partSize;
+        parts.y = tools.y+partSize;
+        calcStep.x = recalc.width;
         back.width = parts.x+parts.width-back.height*2;
         undo.width = undo.height = redo.width = redo.height = back.height;
         undo.x = back.width;
         redo.x = undo.x+undo.width;
         undo.enabled = !multiblock.history.isEmpty();
         redo.enabled = !multiblock.future.isEmpty();
-        generate.y = gui.helper.displayHeight()-generate.height;
-        tools.height = editorTools.size()*partSize;
-        tools.height = parts.height = Math.max(tools.height, Math.min(gui.helper.displayHeight()/2, ((parts.components.size()+5)/partsWide)*partSize));
+        toggle3D.y = recalc.y = calcStep.y = generate.y = gui.helper.displayHeight()-generate.height;
+        tools.height = Math.max(6, editorTools.size())*partSize;
+        parts.height = Math.max(tools.height-partSize, Math.min((gui.helper.displayHeight()-parts.y-progress.height-recalc.height)/2, ((parts.components.size()+partsWide-1)/partsWide)*partSize));
+        tools.height = parts.height+partSize;
         resize.width = 320;
         editMetadata.width = multibwauk.width = gui.helper.displayWidth()-parts.x-parts.width-resize.width;
         generate.width = multibwauk.width-generate.height;
@@ -337,9 +358,9 @@ public class MenuEdit extends Menu implements Editor{
         resize.x = gui.helper.displayWidth()-resize.width;
         zoomIn.x = resize.x;
         zoomOut.x = zoomIn.x+zoomIn.width;
-        suggestionList.x = irradiatorRecipe.x = overFuel.x = underFuelOrCoolantRecipe.x = resize.x;
+        toggle3D.x = suggestionList.x = blockRecipe.x = fusionRecipe.x = underFuelOrCoolantRecipe.x = resize.x;
         underFuelOrCoolantRecipe.y = resize.height*2+underFuelOrCoolantRecipe.preferredHeight;
-        suggestionList.width = irradiatorRecipe.width = overFuel.width = underFuelOrCoolantRecipe.width = resize.width;
+        toggle3D.width = suggestionList.width = blockRecipe.width = fusionRecipe.width = underFuelOrCoolantRecipe.width = resize.width;
         if(suggestorSettings.isDown){
             suggestorSettings.width = gui.helper.displayWidth()-suggestorSettings.x;
             suggestorSettings.y = gui.helper.displayHeight()/2;
@@ -351,31 +372,29 @@ public class MenuEdit extends Menu implements Editor{
             c.width = c.height = partSize;
         }
         if(multiblock instanceof OverhaulSFR){
-            overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+overFuel.preferredHeight;
-            irradiatorRecipe.y = overFuel.y+overFuel.height+irradiatorRecipe.preferredHeight;
+            blockRecipe.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+blockRecipe.preferredHeight;
         }
         if(multiblock instanceof OverhaulFusionReactor){
-            overFuel.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+overFuel.preferredHeight;
-            irradiatorRecipe.y = overFuel.y+overFuel.height+irradiatorRecipe.preferredHeight;
+            fusionRecipe.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+fusionRecipe.preferredHeight;
+            blockRecipe.y = fusionRecipe.y+fusionRecipe.height+blockRecipe.preferredHeight;
         }
         if(multiblock instanceof OverhaulMSR){
             underFuelOrCoolantRecipe.x = -5000;
-            overFuel.y = resize.height*2+overFuel.preferredHeight;
-            irradiatorRecipe.y = overFuel.y+overFuel.height+irradiatorRecipe.preferredHeight;
+            blockRecipe.y = resize.height*2+blockRecipe.preferredHeight;
         }
-        suggestionList.y = Math.max(underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height, Math.max(overFuel.y+overFuel.height, irradiatorRecipe.y+irradiatorRecipe.height));
-        suggestionList.height = gui.helper.displayHeight()-suggestionList.y;
+        suggestionList.y = Math.max(underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height, Math.max(blockRecipe.y+blockRecipe.height, fusionRecipe.y+fusionRecipe.height));
+        suggestionList.height = gui.helper.displayHeight()-suggestionList.y-(generate.height+(toggle3D.isToggledOn?toggle3D.width:0));
         multibwauk.height = gui.helper.displayHeight()-multibwauk.y-generate.height;
-        progress.y = generate.y-generate.height;
+        progress.y = generate.y-generate.height*2;
         progress.width = textBox.width;
         progress.height = generate.height*2;
         textBox.y = parts.y+parts.height;
-        textBox.height = gui.helper.displayHeight()-textBox.y-progress.height;
+        textBox.height = gui.helper.displayHeight()-textBox.y-progress.height-generate.height;
         if(multiblock instanceof OverhaulTurbine){
             OverhaulTurbine turbine = (OverhaulTurbine)multiblock;
-            double width = turbine.getDisplayZ()*CELL_SIZE;
+            double width = turbine.getInternalDepth()*CELL_SIZE;
             double height = CELL_SIZE*4;
-            if(turbine.bladesValid){
+            if(turbine.rotorValid){
                 double max = 0;
                 double min = Double.MAX_VALUE;
                 for(double d : turbine.idealExpansion){
@@ -449,20 +468,16 @@ public class MenuEdit extends Menu implements Editor{
         if(multiblock instanceof OverhaulSFR){
             Core.applyColor(Core.theme.getDarkButtonColor());
             drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
-            drawRect(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, 0);
-            drawRect(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, 0);
+            drawRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, 0);
             Core.applyColor(Core.theme.getTextColor());
             drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Coolant Recipe");
-            drawCenteredText(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, "Fuel");
-            drawCenteredText(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, "Irradiator Recipe");
+            drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
         }
         if(multiblock instanceof OverhaulMSR){
             Core.applyColor(Core.theme.getDarkButtonColor());
-            drawRect(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, 0);
-            drawRect(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, 0);
+            drawRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, 0);
             Core.applyColor(Core.theme.getTextColor());
-            drawCenteredText(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, "Fuel");
-            drawCenteredText(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, "Irradiator Recipe");
+            drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
         }
         if(multiblock instanceof OverhaulTurbine){
             Core.applyColor(Core.theme.getDarkButtonColor());
@@ -473,12 +488,12 @@ public class MenuEdit extends Menu implements Editor{
         if(multiblock instanceof OverhaulFusionReactor){
             Core.applyColor(Core.theme.getDarkButtonColor());
             drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
-            drawRect(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, 0);
-            drawRect(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, 0);
+            drawRect(fusionRecipe.x, fusionRecipe.y-fusionRecipe.preferredHeight, fusionRecipe.x+fusionRecipe.width, fusionRecipe.y, 0);
+            drawRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, 0);
             Core.applyColor(Core.theme.getTextColor());
             drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Coolant Recipe");
-            drawCenteredText(overFuel.x, overFuel.y-overFuel.preferredHeight, overFuel.x+overFuel.width, overFuel.y, "Recipe");
-            drawCenteredText(irradiatorRecipe.x, irradiatorRecipe.y-irradiatorRecipe.preferredHeight, irradiatorRecipe.x+irradiatorRecipe.width, irradiatorRecipe.y, "Breeding Blanket Recipe");
+            drawCenteredText(fusionRecipe.x, fusionRecipe.y-fusionRecipe.preferredHeight, fusionRecipe.x+fusionRecipe.width, fusionRecipe.y, "Recipe");
+            drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
         }
         Core.applyWhite();
         super.renderForeground();
@@ -494,15 +509,38 @@ public class MenuEdit extends Menu implements Editor{
     @Override
     public Block getSelectedBlock(int id){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
+        if(parts.components.isEmpty())return ((Multiblock<Block>)multiblock).getAvailableBlocks().get(0);
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
     }
-    public void setSelectedBlock(Block block){
+    public void setSelectedBlock(Block block){//and recipe too
         if(block==null)return;
+        partsSearch.text = "";
+        blockRecipe.searchBox.text = "";
+        underFuelOrCoolantRecipe.searchBox.text = "";
+        fusionRecipe.searchBox.text = "";
+        refreshPartsList();
         for(int i = 0; i<parts.components.size(); i++){
             MenuComponentEditorListBlock comp = (MenuComponentEditorListBlock)parts.components.get(i);
             if(comp.block.isEqual(block))parts.setSelectedIndex(i);
         }
+        refreshBlockRecipes();
+        for(int i = 0; i<blockRecipe.allComponents.size(); i++){
+            MenuComponent comp = blockRecipe.allComponents.get(i);
+            if(comp instanceof MenuComponentOverhaulSFRBlockRecipe){
+                MenuComponentOverhaulSFRBlockRecipe bcomp = (MenuComponentOverhaulSFRBlockRecipe)comp;
+                if(bcomp.recipe==((multiblock.overhaul.fissionsfr.Block)block).recipe)blockRecipe.setSelectedIndex(i);
+            }
+            if(comp instanceof MenuComponentOverhaulMSRBlockRecipe){
+                MenuComponentOverhaulMSRBlockRecipe bcomp = (MenuComponentOverhaulMSRBlockRecipe)comp;
+                if(bcomp.recipe==((multiblock.overhaul.fissionmsr.Block)block).recipe)blockRecipe.setSelectedIndex(i);
+            }
+            if(comp instanceof MenuComponentOverhaulFusionBlockRecipe){
+                MenuComponentOverhaulFusionBlockRecipe bcomp = (MenuComponentOverhaulFusionBlockRecipe)comp;
+                if(bcomp.recipe==((multiblock.overhaul.fusion.Block)block).recipe)blockRecipe.setSelectedIndex(i);
+            }
+        }
+        lastSelectedBlock = getSelectedBlock(0);
     }
     @Override
     public EditorTool getSelectedTool(int id){
@@ -524,39 +562,55 @@ public class MenuEdit extends Menu implements Editor{
         return tool;
     }
     @Override
-    public multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(int id){
+    public multiblock.configuration.overhaul.fusion.BlockRecipe getSelectedOverhaulFusionBlockRecipe(int id){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        return ((MenuComponentFusionBreedingBlanketRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
+        MenuComponent comp = blockRecipe.getSelectedComponent();
+        if(comp==null)return null;
+        return ((MenuComponentOverhaulFusionBlockRecipe)comp).recipe;
     }
     @Override
-    public multiblock.configuration.overhaul.fissionsfr.Fuel getSelectedOverSFRFuel(int id){
+    public multiblock.configuration.overhaul.fissionsfr.BlockRecipe getSelectedOverhaulSFRBlockRecipe(int id){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        return ((MenuComponentOverSFRFuel) overFuel.getSelectedComponent()).fuel;
+        MenuComponent comp = blockRecipe.getSelectedComponent();
+        if(comp==null)return null;
+        return ((MenuComponentOverhaulSFRBlockRecipe)comp).recipe;
     }
     @Override
-    public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id){
+    public multiblock.configuration.overhaul.fissionmsr.BlockRecipe getSelectedOverhaulMSRBlockRecipe(int id){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        return ((MenuComponentSFRIrradiatorRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
-    }
-    @Override
-    public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id){
-        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        return ((MenuComponentOverMSRFuel) overFuel.getSelectedComponent()).fuel;
-    }
-    @Override
-    public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id){
-        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        return ((MenuComponentMSRIrradiatorRecipe) irradiatorRecipe.getSelectedComponent()).recipe;
+        MenuComponent comp = blockRecipe.getSelectedComponent();
+        if(comp==null)return null;
+        return ((MenuComponentOverhaulMSRBlockRecipe)comp).recipe;
     }
     @Override
     public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
         super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
         if(isPress){
+            boolean aSearchBoxIsSelected = partsSearch.isSelected;
+            for(MenuComponent c : components){
+                if(c instanceof MenuComponentDropdownList){
+                    if(((MenuComponentDropdownList)c).searchBox.isSelected){
+                        aSearchBoxIsSelected = true;
+                    }
+                }
+            }
             if(key==GLFW.GLFW_KEY_ESCAPE){
-                if(getSelectedTool(0) instanceof PasteTool||getSelectedTool(0) instanceof CopyTool||getSelectedTool(0) instanceof CutTool){
-                    tools.setSelectedIndex(1);
-                }else{
-                    clearSelection(0);
+                for(MenuComponent c : components){
+                    if(c instanceof MenuComponentDropdownList){
+                        if(((MenuComponentDropdownList)c).searchBox.isSelected){
+                            ((MenuComponentDropdownList)c).searchBox.isSelected = false;
+                            c.selected = null;
+                        }
+                    }
+                }
+                partsSearch.isSelected = false;
+                selected = null;
+                if(!aSearchBoxIsSelected){
+                    if(getSelectedTool(0) instanceof PasteTool||getSelectedTool(0) instanceof CopyTool||getSelectedTool(0) instanceof CutTool){
+                        tools.setSelectedIndex(1);
+                    }else{
+                        clearSelection(0);
+                    }
                 }
             }
             if(key==GLFW.GLFW_KEY_DELETE){
@@ -569,22 +623,16 @@ public class MenuEdit extends Menu implements Editor{
                 action(ac, true);
                 clearSelection(0);
             }
-            if(key==GLFW.GLFW_KEY_M||key==GLFW.GLFW_KEY_1)tools.setSelectedIndex(0);
-            if(key==GLFW.GLFW_KEY_S||key==GLFW.GLFW_KEY_2)tools.setSelectedIndex(1);
-            if(key==GLFW.GLFW_KEY_P||key==GLFW.GLFW_KEY_3)tools.setSelectedIndex(2);
-            if(key==GLFW.GLFW_KEY_L||key==GLFW.GLFW_KEY_4)tools.setSelectedIndex(3);
-            if(key==GLFW.GLFW_KEY_B||key==GLFW.GLFW_KEY_5)tools.setSelectedIndex(4);
+            if(!aSearchBoxIsSelected){
+                if(key==GLFW.GLFW_KEY_M||key==GLFW.GLFW_KEY_1)tools.setSelectedIndex(0);
+                if(key==GLFW.GLFW_KEY_S||key==GLFW.GLFW_KEY_2)tools.setSelectedIndex(1);
+                if(key==GLFW.GLFW_KEY_P||key==GLFW.GLFW_KEY_3)tools.setSelectedIndex(2);
+                if(key==GLFW.GLFW_KEY_L||key==GLFW.GLFW_KEY_4)tools.setSelectedIndex(3);
+                if(key==GLFW.GLFW_KEY_B||key==GLFW.GLFW_KEY_5)tools.setSelectedIndex(4);
+            }
             if(Core.isControlPressed()){
                 if(key==GLFW.GLFW_KEY_A){
-                    ArrayList<int[]> sel = new ArrayList<>();
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                sel.add(new int[]{x,y,z});
-                            }
-                        }
-                    }
-                    setSelection(0, sel);
+                    selectAll(0);
                 }
                 if(key==(Core.invertUndoRedo?GLFW.GLFW_KEY_Y:GLFW.GLFW_KEY_Z)){
                     multiblock.undo();
@@ -592,55 +640,33 @@ public class MenuEdit extends Menu implements Editor{
                 if(key==(Core.invertUndoRedo?GLFW.GLFW_KEY_Z:GLFW.GLFW_KEY_Y)){
                     multiblock.redo();
                 }
-                MenuComponent grid = null;
+                MenuComponentEditorGrid grid = null;
                 for(MenuComponent c : multibwauk.components){
                     if(!c.isMouseOver)continue;
-                    if(c instanceof MenuComponentEditorGrid)grid = c;
-                    if(c instanceof MenuComponentTurbineCoilEditorGrid)grid = c;
-                    if(c instanceof MenuComponentTurbineBladeEditorGrid)grid = c;
+                    if(c instanceof MenuComponentEditorGrid)grid = (MenuComponentEditorGrid)c;
                 }
+                int x = -1, y = -1, z = -1;
                 if(grid!=null){
-                    int x = -1,y = -1,z = -1;
                     double mx = gui.mouseX-(multibwauk.x+grid.x-multibwauk.getHorizScroll());
                     double my = gui.mouseY-(multibwauk.y+grid.y-multibwauk.getVertScroll());
-                    if(grid instanceof MenuComponentEditorGrid){
-                        x = (int)(mx/((MenuComponentEditorGrid)grid).blockSize);
-                        y = ((MenuComponentEditorGrid)grid).layer;
-                        z = (int)(my/((MenuComponentEditorGrid)grid).blockSize);
-                    }
-                    if(grid instanceof MenuComponentTurbineCoilEditorGrid){
-                        x = (int)(mx/((MenuComponentTurbineCoilEditorGrid)grid).blockSize);
-                        y = (int)(my/((MenuComponentTurbineCoilEditorGrid)grid).blockSize);
-                        z = ((MenuComponentTurbineCoilEditorGrid)grid).layer;
-                    }
-                    if(grid instanceof MenuComponentTurbineBladeEditorGrid){
-                        x = multiblock.getX()/2;
-                        y = 0;
-                        z = (int)(mx/((MenuComponentTurbineBladeEditorGrid)grid).blockSize);
-                    }
-                    if(x<0||y<0||z<0||x>=multiblock.getX()||y>=multiblock.getY()||z>=multiblock.getZ()){
-                        //do nothing
-                    }else{
-                        if(key==GLFW.GLFW_KEY_C){
-                            copySelection(0, x, y, z);
-                        }
-                        if(key==GLFW.GLFW_KEY_X){
-                            cutSelection(0, x, y, z);
-                        }
-                        if(key==GLFW.GLFW_KEY_V){
-                            if(!clipboard.isEmpty()&&!editorTools.contains(paste)){
-                                editorTools.add(paste);
-                                tools.add(pasteComp);
-                                tools.setSelectedIndex(tools.components.size()-1);
-                            }
-                        }
-                    }
-                }else{
-                    if(key==GLFW.GLFW_KEY_C){
-                        copySelection(0, -1, -1, -1);
-                    }
-                    if(key==GLFW.GLFW_KEY_X){
-                        cutSelection(0, -1, -1, -1);
+                    int sx = (int) (mx/grid.blockSize);
+                    int sy = (int) (my/grid.blockSize);
+                    x = sx*grid.xAxis.x+sy*grid.yAxis.x+grid.layer*grid.axis.x;
+                    y = sx*grid.xAxis.y+sy*grid.yAxis.y+grid.layer*grid.axis.y;
+                    z = sx*grid.xAxis.z+sy*grid.yAxis.z+grid.layer*grid.axis.z;
+                    if(sx<grid.x1||sx>grid.x2||sy<grid.y1||sy>grid.y2)x = y = z = -1;
+                }
+                if(key==GLFW.GLFW_KEY_C){
+                    copySelection(0, x, y, z);
+                }
+                if(key==GLFW.GLFW_KEY_X){
+                    cutSelection(0, x, y, z);
+                }
+                if(key==GLFW.GLFW_KEY_V){
+                    if(!clipboard.isEmpty()&&!editorTools.contains(paste)){
+                        editorTools.add(paste);
+                        tools.add(pasteComp);
+                        tools.setSelectedIndex(tools.components.size()-1);
                     }
                 }
             }
@@ -666,24 +692,21 @@ public class MenuEdit extends Menu implements Editor{
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulSFR){
-            if(((multiblock.overhaul.fissionsfr.Block)set.block).isFuelCell()){
-                ((multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel(id);
-            }
-            if(((multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
-                ((multiblock.overhaul.fissionsfr.Block)set.block).irradiatorRecipe = getSelectedSFRIrradiatorRecipe(id);
+            multiblock.overhaul.fissionsfr.Block block = (multiblock.overhaul.fissionsfr.Block)set.block;
+            if(!block.template.allRecipes.isEmpty()||(block.template.parent!=null&&!block.template.parent.allRecipes.isEmpty())){
+                block.recipe = getSelectedOverhaulSFRBlockRecipe(id);
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulMSR){
-            if(((multiblock.overhaul.fissionmsr.Block)set.block).isFuelVessel()){
-                ((multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel(id);
-            }
-            if(((multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
-                ((multiblock.overhaul.fissionmsr.Block)set.block).irradiatorRecipe = getSelectedMSRIrradiatorRecipe(id);
+            multiblock.overhaul.fissionmsr.Block block = (multiblock.overhaul.fissionmsr.Block)set.block;
+            if(!block.template.allRecipes.isEmpty()||(block.template.parent!=null&&!block.template.parent.allRecipes.isEmpty())){
+                block.recipe = getSelectedOverhaulMSRBlockRecipe(id);
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulFusionReactor){
-            if(((multiblock.overhaul.fusion.Block)set.block).isBreedingBlanket()){
-                ((multiblock.overhaul.fusion.Block)set.block).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe(id);
+            multiblock.overhaul.fusion.Block block = (multiblock.overhaul.fusion.Block)set.block;
+            if(!block.template.allRecipes.isEmpty()){
+                block.recipe = getSelectedOverhaulFusionBlockRecipe(id);
             }
         }
         action(set, true);
@@ -825,7 +848,7 @@ public class MenuEdit extends Menu implements Editor{
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
-            select(id, 0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
+            selectAll(id);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
@@ -839,7 +862,7 @@ public class MenuEdit extends Menu implements Editor{
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
-            deselect(id, 0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
+            deselectAll(id);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
@@ -847,16 +870,6 @@ public class MenuEdit extends Menu implements Editor{
             is.add(new int[]{b.x,b.y,b.z});
         }
         deselect(id, is);
-    }
-    @Override
-    public void moveSelection(int id, int x, int y, int z){
-        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        action(new MoveAction(this, id, selection, x, y, z), true);
-    }
-    @Override
-    public void cloneSelection(int id, int x, int y, int z){
-        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        action(new CopyAction(this, id, selection, x, y, z), true);
     }
     @Override
     public void clearSelection(int id){
@@ -1039,7 +1052,7 @@ public class MenuEdit extends Menu implements Editor{
     }
     @Override
     public void setFusionRecipe(int idx){
-        overFuel.setSelectedIndex(idx);
+        fusionRecipe.setSelectedIndex(idx);
     }
     @Override
     public void setTurbineRecipe(int idx){
@@ -1078,11 +1091,16 @@ public class MenuEdit extends Menu implements Editor{
     }
     @Override
     public void action(Action action, boolean allowUndo){
+        if(multiblock.calculationPaused)multiblock.recalculate();
         multiblock.action(action, allowUndo);
     }
     @Override
     public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
         super.onMouseButton(x, y, button, pressed, mods);
+        if(getSelectedBlock(0)!=lastSelectedBlock){
+            refreshBlockRecipes();
+            lastSelectedBlock = getSelectedBlock(0);
+        }
         if(multiblock instanceof UnderhaulSFR){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
                 multiblock.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.allFuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
@@ -1106,8 +1124,8 @@ public class MenuEdit extends Menu implements Editor{
                     action(new SetFusionCoolantRecipeAction(this, recipe), true);
                 }
             }
-            if(overFuel.getSelectedIndex()>-1){
-                multiblock.configuration.overhaul.fusion.Recipe recipe = Core.configuration.overhaul.fusion.allRecipes.get(overFuel.getSelectedIndex());
+            if(fusionRecipe.getSelectedIndex()>-1){
+                multiblock.configuration.overhaul.fusion.Recipe recipe = Core.configuration.overhaul.fusion.allRecipes.get(fusionRecipe.getSelectedIndex());
                 if(((OverhaulFusionReactor)multiblock).recipe!=recipe){
                     action(new SetFusionRecipeAction(this, recipe), true);
                 }
@@ -1137,6 +1155,7 @@ public class MenuEdit extends Menu implements Editor{
         CELL_SIZE = (int) (16*scale);
         LAYER_GAP = CELL_SIZE/2;
         multibwauk.setScrollMagnitude(CELL_SIZE*scrollMagnitude);multibwauk.setScrollWheelMagnitude(CELL_SIZE*scrollMagnitude);
+        recalculateOnOpen = false;
         onGUIOpened();
     }
     private void zoomOut(double amount){
@@ -1144,5 +1163,220 @@ public class MenuEdit extends Menu implements Editor{
     }
     private void zoomIn(double amount){
         zoom(amount);
+    }
+    private void selectAll(int id){
+        ArrayList<int[]> sel = new ArrayList<>();
+        multiblock.forEachPosition((x, y, z) -> {
+            sel.add(new int[]{x,y,z});
+        });
+        setSelection(id, sel);
+    }
+    private void deselectAll(int id){
+        setSelection(id, new ArrayList<>());
+    }
+    private void refreshBlockRecipes(){
+        Object was = null;
+        MenuComponent comp = blockRecipe.getSelectedComponent();
+        if(comp instanceof MenuComponentOverhaulSFRBlockRecipe)was = ((MenuComponentOverhaulSFRBlockRecipe)comp).recipe;
+        if(comp instanceof MenuComponentOverhaulMSRBlockRecipe)was = ((MenuComponentOverhaulMSRBlockRecipe)comp).recipe;
+        if(comp instanceof MenuComponentOverhaulFusionBlockRecipe)was = ((MenuComponentOverhaulFusionBlockRecipe)comp).recipe;
+        blockRecipe.clear();
+        if(multiblock instanceof OverhaulSFR){
+            multiblock.configuration.overhaul.fissionsfr.Block b = ((multiblock.overhaul.fissionsfr.Block)getSelectedBlock(0)).template;
+            if(b.parent!=null)b = b.parent;
+            for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.allRecipes){
+                blockRecipe.add(new MenuComponentOverhaulSFRBlockRecipe(b, recipe));
+            }
+        }
+        if(multiblock instanceof OverhaulMSR){
+            multiblock.configuration.overhaul.fissionmsr.Block b = ((multiblock.overhaul.fissionmsr.Block)getSelectedBlock(0)).template;
+            if(b.parent!=null)b = b.parent;
+            for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.allRecipes){
+                blockRecipe.add(new MenuComponentOverhaulMSRBlockRecipe(b, recipe));
+            }
+        }
+        if(multiblock instanceof OverhaulFusionReactor){
+            multiblock.configuration.overhaul.fusion.Block b = ((multiblock.overhaul.fusion.Block)getSelectedBlock(0)).template;
+            for(multiblock.configuration.overhaul.fusion.BlockRecipe recipe : b.allRecipes){
+                blockRecipe.add(new MenuComponentOverhaulFusionBlockRecipe(b, recipe));
+            }
+        }
+        for(int i = 0; i<blockRecipe.allComponents.size(); i++){
+            MenuComponent c = blockRecipe.allComponents.get(i);
+            if(c instanceof MenuComponentOverhaulSFRBlockRecipe&&was==((MenuComponentOverhaulSFRBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);
+            if(c instanceof MenuComponentOverhaulMSRBlockRecipe&&was==((MenuComponentOverhaulMSRBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);
+            if(c instanceof MenuComponentOverhaulFusionBlockRecipe&&was==((MenuComponentOverhaulFusionBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);
+        }
+    }
+    private void refreshPartsList(){
+        List<Block> availableBlocks = ((Multiblock<Block>)multiblock).getAvailableBlocks();
+        ArrayList<Block> searchedAvailable = new ArrayList<>();
+        String regex = ".*";
+        for(char c : partsSearch.text.trim().toLowerCase(Locale.ENGLISH).toCharArray()){
+            if(Character.isLetterOrDigit(c)){
+                regex+=c+".*";
+            }else regex+="\\"+c+".*";
+        }
+        for(Block b : availableBlocks){
+            if(b instanceof Searchable){
+                for(String nam : ((Searchable)b).getSearchableNames()){
+                    if(nam.toLowerCase(Locale.ENGLISH).matches(regex)){
+                        searchedAvailable.add(b);
+                        break;
+                    }
+                }
+            }else searchedAvailable.add(b);
+        }
+        Block selectedBlock = getSelectedBlock(0);
+        int i = 0;
+        int idx = 0;
+        parts.components.clear();
+        for(Block availableBlock : searchedAvailable){
+            parts.add(new MenuComponentEditorListBlock(this, availableBlock));
+            if(selectedBlock.isEqual(availableBlock))idx = i;
+            i++;
+        }
+        parts.setSelectedIndex(idx);
+    }
+    public void draw3D(){
+        BoundingBox bbox = multiblock.getBoundingBox();
+        float resonatingAlpha = 0.25f;
+        double blockSize = 1;
+        Core.applyColor(Core.theme.getEditorListBorderColor());
+        VRCore.drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,bbox.getWidth()+blockSize/32,bbox.getHeight()+blockSize/32,bbox.getDepth()+blockSize/32,blockSize/24);
+        Core.applyColor(Core.theme.getTextColor());
+        multiblock.forEachPosition((x, y, z) -> {//solid stuff
+            Block block = multiblock.getBlock(x, y, z);
+            int xx = x;
+            int yy = y;
+            int zz = z;
+            double X = x*blockSize;
+            double Y = y*blockSize;
+            double Z = z*blockSize;
+            double border = blockSize/16;
+            if(block!=null){
+                block.render(X, Y, Z, blockSize, blockSize, blockSize, true, 1, multiblock, (t) -> {
+                    if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
+                    Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    return block.shouldRenderFace(b);
+                });
+            }
+            if(isSelected(0, x, y, z)){
+                Core.applyColor(Core.theme.getSelectionColor());
+                VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+                    boolean d1 = isSelected(0, xx+t[0].x, yy+t[0].y, zz+t[0].z);
+                    boolean d2 = isSelected(0, xx+t[1].x, yy+t[1].y, zz+t[1].z);
+                    boolean d3 = isSelected(0, xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                    if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                    if(!d1&&!d2)return true;//neither side
+                    return false;
+                });
+            }
+            //TODO There's a better way to do this, but this'll do for now
+            for(Suggestion s : getSuggestions()){
+                if(s.affects(x, y, z)){
+                    if(s.selected&&s.result!=null){
+                        Block b = s.result.getBlock(x, y, z);
+                        Core.applyWhite(resonatingAlpha+.5f);
+                        double brdr = blockSize/64;
+                        if(b==null){
+                            VRCore.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, 0);
+                        }else{
+                            b.render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
+                                return true;
+                            });
+                        }
+                    }
+                    Core.applyColor(Core.theme.getGreen());
+                    border = blockSize/40f;
+                    if(s.selected)border*=3;
+                    VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+                        boolean d1 = s.affects(xx+t[0].x, yy+t[0].y, zz+t[0].z);
+                        boolean d2 = s.affects(xx+t[1].x, yy+t[1].y, zz+t[1].z);
+                        boolean d3 = s.affects(xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                        if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                        if(!d1&&!d2)return true;//neither side
+                        return false;
+                    });
+                }
+            }
+        });
+        for(MenuComponent comp : multibwauk.components){
+            if(comp instanceof MenuComponentEditorGrid){
+                MenuComponentEditorGrid grid = (MenuComponentEditorGrid)comp;
+                if(grid.mouseover==null)continue;
+                int bx = (grid.x1+grid.mouseover[0])*grid.xAxis.x+(grid.y1+grid.mouseover[1])*grid.yAxis.x+grid.layer*grid.axis.x;
+                int by = (grid.x1+grid.mouseover[0])*grid.xAxis.y+(grid.y1+grid.mouseover[1])*grid.yAxis.y+grid.layer*grid.axis.y;
+                int bz = (grid.x1+grid.mouseover[0])*grid.xAxis.z+(grid.y1+grid.mouseover[1])*grid.yAxis.z+grid.layer*grid.axis.z;
+                double X = bx*blockSize;
+                double Y = by*blockSize;
+                double Z = bz*blockSize;
+                double border = blockSize/16;
+                Core.applyColor(Core.theme.getEditorListBorderColor());
+                VRCore.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
+                Core.applyAverageColor(Core.theme.getEditorListBorderColor(), Core.theme.getTextColor());
+                X+=blockSize/2;
+                Y+=blockSize/2;
+                Z+=blockSize/2;
+                VRCore.drawCube(0, Y-border/2, Z-border/2, X-blockSize/2, Y+border/2, Z+border/2, 0);//NX
+                VRCore.drawCube(X-border/2, 0, Z-border/2, X+border/2, Y-blockSize/2, Z+border/2, 0);//NY
+                VRCore.drawCube(X-border/2, Y-border/2, 0, X+border/2, Y+border/2, Z-blockSize/2, 0);//NZ
+                VRCore.drawCube(X+blockSize/2, Y-border/2, Z-border/2, bbox.getWidth()*blockSize, Y+border/2, Z+border/2, 0);//PX
+                VRCore.drawCube(X-border/2, Y+blockSize/2, Z-border/2, X+border/2, bbox.getHeight()*blockSize, Z+border/2, 0);//PY
+                VRCore.drawCube(X-border/2, Y-border/2, Z+blockSize/2, X+border/2, Y+border/2, bbox.getDepth()*blockSize, 0);//PZ
+            }
+        }
+        multiblock.forEachPosition((x, y, z) -> {//transparent stuff
+            Block block = multiblock.getBlock(x, y, z);
+            int xx = x;
+            int yy = y;
+            int zz = z;
+            double X = x*blockSize;
+            double Y = y*blockSize;
+            double Z = z*blockSize;
+            double border = blockSize/16;
+            if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                Core.applyWhite();
+                VRCore.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"), (t) -> {
+                    if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
+                    Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    if(((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA)return true;
+                    return b==null||Core.hasAlpha(b.getBaseTexture());
+                });
+            }
+            if(isControlPressed(0)){
+                if(block==null||(isShiftPressed(0)&&block.canBeQuickReplaced())){
+                    for(EditorSpace space : ((Multiblock<Block>)multiblock).getEditorSpaces()){
+                        if(space.isSpaceValid(getSelectedBlock(0), x, y, z)&&multiblock.isValid(getSelectedBlock(0), x, y, z)){
+                            getSelectedBlock(0).render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, null, (t) -> {
+                                return true;
+                            });
+                        }
+                    }
+                }
+            }
+            for(Object o : multiblock.decals){
+                Decal decal = (Decal)o;
+                if(decal.x==x&&decal.y==y&&decal.z==z){
+                    decal.render3D(X, Y, Z, blockSize);
+                }
+            }
+            if(isSelected(0, x, y, z)){
+                Core.applyColor(convertToolColor(Core.theme.getSelectionColor(), 0), .5f);
+                VRCore.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0, (t) -> {
+                    if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
+                    Block o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    return !isSelected(0, xx+t.x, yy+t.y, zz+t.z)&&o==null;
+                });
+            }
+        });
+        for(EditorSpace space : ((Multiblock<Block>)multiblock).getEditorSpaces()){
+            getSelectedTool(0).drawVRGhosts(space, 0, 0, 0, 1, 1, 1, blockSize, (getSelectedBlock(0)==null?0:Core.getTexture(getSelectedBlock(0).getTexture())));
+        }
+    }
+    @Override
+    public void buttonClicked(MenuComponentButton button){
+        if(button==recalc)multiblock.recalculate();
+        if(button==calcStep)multiblock.recalcStep();
     }
 }

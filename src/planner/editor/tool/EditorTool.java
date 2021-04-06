@@ -1,5 +1,7 @@
 package planner.editor.tool;
 import java.util.ArrayList;
+import multiblock.Axis;
+import multiblock.EditorSpace;
 import org.lwjgl.opengl.GL11;
 import planner.editor.Editor;
 public abstract class EditorTool{
@@ -17,16 +19,14 @@ public abstract class EditorTool{
         render(0, 0, width, height);//draw 2D
         GL11.glPopMatrix();
     }//TODO VR: make this abstract fancy tool rendering
-    public abstract void mouseReset(int button);
-    public abstract void mousePressed(Object obj, int x, int y, int z, int button);
-    public abstract void mouseReleased(Object obj, int x, int y, int z, int button);
-    public abstract void mouseDragged(Object obj, int x, int y, int z, int button);
-    public abstract void mouseMoved(Object obj, int x, int y, int z);
-    public abstract void mouseMovedElsewhere(Object obj);
-    public abstract void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
-    public abstract void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture);
-    public abstract void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture);
-    public abstract void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture);
+    public abstract void mouseReset(EditorSpace editorSpace, int button);
+    public abstract void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button);
+    public abstract void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button);
+    public abstract void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button);
+    public abstract void mouseMoved(Object obj, EditorSpace editorSpace, int x, int y, int z);
+    public abstract void mouseMovedElsewhere(Object obj, EditorSpace editorSpace);
+    public abstract void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, int texture);
+    public abstract void drawVRGhosts(EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture);
     public abstract boolean isEditTool();
     public abstract String getTooltip();
     public static interface TraceStep{

@@ -2,13 +2,14 @@ package planner.vr.menu.component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import multiblock.Block;
+import multiblock.BoundingBox;
+import multiblock.Decal;
+import multiblock.EditorSpace;
 import multiblock.Multiblock;
 import multiblock.action.MSRAllShieldsAction;
-import multiblock.action.MSRShieldAction;
-import multiblock.action.MSRSourceAction;
+import multiblock.action.MSRToggleAction;
 import multiblock.action.SFRAllShieldsAction;
-import multiblock.action.SFRShieldAction;
-import multiblock.action.SFRSourceAction;
+import multiblock.action.SFRToggleAction;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
@@ -34,17 +35,20 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     private long lastTick = -1;
     private final HashMap<Integer, int[]> deviceover = new HashMap<>();
     public final double blockSize;
-    public VRMenuComponentEditorGrid(double x, double y, double z, double size, VRMenuEdit editor, Multiblock multiblock){
+    private final EditorSpace editorSpace;
+    public VRMenuComponentEditorGrid(double x, double y, double z, double size, VRMenuEdit editor, Multiblock multiblock, EditorSpace editorSpace){
         super(x, y, z, 0, 0, 0, 0, 0, 0);
-        blockSize = size/Math.max(multiblock.getX(), Math.max(multiblock.getY(), multiblock.getZ()));
-        width = multiblock.getX()*blockSize;
-        height = multiblock.getY()*blockSize;
-        depth = multiblock.getZ()*blockSize;
+        BoundingBox bbox = multiblock.getBoundingBox();
+        blockSize = size/Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
+        width = bbox.getWidth()*blockSize;
+        height = bbox.getHeight()*blockSize;
+        depth = bbox.getDepth()*blockSize;
         this.x-=width/2;
         this.y-=height/2;
         this.z-=depth/2;
         this.editor = editor;
         this.multiblock = multiblock;
+        this.editorSpace = editorSpace;
     }
     @Override
     public void tick(){
@@ -52,8 +56,8 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             ArrayList<Integer> lst = gui.buttonsWereDown.get(i);
             EditorTool tool = editor.getSelectedTool(i);
             if(tool!=null){
-                if(!lst.contains(VR.EVRButtonId_k_EButton_SteamVR_Trigger))tool.mouseReset(0);
-                if(!lst.contains(VR.EVRButtonId_k_EButton_SteamVR_Touchpad))tool.mouseReset(1);
+                if(!lst.contains(VR.EVRButtonId_k_EButton_SteamVR_Trigger))tool.mouseReset(editorSpace, 0);
+                if(!lst.contains(VR.EVRButtonId_k_EButton_SteamVR_Touchpad))tool.mouseReset(editorSpace, 1);
             }
         }
         resonatingTick++;
@@ -76,74 +80,70 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 int[] mouseover = deviceover.get(id);
                 if(!isDeviceOver.contains(id))mouseover = null;
                 if(mouseover!=null){
-                    if(mouseover[0]<0||mouseover[1]<0||mouseover[2]<0||mouseover[0]>=multiblock.getX()||mouseover[1]>=multiblock.getY()||mouseover[2]>=multiblock.getZ())mouseover = null;
+                    if(!multiblock.contains(mouseover[0],mouseover[1],mouseover[2]))mouseover = null;
                 }
                 if(mouseover==null)deviceover.remove(id);
                 else deviceover.put(id, mouseover);
             }
         }
         Core.applyColor(Core.theme.getTextColor());
-        for(int x = 0; x<multiblock.getX(); x++){//solid stuff
-            for(int y = 0; y<multiblock.getY(); y++){
-                for(int z = 0; z<multiblock.getZ(); z++){
-                    Block block = multiblock.getBlock(x, y, z);
-                    int xx = x;
-                    int yy = y;
-                    int zz = z;
-                    double X = x*blockSize;
-                    double Y = y*blockSize;
-                    double Z = z*blockSize;
-                    double border = blockSize/16;
-                    if(block!=null){
-                        block.render(X, Y, Z, blockSize, blockSize, blockSize, true, 1, multiblock, (t) -> {
-                            Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
-                            return b==null||b.isCasing();
-                        });
-                    }
-                    for(int id : editor.editorTools.keySet()){
-                        if(isSelected(id, x, y, z)){
-                            Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id));
-                            VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
-                                boolean d1 = isSelected(id, xx+t[0].x, yy+t[0].y, zz+t[0].z);
-                                boolean d2 = isSelected(id, xx+t[1].x, yy+t[1].y, zz+t[1].z);
-                                boolean d3 = isSelected(id, xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
-                                if(d1&&d2&&!d3)return true;//both sides, but not the corner
-                                if(!d1&&!d2)return true;//neither side
-                                return false;
-                            });
-                        }
-                    }
-                    for(Suggestion s : editor.getSuggestions()){
-                        if(s.affects(x, y, z)){
-                            if(s.selected&&s.result!=null){
-                                Block b = s.result.getBlock(x, y, z);
-                                Core.applyWhite(resonatingAlpha+.5f);
-                                double brdr = blockSize/64;
-                                if(b==null){
-                                    VRCore.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, 0);
-                                }else{
-                                    b.render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
-                                        return true;
-                                    });
-                                }
-                            }
-                            Core.applyColor(Core.theme.getGreen());
-                            border = blockSize/40f;
-                            if(s.selected)border*=3;
-                            VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
-                                boolean d1 = s.affects(xx+t[0].x, yy+t[0].y, zz+t[0].z);
-                                boolean d2 = s.affects(xx+t[1].x, yy+t[1].y, zz+t[1].z);
-                                boolean d3 = s.affects(xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
-                                if(d1&&d2&&!d3)return true;//both sides, but not the corner
-                                if(!d1&&!d2)return true;//neither side
-                                return false;
-                            });
-                        }
-                    }
-                    //TODO There's a better way to do this, but this'll do for now
+        multiblock.forEachPosition((x, y, z) -> {//solid stuff
+            Block block = multiblock.getBlock(x, y, z);
+            int xx = x;
+            int yy = y;
+            int zz = z;
+            double X = x*blockSize;
+            double Y = y*blockSize;
+            double Z = z*blockSize;
+            double border = blockSize/16;
+            if(block!=null){
+                block.render(X, Y, Z, blockSize, blockSize, blockSize, true, 1, multiblock, (t) -> {
+                    Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    return b==null;
+                });
+            }
+            for(int id : editor.editorTools.keySet()){
+                if(isSelected(id, x, y, z)){
+                    Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id));
+                    VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+                        boolean d1 = isSelected(id, xx+t[0].x, yy+t[0].y, zz+t[0].z);
+                        boolean d2 = isSelected(id, xx+t[1].x, yy+t[1].y, zz+t[1].z);
+                        boolean d3 = isSelected(id, xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                        if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                        if(!d1&&!d2)return true;//neither side
+                        return false;
+                    });
                 }
             }
-        }
+            //TODO There's a better way to do this, but this'll do for now
+            for(Suggestion s : editor.getSuggestions()){
+                if(s.affects(x, y, z)){
+                    if(s.selected&&s.result!=null){
+                        Block b = s.result.getBlock(x, y, z);
+                        Core.applyWhite(resonatingAlpha+.5f);
+                        double brdr = blockSize/64;
+                        if(b==null){
+                            VRCore.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, 0);
+                        }else{
+                            b.render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
+                                return true;
+                            });
+                        }
+                    }
+                    Core.applyColor(Core.theme.getGreen());
+                    border = blockSize/40f;
+                    if(s.selected)border*=3;
+                    VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+                        boolean d1 = s.affects(xx+t[0].x, yy+t[0].y, zz+t[0].z);
+                        boolean d2 = s.affects(xx+t[1].x, yy+t[1].y, zz+t[1].z);
+                        boolean d3 = s.affects(xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                        if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                        if(!d1&&!d2)return true;//neither side
+                        return false;
+                    });
+                }
+            }
+        });
         synchronized(deviceover){
             for(int id : deviceover.keySet()){
                 if(id==VR.k_unTrackedDeviceIndex_Hmd)continue;//don't do mouseover for headset
@@ -155,58 +155,85 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     double border = blockSize/16;
                     Core.applyColor(Core.theme.getEditorListBorderColor());
                     VRCore.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
+                    Core.applyAverageColor(Core.theme.getEditorListBorderColor(), Core.theme.getTextColor());
+                    X+=blockSize/2;
+                    Y+=blockSize/2;
+                    Z+=blockSize/2;
+                    VRCore.drawCube(0, Y-border/2, Z-border/2, X-blockSize/2, Y+border/2, Z+border/2, 0);//NX
+                    VRCore.drawCube(X-border/2, 0, Z-border/2, X+border/2, Y-blockSize/2, Z+border/2, 0);//NY
+                    VRCore.drawCube(X-border/2, Y-border/2, 0, X+border/2, Y+border/2, Z-blockSize/2, 0);//NZ
+                    VRCore.drawCube(X+blockSize/2, Y-border/2, Z-border/2, width, Y+border/2, Z+border/2, 0);//PX
+                    VRCore.drawCube(X-border/2, Y+blockSize/2, Z-border/2, X+border/2, height, Z+border/2, 0);//PY
+                    VRCore.drawCube(X-border/2, Y-border/2, Z+blockSize/2, X+border/2, Y+border/2, depth, 0);//PZ
                 }
             }
         }
-        for(int x = 0; x<multiblock.getX(); x++){//transparent stuff
-            for(int y = 0; y<multiblock.getY(); y++){
-                for(int z = 0; z<multiblock.getZ(); z++){
-                    Block block = multiblock.getBlock(x, y, z);
-                    int xx = x;
-                    int yy = y;
-                    int zz = z;
-                    double X = x*blockSize;
-                    double Y = y*blockSize;
-                    double Z = z*blockSize;
-                    double border = blockSize/16;
-                    if(block!=null){
-                        for(int id : editor.editorTools.keySet()){
-                            if((multiblock instanceof OverhaulMSR&&((multiblock.overhaul.fissionmsr.Block)block).fuel==editor.getSelectedOverMSRFuel(id))||(multiblock instanceof OverhaulSFR&&((multiblock.overhaul.fissionsfr.Block)block).fuel==editor.getSelectedOverSFRFuel(id))){
-                                Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), resonatingAlpha);
-                                VRCore.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0);
-                            }
-                        }
+        multiblock.forEachPosition((x, y, z) -> {//transparent stuff
+            Block block = multiblock.getBlock(x, y, z);
+            int xx = x;
+            int yy = y;
+            int zz = z;
+            double X = x*blockSize;
+            double Y = y*blockSize;
+            double Z = z*blockSize;
+            double border = blockSize/16;
+            if(block!=null){
+                for(int id : editor.editorTools.keySet()){
+                    boolean recipeMatches = false;
+                    if(multiblock instanceof OverhaulSFR){
+                        multiblock.overhaul.fissionsfr.Block bl = (multiblock.overhaul.fissionsfr.Block)block;
+                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulSFRBlockRecipe(id))recipeMatches = true;
                     }
-                    if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
-                        Core.applyWhite();
-                        VRCore.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"), (t) -> {
-                            Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
-                            return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA;
-                        });
+                    if(multiblock instanceof OverhaulMSR){
+                        multiblock.overhaul.fissionmsr.Block bl = (multiblock.overhaul.fissionmsr.Block)block;
+                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulMSRBlockRecipe(id))recipeMatches = true;
                     }
-                    for(int id : editor.editorTools.keySet()){
-                        if(editor.isControlPressed(id)){
-                            if(block==null||(editor.isShiftPressed(id)&&block.canBeQuickReplaced())){
-                                if(multiblock.isValid(editor.getSelectedBlock(id), x, y, z)){
-                                    editor.getSelectedBlock(id).render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, null, (t) -> {
-                                        return true;
-                                    });
-                                }
-                            }
-                        }
-                        if(isSelected(id, x, y, z)){
-                            Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), .5f);
-                            VRCore.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0, (t) -> {
-                                Block o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
-                                return !isSelected(id, xx+t.x, yy+t.y, zz+t.z)&&(o==null||o.isCasing());
+                    if(multiblock instanceof OverhaulFusionReactor){
+                        multiblock.overhaul.fusion.Block bl = (multiblock.overhaul.fusion.Block)block;
+                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulFusionBlockRecipe(id))recipeMatches = true;
+                    }
+                    if(recipeMatches){
+                        Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), resonatingAlpha);
+                        VRCore.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0);
+                    }
+                }
+            }
+            if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                Core.applyWhite();
+                VRCore.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"), (t) -> {
+                    Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA;
+                });
+            }
+            for(int id : editor.editorTools.keySet()){
+                if(editor.isControlPressed(id)){
+                    if(block==null||(editor.isShiftPressed(id)&&block.canBeQuickReplaced())){
+                        if(editorSpace.isSpaceValid(editor.getSelectedBlock(id), x, y, z)&&multiblock.isValid(editor.getSelectedBlock(id), x, y, z)){
+                            editor.getSelectedBlock(id).render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, null, (t) -> {
+                                return true;
                             });
                         }
                     }
                 }
             }
-        }
+            for(Object o : multiblock.decals){
+                Decal decal = (Decal)o;
+                if(decal.x==x&&decal.y==y&&decal.z==z){
+                    decal.render3D(X, Y, Z, blockSize);
+                }
+            }
+            for(int id : editor.editorTools.keySet()){
+                if(isSelected(id, x, y, z)){
+                    Core.applyColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), .5f);
+                    VRCore.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0, (t) -> {
+                        Block o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                        return !isSelected(id, xx+t.x, yy+t.y, zz+t.z)&&o==null;
+                    });
+                }
+            }
+        });
         for(int i : editor.editorTools.keySet()){
-            editor.getSelectedTool(i).drawVRGhosts(0, 0, 0, width, height, depth, blockSize, (editor.getSelectedBlock(i)==null?0:Core.getTexture(editor.getSelectedBlock(i).getTexture())));
+            editor.getSelectedTool(i).drawVRGhosts(editorSpace, 0, 0, 0, width, height, depth, blockSize, (editor.getSelectedBlock(i)==null?0:Core.getTexture(editor.getSelectedBlock(i).getTexture())));
         }
     }
     @Override
@@ -223,16 +250,17 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             deviceDragged(device, matrix, i);
         }
         if(Double.isNaN(x)||Double.isNaN(y)||Double.isNaN(z))return;
-        int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int)(x/blockSize)));
-        int blockY = Math.max(0, Math.min(multiblock.getY()-1, (int)(y/blockSize)));
-        int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int)(z/blockSize)));
-        editor.getSelectedTool(device).mouseMoved(this, blockX, blockY, blockZ);
+        BoundingBox bbox = multiblock.getBoundingBox();
+        int blockX = Math.max(bbox.x1, Math.min(bbox.x2, (int)(x/blockSize)));
+        int blockY = Math.max(bbox.y1, Math.min(bbox.y2, (int)(y/blockSize)));
+        int blockZ = Math.max(bbox.z1, Math.min(bbox.z2, (int)(z/blockSize)));
+        editor.getSelectedTool(device).mouseMoved(this, editorSpace, blockX, blockY, blockZ);
     }
     @Override
     public void onDeviceMovedElsewhere(int device, Matrix4f matrix){
         super.onDeviceMovedElsewhere(device, matrix);
         synchronized(deviceover){
-            if(deviceover.containsKey(device))editor.getSelectedTool(device).mouseMovedElsewhere(this);
+            if(deviceover.containsKey(device))editor.getSelectedTool(device).mouseMovedElsewhere(this, editorSpace);
             deviceover.remove(device);
         }
     }
@@ -252,42 +280,24 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         int blockY = mouseover[1];
         int blockZ = mouseover[2];
         if(pressed){
-            if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulSFR&&editor.isShiftPressed(device)&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ)).isFuelCell()&&!((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ)).fuel.selfPriming){
+            if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulSFR&&editor.isShiftPressed(device)&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ)).template.shield){
                 multiblock.overhaul.fissionsfr.Block b = (multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, blockY, blockZ);
                 if(b!=null){
-                    int index = Core.configuration.overhaul.fissionSFR.allSources.indexOf(b.source);
-                    index--;
-                    if(index>=Core.configuration.overhaul.fissionSFR.allSources.size())index = 0;//that's impossible, right?
-                    if(index<-1)index = Core.configuration.overhaul.fissionSFR.allSources.size()-1;
-                    editor.action(new SFRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionSFR.allSources.get(index)), true);
-                }
-            }else if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulMSR&&editor.isShiftPressed(device)&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ)).isFuelVessel()&&!((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ)).fuel.selfPriming){
-                multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, blockY, blockZ);
-                if(b!=null){
-                    int index = Core.configuration.overhaul.fissionMSR.allSources.indexOf(b.source);
-                    index--;
-                    if(index>=Core.configuration.overhaul.fissionMSR.allSources.size())index = 0;
-                    if(index<-1)index = Core.configuration.overhaul.fissionMSR.allSources.size()-1;
-                    editor.action(new MSRSourceAction(b, index==-1?null:Core.configuration.overhaul.fissionMSR.allSources.get(index)), true);
-                }
-            }else if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulSFR&&editor.isShiftPressed(device)&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ)).template.shield){
-                multiblock.overhaul.fissionsfr.Block b = (multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, blockY, blockZ);
-                if(b!=null){
-                    if(editor.isControlPressed(device))editor.action(new SFRAllShieldsAction(!b.closed), true);
-                    else editor.action(new SFRShieldAction(b), true);
+                    if(editor.isControlPressed(device))editor.action(new SFRAllShieldsAction(!b.isToggled), true);
+                    else editor.action(new SFRToggleAction(b), true);
                 }
             }else if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulMSR&&editor.isShiftPressed(device)&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ)).template.shield){
                 multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, blockY, blockZ);
                 if(b!=null){
-                    if(editor.isControlPressed(device))editor.action(new MSRAllShieldsAction(!b.closed), true);
-                    else editor.action(new MSRShieldAction(b), true);
+                    if(editor.isControlPressed(device))editor.action(new MSRAllShieldsAction(!b.isToggled), true);
+                    else editor.action(new MSRToggleAction(b), true);
                 }
             }else{
                 //TODO VR: PICK BLOCK
-                editor.getSelectedTool(device).mousePressed(this, blockX, blockY, blockZ, mButton);
+                editor.getSelectedTool(device).mousePressed(this, editorSpace, blockX, blockY, blockZ, mButton);
             }
         }else{
-            editor.getSelectedTool(device).mouseReleased(this, blockX, blockY, blockZ, mButton);
+            editor.getSelectedTool(device).mouseReleased(this, editorSpace, blockX, blockY, blockZ, mButton);
         }
     }
     private void deviceDragged(int device, Matrix4f matrix, int button){
@@ -299,10 +309,11 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         double x = pos.x;
         double y = pos.y;
         double z = pos.z;
-        int blockX = Math.max(0, Math.min(multiblock.getX()-1, (int) (x/blockSize)));
-        int blockY = Math.max(0, Math.min(multiblock.getY()-1, (int) (y/blockSize)));
-        int blockZ = Math.max(0, Math.min(multiblock.getZ()-1, (int) (z/blockSize)));
-        editor.getSelectedTool(device).mouseDragged(this, blockX, blockY, blockZ, mButton);
+        BoundingBox bbox = multiblock.getBoundingBox();
+        int blockX = Math.max(bbox.x1, Math.min(bbox.x2, (int)(x/blockSize)));
+        int blockY = Math.max(bbox.y1, Math.min(bbox.y2, (int)(y/blockSize)));
+        int blockZ = Math.max(bbox.z1, Math.min(bbox.z2, (int)(z/blockSize)));
+        editor.getSelectedTool(device).mouseDragged(this, editorSpace, blockX, blockY, blockZ, mButton);
     }
     public boolean isSelected(int id, int x, int y, int z){
         return editor.isSelected(id, x, y, z);

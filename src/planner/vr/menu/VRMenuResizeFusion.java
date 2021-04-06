@@ -1,6 +1,7 @@
 package planner.vr.menu;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import multiblock.BoundingBox;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
@@ -59,23 +60,15 @@ public class VRMenuResizeFusion extends VRMenu{
     public void render(TrackedDevicePose.Buffer tdpb){
         GL11.glPushMatrix();
         GL11.glTranslated(-.5, .5, -.5);
-        double size = Math.max(multiblock.getX(), Math.max(multiblock.getY(), multiblock.getZ()));
+        BoundingBox bbox = multiblock.getBoundingBox();
+        double size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
         GL11.glScaled(1/size, 1/size, 1/size);
         multiblock.draw3D();
         Core.applyColor(Core.theme.getEditorListBorderColor());
-        VRCore.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getX()+1/16f, multiblock.getY()+1/16f, multiblock.getZ()+1/16f, 1/16f);
+        VRCore.drawCubeOutline(-1/16f, -1/16f, -1/16f, bbox.getWidth()+1/16f, bbox.getHeight()+1/16f, bbox.getDepth()+1/16f, 1/16f);//TODO perhaps individual block grids?
         GL11.glPopMatrix();
-        textPanel.text = new FormattedText("["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]\n"+multiblock.getX()+"x"+multiblock.getY()+"x"+multiblock.getDisplayZ());
+        textPanel.text = new FormattedText("["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]\n"+bbox.getWidth()+"x"+bbox.getHeight()+"x"+bbox.getDepth());
         super.render(tdpb);
-    }
-    public void expand(int x, int y, int z){
-        if(x>0)multiblock.expandRight(x);
-        if(x<0)multiblock.expandLeft(-x);
-        if(y>0)multiblock.expandUp(y);
-        if(y<0)multiblock.exandDown(-y);
-        if(z>0)multiblock.expandToward(z);
-        if(z<0)multiblock.expandAway(-z);
-        onGUIOpened();
     }
     private static class VRMenuComponentPlusButton extends VRMenuComponentButton{
         public VRMenuComponentPlusButton(double x, double y, double z, double width, double height, double depth, boolean enabled, ActionListener al){

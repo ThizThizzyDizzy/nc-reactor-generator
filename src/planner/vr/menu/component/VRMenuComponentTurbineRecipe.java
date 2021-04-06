@@ -34,7 +34,7 @@ public class VRMenuComponentTurbineRecipe extends VRMenuComponent{
         if(((OverhaulTurbine)editor.getMultiblock()).recipe.equals(recipe)){
             VRCore.drawCubeOutline(-.0025, -.0025, -.0025, width+.0025, height+.0025, depth+.0025, .0025);//2.5mm
         }
-        drawText(recipe.name);
+        drawText(recipe.getInputDisplayName());
     }
     public void drawText(String text){
         double textLength = FontManager.getLengthForStringWithHeight(text, height);

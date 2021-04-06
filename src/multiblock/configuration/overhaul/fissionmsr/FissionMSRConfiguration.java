@@ -13,30 +13,12 @@ import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionMSRConfiguration{
-    public ArrayList<Block> allBlocks = new ArrayList<>();
-    public ArrayList<Fuel> allFuels = new ArrayList<>();
-    public ArrayList<Source> allSources = new ArrayList<>();
-    public ArrayList<IrradiatorRecipe> allIrradiatorRecipes = new ArrayList<>();
+    public ArrayList<Block> allBlocks = new ArrayList<>();//because I feel like being complicated, this is filled with parent duplicates for addons with recipes
     /**
      * @deprecated You should probably be using allBlocks
      */
     @Deprecated
     public ArrayList<Block> blocks = new ArrayList<>();
-    /**
-     * @deprecated You should probably be using allFuells
-     */
-    @Deprecated
-    public ArrayList<Fuel> fuels = new ArrayList<>();
-    /**
-     * @deprecated You should probably be using allSources
-     */
-    @Deprecated
-    public ArrayList<Source> sources = new ArrayList<>();
-    /**
-     * @deprecated You should probably be using allIrradiatorRecipes
-     */
-    @Deprecated
-    public ArrayList<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
     public int minSize;
     public int maxSize;
     public int neutronReach;
@@ -62,55 +44,38 @@ public class FissionMSRConfiguration{
         }
         ConfigList blocks = new ConfigList();
         for(Block block : this.blocks){
+            if(block.parent!=null)continue;
             blocks.add(block.save(parent, this, partial));
         }
         config.set("blocks", blocks);
-        ConfigList fuels = new ConfigList();
-        for(Fuel fuel : this.fuels){
-            fuels.add(fuel.save());
-        }
-        config.set("fuels", fuels);
-        ConfigList sources = new ConfigList();
-        for(Source source : this.sources){
-            sources.add(source.save());
-        }
-        config.set("sources", sources);
-        ConfigList irradiatorRecipes = new ConfigList();
-        for(IrradiatorRecipe recipe : this.irradiatorRecipes){
-            irradiatorRecipes.add(recipe.save());
-        }
-        config.set("irradiatorRecipes", irradiatorRecipes);
         return config;
     }
     public void apply(FissionMSRConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
-        Set<Block> usedBlocks = new HashSet<>();
-        Set<Fuel> usedFuels = new HashSet<>();
-        Set<Source> usedSources = new HashSet<>();
-        Set<IrradiatorRecipe> usedIrradiatorRecipes = new HashSet<>();
+        ArrayList<Block> usedBlocks = new ArrayList<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulMSR){
                 for(multiblock.overhaul.fissionmsr.Block b : ((OverhaulMSR)mb).getBlocks()){
-                    usedBlocks.add(b.template);
-                    if(b.fuel!=null)usedFuels.add(b.fuel);
-                    if(b.source!=null)usedSources.add(b.source);
-                    if(b.irradiatorRecipe!=null)usedIrradiatorRecipes.add(b.irradiatorRecipe);
+                    if(b.template.parent!=null)if(!usedBlocks.contains(b.template.parent))usedBlocks.add(b.template.parent);
+                    if(!usedBlocks.contains(b.template))usedBlocks.add(b.template);
+                    if(b.template.port!=null)if(!usedBlocks.contains(b.template.port))usedBlocks.add(b.template.port);
                 }
             }
         }
         partial.blocks.addAll(usedBlocks);
-        partial.fuels.addAll(usedFuels);
-        partial.sources.addAll(usedSources);
-        partial.irradiatorRecipes.addAll(usedIrradiatorRecipes);
         parent.overhaul.fissionMSR.allBlocks.addAll(usedBlocks);
-        parent.overhaul.fissionMSR.allFuels.addAll(usedFuels);
-        parent.overhaul.fissionMSR.allSources.addAll(usedSources);
-        parent.overhaul.fissionMSR.allIrradiatorRecipes.addAll(usedIrradiatorRecipes);
     }
     public void apply(AddonConfiguration addon, Configuration parent){
         Set<Block> usedBlocks = new HashSet<>();
         for(Block b : blocks){
             usedBlocks.addAll(getAllUsedBlocks(b));
             usedBlocks.removeAll(blocks);
+        }
+        for(Block block : allBlocks){
+            for(Block b : parent.overhaul.fissionMSR.allBlocks){
+                for(String nam : b.getLegacyNames()){
+                    if(block.name.equals(nam))usedBlocks.add(b);
+                }
+            }
         }
         //parent blocks
         ArrayList<Block> theBlocks = new ArrayList<>();
@@ -124,6 +89,8 @@ public class FissionMSRConfiguration{
         //self blocks
         addon.self.overhaul.fissionMSR.blocks.addAll(blocks);
         addon.overhaul.fissionMSR.allBlocks.addAll(blocks);
+        //recipe blocks
+        addon.self.overhaul.fissionMSR.blocks.addAll(allBlocks);
         //addon blocks
         for(Configuration addn : parent.addons){
             theBlocks = new ArrayList<>();
@@ -153,91 +120,36 @@ public class FissionMSRConfiguration{
                 }
             }
         }
-        addon.self.overhaul.fissionMSR.fuels.addAll(fuels);
-        parent.overhaul.fissionMSR.allFuels.addAll(fuels);
-        addon.self.overhaul.fissionMSR.sources.addAll(sources);
-        parent.overhaul.fissionMSR.allSources.addAll(sources);
-        addon.self.overhaul.fissionMSR.irradiatorRecipes.addAll(irradiatorRecipes);
-        parent.overhaul.fissionMSR.allIrradiatorRecipes.addAll(irradiatorRecipes);
     }
     public Block convert(Block template){
         if(template==null)return null;
         for(Block block : allBlocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+            for(String name : block.getLegacyNames()){
+                if(name.equals(template.name))return block;
+            }
         }
         for(Block block : blocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+            for(String name : block.getLegacyNames()){
+                if(name.equals(template.name))return block;
+            }
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
-    }
-    public Fuel convert(Fuel template){
-        if(template==null)return null;
-        for(Fuel fuel : allFuels){
-            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
-        }
-        for(Fuel fuel : fuels){
-            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
-        }
-        throw new IllegalArgumentException("Failed to find match for fuel "+template.name+"!");
-    }
-    public Source convert(Source template){
-        if(template==null)return null;
-        for(Source source : allSources){
-            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
-        }
-        for(Source source : sources){
-            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
-        }
-        throw new IllegalArgumentException("Failed to find match for source "+template.name+"!");
-    }
-    public IrradiatorRecipe convert(IrradiatorRecipe template){
-        if(template==null)return null;
-        for(IrradiatorRecipe recipe : allIrradiatorRecipes){
-            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
-        }
-        for(IrradiatorRecipe recipe : irradiatorRecipes){
-            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
-        }
-        throw new IllegalArgumentException("Failed to find match for irradiator recipe "+template.name+"!");
     }
     public Block convertToMSR(multiblock.configuration.overhaul.fissionsfr.Block template){
         if(template==null)return null;
         for(Block block : allBlocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase(Locale.ENGLISH).replace("cell", "vessel").replace("water heat", "standard heat").replace("heat sink", "coolant heater")))return block;
+            if(block.name.equals(template.name.replace("solid", "salt").replace("cell", "vessel").replace("sink", "heater")))return block;
         }
         for(Block block : blocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim().toLowerCase(Locale.ENGLISH).replace("cell", "vessel").replace("water heat", "standard heat").replace("heat sink", "coolant heater")))return block;
+            if(block.name.equals(template.name.replace("solid", "salt").replace("cell", "vessel").replace("sink", "heater")))return block;
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
-    }
-    public Fuel convertToMSR(multiblock.configuration.overhaul.fissionsfr.Fuel template){
-        if(template==null)return null;
-        for(Fuel fuel : allFuels){
-            if(fuel.name.trim().toLowerCase(Locale.ENGLISH).startsWith(template.name.trim().toLowerCase(Locale.ENGLISH).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return fuel;
-        }
-        for(Fuel fuel : fuels){
-            if(fuel.name.trim().toLowerCase(Locale.ENGLISH).startsWith(template.name.trim().toLowerCase(Locale.ENGLISH).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return fuel;
-        }
-        throw new IllegalArgumentException("Failed to find match for fuel "+template.name+"!");
-    }
-    public Source convertToMSR(multiblock.configuration.overhaul.fissionsfr.Source template){
-        if(template==null)return null;
-        for(Source source : allSources){
-            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
-        }
-        for(Source source : sources){
-            if(source.name.trim().equalsIgnoreCase(template.name.trim()))return source;
-        }
-        throw new IllegalArgumentException("Failed to find match for source "+template.name+"!");
     }
     @Override
     public boolean equals(Object obj){
         if(obj!=null&&obj instanceof FissionMSRConfiguration){
             FissionMSRConfiguration fsfrc = (FissionMSRConfiguration)obj;
             return Objects.equals(fsfrc.blocks, blocks)
-                    &&Objects.equals(fsfrc.fuels, fuels)
-                    &&Objects.equals(fsfrc.sources, sources)
-                    &&Objects.equals(fsfrc.irradiatorRecipes, irradiatorRecipes)
                     &&minSize==fsfrc.minSize
                     &&maxSize==fsfrc.maxSize
                     &&neutronReach==fsfrc.neutronReach

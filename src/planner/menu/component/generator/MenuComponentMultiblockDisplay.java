@@ -1,6 +1,7 @@
 package planner.menu.component.generator;
 import java.util.UUID;
 import multiblock.Block;
+import multiblock.BoundingBox;
 import multiblock.Multiblock;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
@@ -16,16 +17,13 @@ public class MenuComponentMultiblockDisplay extends MenuComponent{
     private MenuComponent view = new MenuComponent(0, 0, 0, 0){
         @Override
         public void render(){
-            for(int x = 0; x<multiblock.getX(); x++){
-                for(int y = 0; y<multiblock.getY(); y++){
-                    for(int z = 0; z<multiblock.getZ(); z++){
-                        Block block = multiblock.getBlock(x, y, z);
-                        if(block!=null){
-                            block.render(this.x+x*CELL_SIZE, this.y+y*(multiblock.getZ()+1)*CELL_SIZE+z*CELL_SIZE, CELL_SIZE, CELL_SIZE, true, multiblock);
-                        }
-                    }
+            BoundingBox bbox = multiblock.getBoundingBox();
+            multiblock.forEachPosition((x, y, z) -> {
+                Block block = multiblock.getBlock(x, y, z);
+                if(block!=null){
+                    block.render(this.x+x*CELL_SIZE, this.y+y*(bbox.getDepth()+1)*CELL_SIZE+z*CELL_SIZE, CELL_SIZE, CELL_SIZE, true, multiblock);
                 }
-            }
+            });
         }
     };
     public MenuComponentMultiblockDisplay(Multiblock multiblock){
@@ -35,8 +33,9 @@ public class MenuComponentMultiblockDisplay extends MenuComponent{
     }
     @Override
     public void render(){
-        view.width = multiblock.getX()*CELL_SIZE;
-        view.height = (multiblock.getZ()+1)*multiblock.getY()*CELL_SIZE;
+        BoundingBox bbox = multiblock.getBoundingBox();
+        view.width = bbox.getWidth()*CELL_SIZE;
+        view.height = (bbox.getDepth()+1)*bbox.getHeight()*CELL_SIZE;
         textView.width = width;
         textView.height = height/4;
         multiblockView.width = width;
@@ -46,7 +45,7 @@ public class MenuComponentMultiblockDisplay extends MenuComponent{
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(Core.theme.getButtonColor());
         drawRect(x+border, y+border, x+width-border, y+height-border, 0);
-        textView.setText(multiblock.getTooltip());
+        textView.setText(multiblock.getTooltip(true));
     }
     @Override
     public void renderForeground(){

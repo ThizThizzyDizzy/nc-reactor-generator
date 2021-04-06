@@ -6,7 +6,6 @@ import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import planner.Core;
-import simplelibrary.Queue;
 public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -16,12 +15,14 @@ public class Block extends multiblock.Block{
     public int adjacentCells, adjacentModerators;
     public float energyMult, heatMult;
     //moderator
-    private boolean moderatorValid;
-    private boolean moderatorActive;
+    public boolean moderatorValid;
+    public boolean moderatorActive;
     //cooler
-    private boolean coolerValid;
+    public boolean coolerValid;
+    boolean casingValid;//also for controllers
     public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.underhaul.fissionsfr.Block template){
         super(configuration,x,y,z);
+        if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
@@ -40,31 +41,31 @@ public class Block extends multiblock.Block{
     }
     @Override
     public String getName(){
-        return isCasing()?"Casing":template.name;
+        return template.getDisplayName();
     }
     @Override
     public boolean isCore(){
         return isFuelCell()||isModerator();
     }
-    @Override
-    public boolean isCasing(){
-        return template==null;
-    }
     public boolean isFuelCell(){
-        if(template==null)return false;
         return template.fuelCell;
     }
     public boolean isModerator(){
-        if(template==null)return false;
         return template.moderator;
     }
     public boolean isCooler(){
         if(template==null)return false;
         return template.cooling!=0;
     }
+    public boolean isCasing(){
+        return template.casing;
+    }
+    public boolean isController(){
+        return template.controller;
+    }
     @Override
     public boolean isActive(){
-        return isCasing()||isFuelCell()||moderatorActive||coolerValid;
+        return isFuelCell()||moderatorActive||coolerValid||casingValid;
     }
     @Override
     public boolean isValid(){
@@ -77,58 +78,13 @@ public class Block extends multiblock.Block{
     public void clearData(){
         adjacentCells = adjacentModerators = 0;
         energyMult = heatMult = 0;
-        moderatorActive = moderatorValid = false;
-    }
-    public void calculateCore(UnderhaulSFR reactor){
-        if(!template.fuelCell)return;
-        for(Direction d : directions){
-            Queue<Block> toValidate = new Queue<>();
-            for(int i = 1; i<=reactor.getConfiguration().underhaul.fissionSFR.neutronReach+1; i++){
-                Block block = reactor.getBlock(x+d.x*i,y+d.y*i,z+d.z*i);
-                if(block==null)break;
-                if(block.isModerator()){
-                    if(i==1){
-                        block.moderatorActive = block.moderatorValid = true;
-                        adjacentModerators++;
-                    }
-                    toValidate.enqueue(block);
-                    continue;
-                }
-                if(block.isFuelCell()){
-                    for(Block b : toValidate){
-                        b.moderatorValid = true;
-                    }
-                    adjacentCells++;
-                    break;
-                }
-                break;
-            }
-        }
-        float baseEff = energyMult = adjacentCells+1;
-        heatMult = (baseEff*(baseEff+1))/2;
-        energyMult+=baseEff/6*reactor.getConfiguration().underhaul.fissionSFR.moderatorExtraPower*adjacentModerators;
-        heatMult+=baseEff/6*reactor.getConfiguration().underhaul.fissionSFR.moderatorExtraHeat*adjacentModerators;
-    }
-    /**
-     * Calculates the cooler
-     * @param reactor the reactor
-     * @return <code>true</code> if the cooler state has changed
-     */
-    public boolean calculateCooler(UnderhaulSFR reactor){
-        if(template.cooling==0)return false;
-        boolean wasValid = coolerValid;
-        for(PlacementRule rule : template.rules){
-            if(!rule.isValid(this, reactor)){
-                coolerValid = false;
-                return wasValid!=coolerValid;
-            }
-        }
-        coolerValid = true;
-        return wasValid!=coolerValid;
+        moderatorActive = coolerValid = moderatorValid = casingValid = false;
     }
     @Override
     public String getTooltip(Multiblock multiblock){
         String tip = getName();
+        if(isController())tip+="\nController "+(casingValid?"Valid":"Invalid");
+        if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
         if(isFuelCell()){
             tip+="\n"
                     + " Adjacent Cells: "+adjacentCells+"\n"
@@ -250,5 +206,15 @@ public class Block extends multiblock.Block{
     public void convertTo(Configuration to){
         template = to.underhaul.fissionSFR.convert(template);
         configuration = to;
+    }
+    @Override
+    public boolean shouldRenderFace(multiblock.Block against){
+        if(super.shouldRenderFace(against))return true;
+        if(template==((Block)against).template)return false;
+        return Core.hasAlpha(against.getBaseTexture());
+    }
+    @Override
+    public Iterable<String> getSearchableNames(){
+        return template.getSearchableNames();
     }
 }

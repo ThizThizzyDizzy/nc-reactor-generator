@@ -28,6 +28,7 @@ public class MenuTransition extends Menu{
         to.tick();
         timer++;
         if(time==timer){
+            transition.finalCheck(from, to);
             gui.open(to);
         }
     }
@@ -38,6 +39,7 @@ public class MenuTransition extends Menu{
     }
     public static interface Transition{
         public void render(Menu from, Menu to, double ratio, int millisSinceLastTick);
+        public void finalCheck(Menu from, Menu to);
     }
     public static class SlideTransition implements Transition{
         public static SlideTransition slideTo(int xDiff, int yDiff){
@@ -78,17 +80,19 @@ public class MenuTransition extends Menu{
                 GL11.glPopMatrix();
             }
         }
+        @Override
+        public void finalCheck(Menu from, Menu to){}
     }
-    public static class SplitTransition implements Transition{
-        public static SplitTransition slideOut(double dividerX){
-            return new SplitTransition(dividerX, true);
+    public static class SplitTransitionX implements Transition{
+        public static SplitTransitionX slideOut(double dividerX){
+            return new SplitTransitionX(dividerX, true);
         }
-        public static SplitTransition slideIn(double dividerX){
-            return new SplitTransition(dividerX, false);
+        public static SplitTransitionX slideIn(double dividerX){
+            return new SplitTransitionX(dividerX, false);
         }
         private final double dividerX;
         private final boolean slideOut;
-        public SplitTransition(double dividerX, boolean slideOut){
+        public SplitTransitionX(double dividerX, boolean slideOut){
             this.dividerX = dividerX;
             this.slideOut = slideOut;
         }
@@ -173,6 +177,195 @@ public class MenuTransition extends Menu{
                     component.render(millisSinceLastTick);
                 }
                 to.renderForeground();
+            }
+        }
+        @Override
+        public void finalCheck(Menu from, Menu to){
+            if(slideOut){
+                double totalLeft = 0;
+                double totalRight = 0;
+                for(MenuComponent c : from.components){
+                    double initialX = this.initialX.getOrDefault(c, c.x);
+                    double x = (c.x+c.width/2)/Core.helper.displayWidth();
+                    if(x>dividerX){
+                        totalRight = Math.max(totalRight, Core.helper.displayWidth()-initialX);
+                    }else{
+                        totalLeft = Math.max(totalLeft, initialX+c.width);
+                    }
+                }
+                for(MenuComponent c : from.components){
+                    double initialX = this.initialX.getOrDefault(c, c.x);
+                    double x = (c.x+c.width/2)/Core.helper.displayWidth();
+                    if(x>dividerX){
+                        c.x = initialX+(totalRight);
+                    }else{
+                        c.x = initialX-(totalLeft);
+                    }
+                }
+            }else{
+                double totalLeft = 0;
+                double totalRight = 0;
+                for(MenuComponent c : to.components){
+                    double initialX = this.initialX.getOrDefault(c, c.x);
+                    double x = (c.x+c.width/2)/Core.helper.displayWidth();
+                    if(x>dividerX){
+                        totalRight = Math.max(totalRight, Core.helper.displayWidth()-initialX);
+                    }else{
+                        totalLeft = Math.max(totalLeft, initialX+c.width);
+                    }
+                }
+                for(MenuComponent c : to.components){
+                    double initialX = this.initialX.getOrDefault(c, c.x);
+                    double x = (c.x+c.width/2)/Core.helper.displayWidth();
+                    if(x>dividerX){
+                        c.x = initialX;
+                    }else{
+                        c.x = initialX;
+                    }
+                }
+            }
+        }
+    }
+    public static class SplitTransitionY implements Transition{
+        public static SplitTransitionY slideOut(double dividerY){
+            return new SplitTransitionY(dividerY, true);
+        }
+        public static SplitTransitionY slideIn(double dividerY){
+            return new SplitTransitionY(dividerY, false);
+        }
+        private final double dividerY;
+        private final boolean slideOut;
+        public SplitTransitionY(double dividerY, boolean slideOut){
+            this.dividerY = dividerY;
+            this.slideOut = slideOut;
+        }
+        private final HashMap<MenuComponent, Double> initialY = new HashMap<>();
+        @Override
+        public void render(Menu from, Menu to, double ratio, int millisSinceLastTick){
+            if(slideOut){
+                if(initialY.isEmpty()){
+                    GL11.glPushMatrix();
+                    GL11.glScaled(0,0,0);
+                    from.render(millisSinceLastTick);
+                    from.render(millisSinceLastTick);
+                    GL11.glPopMatrix();
+                    for(MenuComponent c : from.components){
+                        initialY.put(c, c.y);
+                    }
+                }
+                to.render(millisSinceLastTick);
+                double totalDown = 0;
+                double totalRight = 0;
+                for(MenuComponent c : from.components){
+                    double initialY = this.initialY.getOrDefault(c, c.y);
+                    double y = (c.y+c.height/2)/Core.helper.displayHeight();
+                    if(y>dividerY){
+                        totalRight = Math.max(totalRight, Core.helper.displayHeight()-initialY);
+                    }else{
+                        totalDown = Math.max(totalDown, initialY+c.height);
+                    }
+                }
+                for(MenuComponent c : from.components){
+                    double initialY = this.initialY.getOrDefault(c, c.y);
+                    double y = (c.y+c.height/2)/Core.helper.displayHeight();
+                    if(y>dividerY){
+                        c.y = initialY+(totalRight)*ratio;
+                    }else{
+                        c.y = initialY-(totalDown)*ratio;
+                    }
+                }
+                Core.applyColor(Core.theme.getBackgroundColor());
+                drawRect(0, 0, Core.helper.displayWidth(), (1-ratio)*Core.helper.displayHeight()*dividerY, 0);
+                drawRect(0, Core.helper.displayHeight()-(1-ratio)*Core.helper.displayHeight()*(1-dividerY), Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
+                for(MenuComponent component : from.components){
+                    component.render(millisSinceLastTick);
+                }
+                from.renderForeground();
+            }else{
+                if(initialY.isEmpty()){
+                    GL11.glPushMatrix();
+                    GL11.glScaled(0,0,0);
+                    to.render(millisSinceLastTick);
+                    to.render(millisSinceLastTick);
+                    GL11.glPopMatrix();
+                    for(MenuComponent c : to.components){
+                        initialY.put(c, c.y);
+                    }
+                }
+                from.render(millisSinceLastTick);
+                double totalUp = 0;
+                double totalDown = 0;
+                for(MenuComponent c : to.components){
+                    double initialY = this.initialY.getOrDefault(c, c.y);
+                    double y = (c.y+c.height/2)/Core.helper.displayHeight();
+                    if(y>dividerY){
+                        totalDown = Math.max(totalDown, Core.helper.displayHeight()-initialY);
+                    }else{
+                        totalUp = Math.max(totalUp, initialY+c.height);
+                    }
+                }
+                for(MenuComponent c : to.components){
+                    double initialY = this.initialY.getOrDefault(c, c.y);
+                    double y = (c.y+c.height/2)/Core.helper.displayHeight();
+                    if(y>dividerY){
+                        c.y = initialY+(totalDown)*(1-ratio);
+                    }else{
+                        c.y = initialY-(totalUp)*(1-ratio);
+                    }
+                }
+                Core.applyColor(Core.theme.getBackgroundColor());
+                drawRect(0, 0, Core.helper.displayWidth(), (ratio)*Core.helper.displayHeight()*dividerY, 0);
+                drawRect(0, Core.helper.displayHeight()-(ratio)*Core.helper.displayHeight()*(1-dividerY), Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
+                for(MenuComponent component : to.components){
+                    component.render(millisSinceLastTick);
+                }
+                to.renderForeground();
+            }
+        }
+        @Override
+        public void finalCheck(Menu from, Menu to){
+            if(slideOut){
+                double totalUp = 0;
+                double totalDown = 0;
+                for(MenuComponent c : from.components){
+                    double initialY = this.initialY.getOrDefault(c, c.y);
+                    double y = (c.y+c.height/2)/Core.helper.displayHeight();
+                    if(y>dividerY){
+                        totalDown = Math.max(totalDown, Core.helper.displayHeight()-initialY);
+                    }else{
+                        totalUp = Math.max(totalUp, initialY+c.height);
+                    }
+                }
+                for(MenuComponent c : from.components){
+                    double initialY = this.initialY.getOrDefault(c, c.y);
+                    double y = (c.y+c.height/2)/Core.helper.displayHeight();
+                    if(y>dividerY){
+                        c.y = initialY+(totalDown);
+                    }else{
+                        c.y = initialY-(totalUp);
+                    }
+                }
+            }else{
+                double totalUp = 0;
+                double totalDown = 0;
+                for(MenuComponent c : to.components){
+                    double initialY = this.initialY.getOrDefault(c, c.y);
+                    double y = (c.y+c.height/2)/Core.helper.displayHeight();
+                    if(y>dividerY){
+                        totalDown = Math.max(totalDown, Core.helper.displayHeight()-initialY);
+                    }else{
+                        totalUp = Math.max(totalUp, initialY+c.height);
+                    }
+                }
+                for(MenuComponent c : to.components){
+                    double initialY = this.initialY.getOrDefault(c, c.y);
+                    double y = (c.y+c.height/2)/Core.helper.displayHeight();
+                    if(y>dividerY){
+                        c.y = initialY;
+                    }else{
+                        c.y = initialY;
+                    }
+                }
             }
         }
     }

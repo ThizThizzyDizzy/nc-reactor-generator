@@ -32,7 +32,10 @@ public class PlacementRule extends RuleContainer{
         boolean exactly = str.startsWith("exactly");
         if(exactly)str = str.substring(7).trim();
         int amount = 0;
-        if(str.startsWith("one")){
+        if(str.startsWith("zero")){
+            amount = 0;
+            str = str.substring(4).trim();
+        }else if(str.startsWith("one")){
             amount = 1;
             str = str.substring(3).trim();
         }else if(str.startsWith("two")){
@@ -55,12 +58,15 @@ public class PlacementRule extends RuleContainer{
         if(axial)str = str.substring(5).trim();
         BlockType type = null;
         Block block = null;
-        if(str.startsWith("vessel"))type = BlockType.VESSEL;
+        int shortest = 0;
+        if(str.startsWith("cell"))type = BlockType.VESSEL;
+        else if(str.startsWith("vessel"))type = BlockType.VESSEL;
         else if(str.startsWith("moderator"))type = BlockType.MODERATOR;
         else if(str.startsWith("reflector"))type = BlockType.REFLECTOR;
         else if(str.startsWith("casing"))type = BlockType.CASING;
         else if(str.startsWith("air"))type = BlockType.AIR;
         else if(str.startsWith("conductor"))type = BlockType.CONDUCTOR;
+        else if(str.startsWith("sink"))type = BlockType.HEATER;
         else if(str.startsWith("heater"))type = BlockType.HEATER;
         else if(str.startsWith("shield"))type = BlockType.SHIELD;
         else{
@@ -69,11 +75,19 @@ public class PlacementRule extends RuleContainer{
                 throw new IllegalArgumentException("Unknown rule bit: "+str);
             }
             for(Block b : configuration.allBlocks){
-                if(b.name.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH).replace("_", " "))){
-                    block = b;
+                if(b.parent!=null)continue;
+                for(String s : b.getLegacyNames()){
+                    if(s.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH).replace("_", " "))||s.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH))){
+                        int len = s.length();
+                        if(block==null||len<shortest){
+                            block = b;
+                            shortest = len;
+                        }
+                    }
                 }
             }
         }
+        if(type==null&&block==null)throw new IllegalArgumentException("Failed to parse rule "+str+": block is null!");
         if(exactly&&axial){
             PlacementRule rule = new PlacementRule();
             rule.ruleType = RuleType.AND;
@@ -180,23 +194,23 @@ public class PlacementRule extends RuleContainer{
     public String toString(){
         switch(ruleType){
             case BETWEEN:
-                if(max==6)return "At least "+min+" "+block.name;
-                if(min==max)return "Exactly "+min+" "+block.name;
-                return "Between "+min+" and "+max+" "+block.name;
+                if(max==6)return "At least "+min+" "+block.getDisplayName();
+                if(min==max)return "Exactly "+min+" "+block.getDisplayName();
+                return "Between "+min+" and "+max+" "+block.getDisplayName();
             case BETWEEN_GROUP:
                 if(max==6)return "At least "+min+" "+blockType.name;
                 if(min==max)return "Exactly "+min+" "+blockType.name;
                 return "Between "+min+" and "+max+" "+blockType.name;
             case AXIAL:
-                if(max==6)return "At least "+min+" Axial pairs of "+block.name;
-                if(min==max)return "Exactly "+min+" Axial pairs of "+block.name;
-                return "Between "+min+" and "+max+" Axial pairs of "+block.name;
+                if(max==6)return "At least "+min+" Axial pairs of "+block.getDisplayName();
+                if(min==max)return "Exactly "+min+" Axial pairs of "+block.getDisplayName();
+                return "Between "+min+" and "+max+" Axial pairs of "+block.getDisplayName();
             case AXIAL_GROUP:
                 if(max==6)return "At least "+min+" Axial pairs of "+blockType.name;
                 if(min==max)return "Exactly "+min+" Axial pairs of "+blockType.name;
                 return "Between "+min+" and "+max+" Axial pairs of "+blockType.name;
             case VERTEX:
-                return "Three "+block.name+" at the same vertex";
+                return "Three "+block.getDisplayName()+" at the same vertex";
             case VERTEX_GROUP:
                 return "Three "+blockType.name+" at the same vertex";
             case AND:
@@ -260,7 +274,7 @@ public class PlacementRule extends RuleContainer{
                 }
                 return num>=min&&num<=max;
             case AXIAL:
-                for(Axis axis : Axis.values()){
+                for(Axis axis : axes){
                     multiblock.overhaul.fissionmsr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                     multiblock.overhaul.fissionmsr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                     if(b1!=null&&b1.template==this.block&&b1.isActive()&&b2!=null&&b2.template==this.block&&b2.isActive())num++;
@@ -269,14 +283,14 @@ public class PlacementRule extends RuleContainer{
             case AXIAL_GROUP:
                 switch(blockType){
                     case AIR:
-                        for(Axis axis : Axis.values()){
+                        for(Axis axis : axes){
                             multiblock.overhaul.fissionmsr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                             multiblock.overhaul.fissionmsr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null&&b2==null)num++;
                         }
                         break;
                     default:
-                        for(Axis axis : Axis.values()){
+                        for(Axis axis : axes){
                             multiblock.overhaul.fissionmsr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                             multiblock.overhaul.fissionmsr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null||b2==null)continue;
@@ -393,20 +407,13 @@ public class PlacementRule extends RuleContainer{
         VERTEX_GROUP("Vertex (Group"),
         OR("Or"),
         AND("And");
-        private final String name;
+        public final String name;
         private RuleType(String name){
             this.name = name;
         }
         @Override
         public String toString(){
             return name;
-        }
-        public static String[] getStringList(){
-            String[] strs = new String[values().length];
-            for(int i = 0; i<strs.length; i++){
-                strs[i] = values()[i].toString();
-            }
-            return strs;
         }
     }
     public static enum BlockType{
@@ -419,20 +426,13 @@ public class PlacementRule extends RuleContainer{
         SHIELD("Neutron Shield"),
         IRRADIATOR("Irradiator"),
         CONDUCTOR("Conductor");
-        private final String name;
+        public final String name;
         private BlockType(String name){
             this.name = name;
         }
         @Override
         public String toString(){
             return name;
-        }
-        public static String[] getStringList(){
-            String[] strs = new String[values().length];
-            for(int i = 0; i<strs.length; i++){
-                strs[i] = values()[i].toString();
-            }
-            return strs;
         }
     }
     @Override

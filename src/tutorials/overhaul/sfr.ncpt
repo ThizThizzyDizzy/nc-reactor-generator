@@ -66,10 +66,6 @@ text .75 Preheated Water
 text .75 High Pressure Steam
 text .75 32
 text .75 4
-text .75 IC2 Coolant
-text .75 Hot IC2 Coolant
-text .75 160
-text .75 1
 columns 1
 text .5 (Actual values may vary based on mod configuration)
 margin 0 2
@@ -130,10 +126,10 @@ ltext 1 they receive enough neutron flux. (when flux >= fuel criticality)
 translate 1
 ltext 1 Neutron flux spreads through the reactor's core through moderator lines.
 ltext 1 Neutron flux originates from cells that are primed with a neutron source. To prime
-ltext 1 a cell in the planner, shift-click it to cycle through neutron sources.
-ltext 1 To prime a cell ingame, place a neutron source on the casing with line-of-sight to
-ltext 1 the cell you want to prime. (Line-of-sight is obstructed by cells, reflectors,
-ltext 1 and irradiators, but not by heat sinks, moderators, or conductors)
+ltext 1 a cell, place a neutron source on the casing with line-of-sight to the cell you want
+ltext 1 to prime. (Line-of-sight is obstructed by cells, reflectors, and irradiators, but
+ltext 1 not by heat sinks, moderators, or conductors)
+ltext 1 You can also prime a cell in the planner by shift-clicking it.
 text 1 For example:
 columns 13
 margin 0 0
@@ -148,7 +144,7 @@ imgsq overhaul/graphite.png
 imgsq overhaul/cell.png
 imgsq overhaul/water.png
 imgsq overhaul/copper.png
-imgsq overhaul/californium.png
+imgsq overhaul/cf-252.png
 skip
 skip
 margin -1 1

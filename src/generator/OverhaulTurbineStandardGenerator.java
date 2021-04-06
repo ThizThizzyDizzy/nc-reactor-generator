@@ -2,17 +2,16 @@ package generator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import multiblock.Block;
+import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.Range;
 import multiblock.action.PostProcessingAction;
+import multiblock.action.SetBladeAction;
 import multiblock.action.SetblockAction;
 import multiblock.action.SymmetryAction;
-import multiblock.overhaul.fissionmsr.OverhaulMSR;
-import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.Symmetry;
-import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -20,7 +19,7 @@ import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.component.generator.MenuComponentPostProcessingEffect;
 import planner.menu.component.generator.MenuComponentPriority;
 import planner.menu.component.generator.MenuComponentSymmetry;
-import planner.menu.component.generator.MenuComponentToggle;
+import planner.menu.component.MenuComponentToggleBox;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
 //    private MenuComponentMinimalistTextBox finalMultiblockCount;
@@ -32,9 +31,9 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
     MenuComponentMinimaList symmetriesList;
     MenuComponentMinimaList postProcessingEffectsList;
     MenuComponentMinimalistTextBox changeChance;
-    MenuComponentToggle variableRate;
-    MenuComponentToggle lockCore;
-    MenuComponentToggle fillAir;
+    MenuComponentToggleBox variableRate;
+    MenuComponentToggleBox lockCore;
+    MenuComponentToggleBox fillAir;
     private OverhaulTurbineStandardGeneratorSettings settings = new OverhaulTurbineStandardGeneratorSettings(this);
     private final ArrayList<Multiblock> finalMultiblocks = new ArrayList<>();
     private final ArrayList<Multiblock> workingMultiblocks = new ArrayList<>();
@@ -47,8 +46,8 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         return new ArrayList[]{(ArrayList)finalMultiblocks.clone(),(ArrayList)workingMultiblocks.clone()};
     }
     @Override
-    public Class<? extends Multiblock>[] getValidMultiblocks(){
-        return new Class[]{OverhaulTurbine.class};
+    public boolean canGenerateFor(Multiblock multiblock){
+        return multiblock instanceof OverhaulTurbine;
     }
     @Override
     public String getName(){
@@ -102,9 +101,9 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Generator Settings", true));
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 24, "Change Chance", true));
         changeChance = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "1", true).setFloatFilter(0f, 100f).setSuffix("%")).setTooltip("If variable rate is on: Each iteration, each block in the reactor has an x% chance of changing\nIf variable rate is off: Each iteration, exactly x% of the blocks in the reactor will change (minimum of 1)");
-        variableRate = generatorSettings.add(new MenuComponentToggle(0, 0, 0, 32, "Variable Rate", true));
-        lockCore = generatorSettings.add(new MenuComponentToggle(0, 0, 0, 32, "Lock Core", false));
-        fillAir = generatorSettings.add(new MenuComponentToggle(0, 0, 0, 32, "Fill Air", false));
+        variableRate = generatorSettings.add(new MenuComponentToggleBox(0, 0, 0, 32, "Variable Rate", true));
+        lockCore = generatorSettings.add(new MenuComponentToggleBox(0, 0, 0, 32, "Lock Core", false));
+        fillAir = generatorSettings.add(new MenuComponentToggleBox(0, 0, 0, 32, "Fill Air", false));
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Symmetry Settings", true));
         ArrayList<Symmetry> symmetries = multi.getSymmetries();
         symmetriesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, symmetries.size()*32, 24));
@@ -146,7 +145,11 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
             size = workingMultiblocks.size();
         }
         if(size<settings.workingMultiblocks){
-            Multiblock inst = multiblock.blankCopy();
+            OverhaulTurbine inst = (OverhaulTurbine)multiblock.blankCopy();
+            ArrayList<Integer> diameters = new ArrayList<>();
+            for(int i = inst.getMinBearingDiameter(); i<=inst.getMaxBearingDiameter(); i+=2)diameters.add(i);
+            inst.setBearing(diameters.get(rand.nextInt(diameters.size())));
+            inst.buildDefaultCasing();
             inst.recalculate();
             synchronized(workingMultiblocks){
                 workingMultiblocks.add(inst);
@@ -166,13 +169,13 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
             }
         }
 //</editor-fold>
-        Multiblock currentMultiblock = null;
+        CuboidalMultiblock currentMultiblock = null;
         int idx = index;
         //<editor-fold defaultstate="collapsed" desc="Fetch Current multiblock">
         synchronized(workingMultiblocks){
             if(idx>=workingMultiblocks.size())idx = 0;
             if(!workingMultiblocks.isEmpty()){
-                currentMultiblock = workingMultiblocks.get(idx).copy();
+                currentMultiblock = (CuboidalMultiblock)workingMultiblocks.get(idx).copy();
             }
             index++;
             if(index>=workingMultiblocks.size())index = 0;
@@ -181,10 +184,10 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         if(currentMultiblock==null)return;//there's nothing to do!
         if(settings.variableRate){
             if(rand.nextBoolean()){//change coil
-                for(int x = 0; x<currentMultiblock.getX(); x++){
-                    for(int y = 0; y<currentMultiblock.getY(); y++){
+                for(int x = 1; x<=currentMultiblock.getInternalWidth(); x++){
+                    for(int y = 1; y<=currentMultiblock.getInternalHeight(); y++){
                         for(int z = 0; z<2; z++){
-                            if(z==1)z = currentMultiblock.getZ()-1;
+                            if(z==1)z = currentMultiblock.getExternalDepth()-1;
                             Block b = currentMultiblock.getBlock(x, y, z);
                             if(settings.lockCore&&b!=null&&b.isCore())continue;
                             if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
@@ -197,25 +200,25 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
                 }
             }else{
                 //change blade
-                int x = multiblock.getX()/2;
+                int x = ((CuboidalMultiblock)multiblock).getExternalWidth()/2;
                 int y = 0;
-                for(int z = 1; z<currentMultiblock.getZ()-1; z++){
+                for(int z = 1; z<currentMultiblock.getExternalDepth()-1; z++){
                     Block b = currentMultiblock.getBlock(x, y, z);
                     if(settings.lockCore&&b!=null&&b.isCore())continue;
                     if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
                         Block randBlock = randBlade(currentMultiblock, settings.allowedBlocks);
                         if(randBlock==null||settings.lockCore&&randBlock.isCore())continue;//nope
-                        currentMultiblock.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
+                        currentMultiblock.queueAction(new SetBladeAction(((OverhaulTurbine)currentMultiblock).bearingDiameter, z, (multiblock.overhaul.turbine.Block)applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
                     }
                 }
             }
         }else{
-            int changes = (int) Math.max(1, Math.round(settings.changeChancePercent*currentMultiblock.getVolume()));
+            int changes = (int) Math.max(1, Math.round(settings.changeChancePercent*currentMultiblock.getTotalVolume()));
             ArrayList<int[]> pool = new ArrayList<>();
-            for(int x = 0; x<currentMultiblock.getX(); x++){
-                for(int y = 0; y<currentMultiblock.getY(); y++){
+                for(int x = 1; x<=currentMultiblock.getInternalWidth(); x++){
+                    for(int y = 1; y<=currentMultiblock.getInternalHeight(); y++){
                     for(int z = 0; z<2; z++){
-                        if(z==1)z = currentMultiblock.getZ()-1;
+                        if(z==1)z = currentMultiblock.getExternalDepth()-1;
                         if(settings.fillAir&&currentMultiblock.getBlock(x, y, z)==null){
                             Block randBlock = randCoil(currentMultiblock, settings.allowedBlocks);
                             if(randBlock==null||settings.lockCore&&randBlock.isCore())continue;//nope
@@ -226,13 +229,13 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
                     }
                 }
             }
-            int x = multiblock.getX()/2;
+            int x = ((CuboidalMultiblock)multiblock).getExternalWidth()/2;
             int y = 0;
-            for(int z = 1; z<currentMultiblock.getZ()-1; z++){
+            for(int z = 1; z<currentMultiblock.getExternalDepth()-1; z++){
                 if(settings.fillAir&&currentMultiblock.getBlock(x, y, z)==null){
                     Block randBlock = randBlade(currentMultiblock, settings.allowedBlocks);
                     if(randBlock==null||settings.lockCore&&randBlock.isCore())continue;//nope
-                    currentMultiblock.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
+                    currentMultiblock.queueAction(new SetBladeAction(((OverhaulTurbine)currentMultiblock).bearingDiameter, z, (multiblock.overhaul.turbine.Block)applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
                     continue;
                 }
                 pool.add(new int[]{x,y,z});
@@ -242,9 +245,9 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
                 int[] pos = pool.remove(rand.nextInt(pool.size()));
                 Block b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
                 if(settings.lockCore&&b!=null&&b.isCore())continue;
-                Block randBlock = (pos[2]==0||pos[2]==currentMultiblock.getZ()-1)?randCoil(currentMultiblock, settings.allowedBlocks):randBlade(currentMultiblock, settings.allowedBlocks);
+                Block randBlock = (pos[2]==0||pos[2]==currentMultiblock.getExternalDepth()-1)?randCoil(currentMultiblock, settings.allowedBlocks):randBlade(currentMultiblock, settings.allowedBlocks);
                 if(randBlock==null||settings.lockCore&&randBlock.isCore())continue;//nope
-                currentMultiblock.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
+                currentMultiblock.queueAction(((multiblock.overhaul.turbine.Block)randBlock).template.blade?new SetBladeAction(((OverhaulTurbine)currentMultiblock).bearingDiameter, pos[2], (multiblock.overhaul.turbine.Block)applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(0, 0, 0))):new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
             }
         }
         currentMultiblock.performActions(false);
@@ -259,13 +262,18 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         for(PostProcessingEffect effect : settings.postProcessingEffects){
             if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), false);
         }
+        currentMultiblock.buildDefaultCasing();
         currentMultiblock.recalculate();
         synchronized(workingMultiblocks.get(idx)){
             Multiblock mult = workingMultiblocks.get(idx);
             finalize(mult);
             if(currentMultiblock.isBetterThan(mult, settings.priorities)){workingMultiblocks.set(idx, currentMultiblock.copy());}
             else if(mult.millisSinceLastChange()>settings.timeout*1000){
-                Multiblock m = multiblock.blankCopy();
+                OverhaulTurbine m = (OverhaulTurbine)multiblock.blankCopy();
+                ArrayList<Integer> diameters = new ArrayList<>();
+                for(int i = m.getMinBearingDiameter(); i<=m.getMaxBearingDiameter(); i+=2)diameters.add(i);
+                m.setBearing(diameters.get(rand.nextInt(diameters.size())));
+                m.buildDefaultCasing();
                 m.recalculate();
                 workingMultiblocks.set(idx, m);
             }
@@ -273,33 +281,6 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         countIteration();
     }
     private Block applyMultiblockSpecificSettings(Multiblock currentMultiblock, Block randBlock){
-        if(multiblock instanceof UnderhaulSFR)return randBlock;//no block-specifics here!
-        if(multiblock instanceof OverhaulSFR){
-            multiblock.overhaul.fissionsfr.Block block = (multiblock.overhaul.fissionsfr.Block)randBlock;
-            if(block.isFuelCell()){
-                multiblock.configuration.overhaul.fissionsfr.Fuel allowedFuel = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidFuels());
-                if(allowedFuel==null)return null;
-                block.fuel = allowedFuel;
-                block.source = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidSources());
-            }
-            if(block.isIrradiator()){
-                block.irradiatorRecipe = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidIrradiatorRecipes());
-            }
-            return randBlock;
-        }
-        if(multiblock instanceof OverhaulMSR){
-            multiblock.overhaul.fissionmsr.Block block = (multiblock.overhaul.fissionmsr.Block)randBlock;
-            if(block.isFuelVessel()){
-                multiblock.configuration.overhaul.fissionmsr.Fuel allowedFuel = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidFuels());
-                if(allowedFuel==null)return null;
-                block.fuel = allowedFuel;
-                block.source = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidSources());
-            }
-            if(block.isIrradiator()){
-                block.irradiatorRecipe = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidIrradiatorRecipes());
-            }
-            return randBlock;
-        }
         if(multiblock instanceof OverhaulTurbine)return randBlock;//also no block-specifics!
         throw new IllegalArgumentException("Unknown multiblock: "+multiblock.getDefinitionName());
     }
@@ -334,12 +315,7 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
     @Override
     public void importMultiblock(Multiblock multiblock){
         multiblock.convertTo(this.multiblock.getConfiguration());
-        if(multiblock instanceof UnderhaulSFR){
-            multiblock = multiblock.copy();
-            ((UnderhaulSFR)multiblock).fuel = ((UnderhaulSFR)this.multiblock).fuel;
-            multiblock.recalculate();
-        }
-        if(!multiblock.checkCompatible(this.multiblock))return;
+        if(!multiblock.isShapeEqual(this.multiblock))return;
         for(Range<Block> range : settings.allowedBlocks){
             for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
                 if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), false);
@@ -359,7 +335,7 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         ranges = new ArrayList<>(ranges);
         for(Iterator<Range<Block>> it = ranges.iterator(); it.hasNext();){
             Range<Block> next = it.next();
-            if(((multiblock.overhaul.turbine.Block)next.obj).coil!=null)it.remove();
+            if(!((multiblock.overhaul.turbine.Block)next.obj).template.blade)it.remove();
         }
         for(Range<Block> range : ranges){
             if(range.min==0&&range.max==Integer.MAX_VALUE)continue;
@@ -376,7 +352,7 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         ranges = new ArrayList<>(ranges);
         for(Iterator<Range<Block>> it = ranges.iterator(); it.hasNext();){
             Range<Block> next = it.next();
-            if(((multiblock.overhaul.turbine.Block)next.obj).blade!=null)it.remove();
+            if(!((multiblock.overhaul.turbine.Block)next.obj).template.coil&&!((multiblock.overhaul.turbine.Block)next.obj).template.connector)it.remove();
         }
         for(Range<Block> range : ranges){
             if(range.min==0&&range.max==Integer.MAX_VALUE)continue;

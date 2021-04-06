@@ -2,6 +2,7 @@ package generator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import multiblock.Block;
+import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.Range;
 import multiblock.action.PostProcessingAction;
@@ -17,10 +18,10 @@ import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
+import planner.menu.component.MenuComponentToggleBox;
 import planner.menu.component.generator.MenuComponentPostProcessingEffect;
 import planner.menu.component.generator.MenuComponentPriority;
 import planner.menu.component.generator.MenuComponentSymmetry;
-import planner.menu.component.generator.MenuComponentToggle;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class CoreBasedGenerator extends MultiblockGenerator{
     MenuComponentMinimalistTextBox finalMultiblockCount;
@@ -38,8 +39,8 @@ public class CoreBasedGenerator extends MultiblockGenerator{
     MenuComponentMinimaList postProcessingEffectsList;
     MenuComponentMinimalistTextBox changeChance;
     MenuComponentMinimalistTextBox morphChance;
-    MenuComponentToggle variableRate;
-    MenuComponentToggle fillAir;
+    MenuComponentToggleBox variableRate;
+    MenuComponentToggleBox fillAir;
     private CoreBasedGeneratorSettings settings = new CoreBasedGeneratorSettings(this);
     private final ArrayList<Multiblock> finalMultiblocks = new ArrayList<>();
     private final ArrayList<Multiblock> workingMultiblocks = new ArrayList<>();
@@ -55,8 +56,8 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         return new ArrayList[]{(ArrayList)finalMultiblocks.clone(),(ArrayList)workingMultiblocks.clone(),(ArrayList)finalCores.clone(),(ArrayList)workingCores.clone()};
     }
     @Override
-    public Class<? extends Multiblock>[] getValidMultiblocks(){
-        return new Class[]{OverhaulSFR.class, OverhaulMSR.class};
+    public boolean canGenerateFor(Multiblock multiblock){
+        return multiblock instanceof CuboidalMultiblock&&!(multiblock instanceof OverhaulTurbine);
     }
     @Override
     public String getName(){
@@ -164,8 +165,8 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         changeChance = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "1", true).setFloatFilter(0f, 100f).setSuffix("%")).setTooltip("If variable rate is on: Each iteration, each block in the reactor has an x% chance of changing\nIf variable rate is off: Each iteration, exactly x% of the blocks in the reactor will change (minimum of 1)");
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 24, "Morph Chance", true));
         morphChance = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, ".01", true).setFloatFilter(0f, 100f).setSuffix("%")).setTooltip("If variable rate is on: Each iteration, each block in the reactor has an x% chance of changing\nIf variable rate is off: Each iteration, exactly x% of the blocks in the reactor will change (minimum of 1)\nThis applies only to Core blocks, such as cells and moderators");
-        variableRate = generatorSettings.add(new MenuComponentToggle(0, 0, 0, 32, "Variable Rate", true));
-        fillAir = generatorSettings.add(new MenuComponentToggle(0, 0, 0, 32, "Fill Air", false));
+        variableRate = generatorSettings.add(new MenuComponentToggleBox(0, 0, 0, 32, "Variable Rate", true));
+        fillAir = generatorSettings.add(new MenuComponentToggleBox(0, 0, 0, 32, "Fill Air", false));
         generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Symmetry Settings", true));
         ArrayList<Symmetry> symmetries = multi.getSymmetries();
         symmetriesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, symmetries.size()*32, 24));
@@ -236,34 +237,30 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         if(currentMultiblockCore==null)return;//there's nothing to do!
         //<editor-fold defaultstate="collapsed" desc="Process Core">
         if(settings.variableRate){
-            for(int x = 0; x<currentMultiblockCore.getX(); x++){
-                for(int y = 0; y<currentMultiblockCore.getY(); y++){
-                    for(int z = 0; z<currentMultiblockCore.getZ(); z++){
-                        Block b = currentMultiblockCore.getBlock(x, y, z);
-                        if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
-                            Block randBlock = randCore(currentMultiblockCore, settings.allowedBlocks);
-                            if(randBlock==null||!randBlock.isCore())continue;//nope
-                            currentMultiblockCore.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(currentMultiblockCore, randBlock.newInstance(x, y, z))));
-                        }
-                    }
+            final CuboidalMultiblock cmc = (CuboidalMultiblock)currentMultiblockCore;
+            cmc.forEachInternalPosition((x, y, z) -> {
+                Block b = cmc.getBlock(x, y, z);
+                if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
+                    Block randBlock = randCore(cmc, settings.allowedBlocks);
+                    if(randBlock==null||!randBlock.isCore()||!cmc.canBePlacedWithinCasing(randBlock))return;//nope
+                    cmc.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cmc, randBlock.newInstance(x, y, z))));
                 }
-            }
+            });
+            cmc.buildDefaultCasing();
         }else{
-            int changes = (int) Math.max(1, Math.round(settings.getChangeChance()*currentMultiblockCore.getVolume()));
+            int changes = (int) Math.max(1, Math.round(settings.getChangeChance()*currentMultiblockCore.getTotalVolume()));
             ArrayList<int[]> pool = new ArrayList<>();
-            for(int X = 0; X<currentMultiblockCore.getX(); X++){
-                for(int Y = 0; Y<currentMultiblockCore.getY(); Y++){
-                    for(int Z = 0; Z<currentMultiblockCore.getZ(); Z++){
-                        if(settings.fillAir&&currentMultiblockCore.getBlock(X, Y, Z)==null){
-                            Block randBlock = randCore(currentMultiblockCore, settings.allowedBlocks);
-                            if(randBlock==null||!randBlock.isCore())continue;//nope
-                            currentMultiblockCore.queueAction(new SetblockAction(X, Y, Z, applyMultiblockSpecificSettings(currentMultiblockCore, randBlock.newInstance(X, Y, Z))));
-                            continue;
-                        }
-                        pool.add(new int[]{X,Y,Z});
-                    }
+            final CuboidalMultiblock cmc = (CuboidalMultiblock)currentMultiblockCore;
+            cmc.forEachInternalPosition((x, y, z) -> {
+                if(settings.fillAir&&cmc.getBlock(x, y, z)==null){
+                    Block randBlock = randCore(cmc, settings.allowedBlocks);
+                    if(randBlock==null||!randBlock.isCore()||!cmc.canBePlacedWithinCasing(randBlock))return;//nope
+                    cmc.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cmc, randBlock.newInstance(x, y, z))));
+                    return;
                 }
-            }
+                pool.add(new int[]{x,y,z});
+            });
+            cmc.buildDefaultCasing();
             for(int i = 0; i<changes; i++){//so it can't change the same cell twice
                 if(pool.isEmpty())break;
                 int[] pos = pool.remove(rand.nextInt(pool.size()));
@@ -347,37 +344,33 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             if(currentMultiblock==null)return;//there's nothing to do!
             //<editor-fold defaultstate="collapsed" desc="Process Multiblock">
             if(settings.variableRate){
-                for(int x = 0; x<currentMultiblock.getX(); x++){
-                    for(int y = 0; y<currentMultiblock.getY(); y++){
-                        for(int z = 0; z<currentMultiblock.getZ(); z++){
-                            Block b = currentMultiblock.getBlock(x, y, z);
-                            boolean morph = rand.nextDouble()<settings.getMorphChance();
-                            if(b!=null&&(b.isCore()&&!morph))continue;
-                            if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
-                                Block randBlock = rand(currentMultiblock, settings.allowedBlocks);
-                                if(randBlock==null||(randBlock.isCore()&&!morph))continue;//nope
-                                currentMultiblock.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
-                            }
-                        }
+                final CuboidalMultiblock cm = (CuboidalMultiblock)currentMultiblock;
+                cm.forEachInternalPosition((x, y, z) -> {
+                    Block b = cm.getBlock(x, y, z);
+                    boolean morph = rand.nextDouble()<settings.getMorphChance();
+                    if(b!=null&&(b.isCore()&&!morph))return;
+                    if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
+                        Block randBlock = rand(cm, settings.allowedBlocks);
+                        if(randBlock==null||(randBlock.isCore()&&!morph)||!cm.canBePlacedWithinCasing(randBlock))return;//nope
+                        cm.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cm, randBlock.newInstance(x, y, z))));
                     }
-                }
+                });
+                cm.buildDefaultCasing();
             }else{
-                int changes = (int) Math.max(1, Math.round(settings.getChangeChance()*currentMultiblock.getVolume()));
+                int changes = (int) Math.max(1, Math.round(settings.getChangeChance()*currentMultiblock.getTotalVolume()));
                 ArrayList<int[]> pool = new ArrayList<>();
-                for(int X = 0; X<currentMultiblock.getX(); X++){
-                    for(int Y = 0; Y<currentMultiblock.getY(); Y++){
-                        for(int Z = 0; Z<currentMultiblock.getZ(); Z++){
-                            if(settings.fillAir&&currentMultiblock.getBlock(X, Y, Z)==null){
-                                Block randBlock = rand(currentMultiblock, settings.allowedBlocks);
-                                boolean morph = rand.nextDouble()<settings.getMorphChance();
-                                if(randBlock==null||(randBlock.isCore()&&!morph))continue;//nope
-                                currentMultiblock.queueAction(new SetblockAction(X, Y, Z, applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(X, Y, Z))));
-                                continue;
-                            }
-                            pool.add(new int[]{X,Y,Z});
-                        }
+                final CuboidalMultiblock cm = (CuboidalMultiblock)currentMultiblock;
+                cm.forEachInternalPosition((x, y, z) -> {
+                    if(settings.fillAir&&cm.getBlock(x, y, z)==null){
+                        Block randBlock = rand(cm, settings.allowedBlocks);
+                        boolean morph = rand.nextDouble()<settings.getMorphChance();
+                        if(randBlock==null||(randBlock.isCore()&&!morph)||!cm.canBePlacedWithinCasing(randBlock))return;//nope
+                        cm.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cm, randBlock.newInstance(x, y, z))));
+                        return;
                     }
-                }
+                    pool.add(new int[]{x,y,z});
+                });
+                cm.buildDefaultCasing();
                 for(int i = 0; i<changes; i++){//so it can't change the same cell twice
                     if(pool.isEmpty())break;
                     int[] pos = pool.remove(rand.nextInt(pool.size()));
@@ -420,27 +413,25 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         if(multiblock instanceof UnderhaulSFR)return randBlock;//no block-specifics here!
         if(multiblock instanceof OverhaulSFR){
             multiblock.overhaul.fissionsfr.Block block = (multiblock.overhaul.fissionsfr.Block)randBlock;
-            if(block.isFuelCell()){
-                multiblock.configuration.overhaul.fissionsfr.Fuel allowedFuel = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidFuels());
-                if(allowedFuel==null)return null;
-                block.fuel = allowedFuel;
-                block.source = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidSources());
-            }
-            if(block.isIrradiator()){
-                block.irradiatorRecipe = rand(currentMultiblock, ((OverhaulSFR)multiblock).getValidIrradiatorRecipes());
+            if(!block.template.allRecipes.isEmpty()){
+                ArrayList<Range<multiblock.configuration.overhaul.fissionsfr.BlockRecipe>> validRecipes = new ArrayList<>(((OverhaulSFR)multiblock).getValidRecipes());
+                for(Iterator<Range<multiblock.configuration.overhaul.fissionsfr.BlockRecipe>> it = validRecipes.iterator(); it.hasNext();){
+                    Range<multiblock.configuration.overhaul.fissionsfr.BlockRecipe> next = it.next();
+                    if(!block.template.allRecipes.contains(next.obj))it.remove();
+                }
+                if(!validRecipes.isEmpty())block.recipe = rand(currentMultiblock, validRecipes);
             }
             return randBlock;
         }
         if(multiblock instanceof OverhaulMSR){
             multiblock.overhaul.fissionmsr.Block block = (multiblock.overhaul.fissionmsr.Block)randBlock;
-            if(block.isFuelVessel()){
-                multiblock.configuration.overhaul.fissionmsr.Fuel allowedFuel = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidFuels());
-                if(allowedFuel==null)return null;
-                block.fuel = allowedFuel;
-                block.source = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidSources());
-            }
-            if(block.isIrradiator()){
-                block.irradiatorRecipe = rand(currentMultiblock, ((OverhaulMSR)multiblock).getValidIrradiatorRecipes());
+            if(!block.template.allRecipes.isEmpty()){
+                ArrayList<Range<multiblock.configuration.overhaul.fissionmsr.BlockRecipe>> validRecipes = new ArrayList<>(((OverhaulMSR)multiblock).getValidRecipes());
+                for(Iterator<Range<multiblock.configuration.overhaul.fissionmsr.BlockRecipe>> it = validRecipes.iterator(); it.hasNext();){
+                    Range<multiblock.configuration.overhaul.fissionmsr.BlockRecipe> next = it.next();
+                    if(!block.template.allRecipes.contains(next.obj))it.remove();
+                }
+                if(!validRecipes.isEmpty())block.recipe = rand(currentMultiblock, validRecipes);
             }
             return randBlock;
         }
@@ -511,7 +502,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             ((UnderhaulSFR)multiblock).fuel = ((UnderhaulSFR)this.multiblock).fuel;
             multiblock.recalculate();
         }
-        if(!multiblock.checkCompatible(this.multiblock))return;
+        if(!multiblock.isShapeEqual(this.multiblock))return;
         for(Range<Block> range : settings.allowedBlocks){
             for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
                 if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), false);

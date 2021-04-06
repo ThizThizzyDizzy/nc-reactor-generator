@@ -1,5 +1,12 @@
 package planner.editor.tool;
+import java.util.ArrayList;
+import java.util.Iterator;
+import multiblock.Axis;
 import multiblock.Block;
+import multiblock.BoundingBox;
+import multiblock.EditorSpace;
+import multiblock.action.CopyAction;
+import multiblock.action.MoveAction;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
@@ -41,76 +48,55 @@ public class MoveTool extends EditorTool{
         GL11.glPopMatrix();
     }
     @Override
-    public void drawGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
+    public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
             if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
                     for(int[] i : editor.getSelection(id)){
-                        if(i[1]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[2]*blockSize, x+(i[0]+1)*blockSize, y+(i[2]+1)*blockSize, 0);
+                        int bx = i[0];
+                        int by = i[1];
+                        int bz = i[2];
+                        Axis xAxis = axis.get2DXAxis();
+                        Axis yAxis = axis.get2DYAxis();
+                        int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
+                        int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
+                        int sz = bx*axis.x+by*axis.y+bz*axis.z;
+                        if(sz!=layer)continue;
+                        if(sx<x1||sx>x2)continue;
+                        if(sy<y1||sy>y2)continue;
+                        Renderer2D.drawRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, 0);
                     }
                 }
             }
             int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
             synchronized(editor.getSelection(id)){
                 for(int[] i : editor.getSelection(id)){
-                    int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
-                    if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.getMultiblock().getX()||j[1]>=editor.getMultiblock().getY()||j[2]>=editor.getMultiblock().getZ())continue;
+                    int bx = i[0]+diff[0];
+                    int by = i[1]+diff[1];
+                    int bz = i[2]+diff[2];
+                    BoundingBox bbox = editor.getMultiblock().getBoundingBox();
+                    if(bx<bbox.x1||bx>bbox.x2)continue;
+                    if(by<bbox.y1||by>bbox.y2)continue;
+                    if(bz<bbox.z1||bz>bbox.z2)continue;
+                    Axis xAxis = axis.get2DXAxis();
+                    Axis yAxis = axis.get2DYAxis();
+                    int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
+                    int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
+                    int sz = bx*axis.x+by*axis.y+bz*axis.z;
+                    if(sz!=layer)continue;
+                    if(sx<x1||sx>x2)continue;
+                    if(sy<y1||sy>y2)continue;
                     Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
-                    if(j[1]==layer)Renderer2D.drawRect(x+j[0]*blockSize, y+j[2]*blockSize, x+(j[0]+1)*blockSize, y+(j[2]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
+                    if(!editorSpace.isSpaceValid(b, bx, by, bz))continue;
+                    Renderer2D.drawRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
                 }
             }
         }
         Core.applyWhite();
     }
     @Override
-    public void drawCoilGhosts(int layer, double x, double y, double width, double height, int blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        if(leftDragStart!=null&&leftDragEnd!=null){
-            if(!editor.isControlPressed(id)){
-                synchronized(editor.getSelection(id)){
-                    for(int[] i : editor.getSelection(id)){
-                        if(i[2]==layer)Renderer2D.drawRect(x+i[0]*blockSize, y+i[1]*blockSize, x+(i[0]+1)*blockSize, y+(i[1]+1)*blockSize, 0);
-                    }
-                }
-            }
-            int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
-            synchronized(editor.getSelection(id)){
-                for(int[] i : editor.getSelection(id)){
-                    int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
-                    if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.getMultiblock().getX()||j[1]>=editor.getMultiblock().getY()||j[2]>=editor.getMultiblock().getZ())continue;
-                    Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
-                    if(j[2]==layer)Renderer2D.drawRect(x+j[0]*blockSize, y+j[1]*blockSize, x+(j[0]+1)*blockSize, y+(j[1]+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
-                }
-            }
-        }
-        Core.applyWhite();
-    }
-    @Override
-    public void drawBladeGhosts(double x, double y, double width, double height, int blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
-        if(leftDragStart!=null&&leftDragEnd!=null){
-            if(!editor.isControlPressed(id)){
-                synchronized(editor.getSelection(id)){
-                    for(int[] i : editor.getSelection(id)){
-                        Renderer2D.drawRect(x+(i[2]-1)*blockSize, y, x+i[2]*blockSize, y+blockSize, 0);
-                    }
-                }
-            }
-            int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
-            synchronized(editor.getSelection(id)){
-                for(int[] i : editor.getSelection(id)){
-                    int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
-                    if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.getMultiblock().getX()||j[1]>=editor.getMultiblock().getY()||j[2]>=editor.getMultiblock().getZ())continue;
-                    Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
-                    Renderer2D.drawRect(x+(j[2]-1)*blockSize, y, x+j[2]*blockSize, y+blockSize, b==null?0:Core.getTexture(b.getTexture()));
-                }
-            }
-        }
-        Core.applyWhite();
-    }
-    @Override
-    public void drawVRGhosts(double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+    public void drawVRGhosts(EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
         Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
             double border = blockSize/64;
@@ -125,34 +111,51 @@ public class MoveTool extends EditorTool{
             int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
             synchronized(editor.getSelection(id)){
                 for(int[] i : editor.getSelection(id)){
-                    int[] j = new int[]{i[0]+diff[0], i[1]+diff[1], i[2]+diff[2]};
-                    if(j[0]<0||j[1]<0||j[2]<0||j[0]>=editor.getMultiblock().getX()||j[1]>=editor.getMultiblock().getY()||j[2]>=editor.getMultiblock().getZ())continue;
+                    int bx = i[0]+diff[0];
+                    int by = i[1]+diff[1];
+                    int bz = i[2]+diff[2];
+                    BoundingBox bbox = editor.getMultiblock().getBoundingBox();
+                    if(bx<bbox.x1||bx>bbox.x2)continue;
+                    if(by<bbox.y1||by>bbox.y2)continue;
+                    if(bz<bbox.z1||bz>bbox.z2)continue;
                     Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
-                    if(b==null&&editor.getMultiblock().getBlock(j[0], j[1], j[2])==null)continue;//already air, don't need to higlight air again
-                    VRCore.drawCube(x+j[0]*blockSize-border, y+j[1]*blockSize-border, z+j[2]*blockSize-border, x+(j[0]+1)*blockSize+border, y+(j[1]+1)*blockSize+border, z+(j[2]+1)*blockSize+border, b==null?0:Core.getTexture(b.getTexture()));
+                    if(b==null&&editor.getMultiblock().getBlock(bx, by, bz)==null)continue;//already air, don't need to higlight air again
+                    VRCore.drawCube(x+bx*blockSize-border, y+by*blockSize-border, z+bz*blockSize-border, x+(bx+1)*blockSize+border, y+(by+1)*blockSize+border, z+(bz+1)*blockSize+border, b==null?0:Core.getTexture(b.getTexture()));
                 }
             }
         }
         Core.applyWhite();
     }
     @Override
-    public void mouseReset(int button){
+    public void mouseReset(EditorSpace editorSpace, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = null;
     }
     @Override
-    public void mousePressed(Object obj, int x, int y, int z, int button){
+    public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = new int[]{x,y,z};
     }
     @Override
-    public void mouseReleased(Object obj, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null&&leftDragEnd!=null){
-            if(editor.isControlPressed(id))editor.cloneSelection(id, leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
-            else editor.moveSelection(id, leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]);
+    public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
+        if(leftDragStart!=null&&leftDragEnd!=null){
+            int dx = leftDragEnd[0]-leftDragStart[0], dy = leftDragEnd[1]-leftDragStart[1], dz = leftDragEnd[2]-leftDragStart[2];
+            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null&&leftDragEnd!=null){
+                ArrayList<int[]> selection = new ArrayList<>(editor.getSelection(id));
+                for(Iterator<int[]> it = selection.iterator(); it.hasNext();){
+                    int[] i = it.next();
+                    Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
+                    int bx = i[0]+dx;
+                    int by = i[1]+dy;
+                    int bz = i[2]+dz;
+                    if(!editorSpace.isSpaceValid(b, bx, by, bz))it.remove();
+                }
+                if(editor.isControlPressed(id))editor.action(new CopyAction(editor, id, selection, editor.getSelection(id), dx, dy, dz), true);
+                else editor.action(new MoveAction(editor, id, selection, editor.getSelection(id), dx, dy, dz), true);
+            }
         }
-        mouseReset(button);
+        mouseReset(editorSpace, button);
     }
     @Override
-    public void mouseDragged(Object obj, int x, int y, int z, int button){
+    public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
     }
     @Override
@@ -164,7 +167,7 @@ public class MoveTool extends EditorTool{
         return "Move tool (M)\nUse this to move or copy selections\nHold Ctrl to copy selections\nHold Ctrl+Shift to copy selection, and keep the old selection";
     }
     @Override
-    public void mouseMoved(Object obj, int x, int y, int z){}
+    public void mouseMoved(Object obj, EditorSpace editorSpace, int x, int y, int z){}
     @Override
-    public void mouseMovedElsewhere(Object obj){}
+    public void mouseMovedElsewhere(Object obj, EditorSpace editorSpace){}
 }

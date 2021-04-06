@@ -27,8 +27,10 @@ public class MenuTutorial extends Menu{
         for(TutorialCategory category : Tutorial.categories){
             categoryBox.add(new MenuComponentTutorialCategory(category));
         }
+        categoryBox.setSelectedIndex(0);
+        onCategoryChanged();
         done.addActionListener((e) -> {
-            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransition.slideOut(done.width/gui.helper.displayWidth()), 4));
+            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransitionX.slideOut(done.width/gui.helper.displayWidth()), 4));
         });
     }
     @Override
@@ -40,6 +42,7 @@ public class MenuTutorial extends Menu{
         for(Tutorial tutorial : selectedCategory.tutorials){
             tutorialBox.add(new MenuComponentTutorial(tutorial));
         }
+        tutorialBox.setSelectedIndex(0);
     }
     public void onTutorialChanged(){
         tutorialDisplay.tutorial = selectedTutorial;

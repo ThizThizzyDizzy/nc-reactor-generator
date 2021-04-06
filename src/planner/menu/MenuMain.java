@@ -2,6 +2,7 @@ package planner.menu;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.configuration.PartialConfiguration;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
@@ -70,9 +71,10 @@ public class MenuMain extends Menu{
             GL11.glEnd();
         }
     }.setTooltip("Settings"));
-    private MenuComponentMinimalistButton delete = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
-    private MenuComponentMinimalistButton convertOverhaulMSFR = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Convert SFR <> MSR", true, true).setTextColor(() -> {return Core.theme.getRGBA(1, .5f, 0, 1);}));
-    private MenuComponentMinimalistButton setInputs = (MenuComponentMinimalistButton)add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Set Inputs", true, true).setTextColor(() -> {return Core.theme.getRGBA(1, 1, 0, 1);}).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
+    private MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
+    private MenuComponentMinimalistButton credits = add(new MenuComponentMinimalistButton(0, 0, 192, 48, "Credits", true, true));
+    private MenuComponentMinimalistButton convertOverhaulMSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Convert SFR <> MSR", true, true).setTextColor(() -> {return Core.theme.getRGBA(1, .5f, 0, 1);}));
+    private MenuComponentMinimalistButton setInputs = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Set Inputs", true, true).setTextColor(() -> {return Core.theme.getRGBA(1, 1, 0, 1);}).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
     private boolean forceMetaUpdate = true;
     private MenuComponent metadataPanel = add(new MenuComponent(0, 0, 0, 0){
         MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
@@ -161,7 +163,10 @@ public class MenuMain extends Menu{
         for(Multiblock m : Core.multiblockTypes){
             MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true).setTooltip(m.getDescriptionTooltip()));
             button.addActionListener((e) -> {
-                Core.multiblocks.add(m.newInstance());
+                Multiblock mb = m.newInstance();
+                if(mb instanceof OverhaulTurbine)((OverhaulTurbine)mb).setBearing(1);
+                if(mb instanceof CuboidalMultiblock)((CuboidalMultiblock)mb).buildDefaultCasing();
+                Core.multiblocks.add(mb);
                 adding = false;
                 refresh();
             });
@@ -189,11 +194,10 @@ public class MenuMain extends Menu{
                 if(ncpf.configuration==null||ncpf.configuration.isPartial()){
                     if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
                         if(Main.hasAWT){
-                            javax.swing.JOptionPane.showMessageDialog(null, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
+                            javax.swing.JOptionPane.showMessageDialog(null, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", "WARNING", javax.swing.JOptionPane.WARNING_MESSAGE);
                         }else{
-                            Sys.error(ErrorLevel.minor, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
+                            Sys.error(ErrorLevel.warning, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
                         }
-                        return;
                     }
                 }else{
                     Core.configuration = ncpf.configuration;
@@ -241,7 +245,7 @@ public class MenuMain extends Menu{
             forceMetaUpdate = true;
         });
         settings.addActionListener((e) -> {
-            gui.open(new MenuTransition(gui, this, new MenuSettings(gui, this), MenuTransition.SlideTransition.slideFrom(0, -1), 5));
+            gui.open(new MenuTransition(gui, this, new MenuSettings(gui, this), MenuTransition.SplitTransitionX.slideIn(384d/gui.helper.displayWidth()), 5));
         });
         delete.addActionListener((e) -> {
             Multiblock multiblock = Core.multiblocks.get(multiblocks.getSelectedIndex());
@@ -279,6 +283,9 @@ public class MenuMain extends Menu{
         vr.addActionListener((e) -> {
             VRCore.start();
         });
+        credits.addActionListener((e) -> {
+            gui.open(new MenuTransition(gui, this, new MenuCredits(gui), MenuTransition.SplitTransitionY.slideOut(0.5), 10));
+        });
     }
     @Override
     public void renderBackground(){
@@ -313,8 +320,10 @@ public class MenuMain extends Menu{
         settings.x = gui.helper.displayWidth()-gui.helper.displayHeight()/16;
         vr.x = settings.x-gui.helper.displayHeight()/16;
         multiblocks.y = gui.helper.displayHeight()/8;
-        multiblocks.height = gui.helper.displayHeight()-multiblocks.y;
-        multiblocks.width = gui.helper.displayWidth()/3;
+        convertOverhaulMSFR.height = setInputs.height = delete.height = addMultiblock.height;
+        if(multiblocks.getSelectedIndex()==-1)delete.height = 0;
+        multiblocks.height = gui.helper.displayHeight()-multiblocks.y-delete.height;
+        delete.width = multiblocks.width = gui.helper.displayWidth()/3;
         for(simplelibrary.opengl.gui.components.MenuComponent c : multiblocks.components){
             c.width = multiblocks.width-(multiblocks.hasScrollbar()?multiblocks.vertScrollbarWidth:0);
             ((MenuComponentMultiblock) c).edit.enabled = ((MenuComponentMultiblock) c).multiblock.exists()&&(!(adding||metadating));
@@ -322,10 +331,7 @@ public class MenuMain extends Menu{
         addMultiblock.x = gui.helper.displayWidth()/3-gui.helper.displayHeight()/16;
         addMultiblock.y = gui.helper.displayHeight()/16;
         addMultiblock.width = addMultiblock.height = gui.helper.displayHeight()/16;
-        convertOverhaulMSFR.height = setInputs.height = delete.height = addMultiblock.height;
-        delete.width = (gui.helper.displayWidth()-multiblocks.width)*.8;
         convertOverhaulMSFR.width = setInputs.width = editMetadata.width+settings.width;
-        delete.x = gui.helper.displayWidth()-delete.width;
         setInputs.y = convertOverhaulMSFR.y = addMultiblock.y;
         if(getSelectedMultiblock() instanceof OverhaulSFR){
             convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
@@ -346,6 +352,8 @@ public class MenuMain extends Menu{
             setInputs.y = -setInputs.height;
         }
         delete.y = gui.helper.displayHeight()-delete.height;
+        credits.y = gui.helper.displayHeight()-credits.height;
+        credits.x = gui.helper.displayWidth()-credits.width;
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);
         settings.enabled = !(adding||metadating);
@@ -379,7 +387,7 @@ public class MenuMain extends Menu{
         metadataPanel.y = gui.helper.displayHeight()/2-metadataPanel.height/2-gui.helper.displayHeight()*(1-metadataScale);
         super.render(millisSinceLastTick);
         Core.applyColor(Core.theme.getTextColor(), .4f);
-        if(getSelectedMultiblock()!=null)drawCenteredText(delete.x, delete.y-45, delete.x+delete.width, delete.y-5, "Use Arrow keys to rotate preview");
+        if(getSelectedMultiblock()!=null)drawCenteredText(multiblocks.x+multiblocks.width, gui.helper.displayHeight()-45, credits.x, gui.helper.displayHeight()-5, "Use Arrow keys to rotate preview");
     }
     @Override
     public void onGUIOpened(){
@@ -398,7 +406,7 @@ public class MenuMain extends Menu{
         for(simplelibrary.opengl.gui.components.MenuComponent c : multiblocks.components){
             if(c instanceof MenuComponentMultiblock){
                 if(button==((MenuComponentMultiblock) c).edit){
-                    gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock), MenuTransition.SplitTransition.slideIn((MenuEdit.partSize+MenuEdit.partSize/4d+MenuEdit.partsWide*MenuEdit.partSize)/gui.helper.displayWidth()), 5));
+                    gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, ((MenuComponentMultiblock) c).multiblock), MenuTransition.SplitTransitionX.slideIn((MenuEdit.partSize+MenuEdit.partSize/4d+MenuEdit.partsWide*MenuEdit.partSize)/gui.helper.displayWidth()), 5));
                 }
             }
         }
@@ -412,11 +420,10 @@ public class MenuMain extends Menu{
         if(ncpf==null)return;
         if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
             if(Main.hasAWT){
-                javax.swing.JOptionPane.showMessageDialog(null, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", "Failed to load file", javax.swing.JOptionPane.ERROR_MESSAGE);
+                javax.swing.JOptionPane.showMessageDialog(null, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", "WARNING", javax.swing.JOptionPane.WARNING_MESSAGE);
             }else{
-                Sys.error(ErrorLevel.minor, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
+                Sys.error(ErrorLevel.warning, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
             }
-            return;
         }
         for(Multiblock mb : ncpf.multiblocks){
             mb.convertTo(Core.configuration);

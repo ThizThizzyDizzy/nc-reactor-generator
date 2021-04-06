@@ -6,12 +6,13 @@ import java.util.function.Function;
 import multiblock.configuration.Configuration;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.menu.component.Searchable;
 import planner.vr.VRCore;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
-public abstract class Block extends MultiblockBit{
+public abstract class Block extends MultiblockBit implements Searchable{
     protected Configuration configuration;
     public int x;
     public int y;
@@ -34,11 +35,13 @@ public abstract class Block extends MultiblockBit{
         BufferedImage grayscale = new BufferedImage(img.getWidth(), img.getHeight(), img.getType());
         for(int x = 0; x<img.getWidth(); x++){
             for(int y = 0; y<img.getHeight(); y++){
-                Color c = new Color(img.getRGB(x, y));
+                Color c = new Color(img.getRGB(x, y), true);
+                int alpha = c.getAlpha();
                 float[] hsb = new float[3];
                 Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb);
                 hsb[1]*=.25f;
                 c = new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
+                c = new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
                 grayscale.setRGB(x, y, c.getRGB());
             }
         }
@@ -49,6 +52,7 @@ public abstract class Block extends MultiblockBit{
     public <T extends Block> Queue<T> getAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
         for(Direction direction : directions){
+            if(!multiblock.contains(x+direction.x, y+direction.y, z+direction.z))continue;
             T b = multiblock.getBlock(x+direction.x, y+direction.y, z+direction.z);
             if(b!=null)adjacent.enqueue(b);
         }
@@ -57,6 +61,7 @@ public abstract class Block extends MultiblockBit{
     public <T extends Block> Queue<T> getActiveAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
         for(Direction direction : directions){
+            if(!multiblock.contains(x+direction.x, y+direction.y, z+direction.z))continue;
             T b = multiblock.getBlock(x+direction.x, y+direction.y, z+direction.z);
             if(b!=null&&b.isActive())adjacent.enqueue(b);
         }
@@ -82,14 +87,21 @@ public abstract class Block extends MultiblockBit{
         if(renderOverlay)renderOverlay(x,y,width,height, multiblock);
     }
     public void render(double x, double y, double z, double width, double height, double depth, boolean renderOverlay, float alpha, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+        double[] bounds = multiblock.getCubeBounds(this);
+        bounds[0] *= width;
+        bounds[1] *= height;
+        bounds[2] *= depth;
+        bounds[3] *= width;
+        bounds[4] *= height;
+        bounds[5] *= depth;
         if(getTexture()==null){
             Core.applyColor(Core.theme.getRGBA(1, 1, 0, alpha));
-            VRCore.drawCube(x, y, z, x+width, y+height, z+depth, 0, faceRenderFunc);
+            VRCore.drawCube(x+bounds[0], y+bounds[1], z+bounds[2], x+bounds[3], y+bounds[4], z+bounds[5], 0, faceRenderFunc);
         }else{
             Core.applyWhite(alpha);
-            VRCore.drawCube(x, y, z, x+width, y+height, z+depth, Core.getTexture(getTexture()), faceRenderFunc);
+            VRCore.drawCube(x+bounds[0], y+bounds[1], z+bounds[2], x+bounds[3], y+bounds[4], z+bounds[5], Core.getTexture(getTexture()), faceRenderFunc);
         }
-        if(renderOverlay)renderOverlay(x,y,z,width,height,depth,multiblock,faceRenderFunc);
+        if(renderOverlay)renderOverlay(x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5],multiblock,faceRenderFunc);
     }
     public void renderGrayscale(double x, double y, double width, double height, boolean renderOverlay, Multiblock multiblock){
         renderGrayscale(x, y, width, height, renderOverlay, 1, multiblock);
@@ -280,7 +292,6 @@ public abstract class Block extends MultiblockBit{
     public abstract boolean isValid();
     public abstract boolean isActive();
     public abstract boolean isCore();
-    public abstract boolean isCasing();
     public abstract boolean hasRules();
     public abstract boolean calculateRules(Multiblock multiblock);
     public abstract boolean matches(Block template);
@@ -310,4 +321,7 @@ public abstract class Block extends MultiblockBit{
         return configuration;
     }
     public abstract void convertTo(Configuration to);
+    public boolean shouldRenderFace(Block against){
+        return against==null;
+    }
 }

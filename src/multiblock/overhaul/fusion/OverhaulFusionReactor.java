@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import multiblock.Axis;
+import multiblock.BlockGrid;
 import multiblock.Direction;
+import multiblock.EditorSpace;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.action.SetblockAction;
 import multiblock.configuration.Configuration;
-import multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe;
+import multiblock.configuration.overhaul.fusion.BlockRecipe;
 import multiblock.configuration.overhaul.fusion.CoolantRecipe;
 import multiblock.configuration.overhaul.fusion.Recipe;
 import multiblock.ppe.ClearInvalid;
@@ -28,7 +31,8 @@ import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
 import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.generator.MenuComponentFusionToggleBreedingBlanketRecipe;
+import planner.menu.component.editor.MenuComponentEditorGrid;
+import planner.menu.component.generator.MenuComponentFusionToggleBlockRecipe;
 import planner.module.Module;
 import planner.vr.VRGUI;
 import planner.vr.menu.VRMenuEdit;
@@ -37,6 +41,7 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
+import simplelibrary.opengl.gui.components.MenuComponent;
 public class OverhaulFusionReactor extends Multiblock<Block>{
     public CoolantRecipe coolantRecipe;
     public int innerRadius;
@@ -77,7 +82,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         this(configuration, 1, 1, 1, 1, null, null);
     }
     public OverhaulFusionReactor(Configuration configuration, int innerRadius, int coreSize, int toroidWidth, int liningThickness, Recipe recipe, CoolantRecipe coolantRecipe){
-        super(configuration, getWidth(innerRadius, coreSize, toroidWidth, liningThickness), getHeight(innerRadius, coreSize, toroidWidth, liningThickness), getWidth(innerRadius, coreSize, toroidWidth, liningThickness));
+        super(configuration, innerRadius, coreSize, toroidWidth, liningThickness);
         this.recipe = recipe==null?(exists()?getConfiguration().overhaul.fusion.allRecipes.get(0):null):recipe;
         this.coolantRecipe = coolantRecipe==null?(exists()?getConfiguration().overhaul.fusion.allCoolantRecipes.get(0):null):coolantRecipe;
         this.innerRadius = innerRadius;
@@ -85,6 +90,29 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         this.toroidWidth = toroidWidth;
         this.liningThickness = liningThickness;
         fillRequiredSpaces();
+    }
+    @Override
+    protected void createBlockGrids(){
+        int width = getWidth(dimensions[0], dimensions[1], dimensions[2], dimensions[3]);
+        int height = getHeight(dimensions[0], dimensions[1], dimensions[2], dimensions[3]);
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
+    }
+    @Override
+    public void getEditorSpaces(ArrayList<EditorSpace<Block>> editorSpaces){
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        editorSpaces.add(new EditorSpace<Block>(0, 0, 0, width-1, height-1, width-1){
+            @Override
+            public boolean isSpaceValid(Block block, int x, int y, int z){
+                return isLocationValid(block, x, y, z);
+            }
+            @Override
+            public void createComponents(MenuEdit editor, ArrayList<MenuComponent> comps, int cellSize){
+                for(int y = 0; y<height; y++){
+                    comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulFusionReactor.this, this, 0, 0, width-1, width-1, Axis.Y, y));
+                }
+            }
+        });
     }
     private void fillRequiredSpaces(){
         Block core = null, connector = null, electromagnet = null, heatingBlanket = null, breedingBlanket = null;
@@ -97,28 +125,27 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             if(heatingBlanket==null&&b.template.heatingBlanket)heatingBlanket = b;
             if(breedingBlanket==null&&b.template.breedingBlanket)breedingBlanket = b;
         }
-        for(int x = 0; x<getX(); x++){
-            for(int y = 0; y<getY(); y++){
-                for(int z = 0; z<getZ(); z++){
-                    switch(getLocationCategory(x, y, z)){
-                        case CORE:
-                            setBlock(x, y, z, core);
-                        case CONNECTOR:
-                            setBlock(x, y, z, connector);
-                            break;
-                        case POLOID:
-                        case TOROID:
-                            setBlock(x, y, z, electromagnet);
-                            break;
-                        case PLASMA:
-                        case NONE:
-                        case INTERIOR:
-                        case EXTERIOR:
-                            break;
-                    }
-                }
+        final Block cor = core;
+        final Block con = connector;
+        final Block elec = electromagnet;
+        forEachPosition((x, y, z) -> {
+            switch(getLocationCategory(x, y, z)){
+                case CORE:
+                    setBlock(x, y, z, cor);
+                case CONNECTOR:
+                    setBlock(x, y, z, con);
+                    break;
+                case POLOID:
+                case TOROID:
+                    setBlock(x, y, z, elec);
+                    break;
+                case PLASMA:
+                case NONE:
+                case INTERIOR:
+                case EXTERIOR:
+                    break;
             }
-        }
+        });
     }
     @Override
     public String getDefinitionName(){
@@ -129,8 +156,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         return new OverhaulFusionReactor(configuration);
     }
     @Override
-    public Multiblock<Block> newInstance(Configuration configuration, int x, int y, int z){
-        return new OverhaulFusionReactor(configuration, 1, 1, 1, 1, null, null);//I'm not even gonna try to convert that to reasonable settings
+    public Multiblock<Block> newInstance(Configuration configuration, int... dimensions){
+        return new OverhaulFusionReactor(configuration, dimensions[0], dimensions[1], dimensions[2], dimensions[3], null, null);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
@@ -140,31 +167,9 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         }
     }
     @Override
-    public int getMinX(){
-        return getWidth(getConfiguration().overhaul.fusion.minInnerRadius, getConfiguration().overhaul.fusion.minCoreSize, getConfiguration().overhaul.fusion.minToroidWidth, getConfiguration().overhaul.fusion.minLiningThickness);
-    }
+    public void genCalcSubtasks(){}
     @Override
-    public int getMinY(){
-        return getHeight(getConfiguration().overhaul.fusion.minInnerRadius, getConfiguration().overhaul.fusion.minCoreSize, getConfiguration().overhaul.fusion.minToroidWidth, getConfiguration().overhaul.fusion.minLiningThickness);
-    }
-    @Override
-    public int getMinZ(){
-        return getMinX();
-    }
-    @Override
-    public int getMaxX(){
-        return getWidth(getConfiguration().overhaul.fusion.maxInnerRadius, getConfiguration().overhaul.fusion.maxCoreSize, getConfiguration().overhaul.fusion.maxToroidWidth, getConfiguration().overhaul.fusion.maxLiningThickness);
-    }
-    @Override
-    public int getMaxY(){
-        return getHeight(getConfiguration().overhaul.fusion.maxInnerRadius, getConfiguration().overhaul.fusion.maxCoreSize, getConfiguration().overhaul.fusion.maxToroidWidth, getConfiguration().overhaul.fusion.maxLiningThickness);
-    }
-    @Override
-    public int getMaxZ(){
-        return getMaxX();
-    }
-    @Override
-    public void doCalculate(List<Block> blocks){
+    public boolean doCalculationStep(List<Block> blocks, boolean addDecals){
         Task calcBreeding = calculateTask.addSubtask(new Task("Calculating Breeding Blankets"));
         Task calcHeating = calculateTask.addSubtask(new Task("Calculating Breeding Blankets"));
         Task calcHeatsinks = calculateTask.addSubtask(new Task("Calculating Heatsinks"));
@@ -198,7 +203,11 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         shieldinessFactor = 0;
         for(int i = 0; i<allBlocks.size(); i++){
             Block block = allBlocks.get(i);//detect clusters and shieldniness too
-            if(block.isShielding())shieldinessFactor+=block.template.shieldiness;
+            if(block.isShielding()){
+                if(block.template.shieldingHasBaseStats||block.recipe!=null){
+                    shieldinessFactor+=block.recipe==null?block.template.shieldingShieldiness:block.recipe.shieldingShieldiness;
+                }
+            }
             Cluster cluster = getCluster(block);
             if(cluster==null)continue;//that's not a cluster!
             synchronized(clusters){
@@ -223,7 +232,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                         cluster.heatMult+=b.heatMult;
                     }
                     if(b.isHeatsinkActive()){
-                        cluster.totalCooling+=b.template.cooling;
+                        cluster.totalCooling+=b.recipe==null?b.template.heatsinkCooling:b.recipe.heatsinkCooling;
                     }
                     calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                 }
@@ -259,41 +268,26 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                 if(block.isFunctional())functionalBlocks++;
             }
         }
-        int volume = 0;
-        for(int x = 0; x<getX(); x++){
-            for(int y = 0; y<getY(); y++){
-                for(int z = 0; z<getZ(); z++){
-                    LocationCategory cat = getLocationCategory(x, y, z);
-                    if(cat==LocationCategory.INTERIOR||cat==LocationCategory.EXTERIOR)volume++;
-                }
-            }
-        }
-        sparsityMult = (float) (functionalBlocks/(float)volume>=getConfiguration().overhaul.fusion.sparsityPenaltyThreshold?1:getConfiguration().overhaul.fusion.sparsityPenaltyMult+(1-getConfiguration().overhaul.fusion.sparsityPenaltyMult)*Math.sin(Math.PI*functionalBlocks/(2*volume*getConfiguration().overhaul.fusion.sparsityPenaltyThreshold)));
+        int[] volume = new int[1];
+        forEachPosition((x, y, z) -> {
+            LocationCategory cat = getLocationCategory(x, y, z);
+            if(cat==LocationCategory.INTERIOR||cat==LocationCategory.EXTERIOR)volume[0]++;
+        });
+        sparsityMult = (float) (functionalBlocks/(float)volume[0]>=getConfiguration().overhaul.fusion.sparsityPenaltyThreshold?1:getConfiguration().overhaul.fusion.sparsityPenaltyMult+(1-getConfiguration().overhaul.fusion.sparsityPenaltyMult)*Math.sin(Math.PI*functionalBlocks/(2*volume[0]*getConfiguration().overhaul.fusion.sparsityPenaltyThreshold)));
         totalOutput*=sparsityMult;
         totalEfficiency*=sparsityMult;
         totalOutput/=coolantRecipe.heat/coolantRecipe.outputRatio;
         calcStats.finish();
+        return false;
     }
-    @Override
-    protected Block newCasing(int x, int y, int z){
-        return null;
-    }
-    @Override
-    public synchronized FormattedText getTooltip(){
-        return tooltip(true);
-    }
-    @Override
-    public String getExtraBotTooltip(){
-        return tooltip(false).text;
-    }
-    public FormattedText tooltip(boolean showDetails){
-        if(this.showDetails!=null)showDetails = this.showDetails;
+    public FormattedText getTooltip(boolean full){
+        if(this.showDetails!=null)full = this.showDetails;
         synchronized(clusters){
             int validClusters = 0;
             for(Cluster c : clusters){
                 if(c.isValid())validClusters++;
             }
-            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.output+"\n"
+            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.getOutputDisplayName()+"\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
                     + "Net Heat: "+netHeat+"H/t\n"
@@ -303,7 +297,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                     + "Shieldiness Factor: "+percent(shieldinessFactor, 1)+"\n"
                     + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size())));
             text.addText(getModuleTooltip()+"\n");
-            if(showDetails){
+            if(full){
                 HashMap<String, Integer> counts = new HashMap<>();
                 HashMap<String, Color> colors = new HashMap<>();
                 ArrayList<String> order = new ArrayList<>();
@@ -348,23 +342,20 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         size.add(liningThickness);
         config.set("size", size);
         ConfigNumberList blox = new ConfigNumberList();
-        for(int x = 0; x<getX(); x++){
-            for(int y = 0; y<getY(); y++){
-                for(int z = 0; z<getZ(); z++){
-                    Block block = getBlock(x, y, z);
-                    if(block==null)blox.add(0);
-                    else blox.add(configuration.overhaul.fusion.allBlocks.indexOf(block.template)+1);
-                    System.out.print((block==null?"0":(configuration.overhaul.fusion.allBlocks.indexOf(block.template)+1))+" ");
-                }
-            }
-        }
+        forEachPosition((x, y, z) -> {
+            Block block = getBlock(x, y, z);
+            if(block==null)blox.add(0);
+            else blox.add(configuration.overhaul.fusion.allBlocks.indexOf(block.template)+1);
+            System.out.print((block==null?"0":(configuration.overhaul.fusion.allBlocks.indexOf(block.template)+1))+" ");
+        });
         System.out.println(blox.size());
-        ConfigNumberList breedingBlanketRecipes = new ConfigNumberList();
+        ConfigNumberList blockRecipes = new ConfigNumberList();
         for(Block block : getBlocks()){
-            if(block.template.breedingBlanket)breedingBlanketRecipes.add(configuration.overhaul.fusion.allBreedingBlanketRecipes.indexOf(block.breedingBlanketRecipe)+1);
+            if(block.template.allRecipes.isEmpty())continue;
+            blockRecipes.add(block.template.allRecipes.indexOf(block.recipe)+1);
         }
         config.set("blocks", blox);
-        config.set("breedingBlanketRecipes", breedingBlanketRecipes);
+        config.set("blockRecipes", blockRecipes);
         config.set("recipe", (byte)configuration.overhaul.fusion.allRecipes.indexOf(recipe));
         config.set("coolantRecipe", (byte)configuration.overhaul.fusion.allCoolantRecipes.indexOf(coolantRecipe));
     }
@@ -392,14 +383,17 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         }
         return new Cluster(block);
     }
-    private HashMap<BreedingBlanketRecipe, MenuComponentFusionToggleBreedingBlanketRecipe> breedingBlanketRecipeToggles;
+    private HashMap<BlockRecipe, MenuComponentFusionToggleBlockRecipe> blockRecipeToggles;
     @Override
     public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
-        if(breedingBlanketRecipeToggles==null)breedingBlanketRecipeToggles = new HashMap<>();
-        for(BreedingBlanketRecipe r : getConfiguration().overhaul.fusion.allBreedingBlanketRecipes){
-            MenuComponentFusionToggleBreedingBlanketRecipe toggle = new MenuComponentFusionToggleBreedingBlanketRecipe(r);
-            breedingBlanketRecipeToggles.put(r, toggle);
-            multiblockSettings.add(toggle);
+        if(blockRecipeToggles==null)blockRecipeToggles = new HashMap<>();
+        blockRecipeToggles.clear();
+        for(multiblock.configuration.overhaul.fusion.Block block : getConfiguration().overhaul.fusion.allBlocks){
+            for(BlockRecipe recipe : block.allRecipes){
+                MenuComponentFusionToggleBlockRecipe toggle = new MenuComponentFusionToggleBlockRecipe(recipe);
+                blockRecipeToggles.put(recipe, toggle);
+                multiblockSettings.add(toggle);
+            }
         }
     }
     private boolean isValid(){
@@ -465,7 +459,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void increaseInnerRadius(){
         if(innerRadius>=getConfiguration().overhaul.fusion.maxInnerRadius)return;
         innerRadius++;
-        blocks = new Block[getWidth(innerRadius, coreSize, toroidWidth, liningThickness)][getHeight(innerRadius, coreSize, toroidWidth, liningThickness)][getWidth(innerRadius, coreSize, toroidWidth, liningThickness)];
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        blockGrids.clear();
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
         history.clear();
         future.clear();
         fillRequiredSpaces();
@@ -474,7 +471,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void increaseCoreSize(){
         if(coreSize>=getConfiguration().overhaul.fusion.maxCoreSize)return;
         coreSize++;
-        blocks = new Block[getWidth(innerRadius, coreSize, toroidWidth, liningThickness)][getHeight(innerRadius, coreSize, toroidWidth, liningThickness)][getWidth(innerRadius, coreSize, toroidWidth, liningThickness)];
+        blockGrids.clear();
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
         history.clear();
         future.clear();
         fillRequiredSpaces();
@@ -483,7 +483,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void increaseToroidWidth(){
         if(toroidWidth>=getConfiguration().overhaul.fusion.maxToroidWidth)return;
         toroidWidth++;
-        blocks = new Block[getWidth(innerRadius, coreSize, toroidWidth, liningThickness)][getHeight(innerRadius, coreSize, toroidWidth, liningThickness)][getWidth(innerRadius, coreSize, toroidWidth, liningThickness)];
+        blockGrids.clear();
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
         history.clear();
         future.clear();
         fillRequiredSpaces();
@@ -492,7 +495,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void increaseLiningThickness(){
         if(liningThickness>=getConfiguration().overhaul.fusion.maxLiningThickness)return;
         liningThickness++;
-        blocks = new Block[getWidth(innerRadius, coreSize, toroidWidth, liningThickness)][getHeight(innerRadius, coreSize, toroidWidth, liningThickness)][getWidth(innerRadius, coreSize, toroidWidth, liningThickness)];
+        blockGrids.clear();
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
         history.clear();
         future.clear();
         fillRequiredSpaces();
@@ -501,7 +507,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void decreaseInnerRadius(){
         if(innerRadius<=getConfiguration().overhaul.fusion.minInnerRadius)return;
         innerRadius--;
-        blocks = new Block[getWidth(innerRadius, coreSize, toroidWidth, liningThickness)][getHeight(innerRadius, coreSize, toroidWidth, liningThickness)][getWidth(innerRadius, coreSize, toroidWidth, liningThickness)];
+        blockGrids.clear();
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
         history.clear();
         future.clear();
         fillRequiredSpaces();
@@ -510,7 +519,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void decreaseCoreSize(){
         if(coreSize<=getConfiguration().overhaul.fusion.minCoreSize)return;
         coreSize--;
-        blocks = new Block[getWidth(innerRadius, coreSize, toroidWidth, liningThickness)][getHeight(innerRadius, coreSize, toroidWidth, liningThickness)][getWidth(innerRadius, coreSize, toroidWidth, liningThickness)];
+        blockGrids.clear();
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
         history.clear();
         future.clear();
         fillRequiredSpaces();
@@ -519,7 +531,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void decreaseToroidWidth(){
         if(toroidWidth<=getConfiguration().overhaul.fusion.minToroidWidth)return;
         toroidWidth--;
-        blocks = new Block[getWidth(innerRadius, coreSize, toroidWidth, liningThickness)][getHeight(innerRadius, coreSize, toroidWidth, liningThickness)][getWidth(innerRadius, coreSize, toroidWidth, liningThickness)];
+        blockGrids.clear();
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
         history.clear();
         future.clear();
         fillRequiredSpaces();
@@ -528,7 +543,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void decreaseLiningThickness(){
         if(liningThickness<=getConfiguration().overhaul.fusion.minLiningThickness)return;
         liningThickness--;
-        blocks = new Block[getWidth(innerRadius, coreSize, toroidWidth, liningThickness)][getHeight(innerRadius, coreSize, toroidWidth, liningThickness)][getWidth(innerRadius, coreSize, toroidWidth, liningThickness)];
+        blockGrids.clear();
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        blockGrids.add(new BlockGrid(0, 0, 0, width-1, height-1, width-1));
         history.clear();
         future.clear();
         fillRequiredSpaces();
@@ -626,7 +644,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         }
         results.put(0, zero);
         //all the other layers
-        int maxDistance = getX()*getY()*getZ();//the algorithm requires a max search distance. Rather than changing that, I'll just be lazy and give it a big enough number
+        int maxDistance = getWidth(innerRadius, coreSize, toroidWidth, liningThickness)*getHeight(innerRadius, coreSize, toroidWidth, liningThickness);//the algorithm requires a max search distance. Rather than changing that, I'll just be lazy and give it a big enough number
         for(int i = 0; i<maxDistance; i++){
             ArrayList<Block> layer = new ArrayList<>();
             ArrayList<Block> lastLayer = new ArrayList<>(results.get(i));
@@ -710,14 +728,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     @Override
     public OverhaulFusionReactor doCopy(){
         OverhaulFusionReactor copy = blankCopy();
-        for(int x = 0; x<getX(); x++){
-            for(int y = 0; y<getY(); y++){
-                for(int z = 0; z<getZ(); z++){
-                    Block get = getBlock(x, y, z);
-                    if(get!=null)copy.setBlockExact(x, y, z, get.copy());
-                }
-            }
-        }
+        forEachPosition((x, y, z) -> {
+            Block get = getBlock(x, y, z);
+            if(get!=null)copy.setBlockExact(x, y, z, (Block)get.copy());
+        });
         synchronized(clusters){
             for(Cluster cluster : clusters){
                 copy.clusters.add(cluster.copy(copy));
@@ -737,19 +751,15 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     protected int doCount(Object o){
-        int count = 0;
-        if(o instanceof BreedingBlanketRecipe){
-            BreedingBlanketRecipe r = (BreedingBlanketRecipe)o;
-            for(int x = 0; x<getX(); x++){
-                for(int y = 0; y<getY(); y++){
-                    for(int z = 0; z<getZ(); z++){
-                        Block b = getBlock(x, y, z);
-                        if(b==null)continue;
-                        if(b.breedingBlanketRecipe==r)count++;
-                    }
-                }
-            }
-            return count;
+        int[] count = new int[1];
+        if(o instanceof BlockRecipe){
+            BlockRecipe r = (BlockRecipe)o;
+            forEachPosition((x, y, z) -> {
+                Block b = getBlock(x, y, z);
+                if(b==null)return;
+                if(b.recipe==r)count[0]++;
+            });
+            return count[0];
         }
         throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in "+getDefinitionName()+"!");
     }
@@ -763,7 +773,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     protected void getFluidOutputs(HashMap<String, Double> outputs){
-        outputs.put(coolantRecipe.output, (double)totalOutput);
+        outputs.put(coolantRecipe.outputName, (double)totalOutput);
     }
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){}
@@ -773,12 +783,14 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     public LocationCategory getLocationCategory(int x, int y, int z){
         //old; make and use local variables >.>
-        int coreMinX = (getX()-coreSize)/2;
-        int coreMaxX = (getX()+coreSize)/2-1;
-        int coreMinY = (getY()-coreSize)/2;
-        int coreMaxY = (getY()+coreSize)/2-1;
-        int coreMinZ = (getZ()-coreSize)/2;
-        int coreMaxZ = (getZ()+coreSize)/2-1;
+        int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
+        int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
+        int coreMinX = (width-coreSize)/2;
+        int coreMaxX = (width+coreSize)/2-1;
+        int coreMinY = (height-coreSize)/2;
+        int coreMaxY = (height+coreSize)/2-1;
+        int coreMinZ = (width-coreSize)/2;
+        int coreMaxZ = (width+coreSize)/2-1;
         if(x>=coreMinX-1&&y>=coreMinY&&z>=coreMinZ&&x<=coreMaxX+1&&y<=coreMaxY&&z<=coreMaxZ)return LocationCategory.CORE;
         if(x>=coreMinX&&y>=coreMinY-1&&z>=coreMinZ&&x<=coreMaxX&&y<=coreMaxY+1&&z<=coreMaxZ)return LocationCategory.CORE;
         if(x>=coreMinX&&y>=coreMinY&&z>=coreMinZ-1&&x<=coreMaxX&&y<=coreMaxY&&z<=coreMaxZ+1)return LocationCategory.CORE;
@@ -832,10 +844,6 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public enum LocationCategory{
         CORE,CONNECTOR,PLASMA,INTERIOR,POLOID,EXTERIOR,TOROID,NONE;
     }
-    @Override
-    public float get3DPreviewScale(){
-        return 1.95f;
-    }
     @Deprecated
     @Override
     public Menu getResizeMenu(GUI gui, MenuEdit editor){
@@ -867,11 +875,11 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         }
     }
     @Override
-    public void setBlock(int x, int y, int z, multiblock.Block block){
+    public void setBlock(int x, int y, int z, Block block){
         if(isLocationValid((Block)block, x,y,z))super.setBlock(x, y, z, block);
     }
     @Override
-    public void setBlockExact(int x, int y, int z, multiblock.Block exact){
+    public void setBlockExact(int x, int y, int z, Block exact){
         if(isLocationValid((Block)exact, x,y,z))super.setBlockExact(x, y, z, exact);
     }
     @Override
@@ -898,31 +906,30 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                     Block b = it.next();
                     if(!b.isHeatsink())it.remove();
                 }
-                int count = 0;
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
+                int[] count = new int[1];
+                forEachPosition((x, y, z) -> {
+                    if(getLocationCategory(x, y, z)==LocationCategory.EXTERIOR||getLocationCategory(x, y, z)==LocationCategory.INTERIOR){
+                        Block block = multiblock.getBlock(x, y, z);
+                        if(block==null||block.canBeQuickReplaced()){
+                            count[0]++;
+                        }
+                    }
+                });
+                suggestor.setCount(count[0]*blocks.size());
+                multiblock.forEachPosition((x, y, z) -> {
+                    if(getLocationCategory(x, y, z)==LocationCategory.EXTERIOR||getLocationCategory(x, y, z)==LocationCategory.INTERIOR){
+                        for(Block newBlock : blocks){
                             Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                count++;
+                                int oldCooling = 0;
+                                if(block.template.heatsinkHasBaseStats||block.recipe!=null)oldCooling = block.recipe==null?block.template.heatsinkCooling:block.recipe.heatsinkCooling;
+                                int newCooling = newBlock.recipe==null?newBlock.template.heatsinkCooling:newBlock.recipe.heatsinkCooling;
+                                if(newCooling>oldCooling&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                else suggestor.task.max--;
                             }
                         }
                     }
-                }
-                suggestor.setCount(count*blocks.size());
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
-                            for(Block newBlock : blocks){
-                                Block block = multiblock.getBlock(x, y, z);
-                                if(block==null||block.canBeQuickReplaced()){
-                                    if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
-                                    else suggestor.task.max--;
-                                }
-                            }
-                        }
-                    }
-                }
+                });
             }
         });
     }

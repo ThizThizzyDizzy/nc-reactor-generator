@@ -124,6 +124,10 @@ public abstract class Theme{
                 return new Color(c.getRed(), c.getBlue(), c.getGreen(), c.getAlpha()/16);
             }
             @Override
+            public Color getSidebarColor(){
+                return process(themes.get(0).getSidebarColor());
+            }
+            @Override
             public Color getFadeout(){
                 return process(themes.get(0).getFadeout());
             }
@@ -170,6 +174,7 @@ public abstract class Theme{
     public abstract Color getEditorListBorderColor();
     public abstract Color getDarkButtonColor();
     public abstract Color getButtonColor();
+    public abstract Color getSidebarColor();
     public abstract Color getSelectionColor();
     public abstract Color getRGBA(float r, float g, float b, float a);
     public abstract Color getWhite();
@@ -250,6 +255,10 @@ public abstract class Theme{
             return tint(.45f);
         }
         @Override
+        public Color getSidebarColor(){
+            return tint(background, .9f);
+        }
+        @Override
         public Color getRed(){
             return new Color(rgbTint, rgbTint*(1-rgbSat), rgbTint*(1-rgbSat));
         }
@@ -304,6 +313,7 @@ public abstract class Theme{
         private final Color rgb;
         private final Color white;
         private final Color fadeout;
+        private final Color sidebar;
         public RandomColorTheme(){
             this("RANDOM");
         }
@@ -328,6 +338,7 @@ public abstract class Theme{
             rgb = rand();
             white = rand();
             fadeout = rand();
+            sidebar = rand();
         }
         @Override
         public Color getBackgroundColor(){
@@ -408,6 +419,10 @@ public abstract class Theme{
         @Override
         public Color getFadeout(){
             return fadeout;
+        }
+        @Override
+        public Color getSidebarColor(){
+            return sidebar;
         }
     }
     private static class ChangingTheme extends Theme{
@@ -497,6 +512,10 @@ public abstract class Theme{
         @Override
         public Color getFadeout(){
             return current.getFadeout();
+        }
+        @Override
+        public Color getSidebarColor(){
+            return current.getSidebarColor();
         }
     }
     private static class SiezureTheme extends Theme{
@@ -600,6 +619,10 @@ public abstract class Theme{
         }
         @Override
         public Color getFadeout(){
+            return rand();
+        }
+        @Override
+        public Color getSidebarColor(){
             return rand();
         }
     }

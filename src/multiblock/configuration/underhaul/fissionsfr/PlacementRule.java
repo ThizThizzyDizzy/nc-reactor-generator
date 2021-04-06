@@ -150,23 +150,23 @@ public class PlacementRule extends RuleContainer{
     public String toString(){
         switch(ruleType){
             case BETWEEN:
-                if(max==6)return "At least "+min+" "+block.name;
-                if(min==max)return "Exactly "+min+" "+block.name;
-                return "Between "+min+" and "+max+" "+block.name;
+                if(max==6)return "At least "+min+" "+block.getDisplayName();
+                if(min==max)return "Exactly "+min+" "+block.getDisplayName();
+                return "Between "+min+" and "+max+" "+block.getDisplayName();
             case BETWEEN_GROUP:
                 if(max==6)return "At least "+min+" "+blockType.name;
                 if(min==max)return "Exactly "+min+" "+blockType.name;
                 return "Between "+min+" and "+max+" "+blockType.name;
             case AXIAL:
-                if(max==3)return "At least "+min+" Axial pairs of "+block.name;
-                if(min==max)return "Exactly "+min+" Axial pairs of "+block.name;
-                return "Between "+min+" and "+max+" Axial pairs of "+block.name;
+                if(max==3)return "At least "+min+" Axial pairs of "+block.getDisplayName();
+                if(min==max)return "Exactly "+min+" Axial pairs of "+block.getDisplayName();
+                return "Between "+min+" and "+max+" Axial pairs of "+block.getDisplayName();
             case AXIAL_GROUP:
                 if(max==3)return "At least "+min+" Axial pairs of "+blockType.name;
                 if(min==max)return "Exactly "+min+" Axial pairs of "+blockType.name;
                 return "Between "+min+" and "+max+" Axial pairs of "+blockType.name;
             case VERTEX:
-                return "Three "+block.name+" at the same vertex";
+                return "Three "+block.getDisplayName()+" at the same vertex";
             case VERTEX_GROUP:
                 return "Three "+blockType.name+" at the same vertex";
             case AND:
@@ -218,7 +218,9 @@ public class PlacementRule extends RuleContainer{
                 }
                 return num>=min&&num<=max;
             case AXIAL:
-                for(Axis axis : Axis.values()){
+                for(Axis axis : axes){
+                    if(!reactor.contains(block.x-axis.x, block.y-axis.y, block.z-axis.z))continue;
+                    if(!reactor.contains(block.x+axis.x, block.y+axis.y, block.z+axis.z))continue;
                     multiblock.underhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                     multiblock.underhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                     if(b1!=null&&b1.template==this.block&&b1.isActive()&&b2!=null&&b2.template==this.block&&b2.isActive())num++;
@@ -227,14 +229,18 @@ public class PlacementRule extends RuleContainer{
             case AXIAL_GROUP:
                 switch(blockType){
                     case AIR:
-                        for(Axis axis : Axis.values()){
+                        for(Axis axis : axes){
+                            if(!reactor.contains(block.x-axis.x, block.y-axis.y, block.z-axis.z))continue;
+                            if(!reactor.contains(block.x+axis.x, block.y+axis.y, block.z+axis.z))continue;
                             multiblock.underhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                             multiblock.underhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null&&b2==null)num++;
                         }
                         break;
                     default:
-                        for(Axis axis : Axis.values()){
+                        for(Axis axis : axes){
+                            if(!reactor.contains(block.x-axis.x, block.y-axis.y, block.z-axis.z))continue;
+                            if(!reactor.contains(block.x+axis.x, block.y+axis.y, block.z+axis.z))continue;
                             multiblock.underhaul.fissionsfr.Block b1 = reactor.getBlock(block.x-axis.x, block.y-axis.y, block.z-axis.z);
                             multiblock.underhaul.fissionsfr.Block b2 = reactor.getBlock(block.x+axis.x, block.y+axis.y, block.z+axis.z);
                             if(b1==null||b2==null)continue;
@@ -259,6 +265,7 @@ public class PlacementRule extends RuleContainer{
             case VERTEX:
                 ArrayList<Direction> dirs = new ArrayList<>();
                 for(Direction d : Direction.values()){
+                    if(!reactor.contains(block.x+d.x, block.y+d.y, block.z+d.z))continue;
                     multiblock.underhaul.fissionsfr.Block b = reactor.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
                     if(b.template==this.block)dirs.add(d);
                 }
@@ -273,6 +280,7 @@ public class PlacementRule extends RuleContainer{
             case VERTEX_GROUP:
                 dirs = new ArrayList<>();
                 for(Direction d : Direction.values()){
+                    if(!reactor.contains(block.x+d.x, block.y+d.y, block.z+d.z))continue;
                     multiblock.underhaul.fissionsfr.Block b = reactor.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
                     switch(blockType){
                         case AIR:
@@ -330,20 +338,13 @@ public class PlacementRule extends RuleContainer{
         VERTEX_GROUP("Vertex (Group)"),
         OR("Or"),
         AND("And");
-        private final String name;
+        public final String name;
         private RuleType(String name){
             this.name = name;
         }
         @Override
         public String toString(){
             return name;
-        }
-        public static String[] getStringList(){
-            String[] strs = new String[values().length];
-            for(int i = 0; i<strs.length; i++){
-                strs[i] = values()[i].toString();
-            }
-            return strs;
         }
     }
     public static enum BlockType{
@@ -352,20 +353,13 @@ public class PlacementRule extends RuleContainer{
         COOLER("Cooler"),
         FUEL_CELL("Fuel Cell"),
         MODERATOR("Moderator");
-        private final String name;
+        public final String name;
         private BlockType(String name){
             this.name = name;
         }
         @Override
         public String toString(){
             return name;
-        }
-        public static String[] getStringList(){
-            String[] strs = new String[values().length];
-            for(int i = 0; i<strs.length; i++){
-                strs[i] = values()[i].toString();
-            }
-            return strs;
         }
     }
     @Override

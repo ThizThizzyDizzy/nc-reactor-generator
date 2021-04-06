@@ -65,8 +65,7 @@ ltext 1 The turbine rotor consists of bearings, the rotor shaft, and rotor blade
 ltext 1 The bearing diameter must be between 1 and turbine diameter-2. If the turbine
 ltext 1 diameter is odd, the bearing diameter must also be odd. (likewise for even diameters)
 ltext 1 The bearing is placed in the casing centered on either end of the turbine.
-text .5 (To resize the bearing in the planner, click inside the multiblock with the bearing block selected)
-translate .25
+translate .5
 ltext 1 The rotor shaft is inside the turbine, between the two bearings.
 ltext 1 Rotor blades and stators are placed on the rotor shaft. As in the image above,
 ltext 1 each layer of blades/stators must be the same type, and must extend to the casing.

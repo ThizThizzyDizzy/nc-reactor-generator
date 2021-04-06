@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import multiblock.Block;
+import multiblock.BoundingBox;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
@@ -17,7 +18,10 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.FormattedText;
 import planner.JSON;
+import simplelibrary.Sys;
 import simplelibrary.config2.Config;
+import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorLevel;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
@@ -34,6 +38,7 @@ public class FileWriter{
             }
             @Override
             public void write(NCPFFile ncpf, OutputStream stream){
+                Sys.error(ErrorLevel.warning, "Hellrage JSON format is deprecated!\nCasings, configurations, and addons will not be saved!\nSome things, such as coolant recipes, may not be saved properly!\n\nPlease use NCPF for full support", null, ErrorCategory.fileIO);
                 if(!ncpf.multiblocks.isEmpty()){
                     if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by Hellrage JSON!");
                     Multiblock multi = ncpf.multiblocks.get(0);
@@ -53,23 +58,24 @@ public class FileWriter{
                         for(multiblock.configuration.underhaul.fissionsfr.Block b : ncpf.configuration.underhaul.fissionSFR.allBlocks){
                             JSON.JSONArray array = new JSON.JSONArray();
                             for(multiblock.underhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                                 if(block.template==b){
                                     JSON.JSONObject bl = new JSON.JSONObject();
-                                    bl.set("X", block.x+1);
-                                    bl.set("Y", block.y+1);
-                                    bl.set("Z", block.z+1);
+                                    bl.set("X", block.x);
+                                    bl.set("Y", block.y);
+                                    bl.set("Z", block.z);
                                     array.add(bl);
                                 }
                             }
-                            compressedReactor.put(b.name.replace(" ", "").replace("Liquid", "").replace("Active", "Active ").replace("Cooler", "").replace("Moderator", ""), array);
+                            compressedReactor.put(b.getDisplayName().replace(" ", "").replace("Liquid", "").replace("Active", "Active ").replace("Cooler", "").replace("Moderator", ""), array);
                         }
                         JSON.JSONObject dims = new JSON.JSONObject();
-                        dims.set("X", reactor.getX());
-                        dims.set("Y", reactor.getY());
-                        dims.set("Z", reactor.getZ());
+                        dims.set("X", reactor.getInternalWidth());
+                        dims.set("Y", reactor.getInternalHeight());
+                        dims.set("Z", reactor.getInternalDepth());
                         hellrage.set("InteriorDimensions", dims);
                         JSON.JSONObject usedFuel = new JSON.JSONObject();
-                        usedFuel.set("Name", reactor.fuel.name);
+                        usedFuel.set("Name", reactor.fuel.getDisplayName());
                         usedFuel.set("BasePower", reactor.fuel.power);
                         usedFuel.set("BaseHeat", reactor.fuel.heat);
                         usedFuel.set("FuelTime", reactor.fuel.time);
@@ -98,68 +104,73 @@ public class FileWriter{
                         JSON.JSONObject irradiators = new JSON.JSONObject();
                         JSON.JSONObject shields = new JSON.JSONObject();
                         for(multiblock.configuration.overhaul.fissionsfr.Block b : ncpf.configuration.overhaul.fissionSFR.allBlocks){
-                            if(b.cooling!=0){
+                            if(b.heatsink){
                                 JSON.JSONArray array = new JSON.JSONArray();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                    if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                                     if(block.template==b){
                                         JSON.JSONObject bl = new JSON.JSONObject();
-                                        bl.set("X", block.x+1);
-                                        bl.set("Y", block.y+1);
-                                        bl.set("Z", block.z+1);
+                                        bl.set("X", block.x);
+                                        bl.set("Y", block.y);
+                                        bl.set("Z", block.z);
                                         array.add(bl);
                                     }
                                 }
-                                heatSinks.set(b.name.replace(" ", "").replace("HeatSink", "").replace("Sink", "").replace("Heatsink", "").replace("Liquid", ""), array);
+                                heatSinks.set(b.getDisplayName().replace(" ", "").replace("HeatSink", "").replace("Sink", "").replace("Heatsink", "").replace("Liquid", ""), array);
                             }
                             if(b.moderator&&!b.shield){
                                 JSON.JSONArray array = new JSON.JSONArray();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                    if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                                     if(block.template==b){
                                         JSON.JSONObject bl = new JSON.JSONObject();
-                                        bl.set("X", block.x+1);
-                                        bl.set("Y", block.y+1);
-                                        bl.set("Z", block.z+1);
+                                        bl.set("X", block.x);
+                                        bl.set("Y", block.y);
+                                        bl.set("Z", block.z);
                                         array.add(bl);
                                     }
                                 }
-                                moderators.set(b.name.replace(" ", "").replace("Moderator", ""), array);
+                                moderators.set(b.getDisplayName().replace(" ", "").replace("Moderator", ""), array);
                             }
                             if(b.reflector){
                                 JSON.JSONArray array = new JSON.JSONArray();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                    if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                                     if(block.template==b){
                                         JSON.JSONObject bl = new JSON.JSONObject();
-                                        bl.set("X", block.x+1);
-                                        bl.set("Y", block.y+1);
-                                        bl.set("Z", block.z+1);
+                                        bl.set("X", block.x);
+                                        bl.set("Y", block.y);
+                                        bl.set("Z", block.z);
                                         array.add(bl);
                                     }
                                 }
-                                reflectors.set(b.name.replace(" ", "").replace("Reflector", ""), array);
+                                reflectors.set(b.getDisplayName().replace(" ", "").replace("Reflector", ""), array);
                             }
                             if(b.shield){
                                 JSON.JSONArray array = new JSON.JSONArray();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                    if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                                     if(block.template==b){
                                         JSON.JSONObject bl = new JSON.JSONObject();
-                                        bl.set("X", block.x+1);
-                                        bl.set("Y", block.y+1);
-                                        bl.set("Z", block.z+1);
+                                        bl.set("X", block.x);
+                                        bl.set("Y", block.y);
+                                        bl.set("Z", block.z);
                                         array.add(bl);
                                     }
                                 }
-                                shields.set(b.name.replace(" ", "").replace("NeutronShield", "").replace("Shield", ""), array);
+                                shields.set(b.getDisplayName().replace(" ", "").replace("NeutronShield", "").replace("Shield", ""), array);
                             }
                             if(b.fuelCell){
                                 HashMap<String, ArrayList<multiblock.overhaul.fissionsfr.Block>> cells = new HashMap<>();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                    if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                                     if(block.template==b){
-                                        String name = block.fuel.name;
+                                        String name = block.recipe.getInputDisplayName();
                                         if(name.endsWith(" Oxide"))name = "[OX]"+name.replace(" Oxide", "");
                                         if(name.endsWith(" Nitride"))name = "[NI]"+name.replace(" Nitride", "");
                                         if(name.endsWith("-Zirconium Alloy"))name = "[ZA]"+name.replace("-Zirconium Alloy", "");
                                         name+=";"+(block.isPrimed()?"True":"False")+";";
-                                        if(block.isPrimed())name+=(block.fuel.selfPriming?"Self":block.source.name);
+                                        if(block.isPrimed())name+=(block.recipe.fuelCellSelfPriming?"Self":block.source.template.getDisplayName());
                                         else name+="None";
                                         if(cells.containsKey(name)){
                                             cells.get(name).add(block);
@@ -174,9 +185,9 @@ public class FileWriter{
                                     JSON.JSONArray array = new JSON.JSONArray();
                                     for(multiblock.overhaul.fissionsfr.Block block : cells.get(key)){
                                         JSON.JSONObject bl = new JSON.JSONObject();
-                                        bl.set("X", block.x+1);
-                                        bl.set("Y", block.y+1);
-                                        bl.set("Z", block.z+1);
+                                        bl.set("X", block.x);
+                                        bl.set("Y", block.y);
+                                        bl.set("Z", block.z);
                                         array.add(bl);
                                     }
                                     fuelCells.set(key, array);
@@ -185,8 +196,9 @@ public class FileWriter{
                             if(b.irradiator){
                                 HashMap<String, ArrayList<multiblock.overhaul.fissionsfr.Block>> radiators = new HashMap<>();
                                 for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                                    if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                                     if(block.template==b){
-                                        String name = "{\\\"HeatPerFlux\\\":"+(block.irradiatorRecipe==null?0:(int)block.irradiatorRecipe.heat)+",\\\"EfficiencyMultiplier\\\":"+(block.irradiatorRecipe==null?0:block.irradiatorRecipe.efficiency)+"}";
+                                        String name = "{\\\"HeatPerFlux\\\":"+(block.recipe==null?0:(int)block.recipe.irradiatorHeat)+",\\\"EfficiencyMultiplier\\\":"+(block.recipe==null?0:block.recipe.irradiatorEfficiency)+"}";
                                         if(radiators.containsKey(name)){
                                             radiators.get(name).add(block);
                                         }else{
@@ -200,9 +212,9 @@ public class FileWriter{
                                     JSON.JSONArray array = new JSON.JSONArray();
                                     for(multiblock.overhaul.fissionsfr.Block block : radiators.get(key)){
                                         JSON.JSONObject bl = new JSON.JSONObject();
-                                        bl.set("X", block.x+1);
-                                        bl.set("Y", block.y+1);
-                                        bl.set("Z", block.z+1);
+                                        bl.set("X", block.x);
+                                        bl.set("Y", block.y);
+                                        bl.set("Z", block.z);
                                         array.add(bl);
                                     }
                                     irradiators.set(key, array);
@@ -217,21 +229,22 @@ public class FileWriter{
                         data.set("NeutronShields", shields);
                         JSON.JSONArray conductors = new JSON.JSONArray();
                         for(multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
+                            if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.isConductor()||block.isInert()){
                                 JSON.JSONObject bl = new JSON.JSONObject();
-                                bl.set("X", block.x+1);
-                                bl.set("Y", block.y+1);
-                                bl.set("Z", block.z+1);
+                                bl.set("X", block.x);
+                                bl.set("Y", block.y);
+                                bl.set("Z", block.z);
                                 conductors.add(bl);
                             }
                         }
                         data.set("Conductors", conductors);
                         JSON.JSONObject dims = new JSON.JSONObject();
-                        dims.set("X", reactor.getX());
-                        dims.set("Y", reactor.getY());
-                        dims.set("Z", reactor.getZ());
+                        dims.set("X", reactor.getInternalWidth());
+                        dims.set("Y", reactor.getInternalHeight());
+                        dims.set("Z", reactor.getInternalDepth());
                         data.set("InteriorDimensions", dims);
-                        data.set("CoolantRecipeName", reactor.coolantRecipe.name);
+                        data.set("CoolantRecipeName", reactor.coolantRecipe.getInputDisplayName()+" to "+reactor.coolantRecipe.getOutputDisplayName());
                         hellrage.set("Data", data);
                         try{
                             hellrage.write(stream);
@@ -320,15 +333,16 @@ public class FileWriter{
                     }
                     final double tW = textWidth+borderSize;
                     final double pW = partsWidth+borderSize;
-                    int width = (int) Math.max(textWidth+partsWidth+totalTextHeight,multi.getX()*blockSize+borderSize);
-                    int multisPerRow = Math.max(1, (int)(width/(multi.getX()*blockSize+borderSize)));
-                    int rowCount = (multi.getY()+multisPerRow-1)/multisPerRow;
-                    int height = totalTextHeight+rowCount*(multi.getZ()*blockSize+borderSize)+borderSize/2;
+                    BoundingBox bbox = multi.getBoundingBox();
+                    int width = (int) Math.max(textWidth+partsWidth+totalTextHeight,bbox.getWidth()*blockSize+borderSize);
+                    int multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
+                    int rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
+                    int height = totalTextHeight+rowCount*(bbox.getDepth()*blockSize+borderSize)+borderSize/2;
                     while(rowCount>1&&height>width){
                         width++;
-                        multisPerRow = Math.max(1, (int)(width/(multi.getX()*blockSize+borderSize)));
-                        rowCount = (multi.getY()+multisPerRow-1)/multisPerRow;
-                        height = totalTextHeight+rowCount*(multi.getZ()*blockSize+borderSize);
+                        multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
+                        rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
+                        height = totalTextHeight+rowCount*(bbox.getDepth()*blockSize+borderSize);
                     }
                     int mpr = multisPerRow;
                     Core.BufferRenderer renderer = (buff) -> {
@@ -356,21 +370,22 @@ public class FileWriter{
                         GL11.glScaled(1, 1, 0.0001);
                         GL11.glRotated(45, 1, 0, 0);
                         GL11.glRotated(45, 0, 1, 0);
-                        double size = Math.max(multi.getX(), Math.max(multi.getY(), multi.getZ()));
+                        double size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
                         GL11.glScaled(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2);
                         GL11.glScaled(1/size, 1/size, 1/size);
-                        GL11.glTranslated(-multi.getX()/2d, -multi.getY()/2d, -multi.getZ()/2d);
+                        GL11.glRotated(180, 1, 0, 0);
+                        GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
                         multi.draw3DInOrder();
                         GL11.glPopMatrix();
 //                        GL11.glDisable(GL11.GL_CULL_FACE);
-                        for(int y = 0; y<multi.getY(); y++){
+                        for(int y = 0; y<bbox.getHeight(); y++){
                             int column = y%mpr;
                             int row = y/mpr;
-                            int layerWidth = multi.getX()*blockSize+borderSize;
-                            int layerHeight = multi.getZ()*blockSize+borderSize;
-                            for(int x = 0; x<multi.getX(); x++){
-                                for(int z = 0; z<multi.getZ(); z++){
-                                    Block b = multi.getBlock(x, y, z);
+                            int layerWidth = bbox.getWidth()*blockSize+borderSize;
+                            int layerHeight = bbox.getDepth()*blockSize+borderSize;
+                            for(int x = 0; x<bbox.getWidth(); x++){
+                                for(int z = 0; z<bbox.getDepth(); z++){
+                                    Block b = multi.getBlock(x+bbox.x1, y+bbox.y1, z+bbox.z1);
                                     if(b!=null)b.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, true, multi);
                                     if(multi instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multi).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
                                         Renderer2D.drawRect(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"));

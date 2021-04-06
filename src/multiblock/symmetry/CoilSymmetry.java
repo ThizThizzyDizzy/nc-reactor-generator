@@ -1,52 +1,42 @@
 package multiblock.symmetry;
 import java.util.ArrayList;
 import java.util.Locale;
-import multiblock.Block;
-import multiblock.Multiblock;
+import multiblock.overhaul.turbine.Block;
 import multiblock.overhaul.turbine.OverhaulTurbine;
-public abstract class CoilSymmetry extends Symmetry{
+public abstract class CoilSymmetry extends Symmetry<OverhaulTurbine>{
     public static CoilSymmetry X = new CoilSymmetry("X"){
         @Override
-        public void apply(Multiblock multiblock){
-            if(multiblock instanceof OverhaulTurbine){
-                ArrayList<Block> bls = multiblock.getBlocks(true);
-                for(Block b : bls){
-                    if(((multiblock.overhaul.turbine.Block)b).blade!=null)continue;
-                    int X = multiblock.getX()-b.x-1;
-                    multiblock.setBlock(X, b.y, b.z, multiblock.getBlock(b.x, b.y, b.z));
-                }
-            }else{
-                throw new IllegalArgumentException("Coil symmetry can only be applied to turbines!");
+        public void apply(OverhaulTurbine multiblock){
+            ArrayList<Block> bls = multiblock.getBlocks(true);
+            for(Block b : bls){
+                if(b.x==0||b.y==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1)continue;
+                if(b.template.blade)continue;
+                int X = multiblock.getExternalWidth()-b.x-1;
+                multiblock.setBlock(X, b.y, b.z, multiblock.getBlock(b.x, b.y, b.z));
             }
         }
     };
     public static CoilSymmetry Y = new CoilSymmetry("Y"){
         @Override
-        public void apply(Multiblock multiblock){
-            if(multiblock instanceof OverhaulTurbine){
-                ArrayList<Block> bls = multiblock.getBlocks(true);
-                for(Block b : bls){
-                    if(((multiblock.overhaul.turbine.Block)b).blade!=null)continue;
-                    int Y = multiblock.getY()-b.y-1;
-                    multiblock.setBlock(b.x, Y, b.z, multiblock.getBlock(b.x, b.y, b.z));
-                }
-            }else{
-                throw new IllegalArgumentException("Coil symmetry can only be applied to turbines!");
+        public void apply(OverhaulTurbine multiblock){
+            ArrayList<Block> bls = multiblock.getBlocks(true);
+            for(Block b : bls){
+                if(b.x==0||b.y==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1)continue;
+                if(b.template.blade)continue;
+                int Y = multiblock.getExternalHeight()-b.y-1;
+                multiblock.setBlock(b.x, Y, b.z, multiblock.getBlock(b.x, b.y, b.z));
             }
         }
     };
     public static CoilSymmetry Z = new CoilSymmetry("Z"){
         @Override
-        public void apply(Multiblock multiblock){
-            if(multiblock instanceof OverhaulTurbine){
-                ArrayList<Block> bls = multiblock.getBlocks(true);
-                for(Block b : bls){
-                    if(((multiblock.overhaul.turbine.Block)b).blade!=null)continue;
-                    int Z = multiblock.getZ()-b.z-1;
-                    multiblock.setBlock(b.x, b.y, Z, multiblock.getBlock(b.x, b.y, b.z));
-                }
-            }else{
-                throw new IllegalArgumentException("Coil symmetry can only be applied to turbines!");
+        public void apply(OverhaulTurbine multiblock){
+            ArrayList<Block> bls = multiblock.getBlocks(true);
+            for(Block b : bls){
+                if(b.x==0||b.y==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1)continue;
+                if(b.template.blade)continue;
+                int Z = multiblock.getExternalDepth()-b.z-1;
+                multiblock.setBlock(b.x, b.y, Z, multiblock.getBlock(b.x, b.y, b.z));
             }
         }
     };

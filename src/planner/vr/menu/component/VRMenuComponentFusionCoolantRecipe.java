@@ -34,7 +34,7 @@ public class VRMenuComponentFusionCoolantRecipe extends VRMenuComponent{
         if(((OverhaulFusionReactor)editor.getMultiblock()).coolantRecipe.equals(coolantRecipe)){
             VRCore.drawCubeOutline(-.0025, -.0025, -.0025, width+.0025, height+.0025, depth+.0025, .0025);//2.5mm
         }
-        drawText(coolantRecipe.name);
+        drawText(coolantRecipe.getInputDisplayName());
     }
     public void drawText(String text){
         double textLength = FontManager.getLengthForStringWithHeight(text, height);

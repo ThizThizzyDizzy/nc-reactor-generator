@@ -7,18 +7,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import multiblock.Action;
 import multiblock.Block;
+import multiblock.EditorSpace;
 import multiblock.Multiblock;
 import multiblock.action.ClearSelectionAction;
-import multiblock.action.CopyAction;
 import multiblock.action.DeselectAction;
-import multiblock.action.MoveAction;
 import multiblock.action.PasteAction;
 import multiblock.action.SelectAction;
 import multiblock.action.SetSelectionAction;
 import multiblock.action.SetblocksAction;
-import multiblock.configuration.overhaul.fissionsfr.Fuel;
-import multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe;
-import multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
@@ -69,11 +65,9 @@ public class VRMenuEdit extends VRMenu implements Editor{
     private HashMap<Integer, EditorTool> paste = new HashMap<>();
     private HashMap<Integer, Integer> selectedTool = new HashMap<>();
     public HashMap<Integer, Integer> selectedBlock = new HashMap<>();
-    public HashMap<Integer, Integer> selectedFusionBreedingBlanketRecipe = new HashMap<>();
-    public HashMap<Integer, Integer> selectedOverSFRFuel = new HashMap<>();
-    public HashMap<Integer, Integer> selectedSFRIrradiatorRecipe = new HashMap<>();
-    public HashMap<Integer, Integer> selectedOverMSRFuel = new HashMap<>();
-    public HashMap<Integer, Integer> selectedMSRIrradiatorRecipe = new HashMap<>();
+    public HashMap<Integer, Integer> selectedFusionBlockRecipe = new HashMap<>();
+    public HashMap<Integer, Integer> selectedSFRBlockRecipe = new HashMap<>();
+    public HashMap<Integer, Integer> selectedMSRBlockRecipe = new HashMap<>();
     private VRMenuComponentToolPanel leftToolPanel  = add(new VRMenuComponentToolPanel(this, -.625, 1, -1, .5, .5, .1, 0, 0, 0));
     private VRMenuComponentToolPanel rightToolPanel  = add(new VRMenuComponentToolPanel(this, .125, 1, -1, .5, .5, .1, 0, 0, 0));
     private VRMenuComponentSpecialPanel leftSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -1, .625, -.125, .5, 1, .1, 0, 90, 0));
@@ -95,7 +89,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public VRMenuEdit(VRGUI gui, Multiblock multiblock){
         super(gui, null);
         this.multiblock = multiblock;
-        grid = add(new VRMenuComponentEditorGrid(0, 1, 0, 1, this, multiblock));
+        grid = add(new VRMenuComponentEditorGrid(0, 1, 0, 1, this, multiblock, (EditorSpace)multiblock.getEditorSpaces().get(0)));
         openTargetZ = grid.z;
         done.setTooltip("Stop editing this multiblock and return to the main menu");
         resize.setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)");
@@ -190,11 +184,9 @@ public class VRMenuEdit extends VRMenu implements Editor{
         tools.add(new RectangleTool(this, id));
         selectedTool.put(id, 2);//pencil
         selectedBlock.put(id, 0);
-        selectedFusionBreedingBlanketRecipe.put(id, 0);
-        selectedOverSFRFuel.put(id, 0);
-        selectedSFRIrradiatorRecipe.put(id, 0);
-        selectedOverMSRFuel.put(id, 0);
-        selectedMSRIrradiatorRecipe.put(id, 0);
+        selectedFusionBlockRecipe.put(id, 0);
+        selectedSFRBlockRecipe.put(id, 0);
+        selectedMSRBlockRecipe.put(id, 0);
         editorTools.put(id, tools);
         selection.put(id, new ArrayList<>());
         copy.put(id, new CopyTool(this, id));
@@ -331,35 +323,24 @@ public class VRMenuEdit extends VRMenu implements Editor{
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulSFR){
-            if(((multiblock.overhaul.fissionsfr.Block)set.block).isFuelCell()){
-                ((multiblock.overhaul.fissionsfr.Block)set.block).fuel = getSelectedOverSFRFuel(id);
-            }
-            if(((multiblock.overhaul.fissionsfr.Block)set.block).isIrradiator()){
-                ((multiblock.overhaul.fissionsfr.Block)set.block).irradiatorRecipe = getSelectedSFRIrradiatorRecipe(id);
+            multiblock.overhaul.fissionsfr.Block block = (multiblock.overhaul.fissionsfr.Block)set.block;
+            if(!block.template.allRecipes.isEmpty()||(block.template.parent!=null&&!block.template.parent.allRecipes.isEmpty())){
+                block.recipe = getSelectedOverhaulSFRBlockRecipe(id);
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulMSR){
-            if(((multiblock.overhaul.fissionmsr.Block)set.block).isFuelVessel()){
-                ((multiblock.overhaul.fissionmsr.Block)set.block).fuel = getSelectedOverMSRFuel(id);
-            }
-            if(((multiblock.overhaul.fissionmsr.Block)set.block).isIrradiator()){
-                ((multiblock.overhaul.fissionmsr.Block)set.block).irradiatorRecipe = getSelectedMSRIrradiatorRecipe(id);
+            multiblock.overhaul.fissionmsr.Block block = (multiblock.overhaul.fissionmsr.Block)set.block;
+            if(!block.template.allRecipes.isEmpty()||(block.template.parent!=null&&!block.template.parent.allRecipes.isEmpty())){
+                block.recipe = getSelectedOverhaulMSRBlockRecipe(id);
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulFusionReactor){
-            if(((multiblock.overhaul.fusion.Block)set.block).isBreedingBlanket()){
-                ((multiblock.overhaul.fusion.Block)set.block).breedingBlanketRecipe = getSelectedFusionBreedingBlanketRecipe(id);
+            multiblock.overhaul.fusion.Block block = (multiblock.overhaul.fusion.Block)set.block;
+            if(!block.template.allRecipes.isEmpty()){
+                block.recipe = getSelectedOverhaulFusionBlockRecipe(id);
             }
         }
         action(set, true);
-    }
-    @Override
-    public void cloneSelection(int id, int x, int y, int z){
-        action(new CopyAction(this, id, selection.get(id), x, y, z), true);
-    }
-    @Override
-    public void moveSelection(int id, int x, int y, int z){
-        action(new MoveAction(this, id, selection.get(id), x, y, z), true);
     }
     @Override
     public void pasteSelection(int id, int x, int y, int z){
@@ -371,7 +352,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public void selectGroup(int id, int x, int y, int z){
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
-            select(id, 0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
+            selectAll(id);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
@@ -384,7 +365,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
     public void deselectGroup(int id, int x, int y, int z){
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
-            deselect(id, 0, 0, 0, multiblock.getX()-1, multiblock.getY()-1, multiblock.getZ()-1);
+            deselectAll(id);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
@@ -532,24 +513,16 @@ public class VRMenuEdit extends VRMenu implements Editor{
         return new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
     }//doesn't do alpha
     @Override
-    public BreedingBlanketRecipe getSelectedFusionBreedingBlanketRecipe(int id){
-        return multiblock.getConfiguration().overhaul.fusion.allBreedingBlanketRecipes.get(selectedFusionBreedingBlanketRecipe.get(id));
+    public multiblock.configuration.overhaul.fusion.BlockRecipe getSelectedOverhaulFusionBlockRecipe(int id){
+        return ((multiblock.overhaul.fusion.Block)getSelectedBlock(id)).template.allRecipes.get(selectedFusionBlockRecipe.get(id));
     }
     @Override
-    public Fuel getSelectedOverSFRFuel(int id){
-        return multiblock.getConfiguration().overhaul.fissionSFR.allFuels.get(selectedOverSFRFuel.get(id));
+    public multiblock.configuration.overhaul.fissionsfr.BlockRecipe getSelectedOverhaulSFRBlockRecipe(int id){
+        return ((multiblock.overhaul.fissionsfr.Block)getSelectedBlock(id)).template.allRecipes.get(selectedSFRBlockRecipe.get(id));
     }
     @Override
-    public IrradiatorRecipe getSelectedSFRIrradiatorRecipe(int id){
-        return multiblock.getConfiguration().overhaul.fissionSFR.allIrradiatorRecipes.get(selectedSFRIrradiatorRecipe.get(id));
-    }
-    @Override
-    public multiblock.configuration.overhaul.fissionmsr.Fuel getSelectedOverMSRFuel(int id){
-        return multiblock.getConfiguration().overhaul.fissionMSR.allFuels.get(selectedOverMSRFuel.get(id));
-    }
-    @Override
-    public multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe getSelectedMSRIrradiatorRecipe(int id){
-        return multiblock.getConfiguration().overhaul.fissionMSR.allIrradiatorRecipes.get(selectedMSRIrradiatorRecipe.get(id));
+    public multiblock.configuration.overhaul.fissionmsr.BlockRecipe getSelectedOverhaulMSRBlockRecipe(int id){
+        return ((multiblock.overhaul.fissionmsr.Block)getSelectedBlock(id)).template.allRecipes.get(selectedMSRBlockRecipe.get(id));
     }
     public VRMenu alreadyOpen(){
         openProgress = openTime;
@@ -629,5 +602,15 @@ public class VRMenuEdit extends VRMenu implements Editor{
     @Override
     public void action(Action action, boolean allowUndo){
         multiblock.action(action, allowUndo);
+    }
+    private void selectAll(int id){
+        ArrayList<int[]> sel = new ArrayList<>();
+        multiblock.forEachPosition((x, y, z) -> {
+            sel.add(new int[]{x,y,z});
+        });
+        setSelection(id, sel);
+    }
+    private void deselectAll(int id){
+        setSelection(id, new ArrayList<>());
     }
 }

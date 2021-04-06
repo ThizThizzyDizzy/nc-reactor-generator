@@ -1,4 +1,5 @@
 package multiblock.configuration;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -40,5 +41,18 @@ public class TextureManager{
             c = (int)h;
         }
         return c;
+    }
+    public static Color convert(Color color){
+        return new Color(convert(color.getRed()), convert(color.getGreen()), convert(color.getBlue()), color.getAlpha());
+    }
+    public static BufferedImage convert(BufferedImage image){
+        BufferedImage converted = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        for(int x = 0; x<image.getWidth(); x++){
+            for(int y = 0; y<image.getHeight(); y++){
+                Color col = new Color(image.getRGB(x, y), true);
+                converted.setRGB(x, y, convert(col).getRGB());
+            }
+        }
+        return converted;
     }
 }

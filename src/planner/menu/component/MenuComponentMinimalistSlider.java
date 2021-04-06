@@ -2,9 +2,20 @@ package planner.menu.component;
 import java.awt.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
-import simplelibrary.opengl.gui.components.MenuComponentSlider;
-public class MenuComponentMinimalistSlider extends MenuComponentSlider{
+import simplelibrary.opengl.gui.components.MenuComponent;
+public class MenuComponentMinimalistSlider extends MenuComponent{
+    public boolean enabled;
+    public double textInset = -1;
+    public double minimum;
+    public double maximum;
+    public double value;
+    public final int digits;
+    public boolean isPressed;
+    public double sliderHeight;
+    public double maxSliderX;
+    public double sliderX;    
     private final boolean darker;
+    private String name;
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled){
         this(x, y, width, height, name, minimum, maximum, initial, enabled, false);
     }
@@ -12,32 +23,29 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
         this(x, y, width, height, name, minimum, maximum, initial, digits, enabled, false);
     }
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, int minimum, int maximum, int initial, boolean enabled, boolean darker){
-        super(x, y, width, height, minimum, maximum, initial, enabled);
+        super(x, y, width, height);
         this.darker = darker;
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
+        this.value = initial;
+        digits = 0;
+        this.enabled = enabled;
         updateSlider();
     }
     public MenuComponentMinimalistSlider(double x, double y, double width, double height, String name, double minimum, double maximum, double initial, int digits, boolean enabled, boolean darker){
-        super(x, y, width, height, minimum, maximum, initial, digits, enabled);
+        super(x, y, width, height);
         this.darker = darker;
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
+        this.value = initial;
+        this.digits = digits;
+        this.enabled = enabled;
         updateSlider();
     }
-    private boolean isPressed;
-    private double sliderHeight;
-    private double maxSliderX;
-    private double sliderX;
-    private String name;
-    private double minimum;
-    private double maximum;
-    private double value;
     @Override
-    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-        super.onMouseButton(x, y, button, pressed, mods);
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods) {
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed&&enabled){
             isPressed = true;
             updateSlider(x);
@@ -47,6 +55,8 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
     }
     @Override
     public void render(){
+        updateSlider();
+        sliderHeight = height/2;
         if(textInset<0){
             textInset = height/10;
         }
@@ -81,6 +91,7 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
         }else if(percent<0){
             percent = 0;
         }
+        value = percent*(maximum-minimum)+minimum;
         updateSlider();
     }
     private void updateSlider(){
@@ -89,6 +100,24 @@ public class MenuComponentMinimalistSlider extends MenuComponentSlider{
         sliderX = 0;
         double percent = (getValue()-minimum)/(maximum-minimum);
         sliderX = maxSliderX*percent;
+    }
+    public String getValueS(){
+        if(Math.round(getValue())==getValue()){
+            return ""+Math.round(getValue());
+        }else{
+            return ""+getValue();
+        }
+    }
+    public double getValue(){
+        if(digits==0){
+            return Math.round(value);
+        }else{
+            return (double)Math.round(value*digits)/digits;
+        }
+    }
+    public void setValue(double value){
+        this.value = Math.min(maximum, Math.max(minimum, value));
+        updateSlider();
     }
     @Override
     public MenuComponentMinimalistSlider setTooltip(String tooltip){

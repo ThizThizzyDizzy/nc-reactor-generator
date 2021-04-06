@@ -47,7 +47,7 @@ public class MenuComponentMultiblock extends MenuComponent{
     }
     @Override
     public void render(){
-        if(main.settingInputs!=null&&!multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.input)){
+        if(main.settingInputs!=null&&!multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.inputName)){
             isMouseOver = false;
         }
         if(isMouseOver&&!isSelected)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
@@ -57,7 +57,7 @@ public class MenuComponentMultiblock extends MenuComponent{
             Core.applyColor(Core.theme.getRGBA(1, 1, 0, 1), .25f);
             drawRect(x, y, x+width, y+height, 0);
         }
-        if(main.settingInputs!=null&&!multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.input)){
+        if(main.settingInputs!=null&&!multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.inputName)){
             Core.applyColor(Core.theme.getRGBA(0, 0, 0, 1), .25f);
             drawRect(x, y, x+width, y+height, 0);
         }
@@ -74,7 +74,7 @@ public class MenuComponentMultiblock extends MenuComponent{
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&pressed){
             if(main.settingInputs!=null){
                 if(multiblock!=main.settingInputs){
-                    if(multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.input)){
+                    if(multiblock.getFluidOutputs().containsKey(main.settingInputs.recipe.inputName)){
                         if(main.settingInputs.inputs.contains(multiblock)){
                             main.settingInputs.inputs.remove(multiblock);
                         }else{

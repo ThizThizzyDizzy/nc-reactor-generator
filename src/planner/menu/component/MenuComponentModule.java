@@ -20,7 +20,7 @@ public class MenuComponentModule extends MenuComponent{
         else Core.applyColor(enabled?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(Core.theme.getTextColor());
-        drawText(module.getName()+" ("+(module.isActive()?"Active":"Inactive")+")");
+        drawText(module.getDisplayName()+" ("+(module.isActive()?"Active":"Inactive")+")");
     }
     public void drawText(String text){
         if(Core.isControlPressed()){

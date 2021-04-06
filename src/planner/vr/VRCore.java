@@ -487,24 +487,24 @@ public class VRCore{
         GL11.glBegin(GL11.GL_QUADS);
         //xy +z
         if(pz){
-            if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y1, z2);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x2, y1, z2);
+            GL11.glVertex3d(x1, y1, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y2, z2);
+            GL11.glVertex3d(x2, y1, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x2, y2, z2);
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
             GL11.glVertex3d(x1, y2, z2);
         }
         //xy -z
         if(nz){
-            if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(x1, y1, z1);
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
             GL11.glVertex3d(x1, y2, z1);
-            if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y2, z1);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x2, y2, z1);
+            if(texture!=0)GL11.glTexCoord2d(1, 1);
             GL11.glVertex3d(x2, y1, z1);
         }
         //xz +y
@@ -520,35 +520,35 @@ public class VRCore{
         }
         //xz -y
         if(ny){
-            if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x2, y1, z1);
+            GL11.glVertex3d(x1, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y1, z2);
+            GL11.glVertex3d(x2, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x2, y1, z2);
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
             GL11.glVertex3d(x1, y1, z2);
         }
         //yz +x
         if(px){
-            if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x2, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
+            GL11.glVertex3d(x2, y1, z1);
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
             GL11.glVertex3d(x2, y2, z1);
-            if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y2, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x2, y2, z2);
+            if(texture!=0)GL11.glTexCoord2d(1, 1);
             GL11.glVertex3d(x2, y1, z2);
         }
         //yz -x
         if(nx){
-            if(texture!=0)GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x1, y1, z2);
+            GL11.glVertex3d(x1, y1, z1);
             if(texture!=0)GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x1, y2, z2);
+            GL11.glVertex3d(x1, y1, z2);
             if(texture!=0)GL11.glTexCoord2d(1, 0);
+            GL11.glVertex3d(x1, y2, z2);
+            if(texture!=0)GL11.glTexCoord2d(0, 0);
             GL11.glVertex3d(x1, y2, z1);
         }
         GL11.glEnd();

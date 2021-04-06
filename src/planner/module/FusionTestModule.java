@@ -5,8 +5,11 @@ import static multiblock.configuration.Configuration.getInputStream;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import planner.file.FileReader;
 public class FusionTestModule extends Module{
+    public FusionTestModule(){
+        super("fusion_test");
+    }
     @Override
-    public String getName(){
+    public String getDisplayName(){
         return "Fusion Test";
     }
     @Override

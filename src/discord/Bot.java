@@ -48,6 +48,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import javax.security.auth.login.LoginException;
 import multiblock.Block;
+import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.Range;
 import multiblock.configuration.Configuration;
@@ -285,14 +286,16 @@ public class Bot extends ListenerAdapter{
                 }
                 multiblock = template.newInstance(configuration);
                 ArrayList<Range<Block>> blockRanges = new ArrayList<>();
-                if(multiblock.getDefinitionName().contains("Turbine"))z+=2;
-                if(x<multiblock.getMinX()||y<multiblock.getMinY()||z<multiblock.getMinZ()){
-                    channel.sendMessage("Too small! Minimum size: "+multiblock.getMinX()+"x"+multiblock.getMinY()+"x"+multiblock.getMinZ()).queue();
-                    return;
-                }
-                if(x>multiblock.getMaxX()||y>multiblock.getMaxY()||z>multiblock.getMaxZ()){
-                    channel.sendMessage("Too big! Maximum size: "+multiblock.getMaxX()+"x"+multiblock.getMaxY()+"x"+multiblock.getMaxZ()).queue();
-                    return;
+                if(multiblock instanceof CuboidalMultiblock){
+                    CuboidalMultiblock cm = (CuboidalMultiblock)multiblock;
+                    if(x<cm.getMinX()||y<cm.getMinY()||z<cm.getMinZ()){
+                        channel.sendMessage("Too small! Minimum size: "+cm.getMinX()+"x"+cm.getMinY()+"x"+cm.getMinZ()).queue();
+                        return;
+                    }
+                    if(x>cm.getMaxX()||y>cm.getMaxY()||z>cm.getMaxZ()){
+                        channel.sendMessage("Too big! Maximum size: "+cm.getMaxX()+"x"+cm.getMaxY()+"x"+cm.getMaxZ()).queue();
+                        return;
+                    }
                 }
                 ArrayList<Block> availableBlocks = new ArrayList<>();
                 multiblock.getAvailableBlocks(availableBlocks);
@@ -306,7 +309,8 @@ public class Bot extends ListenerAdapter{
                     channel.sendMessage("Unknown block: `"+range.obj+"`!").queue();
                     return;
                 }
-                Object fuels = null;
+                multiblock.configuration.underhaul.fissionsfr.Fuel theFuel = null;
+                ArrayList blockRecipes = null;
                 if(multiblock instanceof UnderhaulSFR){
                     multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
                     FUEL:for(String str : fuelStrings){
@@ -324,37 +328,61 @@ public class Bot extends ListenerAdapter{
                         return;
                     }
                     if(fuel==null)fuel = configuration.underhaul.fissionSFR.allFuels.get(0);
-                    fuels = fuel;
+                    theFuel = fuel;
                 }
                 if(multiblock instanceof OverhaulSFR){
-                    ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel> sfrFuels = new ArrayList<>();
+                    ArrayList<multiblock.configuration.overhaul.fissionsfr.BlockRecipe> sfrRecipes = new ArrayList<>();
+                    multiblock.configuration.overhaul.fissionsfr.BlockRecipe defaultRecipe = null;
+                    for(Block b : availableBlocks){
+                        if(((multiblock.overhaul.fissionsfr.Block)b).template.fuelCell&&defaultRecipe==null)defaultRecipe = ((multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.get(0);
+                    }
                     FUEL:for(String str : fuelStrings){
-                        for(multiblock.configuration.overhaul.fissionsfr.Fuel f : configuration.overhaul.fissionSFR.allFuels){
-                            if(f.name.equalsIgnoreCase(str)){
-                                sfrFuels.add(f);
-                                continue FUEL;
+                        for(Block b : availableBlocks){
+                            for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : ((multiblock.overhaul.fissionsfr.Block)b).template.allRecipes){
+                                if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
+                                    sfrRecipes.add(recipe);
+                                    continue FUEL;
+                                }
+                                for(String s : recipe.getLegacyNames()){
+                                    if(s.equalsIgnoreCase(str)){
+                                        sfrRecipes.add(recipe);
+                                        continue FUEL;
+                                    }
+                                }
                             }
                         }
                         channel.sendMessage("Unknown fuel: "+str).queue();
                         return;
                     }
-                    if(sfrFuels.isEmpty())sfrFuels.add(configuration.overhaul.fissionSFR.allFuels.get(0));
-                    fuels = sfrFuels;
+                    if(sfrRecipes.isEmpty())sfrRecipes.add(defaultRecipe);
+                    blockRecipes = sfrRecipes;
                 }
                 if(multiblock instanceof OverhaulMSR){
-                    ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel> msrFuels = new ArrayList<>();
+                    ArrayList<multiblock.configuration.overhaul.fissionmsr.BlockRecipe> msrRecipes = new ArrayList<>();
+                    multiblock.configuration.overhaul.fissionmsr.BlockRecipe defaultRecipe = null;
+                    for(Block b : availableBlocks){
+                        if(((multiblock.overhaul.fissionmsr.Block)b).template.fuelVessel&&defaultRecipe==null)defaultRecipe = ((multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.get(0);
+                    }
                     FUEL:for(String str : fuelStrings){
-                        for(multiblock.configuration.overhaul.fissionmsr.Fuel f : configuration.overhaul.fissionMSR.allFuels){
-                            if(f.name.equalsIgnoreCase(str)){
-                                msrFuels.add(f);
-                                continue FUEL;
+                        for(Block b : availableBlocks){
+                            for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : ((multiblock.overhaul.fissionmsr.Block)b).template.allRecipes){
+                                if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
+                                    msrRecipes.add(recipe);
+                                    continue FUEL;
+                                }
+                                for(String s : recipe.getLegacyNames()){
+                                    if(s.equalsIgnoreCase(str)){
+                                        msrRecipes.add(recipe);
+                                        continue FUEL;
+                                    }
+                                }
                             }
                         }
                         channel.sendMessage("Unknown fuel: "+str).queue();
                         return;
                     }
-                    if(msrFuels.isEmpty())msrFuels.add(configuration.overhaul.fissionMSR.allFuels.get(0));
-                    fuels = msrFuels;
+                    if(msrRecipes.isEmpty())msrRecipes.add(defaultRecipe);
+                    blockRecipes = msrRecipes;
                 }
                 Priority.Preset priority = null;
                 ArrayList<Priority> priorities = multiblock.getGenerationPriorities();
@@ -410,31 +438,21 @@ public class Bot extends ListenerAdapter{
                 formats.add(FileWriter.PNG);
                 Multiblock multiblockInstance = multiblock.newInstance(configuration,x,y,z);
                 if(multiblockInstance instanceof UnderhaulSFR){
-                    ((UnderhaulSFR)multiblockInstance).fuel = (Fuel)fuels;
+                    ((UnderhaulSFR)multiblockInstance).fuel = (Fuel)theFuel;
                 }
                 if(multiblockInstance instanceof OverhaulSFR){
-                    ArrayList<Range<multiblock.configuration.overhaul.fissionsfr.Source>> validSources = new ArrayList<>();
-                    for(multiblock.configuration.overhaul.fissionsfr.Source s : configuration.overhaul.fissionSFR.allSources){
-                        validSources.add(new Range(s, 0));
+                    ArrayList<Range<multiblock.configuration.overhaul.fissionsfr.BlockRecipe>> validRecipes = new ArrayList<>();
+                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe r : (ArrayList<multiblock.configuration.overhaul.fissionsfr.BlockRecipe>)blockRecipes){
+                        validRecipes.add(new Range(r, 0));
                     }
-                    ((OverhaulSFR)multiblockInstance).setValidSources(validSources);
-                    ArrayList<Range<multiblock.configuration.overhaul.fissionsfr.Fuel>> validFuels = new ArrayList<>();
-                    for(multiblock.configuration.overhaul.fissionsfr.Fuel f : (ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel>)fuels){
-                        validFuels.add(new Range(f, 0));
-                    }
-                    ((OverhaulSFR)multiblockInstance).setValidFuels(validFuels);
+                    ((OverhaulSFR)multiblockInstance).setValidRecipes(validRecipes);
                 }
                 if(multiblockInstance instanceof OverhaulMSR){
-                    ArrayList<Range<multiblock.configuration.overhaul.fissionmsr.Source>> validSources = new ArrayList<>();
-                    for(multiblock.configuration.overhaul.fissionmsr.Source s : configuration.overhaul.fissionMSR.allSources){
-                        validSources.add(new Range(s, 0));
+                    ArrayList<Range<multiblock.configuration.overhaul.fissionmsr.BlockRecipe>> validRecipes = new ArrayList<>();
+                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe r : (ArrayList<multiblock.configuration.overhaul.fissionmsr.BlockRecipe>)blockRecipes){
+                        validRecipes.add(new Range(r, 0));
                     }
-                    ((OverhaulMSR)multiblockInstance).setValidSources(validSources);
-                    ArrayList<Range<multiblock.configuration.overhaul.fissionmsr.Fuel>> validFuels = new ArrayList<>();
-                    for(multiblock.configuration.overhaul.fissionmsr.Fuel f : (ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel>)fuels){
-                        validFuels.add(new Range(f, 0));
-                    }
-                    ((OverhaulMSR)multiblockInstance).setValidFuels(validFuels);
+                    ((OverhaulMSR)multiblockInstance).setValidRecipes(validRecipes);
                 }
 //</editor-fold>
                 try{
@@ -600,7 +618,7 @@ public class Bot extends ListenerAdapter{
                         for(FormatWriter writer : formats){
                             if(writer.isMultiblockSupported(finalMultiblock)){
                                 CircularStream stream = new CircularStream(1024*1024);//1MB
-                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getX()+"x"+generator.multiblock.getY()+"x"+generator.multiblock.getZ()+" "+generator.multiblock.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
+                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getDimensionsStr()+" "+generator.multiblock.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
                                 try{
                                     writer.write(ncpf, stream);
                                 }catch(Exception ex){
@@ -732,13 +750,16 @@ public class Bot extends ListenerAdapter{
                 if(x==0&&y==0&&z==0){
                     //this is fine.
                 }else{
-                    if(x<multiblock.getMinX()||y<multiblock.getMinY()||z<multiblock.getMinZ()){
-                        channel.sendMessage("Too small! Minimum size: "+multiblock.getMinX()+"x"+multiblock.getMinY()+"x"+multiblock.getMinZ()).queue();
-                        return;
-                    }
-                    if(x>multiblock.getMaxX()||y>multiblock.getMaxY()||z>multiblock.getMaxZ()){
-                        channel.sendMessage("Too big! Maximum size: "+multiblock.getMaxX()+"x"+multiblock.getMaxY()+"x"+multiblock.getMaxZ()).queue();
-                        return;
+                    if(multiblock instanceof CuboidalMultiblock){
+                        CuboidalMultiblock cm = (CuboidalMultiblock)multiblock;
+                        if(x<cm.getMinX()||y<cm.getMinY()||z<cm.getMinZ()){
+                            channel.sendMessage("Too small! Minimum size: "+cm.getMinX()+"x"+cm.getMinY()+"x"+cm.getMinZ()).queue();
+                            return;
+                        }
+                        if(x>cm.getMaxX()||y>cm.getMaxY()||z>cm.getMaxZ()){
+                            channel.sendMessage("Too big! Maximum size: "+cm.getMaxX()+"x"+cm.getMaxY()+"x"+cm.getMaxZ()).queue();
+                            return;
+                        }
                     }
                 }
                 ArrayList<Block> availableBlocks = new ArrayList<>();
@@ -754,6 +775,7 @@ public class Bot extends ListenerAdapter{
                     return;
                 }
                 Object fuels = null;
+                ArrayList blockRecipes = null;
                 if(multiblock instanceof UnderhaulSFR){
                     ArrayList<multiblock.configuration.underhaul.fissionsfr.Fuel> underFuels = new ArrayList<>();
                     FUEL:for(String str : fuelStrings){
@@ -769,32 +791,48 @@ public class Bot extends ListenerAdapter{
                     fuels = underFuels.isEmpty()?null:underFuels;
                 }
                 if(multiblock instanceof OverhaulSFR){
-                    ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel> sfrFuels = new ArrayList<>();
+                    ArrayList<multiblock.configuration.overhaul.fissionsfr.BlockRecipe> sfrRecipes = new ArrayList<>();
                     FUEL:for(String str : fuelStrings){
-                        for(multiblock.configuration.overhaul.fissionsfr.Fuel f : configuration.overhaul.fissionSFR.allFuels){
-                            if(f.name.equalsIgnoreCase(str)){
-                                sfrFuels.add(f);
-                                continue FUEL;
+                        for(Block b : availableBlocks){
+                            for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : ((multiblock.overhaul.fissionsfr.Block)b).template.allRecipes){
+                                if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
+                                    sfrRecipes.add(recipe);
+                                    continue FUEL;
+                                }
+                                for(String s : recipe.getLegacyNames()){
+                                    if(s.equalsIgnoreCase(str)){
+                                        sfrRecipes.add(recipe);
+                                        continue FUEL;
+                                    }
+                                }
                             }
                         }
                         channel.sendMessage("Unknown fuel: "+str).queue();
                         return;
                     }
-                    fuels = sfrFuels.isEmpty()?null:sfrFuels;
+                    blockRecipes = sfrRecipes.isEmpty()?null:sfrRecipes;
                 }
                 if(multiblock instanceof OverhaulMSR){
-                    ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel> msrFuels = new ArrayList<>();
+                    ArrayList<multiblock.configuration.overhaul.fissionmsr.BlockRecipe> msrRecipes = new ArrayList<>();
                     FUEL:for(String str : fuelStrings){
-                        for(multiblock.configuration.overhaul.fissionmsr.Fuel f : configuration.overhaul.fissionMSR.allFuels){
-                            if(f.name.equalsIgnoreCase(str)){
-                                msrFuels.add(f);
-                                continue FUEL;
+                        for(Block b : availableBlocks){
+                            for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : ((multiblock.overhaul.fissionmsr.Block)b).template.allRecipes){
+                                if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
+                                    msrRecipes.add(recipe);
+                                    continue FUEL;
+                                }
+                                for(String s : recipe.getLegacyNames()){
+                                    if(s.equalsIgnoreCase(str)){
+                                        msrRecipes.add(recipe);
+                                        continue FUEL;
+                                    }
+                                }
                             }
                         }
                         channel.sendMessage("Unknown fuel: "+str).queue();
                         return;
                     }
-                    fuels = msrFuels.isEmpty()?null:msrFuels;
+                    blockRecipes = msrRecipes.isEmpty()?null:msrRecipes;
                 }
                 Priority.Preset priority = null;
                 ArrayList<Priority> priorities = multiblock.getGenerationPriorities();
@@ -881,7 +919,10 @@ public class Bot extends ListenerAdapter{
                                 }
                                 if(!m.getDefinitionName().equals(mb.getDefinitionName()))continue;//wrong multiblock type
                                 if(X!=0&&Y!=0&&Z!=0){
-                                    if(m.getX()!=X||m.getY()!=Y||m.getZ()!=Z)continue;//wrong size
+                                    if(m instanceof CuboidalMultiblock){
+                                        CuboidalMultiblock cm = (CuboidalMultiblock)m;
+                                        if(cm.getInternalWidth()!=X||cm.getInternalHeight()!=Y||cm.getInternalDepth()!=Z)continue;//wrong size
+                                    }
                                 }
                                 for(Symmetry sym : symmetries){
                                     if(!sym.check(m))continue MULTIBLOCK;//symmetry doesn't match
@@ -895,18 +936,18 @@ public class Bot extends ListenerAdapter{
                                         if(!yay)continue;
                                     }
                                     if(m instanceof OverhaulSFR){
-                                        for(multiblock.configuration.overhaul.fissionsfr.Fuel fuel : ((OverhaulSFR)m).getFuelCounts().keySet()){
+                                        for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe fuel : ((OverhaulSFR)m).getRecipeCounts().keySet()){
                                             boolean yay = false;
-                                            for(multiblock.configuration.overhaul.fissionsfr.Fuel f : (ArrayList<multiblock.configuration.overhaul.fissionsfr.Fuel>)feuls){
+                                            for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe f : (ArrayList<multiblock.configuration.overhaul.fissionsfr.BlockRecipe>)feuls){
                                                 if(fuel.equals(f))yay = true;
                                             }
                                             if(!yay)continue MULTIBLOCK;
                                         }
                                     }
                                     if(m instanceof OverhaulMSR){
-                                        for(multiblock.configuration.overhaul.fissionmsr.Fuel fuel : ((OverhaulMSR)m).getFuelCounts().keySet()){
+                                        for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel : ((OverhaulMSR)m).getRecipeCounts().keySet()){
                                             boolean yay = false;
-                                            for(multiblock.configuration.overhaul.fissionmsr.Fuel f : (ArrayList<multiblock.configuration.overhaul.fissionmsr.Fuel>)feuls){
+                                            for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe f : (ArrayList<multiblock.configuration.overhaul.fissionmsr.BlockRecipe>)feuls){
                                                 if(fuel.equals(f))yay = true;
                                             }
                                             if(!yay)continue MULTIBLOCK;
@@ -933,7 +974,7 @@ public class Bot extends ListenerAdapter{
                         for(FormatWriter writer : formats){
                             if(writer.isMultiblockSupported(finalMultiblock)){
                                 CircularStream stream = new CircularStream(1024*1024);//1MB
-                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+finalMultiblock.getX()+"x"+finalMultiblock.getY()+"x"+finalMultiblock.getZ()+" "+mb.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
+                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+finalMultiblock.getDimensionsStr()+" "+mb.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
                                 try{
                                     writer.write(ncpf, stream);
                                 }catch(Exception ex){
@@ -1608,7 +1649,7 @@ public class Bot extends ListenerAdapter{
                     Hut hut = SmoreBot.getHut(user.getIdLong());
                     FOR:for(HutThing thing : Hut.allFurniture){
                         if(!thing.isSellable())continue;
-                        if(args.trim().equalsIgnoreCase(thing.getName())){
+                        if(args.trim().replace("_", " ").equalsIgnoreCase(thing.getName())){
                             price = thing.getPrice();
                             final long pric = price;
                             onBuy = () -> {
@@ -2165,7 +2206,16 @@ public class Bot extends ListenerAdapter{
     }
     public void storeMultiblocks(Message message){
         for(Attachment att : message.getAttachments()){
-            if(att!=null&&att.getFileExtension()!=null&&att.getFileExtension().toLowerCase(Locale.ENGLISH).contains("png"))continue;
+            if(att!=null&&att.getFileExtension()!=null){
+                switch(att.getFileExtension().toLowerCase(Locale.ENGLISH)){
+                    case "png":
+                    case "gif":
+                    case "jpg":
+                    case "xlsx":
+                    case "txt":
+                        continue;
+                }
+            }
             try{
                 NCPFFile ncpf = FileReader.read(() -> {
                     try{
@@ -2185,7 +2235,6 @@ public class Bot extends ListenerAdapter{
                 }
             }catch(Exception ex){
                 System.err.println("Failed to read file: "+att.getFileName());
-                ex.printStackTrace();
             }
         }
     }

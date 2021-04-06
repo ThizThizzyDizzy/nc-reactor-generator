@@ -14,15 +14,15 @@ public class SFRAllShieldsAction extends Action<OverhaulSFR>{
     public void doApply(OverhaulSFR multiblock, boolean allowUndo){
         for(Block b : multiblock.getBlocks()){
             if(b.template.shield){
-                if(allowUndo)was.put(b, b.closed);
-                b.closed = close;
+                if(allowUndo)was.put(b, b.isToggled);
+                b.isToggled = close;
             }
         }
     }
     @Override
     public void doUndo(OverhaulSFR multiblock){
         for(Block b : was.keySet()){
-            b.closed = was.get(b);
+            b.isToggled = was.get(b);
         }
     }
     @Override

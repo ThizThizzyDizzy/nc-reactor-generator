@@ -92,7 +92,7 @@ public class Hangman extends Game{
             channel.sendMessage("No applicable multiblocks found!").queue();
             return false;
         }
-        channel.sendMessage("Hangman has started!\nCurrent Multiblock: "+basis.getX()+"x"+basis.getY()+"x"+basis.getZ()+" "+basis.getDefinitionName()+"\nYou have "+(maxGuesses-1)+" Incorrect guesses left."+(usesActive?"\nThis reactor has active coolers":"")).queue();
+        channel.sendMessage("Hangman has started!\nCurrent Multiblock: "+basis.getDimensionsStr()+" "+basis.getDefinitionName()+"\nYou have "+(maxGuesses-1)+" Incorrect guesses left."+(usesActive?"\nThis reactor has active coolers":"")).queue();
         if(!blind)exportPng(generateNCPF(current), channel);
         return true;
     }

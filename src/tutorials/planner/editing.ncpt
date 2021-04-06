@@ -96,6 +96,7 @@ ltext 1 multiblock.
 skip
 ltext 1 Press escape to deselect everything.
 columns 1
+margin 2 2
 ltext 1 In some multiblocks, Shift-click and Alt-click may have special functions, such as
 ltext 1 selecting clusters or groups of heatsinks
 margin 0 2

@@ -1,13 +1,13 @@
 package multiblock.overhaul.fissionsfr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.PlacementRule;
-import multiblock.configuration.overhaul.fissionsfr.Source;
 import planner.Core;
 import planner.vr.VRCore;
 import simplelibrary.Queue;
@@ -17,10 +17,8 @@ public class Block extends multiblock.Block{
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
     public multiblock.configuration.overhaul.fissionsfr.Block template;
-    public multiblock.configuration.overhaul.fissionsfr.Fuel fuel;
-    public multiblock.configuration.overhaul.fissionsfr.Source source;
-    public multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irradiatorRecipe;
-    private boolean hasPropogated = false;
+    public multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe;
+    public boolean hasPropogated = false;
     public int moderatorLines;
     public int neutronFlux;
     public float positionalEfficiency;
@@ -30,12 +28,15 @@ public class Block extends multiblock.Block{
     public boolean reflectorActive;
     public boolean shieldActive;
     public float efficiency;
-    public boolean closed = false;
+    public boolean isToggled = false;//if true, shields are closed and ports/vents are in output mode
     public boolean wasActive;
     public int hadFlux;
     public OverhaulSFR.Cluster cluster;
+    public Block source;
+    public boolean casingValid;
     public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.overhaul.fissionsfr.Block template){
         super(configuration, x, y, z);
+        if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
@@ -44,87 +45,113 @@ public class Block extends multiblock.Block{
     }
     @Override
     public void copyProperties(multiblock.Block other){
-        ((Block)other).fuel = fuel;
-        ((Block)other).source = source;
-        ((Block)other).irradiatorRecipe = irradiatorRecipe;
+        ((Block)other).recipe = recipe;
+        ((Block)other).isToggled = isToggled;
     }
     @Override
     public BufferedImage getBaseTexture(){
-        return closed?template.closedTexture:template.texture;
+        if(isToggled){
+            if(template.shield)return template.shieldClosedTexture;
+            if(template.coolantVent)return template.coolantVentOutputTexture;
+            if(template.parent!=null)return template.portOutputTexture;
+        }
+        return template.texture;
     }
     @Override
     public BufferedImage getTexture(){
-        return closed?template.closedDisplayTexture:template.displayTexture;
+        if(isToggled){
+            if(template.shield)return template.shieldClosedDisplayTexture;
+            if(template.coolantVent)return template.coolantVentOutputDisplayTexture;
+            if(template.parent!=null)return template.portOutputDisplayTexture;
+        }
+        return template.displayTexture;
     }
     @Override
     public String getName(){
-        return isCasing()?"Casing":template.name;
+        if(isToggled&&template.coolantVent)return template.getCoolantVentOutputDisplayName();
+        if(isToggled&&template.parent!=null)return template.getPortOutputDisplayName();
+        return template.getDisplayName();
     }
     @Override
     public void clearData(){
         hasPropogated = false;
         positionalEfficiency = efficiency = moderatorLines = neutronFlux = 0;
-        wasActive = moderatorValid = moderatorActive = heatsinkValid = reflectorActive = shieldActive = false;
+        wasActive = moderatorValid = moderatorActive = heatsinkValid = reflectorActive = shieldActive = casingValid = false;
         cluster = null;
+        source = null;
     }
     @Override
     public String getTooltip(Multiblock multiblock){
         String tip = getName();
+        if(recipe!=null){
+            tip+="\n"+recipe.getInputDisplayName();
+        }
+        if(isController())tip+="\nController "+(casingValid?"Valid":"Invalid");
+        if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
         if(isFuelCell()){
-            tip+="\nFuel: "+fuel.name+"\n"
-                    + "Fuel Cell "+(isFuelCellActive()?"Active":"Inactive");
+            if(recipe==null&&!template.fuelCellHasBaseStats)tip+="\nNo Fuel";
+            tip+="\nFuel Cell "+(isFuelCellActive()?"Active":"Inactive");
             if(isFuelCellActive()){
                 tip+="\nAdjacent moderator lines: "+moderatorLines+"\n"
                         + "Heat Multiplier: "+percent(moderatorLines, 0)+"\n"
-                        + "Heat Produced: "+moderatorLines*fuel.heat+"H/t\n"
+                        + "Heat Produced: "+moderatorLines*(recipe==null?template.fuelCellHeat:recipe.fuelCellHeat)+"H/t\n"
                         + "Efficiency: "+percent(efficiency, 0)+"\n"
                         + "Positional Efficiency: "+percent(positionalEfficiency, 0)+"\n"
                         + "Total Neutron Flux: "+neutronFlux+"\n"
-                        + "Criticality Factor: "+fuel.criticality;
+                        + "Criticality Factor: "+(recipe==null?template.fuelCellCriticality:recipe.fuelCellCriticality);
             }else{
-                tip+="\nTotal Neutron Flux: "+neutronFlux+"\n"
-                        + "Criticality Factor: "+fuel.criticality;
+                tip+="\nTotal Neutron Flux: "+neutronFlux;
+                if(template.fuelCellHasBaseStats||recipe!=null){
+                    tip+="\nCriticality Factor: "+(recipe==null?template.fuelCellCriticality:recipe.fuelCellCriticality);
+                }
             }
             if(isPrimed()){
-                Source src = source;
-                tip+="\n"
-                        + "Primed\n"
-                        + "Neutron source: "+(src==null?"Self":src.name);
+                tip+="\nPrimed"
+                        + "\nNeutron source: "+(source==null?"Self":source.template.getDisplayName());
             }
         }
         if(isModerator()){
-            tip+="\nModerator "+(moderatorActive?"Active":(moderatorValid?"Valid":"Invalid"))+"\n"
-                    + "Flux Factor: "+template.flux+"\n"
-                    + "Efficiency Factor: "+template.efficiency;
+            if(recipe==null&&!template.moderatorHasBaseStats)tip+="\nNo Recipe";
+            tip+="\nModerator "+(moderatorActive?"Active":(moderatorValid?"Valid":"Invalid"));
+            if(template.moderatorHasBaseStats||recipe!=null){
+                tip+="\nFlux Factor: "+(recipe==null?template.moderatorFlux:recipe.moderatorFlux)
+                        + "\nEfficiency Factor: "+(recipe==null?template.moderatorEfficiency:recipe.moderatorEfficiency);
+            }
         }
         if(isReflector()){
-            tip+="\nReflector "+(reflectorActive?"Active":"Inactive")+"\n"
-                    + "Reflectivity: "+template.reflectivity+"\n"
-                    + "Efficiency multiplier: "+template.efficiency;
+            if(recipe==null&&!template.reflectorHasBaseStats)tip+="\nNo Recipe";
+            tip+="\nReflector "+(reflectorActive?"Active":"Inactive");
+            if(template.reflectorHasBaseStats||recipe!=null){
+                tip+="\nReflectivity: "+(recipe==null?template.reflectorReflectivity:recipe.reflectorReflectivity)
+                        + "\nEfficiency multiplier: "+(recipe==null?template.reflectorEfficiency:recipe.reflectorEfficiency);
+            }
         }
         if(isShield()){
-            tip+="\nShield "+(shieldActive?"Valid":"Invalid")+"\n"
-                    + "Total flux: "+neutronFlux+"\n"
-                    + "Heat per flux: "+template.heatMult+"\n"
-                    + "Total heat: "+(neutronFlux*template.heatMult)+" H/t\n"
-                    + "Efficiency factor: "+template.efficiency;
-        }
-        if(closed){
-            tip+="\nClosed";
+            if(recipe==null&&!template.shieldHasBaseStats)tip+="\nNo Recipe";
+            tip+="\nShield "+(shieldActive?"Valid":"Invalid");
+            if(template.shieldHasBaseStats||recipe!=null){
+                tip+="\nTotal flux: "+neutronFlux
+                        + "\nHeat per flux: "+(recipe==null?template.shieldHeat:recipe.shieldHeat)
+                        + "\nTotal heat: "+(neutronFlux*(recipe==null?template.shieldHeat:recipe.shieldHeat))+" H/t"
+                        + "\nEfficiency factor: "+(recipe==null?template.shieldEfficiency:recipe.shieldEfficiency);
+            }
+            if(isToggled){
+                tip+="\nClosed";
+            }
         }
         if(isIrradiator()){
-            if(irradiatorRecipe!=null){
-                tip+="\nRecipe: "+irradiatorRecipe.name;
-            }
-            tip+="\nIrradiator flux: "+neutronFlux+"\n";
-            if(irradiatorRecipe!=null){
-                tip+="Efficiency bonus: "+percent(irradiatorRecipe.efficiency,0)+"\n"
-                        + "Heat per flux: "+irradiatorRecipe.heat+"\n"
-                        + "Total heat: "+irradiatorRecipe.heat*neutronFlux+"H/t";
+            if(recipe==null&&!template.irradiatorHasBaseStats)tip+="\nNo Recipe";
+            tip+="\nIrradiator flux: "+neutronFlux;
+            if(template.irradiatorHasBaseStats||recipe!=null){
+                tip+="\nEfficiency bonus: "+percent(recipe==null?template.irradiatorEfficiency:recipe.irradiatorEfficiency,0)
+                        + "\nHeat per flux: "+(recipe==null?template.irradiatorHeat:recipe.irradiatorHeat)
+                        + "\nTotal heat: "+(recipe==null?template.irradiatorHeat:recipe.irradiatorHeat)*neutronFlux+"H/t";
             }
         }
         if(isHeatsink()){
+            if(recipe==null&&!template.heatsinkHasBaseStats)tip+="\nNo Recipe";
             tip+="\nHeatsink "+(heatsinkValid?"Valid":"Invalid");
+            //TODO show heatsink validity check errors
         }
         OverhaulSFR.Cluster cluster = this.cluster;
         if(cluster!=null){
@@ -146,19 +173,49 @@ public class Block extends multiblock.Block{
     @Override
     public String getListTooltip(){
         String tip = getName();
-        if(isFuelCell())tip+="\nFuel Cell";
-        if(isModerator())tip+="\nModerator"
-                + "\nFlux: "+template.flux
-                + "\nEfficiency: "+template.efficiency;
-        if(isReflector())tip+="\nReflector"
-                + "\nReflectivity: "+template.reflectivity
-                + "\nEfficiency: "+template.efficiency;
-        if(isShield())tip+="\nNeutron Shield"
-                + "\nHeat per flux: "+template.heatMult
-                + "\nEfficiency: "+template.efficiency;
-        if(isIrradiator())tip+="\nIrradiator";
-        if(isHeatsink())tip+="\nHeatsink"
-                + "\nCooling: "+template.cooling+"H/t";
+        if(isFuelCell()){
+            tip+="\nFuel Cell";
+            if(template.fuelCellHasBaseStats){
+                tip+="\nEfficiency: "+template.fuelCellEfficiency
+                        + "\nBase Heat: "+template.fuelCellHeat
+                        + "\nCriticality: "+template.fuelCellCriticality;
+                if(template.fuelCellSelfPriming)tip+="\nSelf-Priming";
+            }
+        }
+        if(isModerator()){
+            tip+="\nModerator";
+            if(template.moderatorHasBaseStats){
+                tip+="\nFlux: "+template.moderatorFlux
+                        + "\nEfficiency: "+template.moderatorEfficiency;
+            }
+        }
+        if(isReflector()){
+            tip+="\nReflector";
+            if(template.reflectorHasBaseStats){
+                tip+="\nReflectivity: "+template.reflectorReflectivity
+                        + "\nEfficiency: "+template.reflectorEfficiency;
+            }
+        }
+        if(isShield()){
+            tip+="\nNeutron Shield";
+            if(template.shieldHasBaseStats){
+                tip+="\nHeat per flux: "+template.shieldHeat
+                        + "\nEfficiency: "+template.shieldEfficiency;
+            }
+        }
+        if(isIrradiator()){
+            tip+="\nIrradiator";
+            if(template.irradiatorHasBaseStats){
+                tip+="\nEfficiency: "+template.irradiatorEfficiency
+                        +"\nHeat: "+template.irradiatorHeat;
+            }
+        }
+        if(isHeatsink()){
+            tip+="\nHeatsink";
+            if(template.heatsinkHasBaseStats){
+                tip+="\nCooling: "+template.heatsinkCooling+"H/t";
+            }
+        }
         for(PlacementRule rule : template.rules){
             tip+="\nRequires "+rule.toString();
         }
@@ -166,247 +223,71 @@ public class Block extends multiblock.Block{
     }
     public boolean isPrimed(){
         if(!isFuelCell())return false;
-        return source!=null||fuel.selfPriming;
+        if(template.fuelCellHasBaseStats||recipe!=null){
+            if(recipe==null?template.fuelCellSelfPriming:recipe.fuelCellSelfPriming)return true;//self-priming
+        }
+        return source!=null;
     }
     @Override
     public boolean isCore(){
         return isModerator()||isFuelCell()||isShield()||isIrradiator()||isReflector();
     }
     @Override
-    public boolean isCasing(){
-        return template==null;
-    }
-    @Override
     public boolean isActive(){
-        return isCasing()||isConductor()||isModeratorActive()||isFuelCellActive()||isHeatsinkActive()||isIrradiatorActive()||reflectorActive||isShieldActive();
+        return isConductor()||isModeratorActive()||isFuelCellActive()||isHeatsinkActive()||isIrradiatorActive()||reflectorActive||isShieldActive()||casingValid;
     }
     @Override
     public boolean isValid(){
         return isInert()||isActive()||moderatorValid;
     }
     public boolean isModeratorActive(){
-        return isModerator()&&moderatorActive&&template.activeModerator;
+        if(!template.moderatorHasBaseStats&&recipe==null)return false;
+        return isModerator()&&moderatorActive&&(recipe==null?template.moderatorActive:recipe.moderatorActive);
     }
     public boolean isFuelCellActive(){
-        return isFuelCell()&&neutronFlux>=fuel.criticality;
+        if(!template.fuelCellHasBaseStats&&recipe==null)return false;
+        return isFuelCell()&&neutronFlux>=(recipe==null?template.fuelCellCriticality:recipe.fuelCellCriticality);
     }
     public boolean isFuelCell(){
-        if(isCasing())return false;
         return template.fuelCell;
     }
     public boolean isModerator(){
-        if(closed)return false;
-        if(isCasing())return false;
+        if(isToggled)return false;
         return template.moderator;
     }
     public boolean isReflector(){
-        if(isCasing())return false;
         return template.reflector;
     }
     public boolean isIrradiator(){
-        if(isCasing())return false;
         return template.irradiator;
     }
     public boolean isIrradiatorActive(){
+        if(!template.irradiatorHasBaseStats&&recipe==null)return false;
         return isIrradiator()&&neutronFlux>0;
     }
     public boolean isShield(){
-        if(closed)return false;
-        if(isCasing())return false;
+        if(isToggled)return false;
         return template.shield;
     }
     public boolean isShieldActive(){
+        if(!template.shieldHasBaseStats&&recipe==null)return false;
         return isShield()&&shieldActive&&moderatorValid;
     }
     public boolean isHeatsink(){
-        if(isCasing())return false;
-        return template.cooling!=0;
+        return template.heatsink;
     }
     public boolean isHeatsinkActive(){
+        if(!template.heatsinkHasBaseStats&&recipe==null)return false;
         return isHeatsink()&&heatsinkValid;
     }
     public boolean isConductor(){
-        if(isCasing())return false;
         return template.conductor;
     }
     public boolean isFunctional(){
-        if(isCasing())return false;
         if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
         return template.functional&&(isActive()||moderatorValid);
     }
-    public void propogateNeutronFlux(OverhaulSFR reactor, boolean force){
-        if(!isFuelCell())return;
-        if(!force&&!isPrimed()&&neutronFlux<fuel.criticality)return;
-        if(hasPropogated)return;
-        hasPropogated = true;
-        for(Direction d : directions){
-            int flux = 0;
-            int length = 0;
-            float efficiency = 0;
-            for(int i = 1; i<=reactor.getConfiguration().overhaul.fissionSFR.neutronReach+1; i++){
-                Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
-                if(block==null)break;
-                if(block.isCasing())break;
-                if(block.isModerator()){
-                    flux+=block.template.flux;
-                    efficiency+=block.template.efficiency;
-                    length++;
-                    continue;
-                }
-                if(block.isFuelCell()){
-                    if(length==0)break;
-                    block.neutronFlux+=flux;
-                    block.moderatorLines++;
-                    if(flux>0)block.positionalEfficiency+=efficiency/length;
-                    block.propogateNeutronFlux(reactor, false);
-                    break;
-                }
-                if(block.isReflector()){
-                    if(length==0)break;
-                    if(length>reactor.getConfiguration().overhaul.fissionSFR.neutronReach/2)break;
-                    neutronFlux+=flux*2*block.template.reflectivity;
-                    if(flux>0)positionalEfficiency+=efficiency/length*block.template.efficiency;
-                    moderatorLines++;
-                    break;
-                }
-                if(block.isIrradiator()){
-                    if(length==0)break;
-                    moderatorLines++;
-                    if(block.irradiatorRecipe!=null){
-                        if(flux>0)positionalEfficiency+=efficiency/length*block.irradiatorRecipe.efficiency;
-                    }
-                    break;
-                }
-                break;
-            }
-        }
-    }
-    public void rePropogateNeutronFlux(OverhaulSFR reactor, boolean force){
-        if(!isFuelCell())return;
-        if(!wasActive)return;
-        if(!force&&!isPrimed()&&neutronFlux<fuel.criticality)return;
-        if(hasPropogated)return;
-        hasPropogated = true;
-        for(Direction d : directions){
-            int flux = 0;
-            int length = 0;
-            float efficiency = 0;
-            for(int i = 1; i<=reactor.getConfiguration().overhaul.fissionSFR.neutronReach+1; i++){
-                Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
-                if(block==null)break;
-                if(block.isCasing())break;
-                if(block.isModerator()){
-                    flux+=block.template.flux;
-                    efficiency+=block.template.efficiency;
-                    length++;
-                    continue;
-                }
-                if(block.isFuelCell()){
-                    if(length==0)break;
-                    block.neutronFlux+=flux;
-                    block.moderatorLines++;
-                    if(flux>0)block.positionalEfficiency+=efficiency/length;
-                    block.rePropogateNeutronFlux(reactor, false);
-                    break;
-                }
-                if(block.isReflector()){
-                    if(length==0)break;
-                    if(length>reactor.getConfiguration().overhaul.fissionSFR.neutronReach/2)break;
-                    neutronFlux+=flux*2*block.template.reflectivity;
-                    if(flux>0)positionalEfficiency+=efficiency/length*block.template.efficiency;
-                    moderatorLines++;
-                    break;
-                }
-                if(block.isIrradiator()){
-                    if(length==0)break;
-                    moderatorLines++;
-                    if(block.irradiatorRecipe!=null){
-                        if(flux>0)positionalEfficiency+=efficiency/length*block.irradiatorRecipe.efficiency;
-                    }
-                    break;
-                }
-                break;
-            }
-        }
-    }
-    public void postFluxCalc(OverhaulSFR reactor){
-        if(!isFuelCellActive())return;
-        for(Direction d : directions){
-            int flux = 0;
-            int length = 0;
-            HashMap<Block, Integer> shieldFluxes = new HashMap<>();
-            Queue<Block> toActivate = new Queue<>();
-            Queue<Block> toValidate = new Queue<>();
-            for(int i = 1; i<=reactor.getConfiguration().overhaul.fissionSFR.neutronReach+1; i++){
-                Block block = reactor.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
-                if(block==null)break;
-                boolean skip = false;
-                if(block.isModerator()){
-                    length++;
-                    flux+=block.template.flux;
-                    if(i==1)toActivate.enqueue(block);
-                    toValidate.enqueue(block);
-                    skip = true;
-                }
-                if(block.isShield()){
-                    block.shieldActive = true;
-                    shieldFluxes.put(block, flux);
-                    skip = true;
-                }
-                if(skip)continue;
-                if(block.isFuelCellActive()){
-                    if(length==0)break;
-                    for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b);
-                    }
-                    for(Block b : toActivate)b.moderatorActive = true;
-                    for(Block b : toValidate)b.moderatorValid = true;
-                    break;
-                }
-                if(block.isReflector()){
-                    if(length==0)break;
-                    block.reflectorActive = true;
-                    for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=flux*(1+block.template.reflectivity);
-                    }
-                    for(Block b : toActivate)b.moderatorActive = true;
-                    for(Block b : toValidate)b.moderatorValid = true;
-                    break;
-                }
-                if(block.isIrradiator()){
-                    if(length==0)break;
-                    for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b);
-                    }
-                    block.neutronFlux+=flux;
-                    for(Block b : toActivate)b.moderatorActive = true;
-                    for(Block b : toValidate)b.moderatorValid = true;
-                    break;
-                }
-                break;
-            }
-        }
-        hasPropogated = true;
-    }
-    /**
-     * Calculates the heatsink
-     * @param reactor the reactor
-     * @return <code>true</code> if the heatsink state has changed
-     */
-    public boolean calculateHeatsink(OverhaulSFR reactor){
-        if(template.cooling==0)return false;
-        boolean wasValid = heatsinkValid;
-        for(PlacementRule rule : template.rules){
-            if(!rule.isValid(this, reactor)){
-                heatsinkValid = false;
-                return wasValid!=heatsinkValid;
-            }
-        }
-        heatsinkValid = true;
-        return wasValid!=heatsinkValid;
-    }
     public boolean canCluster(){
-        if(isCasing())return false;
         return (isActive()||isInert())&&template.cluster;
     }
     @Override
@@ -417,13 +298,19 @@ public class Block extends multiblock.Block{
         if(isModeratorActive()){
             drawOutline(x, y, width, height, Core.theme.getGreen());
         }
-        boolean self = fuel!=null&&fuel.selfPriming;
-        if(source!=null||self){
-            float fac = self?1:(float) Math.pow(source.efficiency, 10);
-            float r = self?0:Math.min(1, -2*fac+2);
-            float g = self?0:Math.min(1, fac*2);
-            float b = self?1:0;
-            drawCircle(x, y, width, height, Core.theme.getRGBA(r, g, b, 1));
+        if(recipe!=null&&(template.parent==null?template.allRecipes:template.parent.allRecipes).size()>1){
+            Core.applyWhite(template.parent==null?1:0.75f);
+            drawRect(x+width*.125, y+height*.125, x+width*.875, y+height*.875, Core.getTexture(recipe.inputDisplayTexture));
+        }
+        if(template.fuelCell&&(template.fuelCellHasBaseStats||recipe!=null)){
+            boolean self = recipe==null?template.fuelCellSelfPriming:recipe.fuelCellSelfPriming;
+            if(source!=null||self){
+                float fac = self?1:(float) Math.pow(source.template.sourceEfficiency, 10);
+                float r = self?0:Math.min(1, -2*fac+2);
+                float g = self?0:Math.min(1, fac*2);
+                float b = self?1:0;
+                drawCircle(x, y, width, height, Core.theme.getRGBA(r, g, b, 1));
+            }
         }
         OverhaulSFR.Cluster cluster = this.cluster;
         if(cluster!=null){
@@ -509,13 +396,15 @@ public class Block extends multiblock.Block{
         if(isModeratorActive()){
             drawOutline(x, y, z, width, height, depth, Core.theme.getGreen(), faceRenderFunc);
         }
-        boolean self = fuel!=null&&fuel.selfPriming;
-        if(source!=null||self){
-            float fac = self?1:(float) Math.pow(source.efficiency, 10);
-            float r = self?0:Math.min(1, -2*fac+2);
-            float g = self?0:Math.min(1, fac*2);
-            float b = self?1:0;
-            drawCircle(x, y, z, width, height, depth, Core.theme.getRGBA(r, g, b, 1), faceRenderFunc);
+        if(template.fuelCell&&(template.fuelCellHasBaseStats||recipe!=null)){
+            boolean self = recipe==null?template.fuelCellSelfPriming:recipe.fuelCellSelfPriming;
+            if(source!=null||self){
+                float fac = self?1:(float) Math.pow(source.template.sourceEfficiency, 10);
+                float r = self?0:Math.min(1, -2*fac+2);
+                float g = self?0:Math.min(1, fac*2);
+                float b = self?1:0;
+                drawCircle(x, y, z, width, height, depth, Core.theme.getRGBA(r, g, b, 1), faceRenderFunc);
+            }
         }
         OverhaulSFR.Cluster cluster = this.cluster;
         if(cluster!=null){
@@ -559,7 +448,6 @@ public class Block extends multiblock.Block{
         }
     }
     public boolean isInert(){
-        if(isCasing())return true;
         return template.cluster&&!template.functional;
     }
     @Override
@@ -585,7 +473,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean requires(multiblock.Block oth, Multiblock mb){
-        if(template.cooling==0)return false;
+        if(!template.heatsink)return false;
         Block other = (Block) oth;
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
         if(totalDist>1)return false;//too far away
@@ -606,24 +494,22 @@ public class Block extends multiblock.Block{
     @Override
     public boolean canGroup(){
         if(template.moderator)return false;
-        return template.cooling!=0;
+        return template.heatsink;
     }
     public multiblock.overhaul.fissionmsr.Block convertToMSR(){
         multiblock.overhaul.fissionmsr.Block b = new multiblock.overhaul.fissionmsr.Block(getConfiguration(), x, y, z, getConfiguration().overhaul.fissionMSR.convertToMSR(template));
-        b.fuel = getConfiguration().overhaul.fissionMSR.convertToMSR(fuel);
-        b.source = getConfiguration().overhaul.fissionMSR.convertToMSR(source);
+        b.recipe = b.template.convertToMSR(recipe);
         return b;
     }
     @Override
     public boolean canBeQuickReplaced(){
-        return template.cooling!=0;
+        return template.heatsink;
     }
     @Override
     public Block copy(){
         Block copy = new Block(getConfiguration(), x, y, z, template);
-        copy.fuel = fuel;
+        copy.recipe = recipe;
         copy.source = source;
-        copy.irradiatorRecipe = irradiatorRecipe;
         copy.hasPropogated = hasPropogated;
         copy.moderatorLines = moderatorLines;
         copy.neutronFlux = neutronFlux;
@@ -635,7 +521,7 @@ public class Block extends multiblock.Block{
         copy.shieldActive = shieldActive;
         copy.efficiency = efficiency;
         copy.cluster = cluster;//TODO probably shouldn't do that
-        copy.closed = closed;
+        copy.isToggled = isToggled;
         return copy;
     }
     @Override
@@ -644,10 +530,61 @@ public class Block extends multiblock.Block{
     }
     @Override
     public void convertTo(Configuration to){
-        if(template.fuelCell)fuel = to.overhaul.fissionSFR.convert(fuel);
-        if(template.fuelCell)source = to.overhaul.fissionSFR.convert(source);
-        if(template.irradiator)irradiatorRecipe = to.overhaul.fissionSFR.convert(irradiatorRecipe);
         template = to.overhaul.fissionSFR.convert(template);
+        recipe = template.convert(recipe);
         configuration = to;
+    }
+    public boolean isCasing(){
+        return template.casing||template.parent!=null;//is explicitly casing or if it's a port
+    }
+    public boolean isController(){
+        return template.controller;
+    }
+    /**
+     * Adds a neutron source to this block
+     * @param sfr the parent SFR
+     * @param source the source to add
+     * @return If no block was replaced, the new source. Otherwise, the replaced block.
+     */
+    public Block addNeutronSource(OverhaulSFR sfr, multiblock.configuration.overhaul.fissionsfr.Block source){
+        HashMap<int[], Integer> possible = new HashMap<>();
+        for(Direction d : directions){
+            int i = 0;
+            while(true){
+                i++;
+                if(!sfr.contains(x+d.x*i, y+d.y*i, z+d.z*i)){
+                    possible.put(new int[]{x+d.x*(i-1),y+d.y*(i-1),z+d.z*(i-1)}, i);
+                    break;
+                }
+                Block b = sfr.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
+                if(b==null)continue;//air
+                if(b.template.blocksLOS)break;
+            }
+        }
+        ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
+        keys.sort((o1, o2) -> {
+            return possible.get(o1)-possible.get(o2);
+        });
+        for(int[] key : keys){
+            Block was = sfr.getBlock(key[0], key[1], key[2]);
+            if(tryAddNeutronSource(sfr, source, key[0], key[1], key[2]))return was==null?sfr.getBlock(key[0], key[1], key[2]):was;
+        }
+        return null;
+    }
+    private boolean tryAddNeutronSource(OverhaulSFR sfr, multiblock.configuration.overhaul.fissionsfr.Block source, int X, int Y, int Z){
+        Block b = sfr.getBlock(X, Y, Z);
+        if(b!=null&&(b.isController()||b.template.coolantVent||b.template.parent!=null||b.template.source))return false;
+        sfr.setBlock(X, Y, Z, new Block(sfr.getConfiguration(), X, Y, Z, source));
+        return true;
+    }
+    @Override
+    public boolean shouldRenderFace(multiblock.Block against){
+        if(super.shouldRenderFace(against))return true;
+        if(template==((Block)against).template)return false;
+        return Core.hasAlpha(against.getBaseTexture());
+    }
+    @Override
+    public Iterable<String> getSearchableNames(){
+        return template.getSearchableNames();
     }
 }

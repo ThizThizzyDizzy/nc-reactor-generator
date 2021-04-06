@@ -1,11 +1,14 @@
 package planner.menu.component.editor;
+import java.util.Arrays;
+import java.util.List;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.editor.suggestion.Suggestor;
 import planner.menu.MenuEdit;
+import planner.menu.component.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentSuggestor extends MenuComponent{
+public class MenuComponentSuggestor extends MenuComponent implements Searchable{
     private final MenuEdit editor;
     public final Suggestor suggestor;
     public boolean enabled = false;
@@ -40,5 +43,9 @@ public class MenuComponentSuggestor extends MenuComponent{
             suggestor.setActive(enabled);
             editor.recalculateSuggestions();
         }
+    }
+    @Override
+    public List<String> getSearchableNames(){
+        return Arrays.asList(suggestor.name);
     }
 }

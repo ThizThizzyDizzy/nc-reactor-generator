@@ -1,5 +1,6 @@
 package multiblock.configuration.overhaul.turbine;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -12,19 +13,13 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class TurbineConfiguration{
-    public ArrayList<Blade> allBlades = new ArrayList<>();
-    public ArrayList<Coil> allCoils = new ArrayList<>();
+    public ArrayList<Block> allBlocks = new ArrayList<>();
     public ArrayList<Recipe> allRecipes = new ArrayList<>();
     /**
-     * @deprecated You should probably be using allBlades
+     * @deprecated You should probably be using allBlocks
      */
     @Deprecated
-    public ArrayList<Blade> blades = new ArrayList<>();
-    /**
-     * @deprecated You should probably be using allCoils
-     */
-    @Deprecated
-    public ArrayList<Coil> coils = new ArrayList<>();
+    public ArrayList<Block> blocks = new ArrayList<>();
     /**
      * @deprecated You should probably be using allRecipes
      */
@@ -38,10 +33,10 @@ public class TurbineConfiguration{
     public float powerBonus;
     public float throughputEfficiencyLeniencyMult;
     public float throughputEfficiencyLeniencyThreshold;
-    public String[] getAllCoilsStringList(){
-        String[] strs = new String[allCoils.size()];
+    public String[] getAllBlocksStringList(){
+        String[] strs = new String[allBlocks.size()];
         for(int i = 0; i<strs.length; i++){
-            strs[i] = allCoils.get(i).name;
+            strs[i] = allBlocks.get(i).name;
         }
         return strs;
     }
@@ -57,78 +52,69 @@ public class TurbineConfiguration{
             config.set("throughputFactor", throughputFactor);
             config.set("powerBonus", powerBonus);
         }
-        ConfigList blades = new ConfigList();
-        for(Blade blade : this.blades){
-            blades.add(blade.save(partial));
+        ConfigList blocks = new ConfigList();
+        for(Block block : this.blocks){
+            blocks.add(block.save(parent, this, partial));
         }
-        config.set("blades", blades);
-        ConfigList coils = new ConfigList();
-        for(Coil coil : this.coils){
-            coils.add(coil.save(parent, this, partial));
-        }
-        config.set("coils", coils);
+        config.set("blocks", blocks);
         ConfigList recipes = new ConfigList();
         for(Recipe recipe : this.recipes){
-            recipes.add(recipe.save());
+            recipes.add(recipe.save(partial));
         }
         config.set("recipes", recipes);
         return config;
     }
     public void apply(TurbineConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
-        Set<Blade> usedBlades = new HashSet<>();
-        Set<Coil> usedCoils = new HashSet<>();
+        Set<Block> usedBlocks = new HashSet<>();
         Set<Recipe> usedRecipes = new HashSet<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulTurbine){
                 for(multiblock.overhaul.turbine.Block b : ((OverhaulTurbine)mb).getBlocks()){
-                    if(b.coil!=null)usedCoils.add(b.coil);
-                    if(b.blade!=null)usedBlades.add(b.blade);
+                    if(b.template!=null)usedBlocks.add(b.template);
                 }
                 usedRecipes.add(((OverhaulTurbine)mb).recipe);
             }
         }
-        partial.blades.addAll(usedBlades);
-        parent.overhaul.turbine.allBlades.addAll(usedBlades);
-        partial.coils.addAll(usedCoils);
-        parent.overhaul.turbine.allCoils.addAll(usedCoils);
+        partial.blocks.addAll(usedBlocks);
+        parent.overhaul.turbine.allBlocks.addAll(usedBlocks);
         partial.recipes.addAll(usedRecipes);
         parent.overhaul.turbine.allRecipes.addAll(usedRecipes);
     }
     public void apply(AddonConfiguration addon, Configuration parent){
-        Set<Coil> usedCoils = new HashSet<>();
-        for(Coil b : coils){
-            usedCoils.addAll(getAllUsedCoils(b));
-            usedCoils.removeAll(coils);
+        Set<Block> usedBlocks = new HashSet<>();
+        for(Block b : blocks){
+            usedBlocks.addAll(getAllUsedBlocks(b));
+            usedBlocks.removeAll(blocks);
         }
-        //parent coils
-        ArrayList<Coil> theCoils = new ArrayList<>();
-        for(Coil b : parent.overhaul.turbine.coils){
-            if(usedCoils.contains(b)){
-                theCoils.add(b);
+        //parent blocks
+        ArrayList<Block> theBlocks = new ArrayList<>();
+        for(Block b : parent.overhaul.turbine.blocks){
+            if(usedBlocks.contains(b)){
+                theBlocks.add(b);
             }
         }
-        addon.overhaul.turbine.allCoils.addAll(theCoils);
-        addon.overhaul.turbine.coils.addAll(theCoils);
-        //self coils
-        addon.self.overhaul.turbine.coils.addAll(coils);
-        addon.overhaul.turbine.allCoils.addAll(coils);
-        //addon coils
+        addon.overhaul.turbine.allBlocks.addAll(theBlocks);
+        addon.overhaul.turbine.blocks.addAll(theBlocks);
+        //self blocks
+        addon.self.overhaul.turbine.blocks.addAll(blocks);
+        addon.overhaul.turbine.allBlocks.addAll(blocks);
+        //addon blocks
         for(Configuration addn : parent.addons){
-            theCoils = new ArrayList<>();
+            theBlocks = new ArrayList<>();
             if(addn.overhaul!=null&&addn.overhaul.turbine!=null){
-                for(Coil b : addn.overhaul.turbine.coils){
-                    if(usedCoils.contains(b)){
-                        theCoils.add(b);
+                for(Block b : addn.overhaul.turbine.blocks){
+                    if(usedBlocks.contains(b)){
+                        theBlocks.add(b);
                     }
                 }
             }
-            addon.overhaul.turbine.allCoils.addAll(theCoils);
-            if(!theCoils.isEmpty()){
+            addon.overhaul.turbine.allBlocks.addAll(theBlocks);
+            if(!theBlocks.isEmpty()){
                 boolean foundMatch = false;
                 for(Configuration c : addon.addons){
                     if(c.overhaulNameMatches(addn)){
                         foundMatch = true;
-                        c.overhaul.turbine.coils.addAll(theCoils);
+                        c.overhaul.turbine.blocks.addAll(theBlocks);
                     }
                 }
                 if(!foundMatch){
@@ -137,51 +123,46 @@ public class TurbineConfiguration{
                     c.addon = true;
                     c.overhaul = new OverhaulConfiguration();
                     c.overhaul.turbine = new TurbineConfiguration();
-                    c.overhaul.turbine.coils.addAll(theCoils);
+                    c.overhaul.turbine.blocks.addAll(theBlocks);
                 }
             }
         }
-        addon.self.overhaul.turbine.blades.addAll(blades);
-        parent.overhaul.turbine.allBlades.addAll(blades);
         addon.self.overhaul.turbine.recipes.addAll(recipes);
         parent.overhaul.turbine.allRecipes.addAll(recipes);
     }
-    public Blade convert(Blade template){
+    public Block convert(Block template){
         if(template==null)return null;
-        for(Blade blade : allBlades){
-            if(blade.name.trim().equalsIgnoreCase(template.name.trim()))return blade;
+        for(Block block : allBlocks){
+            for(String name : block.getLegacyNames()){
+                if(name.equals(template.name))return block;
+            }
         }
-        for(Blade blade : blades){
-            if(blade.name.trim().equalsIgnoreCase(template.name.trim()))return blade;
+        for(Block block : blocks){
+            for(String name : block.getLegacyNames()){
+                if(name.equals(template.name))return block;
+            }
         }
-        throw new IllegalArgumentException("Failed to find match for blade "+template.name+"!");
-    }
-    public Coil convert(Coil template){
-        if(template==null)return null;
-        for(Coil coil : allCoils){
-            if(coil.name.trim().equalsIgnoreCase(template.name.trim()))return coil;
-        }
-        for(Coil coil : coils){
-            if(coil.name.trim().equalsIgnoreCase(template.name.trim()))return coil;
-        }
-        throw new IllegalArgumentException("Failed to find match for coil "+template.name+"!");
+        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
     }
     public Recipe convert(Recipe template){
         if(template==null)return null;
         for(Recipe recipe : allRecipes){
-            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+            for(String name : recipe.getLegacyNames()){
+                if(name.equals(template.inputName))return recipe;
+            }
         }
         for(Recipe recipe : recipes){
-            if(recipe.name.trim().equalsIgnoreCase(template.name.trim()))return recipe;
+            for(String name : recipe.getLegacyNames()){
+                if(name.equals(template.inputName))return recipe;
+            }
         }
-        throw new IllegalArgumentException("Failed to find match for recipe "+template.name+"!");
+        throw new IllegalArgumentException("Failed to find match for recipe "+template.inputName+"!");
     }
     @Override
     public boolean equals(Object obj){
         if(obj!=null&&obj instanceof TurbineConfiguration){
             TurbineConfiguration fsfrc = (TurbineConfiguration)obj;
-            return Objects.equals(fsfrc.blades, blades)
-                    &&Objects.equals(fsfrc.coils, coils)
+            return Objects.equals(fsfrc.blocks, blocks)
                     &&Objects.equals(fsfrc.recipes, recipes)
                     &&minWidth==fsfrc.minWidth
                     &&minLength==fsfrc.minLength
@@ -194,11 +175,11 @@ public class TurbineConfiguration{
         }
         return false;
     }
-    private ArrayList<Coil> getAllUsedCoils(RuleContainer container){
-        ArrayList<Coil> used = new ArrayList<>();
+    private ArrayList<Block> getAllUsedBlocks(RuleContainer container){
+        ArrayList<Block> used = new ArrayList<>();
         for(PlacementRule rule : container.rules){
-            used.addAll(getAllUsedCoils(rule));
-            if(rule.coil!=null)used.add(rule.coil);
+            used.addAll(getAllUsedBlocks(rule));
+            if(rule.block!=null)used.add(rule.block);
         }
         return used;
     }
@@ -211,25 +192,25 @@ public class TurbineConfiguration{
         return rules;
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo){
-        for(Coil coil : coils){
-            for(PlacementRule rule : getAllSubRules(coil)){
-                if(rule.coil==null)continue;
-                if(parent.overhaul!=null&&parent.overhaul.turbine!=null&&parent.overhaul.turbine.coils.contains(rule.coil)){
-                    rule.coil = convertTo.overhaul.turbine.convert(rule.coil);
-                }else if(coils.contains(rule.coil)){
+        for(Block block : blocks){
+            for(PlacementRule rule : getAllSubRules(block)){
+                if(rule.block==null)continue;
+                if(parent.overhaul!=null&&parent.overhaul.turbine!=null&&parent.overhaul.turbine.blocks.contains(rule.block)){
+                    rule.block = convertTo.overhaul.turbine.convert(rule.block);
+                }else if(blocks.contains(rule.block)){
                     //do nothing :)
                 }else{
                     //in sub-addon, find and convert
                     boolean found = false;
                     for(Configuration addon : parent.addons){
                         if(addon.overhaul!=null&&addon.overhaul.turbine!=null){
-                            if(addon.overhaul.turbine.coils.contains(rule.coil)){
-                                rule.coil = convertTo.findMatchingAddon(addon).overhaul.turbine.convert(rule.coil);
+                            if(addon.overhaul.turbine.blocks.contains(rule.block)){
+                                rule.block = convertTo.findMatchingAddon(addon).overhaul.turbine.convert(rule.block);
                                 found = true;
                             }
                         }
                     }
-                    if(!found)throw new IllegalArgumentException("Could not convert coil "+coil.name+"!");
+                    if(!found)throw new IllegalArgumentException("Could not convert block "+rule.block.name+"!");
                 }
             }
         }

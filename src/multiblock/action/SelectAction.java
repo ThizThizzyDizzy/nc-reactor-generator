@@ -15,7 +15,7 @@ public class SelectAction extends Action<Multiblock>{
         this.id = id;
         for (Iterator<int[]> it = sel.iterator(); it.hasNext();) {
             int[] i = it.next();
-            if(editor.isSelected(id, i[0], i[1], i[2])||i[0]<0||i[1]<0||i[2]<0||i[0]>=editor.getMultiblock().getX()||i[1]>=editor.getMultiblock().getY()||i[2]>=editor.getMultiblock().getZ())it.remove();
+            if(editor.isSelected(id, i[0], i[1], i[2])||!editor.getMultiblock().contains(i[0], i[1], i[2]))it.remove();
         }
         this.sel.addAll(sel);
     }

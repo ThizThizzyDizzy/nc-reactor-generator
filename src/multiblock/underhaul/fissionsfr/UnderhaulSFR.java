@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import multiblock.Action;
+import multiblock.Axis;
+import multiblock.CuboidalMultiblock;
 import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.PartCount;
@@ -12,6 +14,13 @@ import multiblock.action.SetblockAction;
 import multiblock.action.SetblocksAction;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
+import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
+import multiblock.decal.AdjacentCellDecal;
+import multiblock.decal.AdjacentModeratorDecal;
+import multiblock.decal.BlockInvalidDecal;
+import multiblock.decal.BlockValidDecal;
+import multiblock.decal.MissingCasingDecal;
+import multiblock.decal.UnderhaulModeratorLineDecal;
 import multiblock.ppe.ClearInvalid;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.ppe.SmartFillUnderhaulSFR;
@@ -25,14 +34,23 @@ import planner.editor.suggestion.Suggestor;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.module.Module;
+import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
-public class UnderhaulSFR extends Multiblock<Block>{
+public class UnderhaulSFR extends CuboidalMultiblock<Block>{
     public int netHeat;
     private int power, heat, cooling, cells;
     private float efficiency;
     public Fuel fuel;
     private double heatMult;
+    private int calcStep = 0;
+    private int calcSubstep = 0;
+    private Task calcCasing;
+    private Task calcCore;
+    private Task calcCoolers;
+    private Task calcStats;
+    private int numControllers;
+    private int missingCasings;
     public UnderhaulSFR(){
         this(null);
     }
@@ -87,74 +105,171 @@ public class UnderhaulSFR extends Multiblock<Block>{
         return getConfiguration().underhaul.fissionSFR.maxSize;
     }
     @Override
-    public void doCalculate(List<Block> blocks){
-        Task core = calculateTask.addSubtask(new Task("Calculating Core"));
-        Task coolers = calculateTask.addSubtask(new Task("Calculating Coolers"));
-        Task stats = calculateTask.addSubtask(new Task("Calculating Stats"));
-        for(int i = 0; i<blocks.size(); i++){
-            blocks.get(i).calculateCore(this);
-            core.progress = i/(double)blocks.size();
-        }
-        core.finish();
-        float totalHeatMult = 0;
-        float totalEnergyMult = 0;
-        cells = 0;
-        boolean somethingChanged;
-        int n = 0;
-        do{
-            somethingChanged = false;
-            n++;
-            coolers.name = "Calculating Coolers"+(n>1?" ("+n+")":"");
-            for(int i = 0; i<blocks.size(); i++){
-                if(blocks.get(i).calculateCooler(this))somethingChanged = true;
-                coolers.progress = i/(double)blocks.size();
-            }
-        }while(somethingChanged);
-        coolers.finish();
-        cooling = 0;
-        ArrayList<Block> allBlocks = getBlocks();
-        for(int i = 0; i<allBlocks.size(); i++){
-            Block block = allBlocks.get(i);
-            if(block.isFuelCell()){
-                totalHeatMult+=block.heatMult;
-                totalEnergyMult+=block.energyMult;
-                cells++;
-            }
-            if(block.isCooler()&&block.isActive())cooling+=block.getCooling();
-            stats.progress = i/(double)allBlocks.size();
-        }
-        this.heatMult = totalHeatMult/cells;
-        if(Double.isNaN(heatMult))heatMult = 0;
-        heat = (int) (totalHeatMult*fuel.heat);
-        netHeat = heat-cooling;
-        power = (int) (totalEnergyMult*fuel.power);
-        efficiency = totalEnergyMult/cells;
-        if(Double.isNaN(efficiency))efficiency = 0;
-        stats.finish();
+    public void clearData(List<Block> blocks){
+        super.clearData(blocks);
+        heatMult = efficiency = power = heat = cooling = netHeat = cells = 0;
     }
     @Override
-    protected Block newCasing(int x, int y, int z){
-        return new Block(getConfiguration(), x, y, z, null);
+    public void genCalcSubtasks(){
+        calcCasing = calculateTask.addSubtask(new Task("Checking Casing"));
+        calcCore = calculateTask.addSubtask(new Task("Calculating Core"));
+        calcCoolers = calculateTask.addSubtask(new Task("Calculating Coolers"));
+        calcStats = calculateTask.addSubtask(new Task("Calculating Stats"));
+    }
+    @Override
+    public boolean doCalculationStep(List<Block> blocks, boolean addDecals){
+        switch(calcStep){
+            case 0://casing
+                numControllers = 0;
+                forEachCasingEdgePosition((x, y, z) -> {
+                    Block block = getBlock(x, y, z);
+                    if(block==null)return;
+                    if(block.isController()){
+                        block.casingValid = true;
+                        numControllers++;
+                    }
+                });
+                missingCasings = 0;
+                forEachCasingFacePosition((x, y, z) -> {
+                    Block block = getBlock(x, y, z);
+                    if(block==null||!block.isCasing()){
+                        missingCasings++;
+                        if(addDecals)decals.enqueue(new MissingCasingDecal(x,y,z));
+                    }
+                    if(block!=null&&block.isCasing()){
+                        block.casingValid = true;
+                        if(addDecals)decals.enqueue(new BlockValidDecal(x,y,z));
+                    }
+                });
+                calcCasing.finish();
+                calcStep++;
+                return true;
+            case 1://core
+                for(int i = 0; i<blocks.size(); i++){
+                    calculateCore(blocks.get(i), addDecals);
+                    calcCore.progress = i/(double)blocks.size();
+                }
+                calcCore.finish();
+                calcStep++;
+                return true;
+            case 2://coolers
+                calcSubstep++;
+                boolean somethingChanged = false;
+                calcCoolers.name = "Calculating Coolers"+(calcSubstep>1?" ("+calcSubstep+")":"");
+                for(int i = 0; i<blocks.size(); i++){
+                    if(calculateCooler(blocks.get(i), addDecals))somethingChanged = true;
+                    calcCoolers.progress = i/(double)blocks.size();
+                }
+                if(somethingChanged)return true;
+                calcCoolers.finish();
+                calcSubstep = 0;
+                calcStep++;
+                return true;
+            case 3://stats
+                float totalHeatMult = 0;
+                float totalEnergyMult = 0;
+                cells = 0;
+                cooling = 0;
+                ArrayList<Block> allBlocks = getBlocks();
+                for(int i = 0; i<allBlocks.size(); i++){
+                    Block block = allBlocks.get(i);
+                    if(block.isFuelCell()){
+                        totalHeatMult+=block.heatMult;
+                        totalEnergyMult+=block.energyMult;
+                        cells++;
+                    }
+                    if(block.isCooler()&&block.isActive())cooling+=block.getCooling();
+                    calcStats.progress = i/(double)allBlocks.size();
+                }
+                this.heatMult = totalHeatMult/cells;
+                if(Double.isNaN(heatMult))heatMult = 0;
+                heat = (int) (totalHeatMult*fuel.heat);
+                netHeat = heat-cooling;
+                power = (int) (totalEnergyMult*fuel.power);
+                efficiency = totalEnergyMult/cells;
+                if(Double.isNaN(efficiency))efficiency = 0;
+                calcStats.finish();
+                calcStep = 0;
+                return false;
+            default:
+                throw new IllegalStateException("Invalid calculation step: "+calcStep+"!");
+        }
+    }
+    public void calculateCore(Block that, boolean addDecals){
+        if(!that.template.fuelCell)return;
+        if(addDecals)decals.enqueue(new BlockValidDecal(that.x, that.y, that.z));
+        for(Direction d : directions){
+            Queue<Block> toValidate = new Queue<>();
+            for(int i = 1; i<=getConfiguration().underhaul.fissionSFR.neutronReach+1; i++){
+                if(!contains(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i))break;
+                Block block = getBlock(that.x+d.x*i,that.y+d.y*i,that.z+d.z*i);
+                if(block==null)break;
+                if(block.isModerator()){
+                    if(i==1){
+                        block.moderatorActive = block.moderatorValid = true;
+                        if(addDecals)decals.enqueue(new AdjacentModeratorDecal(block.x, block.y, block.z, d.getOpposite()));
+                        that.adjacentModerators++;
+                    }
+                    toValidate.enqueue(block);
+                    continue;
+                }
+                if(block.isFuelCell()){
+                    if(addDecals)decals.enqueue(new AdjacentCellDecal(that.x, that.y, that.z, d));
+                    for(Block b : toValidate){
+                        b.moderatorValid = true;
+                        if(addDecals&&d.x+d.y+d.z<1)decals.enqueue(new UnderhaulModeratorLineDecal(b.x, b.y, b.z, Axis.fromDirection(d)));//negative directions go last; this stops double-decals
+                    }
+                    that.adjacentCells++;
+                    break;
+                }
+                break;
+            }
+        }
+        float baseEff = that.energyMult = that.adjacentCells+1;
+        that.heatMult = (baseEff*(baseEff+1))/2;
+        that.energyMult+=baseEff/6*getConfiguration().underhaul.fissionSFR.moderatorExtraPower*that.adjacentModerators;
+        that.heatMult+=baseEff/6*getConfiguration().underhaul.fissionSFR.moderatorExtraHeat*that.adjacentModerators;
+    }
+    /**
+     * Calculates the cooler
+     * @param block the block to calculate
+     * @param addDecals whether or not to add decals
+     * @return <code>true</code> if the cooler state has changed
+     */
+    public boolean calculateCooler(Block block, boolean addDecals){
+        if(block.template.cooling==0)return false;
+        boolean wasValid = block.coolerValid;
+        for(PlacementRule rule : block.template.rules){
+            if(!rule.isValid(block, this)){
+                if(block.coolerValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x,block.y,block.z));
+                block.coolerValid = false;
+                return wasValid!=block.coolerValid;
+            }
+        }
+        if(!block.coolerValid&&addDecals)decals.enqueue(new BlockValidDecal(block.x,block.y,block.z));
+        block.coolerValid = true;
+        return wasValid!=block.coolerValid;
     }
     @Override
     protected FormattedText getExtraSaveTooltip(){
-        return new FormattedText("Fuel: "+fuel.name);
+        return new FormattedText("Fuel: "+fuel.getDisplayName());
     }
     @Override
-    protected String getExtraBotTooltip(){
-        return getTooltip().text;
-    }
-    @Override
-    public FormattedText getTooltip(){
-        String tooltip = "Power Generation: "+power+"RF/t\n"
+    public FormattedText getTooltip(boolean full){
+        String mainTooltip = "Power Generation: "+power+"RF/t\n"
                 + "Total Heat: "+heat+"H/t\n"
                 + "Total Cooling: "+cooling+"H/t\n"
                 + "Net Heat: "+netHeat+"H/t\n"
                 + "Efficiency: "+percent(efficiency, 0)+"\n"
                 + "Heat multiplier: "+percent(heatMult, 0)+"\n"
                 + "Fuel cells: "+cells;
-        tooltip+=getModuleTooltip();
-        return new FormattedText(tooltip, netHeat>0?Core.theme.getRed():null);
+        mainTooltip+=getModuleTooltip();
+        FormattedText finalTooltip = new FormattedText();
+        if(numControllers<1)finalTooltip.addText("No controller!", Core.theme.getRed());
+        if(numControllers>1)finalTooltip.addText("Too many controllers!", Core.theme.getRed());
+        if(missingCasings>0)finalTooltip.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getRed());
+        finalTooltip.addText(new FormattedText(mainTooltip, netHeat>0?Core.theme.getRed():Core.theme.getTextColor()));
+        return finalTooltip;
     }
     @Override
     public int getMultiblockID(){
@@ -162,25 +277,16 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     protected void save(NCPFFile ncpf, Configuration configuration, Config config){
-        ConfigNumberList size = new ConfigNumberList();
-        size.add(getX());
-        size.add(getY());
-        size.add(getZ());
-        config.set("size", size);
-        config.set("fuel", (byte)configuration.underhaul.fissionSFR.allFuels.indexOf(fuel));
+        config.set("fuel", configuration.underhaul.fissionSFR.allFuels.indexOf(fuel));
         boolean compact = isCompact(configuration);//find perfect compression ratio
         config.set("compact", compact);
         ConfigNumberList blox = new ConfigNumberList();
         if(compact){
-            for(int x = 0; x<getX(); x++){
-                for(int y = 0; y<getY(); y++){
-                    for(int z = 0; z<getZ(); z++){
-                        Block block = getBlock(x, y, z);
-                        if(block==null)blox.add(0);
-                        else blox.add(configuration.underhaul.fissionSFR.allBlocks.indexOf(block.template)+1);
-                    }
-                }
-            }
+            forEachPosition((x, y, z) -> {
+                Block block = getBlock(x, y, z);
+                if(block==null)blox.add(0);
+                else blox.add(configuration.underhaul.fissionSFR.allBlocks.indexOf(block.template)+1);
+            });
         }else{
             for(Block block : getBlocks()){
                 blox.add(block.x);
@@ -192,19 +298,10 @@ public class UnderhaulSFR extends Multiblock<Block>{
         config.set("blocks", blox);
     }
     private boolean isCompact(Configuration configuration){
-        int blockCount = getBlocks().size();
-        int volume = getX()*getY()*getZ();
-        int bitsPerDim = logBase(2, Math.max(getX(), Math.max(getY(), getZ())));
-        int bitsPerType = logBase(2, configuration.underhaul.fissionSFR.allBlocks.size());
-        int compactBits = bitsPerType*volume;
-        int spaciousBits = 4*Math.max(bitsPerDim, bitsPerType)*blockCount;
-        return compactBits<spaciousBits;
-    }
-    private static int logBase(int base, int n){
-        return (int)(Math.log(n)/Math.log(base));
+        return isCompact(configuration.underhaul.fissionSFR.allBlocks.size());
     }
     @Override
-    public void convertTo(Configuration to){
+    public void doConvertTo(Configuration to){
         if(to.underhaul==null||to.underhaul.fissionSFR==null)return;
         for(Block block : getBlocks()){
             block.convertTo(to);
@@ -288,19 +385,15 @@ public class UnderhaulSFR extends Multiblock<Block>{
     }
     @Override
     public UnderhaulSFR blankCopy(){
-        return new UnderhaulSFR(configuration, getX(), getY(), getZ(), fuel);
+        return new UnderhaulSFR(configuration, getInternalWidth(), getInternalHeight(), getInternalDepth(), fuel);
     }
     @Override
     public UnderhaulSFR doCopy(){
         UnderhaulSFR copy = blankCopy();
-        for(int x = 0; x<getX(); x++){
-            for(int y = 0; y<getY(); y++){
-                for(int z = 0; z<getZ(); z++){
-                    Block get = getBlock(x, y, z);
-                    if(get!=null)copy.setBlockExact(x, y, z, get.copy());
-                }
-            }
-        }
+        forEachPosition((x, y, z) -> {
+            Block get = getBlock(x, y, z);
+            if(get!=null)copy.setBlockExact(x, y, z, get.copy());
+        });
         copy.netHeat = netHeat;
         copy.power = power;
         copy.heat = heat;
@@ -325,9 +418,7 @@ public class UnderhaulSFR extends Multiblock<Block>{
     @Override
     protected void getFluidOutputs(HashMap<String, Double> outputs){}
     @Override
-    protected void getExtraParts(ArrayList<PartCount> parts){
-        parts.add(new PartCount(null, "Casing", getX()*getZ()*2+getX()*getY()*2+getY()*getZ()*2));
-    }
+    protected void getExtraParts(ArrayList<PartCount> parts){}
     @Override
     public String getDescriptionTooltip(){
         return "Underhaul SFRs are Solid-Fueled Fission reactors in NuclearCraft\nIf you have blocks called \"Heat Sink\" instead of \"Cooler\", you are playing Overhaul";
@@ -368,60 +459,59 @@ public class UnderhaulSFR extends Multiblock<Block>{
                     Block b = it.next();
                     if(!b.isModerator())it.remove();
                 }
-                int cellCount = 0;
-                for(int y = 0; y<multiblock.getY(); y++){
-                    for(int z = 0; z<multiblock.getZ(); z++){
-                        for(int x = 0; x<multiblock.getX(); x++){
-                            Block b = multiblock.getBlock(x, y, z);
-                            if(b!=null&&b.isFuelCell())cellCount++;
-                        }
-                    }
-                }
-                suggestor.setCount(multiblock.getX()*multiblock.getY()*multiblock.getZ()*cells.size()*moderators.size()-cellCount);
+                int[] cellCount = new int[1];
+                multiblock.forEachInternalPosition((x, y, z) -> {
+                    Block b = multiblock.getBlock(x, y, z);
+                    if(b!=null&&b.isFuelCell())cellCount[0]++;
+                });
+                suggestor.setCount(multiblock.getInternalVolume()*cells.size()*moderators.size()-cellCount[0]);
                 for(Block cell : cells){
                     for(Block moderator : moderators){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                for(int x = 0; x<multiblock.getX(); x++){
-                                    Block was = multiblock.getBlock(x, y, z);
-                                    if(was!=null&&was.isFuelCell())continue;
-                                    ArrayList<Action> actions = new ArrayList<>();
-                                    actions.add(new SetblockAction(x, y, z, cell.newInstance(x, y, z)));
-                                    SetblocksAction multi = new SetblocksAction(moderator);
-                                    DIRECTION:for(Direction d : directions){
-                                        ArrayList<int[]> toSet = new ArrayList<>();
-                                        boolean yep = false;
-                                        for(int i = 1; i<=configuration.underhaul.fissionSFR.neutronReach+1; i++){
-                                            int X = x+d.x*i;
-                                            int Y = y+d.y*i;
-                                            int Z = z+d.z*i;
-                                            Block b = multiblock.getBlock(X, Y, Z);
-                                            if(b!=null){
-                                                if(b.isCasing())break;//end of the line
-                                                if(b.isModerator())continue;//already a moderator
-                                                if(b.isFuelCell()){
-                                                    yep = true;
-                                                    break;
-                                                }
-                                            }
-                                            if(i<=configuration.underhaul.fissionSFR.neutronReach){
-                                                toSet.add(new int[]{X,Y,Z});
-                                            }
-                                        }
-                                        if(!toSet.isEmpty()){
-                                            if(yep){
-                                                for(int[] b : toSet)multi.add(b[0], b[1], b[2]);
-                                            }else{
-                                                int[] b = toSet.get(0);
-                                                multi.add(b[0], b[1], b[2]);
-                                            }
+                        multiblock.forEachInternalPosition((x, y, z) -> {
+                            Block was = multiblock.getBlock(x, y, z);
+                            if(was!=null&&was.isFuelCell())return;
+                            ArrayList<Action> actions = new ArrayList<>();
+                            actions.add(new SetblockAction(x, y, z, cell.newInstance(x, y, z)));
+                            SetblocksAction multi = new SetblocksAction(moderator);
+                            DIRECTION:for(Direction d : directions){
+                                ArrayList<int[]> toSet = new ArrayList<>();
+                                boolean yep = false;
+                                for(int i = 1; i<=configuration.underhaul.fissionSFR.neutronReach+1; i++){
+                                    int X = x+d.x*i;
+                                    int Y = y+d.y*i;
+                                    int Z = z+d.z*i;
+                                    if(X==0||Y==0||Z==0||X==UnderhaulSFR.this.x+1||Y==UnderhaulSFR.this.y+1||Z==UnderhaulSFR.this.z+1)break;//that's the casing
+                                    if(!multiblock.contains(X, Y, Z))break;//end of the line;
+                                    Block b = multiblock.getBlock(X, Y, Z);
+                                    if(b!=null){
+                                        if(b.isModerator())continue;//already a moderator
+                                        if(b.isFuelCell()){
+                                            yep = true;
+                                            break;
                                         }
                                     }
-                                    if(!multi.isEmpty())actions.add(multi);
-                                    if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion("Add "+cell.getName()+(multi.isEmpty()?"":" with "+moderator.getName()), actions, priorities));
+                                    if(i<=configuration.underhaul.fissionSFR.neutronReach){
+                                        toSet.add(new int[]{X,Y,Z});
+                                    }
+                                }
+                                if(!toSet.isEmpty()){
+                                    if(yep){
+                                        for(int[] b : toSet){
+                                            if(b[0]==0||b[1]==0||b[2]==0||b[0]==UnderhaulSFR.this.x+1||b[1]==UnderhaulSFR.this.y+1||b[2]==UnderhaulSFR.this.z+1)continue;//also casing
+                                            multi.add(b[0], b[1], b[2]);
+                                        }
+                                    }else{
+                                        int[] b = toSet.get(0);
+                                        if(b[0]==0||b[1]==0||b[2]==0||b[0]==UnderhaulSFR.this.x+1||b[1]==UnderhaulSFR.this.y+1||b[2]==UnderhaulSFR.this.z+1){
+                                        }else{
+                                            multi.add(b[0], b[1], b[2]);
+                                        }
+                                    }
                                 }
                             }
-                        }
+                            if(!multi.isEmpty())actions.add(multi);
+                            if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion("Add "+cell.getName()+(multi.isEmpty()?"":" with "+moderator.getName()), actions, priorities, cell.template.displayTexture, moderator.template.displayTexture));
+                        });
                     }
                 }
             }
@@ -454,25 +544,17 @@ public class UnderhaulSFR extends Multiblock<Block>{
                     Block b = it.next();
                     if(!b.isFuelCell())it.remove();
                 }
-                int cellCount = 0;
-                for(int y = 0; y<multiblock.getY(); y++){
-                    for(int z = 0; z<multiblock.getZ(); z++){
-                        for(int x = 0; x<multiblock.getX(); x++){
-                            Block b = multiblock.getBlock(x, y, z);
-                            if(b!=null&&b.isFuelCell())cellCount++;
-                        }
-                    }
-                }
-                suggestor.setCount(multiblock.getX()*multiblock.getY()*multiblock.getZ()*blocks.size()-cellCount);
+                int[] cellCount = new int[1];
+                multiblock.forEachInternalPosition((x, y, z) -> {
+                    Block b = multiblock.getBlock(x, y, z);
+                    if(b!=null&&b.isFuelCell())cellCount[0]++;
+                });
+                suggestor.setCount(multiblock.getInternalVolume()*blocks.size()-cellCount[0]);
                 for(Block b : blocks){
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                Block was = multiblock.getBlock(x, y, z);
-                                if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), priorities));
-                            }
-                        }
-                    }
+                    multiblock.forEachInternalPosition((x, y, z) -> {
+                        Block was = multiblock.getBlock(x, y, z);
+                        if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), priorities, b.template.displayTexture));
+                    });
                 }
             }
         });
@@ -498,26 +580,18 @@ public class UnderhaulSFR extends Multiblock<Block>{
                     Block b = it.next();
                     if(!b.isModerator())it.remove();
                 }
-                int modCount = 0;
-                for(int y = 0; y<multiblock.getY(); y++){
-                    for(int z = 0; z<multiblock.getZ(); z++){
-                        for(int x = 0; x<multiblock.getX(); x++){
-                            Block b = multiblock.getBlock(x, y, z);
-                            if(b!=null&&b.isModerator())modCount++;
-                        }
-                    }
-                }
-                suggestor.setCount(multiblock.getX()*multiblock.getY()*multiblock.getZ()*blocks.size()-modCount);
+                int[] modCount = new int[1];
+                multiblock.forEachInternalPosition((x, y, z) -> {
+                    Block b = multiblock.getBlock(x, y, z);
+                    if(b!=null&&b.isModerator())modCount[0]++;
+                });
+                suggestor.setCount(multiblock.getInternalVolume()*blocks.size()-modCount[0]);
                 for(Block b : blocks){
-                    for(int x = 0; x<multiblock.getX(); x++){
-                        for(int y = 0; y<multiblock.getY(); y++){
-                            for(int z = 0; z<multiblock.getZ(); z++){
-                                Block was = multiblock.getBlock(x, y, z);
-                                if(was!=null&&was.isModerator())continue;
-                                if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), priorities));
-                            }
-                        }
-                    }
+                    multiblock.forEachInternalPosition((x, y, z) -> {
+                        Block was = multiblock.getBlock(x, y, z);
+                        if(was!=null&&was.isModerator())return;
+                        if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), priorities, b.template.displayTexture));
+                    });
                 }
             }
         });
@@ -543,31 +617,23 @@ public class UnderhaulSFR extends Multiblock<Block>{
                     Block b = it.next();
                     if(!b.isCooler()||b.template.active!=null)it.remove();
                 }
-                int count = 0;
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
-                            Block block = multiblock.getBlock(x, y, z);
-                            if(block==null||block.canBeQuickReplaced()){
-                                count++;
-                            }
+                int[] count = new int[1];
+                multiblock.forEachInternalPosition((x, y, z) -> {
+                    Block block = multiblock.getBlock(x, y, z);
+                    if(block==null||block.canBeQuickReplaced()){
+                        count[0]++;
+                    }
+                });
+                suggestor.setCount(count[0]*blocks.size());
+                multiblock.forEachInternalPosition((x, y, z) -> {
+                    for(Block newBlock : blocks){
+                        Block block = multiblock.getBlock(x, y, z);
+                        if(block==null||block.canBeQuickReplaced()){
+                            if(newBlock.template.cooling>(block==null||!block.isActive()?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities, newBlock.template.displayTexture));
+                            else suggestor.task.max--;
                         }
                     }
-                }
-                suggestor.setCount(count*blocks.size());
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
-                            for(Block newBlock : blocks){
-                                Block block = multiblock.getBlock(x, y, z);
-                                if(block==null||block.canBeQuickReplaced()){
-                                    if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
-                                    else suggestor.task.max--;
-                                }
-                            }
-                        }
-                    }
-                }
+                });
             }
         });
         suggestors.add(new Suggestor<UnderhaulSFR>("Active Cooler Suggestor", -1, -1){
@@ -592,32 +658,63 @@ public class UnderhaulSFR extends Multiblock<Block>{
                     Block b = it.next();
                     if(!b.isCooler()||b.template.active==null)it.remove();
                 }
-                int count = 0;
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
-                            Block block = multiblock.getBlock(x, y, z);
-                            if(block==null||block.canBeQuickReplaced()){
-                                count++;
-                            }
+                int[] count = new int[1];
+                multiblock.forEachInternalPosition((x, y, z) -> {
+                    Block block = multiblock.getBlock(x, y, z);
+                    if(block==null||block.canBeQuickReplaced()){
+                        count[0]++;
+                    }
+                });
+                suggestor.setCount(count[0]*blocks.size());
+                multiblock.forEachInternalPosition((x, y, z) -> {
+                    for(Block newBlock : blocks){
+                        Block block = multiblock.getBlock(x, y, z);
+                        if(block==null||block.canBeQuickReplaced()){
+                            if(newBlock.template.cooling>(block==null||!block.isActive()?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities, newBlock.template.displayTexture));
+                            else suggestor.task.max--;
                         }
                     }
-                }
-                suggestor.setCount(count*blocks.size());
-                for(int x = 0; x<multiblock.getX(); x++){
-                    for(int y = 0; y<multiblock.getY(); y++){
-                        for(int z = 0; z<multiblock.getZ(); z++){
-                            for(Block newBlock : blocks){
-                                Block block = multiblock.getBlock(x, y, z);
-                                if(block==null||block.canBeQuickReplaced()){
-                                    if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
-                                    else suggestor.task.max--;
-                                }
-                            }
-                        }
-                    }
-                }
+                });
             }
+        });
+    }
+    @Override
+    public boolean canBePlacedInCasingEdge(Block b){
+        return b.isController();
+    }
+    @Override
+    public boolean canBePlacedInCasingFace(Block b){
+        return b.isCasing();
+    }
+    @Override
+    public boolean canBePlacedWithinCasing(Block b){
+        return b.isFuelCell()||b.isModerator()||b.isCooler();
+    }
+    @Override
+    public void buildDefaultCasing(){
+        Block casing = null;
+        Block controller = null;
+        for(multiblock.configuration.underhaul.fissionsfr.Block template : getConfiguration().underhaul.fissionSFR.allBlocks){
+            if(template.casing)casing = new Block(getConfiguration(), 0, 0, 0, template);
+            if(template.controller)controller = new Block(getConfiguration(), 0, 0, 0, template);
+        }
+        for(multiblock.configuration.underhaul.fissionsfr.Block template : Core.configuration.underhaul.fissionSFR.allBlocks){
+            if(casing==null&&template.casing)casing = new Block(getConfiguration(), 0, 0, 0, template);
+            if(controller==null&&template.controller)controller = new Block(getConfiguration(), 0, 0, 0, template);
+        }
+        final Block theCasing = casing;
+        final Block theController = controller;
+        boolean[] hasPlacedTheController = new boolean[1];
+        for(Block block : getBlocks()){
+            if(block.template.controller)hasPlacedTheController[0] = true;
+        }
+        forEachCasingFacePosition((x, y, z) -> {
+            setBlock(x, y, z, theCasing);
+        });
+        forEachCasingEdgePosition((x, y, z) -> {
+            if(hasPlacedTheController[0])return;
+            setBlock(x, y, z, theController);
+            hasPlacedTheController[0] = true;
         });
     }
 }

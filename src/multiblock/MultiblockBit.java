@@ -9,7 +9,9 @@ public class MultiblockBit extends Renderer2D{
     protected static final Queue<Axis> axes = axes();
     private static Queue<Axis> axes(){
         Queue<Axis> axes = new Queue<>();
-        for(Axis a : Axis.values())axes.enqueue(a);
+        axes.enqueue(Axis.X);
+        axes.enqueue(Axis.Y);
+        axes.enqueue(Axis.Z);
         return axes;
     }
     protected String percent(double n, int digits){

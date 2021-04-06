@@ -8,15 +8,11 @@ public class ClearInvalid extends PostProcessingEffect{
     }
     @Override
     public void apply(Multiblock multiblock, Settings settings){
-        for(int x = 0; x<multiblock.getX(); x++){
-            for(int y = 0; y<multiblock.getY(); y++){
-                for(int z = 0; z<multiblock.getZ(); z++){
-                    Block b = multiblock.getBlock(x, y, z);
-                    if(b==null)continue;
-                    if(!b.isValid())multiblock.setBlock(x, y, z, null);
-                }
-            }
-        }
+        multiblock.forEachPosition((x, y, z) -> {
+            Block b = multiblock.getBlock(x, y, z);
+            if(b==null)return;
+            if(!b.isValid())multiblock.setBlock(x, y, z, null);
+        });
     }
     @Override
     public boolean defaultEnabled(){

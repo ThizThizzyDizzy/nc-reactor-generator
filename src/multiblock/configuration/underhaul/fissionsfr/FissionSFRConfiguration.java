@@ -54,7 +54,7 @@ public class FissionSFRConfiguration{
         config.set("blocks", blocks);
         ConfigList fuels = new ConfigList();
         for(Fuel f : this.fuels){
-            fuels.add(f.save());
+            fuels.add(f.save(partial));
         }
         config.set("fuels", fuels);
         return config;
@@ -127,19 +127,27 @@ public class FissionSFRConfiguration{
     }
     public Block convert(Block template){
         for(Block block : allBlocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+            for(String name : block.getLegacyNames()){
+                if(name.equals(template.name))return block;
+            }
         }
         for(Block block : blocks){
-            if(block.name.trim().equalsIgnoreCase(template.name.trim()))return block;
+            for(String name : block.getLegacyNames()){
+                if(name.equals(template.name))return block;
+            }
         }
         throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
     }
     public Fuel convert(Fuel template){
         for(Fuel fuel : allFuels){
-            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
+            for(String name : fuel.getLegacyNames()){
+                if(name.equals(template.name))return fuel;
+            }
         }
         for(Fuel fuel : fuels){
-            if(fuel.name.trim().equalsIgnoreCase(template.name.trim()))return fuel;
+            for(String name : fuel.getLegacyNames()){
+                if(name.equals(template.name))return fuel;
+            }
         }
         throw new IllegalArgumentException("Failed to find match for fuel "+template.name+"!");
     }

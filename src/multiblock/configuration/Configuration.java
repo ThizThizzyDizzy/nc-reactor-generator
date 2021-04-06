@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import multiblock.Multiblock;
@@ -26,6 +28,8 @@ public class Configuration{
     public boolean addon;
     public ArrayList<Configuration> addons = new ArrayList<>();
     public static final ArrayList<Configuration> configurations = new ArrayList<>();
+    public static final ArrayList<Supplier<AddonConfiguration>> internalAddons = new ArrayList<>();
+    public static final HashMap<Supplier<AddonConfiguration>, AddonConfiguration> internalAddonCache = new HashMap<>();
     private static final Configuration NUCLEARCRAFT = FileReader.read(() -> {
             return getInputStream("configurations/nuclearcraft.ncpf");
         }).configuration.addAlternative("").addAlternative("SF4");
@@ -35,6 +39,8 @@ public class Configuration{
     public static void clearConfigurations(){
         configurations.clear();
         configurations.add(NUCLEARCRAFT);
+        internalAddons.clear();
+        internalAddonCache.clear();
     }
     public ArrayList<String> alternatives = new ArrayList<>();
     public Configuration(String name, String version, String underhaulVersion){
@@ -197,27 +203,49 @@ public class Configuration{
     public void addAndConvertAddon(AddonConfiguration addon){
         Configuration addn = addon.self;
         addn.convertAddon(addon, this);
-        if(addn.underhaul!=null&&addn.underhaul.fissionSFR!=null){
+        if(addn.underhaul!=null&&addn.underhaul.fissionSFR!=null&&underhaul!=null&&underhaul.fissionSFR!=null){
             underhaul.fissionSFR.allBlocks.addAll(addn.underhaul.fissionSFR.blocks);
             underhaul.fissionSFR.allFuels.addAll(addn.underhaul.fissionSFR.fuels);
         }
-        if(addn.overhaul!=null&&addn.overhaul.fissionSFR!=null){
+        if(addn.overhaul!=null&&addn.overhaul.fissionSFR!=null&&overhaul!=null&&overhaul.fissionSFR!=null){
             overhaul.fissionSFR.allBlocks.addAll(addn.overhaul.fissionSFR.blocks);
             overhaul.fissionSFR.allCoolantRecipes.addAll(addn.overhaul.fissionSFR.coolantRecipes);
-            overhaul.fissionSFR.allFuels.addAll(addn.overhaul.fissionSFR.fuels);
-            overhaul.fissionSFR.allIrradiatorRecipes.addAll(addn.overhaul.fissionSFR.irradiatorRecipes);
-            overhaul.fissionSFR.allSources.addAll(addn.overhaul.fissionSFR.sources);
+            FOR:for(multiblock.configuration.overhaul.fissionsfr.Block block : addn.overhaul.fissionSFR.allBlocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block b : overhaul.fissionSFR.allBlocks){
+                    for(String nam : b.getLegacyNames()){
+                        if(nam.equals(block.name)){
+                            block.name = b.name;
+                            b.allRecipes.addAll(block.recipes);
+                            continue FOR;
+                        }
+                    }
+                }
+                throw new IllegalArgumentException("Unable to find block "+block.name+" for recipes!");
+            }
         }
-        if(addn.overhaul!=null&&addn.overhaul.fissionMSR!=null){
+        if(addn.overhaul!=null&&addn.overhaul.fissionMSR!=null&&overhaul!=null&&overhaul.fissionMSR!=null){
             overhaul.fissionMSR.allBlocks.addAll(addn.overhaul.fissionMSR.blocks);
-            overhaul.fissionMSR.allFuels.addAll(addn.overhaul.fissionMSR.fuels);
-            overhaul.fissionMSR.allIrradiatorRecipes.addAll(addn.overhaul.fissionMSR.irradiatorRecipes);
-            overhaul.fissionMSR.allSources.addAll(addn.overhaul.fissionMSR.sources);
+            FOR:for(multiblock.configuration.overhaul.fissionmsr.Block block : addn.overhaul.fissionMSR.allBlocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block b : overhaul.fissionMSR.allBlocks){
+                    for(String nam : b.getLegacyNames()){
+                        if(nam.equals(block.name)){
+                            block.name = b.name;
+                            b.allRecipes.addAll(block.recipes);
+                            continue FOR;
+                        }
+                    }
+                }
+                throw new IllegalArgumentException("Unable to find block "+block.name+" for recipes!");
+            }
         }
-        if(addn.overhaul!=null&&addn.overhaul.turbine!=null){
-            overhaul.turbine.allCoils.addAll(addn.overhaul.turbine.coils);
-            overhaul.turbine.allBlades.addAll(addn.overhaul.turbine.blades);
+        if(addn.overhaul!=null&&addn.overhaul.turbine!=null&&overhaul!=null&&overhaul.turbine!=null){
+            overhaul.turbine.allBlocks.addAll(addn.overhaul.turbine.blocks);
             overhaul.turbine.allRecipes.addAll(addn.overhaul.turbine.recipes);
+        }
+        if(addn.overhaul!=null&&addn.overhaul.fusion!=null&&overhaul!=null&&overhaul.fusion!=null){
+            overhaul.fusion.allBlocks.addAll(addn.overhaul.fusion.blocks);
+            overhaul.fusion.allRecipes.addAll(addn.overhaul.fusion.recipes);
+            overhaul.fusion.allCoolantRecipes.addAll(addn.overhaul.fusion.coolantRecipes);
         }
         addons.add(addn);
     }
@@ -234,5 +262,50 @@ public class Configuration{
             if(addn.nameAndVersionMatches(addon))return addn;
         }
         throw new NullPointerException("No matching addons found for "+addon.toString()+"!");
+    }
+    public void removeAddon(Configuration addon){
+        if(addon.underhaul!=null&&addon.underhaul.fissionSFR!=null&&underhaul!=null&&underhaul.fissionSFR!=null){
+            underhaul.fissionSFR.allBlocks.removeAll(addon.underhaul.fissionSFR.blocks);
+            underhaul.fissionSFR.allFuels.removeAll(addon.underhaul.fissionSFR.fuels);
+        }
+        if(addon.overhaul!=null&&addon.overhaul.fissionSFR!=null&&overhaul!=null&&overhaul.fissionSFR!=null){
+            overhaul.fissionSFR.allBlocks.removeAll(addon.overhaul.fissionSFR.blocks);
+            overhaul.fissionSFR.allCoolantRecipes.removeAll(addon.overhaul.fissionSFR.coolantRecipes);
+            FOR:for(multiblock.configuration.overhaul.fissionsfr.Block block : addon.overhaul.fissionSFR.allBlocks){
+                for(multiblock.configuration.overhaul.fissionsfr.Block b : overhaul.fissionSFR.allBlocks){
+                    for(String nam : b.getLegacyNames()){
+                        if(nam.equals(block.name)){
+                            b.allRecipes.removeAll(block.recipes);
+                            continue FOR;
+                        }
+                    }
+                }
+                throw new IllegalArgumentException("Unable to find block "+block.name+" to remove recipes!");
+            }
+        }
+        if(addon.overhaul!=null&&addon.overhaul.fissionMSR!=null&&overhaul!=null&&overhaul.fissionMSR!=null){
+            overhaul.fissionMSR.allBlocks.removeAll(addon.overhaul.fissionMSR.blocks);
+            FOR:for(multiblock.configuration.overhaul.fissionmsr.Block block : addon.overhaul.fissionMSR.allBlocks){
+                for(multiblock.configuration.overhaul.fissionmsr.Block b : overhaul.fissionMSR.allBlocks){
+                    for(String nam : b.getLegacyNames()){
+                        if(nam.equals(block.name)){
+                            b.allRecipes.removeAll(block.recipes);
+                            continue FOR;
+                        }
+                    }
+                }
+                throw new IllegalArgumentException("Unable to find block "+block.name+" to remove recipes!");
+            }
+        }
+        if(addon.overhaul!=null&&addon.overhaul.turbine!=null&&overhaul!=null&&overhaul.turbine!=null){
+            overhaul.turbine.allBlocks.removeAll(addon.overhaul.turbine.blocks);
+            overhaul.turbine.allRecipes.removeAll(addon.overhaul.turbine.recipes);
+        }
+        if(addon.overhaul!=null&&addon.overhaul.fusion!=null&&overhaul!=null&&overhaul.fusion!=null){
+            overhaul.fusion.allBlocks.removeAll(addon.overhaul.fusion.blocks);
+            overhaul.fusion.allRecipes.removeAll(addon.overhaul.fusion.recipes);
+            overhaul.fusion.allCoolantRecipes.removeAll(addon.overhaul.fusion.coolantRecipes);
+        }
+        addons.remove(addon);
     }
 }

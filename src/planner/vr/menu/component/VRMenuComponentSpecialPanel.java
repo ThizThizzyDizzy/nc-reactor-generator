@@ -58,39 +58,25 @@ public class VRMenuComponentSpecialPanel extends VRMenuComponent{
         components.clear();
         if(activeTool<0)return;
         Block b = editor.getSelectedBlock(activeTool);
-        if(b instanceof multiblock.overhaul.fusion.Block&&((multiblock.overhaul.fusion.Block)b).isBreedingBlanket()){
-            double size = Math.min(depth, height/editor.getMultiblock().getConfiguration().overhaul.fusion.allBreedingBlanketRecipes.size());
-            for(int i = 0; i<editor.getMultiblock().getConfiguration().overhaul.fusion.allBreedingBlanketRecipes.size(); i++){
-                multiblock.configuration.overhaul.fusion.BreedingBlanketRecipe recipe = editor.getMultiblock().getConfiguration().overhaul.fusion.allBreedingBlanketRecipes.get(i);
-                add(new VRMenuComponentFusionBreedingBlanketRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, recipe, i));
+        if(b instanceof multiblock.overhaul.fusion.Block&&!((multiblock.overhaul.fusion.Block)b).template.allRecipes.isEmpty()){
+            double size = Math.min(depth, height/((multiblock.overhaul.fusion.Block)b).template.allRecipes.size());
+            for(int i = 0; i<((multiblock.overhaul.fusion.Block)b).template.allRecipes.size(); i++){
+                multiblock.configuration.overhaul.fusion.BlockRecipe recipe = ((multiblock.overhaul.fusion.Block)b).template.allRecipes.get(i);
+                add(new VRMenuComponentFusionBlockRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, ((multiblock.overhaul.fusion.Block)b).template, recipe, i));
             }
         }
-        if(b instanceof multiblock.overhaul.fissionsfr.Block&&((multiblock.overhaul.fissionsfr.Block)b).isFuelCell()){
-            double size = Math.min(depth, height/editor.getMultiblock().getConfiguration().overhaul.fissionSFR.allFuels.size());
-            for(int i = 0; i<editor.getMultiblock().getConfiguration().overhaul.fissionSFR.allFuels.size(); i++){
-                multiblock.configuration.overhaul.fissionsfr.Fuel fuel = editor.getMultiblock().getConfiguration().overhaul.fissionSFR.allFuels.get(i);
-                add(new VRMenuComponentOverSFRFuel(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, fuel, i));
+        if(b instanceof multiblock.overhaul.fissionsfr.Block&&!((multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.isEmpty()){
+            double size = Math.min(depth, height/((multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.size());
+            for(int i = 0; i<((multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.size(); i++){
+                multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe = ((multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.get(i);
+                add(new VRMenuComponentOverhaulSFRBlockRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, ((multiblock.overhaul.fissionsfr.Block)b).template, recipe, i));
             }
         }
-        if(b instanceof multiblock.overhaul.fissionsfr.Block&&((multiblock.overhaul.fissionsfr.Block)b).isIrradiator()){
-            double size = Math.min(depth, height/editor.getMultiblock().getConfiguration().overhaul.fissionSFR.allIrradiatorRecipes.size());
-            for(int i = 0; i<editor.getMultiblock().getConfiguration().overhaul.fissionSFR.allIrradiatorRecipes.size(); i++){
-                multiblock.configuration.overhaul.fissionsfr.IrradiatorRecipe irrecipe = editor.getMultiblock().getConfiguration().overhaul.fissionSFR.allIrradiatorRecipes.get(i);
-                add(new VRMenuComponentSFRIrradiatorRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, irrecipe, i));
-            }
-        }
-        if(b instanceof multiblock.overhaul.fissionmsr.Block&&((multiblock.overhaul.fissionmsr.Block)b).isFuelVessel()){
-            double size = Math.min(depth, height/editor.getMultiblock().getConfiguration().overhaul.fissionMSR.allFuels.size());
-            for(int i = 0; i<editor.getMultiblock().getConfiguration().overhaul.fissionMSR.allFuels.size(); i++){
-                multiblock.configuration.overhaul.fissionmsr.Fuel fuel = editor.getMultiblock().getConfiguration().overhaul.fissionMSR.allFuels.get(i);
-                add(new VRMenuComponentOverMSRFuel(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, fuel, i));
-            }
-        }
-        if(b instanceof multiblock.overhaul.fissionmsr.Block&&((multiblock.overhaul.fissionmsr.Block)b).isIrradiator()){
-            double size = Math.min(depth, height/editor.getMultiblock().getConfiguration().overhaul.fissionMSR.allIrradiatorRecipes.size());
-            for(int i = 0; i<editor.getMultiblock().getConfiguration().overhaul.fissionMSR.allIrradiatorRecipes.size(); i++){
-                multiblock.configuration.overhaul.fissionmsr.IrradiatorRecipe irrecipe = editor.getMultiblock().getConfiguration().overhaul.fissionMSR.allIrradiatorRecipes.get(i);
-                add(new VRMenuComponentMSRIrradiatorRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, irrecipe, i));
+        if(b instanceof multiblock.overhaul.fissionmsr.Block&&!((multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.isEmpty()){
+            double size = Math.min(depth, height/((multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.size());
+            for(int i = 0; i<((multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.size(); i++){
+                multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = ((multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.get(i);
+                add(new VRMenuComponentOverhaulMSRBlockRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, ((multiblock.overhaul.fissionmsr.Block)b).template, recipe, i));
             }
         }
         refreshNeeded = false;

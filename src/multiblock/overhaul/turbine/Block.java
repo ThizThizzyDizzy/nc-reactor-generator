@@ -7,72 +7,39 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
 import planner.Core;
 public class Block extends multiblock.Block{
-    public static Block casing(Configuration configuration, int x, int y, int z){
-        Block casing = new Block(configuration, x, y, z);
-        return casing;
-    }
-    public multiblock.configuration.overhaul.turbine.Blade blade;
-    public multiblock.configuration.overhaul.turbine.Coil coil;
-    private boolean valid;
-    private Block(Configuration configuration, int x, int y, int z){
-        super(configuration, x,y,z);
-    }
-    public Block(Configuration configuration, int z, multiblock.configuration.overhaul.turbine.Blade blade){
-        this(configuration, 0, 0, z);
-        this.blade = blade;
-    }
-    public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.overhaul.turbine.Coil coil){
-        this(configuration, x, y, z);
-        this.coil = coil;
+    public multiblock.configuration.overhaul.turbine.Block template;
+    public boolean valid;
+    public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.overhaul.turbine.Block block){
+        super(configuration, x, y, z);
+        this.template = block;
+        if(template==null)throw new IllegalArgumentException("Cannot create null block!");
     }
     @Override
     public multiblock.Block newInstance(int x, int y, int z){
-        if(blade!=null)return new Block(getConfiguration(), z, blade);
-        return new Block(getConfiguration(), x, y, z, coil);
+        return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
     public void copyProperties(multiblock.Block other){}
     @Override
     public BufferedImage getBaseTexture(){
-        if(blade==null&&coil==null)return OverhaulTurbine.shaftTexture;
-        return blade==null?coil.texture:blade.texture;
+        return template.texture;
     }
     @Override
     public BufferedImage getTexture(){
-        if(blade==null&&coil==null)return OverhaulTurbine.shaftTexture;
-        return blade==null?coil.displayTexture:blade.displayTexture;
+        return template.displayTexture;
     }
     @Override
     public String getName(){
-        if(coil==null&&blade==null)return "Rotor Shaft";
-        return blade==null?coil.name:blade.name;
+        return template.getDisplayName();
     }
     @Override
     public void clearData(){
         valid = false;
     }
-    /**
-     * Calculates the coil
-     * @param reactor the reactor
-     * @return <code>true</code> if the coil state has changed
-     */
-    public boolean calculateCoil(OverhaulTurbine reactor){
-        if(isCoil()||isConnector()){
-            boolean wasValid = valid;
-            for(PlacementRule rule : coil.rules){
-                if(!rule.isValid(this, reactor)){
-                    valid = false;
-                    return wasValid!=valid;
-                }
-            }
-            valid = true;
-            return wasValid!=valid;
-        }
-        return false;
-    }
     @Override
     public String getTooltip(Multiblock multiblock){
         String tip = getName();
+        if(template.casing)tip+="\nCasing "+(isActive()?"Active":"Invalid");
         if(isConnector())tip+="\nConnector "+(isActive()?"Active":"Invalid");
         if(isCoil())tip+="\nCoil "+(isActive()?"Active":"Invalid");
         return tip;
@@ -82,25 +49,25 @@ public class Block extends multiblock.Block{
         String tip = getName();
         if(isBearing())tip+="\nBearing";
         if(isBlade()){
-            if(blade.stator){
+            if(template.bladeStator){
                 tip+="\nStator"
-                    + "\nExpansion Coefficient: "+blade.expansion;
-                if(blade.efficiency>0){
-                    tip+="\nEfficiency: "+blade.efficiency;
+                    + "\nExpansion Coefficient: "+template.bladeExpansion;
+                if(template.bladeEfficiency>0){
+                    tip+="\nEfficiency: "+template.bladeEfficiency;
                 }
             }else{
                 tip+="\nBlade"
-                    + "\nExpansion Coefficient: "+blade.expansion
-                    + "\nEfficiency: "+blade.efficiency;
+                    + "\nExpansion Coefficient: "+template.bladeExpansion
+                    + "\nEfficiency: "+template.bladeEfficiency;
             }
         }
         if(isConnector())tip+="\nConnector";
         if(isCoil()){
             tip+="\nCoil"
-                + "\nEfficiency: "+coil.efficiency;
+                + "\nEfficiency: "+template.coilEfficiency;
         }
-        if(coil!=null){
-            for(PlacementRule rule : coil.rules){
+        if(template!=null){
+            for(PlacementRule rule : template.rules){
                 tip+="\nRequires "+rule.toString();
             }
         }
@@ -111,7 +78,7 @@ public class Block extends multiblock.Block{
         if(!isValid()){
             drawOutline(x, y, width, height, Core.theme.getRed());
         }
-        if(isActive()&&!isBearing()){
+        if(isActive()&&isCoil()){
             drawOutline(x, y, width, height, Core.theme.getGreen());
         }
     }
@@ -120,33 +87,29 @@ public class Block extends multiblock.Block{
         if(!isValid()){
             drawOutline(x, y, z, width, height, depth, Core.theme.getRed(), faceRenderFunc);
         }
-        if(isActive()&&!isBearing()){
+        if(isActive()&&isCoil()){
             drawOutline(x, y, z, width, height, depth, Core.theme.getGreen(), faceRenderFunc);
         }
     }
     @Override
     public boolean isValid(){
-        return isCasing()||isBearing()||isBlade()||valid;
+        return valid;
     }
     @Override
     public boolean isActive(){
-        return isBearing()||valid;
+        return valid;
     }
     @Override
     public boolean isCore(){
         return isBearing()||isBlade();
     }
     @Override
-    public boolean isCasing(){
-        return coil==null&&blade==null;
-    }
-    @Override
     public boolean hasRules(){
-        return coil!=null&&!coil.rules.isEmpty();
+        return !template.rules.isEmpty();
     }
     @Override
     public boolean calculateRules(Multiblock multiblock){
-        for(PlacementRule rule : coil.rules){
+        for(PlacementRule rule : template.rules){
             if(!rule.isValid(this, (OverhaulTurbine) multiblock)){
                 return false;
             }
@@ -157,7 +120,7 @@ public class Block extends multiblock.Block{
     public boolean matches(multiblock.Block template){
         if(template==null)return false;
         if(template instanceof Block){
-            return ((Block)template).blade==this.blade&&((Block)template).coil==this.coil;
+            return ((Block)template).template==this.template;
         }
         return false;
     }
@@ -169,14 +132,14 @@ public class Block extends multiblock.Block{
         if(totalDist>1)return false;//too far away
         if(isConnector()&&other.isCoil())return true;
         if(hasRules()){
-            for(PlacementRule rule : coil.rules){
+            for(PlacementRule rule : template.rules){
                 if(ruleHas(rule, other))return true;
             }
         }
         return false;
     }
     private boolean ruleHas(PlacementRule rule, Block b){
-        if(rule.coil==b.coil)return true;
+        if(rule.block==b.template)return true;
         for(PlacementRule rul : rule.rules){
             if(ruleHas(rul, b))return true;
         }
@@ -184,35 +147,33 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean canGroup(){
-        return coil!=null;
+        return template.coil||template.connector;
     }
     @Override
     public boolean canBeQuickReplaced(){
-        return coil!=null;
+        return template.coil||template.connector||(template.casing&&!template.controller&&!template.inlet&&!template.outlet);
     }
     @Override
     public multiblock.Block copy(){
-        Block copy;
-        if(blade!=null)copy = new Block(getConfiguration(),z,blade);
-        else copy = new Block(getConfiguration(),x,y,z,coil);
+        Block copy = new Block(getConfiguration(),x,y,z,template);
         copy.valid = valid;
         return copy;
     }
     @Override
     public boolean isEqual(multiblock.Block other){
-        return other instanceof Block&&((Block)other).blade==blade&&((Block)other).coil==coil;
+        return other instanceof Block&&((Block)other).template==template;
     }
     public boolean isBlade(){
-        return blade!=null;
+        return template.blade;
     }
     public boolean isBearing(){
-        return coil!=null&&coil.bearing;
+        return template.bearing;
     }
     public boolean isCoil(){
-        return coil!=null&&!coil.bearing&&!coil.connector;
+        return template.coil;
     }
     public boolean isConnector(){
-        return coil!=null&&coil.connector;
+        return template.connector;
     }
     @Override
     public boolean isFullBlock(){
@@ -220,8 +181,18 @@ public class Block extends multiblock.Block{
     }
     @Override
     public void convertTo(Configuration to){
-        coil = to.overhaul.turbine.convert(coil);
-        blade = to.overhaul.turbine.convert(blade);
+        template = to.overhaul.turbine.convert(template);
         configuration = to;
+    }
+    @Override
+    public boolean shouldRenderFace(multiblock.Block against){
+        if(super.shouldRenderFace(against))return true;
+        if(template.blade||((Block)against).template.blade)return true;
+        if(template==((Block)against).template)return false;
+        return Core.hasAlpha(against.getBaseTexture());
+    }
+    @Override
+    public Iterable<String> getSearchableNames(){
+        return template.getSearchableNames();
     }
 }

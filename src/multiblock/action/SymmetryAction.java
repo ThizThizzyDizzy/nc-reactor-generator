@@ -1,37 +1,30 @@
 package multiblock.action;
 import java.util.ArrayList;
+import java.util.HashMap;
 import multiblock.Action;
 import multiblock.Block;
+import multiblock.BlockPos;
 import multiblock.Multiblock;
 import multiblock.symmetry.Symmetry;
 public class SymmetryAction extends Action<Multiblock>{
     private final Symmetry symmetry;
-    private Block[][][] was;
+    private HashMap<BlockPos, Block> was = new HashMap<>();
     public SymmetryAction(Symmetry symmetry){
         this.symmetry = symmetry;
     }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
         if(allowUndo){
-            was = new Block[multiblock.getX()][multiblock.getY()][multiblock.getZ()];
-            for(int x = 0; x<multiblock.getX(); x++){
-                for(int y = 0; y<multiblock.getY(); y++){
-                    for(int z = 0; z<multiblock.getZ(); z++){
-                        was[x][y][z] = multiblock.getBlock(x, y, z);
-                    }
-                }
-            }
+            multiblock.forEachPosition((x, y, z) -> {
+                was.put(new BlockPos(x,y,z), multiblock.getBlock(x, y, z));
+            });
         }
         symmetry.apply(multiblock);
     }
     @Override
     public void doUndo(Multiblock multiblock){
-        for(int x = 0; x<multiblock.getX(); x++){
-            for(int y = 0; y<multiblock.getY(); y++){
-                for(int z = 0; z<multiblock.getZ(); z++){
-                    multiblock.setBlockExact(x, y, z, was[x][y][z]);
-                }
-            }
+        for(BlockPos pos : was.keySet()){
+            multiblock.setBlockExact(pos.x, pos.y, pos.z, was.get(pos));
         }
     }
     @Override

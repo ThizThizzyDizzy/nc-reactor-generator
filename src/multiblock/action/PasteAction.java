@@ -21,21 +21,16 @@ public class PasteAction extends Action<Multiblock>{
     public void doApply(Multiblock multiblock, boolean allowUndo){
         was.clear();
         for(ClipboardEntry entry : blocks){
-            int X = entry.x+x;
-            int Y = entry.y+y;
-            int Z = entry.z+z;
-            if(X<0)continue;
-            if(Y<0)continue;
-            if(Z<0)continue;
-            if(X>multiblock.getX()-1)continue;
-            if(Y>multiblock.getY()-1)continue;
-            if(Z>multiblock.getZ()-1)continue;
+            int bx = entry.x+x;
+            int by = entry.y+y;
+            int bz = entry.z+z;
+            if(!multiblock.contains(bx, by, bz))continue;
             if(allowUndo){
-                Block bl = multiblock.getBlock(X, Y, Z);
+                Block bl = multiblock.getBlock(bx, by, bz);
                 if(bl!=null)was.add(bl);
-                else wasAir.add(new int[]{X,Y,Z});
+                else wasAir.add(new int[]{bx,by,bz});
             }
-            multiblock.setBlock(X, Y, Z, entry.block);
+            multiblock.setBlock(bx, by, bz, entry.block);
         }
     }
     @Override
@@ -50,10 +45,12 @@ public class PasteAction extends Action<Multiblock>{
     @Override
     public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
         for(ClipboardEntry entry : this.blocks){
-            Block block = multiblock.getBlock(entry.x+x, entry.y+y, entry.z+z);
-            if(block==null)continue;
-            if(!block.isCasing()&&!blocks.contains(block)){
-                blocks.add(block);
+            if(multiblock.contains(entry.x+x, entry.y+y, entry.z+z)){
+                Block block = multiblock.getBlock(entry.x+x, entry.y+y, entry.z+z);
+                if(block==null)continue;
+                if(!blocks.contains(block)){
+                    blocks.add(block);
+                }
             }
         }
     }

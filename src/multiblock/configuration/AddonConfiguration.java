@@ -1,4 +1,9 @@
 package multiblock.configuration;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import planner.Core;
+import planner.file.FileReader;
+import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
 public class AddonConfiguration extends Configuration{
     public static AddonConfiguration generate(Configuration parent, Configuration addon){
@@ -11,6 +16,7 @@ public class AddonConfiguration extends Configuration{
         AddonConfiguration addon = new AddonConfiguration(configuration.name, configuration.overhaulVersion, configuration.underhaulVersion);
         addon.underhaul = configuration.underhaul;
         addon.overhaul = configuration.overhaul;
+        addon.addons.clear();
         addon.addons.addAll(configuration.addons);
         int found = 0;
         for(Configuration config : configuration.addons){
@@ -44,30 +50,24 @@ public class AddonConfiguration extends Configuration{
             overhaul.fissionSFR.allBlocks.addAll(self.overhaul.fissionSFR.blocks);
             overhaul.fissionSFR.allCoolantRecipes.removeAll(self.overhaul.fissionSFR.coolantRecipes);
             overhaul.fissionSFR.allCoolantRecipes.addAll(self.overhaul.fissionSFR.coolantRecipes);
-            overhaul.fissionSFR.allFuels.removeAll(self.overhaul.fissionSFR.fuels);
-            overhaul.fissionSFR.allFuels.addAll(self.overhaul.fissionSFR.fuels);
-            overhaul.fissionSFR.allIrradiatorRecipes.removeAll(self.overhaul.fissionSFR.irradiatorRecipes);
-            overhaul.fissionSFR.allIrradiatorRecipes.addAll(self.overhaul.fissionSFR.irradiatorRecipes);
-            overhaul.fissionSFR.allSources.removeAll(self.overhaul.fissionSFR.sources);
-            overhaul.fissionSFR.allSources.addAll(self.overhaul.fissionSFR.sources);
         }
         if(self.overhaul!=null&&self.overhaul.fissionMSR!=null){
             overhaul.fissionMSR.allBlocks.removeAll(self.overhaul.fissionMSR.blocks);
             overhaul.fissionMSR.allBlocks.addAll(self.overhaul.fissionMSR.blocks);
-            overhaul.fissionMSR.allFuels.removeAll(self.overhaul.fissionMSR.fuels);
-            overhaul.fissionMSR.allFuels.addAll(self.overhaul.fissionMSR.fuels);
-            overhaul.fissionMSR.allIrradiatorRecipes.removeAll(self.overhaul.fissionMSR.irradiatorRecipes);
-            overhaul.fissionMSR.allIrradiatorRecipes.addAll(self.overhaul.fissionMSR.irradiatorRecipes);
-            overhaul.fissionMSR.allSources.removeAll(self.overhaul.fissionMSR.sources);
-            overhaul.fissionMSR.allSources.addAll(self.overhaul.fissionMSR.sources);
         }
         if(self.overhaul!=null&&self.overhaul.turbine!=null){
-            overhaul.turbine.allCoils.removeAll(self.overhaul.turbine.coils);
-            overhaul.turbine.allCoils.addAll(self.overhaul.turbine.coils);
-            overhaul.turbine.allBlades.removeAll(self.overhaul.turbine.blades);
-            overhaul.turbine.allBlades.addAll(self.overhaul.turbine.blades);
+            overhaul.turbine.allBlocks.removeAll(self.overhaul.turbine.blocks);
+            overhaul.turbine.allBlocks.addAll(self.overhaul.turbine.blocks);
             overhaul.turbine.allRecipes.removeAll(self.overhaul.turbine.recipes);
             overhaul.turbine.allRecipes.addAll(self.overhaul.turbine.recipes);
+        }
+        if(self.overhaul!=null&&self.overhaul.fusion!=null){
+            overhaul.fusion.allBlocks.removeAll(self.overhaul.fusion.blocks);
+            overhaul.fusion.allBlocks.addAll(self.overhaul.fusion.blocks);
+            overhaul.fusion.allRecipes.removeAll(self.overhaul.fusion.recipes);
+            overhaul.fusion.allRecipes.addAll(self.overhaul.fusion.recipes);
+            overhaul.fusion.allCoolantRecipes.removeAll(self.overhaul.fusion.coolantRecipes);
+            overhaul.fusion.allCoolantRecipes.addAll(self.overhaul.fusion.coolantRecipes);
         }
         addons.remove(self);
         addons.add(self);//Make sure it's always at the end of the list
@@ -76,5 +76,16 @@ public class AddonConfiguration extends Configuration{
     @Override
     public boolean isPartial(){
         return true;
+    }
+    public AddonConfiguration copy(){
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Config header = Config.newConfig();
+        header.set("version", NCPFFile.SAVE_VERSION);
+        header.set("count", 0);
+        header.save(out);
+        /*AddonConfiguration.generate(Core.configuration, this).*/save(Core.configuration, Config.newConfig()).save(out);
+        return AddonConfiguration.convert(FileReader.read(() -> {
+            return new ByteArrayInputStream(out.toByteArray());
+        }).configuration);
     }
 }

@@ -29,17 +29,12 @@ public abstract class MultiblockGenerator{
     }
     public abstract MultiblockGenerator newInstance(Multiblock multi);
     public abstract ArrayList<Multiblock>[] getMultiblockLists();
-    public abstract Class<? extends Multiblock>[] getValidMultiblocks();
+    public abstract boolean canGenerateFor(Multiblock multiblock);
     public abstract String getName();
     public static ArrayList<MultiblockGenerator> getGenerators(Multiblock m){
         ArrayList<MultiblockGenerator> valid = new ArrayList<>();
         for(MultiblockGenerator gen : generators){
-            for(Class<? extends Multiblock> c : gen.getValidMultiblocks()){
-                if(c.equals(m.getClass())){
-                    valid.add(gen);
-                    break;
-                }
-            }
+            if(gen.canGenerateFor(m))valid.add(gen);
         }
         return valid;
     }
@@ -98,7 +93,7 @@ public abstract class MultiblockGenerator{
         Multiblock main = getMainMultiblock();
         if(main==null)return new FormattedText("");
         main.metadata.put("Author", "S'plodo-bot");
-        return main.getTooltip();
+        return main.getTooltip(true);
     }
     public String getMainMultiblockBotTooltip(){
         Multiblock main = getMainMultiblock();
