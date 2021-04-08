@@ -33,10 +33,12 @@ public class MenuSettings extends SettingsMenu{
     private final MenuComponentMinimalistOptionButton theme;
     private final MenuComponentMinimalistButton modules;
     private final MenuComponentToggleBox invertUndoRedo;
+    private final MenuComponentToggleBox autoBuildCasing;
     public MenuSettings(GUI gui, Menu parent){
         super(gui, parent);
         addToSidebar(new MenuComponentLabel(0, 0, 0, 48, "Settings", true));
         addToSidebar(invertUndoRedo = new MenuComponentToggleBox(0, 0, 0, 48, "Invert Undo/Redo", false));
+        addToSidebar(autoBuildCasing = new MenuComponentToggleBox(0, 0, 0, 48, "Auto-build Casings", false));
         addToSidebar(modules = new MenuComponentMinimalistButton(0, 0, 0, 48, "Modules", true, true));
         modules.addActionListener((e) -> {
             gui.open(new MenuModules(gui, this));
@@ -92,6 +94,7 @@ public class MenuSettings extends SettingsMenu{
     @Override
     public void onGUIOpened(){
         invertUndoRedo.isToggledOn = Core.invertUndoRedo;
+        autoBuildCasing.isToggledOn = Core.autoBuildCasing;
         currentConfigLabel.text = "Current Configuration: "+Core.configuration.toString();
         int active = 0;
         for(Module m : Core.modules)if(m.isActive())active++;
@@ -100,6 +103,7 @@ public class MenuSettings extends SettingsMenu{
     @Override
     public void onGUIClosed(){
         Core.invertUndoRedo = invertUndoRedo.isToggledOn;
+        Core.autoBuildCasing = autoBuildCasing.isToggledOn;
         super.onGUIClosed();
     }
     @Override

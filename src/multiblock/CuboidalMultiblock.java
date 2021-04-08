@@ -167,6 +167,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void expandLeft(int i){
         if(getInternalWidth()+i>getMaxX())return;
@@ -184,6 +185,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void expandUp(int i){
         if(getInternalHeight()+i>getMaxY())return;
@@ -201,6 +203,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void exandDown(int i){
         if(getInternalHeight()+i>getMaxY())return;
@@ -218,6 +221,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void expandToward(int i){
         if(getInternalDepth()+i>getMaxZ())return;
@@ -235,6 +239,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void expandAway(int i){
         if(getInternalDepth()+i>getMaxZ())return;
@@ -252,6 +257,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void deleteX(int X){
         if(getInternalWidth()<=getMinX())return;
@@ -270,6 +276,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void deleteY(int Y){
         if(getInternalHeight()<=getMinY())return;
@@ -288,6 +295,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void deleteZ(int Z){
         if(getInternalDepth()<=getMinZ())return;
@@ -306,6 +314,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void insertX(int X){
         if(getInternalWidth()>=getMaxX())return;
@@ -323,6 +332,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void insertY(int Y){
         if(getInternalHeight()>=getMaxY())return;
@@ -340,6 +350,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     public void insertZ(int Z){
         if(getInternalDepth()>=getMaxZ())return;
@@ -357,6 +368,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         history.clear();
         future.clear();
+        clearCaches();
     }
     @Override
     public String getDimensionsStr(){

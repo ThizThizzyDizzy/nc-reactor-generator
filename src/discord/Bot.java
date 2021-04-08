@@ -315,13 +315,15 @@ public class Bot extends ListenerAdapter{
                     multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
                     FUEL:for(String str : fuelStrings){
                         for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
-                            if(f.name.equalsIgnoreCase(str)){
-                                if(fuel!=null){
-                                    channel.sendMessage("Underhaul SFRs can only have one fuel!").queue();
-                                    return;
+                            for(String nam : f.getLegacyNames()){
+                                if(nam.equalsIgnoreCase(str)){
+                                    if(fuel!=null){
+                                        channel.sendMessage("Underhaul SFRs can only have one fuel!").queue();
+                                        return;
+                                    }
+                                    fuel = f;
+                                    continue FUEL;
                                 }
-                                fuel = f;
-                                continue FUEL;
                             }
                         }
                         channel.sendMessage("Unknown fuel: "+str).queue();
@@ -780,9 +782,11 @@ public class Bot extends ListenerAdapter{
                     ArrayList<multiblock.configuration.underhaul.fissionsfr.Fuel> underFuels = new ArrayList<>();
                     FUEL:for(String str : fuelStrings){
                         for(multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
-                            if(f.name.equalsIgnoreCase(str)){
-                                underFuels.add(f);
-                                continue FUEL;
+                            for(String nam : f.getLegacyNames()){
+                                if(nam.equalsIgnoreCase(str)){
+                                    underFuels.add(f);
+                                    continue FUEL;
+                                }
                             }
                         }
                         channel.sendMessage("Unknown fuel: "+str).queue();

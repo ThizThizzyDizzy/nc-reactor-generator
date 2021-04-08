@@ -151,18 +151,18 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             calculateTask = null;
         }else calculationPaused = true;
     }
-    private ArrayList<T> lastBlocks = null;
+    private ArrayList<T> blocksCache = null;
     private boolean forceRescan = false;
     public ArrayList<T> getBlocks(){
         return getBlocks(false);
     }
     public ArrayList<T> getBlocks(boolean rescan){
-        if(lastBlocks!=null&&!rescan&&!forceRescan)return lastBlocks;
+        if(blocksCache!=null&&!rescan&&!forceRescan)return blocksCache;
         ArrayList<T> lastBlox = new ArrayList<>();
         for(BlockGrid<T> grid : blockGrids){
             lastBlox.addAll(grid.getBlocks());
         }
-        return lastBlocks = lastBlox;
+        return blocksCache = lastBlox;
     }
     public abstract FormattedText getTooltip(boolean full);
     public FormattedText getFullTooltip(){
@@ -722,5 +722,9 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             volume+=grid.getVolume();
         }
         return volume;
+    }
+    public void clearCaches(){
+        forceRescan = true;
+        groupCache.clear();
     }
 }

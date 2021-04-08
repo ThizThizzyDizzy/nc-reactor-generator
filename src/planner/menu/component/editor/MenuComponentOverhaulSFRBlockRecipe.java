@@ -41,6 +41,7 @@ public class MenuComponentOverhaulSFRBlockRecipe extends MenuComponent implement
         if(block.fuelCell){
             ttp+="Fuel Efficiency: "+recipe.fuelCellEfficiency+"\n";
             ttp+="Fuel Heat: "+recipe.fuelCellHeat+"\n";
+            ttp+="Fuel Time: "+recipe.fuelCellTime+"\n";
             ttp+="Fuel Criticality: "+recipe.fuelCellCriticality+"\n";
             if(recipe.fuelCellSelfPriming)ttp+="Fuel Self-Priming\n";
         }

@@ -467,6 +467,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         future.clear();
         fillRequiredSpaces();
         //TODO don't delete all blocks in the reactor! translate them to the new size!
+        clearCaches();
     }
     public void increaseCoreSize(){
         if(coreSize>=getConfiguration().overhaul.fusion.maxCoreSize)return;
@@ -479,6 +480,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         future.clear();
         fillRequiredSpaces();
         //TODO don't delete all blocks in the reactor! translate them to the new size!
+        clearCaches();
     }
     public void increaseToroidWidth(){
         if(toroidWidth>=getConfiguration().overhaul.fusion.maxToroidWidth)return;
@@ -491,6 +493,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         future.clear();
         fillRequiredSpaces();
         //TODO don't delete all blocks in the reactor! translate them to the new size!
+        clearCaches();
     }
     public void increaseLiningThickness(){
         if(liningThickness>=getConfiguration().overhaul.fusion.maxLiningThickness)return;
@@ -503,6 +506,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         future.clear();
         fillRequiredSpaces();
         //TODO don't delete all blocks in the reactor! translate them to the new size!
+        clearCaches();
     }
     public void decreaseInnerRadius(){
         if(innerRadius<=getConfiguration().overhaul.fusion.minInnerRadius)return;
@@ -515,6 +519,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         future.clear();
         fillRequiredSpaces();
         //TODO don't delete all blocks in the reactor! translate them to the new size!
+        clearCaches();
     }
     public void decreaseCoreSize(){
         if(coreSize<=getConfiguration().overhaul.fusion.minCoreSize)return;
@@ -527,6 +532,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         future.clear();
         fillRequiredSpaces();
         //TODO don't delete all blocks in the reactor! translate them to the new size!
+        clearCaches();
     }
     public void decreaseToroidWidth(){
         if(toroidWidth<=getConfiguration().overhaul.fusion.minToroidWidth)return;
@@ -539,6 +545,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         future.clear();
         fillRequiredSpaces();
         //TODO don't delete all blocks in the reactor! translate them to the new size!
+        clearCaches();
     }
     public void decreaseLiningThickness(){
         if(liningThickness<=getConfiguration().overhaul.fusion.minLiningThickness)return;
@@ -551,6 +558,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         future.clear();
         fillRequiredSpaces();
         //TODO don't delete all blocks in the reactor! translate them to the new size!
+        clearCaches();
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();

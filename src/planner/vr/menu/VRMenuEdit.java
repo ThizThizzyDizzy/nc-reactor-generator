@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import multiblock.Action;
 import multiblock.Block;
+import multiblock.CuboidalMultiblock;
 import multiblock.EditorSpace;
 import multiblock.Multiblock;
 import multiblock.action.ClearSelectionAction;
@@ -601,7 +602,9 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }
     @Override
     public void action(Action action, boolean allowUndo){
+        if(multiblock.calculationPaused)multiblock.recalculate();
         multiblock.action(action, allowUndo);
+        if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock)((CuboidalMultiblock)multiblock).buildDefaultCasing();
     }
     private void selectAll(int id){
         ArrayList<int[]> sel = new ArrayList<>();

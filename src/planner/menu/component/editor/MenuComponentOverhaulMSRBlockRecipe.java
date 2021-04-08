@@ -41,6 +41,7 @@ public class MenuComponentOverhaulMSRBlockRecipe extends MenuComponent implement
         if(block.fuelVessel){
             ttp+="Fuel Efficiency: "+recipe.fuelVesselEfficiency+"\n";
             ttp+="Fuel Heat: "+recipe.fuelVesselHeat+"\n";
+            ttp+="Fuel Time: "+recipe.fuelVesselTime+"\n";
             ttp+="Fuel Criticality: "+recipe.fuelVesselCriticality+"\n";
             if(recipe.fuelVesselSelfPriming)ttp+="Fuel Self-Priming\n";
         }

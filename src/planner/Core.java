@@ -92,6 +92,7 @@ public class Core extends Renderer2D{
     public static boolean vr = false;
     private static Callback callback;
     public static boolean invertUndoRedo;
+    public static boolean autoBuildCasing;
     static{
         resetMetadata();
         modules.add(new UnderhaulModule());
@@ -377,6 +378,7 @@ public class Core extends Renderer2D{
             }catch(Exception ex){}
             tutorialShown = settings.get("tutorialShown", false);
             invertUndoRedo = settings.get("invertUndoRedo", false);
+            autoBuildCasing = settings.get("autoBuildCasing", false);
         }
         refreshModules();
         for(Configuration configuration : Configuration.configurations){
@@ -432,6 +434,7 @@ public class Core extends Renderer2D{
             settings.set("modules", modules);
             settings.set("tutorialShown", tutorialShown);
             settings.set("invertUndoRedo", invertUndoRedo);
+            settings.set("autoBuildCasing", autoBuildCasing);
             settings.save();
             if(Main.isBot){
                 Bot.stop();

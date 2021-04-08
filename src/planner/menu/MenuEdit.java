@@ -9,6 +9,7 @@ import java.util.Locale;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.BoundingBox;
+import multiblock.CuboidalMultiblock;
 import multiblock.Decal;
 import multiblock.EditorSpace;
 import multiblock.Multiblock;
@@ -195,9 +196,17 @@ public class MenuEdit extends Menu implements Editor{
         });
         undo.addActionListener((e) -> {
             multiblock.undo();
+            if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+                ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+                multiblock.recalculate();
+            }
         });
         redo.addActionListener((e) -> {
             multiblock.redo();
+            if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+                ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+                multiblock.recalculate();
+            }
         });
         resize.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, multiblock.getResizeMenu(gui, this), MenuTransition.SlideTransition.slideFrom(1, 0), 5));
@@ -636,9 +645,17 @@ public class MenuEdit extends Menu implements Editor{
                 }
                 if(key==(Core.invertUndoRedo?GLFW.GLFW_KEY_Y:GLFW.GLFW_KEY_Z)){
                     multiblock.undo();
+                    if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+                        ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+                        multiblock.recalculate();
+                    }
                 }
                 if(key==(Core.invertUndoRedo?GLFW.GLFW_KEY_Z:GLFW.GLFW_KEY_Y)){
                     multiblock.redo();
+                    if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+                        ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+                        multiblock.recalculate();
+                    }
                 }
                 MenuComponentEditorGrid grid = null;
                 for(MenuComponent c : multibwauk.components){
@@ -1093,6 +1110,10 @@ public class MenuEdit extends Menu implements Editor{
     public void action(Action action, boolean allowUndo){
         if(multiblock.calculationPaused)multiblock.recalculate();
         multiblock.action(action, allowUndo);
+        if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+            ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+            multiblock.recalculate();
+        }
     }
     @Override
     public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
