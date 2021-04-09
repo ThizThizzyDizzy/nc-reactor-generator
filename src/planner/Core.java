@@ -378,7 +378,7 @@ public class Core extends Renderer2D{
             }catch(Exception ex){}
             tutorialShown = settings.get("tutorialShown", false);
             invertUndoRedo = settings.get("invertUndoRedo", false);
-            autoBuildCasing = settings.get("autoBuildCasing", false);
+            autoBuildCasing = settings.get("autoBuildCasing", true);
         }
         refreshModules();
         for(Configuration configuration : Configuration.configurations){
