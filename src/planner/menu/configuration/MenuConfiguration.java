@@ -676,6 +676,35 @@ public class MenuConfiguration extends ConfigurationMenu{
                                         Core.configuration.overhaul.turbine.allBlocks.add(block);
                                         turbineBlocks.add(block);
                                         //</editor-fold>
+                                    }else if(register.startsWith("registerRTG")){
+                                        //ignored
+                                    }else if(register.startsWith("registerFissionSource")){
+                                        if(configuration.overhaul.fissionSFR==null){
+                                            Sys.error(ErrorLevel.severe, "Cannot register fission source without SFR configuration!", null, ErrorCategory.fileIO);
+                                            continue;
+                                        }
+                                        if(configuration.overhaul.fissionMSR==null){
+                                            Sys.error(ErrorLevel.severe, "Cannot register fission source without MSR configuration!", null, ErrorCategory.fileIO);
+                                            continue;
+                                        }
+                                        String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
+                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                        String name = args[0].substring(1, args[0].length()-1);
+                                        float efficiency = Float.parseFloat(args[1]);
+                                        multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block("nuclearcraft:fission_source_"+name);
+                                        block.casing = true;
+                                        block.source = true;
+                                        block.sourceEfficiency = efficiency;
+                                        configuration.overhaul.fissionSFR.blocks.add(block);
+                                        Core.configuration.overhaul.fissionSFR.allBlocks.add(block);
+                                        fissionSFRBlocks.add(block);
+                                        multiblock.configuration.overhaul.fissionmsr.Block mblock = new multiblock.configuration.overhaul.fissionmsr.Block("nuclearcraft:fission_source_"+name);
+                                        mblock.casing = true;
+                                        mblock.source = true;
+                                        mblock.sourceEfficiency = efficiency;
+                                        configuration.overhaul.fissionMSR.blocks.add(mblock);
+                                        Core.configuration.overhaul.fissionMSR.allBlocks.add(mblock);
+                                        fissionMSRBlocks.add(mblock);
                                     }else{
                                         Sys.error(ErrorLevel.severe, "Unknown ZS register: "+register, null, ErrorCategory.fileIO);
                                     }
