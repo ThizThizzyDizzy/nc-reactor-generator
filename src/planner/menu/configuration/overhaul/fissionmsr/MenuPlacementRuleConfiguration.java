@@ -39,7 +39,7 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                 }
             });
         }
-        block = add(new MenuComponentDropdownList(sidebar.width, type.height, 0, 64));
+        block = add(new MenuComponentDropdownList(sidebar.width, type.height, 0, 64, true));
         min = add(new MenuComponentMinimalistSlider(sidebar.width, block.y+block.height, 0, 64, "Minimum", 0, 6, 1, true).setTooltip("For Axial, this is the number of axial pairs (not single blocks)"));
         max = add(new MenuComponentMinimalistSlider(sidebar.width, block.y+block.height, 0, 64, "Maximum", 0, 6, 6, true).setTooltip("For Axial, this is the number of axial pairs (not single blocks)"));
         placementRulesLabel = add(new MenuComponentLabel(sidebar.width, min.y+min.height, 0, 48, "Placement Rules", true));

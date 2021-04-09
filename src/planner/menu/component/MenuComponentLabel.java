@@ -1,11 +1,12 @@
 package planner.menu.component;
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.function.Supplier;
 import planner.Core;
 import simplelibrary.font.FontManager;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentLabel extends MenuComponent{
+public class MenuComponentLabel extends MenuComponent implements Searchable{
     public String text;
     public final boolean darker;
     public double textInset = 4;
@@ -48,5 +49,9 @@ public class MenuComponentLabel extends MenuComponent{
     public MenuComponentLabel noBackground(){
         noBackground = true;
         return this;
+    }
+    @Override
+    public Iterable<String> getSearchableNames(){
+        return Arrays.asList(text);
     }
 }
