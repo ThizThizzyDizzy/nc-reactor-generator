@@ -1,5 +1,6 @@
 package multiblock.configuration.overhaul.turbine;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 import multiblock.Axis;
@@ -7,9 +8,10 @@ import multiblock.Direction;
 import multiblock.Edge;
 import multiblock.configuration.Configuration;
 import multiblock.overhaul.turbine.OverhaulTurbine;
+import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-public class PlacementRule extends RuleContainer{
+public class PlacementRule extends RuleContainer implements Searchable{
     public static PlacementRule parseNC(TurbineConfiguration configuration, String str){
         if(str.contains("||")){
             PlacementRule rule = new PlacementRule();
@@ -347,6 +349,28 @@ public class PlacementRule extends RuleContainer{
                 return false;
         }
         throw new IllegalArgumentException("Unknown rule type: "+ruleType);
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> nams = new ArrayList<>();
+        switch(ruleType){
+            case BETWEEN:
+            case EDGE:
+            case AXIAL:
+                nams.addAll(block.getLegacyNames());
+                nams.add(block.getDisplayName());
+                break;
+            case BETWEEN_GROUP:
+            case EDGE_GROUP:
+            case AXIAL_GROUP:
+                nams.add(blockType.name);
+                break;
+            case AND:
+            case OR:
+                for(PlacementRule r : rules)nams.addAll(r.getSearchableNames());
+                break;
+        }
+        return nams;
     }
     public static enum RuleType{
         BETWEEN("Between"),

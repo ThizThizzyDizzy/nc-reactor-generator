@@ -186,6 +186,7 @@ public class Block extends RuleContainer implements Searchable{
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> nams = getLegacyNames();
         nams.add(getDisplayName());
+        for(PlacementRule r : rules)nams.addAll(r.getSearchableNames());
         return nams;
     }
 }
