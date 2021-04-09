@@ -98,6 +98,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             double border = blockSize/16;
             if(block!=null){
                 block.render(X, Y, Z, blockSize, blockSize, blockSize, true, 1, multiblock, (t) -> {
+                    if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
                     Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     return b==null;
                 });
