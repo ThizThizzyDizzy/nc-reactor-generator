@@ -434,7 +434,7 @@ public class Bot extends ListenerAdapter{
                     }
                 }
                 if(formats.isEmpty()){
-                    formats.add(FileWriter.HELLRAGE);
+                    if(!overhaul)formats.add(FileWriter.HELLRAGE);
                     formats.add(FileWriter.NCPF);
                 }
                 formats.add(FileWriter.PNG);
