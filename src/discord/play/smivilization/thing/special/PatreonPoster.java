@@ -22,7 +22,7 @@ public class PatreonPoster extends HutThingExclusive{
         double[] lefttop = Hut.convertXYZtoXY512(x, y, z+getDimZ());
         double right = Hut.convertXYZtoXY512(x+getDimX(), y, z+getDimZ())[0];
         double bottom = (right-lefttop[0])/getRenderWidth()*getRenderHeight()+lefttop[1];
-//        Renderer2D.drawRect(lefttop[0], lefttop[1], right, bottom, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/special/patreon.png"));
+        Renderer2D.drawRect(lefttop[0], lefttop[1], right, bottom, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/special/patreon.png"));
     }
     @Override
     public int[] getDimensions(){
