@@ -67,7 +67,7 @@ public class FileWriter{
                                     array.add(bl);
                                 }
                             }
-                            compressedReactor.put(b.getDisplayName().replace(" ", "").replace("Liquid", "").replace("Active", "Active ").replace("Cooler", "").replace("Moderator", ""), array);
+                            compressedReactor.put(b.getDisplayName().replace("Reactor Cell", "Fuel Cell").replace(" ", "").replace("Liquid", "").replace("Active", "Active ").replace("Cooler", "").replace("Moderator", ""), array);
                         }
                         JSON.JSONObject dims = new JSON.JSONObject();
                         dims.set("X", reactor.getInternalWidth());
