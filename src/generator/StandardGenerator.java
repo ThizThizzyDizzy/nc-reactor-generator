@@ -18,10 +18,10 @@ import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
+import planner.menu.component.MenuComponentToggleBox;
 import planner.menu.component.generator.MenuComponentPostProcessingEffect;
 import planner.menu.component.generator.MenuComponentPriority;
 import planner.menu.component.generator.MenuComponentSymmetry;
-import planner.menu.component.MenuComponentToggleBox;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class StandardGenerator extends MultiblockGenerator{
 //    private MenuComponentMinimalistTextBox finalMultiblockCount;

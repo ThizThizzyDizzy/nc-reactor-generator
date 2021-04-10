@@ -1,7 +1,6 @@
 package planner.menu.configuration.overhaul;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Block;
-import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;

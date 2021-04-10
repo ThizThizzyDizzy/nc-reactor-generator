@@ -1,6 +1,4 @@
 package planner.menu.component;
-import java.awt.Color;
-import java.util.function.Supplier;
 import planner.Core;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;

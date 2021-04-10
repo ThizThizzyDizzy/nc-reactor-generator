@@ -1,5 +1,4 @@
 package planner.menu;
-import planner.Core;
 import planner.menu.component.MenuComponentDropdownList;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;

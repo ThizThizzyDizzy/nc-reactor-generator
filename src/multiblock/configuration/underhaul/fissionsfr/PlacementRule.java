@@ -1,6 +1,5 @@
 package multiblock.configuration.underhaul.fissionsfr;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 import multiblock.Axis;
 import multiblock.Direction;

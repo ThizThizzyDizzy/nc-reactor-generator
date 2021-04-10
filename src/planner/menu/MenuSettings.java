@@ -2,7 +2,6 @@ package planner.menu;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.Core;

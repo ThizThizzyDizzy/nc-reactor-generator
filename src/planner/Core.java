@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import multiblock.BoundingBox;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
