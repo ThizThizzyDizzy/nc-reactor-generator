@@ -143,10 +143,12 @@ public class MenuComponentEditorGrid extends MenuComponent{
                         }
                     }
                 }
-                for(Object o : multiblock.decals){
-                    Decal decal = (Decal)o;
-                    if(decal.x==bx&&decal.y==by&&decal.z==bz){
-                        decal.render(X, Y, blockSize);
+                synchronized(multiblock.decals){
+                    for(Object o : multiblock.decals){
+                        Decal decal = (Decal)o;
+                        if(decal.x==bx&&decal.y==by&&decal.z==bz){
+                            decal.render(X, Y, blockSize);
+                        }
                     }
                 }
                 if(isSelected(x, y)){
