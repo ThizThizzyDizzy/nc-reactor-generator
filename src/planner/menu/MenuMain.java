@@ -160,18 +160,6 @@ public class MenuMain extends Menu{
         super(gui, null);
         if(Core.vr)add(vr);
         addMultiblock.textInset = 0;
-        for(Multiblock m : Core.multiblockTypes){
-            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true).setTooltip(m.getDescriptionTooltip()));
-            button.addActionListener((e) -> {
-                Multiblock mb = m.newInstance();
-                if(mb instanceof OverhaulTurbine)((OverhaulTurbine)mb).setBearing(1);
-                if(mb instanceof CuboidalMultiblock)((CuboidalMultiblock)mb).buildDefaultCasing();
-                Core.multiblocks.add(mb);
-                adding = false;
-                refresh();
-            });
-            multiblockButtons.add(button);
-        }
         saveFile.addActionListener((e) -> {
             NCPFFile ncpf = new NCPFFile();
             ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
@@ -392,6 +380,20 @@ public class MenuMain extends Menu{
     @Override
     public void onGUIOpened(){
         refresh();
+        components.removeAll(multiblockButtons);
+        multiblockButtons.clear();
+        for(Multiblock m : Core.multiblockTypes){
+            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true).setTooltip(m.getDescriptionTooltip()));
+            button.addActionListener((e) -> {
+                Multiblock mb = m.newInstance();
+                if(mb instanceof OverhaulTurbine)((OverhaulTurbine)mb).setBearing(1);
+                if(mb instanceof CuboidalMultiblock)((CuboidalMultiblock)mb).buildDefaultCasing();
+                Core.multiblocks.add(mb);
+                adding = false;
+                refresh();
+            });
+            multiblockButtons.add(button);
+        }
     }
     public void refresh(){
         multiblocks.components.clear();

@@ -76,26 +76,26 @@ public class MenuResizeFusion extends Menu{
     }
     @Override
     public void onGUIOpened(){
-        refreshNeeded = true;
+        multibwauk.components.clear();
+        BoundingBox bbox = multiblock.getBoundingBox();
+        int depth = bbox.getDepth();
+        multiblock.forEachPosition((x, y, z) -> {
+            multibwauk.add(new MenuComponentVisibleBlock((x+1)*CELL_SIZE, (1+z+(y*(depth+1)))*CELL_SIZE, CELL_SIZE, CELL_SIZE, multiblock, x, y, z));
+        });
+        multibwauk.add(new MenuComponent(0, 0, 0, 0){
+            @Override
+            public void render(){}
+            @Override
+            public void render(int millisSinceLastTick){
+                drawRects();
+            }
+        });
+        refreshNeeded = false;
     }
     @Override
     public void tick(){
         if(refreshNeeded){
-            multibwauk.components.clear();
-            BoundingBox bbox = multiblock.getBoundingBox();
-            int depth = bbox.getDepth();
-            multiblock.forEachPosition((x, y, z) -> {
-                multibwauk.add(new MenuComponentVisibleBlock((x+1)*CELL_SIZE, (1+z+(y*(depth+1)))*CELL_SIZE, CELL_SIZE, CELL_SIZE, multiblock, x, y, z));
-            });
-            multibwauk.add(new MenuComponent(0, 0, 0, 0){
-                @Override
-                public void render(){}
-                @Override
-                public void render(int millisSinceLastTick){
-                    drawRects();
-                }
-            });
-            refreshNeeded = false;
+            onGUIOpened();
         }
         super.tick();
     }

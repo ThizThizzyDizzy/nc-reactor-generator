@@ -8,9 +8,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
@@ -20,7 +25,9 @@ import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import planner.Core;
 import planner.file.FileFormat;
 import planner.file.FileReader;
+import planner.file.JSON;
 import planner.file.NCPFFile;
+import planner.file.ZenScript;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -29,6 +36,7 @@ import planner.menu.configuration.overhaul.MenuOverhaulMSRConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulSFRConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulTurbineConfiguration;
 import planner.menu.configuration.underhaul.MenuUnderhaulSFRConfiguration;
+import simplelibrary.Queue;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -362,7 +370,126 @@ public class MenuConfiguration extends ConfigurationMenu{
     public boolean onFilesDropped(double x, double y, String[] files){
         if(!configuration.addon){
             for(String fil : files){
-                loadAddon(new File(fil));
+                if(fil.endsWith(".zip")){
+                    try{
+                        //load script addon
+                        ZipFile file = new ZipFile(fil);
+                        String[] root = new String[2];
+                        file.stream().forEach((entry) -> {
+                            String nam = entry.getName();
+                            if(!nam.contains("scripts"))return;
+                            String rt = nam.substring(0, nam.indexOf("scripts"));
+                            root[root[0]==null||root[0].equals(rt)?0:1] = rt;
+                        });
+                        if(root[0]==null)throw new IllegalArgumentException("File contains no scripts folder!");
+                        if(root[1]!=null)throw new IllegalArgumentException("File contains multiple script folders!");
+                        ArrayList<ZipEntry> scripts = new ArrayList<>();//names not important
+                        HashMap<String, JSON.JSONObject> ctBlockstates = new HashMap<>();
+                        HashMap<String, JSON.JSONObject> blockstates = new HashMap<>();
+                        HashMap<String, JSON.JSONObject> ctModels = new HashMap<>();
+                        HashMap<String, BufferedImage> ctTextures = new HashMap<>();
+                        HashMap<String, HashMap<String, String>> ctLangFiles = new HashMap<>();
+                        HashMap<String, HashMap<String, String>> langFiles = new HashMap<>();
+                        HashMap<String, BufferedImage> textures = new HashMap<>();
+                        file.stream().forEach((entry) -> {
+                            String nam = entry.getName();
+                            if(!nam.startsWith(root[0]))return;
+                            nam = nam.substring(root[0].length());//root removed
+                            try{
+                                if(nam.matches("scripts/[\\d\\w -]+\\.zs")){
+                                    scripts.add(entry);
+                                }else if(nam.matches("blockstates/[\\d\\w -]+\\.json")){
+                                    blockstates.put(nam.substring("blockstates/".length(), nam.length()-5), JSON.parse(file.getInputStream(entry)));
+                                }else if(nam.matches("contenttweaker/blockstates/[\\d\\w -]+\\.json")){
+                                    ctBlockstates.put(nam.substring("contenttweaker/blockstates/".length(), nam.length()-5), JSON.parse(file.getInputStream(entry)));
+                                }else if(nam.matches("contenttweaker/models/[\\d\\w /-]+\\.json")){
+                                    ctModels.put(nam.substring("contenttweaker/models/".length(), nam.length()-5), JSON.parse(file.getInputStream(entry)));
+                                }else if(nam.matches("contenttweaker/textures/[\\d\\w /-]+\\.png")){
+                                    ctTextures.put(nam.substring("contenttweaker/textures/".length(), nam.length()-4), ImageIO.read(file.getInputStream(entry)));
+                                }else if(nam.matches("lang/[\\d\\w /-]+\\.lang")){
+                                    HashMap<String, String> lang = new HashMap<>();
+                                    try(BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(entry)))){
+                                        String line;
+                                        while((line = reader.readLine())!=null){
+                                            if(line.trim().startsWith("//"))continue;
+                                            if(line.trim().isEmpty())continue;
+                                            lang.put(line.split("=")[0], line.split("=", 2)[1]);
+                                        }
+                                    }
+                                    langFiles.put(nam.substring("lang/".length(), nam.length()-5), lang);
+                                }else if(nam.matches("contenttweaker/lang/[\\d\\w /-]+\\.lang")){
+                                    HashMap<String, String> lang = new HashMap<>();
+                                    try(BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(entry)))){
+                                        String line;
+                                        while((line = reader.readLine())!=null){
+                                            if(line.trim().startsWith("//"))continue;
+                                            if(line.trim().isEmpty())continue;
+                                            lang.put(line.split("=")[0], line.split("=", 2)[1]);
+                                        }
+                                    }
+                                    ctLangFiles.put(nam.substring("contenttweaker/lang/".length(), nam.length()-5), lang);
+                                }else if(nam.matches("textures/[\\d\\w /-]+\\.png")){
+                                    textures.put(nam.substring("textures/".length(), nam.length()-4), ImageIO.read(file.getInputStream(entry)));
+                                }else if(nam.contains(".")&&!nam.endsWith("/"))System.err.println(nam);
+                            }catch(IOException ex){
+                                throw new RuntimeException(ex);
+                            }
+                        });
+                        scripts.forEach((entry) -> {
+                            try(BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(entry)))){
+                                String s = "";
+                                String line;
+                                while((line = reader.readLine())!=null){
+                                    s+=line+"\n";
+                                }
+                                HashMap<String, String> imports = new HashMap<>();
+                                while(!s.isEmpty()){
+                                    char c = s.charAt(0);
+                                    for(String key : imports.keySet()){
+                                        if(s.startsWith(key+"."))s = imports.get(key)+s.substring(key.length());
+                                    }
+                                    if(s.startsWith("//")){
+                                        s = s.substring(s.indexOf("\n"));
+                                        continue;
+                                    }
+                                    if(s.startsWith("import")){
+                                        String theImport = s.substring("import ".length(), s.indexOf(";"));
+                                        String[] split = theImport.split("\\.");
+                                        imports.put(split[split.length-1], theImport);
+                                        System.out.println("Imported "+theImport+" as "+split[split.length-1]);
+                                        s = s.substring(s.indexOf(";")+1);
+                                        continue;
+                                    }
+                                    if(s.startsWith("#modloaded")){
+                                        String str = s.substring("#modloaded".length(), s.indexOf("\n")).trim();
+                                        Sys.error(ErrorLevel.warning, "Script addon has conditional content for mod "+str+"! All content will be included!", null, ErrorCategory.fileIO);
+                                        s = s.substring(s.indexOf("\n"));
+                                        continue;
+                                    }
+                                    if(s.startsWith("#loader")){
+                                        s = s.substring(s.indexOf("\n"));
+                                        //TODO properly handle loaders
+                                        continue;
+                                    }
+                                    if(s.startsWith("/*")){
+                                        s = s.substring(2).substring(s.indexOf("*/"));
+                                        continue;
+                                    }
+                                    if(Character.isWhitespace(c)){
+                                        s = s.substring(1);
+                                        continue;
+                                    }
+                                    throw new IllegalArgumentException("Unknown ZS bit: "+s.substring(0, Math.min(s.length(), 25)).replace("\n", "")+"...");
+                                }
+                                System.out.println(s);
+                            }catch(Exception ex){
+                                Sys.error(ErrorLevel.severe, "Failed to load script: "+entry.getName(), ex, ErrorCategory.fileIO);
+                            }
+                        });
+                    }catch(Exception ex){
+                        Sys.error(ErrorLevel.severe, "Failed to load script addon "+new File(fil).getName(), ex, ErrorCategory.fileIO);
+                    }
+                }else loadAddon(new File(fil));
             }
         }else{
             //load ZS because it's easier than the slow method
