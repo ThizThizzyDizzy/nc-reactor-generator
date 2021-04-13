@@ -57,7 +57,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
     }
     @Override
     public boolean canGenerateFor(Multiblock multiblock){
-        return multiblock instanceof CuboidalMultiblock&&!(multiblock instanceof OverhaulTurbine);
+        return multiblock instanceof CuboidalMultiblock&&!(multiblock instanceof OverhaulTurbine)&&!(multiblock instanceof UnderhaulSFR);
     }
     @Override
     public String getName(){
