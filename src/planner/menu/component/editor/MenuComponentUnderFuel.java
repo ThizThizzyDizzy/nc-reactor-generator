@@ -24,7 +24,7 @@ public class MenuComponentUnderFuel extends MenuComponent implements Searchable{
         drawText();
     }
     public void drawText(){
-        double textLength = FontManager.getLengthForStringWithHeight(fuel.name, height);
+        double textLength = FontManager.getLengthForStringWithHeight(fuel.getDisplayName(), height);
         double scale = Math.min(1, (width-(fuel.texture!=null?height:0))/textLength);
         double textHeight = (int)(height*scale)-1;
         drawText(fuel.texture!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, fuel.getDisplayName());
