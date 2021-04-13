@@ -1369,7 +1369,7 @@ public class MenuEdit extends Menu implements Editor{
                 if(block==null||(isShiftPressed(0)&&block.canBeQuickReplaced())){
                     for(EditorSpace space : ((Multiblock<Block>)multiblock).getEditorSpaces()){
                         if(space.isSpaceValid(getSelectedBlock(0), x, y, z)&&multiblock.isValid(getSelectedBlock(0), x, y, z)){
-                            getSelectedBlock(0).render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, null, (t) -> {
+                            getSelectedBlock(0).render(X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, multiblock, (t) -> {
                                 return true;
                             });
                         }

@@ -42,7 +42,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public Task calculateTask;
     public final int[] dimensions;
-    public Queue<Decal> decals = new Queue<>();
+    public final Queue<Decal> decals = new Queue<>();
     public boolean calculationPaused = false;//if calculation is incomplete and paused
     {
         resetMetadata();

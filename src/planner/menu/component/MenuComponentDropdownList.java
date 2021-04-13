@@ -66,12 +66,16 @@ public class MenuComponentDropdownList extends MenuComponent{
             components.remove(searchBox);
             components.remove(list);
         }
-        for(MenuComponent c : list.components){
-            c.width = width-getVertScrollbarWidth();
-            c.height = preferredHeight;
+        synchronized(list){
+            for(MenuComponent c : list.components){
+                c.width = width-getVertScrollbarWidth();
+                c.height = preferredHeight;
+            }
         }
         if(isDown){
-            list.height = height = Math.min(preferredHeight*list.components.size(), preferredHeight*10);
+            synchronized(list){
+                list.height = height = Math.min(preferredHeight*list.components.size(), preferredHeight*10);
+            }
             double space = gui.helper.displayHeight()-(y+height);
             if(space<0){
                 height+=space;
@@ -84,10 +88,12 @@ public class MenuComponentDropdownList extends MenuComponent{
         }
         else height = preferredHeight;
         int oldSelected = list.getSelectedIndex();
-        super.render(millisSinceLastTick);
-        if(list.getSelectedIndex()!=oldSelected){
-            isDown = false;
-            components.remove(list);
+        synchronized(list){
+            super.render(millisSinceLastTick);
+            if(list.getSelectedIndex()!=oldSelected){
+                isDown = false;
+                components.remove(list);
+            }
         }
     }
     @Override
@@ -129,15 +135,19 @@ public class MenuComponentDropdownList extends MenuComponent{
         GL11.glEnd();
     }
     public void setSelectedIndex(int indexOf){
-        if(allComponents.isEmpty())list.setSelectedIndex(-1);
-        else list.setSelectedIndex(Math.max(0,list.components.indexOf(allComponents.get(Math.max(0,indexOf)))));
+        synchronized(list){
+            if(allComponents.isEmpty())list.setSelectedIndex(-1);
+            else list.setSelectedIndex(Math.max(0,list.components.indexOf(allComponents.get(Math.max(0,indexOf)))));
+        }
     }
     public double getVertScrollbarWidth(){
         return list.vertScrollbarWidth;
     }
     public int getSelectedIndex(){
-        int id = list.getSelectedIndex();
-        return id==-1?0:allComponents.indexOf(list.components.get(id));
+        synchronized(list){
+            int id = list.getSelectedIndex();
+            return id==-1?0:allComponents.indexOf(list.components.get(id));
+        }
     }
     private <V extends MenuComponent> V doAdd(V component){
         return super.add(component);
@@ -153,7 +163,9 @@ public class MenuComponentDropdownList extends MenuComponent{
         return allComponents.get(Math.max(0,getSelectedIndex()));
     }
     public void clear(){
-        list.components.clear();
+        synchronized(list){
+            list.components.clear();
+        }
         allComponents.clear();
     }
     public void refreshSearch(){
@@ -175,9 +187,11 @@ public class MenuComponentDropdownList extends MenuComponent{
             }else searched.add(c);
         }
         int idx = getSelectedIndex();
-        list.components.clear();
-        for(MenuComponent comp : searched){
-            list.add(comp);
+        synchronized(list){
+            list.components.clear();
+            for(MenuComponent comp : searched){
+                list.add(comp);
+            }
         }
         setSelectedIndex(idx);
     }
