@@ -8,6 +8,7 @@ import java.util.List;
 import multiblock.Action;
 import multiblock.CuboidalMultiblock;
 import multiblock.Direction;
+import multiblock.FluidStack;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.Range;
@@ -1707,8 +1708,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         return ((OverhaulSFR)other).coolantRecipe==coolantRecipe;
     }
     @Override
-    protected void getFluidOutputs(HashMap<String, Double> outputs){
-        outputs.put(coolantRecipe.outputName, (double)totalOutput);
+    protected void getFluidOutputs(ArrayList<FluidStack> outputs){
+        outputs.add(new FluidStack(coolantRecipe.outputName, coolantRecipe.outputDisplayName, totalOutput));
     }
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){}

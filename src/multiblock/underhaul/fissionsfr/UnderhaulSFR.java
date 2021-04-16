@@ -8,6 +8,7 @@ import multiblock.Action;
 import multiblock.Axis;
 import multiblock.CuboidalMultiblock;
 import multiblock.Direction;
+import multiblock.FluidStack;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.action.SetblockAction;
@@ -416,7 +417,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
         return ((UnderhaulSFR)other).fuel==fuel;
     }
     @Override
-    protected void getFluidOutputs(HashMap<String, Double> outputs){}
+    protected void getFluidOutputs(ArrayList<FluidStack> outputs){}
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){}
     @Override

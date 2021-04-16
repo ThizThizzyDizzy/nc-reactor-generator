@@ -1076,4 +1076,19 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
         return combined;
     }
+    @Override
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(button==2){
+            for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
+                if(b.fuelVessel||b.heater){
+                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe r : b.allRecipes){
+                        if(r.inputRate==0)r.inputRate = 1;
+                        if(r.outputRate==0)r.outputRate = 1;
+                    }
+                }
+            }
+        }
+    }
+    
 }

@@ -612,12 +612,12 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         if(configuration==null)return Core.configuration;//TODO maybe force it to have a specific configuration?
         return configuration;
     }
-    public final HashMap<String, Double> getFluidOutputs(){
-        HashMap<String, Double> outputs = new HashMap<>();
+    public final ArrayList<FluidStack> getFluidOutputs(){
+        ArrayList<FluidStack> outputs = new ArrayList<>();
         getFluidOutputs(outputs);
         return outputs;
     }
-    protected abstract void getFluidOutputs(HashMap<String, Double> outputs);
+    protected abstract void getFluidOutputs(ArrayList<FluidStack> outputs);
     public final ArrayList<PartCount> getPartsList(){
         ArrayList<PartCount> parts = new ArrayList<>();
         getMainParts(parts);

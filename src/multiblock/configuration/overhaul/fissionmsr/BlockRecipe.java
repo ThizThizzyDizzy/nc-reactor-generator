@@ -16,6 +16,8 @@ public class BlockRecipe{
         recipe.outputDisplayName = outputDisplayName;
         recipe.setOutputTexture(TextureManager.getImage(outputTexture));
         recipe.heaterCooling = cooling;
+        recipe.inputRate = inputRate;
+        recipe.outputRate = outputRate;
         return recipe;
     }
     public static BlockRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
@@ -41,6 +43,7 @@ public class BlockRecipe{
         recipe.fuelVesselTime = time;
         recipe.fuelVesselCriticality = criticality;
         recipe.fuelVesselSelfPriming = selfPriming;
+        recipe.inputRate = recipe.outputRate = 1;
         return recipe;
     }
     public String inputName;

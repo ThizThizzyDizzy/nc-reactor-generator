@@ -1,4 +1,5 @@
 package multiblock.overhaul.fissionmsr;
+import multiblock.FluidStack;
 import generator.Priority;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public int totalIrradiation;
     public int functionalBlocks;
     public float sparsityMult;
-    public HashMap<String, Float> totalOutput = new HashMap<>();
+    public ArrayList<FluidStack> totalOutput = new ArrayList<>();
     public float totalTotalOutput;
     public float shutdownFactor;
     private HashMap<Block, Boolean> shieldsWere = new HashMap<>();//used for shield check
@@ -449,7 +450,15 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         for(Block b : c.blocks){
                             if(b.template.heater&&b.recipe!=null){
                                 float out = c.efficiency*sparsityMult*b.recipe.outputRate;
-                                totalOutput.put(b.recipe.outputName, (totalOutput.containsKey(b.recipe.outputName)?totalOutput.get(b.recipe.outputName):0)+out);
+                                boolean found = false;
+                                for(FluidStack s : totalOutput){
+                                    if(s.name.equals(b.recipe.outputName)){
+                                        s.amount+=out;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if(!found)totalOutput.add(new FluidStack(b.recipe.outputName, b.recipe.outputDisplayName, out));
                                 totalTotalOutput+=out;
                             }
                         }
@@ -704,7 +713,15 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         for(Block b : c.blocks){
                             if(b.template.heater&&b.recipe!=null){
                                 float out = c.efficiency*sparsityMult*b.recipe.outputRate;
-                                totalOutput.put(b.recipe.outputName, (totalOutput.containsKey(b.recipe.outputName)?totalOutput.get(b.recipe.outputName):0)+out);
+                                boolean found = false;
+                                for(FluidStack s : totalOutput){
+                                    if(s.name.equals(b.recipe.outputName)){
+                                        s.amount+=out;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if(!found)totalOutput.add(new FluidStack(b.recipe.outputName, b.recipe.outputDisplayName, out));
                                 totalTotalOutput+=out;
                             }
                         }
@@ -969,7 +986,15 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         for(Block b : c.blocks){
                             if(b.template.heater&&b.recipe!=null){
                                 float out = c.efficiency*sparsityMult*b.recipe.outputRate;
-                                totalOutput.put(b.recipe.outputName, (totalOutput.containsKey(b.recipe.outputName)?totalOutput.get(b.recipe.outputName):0)+out);
+                                boolean found = false;
+                                for(FluidStack s : totalOutput){
+                                    if(s.name.equals(b.recipe.outputName)){
+                                        s.amount+=out;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if(!found)totalOutput.add(new FluidStack(b.recipe.outputName, b.recipe.outputDisplayName, out));
                                 totalTotalOutput+=out;
                             }
                         }
@@ -1030,7 +1055,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         }
                         decals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
                     }
-                    propogateNeutronFlux(block, false, addDecals);
+                    propogateNeutronFlux(block.vesselGroup, false, addDecals);
                     break;
                 }
                 if(block.isReflector()){
@@ -1276,10 +1301,12 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public FormattedText getTooltip(boolean full){
         if(this.showDetails!=null)full = this.showDetails;
         String outs = "";
-        ArrayList<String> outputList = new ArrayList<>(totalOutput.keySet());
-        Collections.sort(outputList);
-        for(String s : outputList){
-            if(full)outs+="\n "+Math.round(totalOutput.get(s))+" mb/t of "+s;
+        ArrayList<FluidStack> outputList = new ArrayList<>(totalOutput);
+        outputList.sort((o1, o2) -> {
+            return (int)(o2.amount-o1.amount);
+        });
+        for(FluidStack stack : outputList){
+            if(full)outs+="\n "+Math.round(stack.amount)+" mb/t of "+stack.getDisplayName();
         }
         synchronized(clusters){
             int validClusters = 0;
@@ -1581,10 +1608,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         }
     }
     @Override
-    protected void getFluidOutputs(HashMap<String, Double> outputs){
-        for(String key : totalOutput.keySet()){
-            outputs.put(key, (double)totalOutput.get(key));
-        }
+    protected void getFluidOutputs(ArrayList<FluidStack> outputs){
+        outputs.addAll(totalOutput);
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();
@@ -1931,7 +1956,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         copy.totalIrradiation = totalIrradiation;
         copy.functionalBlocks = functionalBlocks;
         copy.sparsityMult = sparsityMult;
-        copy.totalOutput.putAll(totalOutput);
+        copy.totalOutput.addAll(totalOutput);
         copy.totalTotalOutput = totalTotalOutput;
         copy.shutdownFactor = shutdownFactor;
         return copy;

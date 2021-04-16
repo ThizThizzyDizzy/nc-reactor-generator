@@ -9,6 +9,7 @@ import multiblock.Axis;
 import multiblock.BlockGrid;
 import multiblock.Direction;
 import multiblock.EditorSpace;
+import multiblock.FluidStack;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.action.SetblockAction;
@@ -780,8 +781,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         return ((OverhaulFusionReactor)other).recipe==recipe&&((OverhaulFusionReactor)other).coolantRecipe==coolantRecipe;
     }
     @Override
-    protected void getFluidOutputs(HashMap<String, Double> outputs){
-        outputs.put(coolantRecipe.outputName, (double)totalOutput);
+    protected void getFluidOutputs(ArrayList<FluidStack> outputs){
+        outputs.add(new FluidStack(coolantRecipe.outputName, coolantRecipe.outputDisplayName, totalOutput));
     }
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){}

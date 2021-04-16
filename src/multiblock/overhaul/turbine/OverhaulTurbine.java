@@ -7,6 +7,7 @@ import java.util.List;
 import multiblock.Axis;
 import multiblock.CuboidalMultiblock;
 import multiblock.EditorSpace;
+import multiblock.FluidStack;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.action.SetblockAction;
@@ -613,13 +614,16 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         if(inputs.isEmpty())return maxInput;
         int input = 0;
         for(Multiblock m : inputs){
-            input+=(double)m.getFluidOutputs().get(recipe.inputName);
+            ArrayList<FluidStack> outs = m.getFluidOutputs();
+            for(FluidStack stack : outs){
+                if(stack.name.equals(recipe.inputName))input+=stack.amount;
+            }
         }
         return input;
     }
     @Override
-    protected void getFluidOutputs(HashMap<String, Double> outputs){
-        outputs.put(recipe.outputName, getInputRate()*recipe.coefficient);
+    protected void getFluidOutputs(ArrayList<FluidStack> outputs){
+        outputs.add(new FluidStack(recipe.outputName, recipe.outputDisplayName, getInputRate()*recipe.coefficient));
     }
     @Override
     protected void getMainParts(ArrayList<PartCount> parts){

@@ -1772,6 +1772,7 @@ public class FileReader{
                         int y = Integer.parseInt(blockLoc[1]);
                         int z = Integer.parseInt(blockLoc[2]);
                         msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
+                        if(block.heater&&!block.allRecipes.isEmpty())msr.getBlock(x,y,z).recipe = block.allRecipes.get(0);
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -1892,6 +1893,7 @@ public class FileReader{
                         int y = Integer.parseInt(blockLoc[1]);
                         int z = Integer.parseInt(blockLoc[2]);
                         msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
+                        if(block.heater&&!block.allRecipes.isEmpty())msr.getBlock(x,y,z).recipe = block.allRecipes.get(0);
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -2030,6 +2032,7 @@ public class FileReader{
                         int y = Integer.parseInt(blockLoc[1]);
                         int z = Integer.parseInt(blockLoc[2]);
                         msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
+                        if(block.heater&&!block.allRecipes.isEmpty())msr.getBlock(x,y,z).recipe = block.allRecipes.get(0);
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -2166,6 +2169,7 @@ public class FileReader{
                         int y = blockLoc.getInt("Y");
                         int z = blockLoc.getInt("Z");
                         msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
+                        if(block.heater&&!block.allRecipes.isEmpty())msr.getBlock(x,y,z).recipe = block.allRecipes.get(0);
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -2298,6 +2302,7 @@ public class FileReader{
                         int y = blockLoc.getInt("Y");
                         int z = blockLoc.getInt("Z");
                         msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
+                        if(block.heater&&!block.allRecipes.isEmpty())msr.getBlock(x,y,z).recipe = block.allRecipes.get(0);
                     }
                 }
                 JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
@@ -2431,6 +2436,7 @@ public class FileReader{
                         int y = blockLoc.getInt("Y");
                         int z = blockLoc.getInt("Z");
                         msr.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
+                        if(block.heater&&!block.allRecipes.isEmpty())msr.getBlock(x,y,z).recipe = block.allRecipes.get(0);
                     }
                 }
                 JSON.JSONObject moderators = data.getJSONObject("Moderators");
@@ -3376,6 +3382,7 @@ public class FileReader{
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
                                 multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                                fuel.inputRate = fuel.outputRate = 1;
                                 fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                                 fuel.fuelVesselHeat = fuelCfg.get("heat");
                                 fuel.fuelVesselTime = fuelCfg.get("time");
@@ -3540,6 +3547,7 @@ public class FileReader{
                                         if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
+                                    if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
                                 }
                                 multiblock = overhaulMSR;
                                 break;
@@ -4184,6 +4192,7 @@ public class FileReader{
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
                                 multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                                fuel.inputRate = fuel.outputRate = 1;
                                 fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                                 fuel.fuelVesselHeat = fuelCfg.get("heat");
                                 fuel.fuelVesselTime = fuelCfg.get("time");
@@ -4422,6 +4431,7 @@ public class FileReader{
                                         if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
+                                    if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
                                 }
                                 multiblock = overhaulMSR;
 //</editor-fold>
@@ -5276,6 +5286,7 @@ public class FileReader{
                             for(Iterator fit = fuels.iterator(); fit.hasNext();){
                                 Config fuelCfg = (Config)fit.next();
                                 multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                                fuel.inputRate = fuel.outputRate = 1;
                                 fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                                 fuel.fuelVesselHeat = fuelCfg.get("heat");
                                 fuel.fuelVesselTime = fuelCfg.get("time");
@@ -5515,6 +5526,7 @@ public class FileReader{
                                         if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
+                                    if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
                                 }
                                 multiblock = overhaulMSR;
 //</editor-fold>
@@ -6249,6 +6261,7 @@ public class FileReader{
                                         if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
+                                    if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
                                 }
                                 multiblock = overhaulMSR;
 //</editor-fold>
@@ -7075,6 +7088,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -7115,10 +7129,10 @@ public class FileReader{
                             multiblock.configuration.overhaul.fissionmsr.Block vessel = new multiblock.configuration.overhaul.fissionmsr.Block("Fuel Vessel");
                             vessel.fuelVessel = true;
                             configuration.overhaul.fissionMSR.allBlocks.add(vessel);
-                            vessel.allRecipes.add(new multiblock.configuration.overhaul.fissionmsr.BlockRecipe("",""));
+                            vessel.allRecipes.add(new multiblock.configuration.overhaul.fissionmsr.BlockRecipe("",""));//TODO WHY?!?
                             multiblock.configuration.overhaul.fissionmsr.Block irradiator = new multiblock.configuration.overhaul.fissionmsr.Block("Neutron Irradiator");
                             irradiator.irradiator = true;
-                            irradiator.allRecipes.add(new multiblock.configuration.overhaul.fissionmsr.BlockRecipe("",""));
+                            irradiator.allRecipes.add(new multiblock.configuration.overhaul.fissionmsr.BlockRecipe("",""));//TODO WHY?!?
                             configuration.overhaul.fissionMSR.allBlocks.add(irradiator);
                         }
                     }
@@ -7464,6 +7478,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -7759,6 +7774,7 @@ public class FileReader{
                                         if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
+                                    if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
                                 }
                                 multiblock = overhaulMSR;
 //</editor-fold>
@@ -8585,6 +8601,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -8974,6 +8991,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -9269,6 +9287,7 @@ public class FileReader{
                                         if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
+                                    if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
                                 }
                                 multiblock = overhaulMSR;
 //</editor-fold>
@@ -10095,6 +10114,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -10484,6 +10504,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -10780,6 +10801,7 @@ public class FileReader{
                                         if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
+                                    if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
                                 }
                                 multiblock = overhaulMSR;
 //</editor-fold>
@@ -11780,6 +11802,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -12264,6 +12287,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -12560,6 +12584,7 @@ public class FileReader{
                                         if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
                                         recipeIndex++;
                                     }
+                                    if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
                                 }
                                 multiblock = overhaulMSR;
 //</editor-fold>
@@ -13482,7 +13507,7 @@ public class FileReader{
                             configuration.overhaul.fissionSFR.allBlocks.add(irradiator);
                         }
                     }
-//</editor-folirradiator
+//</editor-fold>
                     //<editor-fold defaultstate="collapsed" desc="Fission MSR Configuration">
                     if(overhaul.hasProperty("fissionMSR")){
                         configuration.overhaul.fissionMSR = new multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
@@ -13560,6 +13585,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
@@ -14044,6 +14070,7 @@ public class FileReader{
                         for(Iterator fit = fuels.iterator(); fit.hasNext();){
                             Config fuelCfg = (Config)fit.next();
                             multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
+                            fuel.inputRate = fuel.outputRate = 1;
                             fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
                             fuel.fuelVesselHeat = fuelCfg.get("heat");
                             fuel.fuelVesselTime = fuelCfg.get("time");
