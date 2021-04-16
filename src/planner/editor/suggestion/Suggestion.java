@@ -32,7 +32,7 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
         result = (T)multiblock.copy();
         for(Action<T> a : suggestedActions){
             a.getAffectedBlocks(result, affectedBlocks);
-            result.action(a, true);
+            result.action(a, true, true);
             a.getAffectedBlocks(result, affectedBlocks);
         }
         return result.isBetterThan(multiblock, priorities);
@@ -56,7 +56,7 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
     }
     public void apply(Multiblock multiblock){
         for(Action<T> a : suggestedActions){
-            multiblock.action(a, true);
+            multiblock.action(a, true, true);
         }
     }
     @Override

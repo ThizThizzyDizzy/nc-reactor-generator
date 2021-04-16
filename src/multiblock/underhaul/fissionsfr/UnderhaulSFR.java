@@ -1,7 +1,6 @@
 package multiblock.underhaul.fissionsfr;
 import generator.Priority;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import multiblock.Action;

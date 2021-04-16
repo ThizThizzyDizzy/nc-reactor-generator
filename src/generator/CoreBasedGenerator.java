@@ -272,7 +272,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         }
         currentMultiblockCore.performActions(false);
         for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.core&&effect.preSymmetry)currentMultiblockCore.action(new PostProcessingAction(effect, settings), false);
+            if(effect.core&&effect.preSymmetry)currentMultiblockCore.action(new PostProcessingAction(effect, settings), true, false);
         }
         for(Symmetry symmetry : settings.symmetries){
             currentMultiblockCore.queueAction(new SymmetryAction(symmetry));
@@ -280,7 +280,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         currentMultiblockCore.performActions(false);
         currentMultiblockCore.recalculate();
         for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.core&&effect.postSymmetry)currentMultiblockCore.action(new PostProcessingAction(effect, settings), false);
+            if(effect.core&&effect.postSymmetry)currentMultiblockCore.action(new PostProcessingAction(effect, settings), true, false);
         }
 //</editor-fold>
         synchronized(workingCores.get(coreIndex)){
@@ -384,7 +384,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             }
             currentMultiblock.performActions(false);
             for(PostProcessingEffect effect : settings.postProcessingEffects){
-                if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), false);
+                if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), true, false);
             }
             for(Symmetry symmetry : settings.symmetries){
                 currentMultiblock.queueAction(new SymmetryAction(symmetry));
@@ -392,7 +392,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             currentMultiblock.performActions(false);
             currentMultiblock.recalculate();
             for(PostProcessingEffect effect : settings.postProcessingEffects){
-                if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), false);
+                if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), true, false);
             }
     //</editor-fold>
             synchronized(workingMultiblocks.get(idx)){
@@ -505,14 +505,14 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         if(!multiblock.isShapeEqual(this.multiblock))return;
         for(Range<Block> range : settings.allowedBlocks){
             for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
-                if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), false);
+                if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
             }
         }
         ALLOWED:for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
             for(Range<Block> range : settings.allowedBlocks){
                 if(range.obj.isEqual(block))continue ALLOWED;
             }
-            multiblock.action(new SetblockAction(block.x, block.y, block.z, null), false);
+            multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
         }
         finalize(multiblock);
     }

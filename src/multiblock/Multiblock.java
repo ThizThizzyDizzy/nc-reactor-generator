@@ -379,25 +379,28 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         return false;
     }
-    public void undo(){
+    public void undo(boolean calculate){
         if(!history.isEmpty()){
             lastChangeTime = System.nanoTime();
             Action a = history.pop();
-            recalculate(a.undo(this));
+            ActionResult result = a.undo(this);
+            if(calculate)recalculate(result);
             future.push(a);
         }
     }
-    public void redo(){
+    public void redo(boolean calculate){
         if(!future.isEmpty()){
             lastChangeTime = System.nanoTime();
             Action a = future.pop();
-            recalculate(a.apply(this, true));
+            ActionResult result = a.apply(this, true);
+            if(calculate)recalculate(result);
             history.push(a);
         }
     }
-    public void action(Action action, boolean allowUndo){
+    public void action(Action action, boolean calculate, boolean allowUndo){
         lastChangeTime = System.nanoTime();
-        recalculate(action.apply(this, allowUndo));
+        ActionResult result = action.apply(this, allowUndo);
+        if(calculate)recalculate(result);
         future.clear();
         if(allowUndo)history.push(action);
     }

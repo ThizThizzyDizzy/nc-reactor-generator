@@ -603,7 +603,7 @@ public class VRMenuEdit extends VRMenu implements Editor{
     @Override
     public void action(Action action, boolean allowUndo){
         if(multiblock.calculationPaused)multiblock.recalculate();
-        multiblock.action(action, allowUndo);
+        multiblock.action(action, true, allowUndo);
         if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock)((CuboidalMultiblock)multiblock).buildDefaultCasing();
     }
     private void selectAll(int id){

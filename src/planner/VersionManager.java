@@ -95,6 +95,7 @@ public class VersionManager{
         addVersion("3.0");
         addVersion("3.0.1");
         addVersion("3.0.2");
+        addVersion("3.0.3");
         currentVersion = versions.get(versions.size()-1);
     }
     /**

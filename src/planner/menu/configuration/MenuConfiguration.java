@@ -8,12 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
@@ -27,7 +24,6 @@ import planner.file.FileFormat;
 import planner.file.FileReader;
 import planner.file.JSON;
 import planner.file.NCPFFile;
-import planner.file.ZenScript;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -36,7 +32,6 @@ import planner.menu.configuration.overhaul.MenuOverhaulMSRConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulSFRConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulTurbineConfiguration;
 import planner.menu.configuration.underhaul.MenuUnderhaulSFRConfiguration;
-import simplelibrary.Queue;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -1076,19 +1071,4 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
         return combined;
     }
-    @Override
-    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-        super.onMouseButton(x, y, button, pressed, mods);
-        if(button==2){
-            for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-                if(b.fuelVessel||b.heater){
-                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe r : b.allRecipes){
-                        if(r.inputRate==0)r.inputRate = 1;
-                        if(r.outputRate==0)r.outputRate = 1;
-                    }
-                }
-            }
-        }
-    }
-    
 }

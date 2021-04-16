@@ -51,7 +51,7 @@ public class VRMenuComponentTurbineRecipe extends VRMenuComponent{
         super.keyEvent(device, button, pressed);
         if(pressed){
             if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-                editor.getMultiblock().action(new SetTurbineRecipeAction(editor, recipe), true);
+                editor.getMultiblock().action(new SetTurbineRecipeAction(editor, recipe), true, true);
             }
         }
     }

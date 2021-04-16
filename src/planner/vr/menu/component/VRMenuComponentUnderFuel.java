@@ -51,7 +51,7 @@ public class VRMenuComponentUnderFuel extends VRMenuComponent{
         super.keyEvent(device, button, pressed);
         if(pressed){
             if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-                editor.getMultiblock().action(new SetFuelAction(editor, fuel), true);
+                editor.getMultiblock().action(new SetFuelAction(editor, fuel), true, true);
             }
         }
     }

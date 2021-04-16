@@ -95,6 +95,7 @@ public class MenuEdit extends Menu implements Editor{
     private double zoomScrollMagnitude = 0.5;
     private double scaleFac = 1.5;
     private Block lastSelectedBlock;
+    private boolean autoRecalc = true;
     {
         editorTools.add(new MoveTool(this, 0));
         editorTools.add(new SelectionTool(this, 0));
@@ -156,7 +157,7 @@ public class MenuEdit extends Menu implements Editor{
     private final MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Modify the multiblock metadata"));
     public final MenuComponentMinimaList tools = add(new MenuComponentMinimaList(0, 0, 0, 0, partSize/2));
     private final MenuComponentMinimalistButton generate = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Generate", true, true, true).setTooltip("Generate or improve this multiblock"));
-    private final MenuComponentMinimalistButton recalc = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Recalculate", true, true).setTooltip("Recalculate the entire multiblock"));
+    private final MenuComponentMinimalistButton recalc = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Recalculate", true, true).setTooltip("Recalculate the entire multiblock\nCtrl-click to queue multiple actions without recalculating"));
     private final MenuComponentMinimalistButton calcStep = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Step", true, true).setTooltip("Perform one step of calculation"));
     public final MenuComponentToggleBox toggle3D = add(new MenuComponentToggleBox(0, 0, 0, 0, "3D View", false).setTooltip("Toggle 3D multiblock view\n(Rotate with arrow keys)"));
     private final MenuComponentMultiblockProgressBar progress = add(new MenuComponentMultiblockProgressBar(this, 0, 0, 0, 0));;
@@ -195,17 +196,17 @@ public class MenuEdit extends Menu implements Editor{
             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransitionX.slideOut((parts.x+parts.width)/gui.helper.displayWidth()), 5));
         });
         undo.addActionListener((e) -> {
-            multiblock.undo();
+            multiblock.undo(autoRecalc);
             if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
                 ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                multiblock.recalculate();
+                if(autoRecalc)multiblock.recalculate();
             }
         });
         redo.addActionListener((e) -> {
-            multiblock.redo();
+            multiblock.redo(autoRecalc);
             if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
                 ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                multiblock.recalculate();
+                if(autoRecalc)multiblock.recalculate();
             }
         });
         resize.addActionListener((e) -> {
@@ -312,7 +313,10 @@ public class MenuEdit extends Menu implements Editor{
                 nextY = lastY+comp.height+LAYER_GAP;
             }
         }
-        if(recalculateOnOpen)multiblock.recalculate();
+        if(recalculateOnOpen){
+            autoRecalc = true;
+            multiblock.recalculate();
+        }
         recalculateOnOpen = true;
     }
     @Override
@@ -322,6 +326,7 @@ public class MenuEdit extends Menu implements Editor{
     }
     @Override
     public void render(int millisSinceLastTick){
+        recalc.label = isControlPressed(0)&&autoRecalc?"Queue Actions":"Recalculate";
         textBox.setText(multiblock.getFullTooltip());
         double lastX = 0;
         double lastY = 0;
@@ -644,17 +649,17 @@ public class MenuEdit extends Menu implements Editor{
                     selectAll(0);
                 }
                 if(key==(Core.invertUndoRedo?GLFW.GLFW_KEY_Y:GLFW.GLFW_KEY_Z)){
-                    multiblock.undo();
+                    multiblock.undo(autoRecalc);
                     if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
                         ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                        multiblock.recalculate();
+                        if(autoRecalc)multiblock.recalculate();
                     }
                 }
                 if(key==(Core.invertUndoRedo?GLFW.GLFW_KEY_Z:GLFW.GLFW_KEY_Y)){
-                    multiblock.redo();
+                    multiblock.redo(autoRecalc);
                     if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
                         ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                        multiblock.recalculate();
+                        if(autoRecalc)multiblock.recalculate();
                     }
                 }
                 MenuComponentEditorGrid grid = null;
@@ -1109,10 +1114,10 @@ public class MenuEdit extends Menu implements Editor{
     @Override
     public void action(Action action, boolean allowUndo){
         if(multiblock.calculationPaused)multiblock.recalculate();
-        multiblock.action(action, allowUndo);
+        multiblock.action(action, autoRecalc, allowUndo);
         if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
             ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-            multiblock.recalculate();
+            if(autoRecalc)multiblock.recalculate();
         }
     }
     @Override
@@ -1397,7 +1402,21 @@ public class MenuEdit extends Menu implements Editor{
     }
     @Override
     public void buttonClicked(MenuComponentButton button){
-        if(button==recalc)multiblock.recalculate();
+        if(button==recalc){
+            if(autoRecalc){
+                if(isControlPressed(0)){
+                    autoRecalc = false;
+                }else{
+                    multiblock.recalculate();
+                }
+            }else{
+                if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+                    ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+                }
+                multiblock.recalculate();
+                autoRecalc = true;
+            }
+        }
         if(button==calcStep)multiblock.recalcStep();
     }
 }

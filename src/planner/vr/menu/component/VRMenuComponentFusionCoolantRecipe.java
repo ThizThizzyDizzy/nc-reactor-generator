@@ -51,7 +51,7 @@ public class VRMenuComponentFusionCoolantRecipe extends VRMenuComponent{
         super.keyEvent(device, button, pressed);
         if(pressed){
             if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-                editor.getMultiblock().action(new SetFusionCoolantRecipeAction(editor, coolantRecipe), true);
+                editor.getMultiblock().action(new SetFusionCoolantRecipeAction(editor, coolantRecipe), true, true);
             }
         }
     }

@@ -216,7 +216,7 @@ public class NCPTTutorial extends Tutorial{
                             moveEditor.tools.setSelectedIndex(0);
                             moveEditor.parts.setSelectedIndex(1);
                             move = (MenuComponentEditorGrid)moveEditor.multibwauk.components.get(0);
-                            moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
+                            moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), true, false);
                             ArrayList<int[]> selection = new ArrayList<>();
                             selection.add(new int[]{0, 0, 1});
                             selection.add(new int[]{1, 0, 1});
@@ -227,7 +227,7 @@ public class NCPTTutorial extends Tutorial{
                             selection.add(new int[]{0, 0, 3});
                             selection.add(new int[]{1, 0, 3});
                             selection.add(new int[]{2, 0, 3});
-                            moveEditor.multiblock.action(new SetSelectionAction(moveEditor, 0, selection), false);
+                            moveEditor.multiblock.action(new SetSelectionAction(moveEditor, 0, selection), true, false);
                             moveEditor.render(0);
                             moveEditor.render(0);
                         }
@@ -276,9 +276,9 @@ public class NCPTTutorial extends Tutorial{
                         else grid.mouseDragged(X, Y, 0);
                     }
                     if(t==undoTime){
-                        grid.editor.multiblock.undo();
+                        grid.editor.multiblock.undo(true);
                         if(grid==move){
-                            grid.editor.multiblock.action(new SetblocksAction(grid.editor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), false);
+                            grid.editor.multiblock.action(new SetblocksAction(grid.editor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), true, false);
                             ArrayList<int[]> selection = new ArrayList<>();
                             selection.add(new int[]{0, 0, 1});
                             selection.add(new int[]{1, 0, 1});
@@ -289,7 +289,7 @@ public class NCPTTutorial extends Tutorial{
                             selection.add(new int[]{0, 0, 3});
                             selection.add(new int[]{1, 0, 3});
                             selection.add(new int[]{2, 0, 3});
-                            grid.editor.multiblock.action(new SetSelectionAction(grid.editor, 0, selection), false);
+                            grid.editor.multiblock.action(new SetSelectionAction(grid.editor, 0, selection), true, false);
                         }
                     }
                 }
