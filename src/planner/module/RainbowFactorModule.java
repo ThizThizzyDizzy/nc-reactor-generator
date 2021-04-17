@@ -41,7 +41,7 @@ public class RainbowFactorModule extends Module<Float>{
         if(m instanceof OverhaulSFR){
             float totalSinks = 0;
             for(multiblock.configuration.overhaul.fissionsfr.Block b : m.getConfiguration().overhaul.fissionSFR.allBlocks){
-                if(b.heatsinkCooling!=0)totalSinks++;
+                if(b.heatsink)totalSinks++;
             }
             Set<multiblock.configuration.overhaul.fissionsfr.Block> unique = new HashSet<>();
             for(multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)m).getBlocks()){
@@ -53,7 +53,7 @@ public class RainbowFactorModule extends Module<Float>{
         if(m instanceof OverhaulMSR){
             float totalSinks = 0;
             for(multiblock.configuration.overhaul.fissionmsr.Block b : m.getConfiguration().overhaul.fissionMSR.allBlocks){
-                if(b.heaterCooling!=0)totalSinks++;
+                if(b.heater)totalSinks++;
             }
             Set<multiblock.configuration.overhaul.fissionmsr.Block> unique = new HashSet<>();
             for(multiblock.overhaul.fissionmsr.Block b : ((OverhaulMSR)m).getBlocks()){
@@ -65,7 +65,7 @@ public class RainbowFactorModule extends Module<Float>{
         if(m instanceof OverhaulFusionReactor){
             float totalSinks = 0;
             for(multiblock.configuration.overhaul.fusion.Block b : m.getConfiguration().overhaul.fusion.allBlocks){
-                if(b.heatsinkCooling!=0)totalSinks++;
+                if(b.heatsink)totalSinks++;
             }
             Set<multiblock.configuration.overhaul.fusion.Block> unique = new HashSet<>();
             for(multiblock.overhaul.fusion.Block b : ((OverhaulFusionReactor)m).getBlocks()){
