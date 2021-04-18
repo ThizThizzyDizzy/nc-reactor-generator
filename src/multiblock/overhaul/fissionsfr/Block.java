@@ -179,6 +179,11 @@ public class Block extends multiblock.Block{
                         + "\nBase Heat: "+template.fuelCellHeat
                         + "\nCriticality: "+template.fuelCellCriticality;
                 if(template.fuelCellSelfPriming)tip+="\nSelf-Priming";
+            }else if(template.allRecipes.size()==1){
+                tip+="\nEfficiency: "+template.allRecipes.get(0).fuelCellEfficiency
+                        + "\nBase Heat: "+template.allRecipes.get(0).fuelCellHeat
+                        + "\nCriticality: "+template.allRecipes.get(0).fuelCellCriticality;
+                if(template.allRecipes.get(0).fuelCellSelfPriming)tip+="\nSelf-Priming";
             }
         }
         if(isModerator()){
@@ -186,6 +191,9 @@ public class Block extends multiblock.Block{
             if(template.moderatorHasBaseStats){
                 tip+="\nFlux: "+template.moderatorFlux
                         + "\nEfficiency: "+template.moderatorEfficiency;
+            }else if(template.allRecipes.size()==1){
+                tip+="\nFlux: "+template.allRecipes.get(0).moderatorFlux
+                        + "\nEfficiency: "+template.allRecipes.get(0).moderatorEfficiency;
             }
         }
         if(isReflector()){
@@ -193,6 +201,9 @@ public class Block extends multiblock.Block{
             if(template.reflectorHasBaseStats){
                 tip+="\nReflectivity: "+template.reflectorReflectivity
                         + "\nEfficiency: "+template.reflectorEfficiency;
+            }else if(template.allRecipes.size()==1){
+                tip+="\nReflectivity: "+template.allRecipes.get(0).reflectorReflectivity
+                        + "\nEfficiency: "+template.allRecipes.get(0).reflectorEfficiency;
             }
         }
         if(isShield()){
@@ -200,6 +211,9 @@ public class Block extends multiblock.Block{
             if(template.shieldHasBaseStats){
                 tip+="\nHeat per flux: "+template.shieldHeat
                         + "\nEfficiency: "+template.shieldEfficiency;
+            }else if(template.allRecipes.size()==1){
+                tip+="\nHeat per flux: "+template.allRecipes.get(0).shieldHeat
+                        + "\nEfficiency: "+template.allRecipes.get(0).shieldEfficiency;
             }
         }
         if(isIrradiator()){
@@ -207,12 +221,17 @@ public class Block extends multiblock.Block{
             if(template.irradiatorHasBaseStats){
                 tip+="\nEfficiency: "+template.irradiatorEfficiency
                         +"\nHeat: "+template.irradiatorHeat;
+            }else if(template.allRecipes.size()==1){
+                tip+="\nEfficiency: "+template.allRecipes.get(0).irradiatorEfficiency
+                        +"\nHeat: "+template.allRecipes.get(0).irradiatorHeat;
             }
         }
         if(isHeatsink()){
             tip+="\nHeatsink";
             if(template.heatsinkHasBaseStats){
                 tip+="\nCooling: "+template.heatsinkCooling+"H/t";
+            }else if(template.allRecipes.size()==1){
+                tip+="\nCooling: "+template.allRecipes.get(0).heatsinkCooling+"H/t";
             }
         }
         for(PlacementRule rule : template.rules){
@@ -496,6 +515,7 @@ public class Block extends multiblock.Block{
         return template.heatsink;
     }
     public multiblock.overhaul.fissionmsr.Block convertToMSR(){
+        if(template.coolantVent)return null;//remove vents
         multiblock.overhaul.fissionmsr.Block b = new multiblock.overhaul.fissionmsr.Block(getConfiguration(), x, y, z, getConfiguration().overhaul.fissionMSR.convertToMSR(template));
         b.recipe = b.template.convertToMSR(recipe);
         return b;

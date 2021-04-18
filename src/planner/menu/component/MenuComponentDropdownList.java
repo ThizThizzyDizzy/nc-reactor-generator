@@ -195,4 +195,12 @@ public class MenuComponentDropdownList extends MenuComponent{
         }
         setSelectedIndex(idx);
     }
+    @Override
+    public String getTooltip(){
+        if(!isDown){
+            MenuComponent c = getSelectedComponent();
+            if(c!=null)return c.getTooltip();
+        }
+        return super.getTooltip();
+    }
 }

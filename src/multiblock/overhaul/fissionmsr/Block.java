@@ -184,6 +184,11 @@ public class Block extends multiblock.Block{
                         + "\nBase Heat: "+template.fuelVesselHeat
                         + "\nCriticality: "+template.fuelVesselCriticality;
                 if(template.fuelVesselSelfPriming)tip+="\nSelf-Priming";
+            }else if(template.allRecipes.size()==1){
+                tip+="\nEfficiency: "+template.allRecipes.get(0).fuelVesselEfficiency
+                        + "\nBase Heat: "+template.allRecipes.get(0).fuelVesselHeat
+                        + "\nCriticality: "+template.allRecipes.get(0).fuelVesselCriticality;
+                if(template.allRecipes.get(0).fuelVesselSelfPriming)tip+="\nSelf-Priming";
             }
         }
         if(isModerator()){
@@ -191,6 +196,9 @@ public class Block extends multiblock.Block{
             if(template.moderatorHasBaseStats){
                 tip+="\nFlux: "+template.moderatorFlux
                         + "\nEfficiency: "+template.moderatorEfficiency;
+            }else if(template.allRecipes.size()==1){
+                tip+="\nFlux: "+template.allRecipes.get(0).moderatorFlux
+                        + "\nEfficiency: "+template.allRecipes.get(0).moderatorEfficiency;
             }
         }
         if(isReflector()){
@@ -198,6 +206,9 @@ public class Block extends multiblock.Block{
             if(template.reflectorHasBaseStats){
                 tip+="\nReflectivity: "+template.reflectorReflectivity
                         + "\nEfficiency: "+template.reflectorEfficiency;
+            }else if(template.allRecipes.size()==1){
+                tip+="\nReflectivity: "+template.allRecipes.get(0).reflectorReflectivity
+                        + "\nEfficiency: "+template.allRecipes.get(0).reflectorEfficiency;
             }
         }
         if(isShield()){
@@ -205,6 +216,9 @@ public class Block extends multiblock.Block{
             if(template.shieldHasBaseStats){
                 tip+="\nHeat per flux: "+template.shieldHeat
                         + "\nEfficiency: "+template.shieldEfficiency;
+            }else if(template.allRecipes.size()==1){
+                tip+="\nHeat per flux: "+template.allRecipes.get(0).shieldHeat
+                        + "\nEfficiency: "+template.allRecipes.get(0).shieldEfficiency;
             }
         }
         if(isIrradiator()){
@@ -212,12 +226,17 @@ public class Block extends multiblock.Block{
             if(template.irradiatorHasBaseStats){
                 tip+="\nEfficiency: "+template.irradiatorEfficiency
                         +"\nHeat: "+template.irradiatorHeat;
+            }else if(template.allRecipes.size()==1){
+                tip+="\nEfficiency: "+template.allRecipes.get(0).irradiatorEfficiency
+                        +"\nHeat: "+template.allRecipes.get(0).irradiatorHeat;
             }
         }
         if(isHeater()){
             tip+="\nHeater";
             if(template.heaterHasBaseStats){
                 tip+="\nCooling: "+template.heaterCooling+"H/t";
+            }else if(template.allRecipes.size()==1){
+                tip+="\nCooling: "+template.allRecipes.get(0).heaterCooling+"H/t";
             }
         }
         for(PlacementRule rule : template.rules){

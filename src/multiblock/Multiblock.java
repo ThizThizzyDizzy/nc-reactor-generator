@@ -106,7 +106,9 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
      */
     public abstract boolean doCalculationStep(List<T> blocks, boolean addDecals);
     private boolean calculationStep(List<T> blocks, boolean addDecals){
-        decals.clear();
+        synchronized(decals){
+            decals.clear();
+        }
         return doCalculationStep(blocks, addDecals);
     }
     public void calculate(List<T> blocks){
@@ -114,7 +116,9 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         genCalcSubtasks();
         while(calculationStep(blocks, false));
         calculationPaused = false;
-        decals.clear();
+        synchronized(decals){
+            decals.clear();
+        }
         for(Module m : Core.modules){
             if(m.isActive()){
                 Object result = m.calculateMultiblock(this);
@@ -140,7 +144,9 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         }
         if(!calculationStep(blocks, true)){
             calculationPaused = false;
-            decals.clear();
+            synchronized(decals){
+                decals.clear();
+            }
             for(Module m : Core.modules){
                 if(m.isActive()){
                     Object result = m.calculateMultiblock(this);
@@ -351,6 +357,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         ConfigNumberList dimensions = new ConfigNumberList();
         for(int i : this.dimensions)dimensions.add(i);
         config.set("dimensions", dimensions);
+        forceRescan = true;
         save(ncpf, configuration, config);
         config.save(stream);
     }
