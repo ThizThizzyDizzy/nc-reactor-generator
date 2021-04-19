@@ -519,6 +519,7 @@ public class Block extends multiblock.Block{
         if(template.coolantVent)return null;//remove vents
         multiblock.overhaul.fissionmsr.Block b = new multiblock.overhaul.fissionmsr.Block(getConfiguration(), x, y, z, getConfiguration().overhaul.fissionMSR.convertToMSR(template));
         b.recipe = b.template.convertToMSR(recipe);
+        if(b.template.heater&&b.recipe==null&&!b.template.allRecipes.isEmpty())b.recipe = b.template.allRecipes.get(0);
         return b;
     }
     @Override

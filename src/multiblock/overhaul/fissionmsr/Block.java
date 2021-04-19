@@ -85,9 +85,9 @@ public class Block extends multiblock.Block{
             OverhaulMSR.VesselGroup group = vesselGroup;
             if(recipe==null&&!template.fuelVesselHasBaseStats)tip+="\nNo Fuel";
             if(group==null){
-                tip +="Fuel Vessel "+(isFuelVesselActive()?"Active":"Inactive");
+                tip +="\nFuel Vessel "+(isFuelVesselActive()?"Active":"Inactive");
             }else{
-                tip +="Vessel Group "+(isFuelVesselActive()?"Active":"Inactive")+" ("+group.size()+" Vessels)";
+                tip +="\nVessel Group "+(isFuelVesselActive()?"Active":"Inactive")+" ("+group.size()+" Vessels)";
                 if(isFuelVesselActive()){
                     tip+="\nAdjacent moderator lines: "+group.moderatorLines+"\n"
                             + "Open Faces: "+group.getOpenFaces()+"\n"
@@ -522,6 +522,7 @@ public class Block extends multiblock.Block{
         return template.heater;
     }
     public multiblock.overhaul.fissionsfr.Block convertToSFR(){
+        if(template.parent!=null&&template.parent.heater)return null;
         multiblock.overhaul.fissionsfr.Block b = new multiblock.overhaul.fissionsfr.Block(getConfiguration(), x, y, z, getConfiguration().overhaul.fissionSFR.convertToSFR(template));
         b.recipe = b.template.convertToSFR(recipe);
         return b;

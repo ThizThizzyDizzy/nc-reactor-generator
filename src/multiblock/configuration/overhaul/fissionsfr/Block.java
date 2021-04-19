@@ -435,13 +435,18 @@ public class Block extends RuleContainer implements Searchable{
     public BlockRecipe convertToSFR(multiblock.configuration.overhaul.fissionmsr.BlockRecipe template){
         if(template==null)return null;
         if(parent!=null)return parent.convertToSFR(template);
+        if(heatsink)return null;
         for(BlockRecipe recipe : allRecipes){
-            if(recipe.inputName.trim().equalsIgnoreCase(template.inputName.trim().toLowerCase(Locale.ENGLISH).replace("vessel", "cell").replace("coolant heater", "heat sink").replace("standard", "water")))return recipe;
+            for(String inputName : recipe.getLegacyNames()){
+                if(inputName.equals(template.inputName)||inputName.trim().toLowerCase(Locale.ENGLISH).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ENGLISH).replace(" fluoride", "").replace("mf4", "mox")))return recipe;
+            }
         }
         for(BlockRecipe recipe : recipes){
-            if(recipe.inputName.trim().equalsIgnoreCase(template.inputName.trim().toLowerCase(Locale.ENGLISH).replace("vessel", "cell").replace("coolant heater", "heat sink").replace("standard", "water")))return recipe;
+            for(String inputName : recipe.getLegacyNames()){
+                if(inputName.equals(template.inputName)||inputName.trim().toLowerCase(Locale.ENGLISH).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ENGLISH).replace(" fluoride", "").replace("mf4", "mox")))return recipe;
+            }
         }
-        throw new IllegalArgumentException("Failed to find match for block recipe "+template.getInputDisplayName()+"!");
+        throw new IllegalArgumentException("Failed to find match for block recipe "+template.inputName+"!");
     }
     @Override
     public boolean stillEquals(RuleContainer rc){

@@ -325,7 +325,7 @@ public class MenuEdit extends Menu implements Editor{
         super.onGUIClosed();
     }
     @Override
-    public void render(int millisSinceLastTick){
+    public synchronized void render(int millisSinceLastTick){
         recalc.label = isControlPressed(0)&&autoRecalc?"Queue Actions":"Recalculate";
         textBox.setText(multiblock.getFullTooltip());
         double lastX = 0;
@@ -1200,7 +1200,7 @@ public class MenuEdit extends Menu implements Editor{
     private void deselectAll(int id){
         setSelection(id, new ArrayList<>());
     }
-    private void refreshBlockRecipes(){
+    private synchronized void refreshBlockRecipes(){
         Object was = null;
         MenuComponent comp = blockRecipe.getSelectedComponent();
         if(comp instanceof MenuComponentOverhaulSFRBlockRecipe)was = ((MenuComponentOverhaulSFRBlockRecipe)comp).recipe;
