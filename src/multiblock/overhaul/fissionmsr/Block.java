@@ -82,36 +82,37 @@ public class Block extends multiblock.Block{
         if(isController())tip+="\nController "+(casingValid?"Valid":"Invalid");
         if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
         if(isFuelVessel()){
+            OverhaulMSR.VesselGroup group = vesselGroup;
             if(recipe==null&&!template.fuelVesselHasBaseStats)tip+="\nNo Fuel";
-            if(vesselGroup==null){
+            if(group==null){
                 tip +="Fuel Vessel "+(isFuelVesselActive()?"Active":"Inactive");
             }else{
-                tip +="Vessel Group "+(isFuelVesselActive()?"Active":"Inactive")+" ("+vesselGroup.size()+" Vessels)";
+                tip +="Vessel Group "+(isFuelVesselActive()?"Active":"Inactive")+" ("+group.size()+" Vessels)";
                 if(isFuelVesselActive()){
-                    tip+="\nAdjacent moderator lines: "+vesselGroup.moderatorLines+"\n"
-                            + "Open Faces: "+vesselGroup.getOpenFaces()+"\n"
-                            + "Bunching Factor: "+vesselGroup.getBunchingFactor()+"\n"
-                            + "Surface Factor: "+vesselGroup.getSurfaceFactor()+"\n"
-                            + "Heat Multiplier: "+percent(vesselGroup.getHeatMult()/vesselGroup.size(), 0)+"\n"
-                            + "Heat Produced: "+vesselGroup.getHeatMult()*(recipe==null?template.fuelVesselHeat:recipe.fuelVesselHeat)+"H/t\n"
-                            + "Efficiency: "+percent(efficiency/vesselGroup.size(), 0)+"\n"
-                            + "Positional Efficiency: "+percent(vesselGroup.positionalEfficiency/vesselGroup.size(), 0)+"\n"
-                            + "Total Neutron Flux: "+vesselGroup.neutronFlux+"\n"
-                            + "Criticality Factor: "+vesselGroup.criticality;
+                    tip+="\nAdjacent moderator lines: "+group.moderatorLines+"\n"
+                            + "Open Faces: "+group.getOpenFaces()+"\n"
+                            + "Bunching Factor: "+group.getBunchingFactor()+"\n"
+                            + "Surface Factor: "+group.getSurfaceFactor()+"\n"
+                            + "Heat Multiplier: "+percent(group.getHeatMult()/group.size(), 0)+"\n"
+                            + "Heat Produced: "+group.getHeatMult()*(recipe==null?template.fuelVesselHeat:recipe.fuelVesselHeat)+"H/t\n"
+                            + "Efficiency: "+percent(efficiency/group.size(), 0)+"\n"
+                            + "Positional Efficiency: "+percent(group.positionalEfficiency/group.size(), 0)+"\n"
+                            + "Total Neutron Flux: "+group.neutronFlux+"\n"
+                            + "Criticality Factor: "+group.criticality;
                 }else{
-                    tip+="\nTotal Neutron Flux: "+vesselGroup.neutronFlux+"\n"
-                            + "Criticality Factor: "+vesselGroup.criticality;
+                    tip+="\nTotal Neutron Flux: "+group.neutronFlux+"\n"
+                            + "Criticality Factor: "+group.criticality;
                 }
             }
             if(isPrimed()){
                 tip+="\nVessel Primed"
                         + "\nNeutron source: "+(source==null?"Self":source.template.getDisplayName());
             }
-            if(vesselGroup!=null){
-                if(vesselGroup.isPrimed()){
+            if(group!=null){
+                if(group.isPrimed()){
                     tip+="\nVessel Group Primed";
                 }
-                tip+="\nNeutron Sources: "+vesselGroup.getSources()+"/"+vesselGroup.getRequiredSources();
+                tip+="\nNeutron Sources: "+group.getSources()+"/"+group.getRequiredSources();
             }
         }
         if(isModerator()){
@@ -327,8 +328,9 @@ public class Block extends multiblock.Block{
         }
         if(template.fuelVessel&&(template.fuelVesselHasBaseStats||recipe!=null)){
             boolean self = recipe==null?template.fuelVesselSelfPriming:recipe.fuelVesselSelfPriming;
-            if(source!=null||self){
-                float fac = self?1:(float) Math.pow(source.template.sourceEfficiency, 10);
+            Block src = source;
+            if(src!=null||self){
+                float fac = self?1:(float) Math.pow(src.template.sourceEfficiency, 10);
                 float r = self?0:Math.min(1, -2*fac+2);
                 float g = self?0:Math.min(1, fac*2);
                 float b = self?1:0;

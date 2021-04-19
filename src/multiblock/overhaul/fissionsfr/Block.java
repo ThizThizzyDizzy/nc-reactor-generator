@@ -322,8 +322,9 @@ public class Block extends multiblock.Block{
         }
         if(template.fuelCell&&(template.fuelCellHasBaseStats||recipe!=null)){
             boolean self = recipe==null?template.fuelCellSelfPriming:recipe.fuelCellSelfPriming;
-            if(source!=null||self){
-                float fac = self?1:(float) Math.pow(source.template.sourceEfficiency, 10);
+            Block src = source;
+            if(src!=null||self){
+                float fac = self?1:(float) Math.pow(src.template.sourceEfficiency, 10);
                 float r = self?0:Math.min(1, -2*fac+2);
                 float g = self?0:Math.min(1, fac*2);
                 float b = self?1:0;
