@@ -1,5 +1,6 @@
 package multiblock.overhaul.turbine;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
 import multiblock.Multiblock;
@@ -193,6 +194,8 @@ public class Block extends multiblock.Block{
     }
     @Override
     public Iterable<String> getSearchableNames(){
-        return template.getSearchableNames();
+        ArrayList<String> searchables = template.getSearchableNames();
+        for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
+        return searchables;
     }
 }

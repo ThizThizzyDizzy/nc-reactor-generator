@@ -34,6 +34,7 @@ public class MenuComponentTurbineRecipe extends MenuComponent implements Searcha
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> lst = recipe.getLegacyNames();
         lst.add(recipe.getInputDisplayName());
+        for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
     }
 }

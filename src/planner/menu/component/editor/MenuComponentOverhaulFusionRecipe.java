@@ -36,6 +36,7 @@ public class MenuComponentOverhaulFusionRecipe extends MenuComponent implements 
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> lst = recipe.getLegacyNames();
         lst.add(recipe.getInputDisplayName());
+        for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
     }
 }

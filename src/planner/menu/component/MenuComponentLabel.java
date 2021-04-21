@@ -1,5 +1,6 @@
 package planner.menu.component;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import planner.Core;
@@ -51,7 +52,9 @@ public class MenuComponentLabel extends MenuComponent implements Searchable{
         return this;
     }
     @Override
-    public Iterable<String> getSearchableNames(){
-        return Arrays.asList(text);
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> lst = new ArrayList<>(Arrays.asList(text));
+        for(String s : getTooltip().split("\n"))lst.add(s.trim());
+        return lst;
     }
 }

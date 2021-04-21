@@ -39,6 +39,7 @@ public class MenuComponentUnderFuel extends MenuComponent implements Searchable{
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> lst = fuel.getLegacyNames();
         lst.add(fuel.getDisplayName());
+        for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
     }
 }

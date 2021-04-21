@@ -170,20 +170,9 @@ public class MenuComponentDropdownList extends MenuComponent{
     }
     public void refreshSearch(){
         ArrayList<MenuComponent> searched = new ArrayList<>();
-        String regex = ".*";
-        for(char c : searchBox.text.trim().toLowerCase(Locale.ENGLISH).toCharArray()){
-            if(Character.isLetterOrDigit(c)){
-                regex+=c+".*";
-            }else regex+="\\"+c+".*";
-        }
         for(MenuComponent c : allComponents){
             if(c instanceof Searchable){
-                for(String nam : ((Searchable)c).getSearchableNames()){
-                    if(nam.toLowerCase(Locale.ENGLISH).matches(regex)){
-                        searched.add(c);
-                        break;
-                    }
-                }
+                if(Searchable.isValidForSearch((Searchable)c, searchBox.text))searched.add(c);
             }else searched.add(c);
         }
         int idx = getSelectedIndex();

@@ -1,6 +1,6 @@
 package planner.menu.component.editor;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.editor.suggestion.Suggestor;
@@ -45,7 +45,9 @@ public class MenuComponentSuggestor extends MenuComponent implements Searchable{
         }
     }
     @Override
-    public List<String> getSearchableNames(){
-        return Arrays.asList(suggestor.name);
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> lst = new ArrayList<>(Arrays.asList(suggestor.name));
+        for(String s : getTooltip().split("\n"))lst.add(s.trim());
+        return lst;
     }
 }

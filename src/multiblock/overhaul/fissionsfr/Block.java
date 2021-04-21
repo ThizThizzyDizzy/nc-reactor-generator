@@ -606,6 +606,8 @@ public class Block extends multiblock.Block{
     }
     @Override
     public Iterable<String> getSearchableNames(){
-        return template.getSearchableNames();
+        ArrayList<String> searchables = template.getSearchableNames();
+        for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
+        return searchables;
     }
 }

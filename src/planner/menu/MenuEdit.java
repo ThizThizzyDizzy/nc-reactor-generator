@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.BoundingBox;
@@ -124,7 +123,7 @@ public class MenuEdit extends Menu implements Editor{
         }
     }.setTooltip("Redo (Ctrl+"+(Core.invertUndoRedo?"Z":"Y")+")"));
     public final MenuComponentMulticolumnMinimaList parts = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, partSize, partSize, partSize/2));
-    public final MenuComponentMinimalistTextBox partsSearch = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, "", true, "Search"){
+    public final MenuComponentMinimalistTextBox partsSearch = add(new MenuComponentMinimalistTextBox(0, 0, 0, 0, Core.autoBuildCasing?"-port":"", true, "Search"){
         @Override
         public void onCharTyped(char c){
             super.onCharTyped(c);
@@ -1234,24 +1233,11 @@ public class MenuEdit extends Menu implements Editor{
             if(c instanceof MenuComponentOverhaulFusionBlockRecipe&&was==((MenuComponentOverhaulFusionBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);
         }
     }
-    private void refreshPartsList(){
+    private synchronized void refreshPartsList(){
         List<Block> availableBlocks = ((Multiblock<Block>)multiblock).getAvailableBlocks();
         ArrayList<Block> searchedAvailable = new ArrayList<>();
-        String regex = ".*";
-        for(char c : partsSearch.text.trim().toLowerCase(Locale.ENGLISH).toCharArray()){
-            if(Character.isLetterOrDigit(c)){
-                regex+=c+".*";
-            }else regex+="\\"+c+".*";
-        }
         for(Block b : availableBlocks){
-            if(b instanceof Searchable){
-                for(String nam : ((Searchable)b).getSearchableNames()){
-                    if(nam.toLowerCase(Locale.ENGLISH).matches(regex)){
-                        searchedAvailable.add(b);
-                        break;
-                    }
-                }
-            }else searchedAvailable.add(b);
+            if(Searchable.isValidForSearch(b, partsSearch.text))searchedAvailable.add(b);
         }
         Block selectedBlock = getSelectedBlock(0);
         int i = 0;

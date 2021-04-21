@@ -68,6 +68,7 @@ public class MenuComponentOverhaulMSRBlockRecipe extends MenuComponent implement
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> lst = recipe.getLegacyNames();
         lst.add(recipe.getInputDisplayName());
+        for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
     }
 }

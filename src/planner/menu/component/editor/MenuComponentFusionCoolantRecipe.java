@@ -34,6 +34,7 @@ public class MenuComponentFusionCoolantRecipe extends MenuComponent implements S
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> lst = coolantRecipe.getLegacyNames();
         lst.add(coolantRecipe.getInputDisplayName());
+        for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
     }
 }

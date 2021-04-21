@@ -38,6 +38,7 @@ public class MenuComponentCoolantRecipe extends MenuComponent implements Searcha
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> lst = coolantRecipe.getLegacyNames();
         lst.add(coolantRecipe.getInputDisplayName());
+        for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
     }
 }
