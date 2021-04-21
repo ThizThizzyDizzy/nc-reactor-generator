@@ -186,7 +186,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return s;
     }
     public FormattedText getSaveTooltip(){
-        FormattedText s = new FormattedText(getConfiguration().name+" ("+(getDefinitionName().contains("Underhaul")?getConfiguration().underhaulVersion:getConfiguration().overhaulVersion)+")\n");
+        FormattedText s = new FormattedText(getConfiguration().getSaveName(!getDefinitionName().contains("Underhaul"))+"\n");
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s.addText(metadata.get(key)+"\n");
@@ -205,7 +205,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         return s.addText(getTooltip(true));
     }
     public String getBotTooltip(){
-        String s = getConfiguration().name+" ("+(getDefinitionName().contains("Underhaul")?getConfiguration().underhaulVersion:getConfiguration().overhaulVersion)+")\n";
+        String s = getConfiguration().getSaveName(!getDefinitionName().contains("Underhaul"))+"\n";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";

@@ -308,4 +308,13 @@ public class Configuration{
         }
         addons.remove(addon);
     }
+    public String getSaveName(boolean overhaul){
+        String nam = name+" "+(overhaul?overhaulVersion:underhaulVersion);
+        for(Configuration c : addons){
+            if(overhaul&&c.overhaulVersion==null)continue;
+            if(!overhaul&&c.underhaulVersion==null)continue;
+            nam+="\n+ "+c.getSaveName(overhaul);
+        }
+        return nam;
+    }
 }
