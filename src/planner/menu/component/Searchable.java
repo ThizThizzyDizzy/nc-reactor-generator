@@ -18,9 +18,10 @@ public interface Searchable{
                     String excludeRegex = ".*";
                     for(char c : exclude.toCharArray()){
                         if(Character.isLetterOrDigit(c)){
-                            excludeRegex+="["+Character.toLowerCase(c)+""+Character.toUpperCase(c)+"].*";
-                        }else excludeRegex+="\\"+c+".*";
+                            excludeRegex+="["+Character.toLowerCase(c)+""+Character.toUpperCase(c)+"]";
+                        }else excludeRegex+="\\"+c;
                     }
+                    excludeRegex+=".*";
                     for(String nam : searchable.getSearchableNames()){
                         if(nam.matches(excludeRegex))return false;//excluded
                     }
