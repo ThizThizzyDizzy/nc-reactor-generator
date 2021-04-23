@@ -192,7 +192,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
                 s.addText(metadata.get(key)+"\n");
             }
         }
-        s.addText(getDefinitionName()+"\n");
+        s.addText(getDimensionsStr()+" "+getDefinitionName());
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name"))continue;
             if(metadata.get(key)!=null)s.addText(key+": "+metadata.get(key)+"\n");

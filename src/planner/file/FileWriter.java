@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.JOptionPane;
 import multiblock.Block;
 import multiblock.BoundingBox;
 import multiblock.Multiblock;
@@ -17,6 +18,7 @@ import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.FormattedText;
+import planner.Main;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -37,7 +39,16 @@ public class FileWriter{
             }
             @Override
             public void write(NCPFFile ncpf, OutputStream stream){
-                Sys.error(ErrorLevel.warning, "Hellrage JSON format is deprecated!\nCasings, configurations, and addons will not be saved!\nSome things, such as coolant recipes, may not be saved properly!\n\nPlease use NCPF for full support", null, ErrorCategory.fileIO);
+                boolean hasOverhaul = false;
+                for(Multiblock m : ncpf.multiblocks){
+                    if(m.getDefinitionName().contains("Overhaul"))hasOverhaul = true;
+                }
+                if(hasOverhaul){
+                    Sys.error(ErrorLevel.warning, "Hellrage JSON format is deprecated!\nCasings, configurations, and addons will not be saved!\nSome things, such as coolant recipes, may not be saved properly!\n\nPlease use NCPF for full support", null, ErrorCategory.fileIO);
+                    if(Main.hasAWT){
+                        javax.swing.JOptionPane.showMessageDialog(null, "Hellrage JSON format is deprecated!\nCasings, configurations, and addons will not be saved!\nSome properties, such as coolant recipes, may not be saved properly!\n\nPlease use NCPF for full support", "Deprecation notice", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
                 if(!ncpf.multiblocks.isEmpty()){
                     if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by Hellrage JSON!");
                     Multiblock multi = ncpf.multiblocks.get(0);
