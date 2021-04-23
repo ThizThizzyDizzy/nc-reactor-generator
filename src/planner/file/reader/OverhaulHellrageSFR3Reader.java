@@ -28,7 +28,7 @@ public class OverhaulHellrageSFR3Reader implements FormatReader{
         JSON.JSONObject hellrage = JSON.parse(in);
         String dimS = hellrage.getString("InteriorDimensions");
         String[] dims = dimS.split(",");
-        String coolantRecipeName = hellrage.getString("CoolantRecipeName").replace("Hight", "High");
+        String coolantRecipeName = hellrage.getString("CoolantRecipeName");
         CoolantRecipe coolantRecipe = null;
         for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
             for(String nam : recipe.getLegacyNames())if(nam.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;

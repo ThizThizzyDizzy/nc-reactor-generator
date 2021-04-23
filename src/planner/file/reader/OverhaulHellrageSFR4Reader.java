@@ -27,7 +27,7 @@ public class OverhaulHellrageSFR4Reader implements FormatReader{
     public synchronized NCPFFile read(InputStream in){
         JSON.JSONObject hellrage = JSON.parse(in);
         JSON.JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
-        String coolantRecipeName = hellrage.getString("CoolantRecipeName").replace("Hight", "High");
+        String coolantRecipeName = hellrage.getString("CoolantRecipeName");
         CoolantRecipe coolantRecipe = null;
         for(CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
             for(String nam : recipe.getLegacyNames())if(nam.equalsIgnoreCase(coolantRecipeName))coolantRecipe = recipe;

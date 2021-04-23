@@ -137,7 +137,6 @@ public class Block extends RuleContainer implements Searchable{
         block.shieldEfficiency = efficiency;
         block.moderatorHasBaseStats = true;
         block.moderatorEfficiency = efficiency;
-        block.moderatorActive = true;
         block.setTexture(TextureManager.getImage(texture));
         block.setShieldClosedTexture(TextureManager.getImage(closedTexture));
         return block;
