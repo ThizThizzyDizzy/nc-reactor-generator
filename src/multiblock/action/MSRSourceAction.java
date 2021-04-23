@@ -4,25 +4,26 @@ import multiblock.Action;
 import multiblock.overhaul.fissionmsr.Block;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 public class MSRSourceAction extends Action<OverhaulMSR>{
-    private final Block cell;
+    private final Block vessel;
     private int[] pWas;
     private Block was;
     private final multiblock.configuration.overhaul.fissionmsr.Block source;
     public MSRSourceAction(Block cell, multiblock.configuration.overhaul.fissionmsr.Block source){
-        this.cell = cell;
+        this.vessel = cell;
         this.source = source;
     }
     @Override
     public void doApply(OverhaulMSR multiblock, boolean allowUndo){
-        if(cell.source!=null){
+        if(vessel.source!=null){
             if(allowUndo){
-                pWas = new int[]{cell.source.x,cell.source.y,cell.source.z};
-                was = cell.source;
+                pWas = new int[]{vessel.source.x,vessel.source.y,vessel.source.z};
+                was = vessel.source;
             }
-            multiblock.setBlock(cell.source.x, cell.source.y, cell.source.z, source==null?null:new Block(multiblock.getConfiguration(), cell.source.x, cell.source.y, cell.source.z, source));
+            multiblock.setBlock(vessel.source.x, vessel.source.y, vessel.source.z, source==null?null:new Block(multiblock.getConfiguration(), vessel.source.x, vessel.source.y, vessel.source.z, source));
         }else{
             if(source==null)return;
-            Block bWas = cell.addNeutronSource(multiblock, source);
+            Block bWas = vessel.addNeutronSource(multiblock, source);
+            if(bWas==null)return;
             if(allowUndo){
                 pWas = new int[]{bWas.x,bWas.y,bWas.z};
                 was = bWas.template.source?null:bWas;
@@ -31,10 +32,10 @@ public class MSRSourceAction extends Action<OverhaulMSR>{
     }
     @Override
     public void doUndo(OverhaulMSR multiblock){
-        multiblock.setBlockExact(pWas[0], pWas[1], pWas[2], was);
+        if(pWas!=null)multiblock.setBlockExact(pWas[0], pWas[1], pWas[2], was);
     }
     @Override
     public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<multiblock.Block> blocks){
-        blocks.add(multiblock.getBlock(cell.x, cell.y, cell.z));
+        blocks.add(multiblock.getBlock(vessel.x, vessel.y, vessel.z));
     }
 }

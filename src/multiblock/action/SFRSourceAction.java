@@ -23,6 +23,7 @@ public class SFRSourceAction extends Action<OverhaulSFR>{
         }else{
             if(source==null)return;
             Block bWas = cell.addNeutronSource(multiblock, source);
+            if(bWas==null)return;
             if(allowUndo){
                 pWas = new int[]{bWas.x,bWas.y,bWas.z};
                 was = bWas.template.source?null:bWas;
@@ -31,7 +32,7 @@ public class SFRSourceAction extends Action<OverhaulSFR>{
     }
     @Override
     public void doUndo(OverhaulSFR multiblock){
-        multiblock.setBlockExact(pWas[0], pWas[1], pWas[2], was);
+        if(pWas!=null)multiblock.setBlockExact(pWas[0], pWas[1], pWas[2], was);
     }
     @Override
     public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<multiblock.Block> blocks){

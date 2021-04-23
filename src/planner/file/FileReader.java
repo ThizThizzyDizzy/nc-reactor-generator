@@ -1,28 +1,8 @@
 package planner.file;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import multiblock.CuboidalMultiblock;
-import multiblock.Multiblock;
-import multiblock.configuration.Configuration;
-import multiblock.configuration.PartialConfiguration;
-import multiblock.configuration.overhaul.OverhaulConfiguration;
-import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
-import multiblock.configuration.underhaul.UnderhaulConfiguration;
-import multiblock.overhaul.fissionmsr.OverhaulMSR;
-import multiblock.overhaul.fissionsfr.OverhaulSFR;
-import multiblock.overhaul.fusion.OverhaulFusionReactor;
-import multiblock.overhaul.turbine.OverhaulTurbine;
-import multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import planner.Core;
-import planner.file.JSON.*;
 import planner.file.reader.NCPF10Reader;
 import planner.file.reader.NCPF1Reader;
 import planner.file.reader.NCPF2Reader;
@@ -49,9 +29,6 @@ import planner.file.reader.OverhaulNCConfigReader;
 import planner.file.reader.UnderhaulHellrage1Reader;
 import planner.file.reader.UnderhaulHellrage2Reader;
 import planner.file.reader.UnderhaulNCConfigReader;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
-import simplelibrary.config2.ConfigNumberList;
 public class FileReader{
     public static final ArrayList<FormatReader> formats = new ArrayList<>();
     static{
