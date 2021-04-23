@@ -965,13 +965,6 @@ public class MenuEdit extends Menu implements Editor{
         action(ac, true);
         clearSelection(id);
     }
-    @Override
-    public void pasteSelection(int id, int x, int y, int z){
-        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        synchronized(clipboard){
-            action(new PasteAction(clipboard, x, y, z), true);
-        }
-    }
     public void recalculateSuggestions(){
         suggestions.clear();
         suggestionList.components.clear();

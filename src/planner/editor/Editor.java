@@ -35,7 +35,6 @@ public interface Editor{
     public void cutSelection(int id, int x, int y, int z);
     public Block getSelectedBlock(int id);
     public void setblocks(int id, SetblocksAction set);
-    public void pasteSelection(int id, int x, int y, int z);
     public ArrayList<ClipboardEntry> getClipboard(int id);
     public void selectGroup(int id, int x, int y, int z);
     public void deselectGroup(int id, int x, int y, int z);

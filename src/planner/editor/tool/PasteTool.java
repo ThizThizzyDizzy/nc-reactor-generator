@@ -1,7 +1,10 @@
 package planner.editor.tool;
+import java.util.ArrayList;
+import java.util.Iterator;
 import multiblock.Axis;
 import multiblock.BoundingBox;
 import multiblock.EditorSpace;
+import multiblock.action.PasteAction;
 import planner.Core;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
@@ -29,7 +32,15 @@ public class PasteTool extends EditorTool{
     public void mouseReset(EditorSpace editorSpace, int button){}
     @Override
     public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==0)editor.pasteSelection(id, x, y, z);
+        if(button==0){
+            ArrayList<ClipboardEntry> clipboard = new ArrayList<>(editor.getClipboard(id));
+            for(Iterator<ClipboardEntry> it = clipboard.iterator(); it.hasNext();){
+                ClipboardEntry entry = it.next();
+                if(!editorSpace.contains(x+entry.x, y+entry.y, z+entry.z))it.remove();
+                if(!editorSpace.isSpaceValid(entry.block, x+entry.x, y+entry.y, z+entry.z))it.remove();
+            }
+            editor.action(new PasteAction(clipboard, x, y, z), true);
+        }
     }
     @Override
     public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){}

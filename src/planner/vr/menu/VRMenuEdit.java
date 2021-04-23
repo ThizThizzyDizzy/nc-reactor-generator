@@ -344,12 +344,6 @@ public class VRMenuEdit extends VRMenu implements Editor{
         action(set, true);
     }
     @Override
-    public void pasteSelection(int id, int x, int y, int z){
-        synchronized(clipboard){
-            action(new PasteAction(clipboard.get(id), x, y, z), true);
-        }
-    }
-    @Override
     public void selectGroup(int id, int x, int y, int z){
         ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){

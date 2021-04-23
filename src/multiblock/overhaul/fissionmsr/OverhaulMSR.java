@@ -1722,6 +1722,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             default:
                                 throw new IllegalArgumentException("How did this happen?");
                         }
+                        if(!contains(block.x+dx, block.y+dy, block.z+dz))continue;
                         Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
                         if(newBlock==null)continue;
                         if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
@@ -1820,6 +1821,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             default:
                                 throw new IllegalArgumentException("How did this happen?");
                         }
+                        if(!OverhaulMSR.this.contains(block.x+dx, block.y+dy, block.z+dz))continue;
                         Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
                         if(newBlock==null)continue;
                         if(!newBlock.isEqual(start))continue;//not the same block
