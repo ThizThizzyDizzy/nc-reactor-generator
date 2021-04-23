@@ -60,6 +60,13 @@ public class FissionMSRConfiguration{
                 }
             }
         }
+        ArrayList<Block> convertedBlocks = new ArrayList<>();
+        for(Block b : usedBlocks){
+            for(Block bl : blocks.isEmpty()?allBlocks:blocks){
+                if(bl.name.equals(b.name))convertedBlocks.add(bl);
+            }
+        }
+        usedBlocks = convertedBlocks;
         partial.blocks.addAll(usedBlocks);
         parent.overhaul.fissionMSR.allBlocks.addAll(usedBlocks);
     }

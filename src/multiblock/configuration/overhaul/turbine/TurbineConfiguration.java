@@ -64,16 +64,30 @@ public class TurbineConfiguration{
         return config;
     }
     public void apply(TurbineConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
-        Set<Block> usedBlocks = new HashSet<>();
-        Set<Recipe> usedRecipes = new HashSet<>();
+        ArrayList<Block> usedBlocks = new ArrayList<>();
+        ArrayList<Recipe> usedRecipes = new ArrayList<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulTurbine){
                 for(multiblock.overhaul.turbine.Block b : ((OverhaulTurbine)mb).getBlocks()){
-                    if(b.template!=null)usedBlocks.add(b.template);
+                    if(b.template!=null&&!usedBlocks.contains(b.template))usedBlocks.add(b.template);
                 }
-                usedRecipes.add(((OverhaulTurbine)mb).recipe);
+                if(!usedRecipes.contains(((OverhaulTurbine)mb).recipe))usedRecipes.add(((OverhaulTurbine)mb).recipe);
             }
         }
+        ArrayList<Block> convertedBlocks = new ArrayList<>();
+        for(Block b : usedBlocks){
+            for(Block bl : blocks.isEmpty()?allBlocks:blocks){
+                if(bl.name.equals(b.name))convertedBlocks.add(bl);
+            }
+        }
+        usedBlocks = convertedBlocks;
+        ArrayList<Recipe> convertedRecipes = new ArrayList<>();
+        for(Recipe r : usedRecipes){
+            for(Recipe cr : recipes.isEmpty()?allRecipes:recipes){
+                if(cr.inputName.equals(r.inputName))convertedRecipes.add(cr);
+            }
+        }
+        usedRecipes = convertedRecipes;
         partial.blocks.addAll(usedBlocks);
         parent.overhaul.turbine.allBlocks.addAll(usedBlocks);
         partial.recipes.addAll(usedRecipes);

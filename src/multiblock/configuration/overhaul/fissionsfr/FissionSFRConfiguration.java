@@ -62,7 +62,7 @@ public class FissionSFRConfiguration{
     }
     public void apply(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         ArrayList<Block> usedBlocks = new ArrayList<>();
-        Set<CoolantRecipe> usedCoolantRecipes = new HashSet<>();
+        ArrayList<CoolantRecipe> usedCoolantRecipes = new ArrayList<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulSFR){
                 for(multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)mb).getBlocks()){
@@ -70,9 +70,23 @@ public class FissionSFRConfiguration{
                     if(!usedBlocks.contains(b.template))usedBlocks.add(b.template);
                     if(b.template.port!=null)if(!usedBlocks.contains(b.template.port))usedBlocks.add(b.template.port);
                 }
-                usedCoolantRecipes.add(((OverhaulSFR) mb).coolantRecipe);
+                if(!usedCoolantRecipes.contains(((OverhaulSFR)mb).coolantRecipe))usedCoolantRecipes.add(((OverhaulSFR) mb).coolantRecipe);
             }
         }
+        ArrayList<Block> convertedBlocks = new ArrayList<>();
+        for(Block b : usedBlocks){
+            for(Block bl : blocks.isEmpty()?allBlocks:blocks){
+                if(bl.name.equals(b.name))convertedBlocks.add(bl);
+            }
+        }
+        usedBlocks = convertedBlocks;
+        ArrayList<CoolantRecipe> convertedCoolantRecipes = new ArrayList<>();
+        for(CoolantRecipe r : usedCoolantRecipes){
+            for(CoolantRecipe cr : coolantRecipes.isEmpty()?allCoolantRecipes:coolantRecipes){
+                if(cr.inputName.equals(r.inputName))convertedCoolantRecipes.add(cr);
+            }
+        }
+        usedCoolantRecipes = convertedCoolantRecipes;
         partial.blocks.addAll(usedBlocks);
         partial.coolantRecipes.addAll(usedCoolantRecipes);
         parent.overhaul.fissionSFR.allBlocks.addAll(usedBlocks);

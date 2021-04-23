@@ -216,7 +216,7 @@ public class Block extends RuleContainer implements Searchable{
         Config config = Config.newConfig();
         config.set("name", name);
         boolean isHereJustToHoldRecipes = false;
-        if(parent!=null&&parent.addon){
+        if(parent!=null){
             for(Block b : parent.overhaul.fissionSFR.blocks){
                 if(b.name.equals(name))isHereJustToHoldRecipes = true;
             }
