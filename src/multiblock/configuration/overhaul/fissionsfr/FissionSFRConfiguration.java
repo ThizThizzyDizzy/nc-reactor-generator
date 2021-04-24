@@ -76,22 +76,30 @@ public class FissionSFRConfiguration{
         }
         ArrayList<Block> convertedBlocks = new ArrayList<>();
         for(Block b : usedBlocks){
-            for(Block bl : blocks.isEmpty()?allBlocks:blocks){
+            for(Block bl : blocks){
                 if(bl.name.equals(b.name))convertedBlocks.add(bl);
             }
         }
-        usedBlocks = convertedBlocks;
         ArrayList<CoolantRecipe> convertedCoolantRecipes = new ArrayList<>();
         for(CoolantRecipe r : usedCoolantRecipes){
-            for(CoolantRecipe cr : coolantRecipes.isEmpty()?allCoolantRecipes:coolantRecipes){
+            for(CoolantRecipe cr : coolantRecipes){
                 if(cr.inputName.equals(r.inputName))convertedCoolantRecipes.add(cr);
             }
         }
-        usedCoolantRecipes = convertedCoolantRecipes;
-        partial.blocks.addAll(usedBlocks);
-        partial.coolantRecipes.addAll(usedCoolantRecipes);
-        parent.overhaul.fissionSFR.allBlocks.addAll(usedBlocks);
-        parent.overhaul.fissionSFR.allCoolantRecipes.addAll(usedCoolantRecipes);
+        partial.blocks.addAll(convertedBlocks);
+        partial.coolantRecipes.addAll(convertedCoolantRecipes);
+        parent.overhaul.fissionSFR.allBlocks.addAll(convertedBlocks);
+        parent.overhaul.fissionSFR.allCoolantRecipes.addAll(convertedCoolantRecipes);
+        ArrayList convertedBlocksForRecipes = new ArrayList<>();
+        if(blocks.isEmpty()){
+            for(Block b : usedBlocks){
+                for(Block bl : allBlocks){
+                    if(bl.name.equals(b.name))convertedBlocksForRecipes.add(bl);
+                }
+            }
+        }
+        partial.blocks.addAll(convertedBlocksForRecipes);
+        partial.allBlocks.addAll(convertedBlocksForRecipes);
     }
     public void apply(AddonConfiguration addon, Configuration parent){
         Set<Block> usedBlocks = new HashSet<>();

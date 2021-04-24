@@ -63,13 +63,22 @@ public class FissionMSRConfiguration{
         }
         ArrayList<Block> convertedBlocks = new ArrayList<>();
         for(Block b : usedBlocks){
-            for(Block bl : blocks.isEmpty()?allBlocks:blocks){
+            for(Block bl : blocks){
                 if(bl.name.equals(b.name))convertedBlocks.add(bl);
             }
         }
-        usedBlocks = convertedBlocks;
-        partial.blocks.addAll(usedBlocks);
-        parent.overhaul.fissionMSR.allBlocks.addAll(usedBlocks);
+        partial.blocks.addAll(convertedBlocks);
+        parent.overhaul.fissionMSR.allBlocks.addAll(convertedBlocks);
+        ArrayList convertedBlocksForRecipes = new ArrayList<>();
+        if(blocks.isEmpty()){
+            for(Block b : usedBlocks){
+                for(Block bl : allBlocks){
+                    if(bl.name.equals(b.name))convertedBlocksForRecipes.add(bl);
+                }
+            }
+        }
+        partial.blocks.addAll(convertedBlocksForRecipes);
+        partial.allBlocks.addAll(convertedBlocksForRecipes);
     }
     public void apply(AddonConfiguration addon, Configuration parent){
         Set<Block> usedBlocks = new HashSet<>();

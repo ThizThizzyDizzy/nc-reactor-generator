@@ -86,7 +86,7 @@ public class NCPF10Reader implements FormatReader{
                                     }catch(IndexOutOfBoundsException ex){
                                         if(!Core.recoveryMode)throw new RuntimeException(ex);
                                     }
-                                    underhaulSFR.setBlockExact(x, y, z, b==null?null:new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
+                                    if(b!=null)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
                                 }
                                 index[0]++;
                             });
@@ -102,7 +102,7 @@ public class NCPF10Reader implements FormatReader{
                                 }catch(IndexOutOfBoundsException ex){
                                     if(!Core.recoveryMode)throw new RuntimeException(ex);
                                 }
-                                underhaulSFR.setBlockExact(x, y, z, b==null?null:new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
+                                if(b!=null)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
                             }
                         }
                         multiblock = underhaulSFR;
@@ -130,7 +130,7 @@ public class NCPF10Reader implements FormatReader{
                                     }catch(IndexOutOfBoundsException ex){
                                         if(!Core.recoveryMode)throw new RuntimeException(ex);
                                     }
-                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
+                                    if(b!=null)overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
                                 }
                                 index[0]++;
                             });
@@ -146,7 +146,7 @@ public class NCPF10Reader implements FormatReader{
                                 }catch(IndexOutOfBoundsException ex){
                                     if(!Core.recoveryMode)throw new RuntimeException(ex);
                                 }
-                                overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
+                                if(b!=null)overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
                             }
                         }
                         ConfigNumberList blockRecipes = data.get("blockRecipes");
@@ -155,7 +155,8 @@ public class NCPF10Reader implements FormatReader{
                             multiblock.configuration.overhaul.fissionsfr.Block templ = block.template.parent==null?block.template:block.template.parent;
                             if(!templ.allRecipes.isEmpty()){
                                 try{
-                                    block.recipe = templ.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                    int rid = (int)blockRecipes.get(recipeIndex);
+                                    if(rid!=0)block.recipe = templ.allRecipes.get(rid-1);
                                 }catch(IndexOutOfBoundsException ex){
                                     if(!Core.recoveryMode)throw new RuntimeException(ex);
                                 }
@@ -189,7 +190,7 @@ public class NCPF10Reader implements FormatReader{
                                     }catch(IndexOutOfBoundsException ex){
                                         if(!Core.recoveryMode)throw new RuntimeException(ex);
                                     }
-                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, b));
+                                    if(b!=null)overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, b));
                                 }
                                 index[0]++;
                             });
@@ -205,7 +206,7 @@ public class NCPF10Reader implements FormatReader{
                                 }catch(IndexOutOfBoundsException ex){
                                     if(!Core.recoveryMode)throw new RuntimeException(ex);
                                 }
-                                overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, b));
+                                if(b!=null)overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, b));
                             }
                         }
                         blockRecipes = data.get("blockRecipes");
@@ -214,7 +215,8 @@ public class NCPF10Reader implements FormatReader{
                             multiblock.configuration.overhaul.fissionmsr.Block templ = block.template.parent==null?block.template:block.template.parent;
                             if(!templ.allRecipes.isEmpty()){
                                 try{
-                                    block.recipe = templ.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                    int rid = (int)blockRecipes.get(recipeIndex);
+                                    if(rid!=0)block.recipe = templ.allRecipes.get(rid-1);
                                 }catch(IndexOutOfBoundsException ex){
                                     if(!Core.recoveryMode)throw new RuntimeException(ex);
                                 }
@@ -259,7 +261,7 @@ public class NCPF10Reader implements FormatReader{
                                 }catch(IndexOutOfBoundsException ex){
                                     if(!Core.recoveryMode)throw new RuntimeException(ex);
                                 }
-                                overhaulTurbine.setBlockExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, b));
+                                if(b!=null)overhaulTurbine.setBlockExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, b));
                             }
                             index[0]++;
                         });
@@ -286,13 +288,15 @@ public class NCPF10Reader implements FormatReader{
                         int[] findex = new int[0];
                         overhaulFusionReactor.forEachPosition((X, Y, Z) -> {
                             int bid = (int) blocks.get(findex[0]);
-                            multiblock.configuration.overhaul.fusion.Block b = null;
-                            try{
-                                b = ncpf.configuration.overhaul.fusion.allBlocks.get(bid-1);
-                            }catch(IndexOutOfBoundsException ex){
-                                if(!Core.recoveryMode)throw new RuntimeException(ex);
+                            if(bid>0){
+                                multiblock.configuration.overhaul.fusion.Block b = null;
+                                try{
+                                    b = ncpf.configuration.overhaul.fusion.allBlocks.get(bid-1);
+                                }catch(IndexOutOfBoundsException ex){
+                                    if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                }
+                                if(b!=null)overhaulFusionReactor.setBlockExact(X, Y, Z, new multiblock.overhaul.fusion.Block(ncpf.configuration, X, Y, Z, b));
                             }
-                            if(bid>0)overhaulFusionReactor.setBlockExact(X, Y, Z, new multiblock.overhaul.fusion.Block(ncpf.configuration, X, Y, Z, b));
                             findex[0]++;
                         });
                         blockRecipes = data.get("blockRecipes");
@@ -300,7 +304,8 @@ public class NCPF10Reader implements FormatReader{
                         for(multiblock.overhaul.fusion.Block block : overhaulFusionReactor.getBlocks()){
                             if(!block.template.allRecipes.isEmpty()){
                                 try{
-                                    block.recipe = block.template.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                    int rid = (int)blockRecipes.get(recipeIndex);
+                                    if(rid!=0)block.recipe = block.template.allRecipes.get(rid-1);
                                 }catch(IndexOutOfBoundsException ex){
                                     if(!Core.recoveryMode)throw new RuntimeException(ex);
                                 }
