@@ -1,10 +1,13 @@
 package planner.menu;
 import generator.MultiblockGenerator;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.Range;
 import multiblock.action.GenerateAction;
+import planner.exception.MissingConfigurationEntryException;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -59,7 +62,11 @@ public class MenuGenerator extends Menu{
             }
             generator.refreshSettingsFromGUI(allowedBlocks);
             if(threads<=0){
-                generator.importMultiblock(multiblock);
+                try{
+                    generator.importMultiblock(multiblock);
+                }catch(MissingConfigurationEntryException ex){
+                    throw new RuntimeException(ex);
+                }
                 threads = 1;
             }
             threadsLabel.text = threads+" Thread"+(threads==1?"":"s");
