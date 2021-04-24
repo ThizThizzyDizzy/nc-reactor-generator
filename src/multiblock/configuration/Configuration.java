@@ -16,6 +16,7 @@ import multiblock.Multiblock;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import planner.Main;
+import planner.exception.MissingConfigurationEntryException;
 import planner.file.FileReader;
 import planner.file.FileWriter;
 import planner.file.NCPFFile;
@@ -200,7 +201,7 @@ public class Configuration{
     public boolean overhaulNameMatches(Configuration other){
         return nameMatches(other)&&Objects.equals(overhaulVersion, other.overhaulVersion);
     }
-    public void addAndConvertAddon(AddonConfiguration addon){
+    public void addAndConvertAddon(AddonConfiguration addon) throws MissingConfigurationEntryException{
         Configuration addn = addon.self;
         addn.convertAddon(addon, this);
         if(addn.underhaul!=null&&addn.underhaul.fissionSFR!=null&&underhaul!=null&&underhaul.fissionSFR!=null){
@@ -249,7 +250,7 @@ public class Configuration{
         }
         addons.add(addn);
     }
-    private void convertAddon(AddonConfiguration parent, Configuration convertTo){
+    private void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
         if(underhaul!=null){
             underhaul.convertAddon(parent, convertTo);
         }

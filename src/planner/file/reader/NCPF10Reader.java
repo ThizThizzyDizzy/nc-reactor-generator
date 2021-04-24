@@ -10,11 +10,13 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
+import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import planner.Core;
 import planner.file.FormatReader;
 import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
@@ -64,39 +66,27 @@ public class NCPF10Reader implements FormatReader{
                 switch(id){
                     case 0:
                         //<editor-fold defaultstate="collapsed" desc="Underhaul SFR">
-                        UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", -1)));
+                        Fuel f = ncpf.configuration.underhaul.fissionSFR.allFuels.get(0);
+                        try{
+                            f = ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", -1));
+                        }catch(IndexOutOfBoundsException ex){
+                            if(!Core.recoveryMode)throw new RuntimeException(ex);
+                        }
+                        UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),f);
                         boolean compact = data.get("compact");
                         ConfigNumberList blocks = data.get("blocks");
                         if(compact){
                             int[] index = new int[1];
                             underhaulSFR.forEachPosition((x, y, z) -> {
                                 int bid = (int) blocks.get(index[0]);
-                                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
-                                index[0]++;
-                            });
-                        }else{
-                            for(int j = 0; j<blocks.size(); j+=4){
-                                int x = (int) blocks.get(j)+1;
-                                int y = (int) blocks.get(j+1)+1;
-                                int z = (int) blocks.get(j+2)+1;
-                                int bid = (int) blocks.get(j+3);
-                                underhaulSFR.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
-                            }
-                        }
-                        multiblock = underhaulSFR;
-//</editor-fold>
-                        break;
-                    case 1:
-                        //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
-                        OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", -1)));
-                        compact = data.get("compact");
-                        blocks = data.get("blocks");
-                        if(compact){
-                            int[] index = new int[1];
-                            overhaulSFR.forEachPosition((x, y, z) -> {
-                                int bid = (int) blocks.get(index[0]);
                                 if(bid>0){
-                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                    multiblock.configuration.underhaul.fissionsfr.Block b = null;
+                                    try{
+                                        b = ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1);
+                                    }catch(IndexOutOfBoundsException ex){
+                                        if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                    }
+                                    underhaulSFR.setBlockExact(x, y, z, b==null?null:new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
                                 }
                                 index[0]++;
                             });
@@ -106,7 +96,57 @@ public class NCPF10Reader implements FormatReader{
                                 int y = (int) blocks.get(j+1)+1;
                                 int z = (int) blocks.get(j+2)+1;
                                 int bid = (int) blocks.get(j+3);
-                                overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                                multiblock.configuration.underhaul.fissionsfr.Block b = null;
+                                try{
+                                    b = ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1);
+                                }catch(IndexOutOfBoundsException ex){
+                                    if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                }
+                                underhaulSFR.setBlockExact(x, y, z, b==null?null:new multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
+                            }
+                        }
+                        multiblock = underhaulSFR;
+//</editor-fold>
+                        break;
+                    case 1:
+                        //<editor-fold defaultstate="collapsed" desc="Overhaul SFR">
+                        multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolantRecipe = ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0);
+                        try{
+                            coolantRecipe = ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", -1));
+                        }catch(IndexOutOfBoundsException ex){
+                            if(!Core.recoveryMode)throw new RuntimeException(ex);
+                        }
+                        OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),coolantRecipe);
+                        compact = data.get("compact");
+                        blocks = data.get("blocks");
+                        if(compact){
+                            int[] index = new int[1];
+                            overhaulSFR.forEachPosition((x, y, z) -> {
+                                int bid = (int) blocks.get(index[0]);
+                                if(bid>0){
+                                    multiblock.configuration.overhaul.fissionsfr.Block b = null;
+                                    try{
+                                        b = ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1);
+                                    }catch(IndexOutOfBoundsException ex){
+                                        if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                    }
+                                    overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
+                                }
+                                index[0]++;
+                            });
+                        }else{
+                            for(int j = 0; j<blocks.size(); j+=4){
+                                int x = (int) blocks.get(j)+1;
+                                int y = (int) blocks.get(j+1)+1;
+                                int z = (int) blocks.get(j+2)+1;
+                                int bid = (int) blocks.get(j+3);
+                                multiblock.configuration.overhaul.fissionsfr.Block b = null;
+                                try{
+                                    b = ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1);
+                                }catch(IndexOutOfBoundsException ex){
+                                    if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                }
+                                overhaulSFR.setBlockExact(x, y, z, new multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
                             }
                         }
                         ConfigNumberList blockRecipes = data.get("blockRecipes");
@@ -114,7 +154,11 @@ public class NCPF10Reader implements FormatReader{
                         for(multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
                             multiblock.configuration.overhaul.fissionsfr.Block templ = block.template.parent==null?block.template:block.template.parent;
                             if(!templ.allRecipes.isEmpty()){
-                                block.recipe = templ.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                try{
+                                    block.recipe = templ.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                }catch(IndexOutOfBoundsException ex){
+                                    if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                }
                                 recipeIndex++;
                             }
                         }
@@ -139,7 +183,13 @@ public class NCPF10Reader implements FormatReader{
                             overhaulMSR.forEachPosition((x, y, z) -> {
                                 int bid = (int) blocks.get(index[0]);
                                 if(bid>0){
-                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                    multiblock.configuration.overhaul.fissionmsr.Block b = null;
+                                    try{
+                                        b = ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1);
+                                    }catch(IndexOutOfBoundsException ex){
+                                        if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                    }
+                                    overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, b));
                                 }
                                 index[0]++;
                             });
@@ -149,7 +199,13 @@ public class NCPF10Reader implements FormatReader{
                                 int y = (int) blocks.get(j+1)+1;
                                 int z = (int) blocks.get(j+2)+1;
                                 int bid = (int) blocks.get(j+3);
-                                overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                                multiblock.configuration.overhaul.fissionmsr.Block b = null;
+                                try{
+                                    b = ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1);
+                                }catch(IndexOutOfBoundsException ex){
+                                    if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                }
+                                overhaulMSR.setBlockExact(x, y, z, new multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, b));
                             }
                         }
                         blockRecipes = data.get("blockRecipes");
@@ -157,7 +213,11 @@ public class NCPF10Reader implements FormatReader{
                         for(multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
                             multiblock.configuration.overhaul.fissionmsr.Block templ = block.template.parent==null?block.template:block.template.parent;
                             if(!templ.allRecipes.isEmpty()){
-                                block.recipe = templ.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                try{
+                                    block.recipe = templ.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                }catch(IndexOutOfBoundsException ex){
+                                    if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                }
                                 recipeIndex++;
                             }
                         }
@@ -174,7 +234,13 @@ public class NCPF10Reader implements FormatReader{
                         break;
                     case 3:
                         //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine">
-                        OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)dimensions.get(0), (int)dimensions.get(2), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", -1)));
+                        multiblock.configuration.overhaul.turbine.Recipe turbineRecipe = ncpf.configuration.overhaul.turbine.allRecipes.get(0);
+                        try{
+                            turbineRecipe = ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", -1));
+                        }catch(IndexOutOfBoundsException ex){
+                            if(!Core.recoveryMode)throw new RuntimeException(ex);
+                        }
+                        OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)dimensions.get(0), (int)dimensions.get(2), turbineRecipe);
                         if(data.hasProperty("inputs")){
                             overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
                             ConfigNumberList inputs = data.get("inputs");
@@ -187,7 +253,13 @@ public class NCPF10Reader implements FormatReader{
                         overhaulTurbine.forEachPosition((x, y, z) -> {
                             int bid = (int) blocks.get(index[0]);
                             if(bid>0){
-                                overhaulTurbine.setBlockExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.turbine.allBlocks.get(bid-1)));
+                                multiblock.configuration.overhaul.turbine.Block b = null;
+                                try{
+                                    b = ncpf.configuration.overhaul.turbine.allBlocks.get(bid-1);
+                                }catch(IndexOutOfBoundsException ex){
+                                    if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                }
+                                overhaulTurbine.setBlockExact(x, y, z, new multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, b));
                             }
                             index[0]++;
                         });
@@ -196,19 +268,42 @@ public class NCPF10Reader implements FormatReader{
                         break;
                     case 4:
                         //<editor-fold defaultstate="collapsed" desc="Overhaul Fusion Reactor">
-                        OverhaulFusionReactor overhaulFusionReactor = new OverhaulFusionReactor(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),(int)dimensions.get(3),ncpf.configuration.overhaul.fusion.allRecipes.get(data.get("recipe", -1)),ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(data.get("coolantRecipe", -1)));
+                        multiblock.configuration.overhaul.fusion.CoolantRecipe fusionCoolantRecipe = ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(0);
+                        try{
+                            fusionCoolantRecipe = ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(data.get("coolantRecipe", -1));
+                        }catch(IndexOutOfBoundsException ex){
+                            if(!Core.recoveryMode)throw new RuntimeException(ex);
+                        }
+
+                        multiblock.configuration.overhaul.fusion.Recipe fusionRecipe = ncpf.configuration.overhaul.fusion.allRecipes.get(0);
+                        try{
+                            fusionRecipe = ncpf.configuration.overhaul.fusion.allRecipes.get(data.get("recipe", -1));
+                        }catch(IndexOutOfBoundsException ex){
+                            if(!Core.recoveryMode)throw new RuntimeException(ex);
+                        }
+                        OverhaulFusionReactor overhaulFusionReactor = new OverhaulFusionReactor(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),(int)dimensions.get(3),fusionRecipe,fusionCoolantRecipe);
                         blocks = data.get("blocks");
                         int[] findex = new int[0];
                         overhaulFusionReactor.forEachPosition((X, Y, Z) -> {
                             int bid = (int) blocks.get(findex[0]);
-                            if(bid>0)overhaulFusionReactor.setBlockExact(X, Y, Z, new multiblock.overhaul.fusion.Block(ncpf.configuration, X, Y, Z, ncpf.configuration.overhaul.fusion.allBlocks.get(bid-1)));
+                            multiblock.configuration.overhaul.fusion.Block b = null;
+                            try{
+                                b = ncpf.configuration.overhaul.fusion.allBlocks.get(bid-1);
+                            }catch(IndexOutOfBoundsException ex){
+                                if(!Core.recoveryMode)throw new RuntimeException(ex);
+                            }
+                            if(bid>0)overhaulFusionReactor.setBlockExact(X, Y, Z, new multiblock.overhaul.fusion.Block(ncpf.configuration, X, Y, Z, b));
                             findex[0]++;
                         });
                         blockRecipes = data.get("blockRecipes");
                         recipeIndex = 0;
                         for(multiblock.overhaul.fusion.Block block : overhaulFusionReactor.getBlocks()){
                             if(!block.template.allRecipes.isEmpty()){
-                                block.recipe = block.template.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                try{
+                                    block.recipe = block.template.allRecipes.get((int)blockRecipes.get(recipeIndex)-1);
+                                }catch(IndexOutOfBoundsException ex){
+                                    if(!Core.recoveryMode)throw new RuntimeException(ex);
+                                }
                                 recipeIndex++;
                             }
                         }

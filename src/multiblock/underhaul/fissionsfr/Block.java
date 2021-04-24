@@ -7,6 +7,7 @@ import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import planner.Core;
+import planner.exception.MissingConfigurationEntryException;
 public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -204,7 +205,7 @@ public class Block extends multiblock.Block{
         return other instanceof Block&&((Block)other).template==template;
     }
     @Override
-    public void convertTo(Configuration to){
+    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
         template = to.underhaul.fissionSFR.convert(template);
         configuration = to;
     }

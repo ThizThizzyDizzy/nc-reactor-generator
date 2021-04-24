@@ -6,6 +6,7 @@ import java.util.function.Function;
 import multiblock.configuration.Configuration;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.exception.MissingConfigurationEntryException;
 import planner.menu.component.Searchable;
 import planner.vr.VRCore;
 import simplelibrary.Queue;
@@ -320,7 +321,7 @@ public abstract class Block extends MultiblockBit implements Searchable{
     public Configuration getConfiguration(){
         return configuration;
     }
-    public abstract void convertTo(Configuration to);
+    public abstract void convertTo(Configuration to) throws MissingConfigurationEntryException;
     public boolean shouldRenderFace(Block against){
         return against==null;
     }

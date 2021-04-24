@@ -9,6 +9,7 @@ import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.PlacementRule;
 import planner.Core;
+import planner.exception.MissingConfigurationEntryException;
 import planner.vr.VRCore;
 import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
@@ -515,7 +516,7 @@ public class Block extends multiblock.Block{
         if(template.moderator)return false;
         return template.heatsink;
     }
-    public multiblock.overhaul.fissionmsr.Block convertToMSR(){
+    public multiblock.overhaul.fissionmsr.Block convertToMSR() throws MissingConfigurationEntryException{
         if(template.coolantVent)return null;//remove vents
         multiblock.overhaul.fissionmsr.Block b = new multiblock.overhaul.fissionmsr.Block(getConfiguration(), x, y, z, getConfiguration().overhaul.fissionMSR.convertToMSR(template));
         b.recipe = b.template.convertToMSR(recipe);
@@ -550,7 +551,7 @@ public class Block extends multiblock.Block{
         return other instanceof Block&&((Block)other).template==template;
     }
     @Override
-    public void convertTo(Configuration to){
+    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
         template = to.overhaul.fissionSFR.convert(template);
         recipe = template.convert(recipe);
         configuration = to;

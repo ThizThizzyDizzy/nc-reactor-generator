@@ -9,6 +9,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
+import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionMSRConfiguration{
@@ -127,7 +128,7 @@ public class FissionMSRConfiguration{
             }
         }
     }
-    public Block convert(Block template){
+    public Block convert(Block template) throws MissingConfigurationEntryException{
         if(template==null)return null;
         for(Block block : allBlocks){
             for(String name : block.getLegacyNames()){
@@ -139,9 +140,9 @@ public class FissionMSRConfiguration{
                 if(name.equals(template.name))return block;
             }
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
+        throw new MissingConfigurationEntryException("Failed to find match for block "+template.name+"!");
     }
-    public Block convertToMSR(multiblock.configuration.overhaul.fissionsfr.Block template){
+    public Block convertToMSR(multiblock.configuration.overhaul.fissionsfr.Block template) throws MissingConfigurationEntryException{
         if(template==null)return null;
         for(Block block : allBlocks){
             if(block.name.equals(template.name.replace("solid", "salt").replace("cell", "vessel").replace("sink", "heater")))return block;
@@ -149,7 +150,7 @@ public class FissionMSRConfiguration{
         for(Block block : blocks){
             if(block.name.equals(template.name.replace("solid", "salt").replace("cell", "vessel").replace("sink", "heater")))return block;
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
+        throw new MissingConfigurationEntryException("Failed to find match for block "+template.name+"!");
     }
     @Override
     public boolean equals(Object obj){
@@ -181,7 +182,7 @@ public class FissionMSRConfiguration{
         }
         return rules;
     }
-    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
         for(Block block : blocks){
             for(PlacementRule rule : getAllSubRules(block)){
                 if(rule.block==null)continue;

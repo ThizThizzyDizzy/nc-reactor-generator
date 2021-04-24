@@ -2,10 +2,13 @@ package planner.menu;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.Core;
 import planner.Theme;
+import planner.exception.MissingConfigurationEntryException;
 import planner.file.FileFormat;
 import planner.file.FileReader;
 import planner.file.NCPFFile;
@@ -53,7 +56,11 @@ public class MenuSettings extends SettingsMenu{
             b.addActionListener((e) -> {
                 config.impose(Core.configuration);
                 for(Multiblock multi : Core.multiblocks){
-                    multi.convertTo(Core.configuration);
+                    try{
+                        multi.convertTo(Core.configuration);
+                    }catch(MissingConfigurationEntryException ex){
+                        throw new RuntimeException(ex);
+                    }
                 }
                 onGUIOpened();
             });
@@ -65,7 +72,11 @@ public class MenuSettings extends SettingsMenu{
                 if(ncpf==null)return;
                 Configuration.impose(ncpf.configuration, Core.configuration);
                 for(Multiblock multi : Core.multiblocks){
-                    multi.convertTo(Core.configuration);
+                    try{
+                        multi.convertTo(Core.configuration);
+                    }catch(MissingConfigurationEntryException ex){
+                        throw new RuntimeException(ex);
+                    }
                 }
                 onGUIOpened();
             }, FileFormat.ALL_CONFIGURATION_FORMATS);

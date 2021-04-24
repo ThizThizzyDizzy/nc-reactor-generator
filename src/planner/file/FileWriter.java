@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import multiblock.Block;
 import multiblock.BoundingBox;
@@ -19,6 +21,7 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.FormattedText;
 import planner.Main;
+import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -294,7 +297,11 @@ public class FileWriter{
                 header.save(stream);
                 ncpf.configuration.save(null, Config.newConfig()).save(stream);
                 for(Multiblock m : ncpf.multiblocks){
-                    m.save(ncpf, ncpf.configuration, stream);
+                    try{
+                        m.save(ncpf, ncpf.configuration, stream);
+                    }catch(MissingConfigurationEntryException ex){
+                        throw new RuntimeException(ex);
+                    }
                 }
                 try{
                     stream.close();

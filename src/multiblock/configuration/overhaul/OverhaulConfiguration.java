@@ -9,6 +9,7 @@ import multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration;
 import multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
 import multiblock.configuration.overhaul.fusion.FusionConfiguration;
 import multiblock.configuration.overhaul.turbine.TurbineConfiguration;
+import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 public class OverhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
@@ -73,7 +74,7 @@ public class OverhaulConfiguration{
         }
         return super.equals(obj);
     }
-    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
         if(fissionSFR!=null){
             fissionSFR.convertAddon(parent, convertTo);
         }

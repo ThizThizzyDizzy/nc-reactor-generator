@@ -6,6 +6,7 @@ import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
 import multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
+import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 public class UnderhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
@@ -36,7 +37,7 @@ public class UnderhaulConfiguration{
         }
         return super.equals(obj);
     }
-    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
         if(fissionSFR!=null){
             fissionSFR.convertAddon(parent, convertTo);
         }

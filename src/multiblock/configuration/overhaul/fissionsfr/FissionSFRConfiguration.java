@@ -9,6 +9,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
+import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration{
@@ -151,7 +152,7 @@ public class FissionSFRConfiguration{
         addon.self.overhaul.fissionSFR.coolantRecipes.addAll(coolantRecipes);
         parent.overhaul.fissionSFR.allCoolantRecipes.addAll(coolantRecipes);
     }
-    public Block convert(Block template){
+    public Block convert(Block template) throws MissingConfigurationEntryException{
         if(template==null)return null;
         for(Block block : allBlocks){
             for(String name : block.getLegacyNames()){
@@ -163,9 +164,9 @@ public class FissionSFRConfiguration{
                 if(name.equals(template.name))return block;
             }
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
+        throw new MissingConfigurationEntryException("Failed to find match for block "+template.name+"!");
     }
-    public CoolantRecipe convert(CoolantRecipe template){
+    public CoolantRecipe convert(CoolantRecipe template) throws MissingConfigurationEntryException{
         if(template==null)return null;
         for(CoolantRecipe recipe : allCoolantRecipes){
             for(String name : recipe.getLegacyNames()){
@@ -177,9 +178,9 @@ public class FissionSFRConfiguration{
                 if(name.equals(template.inputName))return recipe;
             }
         }
-        throw new IllegalArgumentException("Failed to find match for coolant recipe "+template.inputName+"!");
+        throw new MissingConfigurationEntryException("Failed to find match for coolant recipe "+template.inputName+"!");
     }
-    public Block convertToSFR(multiblock.configuration.overhaul.fissionmsr.Block template){
+    public Block convertToSFR(multiblock.configuration.overhaul.fissionmsr.Block template) throws MissingConfigurationEntryException{
         if(template==null)return null;
         for(Block block : allBlocks){
             if(block.name.equals(template.name.replace("salt", "solid").replace("vessel", "cell").replace("heater", "sink")))return block;
@@ -187,7 +188,7 @@ public class FissionSFRConfiguration{
         for(Block block : blocks){
             if(block.name.equals(template.name.replace("salt", "solid").replace("vessel", "cell").replace("heater", "sink")))return block;
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
+        throw new MissingConfigurationEntryException("Failed to find match for block "+template.name+"!");
     }
     @Override
     public boolean equals(Object obj){
@@ -220,7 +221,7 @@ public class FissionSFRConfiguration{
         }
         return rules;
     }
-    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
         for(Block block : blocks){
             for(PlacementRule rule : getAllSubRules(block)){
                 if(rule.block==null)continue;

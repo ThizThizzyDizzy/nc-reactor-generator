@@ -31,6 +31,7 @@ import planner.FormattedText;
 import planner.Task;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
+import planner.exception.MissingConfigurationEntryException;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.module.Module;
@@ -301,7 +302,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
         return isCompact(configuration.underhaul.fissionSFR.allBlocks.size());
     }
     @Override
-    public void doConvertTo(Configuration to){
+    public void doConvertTo(Configuration to) throws MissingConfigurationEntryException{
         if(to.underhaul==null||to.underhaul.fissionSFR==null)return;
         for(Block block : getBlocks()){
             block.convertTo(to);

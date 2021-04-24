@@ -1,16 +1,21 @@
 package planner.menu;
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.configuration.PartialConfiguration;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.turbine.OverhaulTurbine;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.Main;
+import planner.exception.MissingConfigurationEntryException;
 import planner.file.FileFormat;
 import planner.file.FileReader;
 import planner.file.FileWriter;
@@ -26,6 +31,7 @@ import simplelibrary.Queue;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
+import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -190,10 +196,7 @@ public class MenuMain extends Menu{
                 }else{
                     Core.configuration = ncpf.configuration;
                 }
-                for(Multiblock mb : ncpf.multiblocks){
-                    mb.convertTo(Core.configuration);
-                    Core.multiblocks.add(mb);
-                }
+                convertAndImportMultiblocks(ncpf.multiblocks);
                 onGUIOpened();
             }, FileFormat.ALL_PLANNER_FORMATS);
         });
@@ -247,12 +250,16 @@ public class MenuMain extends Menu{
         });
         convertOverhaulMSFR.addActionListener((e) -> {
             Multiblock selected = getSelectedMultiblock();
-            if(selected instanceof OverhaulSFR){
-                OverhaulMSR msr = ((OverhaulSFR) selected).convertToMSR();
-                Core.multiblocks.set(Core.multiblocks.indexOf(selected), msr);
-            }else if(selected instanceof OverhaulMSR){
-                OverhaulSFR sfr = ((OverhaulMSR) selected).convertToSFR();
-                Core.multiblocks.set(Core.multiblocks.indexOf(selected), sfr);
+            try{
+                if(selected instanceof OverhaulSFR){
+                    OverhaulMSR msr = ((OverhaulSFR) selected).convertToMSR();
+                    Core.multiblocks.set(Core.multiblocks.indexOf(selected), msr);
+                }else if(selected instanceof OverhaulMSR){
+                    OverhaulSFR sfr = ((OverhaulMSR) selected).convertToSFR();
+                    Core.multiblocks.set(Core.multiblocks.indexOf(selected), sfr);
+                }
+            }catch(MissingConfigurationEntryException ex){
+                throw new RuntimeException(ex);
             }
             onGUIOpened();
         });
@@ -294,6 +301,23 @@ public class MenuMain extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
+        if(Core.recoveryMode){
+            double size = gui.helper.displayHeight()/16d;
+            boolean yellow = false;
+            ImageStash.instance.bindTexture(0);
+            GL11.glBegin(GL11.GL_QUADS);
+            for(double d = 0; d<gui.helper.displayWidth()+size; d+=size/2){
+                yellow = !yellow;
+                Core.applyColor(Core.theme.getRGBA(yellow?1:0, yellow?1:0, 0, 1));
+                GL11.glVertex2d(d, gui.helper.displayHeight()-size);
+                GL11.glVertex2d(d-size, gui.helper.displayHeight());
+                GL11.glVertex2d(d-size/2, gui.helper.displayHeight());
+                GL11.glVertex2d(d+size/2, gui.helper.displayHeight()-size);
+            }
+            GL11.glEnd();
+            Core.applyColor(Core.theme.getRGBA(1, 1, 0, 1));
+            drawCenteredText(0, gui.helper.displayHeight()-size*2, gui.helper.displayWidth(), gui.helper.displayHeight()-size, "RECOVERY MODE ENABLED. PRESS CTRL+SHIFT+R TO DISABLE");
+        }
         if(settingInputs!=null)multiblocks.setSelectedIndex(Core.multiblocks.indexOf(settingInputs));
         if(!pendingWrites.isEmpty()){
             pendingWrites.dequeue().write();
@@ -427,8 +451,19 @@ public class MenuMain extends Menu{
                 Sys.error(ErrorLevel.warning, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
             }
         }
-        for(Multiblock mb : ncpf.multiblocks){
-            mb.convertTo(Core.configuration);
+        convertAndImportMultiblocks(ncpf.multiblocks);
+    }
+    private void convertAndImportMultiblocks(ArrayList<Multiblock> multiblocks){
+        for(Multiblock mb : multiblocks){
+            try{
+                mb.convertTo(Core.configuration);
+            }catch(MissingConfigurationEntryException ex){
+                if(Main.hasAWT){
+                    javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage()+"\nAre you missing an addon?", "Failed to load multiblock", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+                Sys.error(ErrorLevel.warning, "Failed to load multiblock - Are you missing an addon?", ex, ErrorCategory.fileIO);
+                continue;
+            }
             Core.multiblocks.add(mb);
         }
     }
@@ -456,5 +491,12 @@ public class MenuMain extends Menu{
         }
         onGUIOpened();
         return true;
+    }
+    @Override
+    public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
+        if(isPress&&key==GLFW.GLFW_KEY_R&&Core.isControlPressed()&&Core.isShiftPressed()){
+            Core.recoveryMode = !Core.recoveryMode;
+        }
+        super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
     }
 }

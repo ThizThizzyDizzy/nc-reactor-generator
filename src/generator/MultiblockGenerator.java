@@ -7,6 +7,7 @@ import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.Range;
 import planner.FormattedText;
+import planner.exception.MissingConfigurationEntryException;
 import planner.menu.component.MenuComponentMinimaList;
 public abstract class MultiblockGenerator{
     public int iterations = 0;
@@ -81,7 +82,7 @@ public abstract class MultiblockGenerator{
         }
         System.out.println(iterations+" iterations");
     }
-    public abstract void importMultiblock(Multiblock multiblock);
+    public abstract void importMultiblock(Multiblock multiblock) throws MissingConfigurationEntryException;
     public Multiblock getMainMultiblock(){
         ArrayList<Multiblock>[] lists = getMultiblockLists();
         if(lists.length==0)return null;

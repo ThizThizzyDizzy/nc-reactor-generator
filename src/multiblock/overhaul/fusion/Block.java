@@ -8,6 +8,7 @@ import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fusion.PlacementRule;
 import planner.Core;
+import planner.exception.MissingConfigurationEntryException;
 import planner.vr.VRCore;
 import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
@@ -465,7 +466,7 @@ public class Block extends multiblock.Block{
         return template.functional&&(isActive()||breedingBlanketValid);
     }
     @Override
-    public void convertTo(Configuration to){
+    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
         template = to.overhaul.fusion.convert(template);
         recipe = template.convert(recipe);
         configuration = to;

@@ -14,6 +14,7 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.Symmetry;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import planner.exception.MissingConfigurationEntryException;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -495,7 +496,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         }
     }
     @Override
-    public void importMultiblock(Multiblock multiblock){
+    public void importMultiblock(Multiblock multiblock) throws MissingConfigurationEntryException{
         multiblock.convertTo(this.multiblock.getConfiguration());
         if(multiblock instanceof UnderhaulSFR){
             multiblock = multiblock.copy();

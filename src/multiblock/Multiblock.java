@@ -17,6 +17,7 @@ import planner.Core;
 import planner.FormattedText;
 import planner.Task;
 import planner.editor.suggestion.Suggestor;
+import planner.exception.MissingConfigurationEntryException;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.component.MenuComponentMinimaList;
@@ -340,7 +341,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
             GL11.glVertex3d(x1, y2, z1);
         }
     }
-    public final void save(NCPFFile ncpf, Configuration configuration, OutputStream stream){
+    public final void save(NCPFFile ncpf, Configuration configuration, OutputStream stream) throws MissingConfigurationEntryException{
         int id = getMultiblockID();
         if(id==-1)return;
         Config config = Config.newConfig();
@@ -361,13 +362,13 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         save(ncpf, configuration, config);
         config.save(stream);
     }
-    protected void save(NCPFFile ncpf, Configuration configuration, Config config){}
+    protected void save(NCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{}
     /**
      * Get the ID to use for saving
      * @return the ID as used in NCPF format, or -1 if this multiblock cannot be saved
      */
     public abstract int getMultiblockID();
-    public abstract void convertTo(Configuration to);
+    public abstract void convertTo(Configuration to) throws MissingConfigurationEntryException;
     /**
      * @return true if anything changed
      */

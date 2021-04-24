@@ -44,6 +44,7 @@ import planner.FormattedText;
 import planner.Task;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
+import planner.exception.MissingConfigurationEntryException;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.generator.MenuComponentOverhaulSFRToggleBlockRecipe;
@@ -424,8 +425,10 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
                 if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
                 functionalBlocks = 0;
-                for(Block block : allBlocks){
+                for(int i = 0; i<allBlocks.size(); i++){
+                    Block block = allBlocks.get(i);
                     if(block.isFunctional())functionalBlocks++;
+                    calcStats.progress = i/(double)allBlocks.size();
                 }
                 int volume = getInternalVolume();
                 sparsityMult = (float) (functionalBlocks/(float)volume>=getConfiguration().overhaul.fissionSFR.sparsityPenaltyThreshold?1:getConfiguration().overhaul.fissionSFR.sparsityPenaltyMult+(1-getConfiguration().overhaul.fissionSFR.sparsityPenaltyMult)*Math.sin(Math.PI*functionalBlocks/(2*volume*getConfiguration().overhaul.fissionSFR.sparsityPenaltyThreshold)));
@@ -659,8 +662,10 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
                 if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
                 functionalBlocks = 0;
-                for(Block block : allBlocks){
+                for(int i = 0; i<allBlocks.size(); i++){
+                    Block block = allBlocks.get(i);
                     if(block.isFunctional())functionalBlocks++;
+                    shutdownCalcStats.progress = i/(double)allBlocks.size();
                 }
                 volume = getInternalVolume();
                 sparsityMult = (float) (functionalBlocks/(float)volume>=getConfiguration().overhaul.fissionSFR.sparsityPenaltyThreshold?1:getConfiguration().overhaul.fissionSFR.sparsityPenaltyMult+(1-getConfiguration().overhaul.fissionSFR.sparsityPenaltyMult)*Math.sin(Math.PI*functionalBlocks/(2*volume*getConfiguration().overhaul.fissionSFR.sparsityPenaltyThreshold)));
@@ -892,22 +897,29 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
                 if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
                 functionalBlocks = 0;
-                BLOCK:for(Block block : allBlocks){
+                ArrayList<BlockRecipe> inputPortRecipes = new ArrayList<>();
+                ArrayList<BlockRecipe> outputPortRecipes = new ArrayList<>();
+                BLOCK:for(int i = 0; i<allBlocks.size(); i++){
+                    Block block = allBlocks.get(i);
+                    if(block.template.parent==null)continue;
+                    if(block.recipe!=null){
+                        if(block.isToggled){
+                            if(!outputPortRecipes.contains(block.recipe))outputPortRecipes.add(block.recipe);
+                        }else{
+                            if(!inputPortRecipes.contains(block.recipe))inputPortRecipes.add(block.recipe);
+                        }
+                    }
+                    partialShutdownCalcStats.progress = i/(double)allBlocks.size()/2d;
+                }
+                BLOCK:for(int i = 0; i<allBlocks.size(); i++){
+                    Block block = allBlocks.get(i);
                     if(block.isFunctional())functionalBlocks++;
                     if(block.template.parent!=null)continue;
                     if(block.recipe!=null){
-                        boolean hasOutput = false;
-                        boolean hasInput = false;
-                        for(Block b : allBlocks){
-                            if(b.template.parent==null)continue;
-                            if(b.recipe==block.recipe){
-                                if(b.isToggled)hasOutput = true;
-                                else hasInput = true;
-                            }
-                        }
-                        if(!hasInput)missingInputPorts.put(block.recipe, block.template);
-                        if(!hasOutput)missingOutputPorts.put(block.recipe, block.template);
+                        if(!inputPortRecipes.contains(block.recipe))missingInputPorts.put(block.recipe, block.template);
+                        if(!outputPortRecipes.contains(block.recipe))missingOutputPorts.put(block.recipe, block.template);
                     }
+                    partialShutdownCalcStats.progress = 0.5+i/(double)allBlocks.size()/2;
                 }
                 volume = getInternalVolume();
                 sparsityMult = (float) (functionalBlocks/(float)volume>=getConfiguration().overhaul.fissionSFR.sparsityPenaltyThreshold?1:getConfiguration().overhaul.fissionSFR.sparsityPenaltyMult+(1-getConfiguration().overhaul.fissionSFR.sparsityPenaltyMult)*Math.sin(Math.PI*functionalBlocks/(2*volume*getConfiguration().overhaul.fissionSFR.sparsityPenaltyThreshold)));
@@ -1289,7 +1301,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         return 1;
     }
     @Override
-    protected void save(NCPFFile ncpf, Configuration configuration, Config config){
+    protected void save(NCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{
         boolean compact = isCompact(configuration);//find perfect compression ratio
         config.set("compact", compact);
         config.set("coolantRecipe", configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(coolantRecipe));
@@ -1329,7 +1341,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         return isCompact(configuration.overhaul.fissionSFR.allBlocks.size());
     }
     @Override
-    public void doConvertTo(Configuration to){
+    public void doConvertTo(Configuration to) throws MissingConfigurationEntryException{
         if(to.overhaul==null||to.overhaul.fissionSFR==null)return;
         for(Block block : getBlocks(true)){
             block.convertTo(to);
@@ -1369,12 +1381,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         }
         return counts;
     }
-    public OverhaulMSR convertToMSR(){
+    public OverhaulMSR convertToMSR() throws MissingConfigurationEntryException{
         OverhaulMSR msr = new OverhaulMSR(configuration, getInternalWidth(), getInternalHeight(), getInternalDepth());
-        forEachPosition((x, y, z) -> {
-            Block b = getBlock(x, y, z);
-            msr.setBlockExact(x, y, z, b==null?null:b.convertToMSR());
-        });
+        for(Block b : getBlocks(true)){
+            msr.setBlockExact(x, y, z, b.convertToMSR());
+        }
         msr.metadata.putAll(metadata);
         return msr;
     }

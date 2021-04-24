@@ -7,6 +7,7 @@ import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
 import planner.Core;
+import planner.exception.MissingConfigurationEntryException;
 public class Block extends multiblock.Block{
     public multiblock.configuration.overhaul.turbine.Block template;
     public boolean valid;
@@ -181,7 +182,7 @@ public class Block extends multiblock.Block{
         return !isBlade();
     }
     @Override
-    public void convertTo(Configuration to){
+    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
         template = to.overhaul.turbine.convert(template);
         configuration = to;
     }

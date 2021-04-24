@@ -28,6 +28,7 @@ import planner.FormattedText;
 import planner.Task;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
+import planner.exception.MissingConfigurationEntryException;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResizeFusion;
@@ -361,7 +362,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         config.set("coolantRecipe", (byte)configuration.overhaul.fusion.allCoolantRecipes.indexOf(coolantRecipe));
     }
     @Override
-    public void convertTo(Configuration to){
+    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
         if(to.overhaul==null||to.overhaul.fusion==null)return;
         for(Block block : getBlocks()){
             block.convertTo(to);

@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import multiblock.configuration.Configuration;
 import planner.Core;
+import planner.exception.MissingConfigurationEntryException;
 import planner.menu.MenuEdit;
 import planner.menu.MenuResize;
 import planner.menu.component.editor.MenuComponentEditorGrid;
@@ -390,12 +391,12 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         return cache;
     }
     @Override
-    public void convertTo(Configuration to){
+    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
         doConvertTo(to);
         if(casingPending)buildDefaultCasing();
         casingPending = false;
     }
-    public abstract void doConvertTo(Configuration to);
+    public abstract void doConvertTo(Configuration to) throws MissingConfigurationEntryException;
     public void buildDefaultCasingOnConvert(){
         casingPending = true;
     }

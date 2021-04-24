@@ -27,6 +27,7 @@ import planner.FormattedText;
 import planner.Task;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.suggestion.Suggestor;
+import planner.exception.MissingConfigurationEntryException;
 import planner.file.NCPFFile;
 import planner.menu.MenuEdit;
 import planner.menu.component.MenuComponentMinimaList;
@@ -492,7 +493,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         config.set("recipe", configuration.overhaul.turbine.allRecipes.indexOf(recipe));
     }
     @Override
-    public void doConvertTo(Configuration to){
+    public void doConvertTo(Configuration to) throws MissingConfigurationEntryException{
         if(to.overhaul==null||to.overhaul.turbine==null)return;
         for(Block block : getBlocks()){
             block.convertTo(to);

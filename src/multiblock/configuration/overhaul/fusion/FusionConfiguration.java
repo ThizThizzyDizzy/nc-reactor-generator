@@ -9,6 +9,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
+import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public class FusionConfiguration{
@@ -145,7 +146,7 @@ public class FusionConfiguration{
         addon.self.overhaul.fusion.coolantRecipes.addAll(coolantRecipes);
         parent.overhaul.fusion.allCoolantRecipes.addAll(coolantRecipes);
     }
-    public Block convert(Block template){
+    public Block convert(Block template) throws MissingConfigurationEntryException{
         if(template==null)return null;
         for(Block block : allBlocks){
             for(String name : block.getLegacyNames()){
@@ -157,9 +158,9 @@ public class FusionConfiguration{
                 if(name.equals(template.name))return block;
             }
         }
-        throw new IllegalArgumentException("Failed to find match for block "+template.name+"!");
+        throw new MissingConfigurationEntryException("Failed to find match for block "+template.name+"!");
     }
-    public Recipe convert(Recipe template){
+    public Recipe convert(Recipe template) throws MissingConfigurationEntryException{
         if(template==null)return null;
         for(Recipe recipe : allRecipes){
             for(String name : recipe.getLegacyNames()){
@@ -171,7 +172,7 @@ public class FusionConfiguration{
                 if(name.equals(template.inputName))return recipe;
             }
         }
-        throw new IllegalArgumentException("Failed to find match for recipe "+template.inputName+"!");
+        throw new MissingConfigurationEntryException("Failed to find match for recipe "+template.inputName+"!");
     }
     public CoolantRecipe convert(CoolantRecipe template){
         if(template==null)return null;
@@ -224,7 +225,7 @@ public class FusionConfiguration{
         }
         return rules;
     }
-    public void convertAddon(AddonConfiguration parent, Configuration convertTo){
+    public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
         for(Block block : blocks){
             for(PlacementRule rule : getAllSubRules(block)){
                 if(rule.block==null)continue;

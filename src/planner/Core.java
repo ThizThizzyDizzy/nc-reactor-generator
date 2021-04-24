@@ -92,6 +92,7 @@ public class Core extends Renderer2D{
     private static Callback callback;
     public static boolean invertUndoRedo;
     public static boolean autoBuildCasing = true;
+    public static boolean recoveryMode = false;
     static{
         resetMetadata();
         modules.add(new UnderhaulModule());

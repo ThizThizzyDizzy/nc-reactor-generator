@@ -189,6 +189,9 @@ public class MenuEdit extends Menu implements Editor{
     private long lastChange = 0;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
+        if(Core.recoveryMode){
+            autoRecalc = false;
+        }
         this.multiblock = multiblock;
         multibwauk.setScrollMagnitude(CELL_SIZE*scrollMagnitude);
         back.addActionListener((e) -> {
@@ -312,7 +315,7 @@ public class MenuEdit extends Menu implements Editor{
                 nextY = lastY+comp.height+LAYER_GAP;
             }
         }
-        if(recalculateOnOpen){
+        if(recalculateOnOpen&&!Core.recoveryMode){
             autoRecalc = true;
             multiblock.recalculate();
         }
