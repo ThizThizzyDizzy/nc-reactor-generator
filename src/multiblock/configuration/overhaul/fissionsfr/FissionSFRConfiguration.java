@@ -91,11 +91,9 @@ public class FissionSFRConfiguration{
         parent.overhaul.fissionSFR.allBlocks.addAll(convertedBlocks);
         parent.overhaul.fissionSFR.allCoolantRecipes.addAll(convertedCoolantRecipes);
         ArrayList convertedBlocksForRecipes = new ArrayList<>();
-        if(blocks.isEmpty()){
-            for(Block b : usedBlocks){
-                for(Block bl : allBlocks){
-                    if(bl.name.equals(b.name))convertedBlocksForRecipes.add(bl);
-                }
+        for(Block b : usedBlocks){
+            for(Block bl : allBlocks){
+                if(bl.name.equals(b.name)&&!convertedBlocks.contains(bl))convertedBlocksForRecipes.add(bl);
             }
         }
         partial.blocks.addAll(convertedBlocksForRecipes);
