@@ -1,5 +1,5 @@
 package multiblock.configuration.underhaul.fissionsfr;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -21,8 +21,8 @@ public class Fuel{
     public float power;
     public float heat;
     public int time;
-    public BufferedImage texture;
-    public BufferedImage displayTexture;
+    public PlannerImage texture;
+    public PlannerImage displayTexture;
     public Fuel(String name, float power, float heat, int time){
         this.name = name;
         this.power = power;
@@ -55,7 +55,7 @@ public class Fuel{
         }
         return config;
     }
-    public void setTexture(BufferedImage image){
+    public void setTexture(PlannerImage image){
         texture = image;
         displayTexture = TextureManager.convert(image);
     }

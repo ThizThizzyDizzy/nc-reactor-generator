@@ -1,5 +1,5 @@
 package planner.menu.component.generator;
-import java.awt.Color;
+import planner.core.Color;
 import multiblock.Block;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
@@ -17,8 +17,7 @@ public class MenuComponentToggleBlock extends MenuComponent{
     }
     @Override
     public void render(){
-        Color col = Core.theme.getEditorListBorderColor();
-        if(isMouseOver)col = col.brighter();
+        Color col = isMouseOver?Core.theme.getBrighterEditorListBorderColor():Core.theme.getEditorListBorderColor();
         Core.applyColor(col);
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(Core.theme.getTextColor());

@@ -32,8 +32,8 @@ import generator.OverhaulTurbineStandardGeneratorSettings;
 import generator.Priority;
 import generator.StandardGenerator;
 import generator.StandardGeneratorSettings;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -2245,7 +2245,7 @@ public class Bot extends ListenerAdapter{
     private static EmbedBuilder createEmbed(String title){
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(title);
-        builder.setColor(new Color(255, 200, 0));
+        builder.setColor(new Color(255, 200, 0).toAWT());
         builder.setFooter("Powered by https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases");
         return builder;
     }
@@ -2434,9 +2434,9 @@ public class Bot extends ListenerAdapter{
     }
     private static int imgWidth, imgHeight;
     private static BufferRenderer pendingImage = null;
-    private static BufferedImage image = null;
+    private static PlannerImage image = null;
     private static RuntimeException error = null;
-    public static BufferedImage makeImage(int width, int height, BufferRenderer r){
+    public static PlannerImage makeImage(int width, int height, BufferRenderer r){
         imgWidth = width;
         imgHeight = height;
         pendingImage = r;

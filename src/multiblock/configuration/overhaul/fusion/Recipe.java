@@ -1,5 +1,5 @@
 package multiblock.configuration.overhaul.fusion;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -11,12 +11,12 @@ public class Recipe{
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();
-    public BufferedImage inputTexture;
-    public BufferedImage inputDisplayTexture;
+    public PlannerImage inputTexture;
+    public PlannerImage inputDisplayTexture;
     public String outputName;
     public String outputDisplayName;
-    public BufferedImage outputTexture;
-    public BufferedImage outputDisplayTexture;
+    public PlannerImage outputTexture;
+    public PlannerImage outputDisplayTexture;
     public float efficiency;
     public int heat;
     public int time;
@@ -29,11 +29,11 @@ public class Recipe{
         this.time = time;
         this.fluxiness = fluxiness;
     }
-    public void setInputTexture(BufferedImage image){
+    public void setInputTexture(PlannerImage image){
         inputTexture = image;
         inputDisplayTexture = TextureManager.convert(image);
     }
-    public void setOutputTexture(BufferedImage image){
+    public void setOutputTexture(PlannerImage image){
         outputTexture = image;
         outputDisplayTexture = TextureManager.convert(image);
     }

@@ -1,5 +1,5 @@
 package planner.api;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class HeadlessAPI{
      * @param ncpf the NCPFFile to save
      * @return the first multiblock's image
      */
-    public static BufferedImage getImage(NCPFFile ncpf){
+    public static PlannerImage getImage(NCPFFile ncpf){
         return FileWriter.PNG.write(ncpf);
     }
     /**
@@ -76,7 +76,7 @@ public class HeadlessAPI{
      * @param file the file to load
      * @return the first multiblock's image
      */
-    public static BufferedImage getImage(File file){
+    public static PlannerImage getImage(File file){
         return getImage(loadFile(file));
     }
     /**
@@ -84,7 +84,7 @@ public class HeadlessAPI{
      * @param input the stream to load
      * @return the first multiblock's image
      */
-    public static BufferedImage getImage(InputStreamProvider input){
+    public static PlannerImage getImage(InputStreamProvider input){
         return getImage(loadFile(input));
     }
     /**
@@ -92,8 +92,8 @@ public class HeadlessAPI{
      * @param ncpf the file to load
      * @return an array containing all multiblocks' images
      */
-    public static BufferedImage[] getImages(NCPFFile ncpf){
-        BufferedImage[] images = new BufferedImage[ncpf.multiblocks.size()];
+    public static PlannerImage[] getImages(NCPFFile ncpf){
+        PlannerImage[] images = new PlannerImage[ncpf.multiblocks.size()];
         for(int i = 0; i<ncpf.multiblocks.size(); i++){
             NCPFFile ncpf1 = new NCPFFile();
             ncpf1.configuration = ncpf.configuration;
@@ -108,7 +108,7 @@ public class HeadlessAPI{
      * @param file the file to load
      * @return an array containing all multiblocks' images
      */
-    public static BufferedImage[] getImages(File file){
+    public static PlannerImage[] getImages(File file){
         return getImages(loadFile(file));
     }
     /**
@@ -116,7 +116,7 @@ public class HeadlessAPI{
      * @param input the stream to load
      * @return an array containing all multiblocks' images
      */
-    public static BufferedImage[] getImages(InputStreamProvider input){
+    public static PlannerImage[] getImages(InputStreamProvider input){
         return getImages(loadFile(input));
     }
     /**

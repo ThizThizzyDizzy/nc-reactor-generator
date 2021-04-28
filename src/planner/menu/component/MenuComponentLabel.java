@@ -1,5 +1,5 @@
 package planner.menu.component;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;

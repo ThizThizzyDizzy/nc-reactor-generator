@@ -50,7 +50,7 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
         if(textInset<0){
             textInset = height/10;
         }
-        Core.applyColor(Core.theme.getListColor().darker());//TODO remove .darker()
+        Core.applyColor(Core.theme.getDarkerListColor());
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(Core.theme.getListColor());
         drawRect(x+textInset/2, y+textInset/2, x+width-textInset/2, y+height-textInset/2, 0);

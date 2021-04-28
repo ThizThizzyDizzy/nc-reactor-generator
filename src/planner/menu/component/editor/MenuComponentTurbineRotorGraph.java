@@ -1,5 +1,5 @@
 package planner.menu.component.editor;
-import java.awt.Color;
+import planner.core.Color;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.opengl.GL11;
 import planner.Core;

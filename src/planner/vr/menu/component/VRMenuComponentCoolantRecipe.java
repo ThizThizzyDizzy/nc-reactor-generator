@@ -1,5 +1,5 @@
 package planner.vr.menu.component;
-import java.awt.Color;
+import planner.core.Color;
 import multiblock.action.SetCoolantRecipeAction;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
@@ -24,10 +24,7 @@ public class VRMenuComponentCoolantRecipe extends VRMenuComponent{
     }
     @Override
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
-        Color col = Core.theme.getEditorListBorderColor();
-        if(!isDeviceOver.isEmpty()){
-            col = col.brighter();
-        }
+        Color col = isDeviceOver.isEmpty()?Core.theme.getEditorListBorderColor():Core.theme.getBrighterEditorListBorderColor();
         Core.applyColor(col);
         VRCore.drawCube(0, 0, 0, width, height, depth, 0);
         Core.applyColor(Core.theme.getTextColor());

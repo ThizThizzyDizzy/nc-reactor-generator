@@ -1,6 +1,6 @@
 package multiblock;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.util.Locale;
 import java.util.function.Function;
 import multiblock.configuration.Configuration;
@@ -18,7 +18,7 @@ public abstract class Block extends MultiblockBit implements Searchable{
     public int x;
     public int y;
     public int z;
-    private BufferedImage grayscaleTexture = null;
+    private PlannerImage grayscaleTexture = null;
     public Block(Configuration configuration, int x, int y, int z){
         this.configuration = configuration;
         this.x = x;
@@ -27,16 +27,16 @@ public abstract class Block extends MultiblockBit implements Searchable{
     }
     public abstract Block newInstance(int x, int y, int z);
     public abstract void copyProperties(Block other);
-    public abstract BufferedImage getBaseTexture();
-    public abstract BufferedImage getTexture();
-    private BufferedImage getGrayscaleTexture(){
+    public abstract PlannerImage getBaseTexture();
+    public abstract PlannerImage getTexture();
+    private PlannerImage getGrayscaleTexture(){
         if(grayscaleTexture!=null)return grayscaleTexture;
-        BufferedImage img = getTexture();
+        PlannerImage img = getTexture();
         if(img==null)return null;
-        BufferedImage grayscale = new BufferedImage(img.getWidth(), img.getHeight(), img.getType());
+        PlannerImage grayscale = new PlannerImage(img.getWidth(), img.getHeight());
         for(int x = 0; x<img.getWidth(); x++){
             for(int y = 0; y<img.getHeight(); y++){
-                Color c = new Color(img.getRGB(x, y), true);
+                Color c = new Color(img.getRGB(x, y));
                 int alpha = c.getAlpha();
                 float[] hsb = new float[3];
                 Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb);

@@ -1,5 +1,5 @@
 package planner;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
@@ -50,7 +50,7 @@ public abstract class Theme{
         themes.add(new Theme("Air"){
             @Override
             public Color getBackgroundColor(){
-                return average(Color.white, themes.get(0).getBackgroundColor());
+                return average(Color.WHITE, themes.get(0).getBackgroundColor());
             }
             @Override
             public Color getTextColor(){
@@ -183,6 +183,52 @@ public abstract class Theme{
     public Color getRGBA(Color color){
         return getRGBA(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
     }
+    //TODO no brighter()/darker()
+    public Color getBrighterEditorListBorderColor(){
+        return Color.fromAWT(getEditorListBorderColor().toAWT().brighter());
+    }
+    public Color getDarkerEditorListBorderColor(){
+        return Color.fromAWT(getEditorListBorderColor().toAWT().darker());
+    }
+    public Color getDarkerTextColor(){
+        return Color.fromAWT(getTextColor().toAWT().darker());
+    }
+    public Color getDarkerDarkButtonColor(){
+        return Color.fromAWT(getDarkButtonColor().toAWT().darker());
+    }
+    public Color getBrighterDarkButtonColor(){
+        return Color.fromAWT(getDarkButtonColor().toAWT().brighter());
+    }
+    public Color getDarkerButtonColor(){
+        return Color.fromAWT(getButtonColor().toAWT().darker());
+    }
+    public Color getBrighterButtonColor(){
+        return Color.fromAWT(getButtonColor().toAWT().brighter());
+    }
+    public Color getDarkerDarkerDarkButtonColor(){
+        return Color.fromAWT(getDarkButtonColor().toAWT().darker().darker());
+    }
+    public Color getDarkerDarkerButtonColor(){
+        return Color.fromAWT(getButtonColor().toAWT().darker().darker());
+    }
+    public Color getBrighterDarkerDarkerDarkButtonColor(){
+        return Color.fromAWT(getDarkButtonColor().toAWT().darker().darker().brighter());
+    }
+    public Color getBrighterBrighterDarkButtonColor(){
+        return Color.fromAWT(getDarkButtonColor().toAWT().brighter().brighter());
+    }
+    public Color getBrighterDarkerDarkerButtonColor(){
+        return Color.fromAWT(getButtonColor().toAWT().darker().darker().brighter());
+    }
+    public Color getBrighterBrighterButtonColor(){
+        return Color.fromAWT(getButtonColor().toAWT().brighter().brighter());
+    }
+    public Color getBrighterDarkerButtonColor(){
+        return Color.fromAWT(getButtonColor().toAWT().darker().brighter());
+    }
+    public Color getDarkerListColor(){
+        return Color.fromAWT(getListColor().toAWT().darker());
+    }
     private static class SolidColorTheme extends Theme{
         private final Color background;
         private final Color color;
@@ -196,7 +242,7 @@ public abstract class Theme{
             this(name, background, color, .625f, 1);
         }
         public SolidColorTheme(String name, Color background, Color color, float rgbTint, float rgbSat){
-            this(name, background, color, rgbTint, rgbSat, average(color, Color.white));
+            this(name, background, color, rgbTint, rgbSat, average(color, Color.WHITE));
         }
         public SolidColorTheme(String name, Color background, Color color, float rgbTint, float rgbSat, Color white){
             super(name);
@@ -613,7 +659,7 @@ public abstract class Theme{
             return rand();
         }
         private Color rand(){
-            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Color.gray;
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Color.GRAY;
             Random rand = new Random();
             return new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
         }
@@ -629,5 +675,4 @@ public abstract class Theme{
     public static Color average(Color c1, Color c2){
         return new Color((c1.getRed()+c2.getRed())/2, (c1.getGreen()+c2.getGreen())/2, (c1.getBlue()+c2.getBlue())/2, (c1.getAlpha()+c2.getAlpha())/2);
     }
-    
 }

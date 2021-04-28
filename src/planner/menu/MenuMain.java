@@ -1,5 +1,5 @@
 package planner.menu;
-import java.awt.Color;
+import planner.core.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

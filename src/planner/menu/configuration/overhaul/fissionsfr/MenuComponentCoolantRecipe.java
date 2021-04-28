@@ -49,9 +49,9 @@ public class MenuComponentCoolantRecipe extends MenuComponent{
     }.setTooltip("Delete coolant recipe"));
     public MenuComponentCoolantRecipe(CoolantRecipe coolantRecipe){
         super(0, 0, 0, 100);
-        color = Core.theme.getButtonColor();
-        selectedColor = Core.theme.getSelectedMultiblockColor();
-        foregroundColor = Core.theme.getTextColor();
+        color = Core.theme.getButtonColor().toAWT();
+        selectedColor = Core.theme.getSelectedMultiblockColor().toAWT();
+        foregroundColor = Core.theme.getTextColor().toAWT();
         this.coolantRecipe = coolantRecipe;
     }
     @Override

@@ -49,9 +49,9 @@ public class MenuComponentFuel extends MenuComponent{
     }.setTooltip("Delete fuel"));
     public MenuComponentFuel(Fuel fuel){
         super(0, 0, 0, 100);
-        color = Core.theme.getButtonColor();
-        selectedColor = Core.theme.getSelectedMultiblockColor();
-        foregroundColor = Core.theme.getTextColor();
+        color = Core.theme.getButtonColor().toAWT();
+        selectedColor = Core.theme.getSelectedMultiblockColor().toAWT();
+        foregroundColor = Core.theme.getTextColor().toAWT();
         this.fuel = fuel;
     }
     @Override

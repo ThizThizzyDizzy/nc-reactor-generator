@@ -1,5 +1,5 @@
 package multiblock.configuration.overhaul.fissionmsr;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -49,13 +49,13 @@ public class BlockRecipe{
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();
-    public BufferedImage inputTexture;
-    public BufferedImage inputDisplayTexture;
+    public PlannerImage inputTexture;
+    public PlannerImage inputDisplayTexture;
     public int inputRate;
     public String outputName;
     public String outputDisplayName;
-    public BufferedImage outputTexture;
-    public BufferedImage outputDisplayTexture;
+    public PlannerImage outputTexture;
+    public PlannerImage outputDisplayTexture;
     public int outputRate;
     public float fuelVesselEfficiency;
     public int fuelVesselHeat;
@@ -158,11 +158,11 @@ public class BlockRecipe{
         }
         return config;
     }
-    public void setInputTexture(BufferedImage image){
+    public void setInputTexture(PlannerImage image){
         inputTexture = image;
         inputDisplayTexture = TextureManager.convert(image);
     }
-    public void setOutputTexture(BufferedImage image){
+    public void setOutputTexture(PlannerImage image){
         outputTexture = image;
         outputDisplayTexture = TextureManager.convert(image);
     }

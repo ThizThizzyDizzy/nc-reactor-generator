@@ -1,6 +1,6 @@
 package multiblock.overhaul.fusion;
 import generator.Priority;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -312,9 +312,9 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                         order.add(str);
                     }
                     if(!c.isCreated()){
-                        colors.put(str, Core.theme.getRGBA(Color.white));
+                        colors.put(str, Core.theme.getRGBA(Color.WHITE));
                     }else if(!c.isConnectedToWall){
-                        colors.put(str, Core.theme.getRGBA(Color.pink));
+                        colors.put(str, Core.theme.getRGBA(Color.PINK));
                     }else if(c.netHeat>0)colors.put(str, Core.theme.getRed());
                     else if(c.coolingPenaltyMult!=1)colors.put(str, Core.theme.getBlue());
                 }

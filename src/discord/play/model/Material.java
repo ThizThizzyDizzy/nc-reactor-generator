@@ -1,5 +1,5 @@
 package discord.play.model;
-import java.awt.Color;
+import planner.core.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

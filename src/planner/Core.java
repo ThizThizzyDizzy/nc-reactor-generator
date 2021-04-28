@@ -1,8 +1,7 @@
 package planner;
 import discord.Bot;
-import java.awt.Color;
-import java.awt.Desktop;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -112,7 +111,7 @@ public class Core extends Renderer2D{
         if(VR.VR_IsRuntimeInstalled()&&VR.VR_IsHmdPresent())vr = true;
         System.out.println("Initializing GameHelper");
         helper = new GameHelper();
-        helper.setBackground(theme.getBackgroundColor());
+        helper.setBackground(theme.getBackgroundColor().toAWT());
         helper.setDisplaySize(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1));
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
@@ -451,13 +450,13 @@ public class Core extends Renderer2D{
             delCircle = false;
         }
         if(sourceCircle==-1){
-            BufferedImage image = Core.makeImage(circleSize, circleSize, (buff) -> {
-                Core.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d), Color.white);
+            PlannerImage image = Core.makeImage(circleSize, circleSize, (buff) -> {
+                Core.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d), Color.WHITE);
             });
-            sourceCircle = ImageStash.instance.allocateAndSetupTexture(image);
+            sourceCircle = ImageStash.instance.allocateAndSetupTexture(image.toAWT());
         }
         if(outlineSquare==-1){
-            BufferedImage image = Core.makeImage(32, 32, (buff) -> {
+            PlannerImage image = Core.makeImage(32, 32, (buff) -> {
                 Core.applyWhite();
                 double inset = buff.width/32d;
                 drawRect(inset, inset, buff.width-inset, inset+buff.width/16, 0);
@@ -465,7 +464,7 @@ public class Core extends Renderer2D{
                 drawRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16, 0);
                 drawRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16, 0);
             });
-            outlineSquare = ImageStash.instance.allocateAndSetupTexture(image);
+            outlineSquare = ImageStash.instance.allocateAndSetupTexture(image.toAWT());
         }
         applyWhite();
         if(gui.menu instanceof MenuMain){
@@ -547,19 +546,19 @@ public class Core extends Renderer2D{
         float valDiff = val2-val1;
         return percent*valDiff+val1;
     }
-    private static final HashMap<BufferedImage, Integer> imgs = new HashMap<>();
-    private static final HashMap<BufferedImage, Boolean> alphas = new HashMap<>();
-    public static int getTexture(BufferedImage image){
+    private static final HashMap<PlannerImage, Integer> imgs = new HashMap<>();
+    private static final HashMap<PlannerImage, Boolean> alphas = new HashMap<>();
+    public static int getTexture(PlannerImage image){
         if(image==null)return -1;
         if(!imgs.containsKey(image)){
-            imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image));
+            imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image.toAWT()));
         }
         return imgs.get(image);
     }
     public static void setTheme(Theme t){
         t.onSet();
         theme = t;
-        helper.setBackground(theme.getBackgroundColor());
+        helper.setBackground(theme.getBackgroundColor().toAWT());
     }
     public static void applyWhite(){
         applyColor(theme.getWhite());
@@ -674,7 +673,7 @@ public class Core extends Renderer2D{
         }
         GL11.glEnd();
     }
-    public static BufferedImage makeImage(int width, int height, BufferRenderer r){
+    public static PlannerImage makeImage(int width, int height, BufferRenderer r){
         boolean cull = GL11.glIsEnabled(GL11.GL_CULL_FACE);
         boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
         if(cull)GL11.glDisable(GL11.GL_CULL_FACE);
@@ -692,7 +691,7 @@ public class Core extends Renderer2D{
         byte[] imgData = new byte[width*height*4];
         bufferer.rewind();
         bufferer.get(imgData);
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        PlannerImage img = new PlannerImage(width, height);
         for(int i=0;i<imgRGBData.length;i++){
             imgRGBData[i]=(f(imgData[i*4])<<16)+(f(imgData[i*4+1])<<8)+(f(imgData[i*4+2]))+(f(imgData[i*4+3])<<24);//DO NOT Use RED, GREEN, or BLUE channel (here BLUE) for alpha data
         }
@@ -758,13 +757,13 @@ public class Core extends Renderer2D{
         }
         return false;
     }
-    public static boolean hasAlpha(BufferedImage image){
+    public static boolean hasAlpha(PlannerImage image){
         if(image==null)return false;
         if(!alphas.containsKey(image)){
             boolean hasAlpha = false;
             FOR:for(int x = 0; x<image.getWidth(); x++){
                 for(int y = 0; y<image.getHeight(); y++){
-                    if(new Color(image.getRGB(x, y), true).getAlpha()!=255){
+                    if(new Color(image.getRGB(x, y)).getAlpha()!=255){
                         hasAlpha = true;
                         break FOR;
                     }
@@ -804,9 +803,9 @@ public class Core extends Renderer2D{
         return num;
     }
     public static void openWebpage(String link){
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+        if (Main.hasAWT&&java.awt.Desktop.isDesktopSupported() && java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.BROWSE)) {
             try{
-                Desktop.getDesktop().browse(new URI(link));
+                java.awt.Desktop.getDesktop().browse(new URI(link));
             }catch(URISyntaxException|IOException ex){
                 if(Main.hasAWT){
                     javax.swing.JOptionPane.showMessageDialog(null, link, "Failed to open webpage", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -1042,7 +1041,7 @@ public class Core extends Renderer2D{
         }
         GL11.glEnd();
     }
-    public static boolean areImagesEqual(BufferedImage img1, BufferedImage img2) {
+    public static boolean areImagesEqual(PlannerImage img1, PlannerImage img2) {
         if(img1==img2)return true;
         if(img1==null||img2==null)return false;
         if(img1.getWidth()!=img2.getWidth())return false;

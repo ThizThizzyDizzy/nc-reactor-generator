@@ -1,5 +1,5 @@
 package multiblock.configuration.overhaul.fissionsfr;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -20,12 +20,12 @@ public class CoolantRecipe{
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();
-    public BufferedImage inputTexture;
-    public BufferedImage inputDisplayTexture;
+    public PlannerImage inputTexture;
+    public PlannerImage inputDisplayTexture;
     public String outputName;
     public String outputDisplayName;
-    public BufferedImage outputTexture;
-    public BufferedImage outputDisplayTexture;
+    public PlannerImage outputTexture;
+    public PlannerImage outputDisplayTexture;
     public int heat;
     public float outputRatio;
     public CoolantRecipe(String inputName, String outputName, int heat, float outputRatio){
@@ -77,11 +77,11 @@ public class CoolantRecipe{
         config.set("outputRatio", outputRatio);
         return config;
     }
-    public void setInputTexture(BufferedImage image){
+    public void setInputTexture(PlannerImage image){
         inputTexture = image;
         inputDisplayTexture = TextureManager.convert(image);
     }
-    public void setOutputTexture(BufferedImage image){
+    public void setOutputTexture(PlannerImage image){
         outputTexture = image;
         outputDisplayTexture = TextureManager.convert(image);
     }

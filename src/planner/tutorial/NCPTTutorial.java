@@ -1,5 +1,5 @@
 package planner.tutorial;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Random;
 import multiblock.action.SetSelectionAction;
@@ -162,11 +162,11 @@ public class NCPTTutorial extends Tutorial{
                             editor.render(0);
                             GL11.glPopMatrix();
                             editor.onGUIOpened();
-                            BufferedImage image = Core.makeImage(Core.helper.displayWidth(), Core.helper.displayHeight(), (buff) -> {
+                            PlannerImage image = Core.makeImage(Core.helper.displayWidth(), Core.helper.displayHeight(), (buff) -> {
                                 GL11.glColor4d(1, 1, 1, 1);
                                 editor.render(0);
                             });
-                            editorImage = ImageStash.instance.allocateAndSetupTexture(image);
+                            editorImage = ImageStash.instance.allocateAndSetupTexture(image.toAWT());
                         }
                         break;
                     case "editor/tool/pencil":
@@ -309,7 +309,7 @@ public class NCPTTutorial extends Tutorial{
                         if(draw){
                             Core.applyColor(Core.theme.getButtonColor());
                             drawRect(.9, offsets[column], .95, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor().brighter(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
                             drawRect(.9, offsets[column], .95, offsets[column]+scale*2, 0);
                             Core.applyColor(Core.theme.getTextColor());
                             {
@@ -356,7 +356,7 @@ public class NCPTTutorial extends Tutorial{
                             drawRect(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, 0);
                             Core.applyColor(Core.theme.getButtonColor());
                             drawRect(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor().brighter(), resonatingBrightness);//TODO .brighter()
+                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
                             drawRect(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, 0);
                             Core.applyColor(Core.theme.getTextColor());
                             drawCenteredText(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, "Multiblocks");
@@ -375,7 +375,7 @@ public class NCPTTutorial extends Tutorial{
                             drawRect(colLeft, offsets[column]+scale*2, colRight, offsets[column]+scale*6, 0);
                             Core.applyColor(Core.theme.getDarkButtonColor());
                             drawRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5, 0);
-                            Core.applyColor(Core.theme.getDarkButtonColor().brighter(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getBrighterDarkButtonColor(), resonatingBrightness);
                             drawRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5, 0);
                             Core.applyColor(Core.theme.getTextColor());
                             //<editor-fold defaultstate="collapsed" desc="Pencil icon">
@@ -446,7 +446,7 @@ public class NCPTTutorial extends Tutorial{
                         if(draw){
                             Core.applyColor(Core.theme.getButtonColor());
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor().brighter(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
                             Core.applyColor(Core.theme.getRed());
                             drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+scale*2, "Delete (Hold Shift)");
@@ -459,7 +459,7 @@ public class NCPTTutorial extends Tutorial{
                         if(draw){
                             Core.applyColor(Core.theme.getButtonColor());
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor().brighter(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
                             Core.applyColor(Core.theme.getTextColor());
                             drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+scale*2, "Resize");
@@ -478,7 +478,7 @@ public class NCPTTutorial extends Tutorial{
                             drawRect(colLeft+s*5, offsets[column]+s*3.5, colLeft+s*6, offsets[column]+s*6.5, 0);//right
                             drawRect(colLeft+s*2, offsets[column]+s*6.5, colLeft+s*5, offsets[column]+s*7.5, 0);//bottom inner
                             drawRect(colLeft, offsets[column]+s*8, colRight, offsets[column]+s*9, 0);//bottom
-                            Core.applyColor(Core.theme.getButtonColor().brighter(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+s, 0);//top
                             drawRect(colLeft, offsets[column]+s*8, colRight, offsets[column]+s*9, 0);//bottom
                             Core.applyColor(Core.theme.getGreen());
@@ -519,7 +519,7 @@ public class NCPTTutorial extends Tutorial{
                         if(draw){
                             Core.applyColor(Core.theme.getButtonColor());
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor().brighter(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
                             drawRect(colLeft+.25, offsets[column], colRight-.25, offsets[column]+scale*2, 0);
                             Core.applyColor(Core.theme.getTextColor());
                             drawCenteredText(colLeft, offsets[column]+scale/2.5, colLeft+.25, offsets[column]+scale*2-scale/2.5, "Done");
@@ -543,7 +543,7 @@ public class NCPTTutorial extends Tutorial{
                             for(int x = 0; x<2; x++){
                                 for(int y = 0; y<2; y++){
                                     double inset = .005;
-                                    Core.applyColor(Core.theme.getListColor().darker());
+                                    Core.applyColor(Core.theme.getDarkerListColor());
                                     drawRect(colLeft+w*x, offsets[column]+scale*2+scale*2*y, c+w*x, offsets[column]+scale*4+scale*2*y, 0);
                                     Core.applyColor(Core.theme.getListColor());
                                     drawRect(colLeft+w*x+inset/2, offsets[column]+scale*2+scale*2*y+inset/2, c+w*x-inset/2, offsets[column]+scale*4+scale*2*y-inset/2, 0);
@@ -560,7 +560,7 @@ public class NCPTTutorial extends Tutorial{
                         if(draw){
                             Core.applyColor(Core.theme.getButtonColor());
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor().brighter(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
                             drawRect(colLeft+scale*11.2, offsets[column], colRight-scale*2, offsets[column]+scale*2, 0);
                             Core.applyColor(Core.theme.getTextColor());
                             drawCenteredText(colLeft, offsets[column]+.015, colLeft+scale*2.8, offsets[column]+scale*2-.015, "Import");
@@ -620,7 +620,7 @@ public class NCPTTutorial extends Tutorial{
                             for(int x = 0; x<2; x++){
                                 for(int y = 0; y<2; y++){
                                     double inset = .005;
-                                    Core.applyColor(Core.theme.getListColor().darker());
+                                    Core.applyColor(Core.theme.getDarkerListColor());
                                     drawRect(colLeft+w*x, offsets[column]+scale*2+scale*2*y, c+w*x, offsets[column]+scale*4+scale*2*y, 0);
                                     Core.applyColor(Core.theme.getListColor());
                                     drawRect(colLeft+w*x+inset/2, offsets[column]+scale*2+scale*2*y+inset/2, c+w*x-inset/2, offsets[column]+scale*4+scale*2*y-inset/2, 0);

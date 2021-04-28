@@ -1,5 +1,5 @@
 package planner.menu.component;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.function.Supplier;
 import planner.Core;
 import simplelibrary.font.FontManager;
@@ -24,12 +24,23 @@ public class MenuComponentMinimalistButton extends MenuComponentButton{
     }
     @Override
     public void render(){
-        Color col = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
-        if(enabled){
-            if(isPressed)col = col.darker();
-            else if(isMouseOver)col = col.brighter();//TODO .darker() and .brighter()
+        Color col;
+        if(darker){
+             col = Core.theme.getDarkButtonColor();
+            if(enabled){
+                if(isPressed)col = Core.theme.getDarkerDarkButtonColor();
+                else if(isMouseOver)col = Core.theme.getBrighterDarkButtonColor();
+            }else{
+                col = Core.theme.getDarkerDarkButtonColor();
+            }
         }else{
-            col = col.darker();
+            col = Core.theme.getButtonColor();
+            if(enabled){
+                if(isPressed)col = Core.theme.getDarkerButtonColor();
+                else if(isMouseOver)col = Core.theme.getBrighterButtonColor();
+            }else{
+                col = Core.theme.getDarkerButtonColor();
+            }
         }
         Core.applyColor(col);
         drawRect(x, y, x+width, y+height, 0);

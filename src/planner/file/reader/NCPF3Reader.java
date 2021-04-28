@@ -1,5 +1,5 @@
 package planner.file.reader;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -1101,9 +1101,9 @@ public class NCPF3Reader implements FormatReader{
         }
         return rule;
     }
-    private BufferedImage loadNCPFTexture(ConfigNumberList texture){
+    private PlannerImage loadNCPFTexture(ConfigNumberList texture){
         int size = (int) texture.get(0);
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        PlannerImage image = new PlannerImage(size, size);
         int index = 1;
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){

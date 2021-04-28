@@ -1,5 +1,5 @@
 package multiblock.configuration.overhaul.turbine;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.Configuration;
@@ -115,8 +115,8 @@ public class Block extends RuleContainer implements Searchable{
     public boolean casingEdge = false;
     public boolean inlet = false;
     public boolean outlet = false;
-    public BufferedImage texture;
-    public BufferedImage displayTexture;
+    public PlannerImage texture;
+    public PlannerImage displayTexture;
     public Block(String name){
         this.name = name;
     }
@@ -170,7 +170,7 @@ public class Block extends RuleContainer implements Searchable{
         }
         return config;
     }
-    public void setTexture(BufferedImage image){
+    public void setTexture(PlannerImage image){
         texture = image;
         displayTexture = TextureManager.convert(image);
     }

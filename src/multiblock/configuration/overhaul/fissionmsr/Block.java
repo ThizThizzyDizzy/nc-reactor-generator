@@ -1,6 +1,6 @@
 package multiblock.configuration.overhaul.fissionmsr;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
@@ -175,19 +175,19 @@ public class Block extends RuleContainer implements Searchable{
     public boolean shieldHasBaseStats;
     public int shieldHeat;
     public float shieldEfficiency;
-    public BufferedImage shieldClosedTexture;
-    public BufferedImage shieldClosedDisplayTexture;
+    public PlannerImage shieldClosedTexture;
+    public PlannerImage shieldClosedDisplayTexture;
     public boolean heater;
     public boolean heaterHasBaseStats;
     public int heaterCooling;
     public boolean source;
     public float sourceEfficiency;
-    public BufferedImage texture;
-    public BufferedImage displayTexture;
+    public PlannerImage texture;
+    public PlannerImage displayTexture;
     public Block port;
     public String portOutputDisplayName;
-    public BufferedImage portOutputTexture;
-    public BufferedImage portOutputDisplayTexture;
+    public PlannerImage portOutputTexture;
+    public PlannerImage portOutputDisplayTexture;
     public Block parent;//if this is a port
     public ArrayList<BlockRecipe> allRecipes = new ArrayList<>();
     /**
@@ -372,46 +372,46 @@ public class Block extends RuleContainer implements Searchable{
         }
         return config;
     }
-    public void setTexture(BufferedImage image){
+    public void setTexture(PlannerImage image){
         texture = image;
         displayTexture = TextureManager.convert(image);
     }
-    public void setInternalTexture(BufferedImage other){
+    public void setInternalTexture(PlannerImage other){
         int left = Math.max(0,texture.getWidth()*5/16-1);
         int right = Math.min(texture.getWidth()*11/16, texture.getWidth()-1);
         int up = Math.max(0,texture.getHeight()*5/16-1);
         int down = Math.min(texture.getHeight()*11/16, texture.getHeight()-1);
-        BufferedImage displayImg = new BufferedImage(texture.getWidth(), texture.getHeight(), texture.getType());
+        PlannerImage displayImg = new PlannerImage(texture.getWidth(), texture.getHeight());
         for(int x = 0; x<texture.getWidth(); x++){
             for(int y = 0; y<texture.getHeight(); y++){
                 if(x>left&&y>up&&x<right&&y<down){
-                    displayImg.setRGB(x, y, TextureManager.convert(new Color(other.getRGB(x, y), true)).getRGB());
+                    displayImg.setColor(x, y, TextureManager.convert(new Color(other.getRGB(x, y))));
                 }else{
-                    displayImg.setRGB(x, y, TextureManager.convert(new Color(texture.getRGB(x, y), true)).getRGB());
+                    displayImg.setColor(x, y, TextureManager.convert(new Color(texture.getRGB(x, y))));
                 }
             }
         }
         displayTexture = displayImg;
     }
-    public void setPortOutputTexture(BufferedImage image){
+    public void setPortOutputTexture(PlannerImage image){
         portOutputTexture = image;
         portOutputDisplayTexture = TextureManager.convert(image);
     }
-    public void setShieldClosedTexture(BufferedImage image){
+    public void setShieldClosedTexture(PlannerImage image){
         shieldClosedTexture = image;
         shieldClosedDisplayTexture = TextureManager.convert(image);
     }
-    public void setInternalShieldClosedTexture(BufferedImage other){
+    public void setInternalShieldClosedTexture(PlannerImage other){
         int left = Math.max(0,shieldClosedTexture.getWidth()*5/16-1);
         int right = Math.min(shieldClosedTexture.getWidth()*11/16, shieldClosedTexture.getWidth()-1);
         int up = Math.max(0,shieldClosedTexture.getHeight()*5/16-1);
         int down = Math.min(shieldClosedTexture.getHeight()*11/16, shieldClosedTexture.getHeight()-1);
-        BufferedImage displayImg = new BufferedImage(shieldClosedTexture.getWidth(), shieldClosedTexture.getHeight(), shieldClosedTexture.getType());
+        PlannerImage displayImg = new PlannerImage(shieldClosedTexture.getWidth(), shieldClosedTexture.getHeight());
         for(int x = 0; x<shieldClosedTexture.getWidth(); x++){
             for(int y = 0; y<shieldClosedTexture.getHeight(); y++){
                 if(x>left&&y>up&&x<right&&y<down){
-                    Color col = new Color(other.getRGB(x, y), true);
-                    displayImg.setRGB(x, y, TextureManager.convert(col).getRGB());
+                    Color col = new Color(other.getRGB(x, y));
+                    displayImg.setColor(x, y, TextureManager.convert(col));
                 }else{
                     displayImg.setRGB(x, y, shieldClosedTexture.getRGB(x, y));
                 }

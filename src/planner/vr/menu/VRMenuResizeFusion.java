@@ -1,6 +1,5 @@
 package planner.vr.menu;
-import java.awt.Color;
-import java.awt.event.ActionListener;
+import planner.core.Color;
 import multiblock.BoundingBox;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.opengl.GL11;
@@ -19,39 +18,39 @@ public class VRMenuResizeFusion extends VRMenu{
     public VRMenuResizeFusion(VRGUI gui, VRMenu parent, OverhaulFusionReactor multiblock){
         super(gui, parent);
         done.setTooltip("Finish resizing and return to the editor screen");
-        done.addActionListener((e) -> {
+        done.addActionListener(() -> {
             gui.open(new VRMenuEdit(gui, multiblock).alreadyOpen());
         });
         this.multiblock = multiblock;
-        add(new VRMenuComponentPlusButton(-.25, 1.25, -.875, .125, .125, .125, true, (e) -> {
+        add(new VRMenuComponentPlusButton(-.25, 1.25, -.875, .125, .125, .125, true, () -> {
             multiblock.increaseInnerRadius();
             onGUIOpened();
         }).setTooltip("Increase Inner Radius"));
-        add(new VRMenuComponentPlusButton(-.125, 1.25, -.875, .125, .125, .125, true, (e) -> {
+        add(new VRMenuComponentPlusButton(-.125, 1.25, -.875, .125, .125, .125, true, () -> {
             multiblock.increaseCoreSize();
             onGUIOpened();
         }).setTooltip("Increase Core Size"));
-        add(new VRMenuComponentPlusButton(0, 1.25, -.875, .125, .125, .125, true, (e) -> {
+        add(new VRMenuComponentPlusButton(0, 1.25, -.875, .125, .125, .125, true, () -> {
             multiblock.increaseToroidWidth();
             onGUIOpened();
         }).setTooltip("Increase Toroid Width"));
-        add(new VRMenuComponentPlusButton(.125, 1.25, -.875, .125, .125, .125, true, (e) -> {
+        add(new VRMenuComponentPlusButton(.125, 1.25, -.875, .125, .125, .125, true, () -> {
             multiblock.increaseLiningThickness();
             onGUIOpened();
         }).setTooltip("Increase Lining Thickness"));
-        add(new VRMenuComponentMinusButton(-.25, 1.125, -.875, .125, .125, .125, true, (e) -> {
+        add(new VRMenuComponentMinusButton(-.25, 1.125, -.875, .125, .125, .125, true, () -> {
             multiblock.decreaseInnerRadius();
             onGUIOpened();
         }).setTooltip("Decrease Inner Radius"));
-        add(new VRMenuComponentMinusButton(-.125, 1.125, -.875, .125, .125, .125, true, (e) -> {
+        add(new VRMenuComponentMinusButton(-.125, 1.125, -.875, .125, .125, .125, true, () -> {
             multiblock.decreaseCoreSize();
             onGUIOpened();
         }).setTooltip("Decrase Core Size"));
-        add(new VRMenuComponentMinusButton(0, 1.125, -.875, .125, .125, .125, true, (e) -> {
+        add(new VRMenuComponentMinusButton(0, 1.125, -.875, .125, .125, .125, true, () -> {
             multiblock.decreaseToroidWidth();
             onGUIOpened();
         }).setTooltip("Decrease Toroid Width"));
-        add(new VRMenuComponentMinusButton(.125, 1.125, -.875, .125, .125, .125, true, (e) -> {
+        add(new VRMenuComponentMinusButton(.125, 1.125, -.875, .125, .125, .125, true, () -> {
             multiblock.decreaseLiningThickness();
             onGUIOpened();
         }).setTooltip("Decrease Lining Thickness"));
@@ -71,7 +70,7 @@ public class VRMenuResizeFusion extends VRMenu{
         super.render(tdpb);
     }
     private static class VRMenuComponentPlusButton extends VRMenuComponentButton{
-        public VRMenuComponentPlusButton(double x, double y, double z, double width, double height, double depth, boolean enabled, ActionListener al){
+        public VRMenuComponentPlusButton(double x, double y, double z, double width, double height, double depth, boolean enabled, Runnable al){
             super(x, y, z, width, height, depth, 0, 0, 0, "", enabled, false);
             addActionListener(al);
         }
@@ -79,10 +78,10 @@ public class VRMenuResizeFusion extends VRMenu{
         public void renderComponent(TrackedDevicePose.Buffer tdpb){
             Color col = Core.theme.getButtonColor();
             if(enabled){
-                if(isPressed)col = col.darker();
-                else if(!isDeviceOver.isEmpty())col = col.brighter();
+                if(isPressed)col = Core.theme.getDarkerButtonColor();
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getBrighterButtonColor();
             }else{
-                col = col.darker();
+                col = Core.theme.getDarkerButtonColor();
             }
             Core.applyColor(col);
             VRCore.drawCubeOutline(0, 0, 0, width, height, depth, .01);//1cm
@@ -96,7 +95,7 @@ public class VRMenuResizeFusion extends VRMenu{
         }
     }
     private static class VRMenuComponentMinusButton extends VRMenuComponentButton{
-        public VRMenuComponentMinusButton(double x, double y, double z, double width, double height, double depth, boolean enabled, ActionListener al){
+        public VRMenuComponentMinusButton(double x, double y, double z, double width, double height, double depth, boolean enabled, Runnable al){
             super(x, y, z, width, height, depth, 0, 0, 0, "", enabled, false);
             addActionListener(al);
         }
@@ -104,10 +103,10 @@ public class VRMenuResizeFusion extends VRMenu{
         public void renderComponent(TrackedDevicePose.Buffer tdpb){
             Color col = Core.theme.getButtonColor();
             if(enabled){
-                if(isPressed)col = col.darker();
-                else if(!isDeviceOver.isEmpty())col = col.brighter();
+                if(isPressed)col = Core.theme.getDarkerButtonColor();
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getBrighterButtonColor();
             }else{
-                col = col.darker();
+                col = Core.theme.getDarkerButtonColor();
             }
             Core.applyColor(col);
             VRCore.drawCubeOutline(0, 0, 0, width, height, depth, .01);//1cm

@@ -3,11 +3,11 @@ import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
 import discord.play.smivilization.HutThingColorable;
 import discord.play.smivilization.Wall;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.UUID;
 public class Couch extends HutThingColorable{
     public Couch(UUID uuid, Hut hut){
-        super(uuid, hut, "Couch", "couch", 16, Color.red);
+        super(uuid, hut, "Couch", "couch", 16, Color.RED);
         mirrorIf = -1;
     }
     @Override

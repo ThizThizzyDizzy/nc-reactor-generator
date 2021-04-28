@@ -1,5 +1,5 @@
 package planner.vr.menu;
-import java.awt.Color;
+import planner.core.Color;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,10 +94,10 @@ public class VRMenuEdit extends VRMenu implements Editor{
         openTargetZ = grid.z;
         done.setTooltip("Stop editing this multiblock and return to the main menu");
         resize.setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)");
-        done.addActionListener((e) -> {
+        done.addActionListener(() -> {
             closing = true;
         });
-        resize.addActionListener((e) -> {
+        resize.addActionListener(() -> {
             multiblock.openVRResizeMenu(gui, this);
         });
     }

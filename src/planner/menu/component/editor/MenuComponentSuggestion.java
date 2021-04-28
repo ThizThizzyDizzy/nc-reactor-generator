@@ -1,5 +1,5 @@
 package planner.menu.component.editor;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +25,7 @@ public class MenuComponentSuggestion extends MenuComponent implements Searchable
         drawRect(x, y, x+width, y+height, 0);
         int i = 0;
         Core.applyWhite();
-        for(BufferedImage image : suggestion.getImages()){
+        for(PlannerImage image : suggestion.getImages()){
             drawRect(x+height*i, y, x+height*(i+1), y+height, Core.getTexture(image));
             i++;
         }

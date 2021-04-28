@@ -1,5 +1,5 @@
 package planner.menu;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -165,8 +165,7 @@ public class MenuEdit extends Menu implements Editor{
         @Override
         public void render(){
             if(!isDown){
-                Color col = Core.theme.getButtonColor();
-                if(isMouseOver)col = col.brighter();//TODO .brighter()
+                Color col = isMouseOver?Core.theme.getBrighterButtonColor():Core.theme.getButtonColor();
                 Core.applyColor(col);
                 drawRect(x, y, x+width, y+height, 0);
                 Core.applyColor(Core.theme.getTextColor());

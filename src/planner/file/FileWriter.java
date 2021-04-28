@@ -1,6 +1,6 @@
 package planner.file;
 import discord.Bot;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -322,7 +322,7 @@ public class FileWriter{
                 return FileFormat.PNG;
             }
             @Override
-            public BufferedImage write(NCPFFile ncpf){
+            public PlannerImage write(NCPFFile ncpf){
                 if(!ncpf.multiblocks.isEmpty()){
                     if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by PNG!");
                     final Multiblock multi = ncpf.multiblocks.get(0);

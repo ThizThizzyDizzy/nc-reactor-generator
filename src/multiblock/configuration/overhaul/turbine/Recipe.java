@@ -1,5 +1,5 @@
 package multiblock.configuration.overhaul.turbine;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -20,12 +20,12 @@ public class Recipe{
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();
-    public BufferedImage inputTexture;
-    public BufferedImage inputDisplayTexture;
+    public PlannerImage inputTexture;
+    public PlannerImage inputDisplayTexture;
     public String outputName;
     public String outputDisplayName;
-    public BufferedImage outputTexture;
-    public BufferedImage outputDisplayTexture;
+    public PlannerImage outputTexture;
+    public PlannerImage outputDisplayTexture;
     public double power;
     public double coefficient;
     public Recipe(String inputName, String outputName, double power, double coefficient){
@@ -77,11 +77,11 @@ public class Recipe{
         config.set("coefficient", coefficient);
         return config;
     }
-    public void setInputTexture(BufferedImage image){
+    public void setInputTexture(PlannerImage image){
         inputTexture = image;
         inputDisplayTexture = TextureManager.convert(image);
     }
-    public void setOutputTexture(BufferedImage image){
+    public void setOutputTexture(PlannerImage image){
         outputTexture = image;
         outputDisplayTexture = TextureManager.convert(image);
     }

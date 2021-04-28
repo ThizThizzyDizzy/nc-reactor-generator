@@ -24,14 +24,14 @@ public class VRMenuMain extends VRMenu{
             Multiblock m = Core.multiblockTypes.get(i);
             VRMenuComponentButton button = new VRMenuComponentButton(-.375/2, 1.25-.1*i, -.75, .375, .075, .05, 0, 0, 0, m.getDefinitionName(), true, false);
             button.setTooltip(m.getDescriptionTooltip());
-            button.addActionListener((e) -> {
+            button.addActionListener(() -> {
                 Multiblock multi = m.newInstance();
                 Core.multiblocks.add(multi);
                 toAdd.add(multi);
             });
             multiblockButtons.add(button);
         }
-        exit.addActionListener((e) -> {
+        exit.addActionListener(() -> {
             Core.gui.open(new MenuMain(Core.gui));
         });
     }

@@ -1,6 +1,6 @@
 package multiblock.configuration;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -9,24 +9,24 @@ import java.util.jar.JarFile;
 import javax.imageio.ImageIO;
 import planner.Main;
 public class TextureManager{
-    public static BufferedImage getImage(String texture){
+    public static PlannerImage getImage(String texture){
         try{
             if(new File("nbproject").exists()){
-                return ImageIO.read(new File("src/textures/"+texture+".png"));
+                return PlannerImage.fromAWT(ImageIO.read(new File("src/textures/"+texture+".png")));
             }else{
                 JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
                 Enumeration enumEntries = jar.entries();
                 while(enumEntries.hasMoreElements()){
                     JarEntry file = (JarEntry)enumEntries.nextElement();
                     if(file.getName().equals("textures/"+texture+".png")){
-                        return ImageIO.read(jar.getInputStream(file));
+                        return PlannerImage.fromAWT(ImageIO.read(jar.getInputStream(file)));
                     }
                 }
             }
             throw new IllegalArgumentException("Cannot find file: "+texture);
         }catch(IOException ex){
             System.err.println("Couldn't read file: "+texture);
-            return new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+            return new PlannerImage(1, 1);
         }
     }
     public static boolean SEPARATE_BRIGHT_TEXTURES = true;
@@ -45,11 +45,11 @@ public class TextureManager{
     public static Color convert(Color color){
         return new Color(convert(color.getRed()), convert(color.getGreen()), convert(color.getBlue()), color.getAlpha());
     }
-    public static BufferedImage convert(BufferedImage image){
-        BufferedImage converted = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+    public static PlannerImage convert(PlannerImage image){
+        PlannerImage converted = new PlannerImage(image.getWidth(), image.getHeight());
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){
-                Color col = new Color(image.getRGB(x, y), true);
+                Color col = new Color(image.getRGB(x, y));
                 converted.setRGB(x, y, convert(col).getRGB());
             }
         }

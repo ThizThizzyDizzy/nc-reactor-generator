@@ -1,5 +1,5 @@
 package planner.menu.component.editor;
-import java.awt.Color;
+import planner.core.Color;
 import planner.Core;
 import planner.editor.tool.EditorTool;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -11,20 +11,19 @@ public class MenuComponentEditorTool extends MenuComponent{
     }
     @Override
     public void render(){
-        Color col = Core.theme.getEditorListBorderColor();
-        if(isMouseOver)col = col.brighter();
+        Color col = isMouseOver?Core.theme.getBrighterEditorListBorderColor():Core.theme.getEditorListBorderColor();
         Core.applyColor(col);
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(Core.theme.getTextColor());
         drawText();
         double border = height/8;
         if(isSelected){
-            Core.applyColor(Core.theme.getEditorListBorderColor().darker(), .85f);
+            Core.applyColor(Core.theme.getDarkerEditorListBorderColor(), .85f);
             drawRect(x, y, x+border, y+border, 0);
             drawRect(x+width-border, y, x+width, y+border, 0);
             drawRect(x, y+height-border, x+border, y+height, 0);
             drawRect(x+width-border, y+height-border, x+width, y+height, 0);
-            Core.applyColor(Core.theme.getTextColor().darker(), .85f);
+            Core.applyColor(Core.theme.getDarkerTextColor(), .85f);
             drawRect(x+border, y, x+width-border, y+border, 0);
             drawRect(x+border, y+height-border, x+width-border, y+height, 0);
             drawRect(x, y+border, x+border, y+height-border, 0);

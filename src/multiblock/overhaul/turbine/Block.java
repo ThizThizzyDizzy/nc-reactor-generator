@@ -1,5 +1,5 @@
 package multiblock.overhaul.turbine;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
@@ -23,11 +23,11 @@ public class Block extends multiblock.Block{
     @Override
     public void copyProperties(multiblock.Block other){}
     @Override
-    public BufferedImage getBaseTexture(){
+    public PlannerImage getBaseTexture(){
         return template.texture;
     }
     @Override
-    public BufferedImage getTexture(){
+    public PlannerImage getTexture(){
         return template.displayTexture;
     }
     @Override

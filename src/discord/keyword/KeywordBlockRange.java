@@ -1,6 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
-import java.awt.Color;
+import planner.core.Color;
 public class KeywordBlockRange extends Keyword{
     public String block;
     public int min = 0;

@@ -1,7 +1,7 @@
 package discord.keyword;
 import discord.Keyword;
 import generator.Priority;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.ArrayList;
 import multiblock.Multiblock;
 import planner.Core;

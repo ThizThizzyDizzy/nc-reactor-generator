@@ -1,5 +1,5 @@
 package discord.play.smivilization;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -83,7 +83,7 @@ public abstract class HutThing implements Comparable<HutThing>{
     }
     protected void postLoad(Config config){}
     public void render(double x, double y, float scale, float imgScale){
-        Core.applyColor(Color.white);
+        Core.applyColor(Color.WHITE);
         boolean mirror = false;
         float center = this.x+getDimX()/2f;
         if(mirrorIf>0&&center>4.5f)mirror = true;

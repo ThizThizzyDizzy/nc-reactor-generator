@@ -1,11 +1,11 @@
 package multiblock;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import planner.Core;
 public class PartCount implements Comparable<PartCount>{
-    private final BufferedImage image;
+    private final PlannerImage image;
     public final String name;
     public final int count;
-    public PartCount(BufferedImage image, String name, int count){
+    public PartCount(PlannerImage image, String name, int count){
         this.image = image;
         this.name = name;
         this.count = count;

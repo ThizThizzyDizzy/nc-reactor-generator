@@ -1,6 +1,6 @@
 package discord;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public abstract class KeywordCommand extends Command{
             wide = Math.max(wide, (int)FontManager.getLengthForStringWithHeight(w.name+" | "+w.input, textHeight)+1);
         }
         int width = wide;
-        BufferedImage image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
+        PlannerImage image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
             Core.applyColor(Core.theme.getEditorListBorderColor());
             Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
             double x = 5;
@@ -88,7 +88,7 @@ public abstract class KeywordCommand extends Command{
         });
         File debugFile = new File("debug.png");
         try{
-            ImageIO.write(image, "png", debugFile);
+            ImageIO.write(image.toAWT(), "png", debugFile);
         }catch(IOException ex){
             Logger.getLogger(KeywordCommand.class.getName()).log(Level.SEVERE, null, ex);
         }

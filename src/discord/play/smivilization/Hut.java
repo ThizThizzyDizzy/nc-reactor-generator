@@ -5,7 +5,7 @@ import discord.play.model.Model;
 import discord.play.model.Vector3f;
 import discord.play.smivilization.thing.*;
 import discord.play.smivilization.thing.special.*;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -118,7 +118,7 @@ public class Hut{
         CircularStream stream = new CircularStream(1024*1024);//1MB
         CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), name+".png").submit();
         try{
-            ImageIO.write(Bot.makeImage(width, height, renderer), "png", stream);
+            ImageIO.write(Bot.makeImage(width, height, renderer).toAWT(), "png", stream);
             stream.close();
         }catch(Exception ex){
             Bot.printErrorMessage(channel, "Failed to write file", ex);
@@ -559,7 +559,7 @@ public class Hut{
         GL11.glEnd();
     }
     private void setNormals(Color color, float x, float y, float z){
-        if(color==null)color = Color.white;
+        if(color==null)color = Color.WHITE;
         x*=1.25;
         z*=.75;
         float mod = 20;

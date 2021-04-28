@@ -1,6 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
-import java.awt.Color;
+import planner.core.Color;
 public class KeywordCuboid extends Keyword{
     public int x,y,z;
     public KeywordCuboid(){

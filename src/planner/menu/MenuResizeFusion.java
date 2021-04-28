@@ -24,14 +24,14 @@ public class MenuResizeFusion extends Menu{
     private final MenuComponentMinimalistButton decreaseLiningThickness = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "-", true, true).setTooltip("decrease the reactor's Lining Thickness"));
     private boolean refreshNeeded;
     {
-        increaseInnerRadius.setForegroundColor(Core.theme.getGreen());
-        increaseCoreSize.setForegroundColor(Core.theme.getGreen());
-        increaseToroidWidth.setForegroundColor(Core.theme.getGreen());
-        increaseLiningThickness.setForegroundColor(Core.theme.getGreen());
-        decreaseInnerRadius.setForegroundColor(Core.theme.getRed());
-        decreaseCoreSize.setForegroundColor(Core.theme.getRed());
-        decreaseToroidWidth.setForegroundColor(Core.theme.getRed());
-        decreaseLiningThickness.setForegroundColor(Core.theme.getRed());
+        increaseInnerRadius.setForegroundColor(Core.theme.getGreen().toAWT());
+        increaseCoreSize.setForegroundColor(Core.theme.getGreen().toAWT());
+        increaseToroidWidth.setForegroundColor(Core.theme.getGreen().toAWT());
+        increaseLiningThickness.setForegroundColor(Core.theme.getGreen().toAWT());
+        decreaseInnerRadius.setForegroundColor(Core.theme.getRed().toAWT());
+        decreaseCoreSize.setForegroundColor(Core.theme.getRed().toAWT());
+        decreaseToroidWidth.setForegroundColor(Core.theme.getRed().toAWT());
+        decreaseLiningThickness.setForegroundColor(Core.theme.getRed().toAWT());
     }
     private int CELL_SIZE = 16;
     public MenuResizeFusion(GUI gui, Menu parent, OverhaulFusionReactor multiblock){

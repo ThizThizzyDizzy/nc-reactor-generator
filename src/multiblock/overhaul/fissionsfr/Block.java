@@ -1,6 +1,6 @@
 package multiblock.overhaul.fissionsfr;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
@@ -49,7 +49,7 @@ public class Block extends multiblock.Block{
         ((Block)other).isToggled = isToggled;
     }
     @Override
-    public BufferedImage getBaseTexture(){
+    public PlannerImage getBaseTexture(){
         if(isToggled){
             if(template.shield)return template.shieldClosedTexture;
             if(template.coolantVent)return template.coolantVentOutputTexture;
@@ -58,7 +58,7 @@ public class Block extends multiblock.Block{
         return template.texture;
     }
     @Override
-    public BufferedImage getTexture(){
+    public PlannerImage getTexture(){
         if(isToggled){
             if(template.shield)return template.shieldClosedDisplayTexture;
             if(template.coolantVent)return template.coolantVentOutputDisplayTexture;
@@ -336,10 +336,10 @@ public class Block extends multiblock.Block{
         if(cluster!=null){
             Color primaryColor = null;
             if(cluster.netHeat>0){
-                primaryColor = Color.red;
+                primaryColor = Color.RED;
             }
             if(cluster.coolingPenaltyMult<1){
-                primaryColor = Color.blue;
+                primaryColor = Color.BLUE;
             }
             if(primaryColor!=null){
                 Core.applyColor(Core.theme.getRGBA(primaryColor), .125f);
@@ -377,10 +377,10 @@ public class Block extends multiblock.Block{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.white;
+                secondaryColor = Color.WHITE;
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.pink;
+                secondaryColor = Color.PINK;
             }
             if(secondaryColor!=null){
                 Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor), .75f);
@@ -431,10 +431,10 @@ public class Block extends multiblock.Block{
             double border = width/16;
             Color primaryColor = null;
             if(cluster.netHeat>0){
-                primaryColor = Color.red;
+                primaryColor = Color.RED;
             }
             if(cluster.coolingPenaltyMult<1){
-                primaryColor = Color.blue;
+                primaryColor = Color.BLUE;
             }
             if(primaryColor!=null){
                 Core.applyColor(Core.theme.getRGBA(primaryColor));
@@ -449,10 +449,10 @@ public class Block extends multiblock.Block{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.white;
+                secondaryColor = Color.WHITE;
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.pink;
+                secondaryColor = Color.PINK;
             }
             if(secondaryColor!=null){
                 Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor));

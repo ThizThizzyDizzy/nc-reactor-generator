@@ -1,6 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
-import java.awt.Color;
+import planner.core.Color;
 public class KeywordBlind extends Keyword{
     public KeywordBlind(){
         super("Blind");

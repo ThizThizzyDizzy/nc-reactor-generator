@@ -1,5 +1,5 @@
 package planner.menu.component;
-import java.awt.Color;
+import planner.core.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -60,14 +60,24 @@ public class MenuComponentMinimalistSlider extends MenuComponent{
         if(textInset<0){
             textInset = height/10;
         }
-        Color col = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
-        if(enabled){
-            if(isPressed)col = col.darker().darker();//TODO .darker()
-            else if(isMouseOver)col = col.brighter();//TODO .brighter()
+        Color col;
+        if(darker){
+             col = Core.theme.getBrighterDarkButtonColor();
+            if(enabled){
+                if(isPressed)col = Core.theme.getBrighterDarkerDarkerDarkButtonColor();
+                else if(isMouseOver)col = Core.theme.getBrighterBrighterDarkButtonColor();
+            }else{
+                col = Core.theme.getBrighterDarkerDarkerDarkButtonColor();
+            }
         }else{
-            col = col.darker().darker();//TODO .darker()
+            col = Core.theme.getBrighterButtonColor();
+            if(enabled){
+                if(isPressed)col = Core.theme.getBrighterDarkerDarkerButtonColor();
+                else if(isMouseOver)col = Core.theme.getBrighterBrighterButtonColor();
+            }else{
+                col = Core.theme.getBrighterDarkerButtonColor();
+            }
         }
-        col = col.brighter();
         Core.applyColor(darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor());
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(col);

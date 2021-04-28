@@ -1,7 +1,5 @@
 package planner.vr.menu.component;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import planner.core.Color;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 import org.lwjgl.opengl.GL11;
@@ -22,7 +20,7 @@ public class VRMenuComponentButton extends VRMenuComponent{
         return Core.theme.getTextColor();
     };
     public boolean isPressed;
-    private final ArrayList<ActionListener> listeners = new ArrayList<>();
+    private final ArrayList<Runnable> listeners = new ArrayList<>();
     /**
      * How far in front of the button the text should hover
      */
@@ -39,12 +37,23 @@ public class VRMenuComponentButton extends VRMenuComponent{
     }
     @Override
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
-        Color col = darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor();
-        if(enabled){
-            if(isPressed)col = col.darker();
-            else if(!isDeviceOver.isEmpty())col = col.brighter();
+        Color col;
+        if(darker){
+             col = Core.theme.getDarkButtonColor();
+            if(enabled){
+                if(isPressed)col = Core.theme.getDarkerDarkButtonColor();
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getBrighterDarkButtonColor();
+            }else{
+                col = Core.theme.getDarkerDarkButtonColor();
+            }
         }else{
-            col = col.darker();
+            col = Core.theme.getButtonColor();
+            if(enabled){
+                if(isPressed)col = Core.theme.getDarkerButtonColor();
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getBrighterButtonColor();
+            }else{
+                col = Core.theme.getDarkerButtonColor();
+            }
         }
         Core.applyColor(col);
         ImageStash.instance.bindTexture(0);
@@ -68,16 +77,16 @@ public class VRMenuComponentButton extends VRMenuComponent{
         if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
             isPressed = pressed;
             if(pressed){
-                for(ActionListener listener : listeners){
-                    listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+                for(Runnable listener : listeners){
+                    listener.run();
                 }
             }
         }
     }
-    public void addActionListener(ActionListener a){
+    public void addActionListener(Runnable a){
         listeners.add(a);
     }
-    public void removeActionListener(ActionListener a){
+    public void removeActionListener(Runnable a){
         listeners.remove(a);
     }
 }

@@ -1,6 +1,6 @@
 package multiblock.configuration.underhaul.fissionsfr;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.Configuration;
@@ -75,8 +75,8 @@ public class Block extends RuleContainer implements Searchable{
     public boolean casing = false;
     public boolean controller = false;
     public String active;
-    public BufferedImage texture;
-    public BufferedImage displayTexture;
+    public PlannerImage texture;
+    public PlannerImage displayTexture;
     public Block(String name){
         this.name = name;
     }
@@ -116,16 +116,16 @@ public class Block extends RuleContainer implements Searchable{
         }
         return config;
     }
-    public void setTexture(BufferedImage image){
+    public void setTexture(PlannerImage image){
         texture = image;
-        BufferedImage displayImg = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        PlannerImage displayImg = new PlannerImage(image.getWidth(), image.getHeight());
         int left = Math.max(0,image.getWidth()/16-1);
         int right = Math.min(image.getWidth()*15/16, image.getWidth()-1);
         int up = Math.max(0,image.getHeight()/16-1);
         int down = Math.min(image.getHeight()*15/16, image.getHeight()-1);
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){
-                Color col = new Color(image.getRGB(x, y), true);
+                Color col = new Color(image.getRGB(x, y));
                 if(active!=null){
                     if(x<=left||y<=up||x>=right||y>=down){
                         col = new Color(144, 238, 144);

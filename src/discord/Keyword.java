@@ -1,5 +1,5 @@
 package discord;
-import java.awt.Color;
+import planner.core.Color;
 public abstract class Keyword{
     public final String name;
     protected String input;

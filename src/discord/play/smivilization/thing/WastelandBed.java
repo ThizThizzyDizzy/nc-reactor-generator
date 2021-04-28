@@ -3,14 +3,14 @@ import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
 import discord.play.smivilization.HutThingColorable;
 import discord.play.smivilization.Wall;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.UUID;
 import planner.Core;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class WastelandBed extends HutThingColorable{
     public WastelandBed(UUID uuid, Hut hut){
-        super(uuid, hut, "Wasteland Bed", "wasteland bed", 48, Color.white);
+        super(uuid, hut, "Wasteland Bed", "wasteland bed", 48, Color.WHITE);
         mirrorIf = 1;
     }
     @Override
@@ -19,7 +19,7 @@ public class WastelandBed extends HutThingColorable{
     }
     @Override
     public void draw(double left, double top, double right, double bottom){
-        Core.applyColor(Color.white);
+        Core.applyColor(Color.WHITE);
         Renderer2D.drawRect(left, top, right, bottom, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/wasteland bed/frame.png"));
         Core.applyColor(getColor());
         Renderer2D.drawRect(left, top, right, bottom, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/wasteland bed/matress.png"));

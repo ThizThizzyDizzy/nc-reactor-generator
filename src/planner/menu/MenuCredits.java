@@ -1,5 +1,5 @@
 package planner.menu;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -453,10 +453,10 @@ public class MenuCredits extends Menu{
         }
     }
     private static class BackgroundElement{
-        private final BufferedImage texture;
+        private final PlannerImage texture;
         private final boolean threeD;
         private double x, y, z, rot;
-        public BackgroundElement(BufferedImage texture, boolean threeD){
+        public BackgroundElement(PlannerImage texture, boolean threeD){
             this.texture = texture;
             this.threeD = threeD;
         }

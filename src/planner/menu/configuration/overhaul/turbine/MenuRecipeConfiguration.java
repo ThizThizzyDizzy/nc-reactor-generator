@@ -1,5 +1,5 @@
 package planner.menu.configuration.overhaul.turbine;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class MenuRecipeConfiguration extends ConfigurationMenu{
                 for(String s : files){
                     if(s.endsWith(".png")){
                         try{
-                            BufferedImage img = ImageIO.read(new File(s));
+                            PlannerImage img = PlannerImage.fromAWT(ImageIO.read(new File(s)));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
                                 if(Main.hasAWT){
@@ -79,7 +79,7 @@ public class MenuRecipeConfiguration extends ConfigurationMenu{
                 for(String s : files){
                     if(s.endsWith(".png")){
                         try{
-                            BufferedImage img = ImageIO.read(new File(s));
+                            PlannerImage img = PlannerImage.fromAWT(ImageIO.read(new File(s)));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
                                 if(Main.hasAWT){
@@ -103,7 +103,7 @@ public class MenuRecipeConfiguration extends ConfigurationMenu{
         inputTexture.addActionListener((e) -> {
             Core.createFileChooser((file, format) -> {
                 try{
-                    BufferedImage img = ImageIO.read(file);
+                    PlannerImage img = PlannerImage.fromAWT(ImageIO.read(file));
                     if(img==null)return;
                     if(img.getWidth()!=img.getHeight()){
                         if(Main.hasAWT){
@@ -120,7 +120,7 @@ public class MenuRecipeConfiguration extends ConfigurationMenu{
         outputTexture.addActionListener((e) -> {
             Core.createFileChooser((file, format) -> {
                 try{
-                    BufferedImage img = ImageIO.read(file);
+                    PlannerImage img = PlannerImage.fromAWT(ImageIO.read(file));
                     if(img==null)return;
                     if(img.getWidth()!=img.getHeight()){
                         if(Main.hasAWT){

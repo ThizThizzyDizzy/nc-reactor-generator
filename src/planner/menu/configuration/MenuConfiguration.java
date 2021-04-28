@@ -1,6 +1,6 @@
 package planner.menu.configuration;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
+import planner.core.Color;
+import planner.core.PlannerImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -382,10 +382,10 @@ public class MenuConfiguration extends ConfigurationMenu{
                         HashMap<String, JSON.JSONObject> ctBlockstates = new HashMap<>();
                         HashMap<String, JSON.JSONObject> blockstates = new HashMap<>();
                         HashMap<String, JSON.JSONObject> ctModels = new HashMap<>();
-                        HashMap<String, BufferedImage> ctTextures = new HashMap<>();
+                        HashMap<String, PlannerImage> ctTextures = new HashMap<>();
                         HashMap<String, HashMap<String, String>> ctLangFiles = new HashMap<>();
                         HashMap<String, HashMap<String, String>> langFiles = new HashMap<>();
-                        HashMap<String, BufferedImage> textures = new HashMap<>();
+                        HashMap<String, PlannerImage> textures = new HashMap<>();
                         file.stream().forEach((entry) -> {
                             String nam = entry.getName();
                             if(!nam.startsWith(root[0]))return;
@@ -400,7 +400,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                                 }else if(nam.matches("contenttweaker/models/[\\d\\w /-]+\\.json")){
                                     ctModels.put(nam.substring("contenttweaker/models/".length(), nam.length()-5), JSON.parse(file.getInputStream(entry)));
                                 }else if(nam.matches("contenttweaker/textures/[\\d\\w /-]+\\.png")){
-                                    ctTextures.put(nam.substring("contenttweaker/textures/".length(), nam.length()-4), ImageIO.read(file.getInputStream(entry)));
+                                    ctTextures.put(nam.substring("contenttweaker/textures/".length(), nam.length()-4), PlannerImage.fromAWT(ImageIO.read(file.getInputStream(entry))));
                                 }else if(nam.matches("lang/[\\d\\w /-]+\\.lang")){
                                     HashMap<String, String> lang = new HashMap<>();
                                     try(BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(entry)))){
@@ -424,7 +424,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                                     }
                                     ctLangFiles.put(nam.substring("contenttweaker/lang/".length(), nam.length()-5), lang);
                                 }else if(nam.matches("textures/[\\d\\w /-]+\\.png")){
-                                    textures.put(nam.substring("textures/".length(), nam.length()-4), ImageIO.read(file.getInputStream(entry)));
+                                    textures.put(nam.substring("textures/".length(), nam.length()-4), PlannerImage.fromAWT(ImageIO.read(file.getInputStream(entry))));
                                 }else if(nam.contains(".")&&!nam.endsWith("/"))System.err.println(nam);
                             }catch(IOException ex){
                                 throw new RuntimeException(ex);
@@ -950,47 +950,47 @@ public class MenuConfiguration extends ConfigurationMenu{
                     try{
                         String name = consolidateZSName(file.getName().substring(0, file.getName().length()-4));//cut of the .png
                         for(multiblock.configuration.overhaul.fissionsfr.Block b : fissionSFRBlocks){
-                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
+                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                             if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("sink_", ""))){
-                                BufferedImage portTexture = ImageIO.read(file);
+                                PlannerImage portTexture = PlannerImage.fromAWT(ImageIO.read(file));
                                 b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
                                 b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
                             }
                             for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.allRecipes){
                                 if(recipe.inputName.equals(name)){
-                                    recipe.setInputTexture(ImageIO.read(file));
+                                    recipe.setInputTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                                 }
                                 if(recipe.outputName.equals(name)){
-                                    recipe.setOutputTexture(ImageIO.read(file));
+                                    recipe.setOutputTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                                 }
                             }
                         }
                         for(multiblock.configuration.overhaul.fissionmsr.Block b : fissionMSRBlocks){
-                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
+                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                             if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("heater_", ""))){
-                                BufferedImage portTexture = ImageIO.read(file);
+                                PlannerImage portTexture = PlannerImage.fromAWT(ImageIO.read(file));
                                 b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
                                 b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
                             }
                             for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.allRecipes){
                                 if(recipe.inputName.equals(name)){
-                                    recipe.setInputTexture(ImageIO.read(file));
+                                    recipe.setInputTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                                 }
                                 if(recipe.outputName.equals(name)){
-                                    recipe.setOutputTexture(ImageIO.read(file));
+                                    recipe.setOutputTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                                 }
                             }
                         }
                         for(multiblock.configuration.overhaul.turbine.Block b : turbineBlocks){
-                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
+                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                         }
                         for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : fissionSFRRecipes){
-                            if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(ImageIO.read(file));
-                            if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(ImageIO.read(file));
+                            if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(PlannerImage.fromAWT(ImageIO.read(file)));
+                            if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                         }
                         for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
-                            if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(ImageIO.read(file));
-                            if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(ImageIO.read(file));
+                            if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(PlannerImage.fromAWT(ImageIO.read(file)));
+                            if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(PlannerImage.fromAWT(ImageIO.read(file)));
                         }
                     }catch(IOException ex){
                         Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.fileIO);
@@ -1060,12 +1060,12 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
         super.buttonClicked(button);
     }
-    private BufferedImage alphaOver(BufferedImage overlay, BufferedImage image){
-        BufferedImage combined = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+    private PlannerImage alphaOver(PlannerImage overlay, PlannerImage image){
+        PlannerImage combined = new PlannerImage(image.getWidth(), image.getHeight());
         for(int x = 0; x<combined.getWidth(); x++){
             for(int y = 0; y<combined.getHeight(); y++){
-                Color base = new Color(image.getRGB(x, y), true);
-                Color over = new Color(overlay.getRGB(x, y), true);
+                Color base = new Color(image.getRGB(x, y));
+                Color over = new Color(overlay.getRGB(x, y));
                 combined.setRGB(x, y, over.getAlpha()==0?base.getRGB():over.getRGB());
             }
         }

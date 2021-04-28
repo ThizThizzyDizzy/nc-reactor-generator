@@ -1,6 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.Locale;
 public class KeywordFuel extends Keyword{
     public String fuel;

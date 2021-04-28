@@ -1,5 +1,5 @@
 package multiblock.configuration.overhaul.fusion;
-import java.awt.image.BufferedImage;
+import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.Configuration;
@@ -35,8 +35,8 @@ public class Block extends RuleContainer implements Searchable{
     public boolean heatsink = false;
     public boolean heatsinkHasBaseStats = false;
     public int heatsinkCooling;
-    public BufferedImage texture;
-    public BufferedImage displayTexture;
+    public PlannerImage texture;
+    public PlannerImage displayTexture;
     public ArrayList<BlockRecipe> allRecipes = new ArrayList<>();
     /**
      * @deprecated You should probably be using allRecipes
@@ -125,7 +125,7 @@ public class Block extends RuleContainer implements Searchable{
         }
         return config;
     }
-    public void setTexture(BufferedImage image){
+    public void setTexture(PlannerImage image){
         texture = image;
         displayTexture = TextureManager.convert(image);
     }

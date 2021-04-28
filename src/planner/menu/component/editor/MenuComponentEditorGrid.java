@@ -88,7 +88,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
             Core.applyColor(Core.theme.getEditorListBorderColor());
             drawRect(x,y,x+width,y+height,0);
             if(mouseover!=null){
-                Core.applyColor(Core.theme.getEditorListBorderColor().brighter());//TODO .brighter()
+                Core.applyColor(Core.theme.getBrighterEditorListBorderColor());
                 drawRect(x+mouseover[0]*blockSize, y+mouseover[1]*blockSize, x+(mouseover[0]+1)*blockSize, y+(mouseover[1]+1)*blockSize, 0);
             }
         }

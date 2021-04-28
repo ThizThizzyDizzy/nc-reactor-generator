@@ -1,5 +1,5 @@
 package planner.vr;
-import java.awt.Color;
+import planner.core.Color;
 import java.util.HashSet;
 import java.util.Set;
 import org.joml.Matrix4f;
