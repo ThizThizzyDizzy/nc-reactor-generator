@@ -1,5 +1,5 @@
 package planner.editor;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;

@@ -1,6 +1,6 @@
 package planner.editor.suggestion;
 import generator.Priority;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
@@ -17,12 +17,12 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
     }
     public boolean selected = false;
     private final String name;
-    private PlannerImage[] images;
-    public Suggestion(String name, Action<T> suggestedAction, ArrayList<Priority<T>> priorities, PlannerImage... images){
+    private Image[] images;
+    public Suggestion(String name, Action<T> suggestedAction, ArrayList<Priority<T>> priorities, Image... images){
         this(name, box(suggestedAction), priorities);
         this.images = images;
     }
-    public Suggestion(String name, ArrayList<Action<T>> suggestedActions, ArrayList<Priority<T>> priorities, PlannerImage... images){
+    public Suggestion(String name, ArrayList<Action<T>> suggestedActions, ArrayList<Priority<T>> priorities, Image... images){
         this.suggestedActions = suggestedActions;
         this.priorities = priorities;
         this.name = name;
@@ -67,7 +67,7 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
         }
         return false;
     }
-    public PlannerImage[] getImages(){
+    public Image[] getImages(){
         return images;
     }
 }

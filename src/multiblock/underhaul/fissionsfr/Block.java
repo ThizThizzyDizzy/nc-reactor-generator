@@ -1,5 +1,5 @@
 package multiblock.underhaul.fissionsfr;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
@@ -34,11 +34,11 @@ public class Block extends multiblock.Block{
     @Override
     public void copyProperties(multiblock.Block other){}
     @Override
-    public PlannerImage getBaseTexture(){
+    public Image getBaseTexture(){
         return template.texture;
     }
     @Override
-    public PlannerImage getTexture(){
+    public Image getTexture(){
         return template.displayTexture;
     }
     @Override

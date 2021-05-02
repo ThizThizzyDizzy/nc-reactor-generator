@@ -1,5 +1,5 @@
 package discord.play.model;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.ArrayList;
 public class Face{
     public final ArrayList<Integer> verticies;

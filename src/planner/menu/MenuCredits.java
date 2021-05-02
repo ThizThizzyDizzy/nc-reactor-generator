@@ -1,5 +1,4 @@
 package planner.menu;
-import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +11,7 @@ import planner.menu.component.MenuComponentLabel;
 import planner.vr.VRCore;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
@@ -354,7 +354,7 @@ public class MenuCredits extends Menu{
             @Override
             public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
                 double textWidth = FontManager.getLengthForStringWithHeight(text, height);
-                if(x>width/2-textWidth/2&&x<width/2+textWidth/2&&button==0&&pressed)Core.openWebpage(link);
+                if(x>width/2-textWidth/2&&x<width/2+textWidth/2&&button==0&&pressed)Core.openURL(link);
                 super.onMouseButton(x, y, button, pressed, mods);
             }
         }.noBackground());
@@ -453,10 +453,10 @@ public class MenuCredits extends Menu{
         }
     }
     private static class BackgroundElement{
-        private final PlannerImage texture;
+        private final Image texture;
         private final boolean threeD;
         private double x, y, z, rot;
-        public BackgroundElement(PlannerImage texture, boolean threeD){
+        public BackgroundElement(Image texture, boolean threeD){
             this.texture = texture;
             this.threeD = threeD;
         }

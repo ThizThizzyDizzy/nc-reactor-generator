@@ -1,5 +1,5 @@
 package multiblock.configuration.overhaul.fissionsfr;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
@@ -163,8 +163,8 @@ public class Block extends RuleContainer implements Searchable{
     public boolean casingEdge = false;
     public boolean coolantVent = false;
     public String coolantVentOutputDisplayName;
-    public PlannerImage coolantVentOutputTexture;
-    public PlannerImage coolantVentOutputDisplayTexture;
+    public Image coolantVentOutputTexture;
+    public Image coolantVentOutputDisplayTexture;
     public boolean controller = false;
     public boolean fuelCell = false;
     public boolean fuelCellHasBaseStats;
@@ -189,19 +189,19 @@ public class Block extends RuleContainer implements Searchable{
     public boolean shieldHasBaseStats;
     public int shieldHeat;
     public float shieldEfficiency;
-    public PlannerImage shieldClosedTexture;
-    public PlannerImage shieldClosedDisplayTexture;
+    public Image shieldClosedTexture;
+    public Image shieldClosedDisplayTexture;
     public boolean heatsink;
     public boolean heatsinkHasBaseStats;
     public int heatsinkCooling;
     public boolean source;
     public float sourceEfficiency;
-    public PlannerImage texture;
-    public PlannerImage displayTexture;
+    public Image texture;
+    public Image displayTexture;
     public Block port;
     public String portOutputDisplayName;
-    public PlannerImage portOutputTexture;
-    public PlannerImage portOutputDisplayTexture;
+    public Image portOutputTexture;
+    public Image portOutputDisplayTexture;
     public Block parent;//if this is a port
     public ArrayList<BlockRecipe> allRecipes = new ArrayList<>();
     /**
@@ -401,19 +401,19 @@ public class Block extends RuleContainer implements Searchable{
         }
         return config;
     }
-    public void setTexture(PlannerImage image){
+    public void setTexture(Image image){
         texture = image;
         displayTexture = TextureManager.convert(image);
     }
-    public void setCoolantVentOutputTexture(PlannerImage image){
+    public void setCoolantVentOutputTexture(Image image){
         coolantVentOutputTexture = image;
         coolantVentOutputDisplayTexture = TextureManager.convert(image);
     }
-    public void setPortOutputTexture(PlannerImage image){
+    public void setPortOutputTexture(Image image){
         portOutputTexture = image;
         portOutputDisplayTexture = TextureManager.convert(image);
     }
-    public void setShieldClosedTexture(PlannerImage image){
+    public void setShieldClosedTexture(Image image){
         shieldClosedTexture = image;
         shieldClosedDisplayTexture = TextureManager.convert(image);
     }

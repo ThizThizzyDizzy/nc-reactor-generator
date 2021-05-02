@@ -1,7 +1,7 @@
 package multiblock.overhaul.fissionmsr;
 import multiblock.FluidStack;
 import generator.Priority;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

@@ -1,5 +1,5 @@
 package discord;
-import planner.core.Color;
+import simplelibrary.image.Color;
 public abstract class Keyword{
     public final String name;
     protected String input;

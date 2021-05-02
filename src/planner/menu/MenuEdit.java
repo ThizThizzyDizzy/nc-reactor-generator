@@ -1,5 +1,5 @@
 package planner.menu;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -277,7 +277,7 @@ public class MenuEdit extends Menu implements Editor{
     }
     private boolean recalculateOnOpen = true;
     @Override
-    public void onGUIOpened(){
+    public synchronized void onGUIOpened(){
         Core.delCircle = true;
         Core.circleSize = CELL_SIZE;
         editMetadata.label = multiblock.getName().isEmpty()?"Edit Metadata":(multiblock.getName()+" | Edit Metadata");

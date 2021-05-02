@@ -1,5 +1,5 @@
 package planner.vr.menu.component;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import multiblock.action.SetFusionRecipeAction;
 import multiblock.configuration.overhaul.fusion.Recipe;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;

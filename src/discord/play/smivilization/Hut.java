@@ -5,14 +5,12 @@ import discord.play.model.Model;
 import discord.play.model.Vector3f;
 import discord.play.smivilization.thing.*;
 import discord.play.smivilization.thing.special.*;
-import planner.core.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import javax.imageio.ImageIO;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import org.lwjgl.opengl.GL11;
@@ -20,6 +18,8 @@ import planner.Core;
 import simplelibrary.CircularStream;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
+import simplelibrary.image.Color;
+import planner.ImageIO;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class Hut{
@@ -118,7 +118,7 @@ public class Hut{
         CircularStream stream = new CircularStream(1024*1024);//1MB
         CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), name+".png").submit();
         try{
-            ImageIO.write(Bot.makeImage(width, height, renderer).toAWT(), "png", stream);
+            ImageIO.write(Bot.makeImage(width, height, renderer), stream);
             stream.close();
         }catch(Exception ex){
             Bot.printErrorMessage(channel, "Failed to write file", ex);

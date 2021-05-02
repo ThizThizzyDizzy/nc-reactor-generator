@@ -1,6 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.Locale;
 import multiblock.Multiblock;
 import planner.Core;

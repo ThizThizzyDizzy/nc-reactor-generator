@@ -1,6 +1,4 @@
 package multiblock.configuration.underhaul.fissionsfr;
-import planner.core.Color;
-import planner.core.PlannerImage;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.Configuration;
@@ -10,6 +8,8 @@ import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 public class Block extends RuleContainer implements Searchable{
     public static Block cooler(String name, String displayName, int cooling, String texture, PlacementRule... rules){
         Block block = new Block(name);
@@ -75,8 +75,8 @@ public class Block extends RuleContainer implements Searchable{
     public boolean casing = false;
     public boolean controller = false;
     public String active;
-    public PlannerImage texture;
-    public PlannerImage displayTexture;
+    public Image texture;
+    public Image displayTexture;
     public Block(String name){
         this.name = name;
     }
@@ -116,9 +116,9 @@ public class Block extends RuleContainer implements Searchable{
         }
         return config;
     }
-    public void setTexture(PlannerImage image){
+    public void setTexture(Image image){
         texture = image;
-        PlannerImage displayImg = new PlannerImage(image.getWidth(), image.getHeight());
+        Image displayImg = new Image(image.getWidth(), image.getHeight());
         int left = Math.max(0,image.getWidth()/16-1);
         int right = Math.min(image.getWidth()*15/16, image.getWidth()-1);
         int up = Math.max(0,image.getHeight()/16-1);

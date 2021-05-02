@@ -1,5 +1,5 @@
 package multiblock.configuration.overhaul.fusion;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -11,13 +11,13 @@ public class BlockRecipe{
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();
-    public PlannerImage inputTexture;
-    public PlannerImage inputDisplayTexture;
+    public Image inputTexture;
+    public Image inputDisplayTexture;
     public int inputRate;
     public String outputName;
     public String outputDisplayName;
-    public PlannerImage outputTexture;
-    public PlannerImage outputDisplayTexture;
+    public Image outputTexture;
+    public Image outputDisplayTexture;
     public int outputRate;
     public boolean breedingBlanketAugmented;
     public float breedingBlanketEfficiency;
@@ -94,11 +94,11 @@ public class BlockRecipe{
         }
         return config;
     }
-    public void setInputTexture(PlannerImage image){
+    public void setInputTexture(Image image){
         inputTexture = image;
         inputDisplayTexture = TextureManager.convert(image);
     }
-    public void setOutputTexture(PlannerImage image){
+    public void setOutputTexture(Image image){
         outputTexture = image;
         outputDisplayTexture = TextureManager.convert(image);
     }

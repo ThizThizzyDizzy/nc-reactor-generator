@@ -1,5 +1,5 @@
 package planner.vr.menu.component;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import multiblock.action.SetTurbineRecipeAction;
 import multiblock.configuration.overhaul.turbine.Recipe;
 import multiblock.overhaul.turbine.OverhaulTurbine;

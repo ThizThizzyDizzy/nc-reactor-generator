@@ -1,5 +1,5 @@
 package planner.tutorial;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Random;
 import multiblock.action.SetSelectionAction;
@@ -162,11 +162,11 @@ public class NCPTTutorial extends Tutorial{
                             editor.render(0);
                             GL11.glPopMatrix();
                             editor.onGUIOpened();
-                            PlannerImage image = Core.makeImage(Core.helper.displayWidth(), Core.helper.displayHeight(), (buff) -> {
+                            Image image = Core.makeImage(Core.helper.displayWidth(), Core.helper.displayHeight(), (buff) -> {
                                 GL11.glColor4d(1, 1, 1, 1);
                                 editor.render(0);
                             });
-                            editorImage = ImageStash.instance.allocateAndSetupTexture(image.toAWT());
+                            editorImage = ImageStash.instance.allocateAndSetupTexture(image);
                         }
                         break;
                     case "editor/tool/pencil":

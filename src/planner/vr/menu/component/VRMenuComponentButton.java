@@ -1,5 +1,5 @@
 package planner.vr.menu.component;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 import org.lwjgl.opengl.GL11;

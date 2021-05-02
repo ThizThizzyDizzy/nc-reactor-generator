@@ -1,5 +1,5 @@
 package planner.menu;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

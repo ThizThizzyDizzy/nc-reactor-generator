@@ -1,5 +1,5 @@
 package planner.vr.menu.component;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import multiblock.configuration.overhaul.fusion.Block;
 import multiblock.configuration.overhaul.fusion.BlockRecipe;
 import org.lwjgl.opengl.GL11;

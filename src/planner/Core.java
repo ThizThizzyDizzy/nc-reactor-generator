@@ -1,7 +1,7 @@
 package planner;
 import discord.Bot;
-import planner.core.Color;
-import planner.core.PlannerImage;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -111,7 +111,7 @@ public class Core extends Renderer2D{
         if(VR.VR_IsRuntimeInstalled()&&VR.VR_IsHmdPresent())vr = true;
         System.out.println("Initializing GameHelper");
         helper = new GameHelper();
-        helper.setBackground(theme.getBackgroundColor().toAWT());
+        helper.setBackground(theme.getBackgroundColor());
         helper.setDisplaySize(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1));
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
@@ -450,13 +450,13 @@ public class Core extends Renderer2D{
             delCircle = false;
         }
         if(sourceCircle==-1){
-            PlannerImage image = Core.makeImage(circleSize, circleSize, (buff) -> {
+            Image image = Core.makeImage(circleSize, circleSize, (buff) -> {
                 Core.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d), Color.WHITE);
             });
-            sourceCircle = ImageStash.instance.allocateAndSetupTexture(image.toAWT());
+            sourceCircle = ImageStash.instance.allocateAndSetupTexture(image);
         }
         if(outlineSquare==-1){
-            PlannerImage image = Core.makeImage(32, 32, (buff) -> {
+            Image image = Core.makeImage(32, 32, (buff) -> {
                 Core.applyWhite();
                 double inset = buff.width/32d;
                 drawRect(inset, inset, buff.width-inset, inset+buff.width/16, 0);
@@ -464,7 +464,7 @@ public class Core extends Renderer2D{
                 drawRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16, 0);
                 drawRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16, 0);
             });
-            outlineSquare = ImageStash.instance.allocateAndSetupTexture(image.toAWT());
+            outlineSquare = ImageStash.instance.allocateAndSetupTexture(image);
         }
         applyWhite();
         if(gui.menu instanceof MenuMain){
@@ -546,19 +546,19 @@ public class Core extends Renderer2D{
         float valDiff = val2-val1;
         return percent*valDiff+val1;
     }
-    private static final HashMap<PlannerImage, Integer> imgs = new HashMap<>();
-    private static final HashMap<PlannerImage, Boolean> alphas = new HashMap<>();
-    public static int getTexture(PlannerImage image){
+    private static final HashMap<Image, Integer> imgs = new HashMap<>();
+    private static final HashMap<Image, Boolean> alphas = new HashMap<>();
+    public static int getTexture(Image image){
         if(image==null)return -1;
         if(!imgs.containsKey(image)){
-            imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image.toAWT()));
+            imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image));
         }
         return imgs.get(image);
     }
     public static void setTheme(Theme t){
         t.onSet();
         theme = t;
-        helper.setBackground(theme.getBackgroundColor().toAWT());
+        helper.setBackground(theme.getBackgroundColor());
     }
     public static void applyWhite(){
         applyColor(theme.getWhite());
@@ -673,7 +673,7 @@ public class Core extends Renderer2D{
         }
         GL11.glEnd();
     }
-    public static PlannerImage makeImage(int width, int height, BufferRenderer r){
+    public static Image makeImage(int width, int height, BufferRenderer r){
         boolean cull = GL11.glIsEnabled(GL11.GL_CULL_FACE);
         boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
         if(cull)GL11.glDisable(GL11.GL_CULL_FACE);
@@ -691,7 +691,7 @@ public class Core extends Renderer2D{
         byte[] imgData = new byte[width*height*4];
         bufferer.rewind();
         bufferer.get(imgData);
-        PlannerImage img = new PlannerImage(width, height);
+        Image img = new Image(width, height);
         for(int i=0;i<imgRGBData.length;i++){
             imgRGBData[i]=(f(imgData[i*4])<<16)+(f(imgData[i*4+1])<<8)+(f(imgData[i*4+2]))+(f(imgData[i*4+3])<<24);//DO NOT Use RED, GREEN, or BLUE channel (here BLUE) for alpha data
         }
@@ -757,7 +757,7 @@ public class Core extends Renderer2D{
         }
         return false;
     }
-    public static boolean hasAlpha(PlannerImage image){
+    public static boolean hasAlpha(Image image){
         if(image==null)return false;
         if(!alphas.containsKey(image)){
             boolean hasAlpha = false;
@@ -802,19 +802,26 @@ public class Core extends Renderer2D{
         }
         return num;
     }
-    public static void openWebpage(String link){
-        if (Main.hasAWT&&java.awt.Desktop.isDesktopSupported() && java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.BROWSE)) {
-            try{
-                java.awt.Desktop.getDesktop().browse(new URI(link));
-            }catch(URISyntaxException|IOException ex){
-                if(Main.hasAWT){
-                    javax.swing.JOptionPane.showMessageDialog(null, link, "Failed to open webpage", javax.swing.JOptionPane.ERROR_MESSAGE);
-                }else{
-                    Sys.error(ErrorLevel.minor, "Failed to open webpage\n"+link, null, ErrorCategory.InternetIO, false);
-                }
+    public static boolean openURL(String link){
+        Runtime rt = Runtime.getRuntime();
+        try{
+            switch(Main.os){
+                case Main.OS_WINDOWS:
+                    rt.exec("rundll32 url.dll,FileProtocolHandler "+link);
+                    return true;
+                case Main.OS_MACOS:
+                    rt.exec("open "+link);
+                    return true;
+                case Main.OS_LINUX:
+                    rt.exec("xdg-open "+link);
+                    return true;
+                default:
+                    Sys.error(ErrorLevel.minor, "Failed to open webpage: Unkown OS\n"+link, null, ErrorCategory.InternetIO);
+                    return false;
             }
-        }else{
-            Sys.error(ErrorLevel.minor, "Desktop Browse is not supported\n"+link, null, ErrorCategory.InternetIO, false);
+        }catch(IOException ex){
+            Sys.error(ErrorLevel.minor, "Failed to open webpage\n"+link, ex, ErrorCategory.InternetIO);
+            return false;
         }
     }
     public static interface BufferRenderer{
@@ -1041,7 +1048,7 @@ public class Core extends Renderer2D{
         }
         GL11.glEnd();
     }
-    public static boolean areImagesEqual(PlannerImage img1, PlannerImage img2) {
+    public static boolean areImagesEqual(Image img1, Image img2) {
         if(img1==img2)return true;
         if(img1==null||img2==null)return false;
         if(img1.getWidth()!=img2.getWidth())return false;

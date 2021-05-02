@@ -1,5 +1,5 @@
 package planner.menu.component.generator;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import multiblock.Block;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;

@@ -1,6 +1,6 @@
 package multiblock.overhaul.fusion;
 import generator.Priority;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

@@ -49,9 +49,9 @@ public class MenuComponentRecipe extends MenuComponent{
     }.setTooltip("Delete recipe"));
     public MenuComponentRecipe(Recipe recipe){
         super(0, 0, 0, 100);
-        color = Core.theme.getButtonColor().toAWT();
-        selectedColor = Core.theme.getSelectedMultiblockColor().toAWT();
-        foregroundColor = Core.theme.getTextColor().toAWT();
+        color = Core.theme.getButtonColor();
+        selectedColor = Core.theme.getSelectedMultiblockColor();
+        foregroundColor = Core.theme.getTextColor();
         this.recipe = recipe;
     }
     @Override

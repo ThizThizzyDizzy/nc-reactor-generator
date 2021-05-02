@@ -1,5 +1,5 @@
 package planner.api;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class HeadlessAPI{
      * @param ncpf the NCPFFile to save
      * @return the first multiblock's image
      */
-    public static PlannerImage getImage(NCPFFile ncpf){
+    public static Image getImage(NCPFFile ncpf){
         return FileWriter.PNG.write(ncpf);
     }
     /**
@@ -76,7 +76,7 @@ public class HeadlessAPI{
      * @param file the file to load
      * @return the first multiblock's image
      */
-    public static PlannerImage getImage(File file){
+    public static Image getImage(File file){
         return getImage(loadFile(file));
     }
     /**
@@ -84,7 +84,7 @@ public class HeadlessAPI{
      * @param input the stream to load
      * @return the first multiblock's image
      */
-    public static PlannerImage getImage(InputStreamProvider input){
+    public static Image getImage(InputStreamProvider input){
         return getImage(loadFile(input));
     }
     /**
@@ -92,8 +92,8 @@ public class HeadlessAPI{
      * @param ncpf the file to load
      * @return an array containing all multiblocks' images
      */
-    public static PlannerImage[] getImages(NCPFFile ncpf){
-        PlannerImage[] images = new PlannerImage[ncpf.multiblocks.size()];
+    public static Image[] getImages(NCPFFile ncpf){
+        Image[] images = new Image[ncpf.multiblocks.size()];
         for(int i = 0; i<ncpf.multiblocks.size(); i++){
             NCPFFile ncpf1 = new NCPFFile();
             ncpf1.configuration = ncpf.configuration;
@@ -108,7 +108,7 @@ public class HeadlessAPI{
      * @param file the file to load
      * @return an array containing all multiblocks' images
      */
-    public static PlannerImage[] getImages(File file){
+    public static Image[] getImages(File file){
         return getImages(loadFile(file));
     }
     /**
@@ -116,7 +116,7 @@ public class HeadlessAPI{
      * @param input the stream to load
      * @return an array containing all multiblocks' images
      */
-    public static PlannerImage[] getImages(InputStreamProvider input){
+    public static Image[] getImages(InputStreamProvider input){
         return getImages(loadFile(input));
     }
     /**

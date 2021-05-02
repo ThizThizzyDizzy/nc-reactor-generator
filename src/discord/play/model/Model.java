@@ -1,5 +1,5 @@
 package discord.play.model;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.Random;
 public class Model{

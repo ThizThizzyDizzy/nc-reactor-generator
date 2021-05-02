@@ -1,5 +1,5 @@
 package planner.vr;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

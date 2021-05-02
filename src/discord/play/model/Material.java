@@ -1,5 +1,5 @@
 package discord.play.model;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

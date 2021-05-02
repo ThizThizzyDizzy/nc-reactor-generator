@@ -1,5 +1,5 @@
 package planner.menu.component;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.function.Supplier;
 import org.lwjgl.opengl.GL11;
 import planner.Core;

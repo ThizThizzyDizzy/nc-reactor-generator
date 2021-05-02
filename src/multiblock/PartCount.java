@@ -1,11 +1,11 @@
 package multiblock;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import planner.Core;
 public class PartCount implements Comparable<PartCount>{
-    private final PlannerImage image;
+    private final Image image;
     public final String name;
     public final int count;
-    public PartCount(PlannerImage image, String name, int count){
+    public PartCount(Image image, String name, int count){
         this.image = image;
         this.name = name;
         this.count = count;

@@ -1,5 +1,5 @@
 package planner.menu.component;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.font.FontManager;

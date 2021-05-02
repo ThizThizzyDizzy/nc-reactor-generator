@@ -1,6 +1,6 @@
 package multiblock;
-import planner.core.Color;
-import planner.core.PlannerImage;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import java.util.Locale;
 import java.util.function.Function;
 import multiblock.configuration.Configuration;
@@ -18,7 +18,7 @@ public abstract class Block extends MultiblockBit implements Searchable{
     public int x;
     public int y;
     public int z;
-    private PlannerImage grayscaleTexture = null;
+    private Image grayscaleTexture = null;
     public Block(Configuration configuration, int x, int y, int z){
         this.configuration = configuration;
         this.x = x;
@@ -27,23 +27,17 @@ public abstract class Block extends MultiblockBit implements Searchable{
     }
     public abstract Block newInstance(int x, int y, int z);
     public abstract void copyProperties(Block other);
-    public abstract PlannerImage getBaseTexture();
-    public abstract PlannerImage getTexture();
-    private PlannerImage getGrayscaleTexture(){
+    public abstract Image getBaseTexture();
+    public abstract Image getTexture();
+    private Image getGrayscaleTexture(){
         if(grayscaleTexture!=null)return grayscaleTexture;
-        PlannerImage img = getTexture();
+        Image img = getTexture();
         if(img==null)return null;
-        PlannerImage grayscale = new PlannerImage(img.getWidth(), img.getHeight());
+        Image grayscale = new Image(img.getWidth(), img.getHeight());
         for(int x = 0; x<img.getWidth(); x++){
             for(int y = 0; y<img.getHeight(); y++){
-                Color c = new Color(img.getRGB(x, y));
-                int alpha = c.getAlpha();
-                float[] hsb = new float[3];
-                Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb);
-                hsb[1]*=.25f;
-                c = new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
-                c = new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
-                grayscale.setRGB(x, y, c.getRGB());
+                Color c = img.getColor(x, y);
+                grayscale.setColor(x, y, Color.fromHSB(c.getHue(), c.getSaturation()*.25f, c.getBrightness(), c.getAlpha()));
             }
         }
         return grayscaleTexture = grayscale;

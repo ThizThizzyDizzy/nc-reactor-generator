@@ -1,6 +1,6 @@
 package multiblock.configuration.overhaul.fissionmsr;
-import planner.core.Color;
-import planner.core.PlannerImage;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
@@ -175,19 +175,19 @@ public class Block extends RuleContainer implements Searchable{
     public boolean shieldHasBaseStats;
     public int shieldHeat;
     public float shieldEfficiency;
-    public PlannerImage shieldClosedTexture;
-    public PlannerImage shieldClosedDisplayTexture;
+    public Image shieldClosedTexture;
+    public Image shieldClosedDisplayTexture;
     public boolean heater;
     public boolean heaterHasBaseStats;
     public int heaterCooling;
     public boolean source;
     public float sourceEfficiency;
-    public PlannerImage texture;
-    public PlannerImage displayTexture;
+    public Image texture;
+    public Image displayTexture;
     public Block port;
     public String portOutputDisplayName;
-    public PlannerImage portOutputTexture;
-    public PlannerImage portOutputDisplayTexture;
+    public Image portOutputTexture;
+    public Image portOutputDisplayTexture;
     public Block parent;//if this is a port
     public ArrayList<BlockRecipe> allRecipes = new ArrayList<>();
     /**
@@ -372,16 +372,16 @@ public class Block extends RuleContainer implements Searchable{
         }
         return config;
     }
-    public void setTexture(PlannerImage image){
+    public void setTexture(Image image){
         texture = image;
         displayTexture = TextureManager.convert(image);
     }
-    public void setInternalTexture(PlannerImage other){
+    public void setInternalTexture(Image other){
         int left = Math.max(0,texture.getWidth()*5/16-1);
         int right = Math.min(texture.getWidth()*11/16, texture.getWidth()-1);
         int up = Math.max(0,texture.getHeight()*5/16-1);
         int down = Math.min(texture.getHeight()*11/16, texture.getHeight()-1);
-        PlannerImage displayImg = new PlannerImage(texture.getWidth(), texture.getHeight());
+        Image displayImg = new Image(texture.getWidth(), texture.getHeight());
         for(int x = 0; x<texture.getWidth(); x++){
             for(int y = 0; y<texture.getHeight(); y++){
                 if(x>left&&y>up&&x<right&&y<down){
@@ -393,20 +393,20 @@ public class Block extends RuleContainer implements Searchable{
         }
         displayTexture = displayImg;
     }
-    public void setPortOutputTexture(PlannerImage image){
+    public void setPortOutputTexture(Image image){
         portOutputTexture = image;
         portOutputDisplayTexture = TextureManager.convert(image);
     }
-    public void setShieldClosedTexture(PlannerImage image){
+    public void setShieldClosedTexture(Image image){
         shieldClosedTexture = image;
         shieldClosedDisplayTexture = TextureManager.convert(image);
     }
-    public void setInternalShieldClosedTexture(PlannerImage other){
+    public void setInternalShieldClosedTexture(Image other){
         int left = Math.max(0,shieldClosedTexture.getWidth()*5/16-1);
         int right = Math.min(shieldClosedTexture.getWidth()*11/16, shieldClosedTexture.getWidth()-1);
         int up = Math.max(0,shieldClosedTexture.getHeight()*5/16-1);
         int down = Math.min(shieldClosedTexture.getHeight()*11/16, shieldClosedTexture.getHeight()-1);
-        PlannerImage displayImg = new PlannerImage(shieldClosedTexture.getWidth(), shieldClosedTexture.getHeight());
+        Image displayImg = new Image(shieldClosedTexture.getWidth(), shieldClosedTexture.getHeight());
         for(int x = 0; x<shieldClosedTexture.getWidth(); x++){
             for(int y = 0; y<shieldClosedTexture.getHeight(); y++){
                 if(x>left&&y>up&&x<right&&y<down){

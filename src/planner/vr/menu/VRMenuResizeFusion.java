@@ -1,5 +1,5 @@
 package planner.vr.menu;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import multiblock.BoundingBox;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.opengl.GL11;

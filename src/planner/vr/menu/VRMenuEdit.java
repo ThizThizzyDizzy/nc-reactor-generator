@@ -1,5 +1,5 @@
 package planner.vr.menu;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -501,11 +501,10 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }
     @Override
     public Color convertToolColor(Color color, int id){
-        float[] hsb = new float[3];
-        Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsb);
-        if(id%2==0)hsb[0]+=20/360f;//is this 0-1?
-        else hsb[0]-=20/360f;//is this 0-1?
-        return new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
+        float hue = color.getHue();
+        if(id%2==0)hue+=20/360f;//is this 0-1?
+        else hue-=20/360f;//is this 0-1?
+        return Color.fromHSB(hue, color.getSaturation(), color.getBrightness());
     }//doesn't do alpha
     @Override
     public multiblock.configuration.overhaul.fusion.BlockRecipe getSelectedOverhaulFusionBlockRecipe(int id){

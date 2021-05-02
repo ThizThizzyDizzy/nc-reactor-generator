@@ -1,5 +1,5 @@
 package planner;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.ArrayList;
 public class FormattedText{
     public String text;

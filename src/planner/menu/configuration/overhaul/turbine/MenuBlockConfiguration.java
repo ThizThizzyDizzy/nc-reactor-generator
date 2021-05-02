@@ -1,9 +1,9 @@
 package planner.menu.configuration.overhaul.turbine;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
+import planner.ImageIO;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.Block;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
@@ -49,7 +49,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
                 for(String s : files){
                     if(s.endsWith(".png")){
                         try{
-                            PlannerImage img = PlannerImage.fromAWT(ImageIO.read(new File(s)));
+                            Image img = ImageIO.read(new File(s));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
                                 if(Main.hasAWT){
@@ -90,7 +90,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         texture.addActionListener((e) -> {
             Core.createFileChooser((file, format) -> {
                 try{
-                    PlannerImage img = PlannerImage.fromAWT(ImageIO.read(file));
+                    Image img = ImageIO.read(file);
                     if(img==null)return;
                     if(img.getWidth()!=img.getHeight()){
                         if(Main.hasAWT){

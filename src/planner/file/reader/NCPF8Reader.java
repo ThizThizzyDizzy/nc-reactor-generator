@@ -1,5 +1,5 @@
 package planner.file.reader;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -1791,9 +1791,9 @@ public class NCPF8Reader implements FormatReader{
         }
         return configuration;
     }
-    private PlannerImage loadNCPFTexture(ConfigNumberList texture){
+    private Image loadNCPFTexture(ConfigNumberList texture){
         int size = (int) texture.get(0);
-        PlannerImage image = new PlannerImage(size, size);
+        Image image = new Image(size, size);
         int index = 1;
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){

@@ -1,5 +1,5 @@
 package planner.vr.menu.component;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import multiblock.configuration.overhaul.fissionmsr.Block;
 import multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
 import org.lwjgl.opengl.GL11;

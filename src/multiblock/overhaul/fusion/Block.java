@@ -1,6 +1,6 @@
 package multiblock.overhaul.fusion;
-import planner.core.Color;
-import planner.core.PlannerImage;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
@@ -39,11 +39,11 @@ public class Block extends multiblock.Block{
         ((Block)other).recipe = recipe;
     }
     @Override
-    public PlannerImage getBaseTexture(){
+    public Image getBaseTexture(){
         return template.texture;
     }
     @Override
-    public PlannerImage getTexture(){
+    public Image getTexture(){
         return template.displayTexture;
     }
     @Override
@@ -198,10 +198,10 @@ public class Block extends multiblock.Block{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.WHITE;
+                secondaryColor = Color.PINK;
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.PINK;
+                secondaryColor = Color.WHITE;
             }
             if(secondaryColor!=null){
                 Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor), .75f);
@@ -260,10 +260,10 @@ public class Block extends multiblock.Block{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.WHITE;
+                secondaryColor = Color.PINK;
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.PINK;
+                secondaryColor = Color.WHITE;
             }
             if(secondaryColor!=null){
                 Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor));

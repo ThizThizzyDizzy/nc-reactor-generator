@@ -1,9 +1,9 @@
 package planner.menu.configuration.overhaul.fissionmsr;
-import planner.core.PlannerImage;
+import simplelibrary.image.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
+import planner.ImageIO;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Block;
 import multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
@@ -50,7 +50,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
                 for(String s : files){
                     if(s.endsWith(".png")){
                         try{
-                            PlannerImage img = PlannerImage.fromAWT(ImageIO.read(new File(s)));
+                            Image img = ImageIO.read(new File(s));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
                                 if(Main.hasAWT){
@@ -87,7 +87,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
                     if(block.port==null)break;
                     if(s.endsWith(".png")){
                         try{
-                            PlannerImage img = PlannerImage.fromAWT(ImageIO.read(new File(s)));
+                            Image img = ImageIO.read(new File(s));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
                                 if(Main.hasAWT){
@@ -120,7 +120,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
                     if(block.port==null)break;
                     if(s.endsWith(".png")){
                         try{
-                            PlannerImage img = PlannerImage.fromAWT(ImageIO.read(new File(s)));
+                            Image img = ImageIO.read(new File(s));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
                                 if(Main.hasAWT){
@@ -180,7 +180,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
                 for(String s : files){
                     if(s.endsWith(".png")){
                         try{
-                            PlannerImage img = PlannerImage.fromAWT(ImageIO.read(new File(s)));
+                            Image img = ImageIO.read(new File(s));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
                                 if(Main.hasAWT){
@@ -217,7 +217,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         texture.addActionListener((e) -> {
             Core.createFileChooser((file, format) -> {
                 try{
-                    PlannerImage img = PlannerImage.fromAWT(ImageIO.read(file));
+                    Image img = ImageIO.read(file);
                     if(img==null)return;
                     if(img.getWidth()!=img.getHeight()){
                         if(Main.hasAWT){
@@ -235,7 +235,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
             if(block.port==null)return;
             Core.createFileChooser((file, format) -> {
                 try{
-                    PlannerImage img = PlannerImage.fromAWT(ImageIO.read(file));
+                    Image img = ImageIO.read(file);
                     if(img==null)return;
                     if(img.getWidth()!=img.getHeight()){
                         if(Main.hasAWT){
@@ -253,7 +253,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
             if(block.port==null)return;
             Core.createFileChooser((file, format) -> {
                 try{
-                    PlannerImage img = PlannerImage.fromAWT(ImageIO.read(file));
+                    Image img = ImageIO.read(file);
                     if(img==null)return;
                     if(img.getWidth()!=img.getHeight()){
                         if(Main.hasAWT){
@@ -270,7 +270,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         shieldClosedTexture.addActionListener((e) -> {
             Core.createFileChooser((file, format) -> {
                 try{
-                    PlannerImage img = PlannerImage.fromAWT(ImageIO.read(file));
+                    Image img = ImageIO.read(file);
                     if(img==null)return;
                     if(img.getWidth()!=img.getHeight()){
                         if(Main.hasAWT){

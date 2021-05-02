@@ -1,5 +1,5 @@
 package planner.menu.component.editor;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import planner.Core;
 import planner.editor.tool.EditorTool;
 import simplelibrary.opengl.gui.components.MenuComponent;

@@ -1,6 +1,6 @@
 package multiblock.overhaul.fissionmsr;
-import planner.core.Color;
-import planner.core.PlannerImage;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
@@ -46,7 +46,7 @@ public class Block extends multiblock.Block{
         ((Block)other).isToggled = isToggled;
     }
     @Override
-    public PlannerImage getBaseTexture(){
+    public Image getBaseTexture(){
         if(isToggled){
             if(template.shield)return template.shieldClosedTexture;
             if(template.parent!=null)return template.portOutputTexture;
@@ -54,7 +54,7 @@ public class Block extends multiblock.Block{
         return template.texture;
     }
     @Override
-    public PlannerImage getTexture(){
+    public Image getTexture(){
         if(isToggled){
             if(template.shield)return template.shieldClosedDisplayTexture;
             if(template.parent!=null)return template.portOutputDisplayTexture;
@@ -383,10 +383,10 @@ public class Block extends multiblock.Block{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.WHITE;
+                secondaryColor = Color.PINK;
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.PINK;
+                secondaryColor = Color.WHITE;
             }
             if(secondaryColor!=null){
                 Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor), .75f);
@@ -455,10 +455,10 @@ public class Block extends multiblock.Block{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.WHITE;
+                secondaryColor = Color.PINK;
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.PINK;
+                secondaryColor = Color.WHITE;
             }
             if(secondaryColor!=null){
                 Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor));

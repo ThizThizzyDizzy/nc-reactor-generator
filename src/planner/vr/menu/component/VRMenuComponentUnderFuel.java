@@ -1,5 +1,5 @@
 package planner.vr.menu.component;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import multiblock.action.SetFuelAction;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;

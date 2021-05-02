@@ -3,7 +3,7 @@ import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
 import discord.play.smivilization.HutThingColorable;
 import discord.play.smivilization.Wall;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.UUID;
 public class Couch extends HutThingColorable{
     public Couch(UUID uuid, Hut hut){

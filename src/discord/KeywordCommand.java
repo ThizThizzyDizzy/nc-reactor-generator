@@ -1,7 +1,8 @@
 package discord;
-import planner.core.Color;
-import planner.core.PlannerImage;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,9 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import planner.Core;
+import planner.ImageIO;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 public abstract class KeywordCommand extends Command{
@@ -66,7 +67,7 @@ public abstract class KeywordCommand extends Command{
             wide = Math.max(wide, (int)FontManager.getLengthForStringWithHeight(w.name+" | "+w.input, textHeight)+1);
         }
         int width = wide;
-        PlannerImage image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
+        Image image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
             Core.applyColor(Core.theme.getEditorListBorderColor());
             Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
             double x = 5;
@@ -88,7 +89,9 @@ public abstract class KeywordCommand extends Command{
         });
         File debugFile = new File("debug.png");
         try{
-            ImageIO.write(image.toAWT(), "png", debugFile);
+            FileOutputStream fos = new FileOutputStream(debugFile);
+            ImageIO.write(image, fos);
+            fos.close();
         }catch(IOException ex){
             Logger.getLogger(KeywordCommand.class.getName()).log(Level.SEVERE, null, ex);
         }

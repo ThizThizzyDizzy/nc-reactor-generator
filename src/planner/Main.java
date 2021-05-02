@@ -1,10 +1,13 @@
 package planner;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
@@ -12,6 +15,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,13 +29,11 @@ public class Main{
     private static int current;
     //OS details
     
-    public static boolean hasAWT = true;
-    public static boolean hasAWTAfterStartup = false;
     private static final int OS_UNKNOWN = -1;
-    private static final int OS_WINDOWS = 0;
-    private static final int OS_MACOS = 1;
-    private static final int OS_LINUX = 2;
-    private static int os = OS_UNKNOWN;//Should not be directly referenced from other classes, as there are always better ways of handling OS-compatibility
+    static final int OS_WINDOWS = 0;
+    static final int OS_MACOS = 1;
+    static final int OS_LINUX = 2;
+    static int os = OS_UNKNOWN;
     //other stuff
     public static boolean isBot = false;
     public static boolean headless = false;
@@ -51,28 +53,16 @@ public class Main{
             for(int i = 0; i<args.length; i++){
                 switch(args[i]){
                     case "headless":
-                        hasAWT = false;
                         headless = true;
                         break;
-                    case "noAWT":
-                        hasAWT = false;
-                        break;
-                    case "noAWTDuringStartup":
-                        hasAWT = false;
-                        hasAWTAfterStartup = true;
-                        break;
                     case "maybediscord":
-                        if(hasAWT){
-                            if(javax.swing.JOptionPane.showOptionDialog(null, "Bot or Planner?", "Discord?", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, new String[]{"Bot", "Planner"}, "Planner")==0)args[i] = "discord";
-                        }else{
-                            System.out.println("Bot or Planner? (B|P)\n> ");
-                            BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-                            String s = r.readLine();
-                            if(s==null)s = "";
-                            s = s.trim();
-                            r.close();
-                            if(s.equalsIgnoreCase("B")||s.equalsIgnoreCase("Bot")||s.equalsIgnoreCase("Discord"))args[i] = "discord";
-                        }
+                        System.out.println("Bot or Planner? (B|P)\n> ");
+                        BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+                        String s = r.readLine();
+                        if(s==null)s = "";
+                        s = s.trim();
+                        r.close();
+                        if(s.equalsIgnoreCase("B")||s.equalsIgnoreCase("Bot")||s.equalsIgnoreCase("Discord"))args[i] = "discord";
                     case "discord":
                         if(args[i].equals("discord")){
                             isBot = true;
@@ -94,14 +84,21 @@ public class Main{
                 saved = true;
             }catch(Exception e){}
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+")", ex);
-            if(hasAWT){
-                String trace = "";
-                for(StackTraceElement e : ex.getStackTrace()){
-                    trace+="\n"+e.toString();
-                }
-                trace = trace.isEmpty()?trace:trace.substring(1);
-                javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage()+"\n"+trace, "CAUGHT ERROR: "+ex.getClass().getName()+" on main thread! (Autosave "+(saved?"Successful":"Failed")+")", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GregorianCalendar calendar = new GregorianCalendar();
+            File file = new File("crash-reports"+File.separatorChar+"crash-"+calendar.getTime().toString().replace(":", "-")+".txt");
+            if(!file.getParentFile().exists())file.getParentFile().mkdirs();
+            int i = 1;
+            while(file.exists()){
+                file = new File("crash-reports"+File.separatorChar+"crash-"+calendar.getTime().toString().replace(":", "-")+"_"+i+".txt");
+                i++;
             }
+            try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))){
+                writer.write("CAUGHT ERROR: "+ex.getClass().getName()+" on main thread! (Autosave "+(saved?"Successful":"Failed")+")");
+                writer.write(ex.getMessage()+"\n");
+                for(StackTraceElement e : ex.getStackTrace()){
+                    writer.write(e.toString()+"\n");
+                }
+            }catch(IOException ex1){}
             System.exit(0);
         }
     }
@@ -110,6 +107,12 @@ public class Main{
     }
     private static String[] update(String[] args) throws URISyntaxException, IOException, InterruptedException{
         ArrayList<String> theargs = new ArrayList<>(Arrays.asList(args));
+        String osName = System.getProperty("os.name");
+        if(osName==null)osName = "null";
+        osName = osName.toLowerCase(Locale.ENGLISH);
+        if(osName.contains("win"))os = OS_WINDOWS;
+        if(osName.contains("mac"))os = OS_MACOS;
+        if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
         if(args.length<1||!args[0].equals("Skip Dependencies")){
             setLookAndFeel();
             if(versionListURL.isEmpty()){
@@ -146,12 +149,6 @@ public class Main{
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjglx-debug-1.0.0.jar", "lwjglx-debug-1.0.0.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openvr.jar", "lwjgl-openvr.jar");
-            String osName = System.getProperty("os.name");
-            if(osName==null)osName = "null";
-            osName = osName.toLowerCase(Locale.ENGLISH);
-            if(osName.contains("win"))os = OS_WINDOWS;
-            if(osName.contains("mac"))os = OS_MACOS;
-            if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
             if(os==OS_UNKNOWN){
                 System.out.println("Unknown OS: "+osName);
                 if(hasAWT){

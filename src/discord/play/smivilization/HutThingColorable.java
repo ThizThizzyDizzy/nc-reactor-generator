@@ -1,5 +1,5 @@
 package discord.play.smivilization;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import java.util.UUID;
 import planner.Core;
 import simplelibrary.config2.Config;

@@ -1,5 +1,5 @@
 package planner.vr.menu;
-import planner.core.Color;
+import simplelibrary.image.Color;
 import multiblock.CuboidalMultiblock;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;

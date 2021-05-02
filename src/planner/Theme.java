@@ -1,9 +1,9 @@
 package planner;
-import planner.core.Color;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Supplier;
+import simplelibrary.image.Color;
 public abstract class Theme{
     public static ArrayList<Theme> themes = new ArrayList<>();
     static{
@@ -185,49 +185,49 @@ public abstract class Theme{
     }
     //TODO no brighter()/darker()
     public Color getBrighterEditorListBorderColor(){
-        return Color.fromAWT(getEditorListBorderColor().toAWT().brighter());
+        return brighter(getEditorListBorderColor());
     }
     public Color getDarkerEditorListBorderColor(){
-        return Color.fromAWT(getEditorListBorderColor().toAWT().darker());
+        return darker(getEditorListBorderColor());
     }
     public Color getDarkerTextColor(){
-        return Color.fromAWT(getTextColor().toAWT().darker());
+        return darker(getTextColor());
     }
     public Color getDarkerDarkButtonColor(){
-        return Color.fromAWT(getDarkButtonColor().toAWT().darker());
+        return darker(getDarkButtonColor());
     }
     public Color getBrighterDarkButtonColor(){
-        return Color.fromAWT(getDarkButtonColor().toAWT().brighter());
+        return brighter(getDarkButtonColor());
     }
     public Color getDarkerButtonColor(){
-        return Color.fromAWT(getButtonColor().toAWT().darker());
+        return darker(getButtonColor());
     }
     public Color getBrighterButtonColor(){
-        return Color.fromAWT(getButtonColor().toAWT().brighter());
+        return brighter(getButtonColor());
     }
     public Color getDarkerDarkerDarkButtonColor(){
-        return Color.fromAWT(getDarkButtonColor().toAWT().darker().darker());
+        return darker(darker(getDarkButtonColor()));
     }
     public Color getDarkerDarkerButtonColor(){
-        return Color.fromAWT(getButtonColor().toAWT().darker().darker());
+        return darker(darker(getButtonColor()));
     }
     public Color getBrighterDarkerDarkerDarkButtonColor(){
-        return Color.fromAWT(getDarkButtonColor().toAWT().darker().darker().brighter());
+        return brighter(darker(darker(getDarkButtonColor())));
     }
     public Color getBrighterBrighterDarkButtonColor(){
-        return Color.fromAWT(getDarkButtonColor().toAWT().brighter().brighter());
+        return brighter(brighter(getDarkButtonColor()));
     }
     public Color getBrighterDarkerDarkerButtonColor(){
-        return Color.fromAWT(getButtonColor().toAWT().darker().darker().brighter());
+        return brighter(darker(darker(getButtonColor())));
     }
     public Color getBrighterBrighterButtonColor(){
-        return Color.fromAWT(getButtonColor().toAWT().brighter().brighter());
+        return brighter(brighter(getButtonColor()));
     }
     public Color getBrighterDarkerButtonColor(){
-        return Color.fromAWT(getButtonColor().toAWT().darker().brighter());
+        return brighter(darker(getButtonColor()));
     }
     public Color getDarkerListColor(){
-        return Color.fromAWT(getListColor().toAWT().darker());
+        return darker(getListColor());
     }
     private static class SolidColorTheme extends Theme{
         private final Color background;
@@ -574,7 +574,7 @@ public abstract class Theme{
                     if(Main.hasAWT){
                         siezureAllowed = javax.swing.JOptionPane.showConfirmDialog(null, "CONTAINS LOTS OF FLASHING COLORS\nCONTINUE?", "SIEZURE WARNING", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE)==javax.swing.JOptionPane.OK_OPTION;
                     }else{
-                        siezureAllowed = false;//TODO add a non-awt thing for this
+                        siezureAllowed = false;
                     }
                     if(!siezureAllowed){
                         Core.setTheme(themes.get(0));
@@ -674,5 +674,29 @@ public abstract class Theme{
     }
     public static Color average(Color c1, Color c2){
         return new Color((c1.getRed()+c2.getRed())/2, (c1.getGreen()+c2.getGreen())/2, (c1.getBlue()+c2.getBlue())/2, (c1.getAlpha()+c2.getAlpha())/2);
+    }
+    private static final double FACTOR = 0.7;
+    public static Color brighter(Color color) {
+        int r = color.getRed();
+        int g = color.getGreen();
+        int b = color.getBlue();
+        int alpha = color.getAlpha();
+        int i = (int)(1.0/(1.0-FACTOR));
+        if ( r == 0 && g == 0 && b == 0) {
+            return new Color(i, i, i, alpha);
+        }
+        if ( r > 0 && r < i ) r = i;
+        if ( g > 0 && g < i ) g = i;
+        if ( b > 0 && b < i ) b = i;
+        return new Color(Math.min((int)(r/FACTOR), 255),
+                         Math.min((int)(g/FACTOR), 255),
+                         Math.min((int)(b/FACTOR), 255),
+                         alpha);
+    }
+    public static Color darker(Color color) {
+        return new Color(Math.max((int)(color.getRed()  *FACTOR), 0),
+                         Math.max((int)(color.getGreen()*FACTOR), 0),
+                         Math.max((int)(color.getBlue() *FACTOR), 0),
+                         color.getAlpha());
     }
 }
