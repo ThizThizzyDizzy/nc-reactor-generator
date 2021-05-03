@@ -3,6 +3,8 @@ import simplelibrary.image.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import planner.ImageIO;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
@@ -46,11 +48,7 @@ public class MenuFuelConfiguration extends ConfigurationMenu{
                             Image img = ImageIO.read(new File(s));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
-                                if(Main.hasAWT){
-                                    javax.swing.JOptionPane.showMessageDialog(null, "Image is not square!", "Error loading image", javax.swing.JOptionPane.ERROR_MESSAGE);
-                                }else{
-                                    Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                                }
+                                Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
                                 continue;
                             }
                             fuel.setTexture(img);
@@ -68,21 +66,21 @@ public class MenuFuelConfiguration extends ConfigurationMenu{
         heat = add(new MenuComponentMinimalistTextBox(sidebar.width, texture.height, 0, 48, "", true, "Heat").setFloatFilter());
         time = add(new MenuComponentMinimalistTextBox(sidebar.width, texture.height, 0, 48, "", true, "Time").setIntFilter());
         texture.addActionListener((e) -> {
-            Core.createFileChooser((file, format) -> {
-                try{
-                    Image img = ImageIO.read(file);
-                    if(img==null)return;
-                    if(img.getWidth()!=img.getHeight()){
-                        if(Main.hasAWT){
-                            javax.swing.JOptionPane.showMessageDialog(null, "Image is not square!", "Error loading image", javax.swing.JOptionPane.ERROR_MESSAGE);
-                        }else{
+            try{
+                Core.createFileChooser((file) -> {
+                    try{
+                        Image img = ImageIO.read(file);
+                        if(img==null)return;
+                        if(img.getWidth()!=img.getHeight()){
                             Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
+                            return;
                         }
-                        return;
-                    }
-                    fuel.setTexture(img);
-                }catch(IOException ex){}
-            }, FileFormat.PNG);
+                        fuel.setTexture(img);
+                    }catch(IOException ex){}
+                }, FileFormat.PNG);
+            }catch(IOException ex){
+                Sys.error(ErrorLevel.severe, "Failed to load image!", ex, ErrorCategory.fileIO);
+            }
         });
         this.fuel = fuel;
     }

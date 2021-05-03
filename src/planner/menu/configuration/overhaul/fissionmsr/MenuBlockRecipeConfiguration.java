@@ -3,6 +3,8 @@ import simplelibrary.image.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import planner.ImageIO;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Block;
@@ -51,11 +53,7 @@ public class MenuBlockRecipeConfiguration extends ConfigurationMenu{
                             Image img = ImageIO.read(new File(s));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
-                                if(Main.hasAWT){
-                                    javax.swing.JOptionPane.showMessageDialog(null, "Image is not square!", "Error loading image", javax.swing.JOptionPane.ERROR_MESSAGE);
-                                }else{
-                                    Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                                }
+                                Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
                                 continue;
                             }
                             blockRecipe.setInputTexture(img);
@@ -87,11 +85,7 @@ public class MenuBlockRecipeConfiguration extends ConfigurationMenu{
                             Image img = ImageIO.read(new File(s));
                             if(img==null)continue;
                             if(img.getWidth()!=img.getHeight()){
-                                if(Main.hasAWT){
-                                    javax.swing.JOptionPane.showMessageDialog(null, "Image is not square!", "Error loading image", javax.swing.JOptionPane.ERROR_MESSAGE);
-                                }else{
-                                    Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                                }
+                                Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
                                 continue;
                             }
                             blockRecipe.setOutputTexture(img);
@@ -131,38 +125,38 @@ public class MenuBlockRecipeConfiguration extends ConfigurationMenu{
         shieldEfficiency = add(new MenuComponentMinimalistTextBox(shield.x, shieldHeat.y+shieldHeat.height, 0, block.shield?48:0, "", true, "Efficiency").setFloatFilter());
         
         inputTexture.addActionListener((e) -> {
-            Core.createFileChooser((file, format) -> {
-                try{
-                    Image img = ImageIO.read(file);
-                    if(img==null)return;
-                    if(img.getWidth()!=img.getHeight()){
-                        if(Main.hasAWT){
-                            javax.swing.JOptionPane.showMessageDialog(null, "Image is not square!", "Error loading image", javax.swing.JOptionPane.ERROR_MESSAGE);
-                        }else{
+            try{
+                Core.createFileChooser((file) -> {
+                    try{
+                        Image img = ImageIO.read(file);
+                        if(img==null)return;
+                        if(img.getWidth()!=img.getHeight()){
                             Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
+                            return;
                         }
-                        return;
-                    }
-                    blockRecipe.setInputTexture(img);
-                }catch(IOException ex){}
-            }, FileFormat.PNG);
+                        blockRecipe.setInputTexture(img);
+                    }catch(IOException ex){}
+                }, FileFormat.PNG);
+            }catch(IOException ex){
+                Sys.error(ErrorLevel.severe, "Failed to load texture!", ex, ErrorCategory.fileIO);
+            }
         });
         outputTexture.addActionListener((e) -> {
-            Core.createFileChooser((file, format) -> {
-                try{
-                    Image img = ImageIO.read(file);
-                    if(img==null)return;
-                    if(img.getWidth()!=img.getHeight()){
-                        if(Main.hasAWT){
-                            javax.swing.JOptionPane.showMessageDialog(null, "Image is not square!", "Error loading image", javax.swing.JOptionPane.ERROR_MESSAGE);
-                        }else{
+            try{
+                Core.createFileChooser((file) -> {
+                    try{
+                        Image img = ImageIO.read(file);
+                        if(img==null)return;
+                        if(img.getWidth()!=img.getHeight()){
                             Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
+                            return;
                         }
-                        return;
-                    }
-                    blockRecipe.setOutputTexture(img);
-                }catch(IOException ex){}
-            }, FileFormat.PNG);
+                        blockRecipe.setOutputTexture(img);
+                    }catch(IOException ex){}
+                }, FileFormat.PNG);
+            }catch(IOException ex){
+                Logger.getLogger(MenuBlockRecipeConfiguration.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         this.block = block;
         this.blockRecipe = blockRecipe;

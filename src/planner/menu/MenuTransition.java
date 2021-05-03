@@ -2,6 +2,9 @@ package planner.menu;
 import java.util.HashMap;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import simplelibrary.Sys;
+import simplelibrary.error.ErrorCategory;
+import simplelibrary.error.ErrorLevel;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -371,34 +374,70 @@ public class MenuTransition extends Menu{
     }
     @Override
     public void onMouseMove(double x, double y){
-        to.onMouseMove(x, y);
+        try{
+            to.onMouseMove(x, y);
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.other);
+        }
     }
     @Override
     public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-        to.onMouseButton(x, y, button, pressed, mods);
+        try{
+            to.onMouseButton(x, y, button, pressed, mods);
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.other);
+        }
     }
     @Override
     public boolean onMouseScrolled(double x, double y, double dx, double dy){
-        return to.onMouseScrolled(x, y, dx, dy);
+        try{
+            return to.onMouseScrolled(x, y, dx, dy);
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.other);
+        }
+        return true;
     }
     @Override
     public void onCharTyped(char c){
-        to.onCharTyped(c);
+        try{
+            to.onCharTyped(c);
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.other);
+        }
     }
     @Override
     public boolean onFilesDropped(double x, double y, String[] files){
-        return to.onFilesDropped(x, y, files);
+        try{
+            return to.onFilesDropped(x, y, files);
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.other);
+        }
+        return true;
     }
     @Override
     public boolean onReturnPressed(MenuComponent component){
-        return to.onReturnPressed(component);
+        try{
+            return to.onReturnPressed(component);
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.other);
+        }
+        return true;
     }
     @Override
     public boolean onTabPressed(MenuComponent component){
-        return to.onTabPressed(component);
+        try{
+            return to.onTabPressed(component);
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.other);
+        }
+        return true;
     }
     @Override
     public void onWindowFocused(boolean focused){
-        to.onWindowFocused(focused);
+        try{
+            to.onWindowFocused(focused);
+        }catch(Exception ex){
+            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.other);
+        }
     }
 }

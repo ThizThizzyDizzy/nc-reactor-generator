@@ -2,7 +2,6 @@ package planner;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +19,6 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 public class Main{
-    private static final String versionListURL = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt";
     public static final String applicationName = "Nuclearcraft Reactor Generator";
     public static final String issueTrackerLink = "https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues";
     private static final ArrayList<String[]> requiredLibraries = new ArrayList<>();
@@ -28,7 +26,6 @@ public class Main{
     private static int total;
     private static int current;
     //OS details
-    
     private static final int OS_UNKNOWN = -1;
     static final int OS_WINDOWS = 0;
     static final int OS_MACOS = 1;
@@ -114,33 +111,6 @@ public class Main{
         if(osName.contains("mac"))os = OS_MACOS;
         if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
         if(args.length<1||!args[0].equals("Skip Dependencies")){
-            setLookAndFeel();
-            if(versionListURL.isEmpty()){
-                System.err.println("Version list URL is empty! assuming latest version.");
-            }else{
-                System.out.println("Checking for updates...");
-                Updater updater = Updater.read(versionListURL, VersionManager.currentVersion, applicationName);
-                if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
-                    boolean allowUpdate = false;
-                    if(hasAWT){
-                        allowUpdate = javax.swing.JOptionPane.showConfirmDialog(null, "Version "+updater.getLatestDownloadableVersion()+" is out!  Would you like to update "+applicationName+" now?", applicationName+" "+VersionManager.currentVersion+"- Update Available", javax.swing.JOptionPane.YES_NO_OPTION)==javax.swing.JOptionPane.YES_OPTION;
-                    }else{
-                        System.out.println("Version "+updater.getLatestDownloadableVersion()+" is out! Would you like to update "+applicationName+" now? (Y/N)");
-                        BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-                        String s = r.readLine();
-                        if(s==null)s = "";
-                        s = s.trim();
-                        r.close();
-                        allowUpdate = s.equalsIgnoreCase("Y")||s.equalsIgnoreCase("Yes");
-                    }
-                    if(allowUpdate){
-                        System.out.println("Updating...");
-                        startJava(new String[0], new String[]{"justUpdated"}, updater.update(updater.getLatestDownloadableVersion()));
-                        System.exit(0);
-                    }
-                }
-                System.out.println("Update Check Complete.");
-            }
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-assimp.jar", "lwjgl-assimp.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-glfw.jar", "lwjgl-glfw.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openal.jar", "lwjgl-openal.jar");
@@ -149,24 +119,9 @@ public class Main{
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjglx-debug-1.0.0.jar", "lwjglx-debug-1.0.0.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openvr.jar", "lwjgl-openvr.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-nfd.jar", "lwjgl-nfd.jar");
             if(os==OS_UNKNOWN){
-                System.out.println("Unknown OS: "+osName);
-                if(hasAWT){
-                    os = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized OS \""+osName+"\"!\nPlease report this problem at "+issueTrackerLink+".\nIn the meantime, which OS are you using?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"Windows", "Mac OS", "Linux"}, "Windows");
-                }else{
-                    System.out.println("Unrecognized OS \""+osName+"\"! Please report this problem at "+issueTrackerLink+"\nWhich OS are you using? (Windows|Mac|Linux)");
-                    BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-                    String s = r.readLine();
-                    if(s==null)s = "";
-                    s = s.trim();
-                    r.close();
-                    if(s.equalsIgnoreCase("Windows"))os = OS_WINDOWS;
-                    if(s.equalsIgnoreCase("Mac")||s.equalsIgnoreCase("MacOS")||s.equalsIgnoreCase("Mac OS"))os = OS_MACOS;
-                    if(s.equalsIgnoreCase("Linux"))os = OS_LINUX;
-                }
-                if(os<0||os>2){
-                    System.exit(0);
-                }
+                throw new IllegalArgumentException("Unknown OS: "+osName);
             }
             switch(os){
                 case OS_WINDOWS:
@@ -182,22 +137,8 @@ public class Main{
                         if(osArch.equals("x86"))arch = ARCH_X86;
                         System.out.println("OS: Windows");
                         if(arch==ARCH_UNKNOWN){
-                            System.out.println("Unknown Architecture: "+osArch);
-                            if(hasAWT){
-                                arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem at "+issueTrackerLink+".\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x86", "x64"}, "x64");
-                            }else{
-                                System.out.println("Unrecognized Architecture \""+osArch+"\"! Please report this problem at "+issueTrackerLink+"\nWhat is your OS architecture? (x86|x64)");
-                                BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-                                String s = r.readLine();
-                                if(s==null)s = "";
-                                s = s.trim();
-                                r.close();
-                                if(s.equalsIgnoreCase("x86")||s.equalsIgnoreCase("86")||s.equalsIgnoreCase("x32")||s.equalsIgnoreCase("32"))arch = ARCH_X86;
-                                if(s.equalsIgnoreCase("x64")||s.equalsIgnoreCase("64"))arch = ARCH_X64;
-                            }
-                            if(arch<0||arch>1){
-                                System.exit(0);
-                            }
+                            System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
+                            arch = ARCH_X64;
                         }
                         switch(arch){
                             case ARCH_X86:
@@ -209,6 +150,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-opengl-natives-windows-x86.jar", "lwjgl-opengl-natives-windows-x86.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-stb-natives-windows-x86.jar", "lwjgl-stb-natives-windows-x86.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openvr-natives-windows-x86.jar", "lwjgl-openvr-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-nfd-natives-windows-x86.jar", "lwjgl-nfd-natives-windows-x86.jar");
                                 break;
                             case ARCH_X64:
                                 System.out.println("OS Architecture: x64");
@@ -219,6 +161,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-opengl-natives-windows.jar", "lwjgl-opengl-natives-windows.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-stb-natives-windows.jar", "lwjgl-stb-natives-windows.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openvr-natives-windows.jar", "lwjgl-openvr-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-nfd-natives-windows.jar", "lwjgl-nfd-natives-windows.jar");
                                 break;
                         }
                     }
@@ -232,6 +175,7 @@ public class Main{
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-opengl-natives-macos.jar", "lwjgl-opengl-natives-macos.jar");
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-stb-natives-macos.jar", "lwjgl-stb-natives-macos.jar");
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openvr-natives-macos.jar", "lwjgl-openvr-natives-macos.jar");
+                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-nfd-natives-macos.jar", "lwjgl-nfd-natives-macos.jar");
                     break;
                 case OS_LINUX:
                     {
@@ -249,23 +193,8 @@ public class Main{
                         if(osArch.equals("arm64"))arch = ARCH_ARM64;
                         System.out.println("OS: Linux");
                         if(arch==ARCH_UNKNOWN){
-                            System.out.println("Unknown Architecture: "+osArch);
-                            if(hasAWT){
-                                arch = javax.swing.JOptionPane.showOptionDialog(null, "Unrecognized Architecture \""+osArch+"\"!\nPlease report this problem at "+issueTrackerLink+".\nIn the meantime, what is your OS architecture?", "Unrecognized Operating System", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.ERROR_MESSAGE, null, new String[]{"x64", "arm32", "arm64"}, "x64");
-                            }else{
-                                System.out.println("Unrecognized Architecture \""+osArch+"\"! Please report this problem at "+issueTrackerLink+"\nWhat is your OS architecture? (x64|arm32|arm64)");
-                                BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-                                String s = r.readLine();
-                                if(s==null)s = "";
-                                s = s.trim();
-                                r.close();
-                                if(s.equalsIgnoreCase("x64")||s.equalsIgnoreCase("64"))arch = ARCH_X64;
-                                if(s.equalsIgnoreCase("arm32"))arch = ARCH_ARM32;
-                                if(s.equalsIgnoreCase("arm64"))arch = ARCH_ARM64;
-                            }
-                            if(arch<0||arch>2){
-                                System.exit(0);
-                            }
+                            System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
+                            arch = ARCH_X64;
                         }
                         switch(arch){
                             case ARCH_X64:
@@ -277,6 +206,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-opengl-natives-linux.jar", "lwjgl-opengl-natives-linux.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-stb-natives-linux.jar", "lwjgl-stb-natives-linux.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openvr-natives-linux.jar", "lwjgl-openvr-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-nfd-natives-linux.jar", "lwjgl-nfd-natives-linux.jar");
                                 break;
                             case ARCH_ARM32:
                                 System.out.println("OS Architecture: arm32");
@@ -301,56 +231,26 @@ public class Main{
                     break;
             }
             addRequiredLibraries();
-            boolean hasAnythingToDownload = false;
-            for(String[] lib : requiredLibraries){
-                if(!new File(getLibraryRoot()+File.separatorChar+lib[1]).exists()){
-                    hasAnythingToDownload = true;
-                }
-            }
             total = requiredLibraries.size();
             File[] requiredLibs = new File[requiredLibraries.size()];
-            if(hasAWT){
-                javax.swing.JFrame frame = new javax.swing.JFrame("Download Progress");
-                javax.swing.JProgressBar bar = new javax.swing.JProgressBar(0, total);
-                frame.add(bar);
-                frame.setSize(300, 70);
-                bar.setBounds(0, 0, 300, 70);
-                if(hasAnythingToDownload){
-                    frame.setVisible(true);
+            int n = 0;
+            System.out.println("Checking Libraries...");
+            int failed = 0;
+            for(String[] lib : requiredLibraries){
+                String url = lib[0];
+                String filename = lib[1];
+                requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+File.separatorChar+filename));
+                System.out.println("Checking... "+Math.round(100d*current/total)+"% ("+current+"/"+total+")");
+                if(requiredLibs[n]==null){
+                    failed++;
+                    System.err.println("Failed to download library: "+filename+"!");
                 }
-                int n = 0;
-                System.out.println("Checking Libraries...");
-                for(String[] lib : requiredLibraries){
-                    String url = lib[0];
-                    String filename = lib[1];
-                    requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+File.separatorChar+filename));
-                    bar.setValue(current);
-                    n++;
-                }
-                System.out.println("Libraries OK");
-                frame.dispose();
-            }else{
-                int n = 0;
-                System.out.println("Checking Libraries...");
-                for(String[] lib : requiredLibraries){
-                    String url = lib[0];
-                    String filename = lib[1];
-                    requiredLibs[n] = downloadFile(url, new File(getLibraryRoot()+File.separatorChar+filename));
-                    System.out.println("Checking... "+Math.round(100d*current/total)+"% ("+current+"/"+total+")");
-                    n++;
-                }
-                System.out.println("Libraries OK");
+                n++;
             }
+            if(failed>0)throw new RuntimeException("Failed to download "+failed+" librar"+(failed==1?"y":"ies")+"!");
+            System.out.println("Libraries OK");
             String[] additionalClasspathElements = new String[requiredLibs.length+4];
             for(int i = 0; i<requiredLibs.length; i++){
-                if(requiredLibs[i]==null){
-                    if(hasAWT){
-                        javax.swing.JOptionPane.showMessageDialog(null, "Failed to download dependencies!\n"+applicationName+" will now exit.", "Exit", javax.swing.JOptionPane.OK_OPTION);
-                    }else{
-                        System.err.println("Failed to download dependencies!");//TODO yes, but WHAT dependencies?
-                    }
-                    System.exit(0);
-                }
                 additionalClasspathElements[i] = requiredLibs[i].getAbsolutePath();
             }
             theargs.add(0, "Skip Dependencies");
@@ -548,25 +448,5 @@ public class Main{
         params.addAll(Arrays.asList(applicationArgs));
         ProcessBuilder builder = new ProcessBuilder(params);
         return builder.start();
-    }
-    public static void setLookAndFeel(){
-        if(!hasAWT)return;
-        System.out.println("Setting Swing look and feel...");
-        String lookAndFeel = null;
-        for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
-            if("Nimbus".equals(info.getName())){
-                lookAndFeel = info.getClassName();
-                break;
-            }
-        }
-        for(javax.swing.UIManager.LookAndFeelInfo info:javax.swing.UIManager.getInstalledLookAndFeels()){
-            if("Windows".equals(info.getName())){
-                lookAndFeel = info.getClassName();
-                break;
-            }
-        }
-        try{
-            javax.swing.UIManager.setLookAndFeel(lookAndFeel);
-        }catch(ClassNotFoundException|InstantiationException|IllegalAccessException|javax.swing.UnsupportedLookAndFeelException ex){}
     }
 }

@@ -27,9 +27,6 @@ public class HellrageFormatWriter extends FormatWriter{
         }
         if(hasOverhaul){
             Sys.error(ErrorLevel.warning, "Hellrage JSON format is deprecated!\nCasings, configurations, and addons will not be saved!\nSome things, such as coolant recipes, may not be saved properly!\n\nPlease use NCPF for full support", null, ErrorCategory.fileIO);
-            if(Main.hasAWT){
-                javax.swing.JOptionPane.showMessageDialog(null, "Hellrage JSON format is deprecated!\nCasings, configurations, and addons will not be saved!\nSome properties, such as coolant recipes, may not be saved properly!\n\nPlease use NCPF for full support", "Deprecation notice", javax.swing.JOptionPane.WARNING_MESSAGE);
-            }
         }
         if(!ncpf.multiblocks.isEmpty()){
             if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by Hellrage JSON!");

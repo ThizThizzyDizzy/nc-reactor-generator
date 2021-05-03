@@ -21,8 +21,8 @@ public class Updater{
     private HashMap<String, String> links = new HashMap<>();
     private int versionsBehind;
     private String currentVersion;
-    private String applicationName;
-    public static Updater read(File file, String currentVersion, String applicationName){
+    private String filename;
+    public static Updater read(File file, String currentVersion, String filename){
         if(!file.exists()||!file.isFile()){
             return null;
         }
@@ -39,7 +39,7 @@ public class Updater{
             }
         }catch(IOException ex){}
         updater.setCurrentVersion(currentVersion);
-        updater.applicationName = applicationName;
+        updater.filename = filename;
         return updater;
     }
     public static Updater read(String fileURL, String currentVersion, String applicationName){
@@ -60,7 +60,7 @@ public class Updater{
         }catch(IOException ex){}
         file.delete();
         updater.setCurrentVersion(currentVersion);
-        updater.applicationName = applicationName;
+        updater.filename = applicationName;
         return updater;
     }
     private static File downloadFile(String link, File destinationFile){
@@ -148,10 +148,10 @@ public class Updater{
         if(link==null){
             return null;
         }
-        String newFilename = applicationName+" "+version+".jar";
+        String newFilename = filename+"-"+version+".jar";
         String temporaryFilename = newFilename;
         for(int i = 2; new File(temporaryFilename).exists(); i++){
-            temporaryFilename = applicationName+" "+version+" ("+i+").jar";
+            temporaryFilename = filename+"-"+version+" ("+i+").jar";
         }
         //<editor-fold defaultstate="collapsed" desc="Downloading">
         try {

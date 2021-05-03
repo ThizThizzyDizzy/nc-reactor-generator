@@ -1,19 +1,16 @@
 package planner.file;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 public enum FileFormat{
-    PNG("PNG Image (.png)", "png"),
-    HELLRAGE_REACTOR("Hellrage Reactor File (.json)", "json"),
-    NCPF("NuclearCraft Planner File", "ncpf"),
-    ALL_PLANNER_FORMATS("NuclearCraft Planner File", "ncpf", "json"),
-    ALL_CONFIGURATION_FORMATS("NuclearCraft Configuration File", "ncpf", "cfg");//TODO hellrage .json
+    PNG("Image", "PNG Image (.png)", "png"),
+    HELLRAGE_REACTOR("JSON", "Hellrage Reactor File (.json)", "json"),
+    NCPF("NCPF", "NuclearCraft Planner File", "ncpf"),
+    ALL_PLANNER_FORMATS("NuclearCraft Planner File", "NuclearCraft Planner File", "ncpf", "json"),
+    ALL_CONFIGURATION_FORMATS("NuclearCraft Configuration File", "NuclearCraft Configuration File", "ncpf", "cfg");//TODO hellrage .json
+    public final String name;
     public final String description;
     public final String[] extensions;
-    private FileFormat(String description, String... extensions){
+    private FileFormat(String name, String description, String... extensions){
+        this.name = name;
         this.description = description;
         this.extensions = extensions;
-    }
-    public FileFilter getFileFilter(){
-        return new FileNameExtensionFilter(description, extensions);
     }
 }

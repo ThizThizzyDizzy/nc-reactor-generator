@@ -1585,7 +1585,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
             @Override
             protected double doCompare(OverhaulMSR main, OverhaulMSR other){
-                return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                return (int) Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
             }
         });
         priorities.add(new Priority<OverhaulMSR>("Output", true, true){
@@ -2122,10 +2122,16 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         suggestors.add(new Suggestor<OverhaulMSR>("Moderator Line Upgrader", -1, -1){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
+                priorities.add(new Priority<OverhaulMSR>("Vessel Count", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return main.totalFuelVessels-other.totalFuelVessels;
+                    }
+                });
                 priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulMSR main, OverhaulMSR other){
-                        return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                        return (int) Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
                     }
                 });
                 priorities.add(new Priority<OverhaulMSR>("Irradiation", true, true){
@@ -2202,10 +2208,16 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         suggestors.add(new Suggestor<OverhaulMSR>("Single Moderator Upgrader", -1, -1){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
+                priorities.add(new Priority<OverhaulMSR>("Vessel Count", true, true){
+                    @Override
+                    protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                        return main.totalFuelVessels-other.totalFuelVessels;
+                    }
+                });
                 priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulMSR main, OverhaulMSR other){
-                        return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                        return (int) Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
                     }
                 });
                 priorities.add(new Priority<OverhaulMSR>("Irradiation", true, true){

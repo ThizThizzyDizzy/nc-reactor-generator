@@ -2,8 +2,6 @@ package planner.menu;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.Core;
@@ -67,35 +65,42 @@ public class MenuSettings extends SettingsMenu{
             quickLoadList.add(b);
         }
         load.addActionListener((e) -> {
-            Core.createFileChooser((file, format) -> {
-                NCPFFile ncpf = FileReader.read(file);
-                if(ncpf==null)return;
-                Configuration.impose(ncpf.configuration, Core.configuration);
-                for(Multiblock multi : Core.multiblocks){
-                    try{
-                        multi.convertTo(Core.configuration);
-                    }catch(MissingConfigurationEntryException ex){
-                        throw new RuntimeException(ex);
+            try{
+                Core.createFileChooser((file) -> {
+                    NCPFFile ncpf = FileReader.read(file);
+                    if(ncpf==null)return;
+                    Configuration.impose(ncpf.configuration, Core.configuration);
+                    for(Multiblock multi : Core.multiblocks){
+                        try{
+                            multi.convertTo(Core.configuration);
+                        }catch(MissingConfigurationEntryException ex){
+                            throw new RuntimeException(ex);
+                        }
                     }
-                }
-                onGUIOpened();
-            }, FileFormat.ALL_CONFIGURATION_FORMATS);
+                    onGUIOpened();
+                }, FileFormat.ALL_CONFIGURATION_FORMATS);
+            }catch(IOException ex){
+                Sys.error(ErrorLevel.severe, "Failed to load configuration!", ex, ErrorCategory.fileIO);
+            }
         });
         save.addActionListener((e) -> {
-            Core.createFileChooser(new File(Core.configuration.getFullName()), (file, format) -> {
-                if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                file = Core.askForOverwrite(file);
-                if(file==null)return;
-                try(FileOutputStream stream = new FileOutputStream(file)){
-                    Config header = Config.newConfig();
-                    header.set("version", NCPFFile.SAVE_VERSION);
-                    header.set("count", 0);
-                    header.save(stream);
-                    Core.configuration.save(null, Config.newConfig()).save(stream);
-                }catch(IOException ex){
-                    Sys.error(ErrorLevel.severe, "Failed to save configuration!", ex, ErrorCategory.fileIO);
-                }
-            }, FileFormat.NCPF);
+            try{
+                Core.createFileChooser(new File(Core.configuration.getFullName()), (file) -> {
+                    if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                    if(file==null)return;
+                    try(FileOutputStream stream = new FileOutputStream(file)){
+                        Config header = Config.newConfig();
+                        header.set("version", NCPFFile.SAVE_VERSION);
+                        header.set("count", 0);
+                        header.save(stream);
+                        Core.configuration.save(null, Config.newConfig()).save(stream);
+                    }catch(IOException ex){
+                        Sys.error(ErrorLevel.severe, "Failed to save configuration!", ex, ErrorCategory.fileIO);
+                    }
+                }, FileFormat.NCPF);
+            }catch(IOException ex){
+                Sys.error(ErrorLevel.severe, "Failed to save configuration!", ex, ErrorCategory.fileIO);
+            }
         });
         modify.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this, Core.configuration), MenuTransition.SplitTransitionX.slideIn(sidebar.width/gui.helper.displayWidth()), 4));

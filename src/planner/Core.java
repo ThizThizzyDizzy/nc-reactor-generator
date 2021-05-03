@@ -1,7 +1,5 @@
 package planner;
 import discord.Bot;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,12 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import multiblock.BoundingBox;
@@ -28,28 +25,33 @@ import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.system.Callback;
+import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.util.nfd.NativeFileDialog;
 import planner.file.FileFormat;
 import planner.file.FileWriter;
 import planner.file.NCPFFile;
 import planner.menu.MenuCredits;
 import planner.menu.MenuDiscord;
 import planner.menu.MenuEdit;
-import planner.menu.MenuLoadFile;
 import planner.menu.MenuMain;
 import planner.menu.MenuTutorial;
-import planner.menu.error.MenuCriticalError;
-import planner.menu.error.MenuMinorError;
-import planner.menu.error.MenuModerateError;
-import planner.menu.error.MenuSevereError;
+import planner.menu.dialog.MenuCriticalError;
+import planner.menu.dialog.MenuMinorError;
+import planner.menu.dialog.MenuModerateError;
+import planner.menu.dialog.MenuSevereError;
+import planner.menu.dialog.MenuUpdate;
+import planner.menu.dialog.MenuWarningMessage;
 import planner.module.FusionTestModule;
 import planner.module.Module;
 import planner.module.OverhaulModule;
+import planner.module.PrimeFuelModule;
 import planner.module.RainbowFactorModule;
 import planner.module.UnderhaulModule;
 import planner.tutorial.Tutorial;
@@ -61,6 +63,8 @@ import simplelibrary.error.ErrorLevel;
 import simplelibrary.font.FontManager;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.game.GameHelper;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.GUI;
@@ -98,6 +102,7 @@ public class Core extends Renderer2D{
         modules.add(new OverhaulModule());
         modules.add(new FusionTestModule());
         modules.add(new RainbowFactorModule());
+        modules.add(new PrimeFuelModule());
     }
     public static void addModule(Module m){
         modules.add(m);
@@ -151,168 +156,36 @@ public class Core extends Renderer2D{
             public void warningError(String message, Throwable error, ErrorCategory category){
                 System.err.println(Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Warning");
                 logger.log(Level.WARNING, message, error);
+                if(Main.isBot)return;
+                gui.menu = new MenuWarningMessage(gui, gui.menu, message, error, category);
             }
             @Override
             public void minorError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Minor "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
                 if(Main.isBot)return;
-                if(Main.hasAWT){
-                    String details = "";
-                    Throwable t = error;
-                    while(t!=null){
-                        details+=t.getClass().getName()+" "+t.getMessage();
-                        StackTraceElement[] stackTrace = t.getStackTrace();
-                        for(StackTraceElement e : stackTrace){
-                            if(e.getClassName().startsWith("net."))continue;
-                            if(e.getClassName().startsWith("com."))continue;
-                            String[] splitClassName = e.getClassName().split("\\Q.");
-                            String filename = splitClassName[splitClassName.length-1]+".java";
-                            String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
-                            if((details+nextLine).length()+4>1024){
-                                details+="\n...";
-                                break;
-                            }else details+=nextLine;
-                        }
-                        t = t.getCause();
-                        if(t!=null)details+="\nCaused by ";
-                    }
-                    String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
-                    switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Minor "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
-                        case 0:
-                            gui.open(new MenuMain(gui));
-                            break;
-                        case 2:
-                            autoSaveAndExit();
-                            break;
-                        case 1:
-                        default:
-                            break;
-                    }
-                }else{
-                    gui.open(new MenuMinorError(gui, gui.menu, message, error, category));
-                }
+                gui.menu = new MenuMinorError(gui, gui.menu, message, error, category);
             }
             @Override
             public void moderateError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Moderate "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
                 if(Main.isBot)return;
-                if(Main.hasAWT){
-                    String details = "";
-                    Throwable t = error;
-                    while(t!=null){
-                        details+=t.getClass().getName()+" "+t.getMessage();
-                        StackTraceElement[] stackTrace = t.getStackTrace();
-                        for(StackTraceElement e : stackTrace){
-                            if(e.getClassName().startsWith("net."))continue;
-                            if(e.getClassName().startsWith("com."))continue;
-                            String[] splitClassName = e.getClassName().split("\\Q.");
-                            String filename = splitClassName[splitClassName.length-1]+".java";
-                            String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
-                            if((details+nextLine).length()+4>1024){
-                                details+="\n...";
-                                break;
-                            }else details+=nextLine;
-                        }
-                        t = t.getCause();
-                        if(t!=null)details+="\nCaused by ";
-                    }
-                    String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
-                    switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Moderate "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
-                        case 0:
-                            gui.open(new MenuMain(gui));
-                            break;
-                        case 2:
-                            autoSaveAndExit();
-                            break;
-                        case 1:
-                        default:
-                            break;
-                    }
-                }else{
-                    gui.open(new MenuModerateError(gui, gui.menu, message, error, category));
-                }
+                gui.menu = new MenuModerateError(gui, gui.menu, message, error, category);
             }
             @Override
             public void severeError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
                 if(Main.isBot)return;
-                if(Main.hasAWT){
-                    String details = "";
-                    Throwable t = error;
-                    while(t!=null){
-                        details+=t.getClass().getName()+" "+t.getMessage();
-                        StackTraceElement[] stackTrace = t.getStackTrace();
-                        for(StackTraceElement e : stackTrace){
-                            if(e.getClassName().startsWith("net."))continue;
-                            if(e.getClassName().startsWith("com."))continue;
-                            String[] splitClassName = e.getClassName().split("\\Q.");
-                            String filename = splitClassName[splitClassName.length-1]+".java";
-                            String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
-                            if((details+nextLine).length()+4>1024){
-                                details+="\n...";
-                                break;
-                            }else details+=nextLine;
-                        }
-                        t = t.getCause();
-                        if(t!=null)details+="\nCaused by ";
-                    }
-                    String[] options = new String[]{"Main Menu", "Ignore", "Exit"};
-                    switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
-                        case 0:
-                            gui.open(new MenuMain(gui));
-                            break;
-                        case 2:
-                            autoSaveAndExit();
-                            break;
-                        case 1:
-                        default:
-                            break;
-                    }
-                }else{
-                    gui.open(new MenuSevereError(gui, gui.menu, message, error, category));
-                }
+                gui.menu = new MenuSevereError(gui, gui.menu, message, error, category);
             }
             @Override
             public void criticalError(String message, Throwable error, ErrorCategory category){
                 System.err.println("Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
                 logger.log(Level.SEVERE, message, error);
                 if(Main.isBot)return;
-                if(Main.hasAWT){
-                    String details = "";
-                    Throwable t = error;
-                    while(t!=null){
-                        details+=t.getClass().getName()+" "+t.getMessage();
-                        StackTraceElement[] stackTrace = t.getStackTrace();
-                        for(StackTraceElement e : stackTrace){
-                            if(e.getClassName().startsWith("net."))continue;
-                            if(e.getClassName().startsWith("com."))continue;
-                            String[] splitClassName = e.getClassName().split("\\Q.");
-                            String filename = splitClassName[splitClassName.length-1]+".java";
-                            String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
-                            if((details+nextLine).length()+4>1024){
-                                details+="\n...";
-                                break;
-                            }else details+=nextLine;
-                        }
-                        t = t.getCause();
-                        if(t!=null)details+="\nCaused by ";
-                    }
-                    String[] options = new String[]{"Main Menu", "Exit"};
-                    switch(javax.swing.JOptionPane.showOptionDialog(null, details, "Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error: "+message, javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE, null, options, options[0])){
-                        case 0:
-                            gui.open(new MenuMain(gui));
-                            break;
-                        case 1:
-                        default:
-                            autoSaveAndExit();
-                            break;
-                    }
-                }else{
-                    gui.open(new MenuCriticalError(gui, message, error, category));
-                }
+                gui.menu = new MenuCriticalError(gui, message, error, category);
             }
         }, null, helper);
     }
@@ -405,15 +278,17 @@ public class Core extends Renderer2D{
         if(Main.headless)GLFW.glfwHideWindow(helper.getWindow());
         System.out.println("Activating GUI");
         helper.assignGUI(gui);
-        if(Main.hasAWTAfterStartup){
-            Main.hasAWT = true;
-        }
-        Main.setLookAndFeel();
         System.out.println("Startup complete!");
         if(!tutorialShown&&!Main.isBot&&!Main.headless){
             gui.open(new MenuTutorial(gui, gui.menu));
             tutorialShown = true;
         }
+        System.out.println("Checking for updates...");
+        Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Generator");
+        if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
+            gui.menu = new MenuUpdate(gui, gui.menu, updater);
+        }
+        System.out.println("Update Check Complete.");
     }
     public static void tick(boolean isLastTick){
         if(!isLastTick){
@@ -700,21 +575,6 @@ public class Core extends Renderer2D{
         if(depth)GL11.glEnable(GL11.GL_DEPTH_TEST);
         return img;
     }
-    public static File askForOverwrite(File file){
-        if(!file.exists())return file; 
-        if(Main.hasAWT){
-            if(javax.swing.JOptionPane.showConfirmDialog(null, "Overwrite existing file?", "File already exists!", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE)!=javax.swing.JOptionPane.OK_OPTION)return null;
-            file.delete();
-        }else{
-            while(file.exists()){
-                String path = file.getPath();
-                String[] split = path.split("\\.");
-                String extension = "."+split[split.length-1];
-                file = new File(path.substring(0, path.length()-extension.length())+"_"+extension);//TODO TEST THIS
-            }
-        }
-        return file;
-    }
     public static void refreshModules(){
         multiblockTypes.clear();
         Tutorial.init();
@@ -831,65 +691,48 @@ public class Core extends Renderer2D{
         return (imgData+256)&255;
     }
     public static File lastOpenFolder = new File("file").getAbsoluteFile().getParentFile();
-    public static void createFileChooser(FileChooserResultListener listener, FileFormat... formats){
-        if(Main.hasAWT){
-            new Thread(() -> {
-                javax.swing.JFileChooser chooser = new javax.swing.JFileChooser(lastOpenFolder);
-                HashMap<javax.swing.filechooser.FileFilter, FileFormat> filters = new HashMap<>();
-                for(FileFormat format : formats){
-                    javax.swing.filechooser.FileFilter filter = format.getFileFilter();
-                    filters.put(filter, format);
-                    chooser.addChoosableFileFilter(filter);
-                    if(Core.isShiftPressed()&&format==FileFormat.PNG)chooser.setFileFilter(filter);
-                }
-                chooser.setAcceptAllFileFilterUsed(false);
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        lastOpenFolder = chooser.getSelectedFile().getAbsoluteFile().getParentFile();
-                        listener.approved(chooser.getSelectedFile(), filters.get(chooser.getFileFilter()));
-                    }
-                });
-                chooser.showOpenDialog(null);
-            }).start();
-        }else{
-            gui.open(new MenuLoadFile(gui, gui.menu, listener, formats));
+    public static void createFileChooser(Consumer<File> onAccepted, FileFormat format) throws IOException{
+        PointerBuffer path = MemoryUtil.memAllocPointer(1);
+        String filter = "";
+        for(String ext : format.extensions)filter+=","+ext;
+        if(!filter.isEmpty())filter = filter.substring(1);
+        try{
+            int result = NativeFileDialog.NFD_OpenDialog(filter, lastOpenFolder.getAbsolutePath(), path);
+            switch(result){
+                case NativeFileDialog.NFD_OKAY:
+                    String str = path.getStringUTF8();
+                    File file = new File(str);
+                    onAccepted.accept(file);
+                    break;
+                case NativeFileDialog.NFD_CANCEL:
+                    break;
+                default: //NFD_ERROR
+                    throw new IOException(NativeFileDialog.NFD_GetError());
+            }
+        }finally{
+            MemoryUtil.memFree(path);
         }
     }
-    public static void createFileChooser(File selectedFile, FileChooserResultListener listener, FileFormat... formats){
-        if(Main.hasAWT){
-            new Thread(() -> {
-                javax.swing.JFileChooser chooser = new javax.swing.JFileChooser(lastOpenFolder);
-                if(selectedFile!=null)chooser.setSelectedFile(selectedFile);
-                HashMap<javax.swing.filechooser.FileFilter, FileFormat> filters = new HashMap<>();
-                for(FileFormat format : formats){
-                    javax.swing.filechooser.FileFilter filter = format.getFileFilter();
-                    filters.put(filter, format);
-                    chooser.addChoosableFileFilter(filter);
-                    if(Core.isShiftPressed()&&format==FileFormat.PNG)chooser.setFileFilter(filter);
-                }
-                chooser.setAcceptAllFileFilterUsed(false);
-                chooser.addActionListener((event) -> {
-                    if(event.getActionCommand().equals("ApproveSelection")){
-                        lastOpenFolder = chooser.getSelectedFile().getAbsoluteFile().getParentFile();
-                        listener.approved(chooser.getSelectedFile(), filters.get(chooser.getFileFilter()));
-                    }
-                });
-                chooser.showSaveDialog(null);
-            }).start();
-        }else{
-            if(selectedFile!=null){
-                FileFormat form = null;
-                for(FileFormat format : formats){
-                    for(String ext : format.extensions){
-                        if(selectedFile.getName().endsWith("."+ext))form = format;
-                    }
-                }
-                if(form!=null){
-                    listener.approved(selectedFile, form);
-                    return;
-                }
+    public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, FileFormat format) throws IOException{
+        PointerBuffer path = MemoryUtil.memAllocPointer(1);
+        String filter = "";
+        for(String ext : format.extensions)filter+=","+ext;
+        if(!filter.isEmpty())filter = filter.substring(1);
+        try{
+            int result = NativeFileDialog.NFD_SaveDialog(filter, lastOpenFolder.getAbsolutePath(), path);
+            switch(result){
+                case NativeFileDialog.NFD_OKAY:
+                    String str = path.getStringUTF8();
+                    File file = new File(str);
+                    onAccepted.accept(file);
+                    break;
+                case NativeFileDialog.NFD_CANCEL:
+                    break;
+                default: //NFD_ERROR
+                    throw new IOException(NativeFileDialog.NFD_GetError());
             }
-            listener.approved(new File("export."+formats[0].extensions[0]), formats[0]);//TODO proper save
+        }finally{
+            MemoryUtil.memFree(path);
         }
     }
     /**
@@ -1070,38 +913,9 @@ public class Core extends Renderer2D{
             num = autosave();
         }catch(Throwable t){error = t;}
         if(error==null){
-            if(Main.hasAWT){
-                javax.swing.JOptionPane.showMessageDialog(null, "Saved to autosave"+num+".ncpf", "Autosave successful!", javax.swing.JOptionPane.ERROR_MESSAGE);
-            }else{
-                System.err.println("Autosave failed!");
-                error.printStackTrace();
-            }
-            
+            System.out.println("Saved to autosave"+num+".ncpf");
         }else{
-            if(Main.hasAWT){
-                String details = "";
-                while(error!=null){
-                    details+=error.getClass().getName()+" "+error.getMessage();
-                    StackTraceElement[] stackTrace = error.getStackTrace();
-                    for(StackTraceElement e : stackTrace){
-                        if(e.getClassName().startsWith("net."))continue;
-                        if(e.getClassName().startsWith("com."))continue;
-                        String[] splitClassName = e.getClassName().split("\\Q.");
-                        String filename = splitClassName[splitClassName.length-1]+".java";
-                        String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
-                        if((details+nextLine).length()+4>1024){
-                            details+="\n...";
-                            break;
-                        }else details+=nextLine;
-                    }
-                    error = error.getCause();
-                    if(error!=null)details+="\nCaused by ";
-                }
-                javax.swing.JOptionPane.showMessageDialog(null, details, "Autosave failed!", javax.swing.JOptionPane.ERROR_MESSAGE);
-            }else{
-                System.err.println("Autosave failed!");
-                error.printStackTrace();
-            }
+            System.err.println("Autosave Failed!");
         }
         helper.running = false;
     }

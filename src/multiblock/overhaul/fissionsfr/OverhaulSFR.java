@@ -1460,7 +1460,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         priorities.add(new Priority<OverhaulSFR>("Efficiency", true, true){
             @Override
             protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                return (int) Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
             }
         });
         priorities.add(new Priority<OverhaulSFR>("Output", true, true){
@@ -1839,10 +1839,16 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         suggestors.add(new Suggestor<OverhaulSFR>("Moderator Line Upgrader", -1, -1){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
+                priorities.add(new Priority<OverhaulSFR>("Cell Count", true, true){
+                    @Override
+                    protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                        return main.totalFuelCells-other.totalFuelCells;
+                    }
+                });
                 priorities.add(new Priority<OverhaulSFR>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                        return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                        return (int) Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
                     }
                 });
                 priorities.add(new Priority<OverhaulSFR>("Irradiation", true, true){
@@ -1919,10 +1925,16 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         suggestors.add(new Suggestor<OverhaulSFR>("Single Moderator Upgrader", -1, -1){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
+                priorities.add(new Priority<OverhaulSFR>("Cell Count", true, true){
+                    @Override
+                    protected double doCompare(OverhaulSFR main, OverhaulSFR other){
+                        return main.totalFuelCells-other.totalFuelCells;
+                    }
+                });
                 priorities.add(new Priority<OverhaulSFR>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulSFR main, OverhaulSFR other){
-                        return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
+                        return (int) Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
                     }
                 });
                 priorities.add(new Priority<OverhaulSFR>("Irradiation", true, true){

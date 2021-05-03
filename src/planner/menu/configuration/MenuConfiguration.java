@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import planner.ImageIO;
@@ -88,20 +90,22 @@ public class MenuConfiguration extends ConfigurationMenu{
             add(saveAddon);
             saveAddon.addActionListener((e) -> {
                 if(configuration.addon){
-                    Core.createFileChooser(new File(configuration.name), (file, format) -> {
-                        if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                        file = Core.askForOverwrite(file);
-                        if(file==null)return;
-                        try(FileOutputStream stream = new FileOutputStream(file)){
-                            Config header = Config.newConfig();
-                            header.set("version", NCPFFile.SAVE_VERSION);
-                            header.set("count", 0);
-                            header.save(stream);
-                            AddonConfiguration.generate(Core.configuration, configuration).save(null, Config.newConfig()).save(stream);
-                        }catch(IOException ex){
-                            Sys.error(ErrorLevel.severe, "Failed to save addon", ex, ErrorCategory.fileIO);
-                        }
-                    }, FileFormat.NCPF);
+                    try{
+                        Core.createFileChooser(new File(configuration.name), (file) -> {
+                            if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                            try(FileOutputStream stream = new FileOutputStream(file)){
+                                Config header = Config.newConfig();
+                                header.set("version", NCPFFile.SAVE_VERSION);
+                                header.set("count", 0);
+                                header.save(stream);
+                                AddonConfiguration.generate(Core.configuration, configuration).save(null, Config.newConfig()).save(stream);
+                            }catch(IOException ex){
+                                Sys.error(ErrorLevel.severe, "Failed to save addon", ex, ErrorCategory.fileIO);
+                            }
+                        }, FileFormat.NCPF);
+                    }catch(IOException ex){
+                        Sys.error(ErrorLevel.severe, "Failed to save addon!", ex, ErrorCategory.fileIO);
+                    }
                 }else{
                     gui.open(new MenuConfiguration(gui, this, Core.configuration));
                 }
@@ -118,10 +122,14 @@ public class MenuConfiguration extends ConfigurationMenu{
                 gui.open(new MenuConfiguration(gui, this, c));
             });
             importAddon.addActionListener((e) -> {
-                Core.createFileChooser((file, format) -> {
-                    loadAddon(file);
-                    onGUIOpened();
-                }, FileFormat.NCPF);
+                try{
+                    Core.createFileChooser((file) -> {
+                        loadAddon(file);
+                        onGUIOpened();
+                    }, FileFormat.NCPF);
+                }catch(IOException ex){
+                    Sys.error(ErrorLevel.severe, "Failed to import addon!", ex, ErrorCategory.fileIO);
+                }
             });
         }
         deleteOverhaul.addActionListener((e) -> {

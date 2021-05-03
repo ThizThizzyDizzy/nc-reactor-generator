@@ -1,10 +1,9 @@
 package planner.menu;
-import simplelibrary.image.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Random;
 import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.configuration.PartialConfiguration;
@@ -14,13 +13,13 @@ import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
-import planner.Main;
 import planner.exception.MissingConfigurationEntryException;
 import planner.file.FileFormat;
 import planner.file.FileReader;
 import planner.file.FileWriter;
 import planner.file.FormatWriter;
 import planner.file.NCPFFile;
+import planner.menu.component.MenuComponentDropdownList;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
@@ -40,7 +39,22 @@ public class MenuMain extends Menu{
     private MenuComponentMinimaList multiblocks = add(new MenuComponentMinimaList(0, 0, 0, 0, 50));
     private MenuComponentMinimalistButton addMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true).setTooltip("Add a new multiblock"));
     private MenuComponentMinimalistButton importFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Import", false, true).setTooltip("Import all multiblocks from a saved file"));
-    private MenuComponentMinimalistButton exportMultiblock = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true).setTooltip("Export the selected multiblock to a file"));
+    private MenuComponentMinimalistButton exportMain;
+    private MenuComponentDropdownList exportMultiblock = add(new MenuComponentDropdownList(0, 0, 0, 0){
+        {
+            add(exportMain = new MenuComponentMinimalistButton(0, 0, 0, 0, "Export", false, true).setTooltip("Export the selected multiblock to a file")).addActionListener((e) -> {});
+        }
+        @Override
+        public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+            if(!exportMain.enabled)return;
+            super.onMouseButton(x, y, button, pressed, mods);
+        }
+        @Override
+        public void render(int millisSinceLastTick){
+            setSelectedIndex(0);
+            super.render(millisSinceLastTick);
+        }
+    });
     private MenuComponentMinimalistButton saveFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Save", false, true).setTooltip("Save all multiblocks to a file"));
     private MenuComponentMinimalistButton loadFile = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Load", false, true).setTooltip("Load a file, replacing all current multiblocks"));
     private MenuComponentMinimalistButton editMetadata = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true).setTooltip("Edit metadata"));
@@ -171,63 +185,70 @@ public class MenuMain extends Menu{
             ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
             ncpf.multiblocks.addAll(Core.multiblocks);
             ncpf.metadata.putAll(Core.metadata);
-            Core.createFileChooser(null, (file, format) -> {
-                if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                file = Core.askForOverwrite(file);
-                if(file==null)return;
-                FileWriter.write(ncpf, file, FileWriter.NCPF);
-            }, FileFormat.NCPF);
+            try{
+                Core.createFileChooser(null, (file) -> {
+                    if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                    FileWriter.write(ncpf, file, FileWriter.NCPF);
+                }, FileFormat.NCPF);
+            }catch(IOException ex){
+                Sys.error(ErrorLevel.severe, "Failed to save file!", ex, ErrorCategory.fileIO);
+            }
         });
         loadFile.addActionListener((e) -> {
-            Core.createFileChooser((file, format) -> {
-                NCPFFile ncpf = FileReader.read(file);
-                if(ncpf==null)return;
-                Core.multiblocks.clear();
-                Core.metadata.clear();
-                Core.metadata.putAll(ncpf.metadata);
-                if(ncpf.configuration==null||ncpf.configuration.isPartial()){
-                    if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                        if(Main.hasAWT){
-                            javax.swing.JOptionPane.showMessageDialog(null, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", "WARNING", javax.swing.JOptionPane.WARNING_MESSAGE);
-                        }else{
+            try{
+                Core.createFileChooser((file) -> {
+                    NCPFFile ncpf = FileReader.read(file);
+                    if(ncpf==null)return;
+                    Core.multiblocks.clear();
+                    Core.metadata.clear();
+                    Core.metadata.putAll(ncpf.metadata);
+                    if(ncpf.configuration==null||ncpf.configuration.isPartial()){
+                        if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
                             Sys.error(ErrorLevel.warning, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
                         }
+                    }else{
+                        Core.configuration = ncpf.configuration;
                     }
-                }else{
-                    Core.configuration = ncpf.configuration;
-                }
-                convertAndImportMultiblocks(ncpf.multiblocks);
-                onGUIOpened();
-            }, FileFormat.ALL_PLANNER_FORMATS);
+                    convertAndImportMultiblocks(ncpf.multiblocks);
+                    onGUIOpened();
+                }, FileFormat.ALL_PLANNER_FORMATS);
+            }catch(IOException ex){
+                Sys.error(ErrorLevel.severe, "Failed to load file!", ex, ErrorCategory.fileIO);
+            }
         });
         importFile.addActionListener((e) -> {
-            Core.createFileChooser((file, format) -> {
-                importMultiblocks(file);
-                onGUIOpened();
-            }, FileFormat.ALL_PLANNER_FORMATS);
-        });
-        exportMultiblock.addActionListener((e) -> {
-            NCPFFile ncpf = new NCPFFile();
-            Multiblock multi = getSelectedMultiblock();
-            ncpf.multiblocks.add(multi);
-            ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
-            HashMap<FileFormat, FormatWriter> formats = new HashMap<>();
-            for(FormatWriter writer : FileWriter.formats){
-                if(!writer.isMultiblockSupported(multi))continue;
-                formats.put(writer.getFileFormat(), writer);
+            try{
+                Core.createFileChooser((file) -> {
+                    importMultiblocks(file);
+                    onGUIOpened();
+                }, FileFormat.ALL_PLANNER_FORMATS);
+            }catch(IOException ex){
+                Sys.error(ErrorLevel.severe, "Failed to import file!", ex, ErrorCategory.fileIO);
             }
-            Core.createFileChooser(null, (file, format) -> {
-                FormatWriter writer = formats.get(format);
-                boolean hasExtension = false;
-                for(String ext : format.extensions){
-                    if(file.getName().endsWith("."+ext))hasExtension = true;
-                }
-                if(!hasExtension)file = new File(file.getAbsolutePath()+"."+format.extensions[0]);
-                file = Core.askForOverwrite(file);
-                if(file==null)return;
-                pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
-            }, formats.keySet().toArray(new FileFormat[formats.keySet().size()]));
         });
+        for(FormatWriter writer : FileWriter.formats){
+            FileFormat format = writer.getFileFormat();
+            exportMultiblock.add(new MenuComponentMinimalistButton(0, 0, 0, 0, format.name, true, true).setTooltip(format.description)).addActionListener((e) -> {
+                exportMultiblock.isDown = false;
+                NCPFFile ncpf = new NCPFFile();
+                Multiblock multi = getSelectedMultiblock();
+                ncpf.multiblocks.add(multi);
+                ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
+                try{
+                    Core.createFileChooser(null, (file) -> {
+                        boolean hasExtension = false;
+                        for(String ext : format.extensions){
+                            if(file.getName().endsWith("."+ext))hasExtension = true;
+                        }
+                        if(!hasExtension)file = new File(file.getAbsolutePath()+"."+format.extensions[0]);
+                        if(file==null)return;
+                        pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
+                    }, format);
+                }catch(IOException ex){
+                    Sys.error(ErrorLevel.severe, "Failed to export multiblock!", ex, ErrorCategory.fileIO);
+                }
+            });
+        }
         addMultiblock.addActionListener((e) -> {
             adding = true;
         });
@@ -294,6 +315,7 @@ public class MenuMain extends Menu{
     @Override
     public void tick(){
         super.tick();
+        if(gui.keyboardWereDown.contains(GLFW.GLFW_KEY_F))Sys.error(ErrorLevel.warning, "F", null, ErrorCategory.other);
         if(adding)addingScale = Math.min(addingScale+1, addingTime);
         else addingScale = Math.max(addingScale-1, 0);
         if(metadating)metadatingScale = Math.min(metadatingScale+1, metadatingTime);
@@ -323,12 +345,12 @@ public class MenuMain extends Menu{
             pendingWrites.dequeue().write();
         }
         convertOverhaulMSFR.x = setInputs.x = editMetadata.x = gui.helper.displayWidth()/3;
-        importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = gui.helper.displayWidth()/12;
+        exportMain.width = importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = gui.helper.displayWidth()/12;
         exportMultiblock.x = importFile.width;
         saveFile.x = exportMultiblock.x+exportMultiblock.width;
         loadFile.x = saveFile.x+saveFile.width;
         editMetadata.width = gui.helper.displayWidth()*2/3-gui.helper.displayHeight()/16*(Core.vr?2:1);
-        importFile.height = exportMultiblock.height = saveFile.height = loadFile.height = editMetadata.height = vr.width = vr.height = settings.width = settings.height = gui.helper.displayHeight()/16;
+        importFile.height = exportMultiblock.preferredHeight = saveFile.height = loadFile.height = editMetadata.height = vr.width = vr.height = settings.width = settings.height = gui.helper.displayHeight()/16;
         settings.x = gui.helper.displayWidth()-gui.helper.displayHeight()/16;
         vr.x = settings.x-gui.helper.displayHeight()/16;
         multiblocks.y = gui.helper.displayHeight()/8;
@@ -371,7 +393,10 @@ public class MenuMain extends Menu{
         settings.enabled = !(adding||metadating);
         vr.enabled = !(adding||metadating);
         importFile.enabled = !(adding||metadating);
-        exportMultiblock.enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
+        exportMain.enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
+        for(MenuComponent c : exportMultiblock.components){
+            if(c instanceof MenuComponentMinimalistButton)((MenuComponentMinimalistButton)c).enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
+        }
         saveFile.enabled = !Core.multiblocks.isEmpty()&&!(adding||metadating);
         loadFile.enabled = !(adding||metadating);
         delete.enabled = (!(adding||metadating)&&multiblocks.getSelectedIndex()!=-1)&&Core.isShiftPressed();
@@ -445,11 +470,7 @@ public class MenuMain extends Menu{
         NCPFFile ncpf = FileReader.read(file);
         if(ncpf==null)return;
         if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-            if(Main.hasAWT){
-                javax.swing.JOptionPane.showMessageDialog(null, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", "WARNING", javax.swing.JOptionPane.WARNING_MESSAGE);
-            }else{
-                Sys.error(ErrorLevel.warning, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
-            }
+            Sys.error(ErrorLevel.warning, "File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null, ErrorCategory.other);
         }
         convertAndImportMultiblocks(ncpf.multiblocks);
     }
@@ -458,9 +479,6 @@ public class MenuMain extends Menu{
             try{
                 mb.convertTo(Core.configuration);
             }catch(MissingConfigurationEntryException ex){
-                if(Main.hasAWT){
-                    javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage()+"\nAre you missing an addon?", "Failed to load multiblock", javax.swing.JOptionPane.ERROR_MESSAGE);
-                }
                 Sys.error(ErrorLevel.warning, "Failed to load multiblock - Are you missing an addon?", ex, ErrorCategory.fileIO);
                 continue;
             }

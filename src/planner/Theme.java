@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import planner.menu.dialog.MenuSiezureTheme;
 import simplelibrary.image.Color;
 public abstract class Theme{
     public static ArrayList<Theme> themes = new ArrayList<>();
@@ -132,7 +135,11 @@ public abstract class Theme{
                 return process(themes.get(0).getFadeout());
             }
         });
-        themes.add(new ChangingTheme("???", RandomColorTheme::new));
+        themes.add(new ChangingTheme("Random", () -> {
+            Random rand = new Random();
+            return new SolidColorTheme("Random", new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
+        }));
+        themes.add(new ChangingTheme("???", RandomColorsTheme::new));
         themes.add(new SiezureTheme("Disco"));
         themes.add(new SolidColorTheme("Red", new Color(100, 0, 0), new Color(1f, 0f, 0f, 1f), .625f, 1f));
         themes.add(new SolidColorTheme("Orange", new Color(100, 50, 0), new Color(1, 0.5f, 0), .625f, 1f));
@@ -339,7 +346,7 @@ public abstract class Theme{
             return new Color(background.getRed(), background.getGreen(), background.getBlue(), 255*3/4);
         }
     }
-    private static class RandomColorTheme extends Theme{
+    private static class RandomColorsTheme extends Theme{
         private final Color background;
         private final Color text;
         private final Color header;
@@ -360,10 +367,10 @@ public abstract class Theme{
         private final Color white;
         private final Color fadeout;
         private final Color sidebar;
-        public RandomColorTheme(){
+        public RandomColorsTheme(){
             this("RANDOM");
         }
-        public RandomColorTheme(String name){
+        public RandomColorsTheme(String name){
             super(name);
             background = rand();
             text = rand();
@@ -569,106 +576,133 @@ public abstract class Theme{
         @Override
         public void onSet(){
             if(Main.isBot)siezureAllowed = false;
-            new Thread(() -> {
+            Thread t = new Thread(() -> {
+                if(Core.gui==null)siezureAllowed = true;
                 if(siezureAllowed==null){
-                    if(Main.hasAWT){
-                        siezureAllowed = javax.swing.JOptionPane.showConfirmDialog(null, "CONTAINS LOTS OF FLASHING COLORS\nCONTINUE?", "SIEZURE WARNING", javax.swing.JOptionPane.OK_CANCEL_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE)==javax.swing.JOptionPane.OK_OPTION;
-                    }else{
+                    Core.gui.menu = new MenuSiezureTheme(Core.gui, Core.gui.menu, () -> {
+                        siezureAllowed = true;
+                    }, () -> {
                         siezureAllowed = false;
+                    });
+                    while(siezureAllowed==null){
+                        try{
+                            Thread.sleep(5);//too lazy to use object.wait
+                        }catch(InterruptedException ex){}
                     }
                     if(!siezureAllowed){
                         Core.setTheme(themes.get(0));
                         themes.remove(this);
                     }
                 }
-            }).start();
+            });
+            t.setDaemon(true);
+            t.start();
         }
         public SiezureTheme(String name){
             super(name);
         }
         @Override
         public Color getBackgroundColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getBackgroundColor();
             return rand();
         }
         @Override
         public Color getTextColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getTextColor();
             return rand();
         }
         @Override
         public Color getHeaderColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getHeaderColor();
             return rand();
         }
         @Override
         public Color getHeader2Color(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getHeader2Color();
             return rand();
         }
         @Override
         public Color getListColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getListColor();
             return rand();
         }
         @Override
         public Color getSelectedMultiblockColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getSelectedMultiblockColor();
             return rand();
         }
         @Override
         public Color getListBackgroundColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getListBackgroundColor();
             return rand();
         }
         @Override
         public Color getMetadataPanelBackgroundColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getMetadataPanelBackgroundColor();
             return rand();
         }
         @Override
         public Color getMetadataPanelHeaderColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getMetadataPanelHeaderColor();
             return rand();
         }
         @Override
         public Color getRed(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getRed();
             return rand();
         }
         @Override
         public Color getGreen(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getGreen();
             return rand();
         }
         @Override
         public Color getBlue(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getBlue();
             return rand();
         }
         @Override
         public Color getEditorListBorderColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getEditorListBorderColor();
             return rand();
         }
         @Override
         public Color getDarkButtonColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getDarkButtonColor();
             return rand();
         }
         @Override
         public Color getButtonColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getButtonColor();
             return rand();
         }
         @Override
         public Color getSelectionColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getSelectionColor();
             return rand();
         }
         @Override
         public Color getRGBA(float r, float g, float b, float a){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getRGBA(r, g, b, a);
             return rand();
         }
         @Override
         public Color getWhite(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getWhite();
             return rand();
         }
         private Color rand(){
-            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Color.GRAY;
             Random rand = new Random();
             return new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
         }
         @Override
         public Color getFadeout(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getFadeout();
             return rand();
         }
         @Override
         public Color getSidebarColor(){
+            if(!Objects.equals(siezureAllowed, Boolean.TRUE))return themes.get(0).getSidebarColor();
             return rand();
         }
     }
