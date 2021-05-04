@@ -1703,81 +1703,6 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             copy.irradiation = irradiation;
             return copy;
         }
-        /**
-         * Block search algorithm from my Tree Feller for Bukkit.
-         */
-        private HashMap<Integer, ArrayList<Block>> getClusterBlocks(Block start, boolean useConductors){
-            //layer zero
-            HashMap<Integer, ArrayList<Block>>results = new HashMap<>();
-            ArrayList<Block> zero = new ArrayList<>();
-            if(start.canCluster()||(useConductors&&start.isConductor())){
-                zero.add(start);
-            }
-            results.put(0, zero);
-            //all the other layers
-            int maxDistance = getInternalVolume();//the algorithm requires a max search distance. Rather than changing that, I'll just be lazy and give it a big enough number
-            for(int i = 0; i<maxDistance; i++){
-                ArrayList<Block> layer = new ArrayList<>();
-                ArrayList<Block> lastLayer = new ArrayList<>(results.get(i));
-                if(i==0&&lastLayer.isEmpty()){
-                    lastLayer.add(start);
-                }
-                for(Block block : lastLayer){
-                    FOR:for(int j = 0; j<6; j++){
-                        int dx=0,dy=0,dz=0;
-                        switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
-                            case 0:
-                                dx = -1;
-                                break;
-                            case 1:
-                                dx = 1;
-                                break;
-                            case 2:
-                                dy = -1;
-                                break;
-                            case 3:
-                                dy = 1;
-                                break;
-                            case 4:
-                                dz = -1;
-                                break;
-                            case 5:
-                                dz = 1;
-                                break;
-                            default:
-                                throw new IllegalArgumentException("How did this happen?");
-                        }
-                        if(!contains(block.x+dx, block.y+dy, block.z+dz))continue;
-                        Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
-                        if(newBlock==null)continue;
-                        if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
-                            continue;
-                        }
-                        for(Block oldbl : lastLayer){//if(lastLayer.contains(newBlock))continue;//if the new block is on the same layer, ignore
-                            if(oldbl==newBlock){
-                                continue FOR;
-                            }
-                        }
-                        if(i>0){
-                            for(Block oldbl : results.get(i-1)){//if(i>0&&results.get(i-1).contains(newBlock))continue;//if the new block is on the previous layer, ignore
-                                if(oldbl==newBlock){
-                                    continue FOR;
-                                }
-                            }
-                        }
-                        for(Block oldbl : layer){//if(layer.contains(newBlock))continue;//if the new block is on the next layer, but already processed, ignore
-                            if(oldbl==newBlock){
-                                continue FOR;
-                            }
-                        }
-                        layer.add(newBlock);
-                    }
-                }
-                if(layer.isEmpty())break;
-                results.put(i+1, layer);
-            }
-            return results;
-        }
     }
     public class VesselGroup{
         public ArrayList<Block> blocks = new ArrayList<>();
@@ -1941,6 +1866,81 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         }
         totalOutput.clear();
         shutdownFactor = totalTotalOutput = totalEfficiency = totalHeatMult = sparsityMult = totalFuelVessels = totalCooling = totalHeat = netHeat = totalIrradiation = functionalBlocks = 0;
+    }
+    /**
+     * Block search algorithm from my Tree Feller for Bukkit.
+     */
+    private HashMap<Integer, ArrayList<Block>> getClusterBlocks(Block start, boolean useConductors){
+        //layer zero
+        HashMap<Integer, ArrayList<Block>>results = new HashMap<>();
+        ArrayList<Block> zero = new ArrayList<>();
+        if(start.canCluster()||(useConductors&&start.isConductor())){
+            zero.add(start);
+        }
+        results.put(0, zero);
+        //all the other layers
+        int maxDistance = getInternalVolume();//the algorithm requires a max search distance. Rather than changing that, I'll just be lazy and give it a big enough number
+        for(int i = 0; i<maxDistance; i++){
+            ArrayList<Block> layer = new ArrayList<>();
+            ArrayList<Block> lastLayer = new ArrayList<>(results.get(i));
+            if(i==0&&lastLayer.isEmpty()){
+                lastLayer.add(start);
+            }
+            for(Block block : lastLayer){
+                FOR:for(int j = 0; j<6; j++){
+                    int dx=0,dy=0,dz=0;
+                    switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
+                        case 0:
+                            dx = -1;
+                            break;
+                        case 1:
+                            dx = 1;
+                            break;
+                        case 2:
+                            dy = -1;
+                            break;
+                        case 3:
+                            dy = 1;
+                            break;
+                        case 4:
+                            dz = -1;
+                            break;
+                        case 5:
+                            dz = 1;
+                            break;
+                        default:
+                            throw new IllegalArgumentException("How did this happen?");
+                    }
+                    if(!contains(block.x+dx, block.y+dy, block.z+dz))continue;
+                    Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
+                    if(newBlock==null)continue;
+                    if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
+                        continue;
+                    }
+                    for(Block oldbl : lastLayer){//if(lastLayer.contains(newBlock))continue;//if the new block is on the same layer, ignore
+                        if(oldbl==newBlock){
+                            continue FOR;
+                        }
+                    }
+                    if(i>0){
+                        for(Block oldbl : results.get(i-1)){//if(i>0&&results.get(i-1).contains(newBlock))continue;//if the new block is on the previous layer, ignore
+                            if(oldbl==newBlock){
+                                continue FOR;
+                            }
+                        }
+                    }
+                    for(Block oldbl : layer){//if(layer.contains(newBlock))continue;//if the new block is on the next layer, but already processed, ignore
+                        if(oldbl==newBlock){
+                            continue FOR;
+                        }
+                    }
+                    layer.add(newBlock);
+                }
+            }
+            if(layer.isEmpty())break;
+            results.put(i+1, layer);
+        }
+        return results;
     }
     /**
      * Converts the tiered search returned by getBlocks into a list of blocks.<br>
