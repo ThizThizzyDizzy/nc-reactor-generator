@@ -103,22 +103,20 @@ public class MenuResize extends Menu{
             });
             for(int z = 0; z<multiblock.getInternalDepth(); z++){
                 final int row = z;
-                if(z!=0&&z!=multiblock.getInternalDepth()-1||!multiblock.getDefinitionName().contains("Turbine")){
-                    MenuComponentMinimalistButton delRow = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getInternalDepth()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, "-", multiblock.getInternalDepth()>multiblock.getMinZ(), true){
-                        @Override
-                        public void render(){
-                            super.render();
-                            if(enabled&&isMouseOver){
-                                for(int Y = 0; Y<multiblock.getInternalHeight(); Y++){
-                                    addRect(1, 0, 0, .25, CELL_SIZE*2, CELL_SIZE*3+(int)((1+row+(Y*(multiblock.getInternalDepth()+5)))*CELL_SIZE), CELL_SIZE*2+multiblock.getInternalWidth()*CELL_SIZE, CELL_SIZE*4+(int)((1+row+(Y*(multiblock.getInternalDepth()+5)))*CELL_SIZE));
-                                }
+                MenuComponentMinimalistButton delRow = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getInternalDepth()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, "-", multiblock.getInternalDepth()>multiblock.getMinZ(), true){
+                    @Override
+                    public void render(){
+                        super.render();
+                        if(enabled&&isMouseOver){
+                            for(int Y = 0; Y<multiblock.getInternalHeight(); Y++){
+                                addRect(1, 0, 0, .25, CELL_SIZE*2, CELL_SIZE*3+(int)((1+row+(Y*(multiblock.getInternalDepth()+5)))*CELL_SIZE), CELL_SIZE*2+multiblock.getInternalWidth()*CELL_SIZE, CELL_SIZE*4+(int)((1+row+(Y*(multiblock.getInternalDepth()+5)))*CELL_SIZE));
                             }
                         }
-                    }).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete this row");
-                    delRow.addActionListener((e) -> {
-                        deleteZ(row);
-                    });
-                }
+                    }
+                }).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete this row");
+                delRow.addActionListener((e) -> {
+                    deleteZ(row);
+                });
                 for(int x = 0; x<multiblock.getInternalWidth(); x++){
                     final int column = x;
                     if(z==0){
