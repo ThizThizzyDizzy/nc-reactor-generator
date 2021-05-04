@@ -2,8 +2,6 @@ package planner.menu;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
 import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.configuration.PartialConfiguration;

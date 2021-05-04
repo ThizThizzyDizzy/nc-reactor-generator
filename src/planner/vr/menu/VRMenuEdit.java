@@ -1,5 +1,4 @@
 package planner.vr.menu;
-import simplelibrary.image.Color;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +11,6 @@ import multiblock.EditorSpace;
 import multiblock.Multiblock;
 import multiblock.action.ClearSelectionAction;
 import multiblock.action.DeselectAction;
-import multiblock.action.PasteAction;
 import multiblock.action.SelectAction;
 import multiblock.action.SetSelectionAction;
 import multiblock.action.SetblocksAction;
@@ -54,6 +52,7 @@ import planner.vr.menu.component.VRMenuComponentMultiblockOutputPanel;
 import planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;
 import planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import planner.vr.menu.component.VRMenuComponentToolPanel;
+import simplelibrary.image.Color;
 public class VRMenuEdit extends VRMenu implements Editor{
     public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
     public VRMenuComponentButton resize = add(new VRMenuComponentButton(1, 1.625, -.5, 1, .125, .1, 0, -90, 0, "Resize", true, false));

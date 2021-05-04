@@ -1,8 +1,8 @@
 package planner.menu.component.editor;
-import simplelibrary.image.Color;
 import multiblock.Block;
 import planner.Core;
 import planner.menu.MenuEdit;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorListBlock extends MenuComponent{
     private final MenuEdit editor;

@@ -1,6 +1,6 @@
 package discord.play.model;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
+import simplelibrary.image.Color;
 public class Face{
     public final ArrayList<Integer> verticies;
     public final ArrayList<Integer> textureCoords;

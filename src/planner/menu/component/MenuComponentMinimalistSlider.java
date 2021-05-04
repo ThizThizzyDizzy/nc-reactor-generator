@@ -1,7 +1,7 @@
 package planner.menu.component;
-import simplelibrary.image.Color;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMinimalistSlider extends MenuComponent{
     public boolean enabled;

@@ -1,5 +1,4 @@
 package multiblock.configuration.overhaul.fissionmsr;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -7,6 +6,7 @@ import planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Image;
 public class BlockRecipe{
     public static BlockRecipe heater(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int inputRate, int outputRate, int cooling){
         BlockRecipe recipe = new BlockRecipe(inputName, outputName);

@@ -1,5 +1,4 @@
 package planner.file.reader;
-import simplelibrary.image.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Image;
 public class NCPF4Reader implements FormatReader{
     @Override
     public boolean formatMatches(InputStream in){

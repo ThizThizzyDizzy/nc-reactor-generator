@@ -1,5 +1,4 @@
 package multiblock.configuration.overhaul.turbine;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -7,6 +6,7 @@ import planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Image;
 public class Recipe{
     public static Recipe recipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, double power, double coefficient){
         Recipe recipe = new Recipe(inputName, outputName, power, coefficient);

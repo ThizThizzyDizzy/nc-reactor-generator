@@ -1,7 +1,7 @@
 package discord.play.model;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.Random;
+import simplelibrary.image.Color;
 public class Model{
     public ArrayList<Face> faces = new ArrayList<>();
     public ArrayList<Line> lines = new ArrayList<>();

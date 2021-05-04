@@ -1,9 +1,9 @@
 package discord.keyword;
 import discord.Keyword;
-import simplelibrary.image.Color;
 import java.util.Locale;
 import multiblock.Multiblock;
 import planner.Core;
+import simplelibrary.image.Color;
 public class KeywordMultiblock extends Keyword{
     public String text;
     public KeywordMultiblock(){

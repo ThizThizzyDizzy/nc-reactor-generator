@@ -1,7 +1,7 @@
 package discord.keyword;
 import discord.Keyword;
-import simplelibrary.image.Color;
 import multiblock.configuration.Configuration;
+import simplelibrary.image.Color;
 public class KeywordConfiguration extends Keyword{
     public Configuration config;
     public KeywordConfiguration(){

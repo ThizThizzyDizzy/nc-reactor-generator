@@ -1,5 +1,4 @@
 package multiblock.configuration.overhaul.fissionsfr;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -7,6 +6,7 @@ import planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Image;
 public class CoolantRecipe{
     public static CoolantRecipe coolantRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int heat, float outputRatio){
         CoolantRecipe recipe = new CoolantRecipe(inputName, outputName, heat, outputRatio);

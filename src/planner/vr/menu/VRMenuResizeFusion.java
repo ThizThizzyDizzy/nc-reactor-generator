@@ -1,5 +1,4 @@
 package planner.vr.menu;
-import simplelibrary.image.Color;
 import multiblock.BoundingBox;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import org.lwjgl.opengl.GL11;
@@ -11,6 +10,7 @@ import planner.vr.VRGUI;
 import planner.vr.VRMenu;
 import planner.vr.menu.component.VRMenuComponentButton;
 import planner.vr.menu.component.VRMenuComponentTextPanel;
+import simplelibrary.image.Color;
 public class VRMenuResizeFusion extends VRMenu{
     public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
     private VRMenuComponentTextPanel textPanel = add(new VRMenuComponentTextPanel(.25, 1, 1.2, .5, .25, .05, 0, 180, 0, "Size"));

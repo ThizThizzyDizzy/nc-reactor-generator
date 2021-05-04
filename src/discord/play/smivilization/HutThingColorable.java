@@ -1,8 +1,8 @@
 package discord.play.smivilization;
-import simplelibrary.image.Color;
 import java.util.UUID;
 import planner.Core;
 import simplelibrary.config2.Config;
+import simplelibrary.image.Color;
 public abstract class HutThingColorable extends HutThing{
     private Color color;
     public HutThingColorable(UUID uuid, Hut hut, String name, String textureName, long price, Color defaultColor){

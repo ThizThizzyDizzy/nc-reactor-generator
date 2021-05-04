@@ -1,10 +1,10 @@
 package planner.editor.suggestion;
 import generator.Priority;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
 import multiblock.Multiblock;
+import simplelibrary.image.Image;
 public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T>>{
     private final ArrayList<Action<T>> suggestedActions;
     private final ArrayList<Priority<T>> priorities;

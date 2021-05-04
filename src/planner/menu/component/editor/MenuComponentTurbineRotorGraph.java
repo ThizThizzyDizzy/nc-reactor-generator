@@ -1,10 +1,10 @@
 package planner.menu.component.editor;
-import simplelibrary.image.Color;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Color;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentTurbineRotorGraph extends MenuComponent{

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import multiblock.Multiblock;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import planner.Main;
 import planner.file.FileFormat;
 import planner.file.FormatWriter;
 import planner.file.JSON;

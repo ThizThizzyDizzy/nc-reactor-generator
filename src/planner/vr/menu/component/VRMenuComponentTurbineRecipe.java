@@ -1,5 +1,4 @@
 package planner.vr.menu.component;
-import simplelibrary.image.Color;
 import multiblock.action.SetTurbineRecipeAction;
 import multiblock.configuration.overhaul.turbine.Recipe;
 import multiblock.overhaul.turbine.OverhaulTurbine;
@@ -11,6 +10,7 @@ import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.VRMenuEdit;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.Renderer2D;
 public class VRMenuComponentTurbineRecipe extends VRMenuComponent{
     private final VRMenuEdit editor;

@@ -1,8 +1,6 @@
 package planner.menu;
 import generator.MultiblockGenerator;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import multiblock.Block;
 import multiblock.Multiblock;
 import multiblock.Range;

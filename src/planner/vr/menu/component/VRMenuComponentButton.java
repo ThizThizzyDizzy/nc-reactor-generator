@@ -1,5 +1,4 @@
 package planner.vr.menu.component;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 import org.lwjgl.opengl.GL11;
@@ -9,6 +8,7 @@ import planner.Core;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class VRMenuComponentButton extends VRMenuComponent{

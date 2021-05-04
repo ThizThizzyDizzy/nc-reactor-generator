@@ -1,5 +1,4 @@
 package planner.vr.menu.component;
-import simplelibrary.image.Color;
 import multiblock.configuration.overhaul.fissionsfr.Block;
 import multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
 import org.lwjgl.opengl.GL11;
@@ -10,6 +9,7 @@ import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.VRMenuEdit;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.Renderer2D;
 public class VRMenuComponentOverhaulSFRBlockRecipe extends VRMenuComponent{
     private final VRMenuEdit editor;

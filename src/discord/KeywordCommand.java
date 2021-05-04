@@ -1,6 +1,4 @@
 package discord;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,6 +13,8 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import planner.Core;
 import planner.ImageIO;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.Renderer2D;
 public abstract class KeywordCommand extends Command{
     private HashMap<String, Keyword> keywords = new HashMap<>();

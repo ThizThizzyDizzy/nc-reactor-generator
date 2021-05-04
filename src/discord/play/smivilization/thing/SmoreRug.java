@@ -3,8 +3,8 @@ import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutThing;
 import discord.play.smivilization.HutThingColorable;
 import discord.play.smivilization.Wall;
-import simplelibrary.image.Color;
 import java.util.UUID;
+import simplelibrary.image.Color;
 public class SmoreRug extends HutThingColorable{
     public SmoreRug(UUID uuid, Hut hut){
         super(uuid, hut, "S'more Rug", "smore rug", 8, Color.WHITE);

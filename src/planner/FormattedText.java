@@ -1,6 +1,6 @@
 package planner;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
+import simplelibrary.image.Color;
 public class FormattedText{
     public String text;
     public FormattedText next;

@@ -1,11 +1,11 @@
 package discord.play.smivilization;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import simplelibrary.config2.Config;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public abstract class HutThing implements Comparable<HutThing>{

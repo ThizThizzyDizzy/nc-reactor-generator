@@ -1,6 +1,4 @@
 package multiblock.overhaul.fissionmsr;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
@@ -11,6 +9,8 @@ import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
 import planner.vr.VRCore;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
     /**

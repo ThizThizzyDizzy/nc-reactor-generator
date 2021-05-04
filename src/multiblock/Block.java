@@ -1,6 +1,4 @@
 package multiblock;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 import java.util.Locale;
 import java.util.function.Function;
 import multiblock.configuration.Configuration;
@@ -11,6 +9,8 @@ import planner.menu.component.Searchable;
 import planner.vr.VRCore;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public abstract class Block extends MultiblockBit implements Searchable{

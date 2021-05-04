@@ -1,6 +1,4 @@
 package multiblock.overhaul.fusion;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
@@ -10,6 +8,8 @@ import multiblock.configuration.overhaul.fusion.PlacementRule;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
 import planner.vr.VRCore;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.Renderer2D;
 public class Block extends multiblock.Block{
     /**

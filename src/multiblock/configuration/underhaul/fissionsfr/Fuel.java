@@ -1,5 +1,4 @@
 package multiblock.configuration.underhaul.fissionsfr;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
@@ -7,6 +6,7 @@ import planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Image;
 public class Fuel{
     public static Fuel fuel(String name, String displayName, float power, float heat, int time, String texture){
         Fuel fuel = new Fuel(name, power, heat, time);

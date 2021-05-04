@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import planner.ImageIO;
 import planner.Main;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
-import planner.ImageIO;
 public class TextureManager{
     public static Image getImage(String texture){
         try{

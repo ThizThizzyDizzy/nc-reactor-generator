@@ -1,5 +1,4 @@
 package planner.menu.component.editor;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +7,7 @@ import planner.editor.suggestion.Suggestion;
 import planner.menu.MenuEdit;
 import planner.menu.component.Searchable;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentSuggestion extends MenuComponent implements Searchable{
     private final MenuEdit editor;

@@ -1,8 +1,8 @@
 package planner.menu.component;
-import simplelibrary.image.Color;
 import java.util.function.Supplier;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponentList;
 public class MenuComponentMinimaList extends MenuComponentList{
     private Supplier<Color> backgroundColor;

@@ -1,7 +1,7 @@
 package discord.keyword;
 import discord.Keyword;
-import simplelibrary.image.Color;
 import java.util.Locale;
+import simplelibrary.image.Color;
 public class KeywordFuel extends Keyword{
     public String fuel;
     public KeywordFuel(){

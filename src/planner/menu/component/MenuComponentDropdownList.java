@@ -1,6 +1,5 @@
 package planner.menu.component;
 import java.util.ArrayList;
-import java.util.Locale;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.Core;

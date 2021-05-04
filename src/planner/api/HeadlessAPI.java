@@ -1,5 +1,4 @@
 package planner.api;
-import simplelibrary.image.Image;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import planner.file.FileWriter;
 import planner.file.FormatWriter;
 import planner.file.InputStreamProvider;
 import planner.file.NCPFFile;
+import simplelibrary.image.Image;
 public class HeadlessAPI{
     /**
      * Sets the global configuration. This is used when loading from hellrage formats. See multiblock.configuration.Configuration.configurations for a list of loaded configurations

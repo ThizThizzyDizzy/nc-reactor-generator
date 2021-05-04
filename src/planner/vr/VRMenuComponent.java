@@ -1,11 +1,11 @@
 package planner.vr;
-import simplelibrary.image.Color;
 import java.util.HashSet;
 import java.util.Set;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
+import simplelibrary.image.Color;
 public abstract class VRMenuComponent extends VRMenu{
     public Color color = Color.WHITE;
     public Set<Integer> isDeviceOver = new HashSet<>();

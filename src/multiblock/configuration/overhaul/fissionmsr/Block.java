@@ -1,6 +1,4 @@
 package multiblock.configuration.overhaul.fissionmsr;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
@@ -11,6 +9,8 @@ import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Color;
+import simplelibrary.image.Image;
 public class Block extends RuleContainer implements Searchable{
     public static Block controller(String name, String displayName, String texture){
         Block block = new Block(name);

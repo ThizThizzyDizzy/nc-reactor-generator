@@ -1,5 +1,4 @@
 package planner.editor;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
@@ -8,6 +7,7 @@ import multiblock.action.SetblocksAction;
 import planner.Task;
 import planner.editor.suggestion.Suggestion;
 import planner.editor.tool.EditorTool;
+import simplelibrary.image.Color;
 public interface Editor{
     public Multiblock getMultiblock();
     public void action(Action action, boolean allowUndo);

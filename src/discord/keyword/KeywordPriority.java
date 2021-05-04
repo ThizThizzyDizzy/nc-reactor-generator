@@ -1,10 +1,10 @@
 package discord.keyword;
 import discord.Keyword;
 import generator.Priority;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import multiblock.Multiblock;
 import planner.Core;
+import simplelibrary.image.Color;
 public class KeywordPriority extends Keyword{
     public KeywordPriority(){
         super("Priority");

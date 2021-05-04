@@ -1,16 +1,13 @@
 package multiblock.overhaul.fissionmsr;
-import multiblock.FluidStack;
 import generator.Priority;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import multiblock.Action;
 import multiblock.CuboidalMultiblock;
 import multiblock.Direction;
+import multiblock.FluidStack;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.Range;
@@ -53,6 +50,7 @@ import planner.module.Module;
 import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Color;
 public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public ArrayList<Cluster> clusters = new ArrayList<>();
     private ArrayList<VesselGroup> vesselGroups = new ArrayList<>();
@@ -429,6 +427,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         totalEfficiency+=cluster.efficiency*fuelVessels;
                         totalHeatMult+=cluster.heatMult*fuelVessels;
                         totalIrradiation+=cluster.irradiation;
+                        if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         calcClusters.progress = (i+1)/(double)clusters.size();
                     }
                 }
@@ -698,6 +697,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         totalEfficiency+=cluster.efficiency*fuelVessels;
                         totalHeatMult+=cluster.heatMult*fuelVessels;
                         totalIrradiation+=cluster.irradiation;
+                        if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         shutdownCalcClusters.progress = (i+1)/(double)clusters.size();
                     }
                 }
@@ -963,6 +963,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         totalEfficiency+=cluster.efficiency*fuelVessels;
                         totalHeatMult+=cluster.heatMult*fuelVessels;
                         totalIrradiation+=cluster.irradiation;
+                        if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         partialShutdownCalcClusters.progress = (i+1)/(double)clusters.size();
                     }
                 }

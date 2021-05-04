@@ -1,5 +1,4 @@
 package planner.tutorial;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.Random;
 import multiblock.action.SetSelectionAction;
@@ -8,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuEdit;
 import planner.menu.component.editor.MenuComponentEditorGrid;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 import static simplelibrary.opengl.Renderer2D.drawRect;
 public class NCPTTutorial extends Tutorial{

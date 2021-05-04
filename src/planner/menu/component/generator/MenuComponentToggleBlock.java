@@ -1,9 +1,9 @@
 package planner.menu.component.generator;
-import simplelibrary.image.Color;
 import multiblock.Block;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentToggleBlock extends MenuComponent{
     public final Block block;

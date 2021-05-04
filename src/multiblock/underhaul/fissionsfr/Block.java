@@ -1,5 +1,4 @@
 package multiblock.underhaul.fissionsfr;
-import simplelibrary.image.Image;
 import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
@@ -8,6 +7,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
+import simplelibrary.image.Image;
 public class Block extends multiblock.Block{
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!

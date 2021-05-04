@@ -1,10 +1,10 @@
 package planner.menu.component;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import planner.Core;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Color;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentLabel extends MenuComponent implements Searchable{

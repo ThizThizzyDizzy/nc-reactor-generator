@@ -1,5 +1,4 @@
 package planner.vr;
-import simplelibrary.image.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,6 +34,7 @@ import planner.menu.MenuMain;
 import planner.vr.menu.VRMenuMain;
 import simplelibrary.game.Framebuffer;
 import simplelibrary.game.GameHelper;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.gui.Menu;
 public class VRCore{

@@ -1,5 +1,4 @@
 package planner.vr.menu.component;
-import simplelibrary.image.Color;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 import planner.Core;
@@ -7,6 +6,7 @@ import planner.editor.tool.EditorTool;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.VRMenuEdit;
+import simplelibrary.image.Color;
 public class VRMenuComponentEditorTool extends VRMenuComponent{
     private final EditorTool tool;
     private final VRMenuEdit editor;

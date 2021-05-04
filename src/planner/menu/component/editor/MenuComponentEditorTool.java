@@ -1,7 +1,7 @@
 package planner.menu.component.editor;
-import simplelibrary.image.Color;
 import planner.Core;
 import planner.editor.tool.EditorTool;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorTool extends MenuComponent{
     public final EditorTool tool;

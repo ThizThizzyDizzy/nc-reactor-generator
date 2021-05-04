@@ -1,5 +1,4 @@
 package discord.play.model;
-import simplelibrary.image.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +11,7 @@ import java.util.HashMap;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.texture.TexturePackManager;
 public class Material{

@@ -1,6 +1,5 @@
 package multiblock.overhaul.fissionsfr;
 import generator.Priority;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,6 +51,7 @@ import planner.module.Module;
 import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Color;
 public class OverhaulSFR extends CuboidalMultiblock<Block>{
     public CoolantRecipe coolantRecipe;
     public ArrayList<Cluster> clusters = new ArrayList<>();

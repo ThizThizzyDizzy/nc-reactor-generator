@@ -1,6 +1,5 @@
 package multiblock.overhaul.fusion;
 import generator.Priority;
-import simplelibrary.image.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,6 +40,7 @@ import planner.vr.menu.VRMenuEdit;
 import planner.vr.menu.VRMenuResizeFusion;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
+import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
