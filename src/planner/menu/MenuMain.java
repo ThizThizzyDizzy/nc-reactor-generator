@@ -303,8 +303,6 @@ public class MenuMain extends Menu{
     }
     @Override
     public void renderBackground(){
-        Core.applyColor(simplelibrary.image.Color.PINK);//Core.theme.getHeaderColor());
-        drawRect(0, 0, gui.helper.displayWidth(), gui.helper.displayHeight()/16, 0);
         Core.applyColor(Core.theme.getMultiblocksListHeaderColor());
         drawRect(0, gui.helper.displayHeight()/16, gui.helper.displayWidth()/3, gui.helper.displayHeight()/8, 0);
         Core.applyColor(Core.theme.getComponentTextColor(0));

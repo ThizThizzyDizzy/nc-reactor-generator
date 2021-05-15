@@ -6,7 +6,7 @@ import simplelibrary.image.Color;
 import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuComponentMinimalistButton extends MenuComponentButton{
-    private final boolean darker;
+    public final boolean darker;
     private Supplier<Color> textColor = () -> {
         return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
     };

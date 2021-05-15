@@ -5,167 +5,187 @@ import planner.theme.legacy.LegacyTheme;
 import planner.theme.legacy.SolidColorTheme;
 import simplelibrary.image.Color;
 public abstract class Theme{
-    public static ArrayList<Theme> themes = new ArrayList<>();
-    public static final SolidColorTheme LIGHT, GOLD, CRACKER, CHOCOLATE, MARSHMALLOW;
+    public static ArrayList<ThemeCategory> themes = new ArrayList<>();
+    public static final SolidColorTheme STANDARD, GOLD, CRACKER, CHOCOLATE, MARSHMALLOW;
+    public static final Theme QUESTIONQUESTIONQUESTION;
     static{
-        themes.add(LIGHT = new SolidColorTheme("Light", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f));
-        themes.add(new SolidColorTheme("Light, but darker", new Color(50, 50, 50), new Color(.5f, .5f, .5f, 1f), .3125f, .75f));
-        themes.add(new SolidColorTheme("Water", new Color(64, 78, 203)));
-        themes.add(new SolidColorTheme("Iron", new Color(229, 229, 229)));
-        themes.add(new SolidColorTheme("Redstone", new Color(144, 16, 8)));
-        themes.add(new SolidColorTheme("Quartz", new Color(166, 164, 160)));
-        themes.add(new SolidColorTheme("Obsidian", new Color(20, 18, 30)));
-        themes.add(new SolidColorTheme("Nether Brick", new Color(68, 4, 7)));
-        themes.add(new SolidColorTheme("Glowstone", new Color(143, 117, 68)));
-        themes.add(new SolidColorTheme("Lapis", new Color(37, 65, 139)));
-        themes.add(GOLD = new SolidColorTheme("Gold", new Color(254, 249, 85)));
-        themes.add(new SolidColorTheme("Prismarine", new Color(101, 162, 144)));
-        themes.add(new SolidColorTheme("Slime", new Color(119, 187, 101)));
-        themes.add(new SolidColorTheme("End Stone", new Color(225, 228, 170)));
-        themes.add(new SolidColorTheme("Purpur", new Color(165, 121, 165)));
-        themes.add(new SolidColorTheme("Diamond", new Color(136, 230, 226)));
-        themes.add(new SolidColorTheme("Emerald", new Color(82, 221, 119)));
-        themes.add(new SolidColorTheme("Copper", new Color(222, 151, 109)));
-        themes.add(new SolidColorTheme("Tin", new Color(222, 225, 242)));
-        themes.add(new SolidColorTheme("Lead", new Color(65, 77, 77)));
-        themes.add(new SolidColorTheme("Boron", new Color(160, 160, 160)));
-        themes.add(new SolidColorTheme("Lithium", new Color(241, 241, 241)));
-        themes.add(new SolidColorTheme("Magnesium", new Color(242, 220, 229)));
-        themes.add(new SolidColorTheme("Manganese", new Color(173, 176, 201)));
-        themes.add(new SolidColorTheme("Aluminum", new Color(213, 245, 233)));
-        themes.add(new SolidColorTheme("Silver", new Color(241, 238, 246)));
-        themes.add(new SolidColorTheme("Fluorite", new Color(132, 160, 142)));
-        themes.add(new SolidColorTheme("Villiaumite", new Color(154, 109, 97)));
-        themes.add(new SolidColorTheme("Carobbiite", new Color(160, 167, 82)));
-        themes.add(new SolidColorTheme("Arsenic", new Color(147, 149, 137)));
-        themes.add(new SolidColorTheme("Nitrogen", new Color(64, 166, 70)));
-        themes.add(new SolidColorTheme("Helium", new Color(201, 76, 73)));
-        themes.add(new SolidColorTheme("Enderium", new Color(0, 71, 75)));
-        themes.add(new SolidColorTheme("Cryotheum", new Color(0, 150, 194)));
-        themes.add(new SolidColorTheme("Beryllium", new Color(240, 244, 236)));
-        themes.add(new SolidColorTheme("Graphite", new Color(18, 18, 18)));
-        themes.add(new SolidColorTheme("Heavy Water", new Color(103, 71, 210)));
-        themes.add(new SolidColorTheme("Reflector", new Color(186, 144, 94)));
-        themes.add(new SolidColorTheme("Conductor", new Color(129, 129, 129)));
-        themes.add(new SolidColorTheme("OLD Heavy Water", new Color(40, 50, 100), new Color(0.5f, 0.5f, 1f, 1f), .625f, .875f, new Color(.875f,.875f,1f,1f)));
-        themes.add(new LegacyTheme("Air"){
+        newCategory("General");
+        addTheme(STANDARD = new SolidColorTheme("Light", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f));
+        addTheme(new SolidColorTheme("Light, but darker", new Color(50, 50, 50), new Color(.5f, .5f, .5f, 1f), .3125f, .75f));
+        newCategory("Materials");
+        addTheme(new SolidColorTheme("Water", new Color(64, 78, 203)));
+        addTheme(new SolidColorTheme("Iron", new Color(229, 229, 229)));
+        addTheme(new SolidColorTheme("Redstone", new Color(144, 16, 8)));
+        addTheme(new SolidColorTheme("Quartz", new Color(166, 164, 160)));
+        addTheme(new SolidColorTheme("Obsidian", new Color(20, 18, 30)));
+        addTheme(new SolidColorTheme("Nether Brick", new Color(68, 4, 7)));
+        addTheme(new SolidColorTheme("Glowstone", new Color(143, 117, 68)));
+        addTheme(new SolidColorTheme("Lapis", new Color(37, 65, 139)));
+        addTheme(GOLD = new SolidColorTheme("Gold", new Color(254, 249, 85)));
+        addTheme(new SolidColorTheme("Prismarine", new Color(101, 162, 144)));
+        addTheme(new SolidColorTheme("Slime", new Color(119, 187, 101)));
+        addTheme(new SolidColorTheme("End Stone", new Color(225, 228, 170)));
+        addTheme(new SolidColorTheme("Purpur", new Color(165, 121, 165)));
+        addTheme(new SolidColorTheme("Diamond", new Color(136, 230, 226)));
+        addTheme(new SolidColorTheme("Emerald", new Color(82, 221, 119)));
+        addTheme(new SolidColorTheme("Copper", new Color(222, 151, 109)));
+        addTheme(new SolidColorTheme("Tin", new Color(222, 225, 242)));
+        addTheme(new SolidColorTheme("Lead", new Color(65, 77, 77)));
+        addTheme(new SolidColorTheme("Boron", new Color(160, 160, 160)));
+        addTheme(new SolidColorTheme("Lithium", new Color(241, 241, 241)));
+        addTheme(new SolidColorTheme("Magnesium", new Color(242, 220, 229)));
+        addTheme(new SolidColorTheme("Manganese", new Color(173, 176, 201)));
+        addTheme(new SolidColorTheme("Aluminum", new Color(213, 245, 233)));
+        addTheme(new SolidColorTheme("Silver", new Color(241, 238, 246)));
+        addTheme(new SolidColorTheme("Fluorite", new Color(132, 160, 142)));
+        addTheme(new SolidColorTheme("Villiaumite", new Color(154, 109, 97)));
+        addTheme(new SolidColorTheme("Carobbiite", new Color(160, 167, 82)));
+        addTheme(new SolidColorTheme("Arsenic", new Color(147, 149, 137)));
+        addTheme(new SolidColorTheme("Nitrogen", new Color(64, 166, 70)));
+        addTheme(new SolidColorTheme("Helium", new Color(201, 76, 73)));
+        addTheme(new SolidColorTheme("Enderium", new Color(0, 71, 75)));
+        addTheme(new SolidColorTheme("Cryotheum", new Color(0, 150, 194)));
+        addTheme(new SolidColorTheme("Beryllium", new Color(240, 244, 236)));
+        addTheme(new SolidColorTheme("Graphite", new Color(18, 18, 18)));
+        addTheme(new SolidColorTheme("Heavy Water", new Color(103, 71, 210)));
+        addTheme(new SolidColorTheme("Reflector", new Color(186, 144, 94)));
+        addTheme(new SolidColorTheme("Conductor", new Color(129, 129, 129)));
+        addTheme(new SolidColorTheme("Old Heavy Water", new Color(40, 50, 100), new Color(0.5f, 0.5f, 1f, 1f), .625f, .875f, new Color(.875f,.875f,1f,1f)));
+        addTheme(new LegacyTheme("Air"){
             @Override
             public Color getBackgroundColor(){
-                return average(Color.WHITE, LIGHT.getBackgroundColor());
+                return average(Color.WHITE, STANDARD.getBackgroundColor());
             }
             @Override
             public Color getTextColor(){
-                return process(LIGHT.getTextColor());
+                return process(STANDARD.getTextColor());
             }
             @Override
             public Color getHeaderColor(){
-                return process(LIGHT.getHeaderColor());
+                return process(STANDARD.getHeaderColor());
             }
             @Override
             public Color getHeader2Color(){
-                return process(LIGHT.getHeader2Color());
+                return process(STANDARD.getHeader2Color());
             }
             @Override
             public Color getListColor(){
-                return process(LIGHT.getListColor());
+                return process(STANDARD.getListColor());
             }
             @Override
             public Color getSelectedMultiblockColor(){
-                return process(LIGHT.getSelectedMultiblockColor());
+                return process(STANDARD.getSelectedMultiblockColor());
             }
             @Override
             public Color getListBackgroundColor(){
-                return process(LIGHT.getListBackgroundColor());
+                return process(STANDARD.getListBackgroundColor());
             }
             @Override
             public Color getMetadataPanelBackgroundColor(){
-                return process(LIGHT.getMetadataPanelBackgroundColor());
+                return process(STANDARD.getMetadataPanelBackgroundColor());
             }
             @Override
             public Color getMetadataPanelHeaderColor(){
-                return process(LIGHT.getMetadataPanelHeaderColor());
+                return process(STANDARD.getMetadataPanelHeaderColor());
             }
             @Override
             public Color getRed(){
-                return process(LIGHT.getRed());
+                return process(STANDARD.getRed());
             }
             @Override
             public Color getGreen(){
-                return process(LIGHT.getGreen());
+                return process(STANDARD.getGreen());
             }
             @Override
             public Color getBlue(){
-                return process(LIGHT.getBlue());
+                return process(STANDARD.getBlue());
             }
             @Override
             public Color getEditorListBorderColor(){
-                return process(LIGHT.getEditorListBorderColor());
+                return process(STANDARD.getEditorListBorderColor());
             }
             @Override
             public Color getDarkButtonColor(){
-                return process(LIGHT.getDarkButtonColor());
+                return process(STANDARD.getDarkButtonColor());
             }
             @Override
             public Color getButtonColor(){
-                return process(LIGHT.getButtonColor());
+                return process(STANDARD.getButtonColor());
             }
             @Override
             public Color getSelectionColor(){
-                return process(LIGHT.getSelectionColor());
+                return process(STANDARD.getSelectionColor());
             }
             @Override
             public Color getRGBA(float r, float g, float b, float a){
-                return process(LIGHT.getRGBA(r,g,b, a));
+                return process(STANDARD.getRGBA(r,g,b, a));
             }
             @Override
             public Color getWhite(){
-                return process(LIGHT.getWhite());
+                return process(STANDARD.getWhite());
             }
             private Color process(Color c){
                 return new Color(c.getRed(), c.getBlue(), c.getGreen(), c.getAlpha()/16);
             }
             @Override
             public Color getSidebarColor(){
-                return process(LIGHT.getSidebarColor());
+                return process(STANDARD.getSidebarColor());
             }
             @Override
             public Color getFadeout(){
-                return process(LIGHT.getFadeout());
+                return process(STANDARD.getFadeout());
             }
         });
-        themes.add(new ChangingTheme("Random", () -> {
+        newCategory("Colors");
+        addTheme(new SolidColorTheme("Red", new Color(100, 0, 0), new Color(1f, 0f, 0f, 1f), .625f, 1f));
+        addTheme(new SolidColorTheme("Orange", new Color(100, 50, 0), new Color(1, 0.5f, 0), .625f, 1f));
+        addTheme(new SolidColorTheme("Yellow", new Color(100, 100, 0), new Color(1f, 1f, 0f, 1f), .625f, 1f));
+        addTheme(new SolidColorTheme("Lime", new Color(50, 100, 0), new Color(.5f, 1f, 0), .625f, 1f));
+        addTheme(new SolidColorTheme("Green", new Color(0, 100, 0), new Color(0f, 1f, 0f, 1f), .625f, 1f));
+        addTheme(new SolidColorTheme("Bluish green", new Color(0, 100, 50), new Color(0f, 1f, .5f), .625f, 1f));
+        addTheme(new SolidColorTheme("Aqua", new Color(0, 100, 100), new Color(0f, 1f, 1f, 1f), .625f, 1f));
+        addTheme(new SolidColorTheme("Greenish Blue", new Color(0, 50, 100), new Color(0f, .5f, 1f), .625f, 1f));
+        addTheme(new SolidColorTheme("Blue", new Color(0, 0, 100), new Color(0f, 0f, 1f, 1f), .625f, 1f));
+        addTheme(new SolidColorTheme("Purple", new Color(50, 0, 100), new Color(.5f, 0f, 1f), .625f, 1f));
+        addTheme(new SolidColorTheme("Magenta", new Color(100, 0, 100), new Color(1f, 0f, 1f, 1f), .625f, 1f));
+        addTheme(new SolidColorTheme("Pink", new Color(100, 0, 50), new Color(1f, 0f, .5f), .625f, 1f));
+        addTheme(new SolidColorTheme("Light Pink", new Color(255, 110, 199)));
+        newCategory("S'mores");
+        addTheme(CRACKER = new SolidColorTheme("Cracker", new Color(201, 163, 64)));//or 150 106 1
+        addTheme(CHOCOLATE = new SolidColorTheme("Chocolate", new Color(97, 20, 0)));
+        addTheme(MARSHMALLOW = new SolidColorTheme("Marshmallow", new Color(248, 248, 248)));
+        addTheme(new SmoreTheme("S'more", CRACKER, CHOCOLATE, MARSHMALLOW));
+        addTheme(new SmoreTheme("Golden S'more", GOLD, CHOCOLATE, MARSHMALLOW));
+        newCategory("Other");
+        addTheme(new ChangingTheme("Random", () -> {
             Random rand = new Random();
             return new SolidColorTheme("Random", new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
         }));
-        themes.add(CRACKER = new SolidColorTheme("Cracker", new Color(201, 163, 64)));//or 150 106 1
-        themes.add(CHOCOLATE = new SolidColorTheme("Chocolate", new Color(97, 20, 0)));
-        themes.add(MARSHMALLOW = new SolidColorTheme("Marshmallow", new Color(248, 248, 248)));
-        themes.add(new SmoreTheme("S'more", CRACKER, CHOCOLATE, MARSHMALLOW));
-        themes.add(new SmoreTheme("Golden S'more", GOLD, CHOCOLATE, MARSHMALLOW));
-        themes.add(new ChangingTheme("???", () -> {
+        addTheme(QUESTIONQUESTIONQUESTION = new ChangingTheme("???", () -> {
             return new RandomColorsTheme("???");
         }));
-        themes.add(new SiezureTheme("Disco"));
-        themes.add(new SolidColorTheme("Red", new Color(100, 0, 0), new Color(1f, 0f, 0f, 1f), .625f, 1f));
-        themes.add(new SolidColorTheme("Orange", new Color(100, 50, 0), new Color(1, 0.5f, 0), .625f, 1f));
-        themes.add(new SolidColorTheme("Yellow", new Color(100, 100, 0), new Color(1f, 1f, 0f, 1f), .625f, 1f));
-        themes.add(new SolidColorTheme("Lime", new Color(50, 100, 0), new Color(.5f, 1f, 0), .625f, 1f));
-        themes.add(new SolidColorTheme("Green", new Color(0, 100, 0), new Color(0f, 1f, 0f, 1f), .625f, 1f));
-        themes.add(new SolidColorTheme("Bluish green", new Color(0, 100, 50), new Color(0f, 1f, .5f), .625f, 1f));
-        themes.add(new SolidColorTheme("Aqua", new Color(0, 100, 100), new Color(0f, 1f, 1f, 1f), .625f, 1f));
-        themes.add(new SolidColorTheme("Greenish Blue", new Color(0, 50, 100), new Color(0f, .5f, 1f), .625f, 1f));
-        themes.add(new SolidColorTheme("Blue", new Color(0, 0, 100), new Color(0f, 0f, 1f, 1f), .625f, 1f));
-        themes.add(new SolidColorTheme("Purple", new Color(50, 0, 100), new Color(.5f, 0f, 1f), .625f, 1f));
-        themes.add(new SolidColorTheme("Magenta", new Color(100, 0, 100), new Color(1f, 0f, 1f, 1f), .625f, 1f));
-        themes.add(new SolidColorTheme("Pink", new Color(100, 0, 50), new Color(1f, 0f, .5f), .625f, 1f));
-        themes.add(new SolidColorTheme("Light Pink", new Color(255, 110, 199)));
+        addTheme(new SiezureTheme("Disco"));
+        addTheme(new RainbowTheme("Rainbow"));
     }
-    public static String[] getThemeS(){
-        String[] themeS = new String[themes.size()];
-        for(int i = 0; i<themes.size(); i++){
-            themeS[i] = themes.get(i).name;
+    private static ThemeCategory currentCategory;
+    private static void newCategory(String name){
+        themes.add(currentCategory = new ThemeCategory(name));
+    }
+    private static void addTheme(Theme theme){
+        currentCategory.add(theme);
+    }
+    public static Theme getByName(String name){
+        for(ThemeCategory cat : themes){
+            for(Theme t : cat){
+                if(t.name.equals(name))return t;
+            }
         }
-        return themeS;
+        return null;
+    }
+    public static Theme getByLegacyID(int i){
+        ArrayList<Theme> allThemes = new ArrayList<>();
+        for(ThemeCategory cat : themes)allThemes.addAll(cat);
+        return allThemes.get(i);
     }
     public final String name;
     public Theme(String name){
@@ -304,6 +324,8 @@ public abstract class Theme{
     public abstract Color getVRSelectedOutlineColor(int index);
     public abstract Color getVRPanelOutlineColor();
     public abstract Color getVRMultitoolTextColor();
+    public abstract void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver);
+    public abstract void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text);
     public static Color average(Color c1, Color c2){
         return new Color((c1.getRed()+c2.getRed())/2, (c1.getGreen()+c2.getGreen())/2, (c1.getBlue()+c2.getBlue())/2, (c1.getAlpha()+c2.getAlpha())/2);
     }
@@ -330,5 +352,8 @@ public abstract class Theme{
                          Math.max((int)(color.getGreen()*FACTOR), 0),
                          Math.max((int)(color.getBlue() *FACTOR), 0),
                          color.getAlpha());
+    }
+    public boolean shouldContantlyUpdateBackground(){
+        return false;
     }
 }

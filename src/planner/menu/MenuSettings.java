@@ -30,7 +30,7 @@ public class MenuSettings extends SettingsMenu{
     private final MenuComponentMinimalistButton load = add(new MenuComponentMinimalistButton(0, 0, 0, 48, "Load", true, true).setTooltip("Load configuration from a file, replacing the current configuration\nAny existing multiblocks will be converted to the new configuration\nYou can load the following files:\nnuclearcraft.cfg in the game files\nany .ncpf configuration file"));
     private final MenuComponentMinimalistButton save = add(new MenuComponentMinimalistButton(0, 0, 0, 48, "Save", true, true).setTooltip("Save the configuration to a .ncpf file"));
     private final MenuComponentMinimalistButton modify = add(new MenuComponentMinimalistButton(0, 0, 0, 48, "Modify", true, true).setTooltip("Modify the current configuration"));
-    private final MenuComponentMinimalistOptionButton theme;
+    private final MenuComponentMinimalistButton theme;
     private final MenuComponentMinimalistButton modules;
     private final MenuComponentToggleBox invertUndoRedo;
     private final MenuComponentToggleBox autoBuildCasing;
@@ -48,7 +48,7 @@ public class MenuSettings extends SettingsMenu{
         tutorials.addActionListener((e) -> {
             gui.open(new MenuTransition(gui, this, new MenuTutorial(gui, this), MenuTransition.SplitTransitionX.slideIn(300d/gui.helper.displayWidth()), 4));
         });
-        theme = addToSidebar(new MenuComponentMinimalistOptionButton(0, 0, 0, 48, "Theme", true, true, Theme.themes.indexOf(Core.theme), Theme.getThemeS()).setTooltip("Click to cycle through available themes\nRight click to cycle back"));
+        theme = addToSidebar(new MenuComponentMinimalistButton(0, 0, 0, 48, "Change Theme", true, true));
         for(Configuration config : Configuration.configurations){
             MenuComponentMinimalistButton b = new MenuComponentMinimalistButton(0, 0, 0, 48, "Load "+config.toString(), true, true).setTooltip("Replace the current configuration with "+config.toString()+"\nAll multiblocks will be converted to the new configuration");
             b.addActionListener((e) -> {
@@ -64,6 +64,9 @@ public class MenuSettings extends SettingsMenu{
             });
             quickLoadList.add(b);
         }
+        theme.addActionListener((e) -> {
+            gui.open(new MenuTransition(gui, this, new MenuThemes(gui, this), MenuTransition.SplitTransitionX.slideOut(sidebar.width/gui.helper.displayWidth()), 4));
+        });
         load.addActionListener((e) -> {
             try{
                 Core.createFileChooser((file) -> {
@@ -135,13 +138,6 @@ public class MenuSettings extends SettingsMenu{
         quickLoadList.height = gui.helper.displayHeight()/3-quickLoadLabel.height;
         currentConfigLabel.y = quickLoadList.y+quickLoadList.height;
         save.y = load.y = modify.y = currentConfigLabel.y+currentConfigLabel.height;
-        if(Theme.themes.indexOf(Core.theme)!=theme.getIndex()){
-            try{
-                Core.setTheme(Theme.themes.get(theme.getIndex()));
-            }catch(IndexOutOfBoundsException ex){
-                gui.open(new MenuSettings(gui, (Menu)parent));
-            }
-        }
         super.render(millisSinceLastTick);
     }
     

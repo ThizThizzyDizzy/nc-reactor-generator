@@ -1,5 +1,7 @@
 package planner.theme;
+import planner.Core;
 import simplelibrary.image.Color;
+import static simplelibrary.opengl.Renderer2D.*;
 public class SmoreTheme extends ColorTheme{
     private final ColorTheme cracker;
     private final ColorTheme chocolate;
@@ -529,6 +531,38 @@ public class SmoreTheme extends ColorTheme{
     @Override
     public Color getVRMultitoolTextColor(){
         return chocolate.getVRMultitoolTextColor();
+    }
+    @Override
+    public void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
+        for(int i = 0; i<4; i++){
+            Color col;
+            if(darker){
+                 col = getSecondaryComponentColor(i);
+                if(enabled){
+                    if(pressed)col = getSecondaryComponentPressedColor(i);
+                    else if(mouseOver)col = getSecondaryComponentMouseoverColor(i);
+                }else{
+                    col = getSecondaryComponentDisabledColor(i);
+                }
+            }else{
+                col = getComponentColor(i);
+                if(enabled){
+                    if(pressed)col = getComponentPressedColor(i);
+                    else if(mouseOver)col = getComponentMouseoverColor(i);
+                }else{
+                    col = getComponentDisabledColor(i);
+                }
+            }
+            Core.applyColor(col);
+            drawRect(x, y+height*i/4d, x+width, y+height*(i+1)/4d, 0);
+        }
+    }
+    @Override
+    public void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text){
+        for(int i = 0; i<4; i++){
+            Core.applyColor(getComponentTextColor(i));
+            drawCenteredTextWithBounds(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, x, y+height*i/4d, x+width, y+height*(i+1)/4d, text);
+        }
     }
     private ColorTheme pickTheme(int index){
         if(index%3==0)return cracker;

@@ -2,7 +2,7 @@ package planner.theme;
 import java.util.function.Supplier;
 import simplelibrary.image.Color;
 public class ChangingTheme extends Theme{
-    private Theme current;
+    protected Theme current;
     private final Supplier<Theme> theme;
     public ChangingTheme(String name, Supplier<Theme> theme){
         super(name);
@@ -533,5 +533,12 @@ public class ChangingTheme extends Theme{
     public Color getVRMultitoolTextColor(){
         return current.getVRMultitoolTextColor();
     }
-
+    @Override
+    public void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
+        current.drawThemeButtonBackground(x, y, width, height, darker, enabled, pressed, mouseOver);
+    }
+    @Override
+    public void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text){
+        current.drawThemeButtonText(x, y, width, height, textHeight, text);
+    }
 }

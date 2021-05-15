@@ -92,7 +92,7 @@ public class Core extends Renderer2D{
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
     public static Configuration configuration = new Configuration(null, null, null);
-    public static Theme theme = Theme.themes.get(0);
+    public static Theme theme = Theme.themes.get(0).get(0);
     private static boolean tutorialShown = false;
     public static int sourceCircle = -1;
     public static int outlineSquare = -1;
@@ -238,7 +238,10 @@ public class Core extends Renderer2D{
             Config settings = Config.newConfig(f);
             settings.load();
             System.out.println("Loading theme");
-            setTheme(Theme.themes.get(settings.get("theme", 0)));
+            Object o = settings.get("theme");
+            if(o instanceof String){
+                setTheme(Theme.getByName((String)o));
+            }else setTheme(Theme.getByLegacyID((int)o));
             try{
                 Config modules = settings.get("modules", Config.newConfig());
                 HashMap<Module, Boolean> moduleStates = new HashMap<>();
@@ -308,7 +311,7 @@ public class Core extends Renderer2D{
         }else{
             File f = new File("settings.dat").getAbsoluteFile();
             Config settings = Config.newConfig(f);
-            settings.set("theme", Theme.themes.indexOf(theme));
+            settings.set("theme", theme.name);
             Config modules = Config.newConfig();
             for(Module m : Core.modules){
                 modules.set(m.name, m.isActive());
@@ -325,6 +328,7 @@ public class Core extends Renderer2D{
         }
     }
     public static void render(int millisSinceLastTick){
+        if(theme.shouldContantlyUpdateBackground())helper.setBackground(theme.getMenuBackgroundColor());
         if(delCircle&&sourceCircle!=-1){
             ImageStash.instance.deleteTexture(sourceCircle);
             ImageStash.instance.deleteTexture(outlineSquare);
