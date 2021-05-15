@@ -1,5 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordBlockRange extends Keyword{
     public String block;
@@ -64,7 +65,7 @@ public class KeywordBlockRange extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(255, 0, 127);
+        return Core.theme.getKeywordColorBlockRange();
     }
     @Override
     public String getRegex(){

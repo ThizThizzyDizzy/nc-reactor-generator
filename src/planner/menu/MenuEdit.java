@@ -164,10 +164,10 @@ public class MenuEdit extends Menu implements Editor{
         @Override
         public void render(){
             if(!isDown){
-                Color col = isMouseOver?Core.theme.getBrighterButtonColor():Core.theme.getButtonColor();
+                Color col = isMouseOver?Core.theme.getComponentMouseoverColor(0):Core.theme.getComponentColor(0);
                 Core.applyColor(col);
                 drawRect(x, y, x+width, y+height, 0);
-                Core.applyColor(Core.theme.getTextColor());
+                Core.applyColor(Core.theme.getComponentTextColor(0));
                 double border = height/6;
                 double lineThickness = height/9;
                 drawRect(x+border, y+border, x+width-border, y+border+lineThickness, 0);
@@ -474,37 +474,37 @@ public class MenuEdit extends Menu implements Editor{
     @Override    
     public void renderForeground(){
         if(multiblock instanceof UnderhaulSFR){//so this is below the tooltip
-            Core.applyColor(Core.theme.getDarkButtonColor());
+            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
             drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(0));
             drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Fuel");
         }
         if(multiblock instanceof OverhaulSFR){
-            Core.applyColor(Core.theme.getDarkButtonColor());
+            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
             drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
             drawRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, 0);
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(0));
             drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Coolant Recipe");
             drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
         }
         if(multiblock instanceof OverhaulMSR){
-            Core.applyColor(Core.theme.getDarkButtonColor());
+            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
             drawRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, 0);
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(0));
             drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
         }
         if(multiblock instanceof OverhaulTurbine){
-            Core.applyColor(Core.theme.getDarkButtonColor());
+            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
             drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(0));
             drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Recipe");
         }
         if(multiblock instanceof OverhaulFusionReactor){
-            Core.applyColor(Core.theme.getDarkButtonColor());
+            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
             drawRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, 0);
             drawRect(fusionRecipe.x, fusionRecipe.y-fusionRecipe.preferredHeight, fusionRecipe.x+fusionRecipe.width, fusionRecipe.y, 0);
             drawRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, 0);
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(0));
             drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Coolant Recipe");
             drawCenteredText(fusionRecipe.x, fusionRecipe.y-fusionRecipe.preferredHeight, fusionRecipe.x+fusionRecipe.width, fusionRecipe.y, "Recipe");
             drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
@@ -1248,9 +1248,8 @@ public class MenuEdit extends Menu implements Editor{
         BoundingBox bbox = multiblock.getBoundingBox();
         float resonatingAlpha = 0.25f;
         double blockSize = 1;
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.get3DMultiblockOutlineColor());
         VRCore.drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,bbox.getWidth()+blockSize/32,bbox.getHeight()+blockSize/32,bbox.getDepth()+blockSize/32,blockSize/24);
-        Core.applyColor(Core.theme.getTextColor());
         multiblock.forEachPosition((x, y, z) -> {//solid stuff
             Block block = multiblock.getBlock(x, y, z);
             int xx = x;
@@ -1293,7 +1292,7 @@ public class MenuEdit extends Menu implements Editor{
                             });
                         }
                     }
-                    Core.applyColor(Core.theme.getGreen());
+                    Core.applyColor(Core.theme.getSuggestionOutlineColor());
                     border = blockSize/40f;
                     if(s.selected)border*=3;
                     VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
@@ -1318,9 +1317,9 @@ public class MenuEdit extends Menu implements Editor{
                 double Y = by*blockSize;
                 double Z = bz*blockSize;
                 double border = blockSize/16;
-                Core.applyColor(Core.theme.getEditorListBorderColor());
+                Core.applyColor(Core.theme.get3DDeviceoverOutlineColor());
                 VRCore.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
-                Core.applyAverageColor(Core.theme.getEditorListBorderColor(), Core.theme.getTextColor());
+                Core.applyColor(Core.theme.getEditorMouseoverLineColor());
                 X+=blockSize/2;
                 Y+=blockSize/2;
                 Z+=blockSize/2;

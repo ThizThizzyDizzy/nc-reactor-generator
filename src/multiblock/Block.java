@@ -69,7 +69,7 @@ public abstract class Block extends MultiblockBit implements Searchable{
     }
     public void render(double x, double y, double width, double height, boolean renderOverlay, float alpha, Multiblock multiblock){
         if(getTexture()==null){
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getBlockTextColor());
             String text = getName();
             double textLength = FontManager.getLengthForStringWithHeight(text, height);
             double scale = Math.min(1, (width)/textLength);
@@ -90,7 +90,7 @@ public abstract class Block extends MultiblockBit implements Searchable{
         bounds[4] *= height;
         bounds[5] *= depth;
         if(getTexture()==null){
-            Core.applyColor(Core.theme.getRGBA(1, 1, 0, alpha));
+            Core.applyColor(Core.theme.getBlockUnknownColor(), alpha);
             VRCore.drawCube(x+bounds[0], y+bounds[1], z+bounds[2], x+bounds[3], y+bounds[4], z+bounds[5], 0, faceRenderFunc);
         }else{
             Core.applyWhite(alpha);
@@ -103,7 +103,7 @@ public abstract class Block extends MultiblockBit implements Searchable{
     }
     public void renderGrayscale(double x, double y, double width, double height, boolean renderOverlay, float alpha, Multiblock multiblock){
         if(getGrayscaleTexture()==null){
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getBlockTextColor());
             String text = getName();
             double textLength = FontManager.getLengthForStringWithHeight(text, height);
             double scale = Math.min(1, (width)/textLength);

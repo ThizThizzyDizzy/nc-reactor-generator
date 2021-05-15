@@ -28,9 +28,7 @@ public abstract class ConfigurationMenu extends Menu{
         if(parent instanceof ConfigurationMenu)parentNames.add(((ConfigurationMenu)parent).name);
         else parentNames.add("Done");
         sidebar = add(new MenuComponentMinimaList(0, 0, 256, 0, 0));
-        sidebar.setBackgroundColor(() -> {
-            return Core.theme.getSidebarColor();
-        });
+        sidebar.setBackgroundColor(Core.theme::getConfigurationSidebarColor);
         for(int i = 0; i<parents.size(); i++){
             Menu menu = parents.get(i);
             MenuComponentMinimalistButton configurationButton = addToSidebar(new MenuComponentMinimalistButton(0, 0, 0, 48, parentNames.get(i), true, true));

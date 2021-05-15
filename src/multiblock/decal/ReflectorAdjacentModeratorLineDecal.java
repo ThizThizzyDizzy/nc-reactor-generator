@@ -10,7 +10,7 @@ public class ReflectorAdjacentModeratorLineDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getRGBA(1, 0.5f, 0, 1));
+        Core.applyColor(Core.theme.getDecalColorReflectorAdjacentModeratorLine());
         switch(direction){
             case NX:
                 drawRect(x, y+blockSize*.125, x+blockSize*.125, y+blockSize*.875, 0);

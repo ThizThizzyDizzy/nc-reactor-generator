@@ -41,7 +41,7 @@ public class VRMenuComponentSpecialPanel extends VRMenuComponent{
             refreshNeeded = true;
         }
 //</editor-fold>
-        Core.applyColor(Core.theme.getEditorListBorderColor());//I think this is the light one
+        Core.applyColor(Core.theme.getVRPanelOutlineColor());
         VRCore.drawCubeOutline(-.005, -.005, -.005, width+.005, height+.005, depth+.005, .005);//half cm
     }
     @Override

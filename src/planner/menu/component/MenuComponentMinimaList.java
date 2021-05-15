@@ -51,29 +51,29 @@ public class MenuComponentMinimaList extends MenuComponentList{
     }
     @Override
     public void drawVerticalScrollbarBackground(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getListBackgroundColor());
+        Core.applyColor(Core.theme.getScrollbarBackgroundColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawVerticalScrollbarForeground(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getListColor());
+        Core.applyColor(Core.theme.getScrollbarButtonColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawHorizontalScrollbarBackground(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getListBackgroundColor());
+        Core.applyColor(Core.theme.getScrollbarBackgroundColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawHorizontalScrollbarForeground(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getListColor());
+        Core.applyColor(Core.theme.getScrollbarButtonColor());
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void drawButton(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getListColor());
+        Core.applyColor(Core.theme.getScrollbarButtonColor());
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2d(x+1, y);
         GL11.glVertex2d(x+1, y+height-1);

@@ -74,7 +74,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     @Override
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
         synchronized(deviceover){
-            Core.applyColor(Core.theme.getEditorListBorderColor());
+            Core.applyColor(Core.theme.get3DMultiblockOutlineColor());
             VRCore.drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,width+blockSize/32,height+blockSize/32,depth+blockSize/32,blockSize/24);
             for(int id : deviceover.keySet()){
                 int[] mouseover = deviceover.get(id);
@@ -86,7 +86,6 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 else deviceover.put(id, mouseover);
             }
         }
-        Core.applyColor(Core.theme.getTextColor());
         multiblock.forEachPosition((x, y, z) -> {//solid stuff
             Block block = multiblock.getBlock(x, y, z);
             int xx = x;
@@ -131,7 +130,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                             });
                         }
                     }
-                    Core.applyColor(Core.theme.getGreen());
+                    Core.applyColor(Core.theme.getSuggestionOutlineColor());
                     border = blockSize/40f;
                     if(s.selected)border*=3;
                     VRCore.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
@@ -154,9 +153,9 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     double Y = mouseover[1]*blockSize;
                     double Z = mouseover[2]*blockSize;
                     double border = blockSize/16;
-                    Core.applyColor(Core.theme.getEditorListBorderColor());
+                    Core.applyColor(Core.theme.get3DMultiblockOutlineColor());
                     VRCore.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
-                    Core.applyAverageColor(Core.theme.getEditorListBorderColor(), Core.theme.getTextColor());
+                    Core.applyColor(Core.theme.getEditorMouseoverLineColor());
                     X+=blockSize/2;
                     Y+=blockSize/2;
                     Z+=blockSize/2;

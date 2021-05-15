@@ -67,7 +67,7 @@ public class MenuTransition extends Menu{
                 to.render(millisSinceLastTick);
                 GL11.glPushMatrix();
                 GL11.glTranslated(xOff, yOff, 0);
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getMenuBackgroundColor());
                 drawRect(0, 0, Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
                 Core.applyWhite();
                 from.render(millisSinceLastTick);
@@ -76,7 +76,7 @@ public class MenuTransition extends Menu{
                 from.render(millisSinceLastTick);
                 GL11.glPushMatrix();
                 GL11.glTranslated(xOff, yOff, 0);
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getMenuBackgroundColor());
                 drawRect(0, 0, Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
                 Core.applyWhite();
                 to.render(millisSinceLastTick);
@@ -134,7 +134,7 @@ public class MenuTransition extends Menu{
                         c.x = initialX-(totalLeft)*ratio;
                     }
                 }
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getMenuBackgroundColor());
                 drawRect(0, 0, (1-ratio)*Core.helper.displayWidth()*dividerX, Core.helper.displayHeight(), 0);
                 drawRect(Core.helper.displayWidth()-(1-ratio)*Core.helper.displayWidth()*(1-dividerX), 0, Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
                 for(MenuComponent component : from.components){
@@ -173,7 +173,7 @@ public class MenuTransition extends Menu{
                         c.x = initialX-(totalLeft)*(1-ratio);
                     }
                 }
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getMenuBackgroundColor());
                 drawRect(0, 0, (ratio)*Core.helper.displayWidth()*dividerX, Core.helper.displayHeight(), 0);
                 drawRect(Core.helper.displayWidth()-(ratio)*Core.helper.displayWidth()*(1-dividerX), 0, Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
                 for(MenuComponent component : to.components){
@@ -277,7 +277,7 @@ public class MenuTransition extends Menu{
                         c.y = initialY-(totalDown)*ratio;
                     }
                 }
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getMenuBackgroundColor());
                 drawRect(0, 0, Core.helper.displayWidth(), (1-ratio)*Core.helper.displayHeight()*dividerY, 0);
                 drawRect(0, Core.helper.displayHeight()-(1-ratio)*Core.helper.displayHeight()*(1-dividerY), Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
                 for(MenuComponent component : from.components){
@@ -316,7 +316,7 @@ public class MenuTransition extends Menu{
                         c.y = initialY-(totalUp)*(1-ratio);
                     }
                 }
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getMenuBackgroundColor());
                 drawRect(0, 0, Core.helper.displayWidth(), (ratio)*Core.helper.displayHeight()*dividerY, 0);
                 drawRect(0, Core.helper.displayHeight()-(ratio)*Core.helper.displayHeight()*(1-dividerY), Core.helper.displayWidth(), Core.helper.displayHeight(), 0);
                 for(MenuComponent component : to.components){

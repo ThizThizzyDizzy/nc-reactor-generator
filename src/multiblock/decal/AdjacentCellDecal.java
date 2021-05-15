@@ -10,7 +10,7 @@ public class AdjacentCellDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getRGBA(1,1,0,1));
+        Core.applyColor(Core.theme.getDecalColorAdjacentCell());
         switch(cellDirection){
             case NX:
                 drawRect(x, y+blockSize*.25, x+blockSize*.125, y+blockSize*.75, 0);

@@ -11,7 +11,7 @@ public class MenuComponentBlock extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
             GL11.glBegin(GL11.GL_TRIANGLES);
             GL11.glVertex2d(x+width*.25, y+height*.75);
             GL11.glVertex2d(x+width*.375, y+height*.75);
@@ -34,7 +34,7 @@ public class MenuComponentBlock extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
             GL11.glBegin(GL11.GL_QUADS);
             GL11.glVertex2d(x+width*.1, y+height*.8);
             GL11.glVertex2d(x+width*.2, y+height*.9);
@@ -62,15 +62,15 @@ public class MenuComponentBlock extends MenuComponent{
     }
     @Override
     public void render(){
-        if(isMouseOver)Core.applyColor(Core.theme.getSelectedMultiblockColor());
-        else Core.applyColor(Core.theme.getButtonColor());
+        if(isMouseOver)Core.applyColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
+        else Core.applyColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void renderForeground(){
         Core.applyWhite();
         if(block.texture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(block.displayTexture));
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         ArrayList<String> strs = new ArrayList<>();
         strs.add(block.getDisplayName());
         if(block.blade){

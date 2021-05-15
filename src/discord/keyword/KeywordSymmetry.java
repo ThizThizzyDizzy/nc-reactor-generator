@@ -1,5 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordSymmetry extends Keyword{
     public String symmetry;
@@ -13,7 +14,7 @@ public class KeywordSymmetry extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(127, 255, 0);
+        return Core.theme.getKeywordColorSymmetry();
     }
     @Override
     public String getRegex(){

@@ -1,5 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordCuboid extends Keyword{
     public int x,y,z;
@@ -12,7 +13,7 @@ public class KeywordCuboid extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(255,0,0);
+        return Core.theme.getKeywordColorCuboid();
     }
     @Override
     public String getRegex(){

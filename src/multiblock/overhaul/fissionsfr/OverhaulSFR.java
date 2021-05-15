@@ -1225,21 +1225,21 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 if(c.isValid())validClusters++;
             }
             FormattedText text = new FormattedText();
-            if(numControllers<1)text.addText("No controller!", Core.theme.getRed());
-            if(numControllers>1)text.addText("Too many controllers!", Core.theme.getRed());
-            if(missingCasings>0)text.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getRed());
-            if(!hasInputVent)text.addText("Missing input vent!", Core.theme.getRed());
-            if(!hasOutputVent)text.addText("Missing output vent!", Core.theme.getRed());
+            if(numControllers<1)text.addText("No controller!", Core.theme.getTooltipInvalidTextColor());
+            if(numControllers>1)text.addText("Too many controllers!", Core.theme.getTooltipInvalidTextColor());
+            if(missingCasings>0)text.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getTooltipInvalidTextColor());
+            if(!hasInputVent)text.addText("Missing input vent!", Core.theme.getTooltipInvalidTextColor());
+            if(!hasOutputVent)text.addText("Missing output vent!", Core.theme.getTooltipInvalidTextColor());
             if(missingInputPorts.size()>0){
-                text.addText("Missing "+missingInputPorts.size()+" input port"+(missingInputPorts.size()==1?"":"s")+":", Core.theme.getRed());
+                text.addText("Missing "+missingInputPorts.size()+" input port"+(missingInputPorts.size()==1?"":"s")+":", Core.theme.getTooltipInvalidTextColor());
                 for(BlockRecipe key : missingInputPorts.keySet()){
-                    text.addText(" "+missingInputPorts.get(key).getDisplayName()+" ("+key.getInputDisplayName()+")", Core.theme.getRed());
+                    text.addText(" "+missingInputPorts.get(key).getDisplayName()+" ("+key.getInputDisplayName()+")", Core.theme.getTooltipInvalidTextColor());
                 }
             }
             if(missingOutputPorts.size()>0){
-                text.addText("Missing "+missingOutputPorts.size()+" output port"+(missingOutputPorts.size()==1?"":"s")+":", Core.theme.getRed());
+                text.addText("Missing "+missingOutputPorts.size()+" output port"+(missingOutputPorts.size()==1?"":"s")+":", Core.theme.getTooltipInvalidTextColor());
                 for(BlockRecipe key : missingOutputPorts.keySet()){
-                    text.addText(" "+missingOutputPorts.get(key).getDisplayName()+" ("+key.getInputDisplayName()+")", Core.theme.getRed());
+                    text.addText(" "+missingOutputPorts.get(key).getDisplayName()+" ("+key.getInputDisplayName()+")", Core.theme.getTooltipInvalidTextColor());
                 }
             }
             text.addText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.getOutputDisplayName()+"\n"
@@ -1251,7 +1251,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
                     + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
                     + "Total Irradiation: "+totalIrradiation+"\n"
-                    + "Shutdown Factor: "+percent(shutdownFactor, 2), Core.theme.getTextColor());
+                    + "Shutdown Factor: "+percent(shutdownFactor, 2), Core.theme.getTooltipTextColor());
             text.addText(getModuleTooltip()+"\n");
             for(multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
                 if(!b.fuelCell)continue;
@@ -1280,11 +1280,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                         order.add(str);
                     }
                     if(!c.isCreated()){
-                        colors.put(str, Core.theme.getRGBA(Color.WHITE));
+                        colors.put(str, Core.theme.getClusterInvalidColor());
                     }else if(!c.isConnectedToWall){
-                        colors.put(str, Core.theme.getRGBA(Color.PINK));
-                    }else if(c.netHeat>0)colors.put(str, Core.theme.getRed());
-                    else if(c.coolingPenaltyMult!=1)colors.put(str, Core.theme.getBlue());
+                        colors.put(str, Core.theme.getClusterDisconnectedColor());
+                    }else if(c.netHeat>0)colors.put(str, Core.theme.getClusterOverheatingColor());
+                    else if(c.coolingPenaltyMult!=1)colors.put(str, Core.theme.getClusterOvercoolingColor());
                 }
                 for(String str : order){
                     int count = counts.get(str);

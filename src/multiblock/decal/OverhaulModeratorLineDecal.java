@@ -7,7 +7,6 @@ public class OverhaulModeratorLineDecal extends Decal{
     private final Direction direction;
     private final int flux;
     private final float efficiency;
-    private double colorPow = 3;
     public OverhaulModeratorLineDecal(int x, int y, int z, Direction direction, int flux, float efficiency){
         super(x, y, z);
         this.direction = direction;
@@ -16,7 +15,7 @@ public class OverhaulModeratorLineDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getRGBA(0, (float)Math.max(0,Math.min(1,Math.pow(efficiency, colorPow)/2)),1,1));
+        Core.applyColor(Core.theme.getDecalColorOverhaulModeratorLine(efficiency));
         FontManager.setFont("small");
         switch(direction){
             case PX:
@@ -38,7 +37,7 @@ public class OverhaulModeratorLineDecal extends Decal{
                 drawRect(x+blockSize*.55, y, x+blockSize*.75, y+blockSize, 0);
                 break;
         }
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getDecalTextColor());
         switch(direction){
             case PX:
                 drawCenteredText(-blockSize+x, y+blockSize*.55, blockSize+x+blockSize, y+blockSize*.75, flux+"");

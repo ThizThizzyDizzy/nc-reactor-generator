@@ -18,8 +18,8 @@ public class LineTool extends EditorTool{
     private int[] leftDragEnd;
     private int[] rightDragEnd;
     @Override
-    public void render(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getTextColor());
+    public void render(double x, double y, double width, double height, int themeIndex){
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         ImageStash.instance.bindTexture(0);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2d(x+width*.125, y+height*.75);
@@ -30,7 +30,7 @@ public class LineTool extends EditorTool{
     }
     @Override
     public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        Core.applyWhite(.5f);
         if(leftDragEnd!=null&&leftDragStart!=null)raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (bx,by,bz) -> {
             if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), bx, by, bz))return;
             Axis xAxis = axis.get2DXAxis();
@@ -43,6 +43,7 @@ public class LineTool extends EditorTool{
             if(sy<y1||sy>y2)return;
             Renderer2D.drawRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, texture);
         });
+        Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
         if(rightDragEnd!=null&&rightDragStart!=null)raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (bx,by,bz) -> {
             Axis xAxis = axis.get2DXAxis();
             Axis yAxis = axis.get2DYAxis();
@@ -58,12 +59,13 @@ public class LineTool extends EditorTool{
     }
     @Override
     public void drawVRGhosts(EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
         double border = blockSize/64;
         if(leftDragEnd!=null&&leftDragStart!=null)raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
             if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), X, Y, Z))return;
             VRCore.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, texture);
         });
+        Core.applyWhite(.5f);
         if(rightDragEnd!=null&&rightDragStart!=null)raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
             if(editor.getMultiblock().getBlock(X, Y, Z)==null)return;
             VRCore.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, 0);

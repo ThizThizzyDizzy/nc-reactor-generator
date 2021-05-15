@@ -10,7 +10,7 @@ public class UnderhaulModeratorLineDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getBlue());
+        Core.applyColor(Core.theme.getDecalColorUnderhaulModeratorLine());
         switch(axis){
             case X:
                 drawRect(x, y+blockSize*.375, x+blockSize, y+blockSize*.625, 0);

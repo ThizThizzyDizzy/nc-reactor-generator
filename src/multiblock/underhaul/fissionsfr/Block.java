@@ -120,19 +120,19 @@ public class Block extends multiblock.Block{
     @Override
     public void renderOverlay(double x, double y, double width, double height, Multiblock multiblock){
         if(!isValid()){
-            drawOutline(x, y, width, height, Core.theme.getRed());
+            drawOutline(x, y, width, height, Core.theme.getBlockColorOutlineInvalid());
         }
         if(isActive()&&isModerator()){
-            drawOutline(x, y, width, height, Core.theme.getGreen());
+            drawOutline(x, y, width, height, Core.theme.getBlockColorOutlineActive());
         }
     }
     @Override
     public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getRed(), faceRenderFunc);
+            drawOutline(x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
         }
         if(isActive()&&isModerator()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen(), faceRenderFunc);
+            drawOutline(x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
         }
     }
     @Override

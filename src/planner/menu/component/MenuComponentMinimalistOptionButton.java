@@ -40,25 +40,25 @@ public class MenuComponentMinimalistOptionButton extends MenuComponentOptionButt
     public void render(){
         Color col;
         if(darker){
-             col = Core.theme.getDarkButtonColor();
+             col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
             if(enabled){
-                if(isPressed||isRightPressed)col = Core.theme.getDarkerDarkButtonColor();
-                else if(isMouseOver)col = Core.theme.getBrighterDarkButtonColor();
+                if(isPressed||isRightPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
+                else if(isMouseOver)col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
             }else{
-                col = Core.theme.getDarkerDarkButtonColor();
+                col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
             }
         }else{
-            col = Core.theme.getButtonColor();
+            col = Core.theme.getComponentColor(Core.getThemeIndex(this));
             if(enabled){
-                if(isPressed||isRightPressed)col = Core.theme.getDarkerButtonColor();
-                else if(isMouseOver)col = Core.theme.getBrighterButtonColor();
+                if(isPressed||isRightPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(isMouseOver)col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
             }else{
-                col = Core.theme.getDarkerButtonColor();
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
             }
         }
         Core.applyColor(col);
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText();
     }
     public void drawText(){

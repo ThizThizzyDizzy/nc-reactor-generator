@@ -99,7 +99,7 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         double size = Math.max(multiblock.getInternalWidth(), Math.max(multiblock.getInternalHeight(), multiblock.getInternalDepth()));
         GL11.glScaled(1/size, 1/size, 1/size);
         multiblock.draw3D();
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.get3DMultiblockOutlineColor());
         VRCore.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getInternalWidth()+1/16f, multiblock.getInternalHeight()+1/16f, multiblock.getInternalDepth()+1/16f, 1/16f);
         GL11.glPopMatrix();
         textPanel.text = new FormattedText(multiblock.getDimensionsStr());
@@ -153,18 +153,18 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         }
         @Override
         public void renderComponent(TrackedDevicePose.Buffer tdpb){
-            Color col = Core.theme.getButtonColor();
+            Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
             if(enabled){
-                if(isPressed)col = Core.theme.getDarkerButtonColor();
-                else if(!isDeviceOver.isEmpty())col = Core.theme.getBrighterButtonColor();
+                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
             }else{
-                col = Core.theme.getDarkerButtonColor();
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
             }
             Core.applyColor(col);
             VRCore.drawCubeOutline(0, 0, 0, width, height, depth, .005);//5mcm
             GL11.glPushMatrix();
             GL11.glTranslated(width/2, height/2, depth/2);//center
-            Core.applyColor(Core.theme.getGreen());
+            Core.applyColor(Core.theme.getAddButtonTextColor());
             VRCore.drawCube(-width/4, -.005, -.005, width/4, .005, .005, 0);
             VRCore.drawCube(-.005, -width/4, -.005, .005, width/4, .005, 0);
             VRCore.drawCube(-.005, -.005, -width/4, .005, .005, width/4, 0);
@@ -174,7 +174,7 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         public void renderForeground(){
             super.renderForeground();
             if(isDeviceOver.isEmpty())return;
-            Core.applyColor(Core.theme.getGreen(), .5f);
+            Core.applyColor(Core.theme.getAddButtonTextColor(), .5f);
             GL11.glPushMatrix();
             GL11.glScaled(width, height, depth);
             GL11.glTranslated(-X, -Y, -Z);
@@ -199,18 +199,18 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         }
         @Override
         public void renderComponent(TrackedDevicePose.Buffer tdpb){
-            Color col = Core.theme.getButtonColor();
+            Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
             if(enabled){
-                if(isPressed)col = Core.theme.getDarkerButtonColor();
-                else if(!isDeviceOver.isEmpty())col = Core.theme.getBrighterButtonColor();
+                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
             }else{
-                col = Core.theme.getDarkerButtonColor();
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
             }
             Core.applyColor(col);
             VRCore.drawCubeOutline(0, 0, 0, width, height, depth, .005);//5mm
             GL11.glPushMatrix();
             GL11.glTranslated(width/2, height/2, depth/2);//center
-            Core.applyColor(Core.theme.getRed());
+            Core.applyColor(Core.theme.getDeleteButtonTextColor());
             if(isX)VRCore.drawCube(-width/4, -.005, -.005, width/4, .005, .005, 0);
             else VRCore.drawCube(-.005, -.005, -width/4, .005, .005, width/4, 0);
             GL11.glPopMatrix();
@@ -219,7 +219,7 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         public void renderForeground(){
             super.renderForeground();
             if(isDeviceOver.isEmpty())return;
-            Core.applyColor(Core.theme.getRed(), .5f);
+            Core.applyColor(Core.theme.getDeleteButtonTextColor(), .5f);
             GL11.glPushMatrix();
             GL11.glScaled(width, height, depth);
             GL11.glTranslated(-X, -Y, -Z);

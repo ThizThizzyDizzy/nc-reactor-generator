@@ -1,6 +1,7 @@
 package discord.keyword;
 import discord.Keyword;
 import multiblock.configuration.Configuration;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordConfiguration extends Keyword{
     public Configuration config;
@@ -21,7 +22,7 @@ public class KeywordConfiguration extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(255, 0, 255);
+        return Core.theme.getKeywordColorConfiguration();
     }
     @Override
     public String getRegex(){

@@ -14,7 +14,7 @@ public class MenuComponentBlockRecipe extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
             GL11.glBegin(GL11.GL_TRIANGLES);
             GL11.glVertex2d(x+width*.25, y+height*.75);
             GL11.glVertex2d(x+width*.375, y+height*.75);
@@ -37,7 +37,7 @@ public class MenuComponentBlockRecipe extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
             GL11.glBegin(GL11.GL_QUADS);
             GL11.glVertex2d(x+width*.1, y+height*.8);
             GL11.glVertex2d(x+width*.2, y+height*.9);
@@ -53,9 +53,6 @@ public class MenuComponentBlockRecipe extends MenuComponent{
     }.setTooltip("Delete block recipe"));
     public MenuComponentBlockRecipe(Block block, BlockRecipe blockRecipe){
         super(0, 0, 0, 100);
-        color = Core.theme.getButtonColor();
-        selectedColor = Core.theme.getSelectedMultiblockColor();
-        foregroundColor = Core.theme.getTextColor();
         this.block = block;
         this.blockRecipe = blockRecipe;
     }
@@ -69,8 +66,8 @@ public class MenuComponentBlockRecipe extends MenuComponent{
     }
     @Override
     public void render(){
-        if(isMouseOver)Core.applyColor(Core.theme.getSelectedMultiblockColor());
-        else Core.applyColor(Core.theme.getButtonColor());
+        if(isMouseOver)Core.applyColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
+        else Core.applyColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
@@ -78,7 +75,7 @@ public class MenuComponentBlockRecipe extends MenuComponent{
         Core.applyWhite();
         if(blockRecipe.inputTexture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(blockRecipe.inputDisplayTexture));
         if(blockRecipe.outputTexture!=null)drawRect(x+height, y, x+height*2, y+height, Core.getTexture(blockRecipe.outputDisplayTexture));
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         ArrayList<String> strs = new ArrayList<>();
         strs.add(blockRecipe.getInputDisplayName());
         if(block.heater){

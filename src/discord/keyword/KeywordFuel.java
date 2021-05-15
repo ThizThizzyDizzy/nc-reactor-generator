@@ -1,6 +1,7 @@
 package discord.keyword;
 import discord.Keyword;
 import java.util.Locale;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordFuel extends Keyword{
     public String fuel;
@@ -30,7 +31,7 @@ public class KeywordFuel extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(255, 255, 0);
+        return Core.theme.getKeywordColorFuel();
     }
     @Override
     public String getRegex(){

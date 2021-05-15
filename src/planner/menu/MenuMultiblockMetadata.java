@@ -42,7 +42,7 @@ public class MenuMultiblockMetadata extends Menu{
         drawRect(0, 0, gui.helper.displayWidth(), gui.helper.displayHeight(), 0);
         Core.applyColor(Core.theme.getMetadataPanelHeaderColor());
         drawRect(0, 0, gui.helper.displayWidth(), gui.helper.displayHeight()/16, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getMetadataPanelTextColor());
         drawCenteredText(0, 0, gui.helper.displayWidth(), gui.helper.displayHeight()/16, "Metadata");
         super.render(millisSinceLastTick);
     }

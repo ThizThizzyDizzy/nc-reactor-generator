@@ -57,7 +57,7 @@ public class Multitool{
             GL11.glPushMatrix();
             GL11.glTranslated(4, 10, (.5-1/128f));
             GL11.glRotated(-45, 0, 0, 1);
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getVRMultitoolTextColor());
             String[] txt = tooltip.split("\n");
             double textHeight = 1/5f;
             GL11.glScaled(1, -1, 1);

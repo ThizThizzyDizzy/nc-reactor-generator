@@ -119,9 +119,9 @@ public class MenuComponentDropdownList extends MenuComponent{
         GL11.glEnd();
     }
     public void drawButton(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getListColor());
+        Core.applyColor(Core.theme.getScrollbarButtonColor());
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2d(x+1, y);
         GL11.glVertex2d(x+1, y+height-1);

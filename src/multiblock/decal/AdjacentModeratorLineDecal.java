@@ -5,7 +5,6 @@ import planner.Core;
 public class AdjacentModeratorLineDecal extends Decal{
     private final Direction direction;
     private final float efficiency;
-    private double colorPow = 3;
     public AdjacentModeratorLineDecal(int x, int y, int z, Direction direction, float efficiency){
         super(x, y, z);
         this.direction = direction;
@@ -13,7 +12,7 @@ public class AdjacentModeratorLineDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getRGBA(0, (float)Math.max(0,Math.min(1,Math.pow(efficiency, colorPow)/2)),1,1));
+        Core.applyColor(Core.theme.getDecalColorAdjacentModeratorLine(efficiency));
         switch(direction){
             case NX:
                 drawRect(x, y+blockSize*.125, x+blockSize*.125, y+blockSize*.875, 0);

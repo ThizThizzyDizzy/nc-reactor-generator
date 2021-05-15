@@ -10,7 +10,7 @@ public class ModeratorActiveDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getGreen());
+        Core.applyColor(Core.theme.getDecalColorModeratorActive());
         switch(cellDirection){
             case NX:
                 drawRect(x, y+blockSize*.25, x+blockSize*.1875, y+blockSize*.75, 0);

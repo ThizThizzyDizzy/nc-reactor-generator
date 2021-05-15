@@ -12,14 +12,14 @@ public class CopyTool extends EditorTool{
     private int[] dragStart;
     private int[] dragEnd;
     @Override
-    public void render(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getTextColor());
+    public void render(double x, double y, double width, double height, int themeIndex){
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         Renderer2D.drawRect(x+width*.35, y+height*.15, x+width*.8, y+height*.75, 0);
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
         Renderer2D.drawRect(x+width*.4, y+height*.2, x+width*.75, y+height*.7, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         Renderer2D.drawRect(x+width*.2, y+height*.25, x+width*.65, y+height*.85, 0);
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
         Renderer2D.drawRect(x+width*.25, y+height*.3, x+width*.6, y+height*.8, 0);
     }
     @Override

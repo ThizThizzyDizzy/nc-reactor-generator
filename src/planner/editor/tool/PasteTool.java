@@ -18,14 +18,14 @@ public class PasteTool extends EditorTool{
         super(editor, id);
     }
     @Override
-    public void render(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getTextColor());
+    public void render(double x, double y, double width, double height, int themeIndex){
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         Renderer2D.drawRect(x+width*.35, y+height*.15, x+width*.8, y+height*.75, 0);
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
         Renderer2D.drawRect(x+width*.4, y+height*.2, x+width*.75, y+height*.7, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         Renderer2D.drawRect(x+width*.2, y+height*.25, x+width*.65, y+height*.85, 0);
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
         Renderer2D.drawRect(x+width*.25, y+height*.3, x+width*.6, y+height*.8, 0);
     }
     @Override
@@ -53,7 +53,6 @@ public class PasteTool extends EditorTool{
     @Override
     public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         synchronized(editor.getClipboard(id)){
             for(ClipboardEntry entry : editor.getClipboard(id)){
                 int bx = entry.x+mouseX;
@@ -68,6 +67,8 @@ public class PasteTool extends EditorTool{
                 if(sz!=layer)continue;
                 if(sx<x1||sx>x2)continue;
                 if(sy<y1||sy>y2)continue;
+                if(entry.block!=null)Core.applyWhite(.5f);
+                else Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
                 Renderer2D.drawRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
             }
         }
@@ -76,7 +77,6 @@ public class PasteTool extends EditorTool{
     @Override
     public void drawVRGhosts(EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
         synchronized(editor.getClipboard(id)){
             for(ClipboardEntry entry : editor.getClipboard(id)){
                 int bx = entry.x+mouseX;
@@ -87,6 +87,8 @@ public class PasteTool extends EditorTool{
                 if(bx<bbox.x1||bx>bbox.x2)continue;
                 if(by<bbox.y1||by>bbox.y2)continue;
                 if(bz<bbox.z1||bz>bbox.z2)continue;
+                if(entry.block!=null)Core.applyWhite(.5f);
+                else Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
                 VRCore.drawCube(x+bx*blockSize, y+by*blockSize, z+bz*blockSize, x+(bx+1)*blockSize, y+(by+1)*blockSize, z+(bz+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
             }
         }

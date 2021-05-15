@@ -11,39 +11,36 @@ public class MenuComponentEditorTool extends MenuComponent{
     }
     @Override
     public void render(){
-        Color col = isMouseOver?Core.theme.getBrighterEditorListBorderColor():Core.theme.getEditorListBorderColor();
+        Color col = isMouseOver?Core.theme.getEditorListBackgroundMouseoverColor(Core.getThemeIndex(this)):Core.theme.getEditorListBackgroundColor(Core.getThemeIndex(this));
         Core.applyColor(col);
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(Core.theme.getTextColor());
-        drawText();
+        Core.applyColor(Core.theme.getEditorToolTextColor(Core.getThemeIndex(this)));
+        tool.render(x, y, width, height, Core.getThemeIndex(this));
         double border = height/8;
         if(isSelected){
-            Core.applyColor(Core.theme.getDarkerEditorListBorderColor(), .85f);
+            Core.applyColor(Core.theme.getEditorListLightSelectedColor(Core.getThemeIndex(this)), .85f);
             drawRect(x, y, x+border, y+border, 0);
             drawRect(x+width-border, y, x+width, y+border, 0);
             drawRect(x, y+height-border, x+border, y+height, 0);
             drawRect(x+width-border, y+height-border, x+width, y+height, 0);
-            Core.applyColor(Core.theme.getDarkerTextColor(), .85f);
+            Core.applyColor(Core.theme.getEditorListDarkSelectedColor(Core.getThemeIndex(this)), .85f);
             drawRect(x+border, y, x+width-border, y+border, 0);
             drawRect(x+border, y+height-border, x+width-border, y+height, 0);
             drawRect(x, y+border, x+border, y+height-border, 0);
             drawRect(x+width-border, y+border, x+width, y+height-border, 0);
         }
         if(isMouseOver){
-            Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
+            Core.applyColor(Core.theme.getEditorListLightMouseoverColor(Core.getThemeIndex(this)), .6375f);
             drawRect(x, y, x+border, y+border, 0);
             drawRect(x+width-border, y, x+width, y+border, 0);
             drawRect(x, y+height-border, x+border, y+height, 0);
             drawRect(x+width-border, y+height-border, x+width, y+height, 0);
-            Core.applyColor(Core.theme.getTextColor(), .6375f);
+            Core.applyColor(Core.theme.getEditorListDarkMouseoverColor(Core.getThemeIndex(this)), .6375f);
             drawRect(x+border, y, x+width-border, y+border, 0);
             drawRect(x+border, y+height-border, x+width-border, y+height, 0);
             drawRect(x, y+border, x+border, y+height-border, 0);
             drawRect(x+width-border, y+border, x+width, y+height-border, 0);
         }
-    }
-    public void drawText(){
-        tool.render(x, y, width, height);
     }
     @Override
     public String getTooltip(){

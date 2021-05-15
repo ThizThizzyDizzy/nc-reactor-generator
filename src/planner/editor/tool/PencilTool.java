@@ -22,8 +22,8 @@ public class PencilTool extends EditorTool{
     private ArrayList<int[]> leftSelectedBlocks = new ArrayList<>();
     private ArrayList<int[]> rightSelectedBlocks = new ArrayList<>();
     @Override
-    public void render(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getTextColor());
+    public void render(double x, double y, double width, double height, int themeIndex){
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         ImageStash.instance.bindTexture(0);
         GL11.glBegin(GL11.GL_TRIANGLES);
         GL11.glVertex2d(x+width*.25, y+height*.75);
@@ -149,7 +149,7 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        Core.applyWhite(.5f);
         synchronized(leftSelectedBlocks){
             for(int[] i : leftSelectedBlocks){
                 int bx = i[0];
@@ -166,6 +166,7 @@ public class PencilTool extends EditorTool{
                 Renderer2D.drawRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, texture);
             }
         }
+        Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
         synchronized(rightSelectedBlocks){
             for(int[] i : rightSelectedBlocks){
                 int bx = i[0];
@@ -186,13 +187,14 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void drawVRGhosts(EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        Core.applyWhite(.5f);
         double border = blockSize/64;
         synchronized(leftSelectedBlocks){
             for(int[] i : leftSelectedBlocks){
                 VRCore.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, texture);
             }
         }
+        Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
         synchronized(rightSelectedBlocks){
             for(int[] i : rightSelectedBlocks){
                 if(editor.getMultiblock().getBlock(i[0], i[1], i[2])==null)continue;

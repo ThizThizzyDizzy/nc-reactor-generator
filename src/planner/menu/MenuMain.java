@@ -89,10 +89,10 @@ public class MenuMain extends Menu{
             GL11.glEnd();
         }
     }.setTooltip("Settings"));
-    private MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
+    private MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
     private MenuComponentMinimalistButton credits = add(new MenuComponentMinimalistButton(0, 0, 192, 48, "Credits", true, true));
-    private MenuComponentMinimalistButton convertOverhaulMSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Convert SFR <> MSR", true, true).setTextColor(() -> {return Core.theme.getRGBA(1, .5f, 0, 1);}));
-    private MenuComponentMinimalistButton setInputs = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Set Inputs", true, true).setTextColor(() -> {return Core.theme.getRGBA(1, 1, 0, 1);}).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
+    private MenuComponentMinimalistButton convertOverhaulMSFR = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Convert SFR <> MSR", true, true).setTextColor(Core.theme::getConvertButtonTextColor));
+    private MenuComponentMinimalistButton setInputs = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Set Inputs", true, true).setTextColor(Core.theme::getInputsButtonTextColor).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
     private boolean forceMetaUpdate = true;
     private MenuComponent metadataPanel = add(new MenuComponent(0, 0, 0, 0){
         MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
@@ -126,7 +126,7 @@ public class MenuMain extends Menu{
             drawRect(x, y, x+width, y+height, 0);
             Core.applyColor(Core.theme.getMetadataPanelHeaderColor());
             drawRect(x, y, x+width, y+height/16, 0);
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getMetadataPanelTextColor());
             drawCenteredText(x, y, x+width, y+height/16, "Metadata");
         }
         @Override
@@ -303,11 +303,11 @@ public class MenuMain extends Menu{
     }
     @Override
     public void renderBackground(){
-        Core.applyColor(Core.theme.getHeaderColor());
+        Core.applyColor(simplelibrary.image.Color.PINK);//Core.theme.getHeaderColor());
         drawRect(0, 0, gui.helper.displayWidth(), gui.helper.displayHeight()/16, 0);
-        Core.applyColor(Core.theme.getHeader2Color());
+        Core.applyColor(Core.theme.getMultiblocksListHeaderColor());
         drawRect(0, gui.helper.displayHeight()/16, gui.helper.displayWidth()/3, gui.helper.displayHeight()/8, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(0));
         drawCenteredText(0, gui.helper.displayHeight()/16, gui.helper.displayWidth()/3-gui.helper.displayHeight()/16, gui.helper.displayHeight()/8, "Multiblocks");
     }
     @Override
@@ -323,19 +323,19 @@ public class MenuMain extends Menu{
     public void render(int millisSinceLastTick){
         if(Core.recoveryMode){
             double size = gui.helper.displayHeight()/16d;
-            boolean yellow = false;
+            int colorIndex = 0;
             ImageStash.instance.bindTexture(0);
             GL11.glBegin(GL11.GL_QUADS);
             for(double d = 0; d<gui.helper.displayWidth()+size; d+=size/2){
-                yellow = !yellow;
-                Core.applyColor(Core.theme.getRGBA(yellow?1:0, yellow?1:0, 0, 1));
+                Core.applyColor(Core.theme.getRecoveryModeColor(colorIndex));
                 GL11.glVertex2d(d, gui.helper.displayHeight()-size);
                 GL11.glVertex2d(d-size, gui.helper.displayHeight());
                 GL11.glVertex2d(d-size/2, gui.helper.displayHeight());
                 GL11.glVertex2d(d+size/2, gui.helper.displayHeight()-size);
+                colorIndex++;
             }
             GL11.glEnd();
-            Core.applyColor(Core.theme.getRGBA(1, 1, 0, 1));
+            Core.applyColor(Core.theme.getRecoveryModeTextColor());
             drawCenteredText(0, gui.helper.displayHeight()-size*2, gui.helper.displayWidth(), gui.helper.displayHeight()-size, "RECOVERY MODE ENABLED. PRESS CTRL+SHIFT+R TO DISABLE");
         }
         if(settingInputs!=null)multiblocks.setSelectedIndex(Core.multiblocks.indexOf(settingInputs));
@@ -421,7 +421,7 @@ public class MenuMain extends Menu{
         double metadataScale = Math.min(1,Math.max(0,(metadating?(metadatingScale+(millisSinceLastTick/50d)):(metadatingScale-(millisSinceLastTick/50d)))/metadatingTime));
         metadataPanel.y = gui.helper.displayHeight()/2-metadataPanel.height/2-gui.helper.displayHeight()*(1-metadataScale);
         super.render(millisSinceLastTick);
-        Core.applyColor(Core.theme.getTextColor(), .4f);
+        Core.applyColor(Core.theme.getRotateMultiblockTextColor(), .4f);
         if(getSelectedMultiblock()!=null)drawCenteredText(multiblocks.x+multiblocks.width, gui.helper.displayHeight()-45, credits.x, gui.helper.displayHeight()-5, "Use Arrow keys to rotate preview");
     }
     @Override

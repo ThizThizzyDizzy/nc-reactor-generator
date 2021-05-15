@@ -15,7 +15,7 @@ public class MenuComponentMinimalistTextView extends MenuComponentMinimalistScro
         view = add(new MenuComponent(0, 0, width, height){
             @Override
             public void render(){
-                Core.applyColor(Core.theme.getTextColor());
+                Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
                 FontManager.setFont("font");
                 double Y = y+textInset;
                 for(int i = 0; i<text.size(); i++){
@@ -52,7 +52,7 @@ public class MenuComponentMinimalistTextView extends MenuComponentMinimalistScro
     }
     @Override
     public void render(int millisSinceLastTick){
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getTextViewBackgroundColor());
         drawRect(x, y, x+width, y+height, 0);
         double width = 0;
         int extraLines = 0;

@@ -1,5 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordBlind extends Keyword{
     public KeywordBlind(){
@@ -11,7 +12,7 @@ public class KeywordBlind extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(0, 0, 0);
+        return Core.theme.getKeywordColorBlind();
     }
     @Override
     public String getRegex(){

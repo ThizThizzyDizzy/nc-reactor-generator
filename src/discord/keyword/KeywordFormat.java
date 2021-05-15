@@ -1,5 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordFormat extends Keyword{
     public KeywordFormat(){
@@ -11,7 +12,7 @@ public class KeywordFormat extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(0, 0, 0);
+        return Core.theme.getKeywordColorFormat();
     }
     @Override
     public String getRegex(){

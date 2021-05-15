@@ -28,7 +28,7 @@ public class MenuResize extends Menu{
         multibwauk.components.clear();
         for(int y = 0; y<multiblock.getInternalHeight(); y++){
             final int layer = y;
-            MenuComponentMinimalistButton insertLayer = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE/2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*(multiblock.getInternalWidth()+4), CELL_SIZE, "+", multiblock.getInternalHeight()<multiblock.getMaxY(), true)).setTextColor(() -> {return Core.theme.getGreen();}).setTooltip("Insert a blank layer");
+            MenuComponentMinimalistButton insertLayer = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE/2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*(multiblock.getInternalWidth()+4), CELL_SIZE, "+", multiblock.getInternalHeight()<multiblock.getMaxY(), true)).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Insert a blank layer");
             MenuComponentMinimalistButton del = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE*2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*2, CELL_SIZE*2, "-", multiblock.getInternalHeight()>multiblock.getMinY(), true){
                 @Override
                 public void render(){
@@ -37,7 +37,7 @@ public class MenuResize extends Menu{
                         addRect(1, 0, 0, .25, x+width, y+height, x+width+CELL_SIZE*multiblock.getInternalWidth(), (layer+1)*(multiblock.getInternalDepth()+5)*CELL_SIZE);
                     }
                 }
-            }).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete this layer");
+            }).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete this layer");
             MenuComponentMinimalistButton top = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE*2, CELL_SIZE*2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*multiblock.getInternalWidth(), CELL_SIZE, "+", multiblock.getInternalDepth()<multiblock.getMaxZ(), true){
                 @Override
                 public void render(){
@@ -48,7 +48,7 @@ public class MenuResize extends Menu{
                         }
                     }
                 }
-            }).setTextColor(() -> {return Core.theme.getGreen();}).setTooltip("Add a blank row");//add top
+            }).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Add a blank row");//add top
             MenuComponentMinimalistButton bottom = multibwauk.add(new MenuComponentMinimalistButton(CELL_SIZE*2, (y+1)*(multiblock.getInternalDepth()+5)*CELL_SIZE-CELL_SIZE, CELL_SIZE*multiblock.getInternalWidth(), CELL_SIZE, "+", multiblock.getInternalDepth()<multiblock.getMaxZ(), true){
                 @Override
                 public void render(){
@@ -59,7 +59,7 @@ public class MenuResize extends Menu{
                         }
                     }
                 }
-            }).setTextColor(() -> {return Core.theme.getGreen();}).setTooltip("Add a blank row");//add bottom
+            }).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Add a blank row");//add bottom
             MenuComponentMinimalistButton left = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE*3+y*(multiblock.getInternalDepth()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getInternalDepth(), "+", multiblock.getInternalWidth()<multiblock.getMaxX(), true){
                 @Override
                 public void render(){
@@ -70,7 +70,7 @@ public class MenuResize extends Menu{
                         }
                     }
                 }
-            }).setTextColor(() -> {return Core.theme.getGreen();}).setTooltip("Add a blank column");//add left
+            }).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Add a blank column");//add left
             MenuComponentMinimalistButton right = multibwauk.add(new MenuComponentMinimalistButton(multiblock.getInternalWidth()*CELL_SIZE+CELL_SIZE*2, CELL_SIZE*3+y*(multiblock.getInternalDepth()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getInternalDepth(), "+", multiblock.getInternalWidth()<multiblock.getMaxX(), true){
                 @Override
                 public void render(){
@@ -81,7 +81,7 @@ public class MenuResize extends Menu{
                         }
                     }
                 }
-            }).setTextColor(() -> {return Core.theme.getGreen();}).setTooltip("Add a blank column");//add right
+            }).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Add a blank column");//add right
             insertLayer.addActionListener((e) -> {
                 if(layer==0)expand(0, -1, 0);
                 else insertY(layer);
@@ -113,7 +113,7 @@ public class MenuResize extends Menu{
                             }
                         }
                     }
-                }).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete this row");
+                }).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete this row");
                 delRow.addActionListener((e) -> {
                     deleteZ(row);
                 });
@@ -130,7 +130,7 @@ public class MenuResize extends Menu{
                                     }
                                 }
                             }
-                        }).setTextColor(() -> {return Core.theme.getRed();}).setTooltip("Delete this column");
+                        }).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete this column");
                         delColumn.addActionListener((e) -> {
                             deleteX(column);
                         });
@@ -139,7 +139,7 @@ public class MenuResize extends Menu{
                 }
             }
         }
-        MenuComponentMinimalistButton layerTop = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE+CELL_SIZE*(multiblock.getInternalHeight()*(multiblock.getInternalDepth()+5)), CELL_SIZE*(multiblock.getInternalWidth()+4), CELL_SIZE, "+", multiblock.getInternalHeight()<multiblock.getMaxY(), true)).setTextColor(() -> {return Core.theme.getGreen();}).setTooltip("Insert a blank layer");
+        MenuComponentMinimalistButton layerTop = multibwauk.add(new MenuComponentMinimalistButton(0, CELL_SIZE+CELL_SIZE*(multiblock.getInternalHeight()*(multiblock.getInternalDepth()+5)), CELL_SIZE*(multiblock.getInternalWidth()+4), CELL_SIZE, "+", multiblock.getInternalHeight()<multiblock.getMaxY(), true)).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Insert a blank layer");
         layerTop.addActionListener((e) -> {
             expand(0,1,0);
         });
@@ -159,7 +159,7 @@ public class MenuResize extends Menu{
         done.height = 64;
         multibwauk.height = gui.helper.displayHeight();
         super.render(millisSinceLastTick);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getResizeMenuTextColor());
         drawCenteredText(done.x, done.height, done.x+done.width, done.height+40, multiblock.getDimensionsStr());
     }
     public void expand(int x, int y, int z){

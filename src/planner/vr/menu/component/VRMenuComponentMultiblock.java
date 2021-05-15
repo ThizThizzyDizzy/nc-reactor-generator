@@ -51,8 +51,8 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         y = Core.getValueBetweenTwoValues(0, y, 1, ty, snappingFactor);
         z = Core.getValueBetweenTwoValues(0, z, 1, tz, snappingFactor);
         yRot = Core.getValueBetweenTwoValues(0, yRot, 1, tRy, snappingFactor);
-        if(isDeviceOver.isEmpty())Core.applyColor(Core.theme.getButtonColor());
-        else Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
+        if(isDeviceOver.isEmpty())Core.applyColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        else Core.applyColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
         ImageStash.instance.bindTexture(0);
         GL11.glPushMatrix();
         GL11.glTranslated(width/2, height/2, depth/2);
@@ -72,7 +72,7 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         GL11.glTranslated(width/2, height/2, depth/2);
         GL11.glScaled(scale, scale, scale);
         GL11.glTranslated(-width/2, -height/2, -depth/2);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText();
         GL11.glPopMatrix();
     }

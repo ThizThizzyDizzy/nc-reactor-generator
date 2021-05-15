@@ -24,7 +24,7 @@ public class KeywordPriority extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(0, 255, 127);
+        return Core.theme.getKeywordColorPriority();
     }
     @Override
     public String getRegex(){

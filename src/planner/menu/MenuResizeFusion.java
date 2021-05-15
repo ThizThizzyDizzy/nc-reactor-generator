@@ -24,14 +24,14 @@ public class MenuResizeFusion extends Menu{
     private final MenuComponentMinimalistButton decreaseLiningThickness = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "-", true, true).setTooltip("decrease the reactor's Lining Thickness"));
     private boolean refreshNeeded;
     {
-        increaseInnerRadius.setForegroundColor(Core.theme.getGreen());
-        increaseCoreSize.setForegroundColor(Core.theme.getGreen());
-        increaseToroidWidth.setForegroundColor(Core.theme.getGreen());
-        increaseLiningThickness.setForegroundColor(Core.theme.getGreen());
-        decreaseInnerRadius.setForegroundColor(Core.theme.getRed());
-        decreaseCoreSize.setForegroundColor(Core.theme.getRed());
-        decreaseToroidWidth.setForegroundColor(Core.theme.getRed());
-        decreaseLiningThickness.setForegroundColor(Core.theme.getRed());
+        increaseInnerRadius.setForegroundColor(Core.theme.getAddButtonTextColor());
+        increaseCoreSize.setForegroundColor(Core.theme.getAddButtonTextColor());
+        increaseToroidWidth.setForegroundColor(Core.theme.getAddButtonTextColor());
+        increaseLiningThickness.setForegroundColor(Core.theme.getAddButtonTextColor());
+        decreaseInnerRadius.setForegroundColor(Core.theme.getDeleteButtonTextColor());
+        decreaseCoreSize.setForegroundColor(Core.theme.getDeleteButtonTextColor());
+        decreaseToroidWidth.setForegroundColor(Core.theme.getDeleteButtonTextColor());
+        decreaseLiningThickness.setForegroundColor(Core.theme.getDeleteButtonTextColor());
     }
     private int CELL_SIZE = 16;
     public MenuResizeFusion(GUI gui, Menu parent, OverhaulFusionReactor multiblock){
@@ -112,7 +112,7 @@ public class MenuResizeFusion extends Menu{
         increaseToroidWidth.y = decreaseToroidWidth.y = increaseCoreSize.y+increaseCoreSize.height+60;
         increaseLiningThickness.y = decreaseLiningThickness.y = increaseToroidWidth.y+increaseToroidWidth.height+60;
         super.render(millisSinceLastTick);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getResizeMenuTextColor());
         drawCenteredText(done.x, done.height, done.x+done.width, done.height+40, "["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]");
         BoundingBox bbox = multiblock.getBoundingBox();
         drawCenteredText(done.x, done.height+40, done.x+done.width, done.height+80, bbox.getWidth()+"x"+bbox.getHeight()+"x"+bbox.getDepth());

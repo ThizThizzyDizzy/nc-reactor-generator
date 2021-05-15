@@ -71,7 +71,7 @@ public class NCPTTutorial extends Tutorial{
         add(new Component(){
             @Override
             public void draw(float resonatingBrightness, float frame, boolean draw){
-                if(draw)Core.applyColor(Core.theme.getTextColor());
+                if(draw)Core.applyColor(Core.theme.getTutorialTextColor());
                 float columnLeft = column/(float)columns;
                 float columnRight = (column+1f)/columns;
                 if(column==0)columnLeft+=outerMargin;
@@ -89,7 +89,7 @@ public class NCPTTutorial extends Tutorial{
         add(new Component(){
             @Override
             public void draw(float resonatingBrightness, float frame, boolean draw){
-                if(draw)Core.applyColor(Core.theme.getTextColor());
+                if(draw)Core.applyColor(Core.theme.getTutorialTextColor());
                 float columnLeft = column/(float)columns;
                 float columnRight = (column+1f)/columns;
                 if(column==0)columnLeft+=outerMargin;
@@ -307,11 +307,11 @@ public class NCPTTutorial extends Tutorial{
                     case "menu/settings":
                         //<editor-fold defaultstate="collapsed" desc="menu/settings">
                         if(draw){
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(.9, offsets[column], .95, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
                             drawRect(.9, offsets[column], .95, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             {
                                 ImageStash.instance.bindTexture(0);
                                 double siz = .05;
@@ -352,13 +352,13 @@ public class NCPTTutorial extends Tutorial{
                     case "menu/multiblocks/add":
                         //<editor-fold defaultstate="collapsed" desc="menu/multiblocks/add">
                         if(draw){
-                            Core.applyColor(Core.theme.getDarkButtonColor());
+                            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
                             drawRect(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
                             drawRect(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             drawCenteredText(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, "Multiblocks");
                             drawCenteredText(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, "+");
                         }
@@ -368,16 +368,16 @@ public class NCPTTutorial extends Tutorial{
                     case "menu/multiblocks/edit":
                         //<editor-fold defaultstate="collapsed" desc="menu/multiblocks/edit">
                         if(draw){
-                            Core.applyColor(Core.theme.getDarkButtonColor());
+                            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
                             drawRect(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, 0);
                             drawRect(colLeft, offsets[column]+scale*2, colRight, offsets[column]+scale*6, 0);
-                            Core.applyColor(Core.theme.getDarkButtonColor());
+                            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
                             drawRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5, 0);
-                            Core.applyColor(Core.theme.getBrighterDarkButtonColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getSecondaryComponentMouseoverColor(0), resonatingBrightness);
                             drawRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             //<editor-fold defaultstate="collapsed" desc="Pencil icon">
                             GL11.glBegin(GL11.GL_TRIANGLES);
                             GL11.glVertex2d(colRight-scale*3+scale*2*.25, offsets[column]+scale*3+scale*2*.75);
@@ -406,16 +406,16 @@ public class NCPTTutorial extends Tutorial{
                     case "menu/multiblocks/select":
                         //<editor-fold defaultstate="collapsed" desc="menu/multiblocks/select">
                         if(draw){
-                            Core.applyColor(Core.theme.getDarkButtonColor());
+                            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
                             drawRect(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, 0);
                             drawRect(colLeft, offsets[column]+scale*2, colRight, offsets[column]+scale*6, 0);
-                            Core.applyColor(Core.theme.getSelectedMultiblockColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getSelectedComponentColor(0), resonatingBrightness);
                             drawRect(colLeft, offsets[column]+scale*2, colRight, offsets[column]+scale*6, 0);
-                            Core.applyColor(Core.theme.getDarkButtonColor());
+                            Core.applyColor(Core.theme.getSecondaryComponentColor(0));
                             drawRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             //<editor-fold defaultstate="collapsed" desc="Pencil icon">
                             GL11.glBegin(GL11.GL_TRIANGLES);
                             GL11.glVertex2d(colRight-scale*3+scale*2*.25, offsets[column]+scale*3+scale*2*.75);
@@ -444,11 +444,11 @@ public class NCPTTutorial extends Tutorial{
                     case "menu/multiblocks/delete":
                         //<editor-fold defaultstate="collapsed" desc="menu/multiblocks/delete">
                         if(draw){
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getRed());
+                            Core.applyColor(Core.theme.getDeleteButtonTextColor());
                             drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+scale*2, "Delete (Hold Shift)");
                         }
                         if(addHeight)offsets[column]+=scale*2;
@@ -457,11 +457,11 @@ public class NCPTTutorial extends Tutorial{
                     case "editor/resize":
                         //<editor-fold defaultstate="collapsed" desc="editor/resize">
                         if(draw){
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+scale*2, "Resize");
                         }
                         if(addHeight)offsets[column]+=scale*2;
@@ -470,7 +470,7 @@ public class NCPTTutorial extends Tutorial{
                     case "resize":
                         //<editor-fold defaultstate="collapsed" desc="resize">
                         if(draw){
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             double s = scale*2;
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+s, 0);//top
                             drawRect(colLeft, offsets[column]+s*1.5, colLeft+s*5, offsets[column]+s*3.5, 0);//top inner
@@ -478,17 +478,17 @@ public class NCPTTutorial extends Tutorial{
                             drawRect(colLeft+s*5, offsets[column]+s*3.5, colLeft+s*6, offsets[column]+s*6.5, 0);//right
                             drawRect(colLeft+s*2, offsets[column]+s*6.5, colLeft+s*5, offsets[column]+s*7.5, 0);//bottom inner
                             drawRect(colLeft, offsets[column]+s*8, colRight, offsets[column]+s*9, 0);//bottom
-                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+s, 0);//top
                             drawRect(colLeft, offsets[column]+s*8, colRight, offsets[column]+s*9, 0);//bottom
-                            Core.applyColor(Core.theme.getGreen());
+                            Core.applyColor(Core.theme.getAddButtonTextColor());
                             drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+s, "+");//top
                             drawCenteredText(colLeft+s*2, offsets[column]+s*1.5, colLeft+s*5, offsets[column]+s*2.5, "+");//top inner
                             drawCenteredText(colLeft, offsets[column]+s*4.5, colLeft+s, offsets[column]+s*5.5, "+");//left
                             drawCenteredText(colLeft+s*5, offsets[column]+s*4.5, colLeft+s*6, offsets[column]+s*5.5, "+");//right
                             drawCenteredText(colLeft+s*2, offsets[column]+s*6.5, colLeft+s*5, offsets[column]+s*7.5, "+");//bottom inner
                             drawCenteredText(colLeft, offsets[column]+s*8, colRight, offsets[column]+s*9, "+");//bottom
-                            Core.applyColor(Core.theme.getRed());
+                            Core.applyColor(Core.theme.getDeleteButtonTextColor());
                             drawCenteredText(colLeft, offsets[column]+s*1.5, colLeft+s*2, offsets[column]+s*3.5, "-");//top inner
                             drawCenteredText(colLeft+s*2, offsets[column]+s*2.5, colLeft+s*3, offsets[column]+s*3.5, "-");//top 1
                             drawCenteredText(colLeft+s*3, offsets[column]+s*2.5, colLeft+s*4, offsets[column]+s*3.5, "-");//top 2
@@ -496,9 +496,9 @@ public class NCPTTutorial extends Tutorial{
                             drawCenteredText(colLeft+s, offsets[column]+s*3.5, colLeft+s*2, offsets[column]+s*4.5, "-");//left 1
                             drawCenteredText(colLeft+s, offsets[column]+s*4.5, colLeft+s*2, offsets[column]+s*5.5, "-");//left 2
                             drawCenteredText(colLeft+s, offsets[column]+s*5.5, colLeft+s*2, offsets[column]+s*6.5, "-");//left 3
-                            Core.applyColor(Core.theme.getEditorListBorderColor());
+                            Core.applyColor(Core.theme.getEditorBackgroundColor());
                             drawRect(colLeft+s*2, offsets[column]+s*3.5, colLeft+s*5, offsets[column]+s*6.5, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             double border = s/32;
                             for(int x = 0; x<3; x++){
                                 for(int y = 0; y<3; y++){
@@ -517,11 +517,11 @@ public class NCPTTutorial extends Tutorial{
                     case "editor/header":
                         //<editor-fold defaultstate="collapsed" desc="editor/header">
                         if(draw){
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
                             drawRect(colLeft+.25, offsets[column], colRight-.25, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             drawCenteredText(colLeft, offsets[column]+scale/2.5, colLeft+.25, offsets[column]+scale*2-scale/2.5, "Done");
                             drawCenteredText(colLeft+.25, offsets[column]+scale/2.5, colRight-.25, offsets[column]+scale*2-scale/2.5, "Tutorial Build v1 | Edit Metadata");
                             drawCenteredText(colRight-.25, offsets[column]+scale/2.5, colRight, offsets[column]+scale*2-scale/2.5, "Resize");
@@ -535,7 +535,7 @@ public class NCPTTutorial extends Tutorial{
                             Core.applyColor(Core.theme.getMetadataPanelHeaderColor());
                             //.4
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+scale*2, "Metadata");
                             String[][] texts = {{"Name", "Tutorial Build v1"}, {"Author", "tomdodd4598"}};
                             double w = (colRight-colLeft)/2;
@@ -543,11 +543,11 @@ public class NCPTTutorial extends Tutorial{
                             for(int x = 0; x<2; x++){
                                 for(int y = 0; y<2; y++){
                                     double inset = .005;
-                                    Core.applyColor(Core.theme.getDarkerListColor());
+                                    Core.applyColor(Core.theme.getTextBoxBorderColor());
                                     drawRect(colLeft+w*x, offsets[column]+scale*2+scale*2*y, c+w*x, offsets[column]+scale*4+scale*2*y, 0);
-                                    Core.applyColor(Core.theme.getListColor());
+                                    Core.applyColor(Core.theme.getTextBoxColor());
                                     drawRect(colLeft+w*x+inset/2, offsets[column]+scale*2+scale*2*y+inset/2, c+w*x-inset/2, offsets[column]+scale*4+scale*2*y-inset/2, 0);
-                                    Core.applyColor(Core.theme.getTextColor());
+                                    Core.applyColor(Core.theme.getTutorialTextColor());
                                     drawText(colLeft+w*x+inset, offsets[column]+scale*2+scale*2*y+inset, c+w*x-inset, offsets[column]+scale*4+scale*2*y-inset, texts[y][x]);
                                 }
                             }
@@ -558,18 +558,18 @@ public class NCPTTutorial extends Tutorial{
                     case "menu/header/metadata":
                         //<editor-fold defaultstate="collapsed" desc="menu/header/metadata">
                         if(draw){
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getBrighterButtonColor(), resonatingBrightness);
+                            Core.applyColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
                             drawRect(colLeft+scale*11.2, offsets[column], colRight-scale*2, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             drawCenteredText(colLeft, offsets[column]+.015, colLeft+scale*2.8, offsets[column]+scale*2-.015, "Import");
                             drawCenteredText(colLeft+scale*2.8, offsets[column]+.015, colLeft+scale*2.8*2, offsets[column]+scale*2-.015, "Export");
                             drawCenteredText(colLeft+scale*2.8*2, offsets[column]+.015, colLeft+scale*2.8*3, offsets[column]+scale*2-.015, "Save");
                             drawCenteredText(colLeft+scale*2.8*3, offsets[column]+.015, colLeft+scale*2.8*4, offsets[column]+scale*2-.015, "Load");
                             drawCenteredText(colLeft+scale*11.2, offsets[column]+.01, colRight-scale*2, offsets[column]+scale*2-.01, "Tutorial Collection | Edit Metadata");
                             {
-                                Core.applyColor(Core.theme.getTextColor());
+                                Core.applyColor(Core.theme.getTutorialTextColor());
                                 ImageStash.instance.bindTexture(0);
                                 double siz = .05;
                                 double x = .9;
@@ -612,7 +612,7 @@ public class NCPTTutorial extends Tutorial{
                             Core.applyColor(Core.theme.getMetadataPanelHeaderColor());
                             //.4
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+scale*2, "Metadata");
                             String[][] texts = {{"Name", "Tutorial Collection"}, {"Author", "tomdodd4598"}};
                             double w = (colRight-colLeft)/2;
@@ -620,11 +620,11 @@ public class NCPTTutorial extends Tutorial{
                             for(int x = 0; x<2; x++){
                                 for(int y = 0; y<2; y++){
                                     double inset = .005;
-                                    Core.applyColor(Core.theme.getDarkerListColor());
+                                    Core.applyColor(Core.theme.getTextBoxBorderColor());
                                     drawRect(colLeft+w*x, offsets[column]+scale*2+scale*2*y, c+w*x, offsets[column]+scale*4+scale*2*y, 0);
-                                    Core.applyColor(Core.theme.getListColor());
+                                    Core.applyColor(Core.theme.getTextBoxColor());
                                     drawRect(colLeft+w*x+inset/2, offsets[column]+scale*2+scale*2*y+inset/2, c+w*x-inset/2, offsets[column]+scale*4+scale*2*y-inset/2, 0);
-                                    Core.applyColor(Core.theme.getTextColor());
+                                    Core.applyColor(Core.theme.getTutorialTextColor());
                                     drawText(colLeft+w*x+inset, offsets[column]+scale*2+scale*2*y+inset, c+w*x-inset, offsets[column]+scale*4+scale*2*y-inset, texts[y][x]);
                                 }
                             }
@@ -635,10 +635,10 @@ public class NCPTTutorial extends Tutorial{
                     case "menu/file":
                         //<editor-fold defaultstate="collapsed" desc="menu/file">
                         if(draw){
-                            Core.applyColor(Core.theme.getButtonColor());
+                            Core.applyColor(Core.theme.getComponentColor(0));
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*2, 0);
                             double w = (colRight-colLeft)/4;
-                            Core.applyColor(Core.theme.getTextColor());
+                            Core.applyColor(Core.theme.getTutorialTextColor());
                             drawCenteredText(colLeft, offsets[column]+.01, colLeft+w, offsets[column]+scale*2-.01, "Import");
                             drawCenteredText(colLeft+w, offsets[column]+.01, colLeft+w*2, offsets[column]+scale*2-.01, "Export");
                             drawCenteredText(colLeft+w*2, offsets[column]+.01, colLeft+w*3, offsets[column]+scale*2-.01, "Save");
@@ -650,7 +650,7 @@ public class NCPTTutorial extends Tutorial{
                     case "editor":
                         //<editor-fold defaultstate="collapsed" desc="editor">
                         if(draw){
-                            Core.applyColor(Core.theme.getEditorListBorderColor());
+                            Core.applyColor(Core.theme.getTutorialBackgroundColor());
                             drawRect(colLeft, offsets[column], colRight, offsets[column]+scale*20, editorImage);
                         }
                         if(addHeight)offsets[column]+=scale*20;

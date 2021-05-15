@@ -26,7 +26,7 @@ public class MenuComponentTutorialDisplay extends MenuComponent{
     }
     @Override
     public void render(){
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getTutorialBackgroundColor());
         drawRect(0, 0, width, height, 0);
         Renderer2D.pushAndClearBoundStack();
         tutorial.preRender();

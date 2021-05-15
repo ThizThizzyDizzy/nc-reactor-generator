@@ -85,14 +85,14 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 if(mouseover[0]<0||mouseover[1]<0||mouseover[0]>blocksWide-1||mouseover[1]>blocksHigh-1)mouseover = null;
             }
             blockSize = (int) Math.min(width/blocksWide, height/blocksHigh);
-            Core.applyColor(Core.theme.getEditorListBorderColor());
+            Core.applyColor(Core.theme.getEditorBackgroundColor());
             drawRect(x,y,x+width,y+height,0);
             if(mouseover!=null){
-                Core.applyColor(Core.theme.getBrighterEditorListBorderColor());
+                Core.applyColor(Core.theme.getEditorBackgroundMouseoverColor());
                 drawRect(x+mouseover[0]*blockSize, y+mouseover[1]*blockSize, x+(mouseover[0]+1)*blockSize, y+(mouseover[1]+1)*blockSize, 0);
             }
         }
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getEditorGridColor());
         for(int x = 0; x<=blocksWide; x++){
             double border = blockSize/32d;
             double X = this.x+x*blockSize;
@@ -197,7 +197,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                                 b.render(X, Y, blockSize, blockSize, false, resonatingAlpha+.5f, s.result);
                             }
                         }
-                        Core.applyColor(Core.theme.getGreen());
+                        Core.applyColor(Core.theme.getSuggestionOutlineColor());
                         double border = blockSize/40f;
                         if(s.selected)border*=3;
                         boolean top = affects(s, x, y-1);
@@ -238,17 +238,17 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 double X = this.x+mouseover[0]*blockSize;
                 double Y = this.y+mouseover[1]*blockSize;
                 double border = blockSize/8;
-                Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
+                Core.applyColor(Core.theme.getEditorMouseoverLightColor(), .6375f);
                 drawRect(X, Y, X+border, Y+border, 0);
                 drawRect(X+blockSize-border, Y, X+blockSize, Y+border, 0);
                 drawRect(X, Y+blockSize-border, X+border, Y+blockSize, 0);
                 drawRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize, 0);
-                Core.applyColor(Core.theme.getTextColor(), .6375f);
+                Core.applyColor(Core.theme.getEditorMouseoverDarkColor(), .6375f);
                 drawRect(X+border, Y, X+blockSize-border, Y+border, 0);
                 drawRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize, 0);
                 drawRect(X, Y+border, X+border, Y+blockSize-border, 0);
                 drawRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border, 0);
-                Core.applyAverageColor(Core.theme.getEditorListBorderColor(), Core.theme.getTextColor(), 0.6375f);
+                Core.applyColor(Core.theme.getEditorMouseoverLineColor(), 0.6375f);
                 drawRect(this.x, Y+blockSize/2-border/2, X, Y+blockSize/2+border/2, 0);
                 drawRect(X+blockSize, Y+blockSize/2-border/2, this.x+this.width, Y+blockSize/2+border/2, 0);
                 drawRect(X+blockSize/2-border/2, this.y, X+blockSize/2+border/2, Y, 0);
@@ -267,7 +267,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                     double X = this.x+grid.mouseover[0]*blockSize;
                     double Y = this.y+grid.mouseover[1]*blockSize;
                     double border = blockSize/6;
-                    Core.applyAverageColor(Core.theme.getEditorListBorderColor(), Core.theme.getTextColor(), 0.6375f);
+                    Core.applyColor(Core.theme.getEditorMouseoverLineColor(), 0.6375f);
                     drawRect(X+blockSize/2-border/2, Y+blockSize/2-border/2, X+blockSize/2+border/2, Y+blockSize/2+border/2, 0);
                 }
             }

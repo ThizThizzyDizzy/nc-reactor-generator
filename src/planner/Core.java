@@ -1,4 +1,5 @@
 package planner;
+import planner.theme.Theme;
 import discord.Bot;
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,6 +43,8 @@ import planner.menu.MenuDiscord;
 import planner.menu.MenuEdit;
 import planner.menu.MenuMain;
 import planner.menu.MenuTutorial;
+import planner.menu.component.MenuComponentMinimaList;
+import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.dialog.MenuCriticalError;
 import planner.menu.dialog.MenuMinorError;
 import planner.menu.dialog.MenuModerateError;
@@ -55,6 +58,10 @@ import planner.module.PrimeFuelModule;
 import planner.module.RainbowFactorModule;
 import planner.module.UnderhaulModule;
 import planner.tutorial.Tutorial;
+import planner.vr.VRMenuComponent;
+import planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;
+import planner.vr.menu.component.VRMenuComponentSpecialPanel;
+import planner.vr.menu.component.VRMenuComponentToolPanel;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;
@@ -68,6 +75,7 @@ import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.texture.TexturePack;
 import simplelibrary.texture.TexturePackManager;
 public class Core extends Renderer2D{
@@ -116,7 +124,7 @@ public class Core extends Renderer2D{
         if(VR.VR_IsRuntimeInstalled()&&VR.VR_IsHmdPresent())vr = true;
         System.out.println("Initializing GameHelper");
         helper = new GameHelper();
-        helper.setBackground(theme.getBackgroundColor());
+        helper.setBackground(theme.getMenuBackgroundColor());
         helper.setDisplaySize(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1));
         helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
         helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
@@ -433,13 +441,13 @@ public class Core extends Renderer2D{
     public static void setTheme(Theme t){
         t.onSet();
         theme = t;
-        helper.setBackground(theme.getBackgroundColor());
+        helper.setBackground(theme.getMenuBackgroundColor());
     }
     public static void applyWhite(){
-        applyColor(theme.getWhite());
+        applyColor(theme.getWhiteColor());
     }
     public static void applyWhite(float alpha){
-        applyColor(theme.getWhite(), alpha);
+        applyColor(theme.getWhiteColor(), alpha);
     }
     public static void applyColor(Color c){
         GL11.glColor4f(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, c.getAlpha()/255f);
@@ -447,9 +455,11 @@ public class Core extends Renderer2D{
     public static void applyColor(Color c, float alpha){
         GL11.glColor4f(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, c.getAlpha()/255f*alpha);
     }
+    @Deprecated
     public static void applyAverageColor(Color c1, Color c2){
         GL11.glColor4f((c1.getRed()+c2.getRed())/510f, (c1.getGreen()+c2.getGreen())/510f, (c1.getBlue()+c2.getBlue())/510f, (c1.getAlpha()+c2.getAlpha())/510f);
     }
+    @Deprecated
     public static void applyAverageColor(Color c1, Color c2, float alpha){
         GL11.glColor4f((c1.getRed()+c2.getRed())/510f, (c1.getGreen()+c2.getGreen())/510f, (c1.getBlue()+c2.getBlue())/510f, (c1.getAlpha()+c2.getAlpha())/510f*alpha);
     }
@@ -918,5 +928,16 @@ public class Core extends Renderer2D{
             System.err.println("Autosave Failed!");
         }
         helper.running = false;
+    }
+    public static int getThemeIndex(MenuComponent comp){
+        if(comp.parent instanceof MenuComponentMinimaList)return comp.parent.components.indexOf(comp);
+        if(comp.parent instanceof MenuComponentMulticolumnMinimaList)return comp.parent.components.indexOf(comp);
+        return 0;
+    }
+    public static int getThemeIndex(VRMenuComponent comp){
+        if(comp.parent instanceof VRMenuComponentSpecialPanel)return comp.parent.components.indexOf(comp);
+        if(comp.parent instanceof VRMenuComponentToolPanel)return comp.parent.components.indexOf(comp);
+        if(comp.parent instanceof VRMenuComponentMultiblockSettingsPanel)return comp.parent.components.indexOf(comp);
+        return 0;
     }
 }

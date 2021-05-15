@@ -66,14 +66,14 @@ private final int textHeight = 20;
             }
             int mpr = multisPerRow;
             Core.BufferRenderer renderer = (buff) -> {
-                Core.applyColor(Core.theme.getEditorListBorderColor());
+                Core.applyColor(Core.theme.getImageExportBackgroundColor());
                 Renderer2D.drawRect(0, 0, buff.width, buff.height, 0);
-                Core.applyColor(Core.theme.getTextColor());
+                Core.applyColor(Core.theme.getImageExportTextColor());
                 for(int i = 0; i<strs.size(); i++){
                     FormattedText str = strs.get(i);
                     Core.drawFormattedText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str, -1);
                 }
-                Core.applyColor(Core.theme.getTextColor());
+                Core.applyColor(Core.theme.getImageExportTextColor());
                 for(int i = 0; i<parts.size(); i++){
                     PartCount c = parts.get(i);
                     Renderer2D.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);

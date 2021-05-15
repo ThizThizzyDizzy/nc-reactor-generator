@@ -266,10 +266,10 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
                 + "Fuel cells: "+cells;
         mainTooltip+=getModuleTooltip();
         FormattedText finalTooltip = new FormattedText();
-        if(numControllers<1)finalTooltip.addText("No controller!", Core.theme.getRed());
-        if(numControllers>1)finalTooltip.addText("Too many controllers!", Core.theme.getRed());
-        if(missingCasings>0)finalTooltip.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getRed());
-        finalTooltip.addText(new FormattedText(mainTooltip, netHeat>0?Core.theme.getRed():Core.theme.getTextColor()));
+        if(numControllers<1)finalTooltip.addText("No controller!", Core.theme.getTooltipInvalidTextColor());
+        if(numControllers>1)finalTooltip.addText("Too many controllers!", Core.theme.getTooltipInvalidTextColor());
+        if(missingCasings>0)finalTooltip.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getTooltipInvalidTextColor());
+        finalTooltip.addText(new FormattedText(mainTooltip, netHeat>0?Core.theme.getTooltipInvalidTextColor():Core.theme.getTooltipTextColor()));
         return finalTooltip;
     }
     @Override

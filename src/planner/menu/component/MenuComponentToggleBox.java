@@ -23,17 +23,17 @@ public class MenuComponentToggleBox extends MenuComponent{
     }
     @Override
     public void render(){
-        Core.applyColor(darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor());
-        drawRect(x, y, x+width, y+height, 0);
-        Core.applyAverageColor(darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor(), Core.theme.getBackgroundColor());
+//        Core.applyColor(darker?Core.theme.getSecondaryComponentColor():Core.theme.getComponentColor());
+//        drawRect(x, y, x+width, y+height, 0);//why is this here?
+        Core.applyColor(darker?Core.theme.getSecondaryToggleBoxBorderColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBorderColor(Core.getThemeIndex(this)));
         drawRect(x, y, x+height, y+height, 0);
-        Core.applyColor(isToggledOn?Core.theme.getRGBA(.2f, .6f, .2f, 1):Core.theme.getBackgroundColor());
+        Core.applyColor(isToggledOn?Core.theme.getToggleBoxMouseoverColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBackgroundColor(Core.getThemeIndex(this)));
         drawRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height, 0);
         if(isMouseOver&&!enabled){
-            Core.applyColor(Core.theme.getGreen(), .25f);
+            Core.applyColor(Core.theme.getToggleBoxSelectedColor(Core.getThemeIndex(this)), .25f);
             drawRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height, 0);
         }
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText();
     }
     public void drawText(){

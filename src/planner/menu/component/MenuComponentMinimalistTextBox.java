@@ -50,19 +50,19 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
         if(textInset<0){
             textInset = height/10;
         }
-        Core.applyColor(Core.theme.getDarkerListColor());
+        Core.applyColor(Core.theme.getTextBoxBorderColor());
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(Core.theme.getListColor());
+        Core.applyColor(Core.theme.getTextBoxColor());
         drawRect(x+textInset/2, y+textInset/2, x+width-textInset/2, y+height-textInset/2, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         if(editable){
             if(title!=null){
                 drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset-titleInset, text+(((gui.tick&20)<10&&isSelected)?"_":"")+suffix);
-                Core.applyColor(Core.theme.getTextColor(), 0.75f);
+                Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)), 0.75f);
                 drawText(x+textInset, Core.getValueBetweenTwoValues(1, y+textInset, 0, y+height-textInset-titleInset, actualTitleness), x+width-textInset, Core.getValueBetweenTwoValues(1, y+height-textInset-titleInset, 0, y+height-textInset, actualTitleness), title);
 //                if(text.isEmpty())drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset-titleInset, title);
 //                else              drawText(x+textInset, y+height-textInset-titleInset, x+width-textInset, y+height-textInset, title);
-                Core.applyColor(Core.theme.getTextColor());
+                Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
             }else{
                 drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, text+(((gui.tick&20)<10&&isSelected)?"_":"")+suffix);
             }

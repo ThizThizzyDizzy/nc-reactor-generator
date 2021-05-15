@@ -1,5 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordOverhaul extends Keyword{
     public KeywordOverhaul(){
@@ -11,7 +12,7 @@ public class KeywordOverhaul extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(255, 127, 0);
+        return Core.theme.getKeywordColorOverhaul();
     }
     @Override
     public String getRegex(){

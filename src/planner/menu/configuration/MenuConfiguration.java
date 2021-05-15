@@ -299,7 +299,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                 if(Objects.equals(overhaulVersion.text.trim().isEmpty()?null:overhaulVersion.text, c.overhaulVersion)&&!c.isOverhaulConfigurationEqual(configuration)
                         ||Objects.equals(underhaulVersion.text.trim().isEmpty()?null:underhaulVersion.text, c.underhaulVersion)&&!c.isUnderhaulConfigurationEqual(configuration)){
                     badThing = true;
-                    Core.applyColor(Core.theme.getRed());
+                    Core.applyColor(Core.theme.getConfigurationWarningTextColor());
                     String str = "Configuration does not match stored configuration "+c.toString()+"!";
                     double Y = gui.helper.displayHeight()-64;
                     double H = 56;
@@ -312,7 +312,7 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
         importAddon.y = createAddon.y = Core.helper.displayHeight()-importAddon.height-(badThing?64:0);
         addonsList.height = importAddon.y-addonsList.y;
-        Core.applyAverageColor(Core.theme.getMetadataPanelBackgroundColor(), Core.theme.getSidebarColor());
+        Core.applyColor(Core.theme.getConfigurationDividerColor());
         drawRect(underhaulTitle.x+underhaulTitle.width, underhaulTitle.y, overhaulTitle.x, overhaulFusion.y+overhaulFusion.height, 0);
         if(configuration.overhaul==null){
             deleteOverhaul.enabled = (configuration.addon&&Core.configuration.overhaul==null)?false:Core.isShiftPressed();

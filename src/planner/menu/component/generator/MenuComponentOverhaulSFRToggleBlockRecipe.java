@@ -15,14 +15,19 @@ public class MenuComponentOverhaulSFRToggleBlockRecipe extends MenuComponent{
     }
     @Override
     public void render(){
-        if(isMouseOver&&!enabled)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
-        else Core.applyColor(enabled?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
+        if(isSelected){
+            if(isMouseOver)Core.applyColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
+            else Core.applyColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
+        }else{
+            if(isMouseOver)Core.applyColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
+            else Core.applyColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        }
         drawRect(x, y, x+width, y+height, 0);
         if(recipe.inputTexture!=null){
             Core.applyWhite();
             drawRect(x, y, x+height, y+height, Core.getTexture(recipe.inputDisplayTexture));
         }
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText(recipe.getInputDisplayName());
     }
     public void drawText(String text){

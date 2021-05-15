@@ -41,9 +41,9 @@ public class MenuComponentMultiblockDisplay extends MenuComponent{
         multiblockView.width = width;
         multiblockView.height = height-textView.height;
         multiblockView.y = textView.height;
-        Core.applyColor(Core.theme.getDarkButtonColor());
+        Core.applyColor(Core.theme.getMultiblockDisplayBorderColor());
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(Core.theme.getButtonColor());
+        Core.applyColor(Core.theme.getMultiblockDisplayBackgroundColor());
         drawRect(x+border, y+border, x+width-border, y+height-border, 0);
         textView.setText(multiblock.getTooltip(true));
     }
@@ -51,9 +51,9 @@ public class MenuComponentMultiblockDisplay extends MenuComponent{
     public void renderForeground(){
         super.renderForeground();
         if(Core.isShiftPressed()){
-            Core.applyColor(Core.theme.getDarkButtonColor());
+            Core.applyColor(Core.theme.getMultiblockDisplayBorderColor());
             drawRect(x, y, x+width, y+24, 0);
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
             drawCenteredText(x, y+2, x+width, y+22, "Shift-click to save multiblock");
         }
     }

@@ -8,12 +8,12 @@ public class BlockValidDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getGreen(), .125f);
+        Core.applyColor(Core.theme.getDecalColorBlockValid(), .125f);
         drawRect(x, y, x+blockSize, y+blockSize, 0);
     }
     @Override
     public void render3D(double x, double y, double z, double blockSize){
-        Core.applyColor(Core.theme.getGreen(), .125f);
+        Core.applyColor(Core.theme.getDecalColorBlockValid(), .125f);
         VRCore.drawCube(x, y, z, x+blockSize, y+blockSize, z+blockSize, 0);
     }
     @Override

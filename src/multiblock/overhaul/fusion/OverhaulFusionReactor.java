@@ -312,11 +312,11 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                         order.add(str);
                     }
                     if(!c.isCreated()){
-                        colors.put(str, Core.theme.getRGBA(Color.WHITE));
+                        colors.put(str, Core.theme.getClusterInvalidColor());
                     }else if(!c.isConnectedToWall){
-                        colors.put(str, Core.theme.getRGBA(Color.PINK));
-                    }else if(c.netHeat>0)colors.put(str, Core.theme.getRed());
-                    else if(c.coolingPenaltyMult!=1)colors.put(str, Core.theme.getBlue());
+                        colors.put(str, Core.theme.getClusterDisconnectedColor());
+                    }else if(c.netHeat>0)colors.put(str, Core.theme.getClusterOverheatingColor());
+                    else if(c.coolingPenaltyMult!=1)colors.put(str, Core.theme.getClusterOvercoolingColor());
                 }
                 for(String str : order){
                     int count = counts.get(str);

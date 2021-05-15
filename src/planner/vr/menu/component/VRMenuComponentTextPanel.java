@@ -17,9 +17,9 @@ public class VRMenuComponentTextPanel extends VRMenuComponent{
     }
     @Override
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getTextViewBackgroundColor());
         VRCore.drawCube(0, 0, 0, width, height, depth, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText();
     }
     public void drawText(){

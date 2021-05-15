@@ -17,7 +17,7 @@ public class VRMenuComponentButton extends VRMenuComponent{
     private boolean darker;
     private float textInset = .01f;//1cm
     private Supplier<Color> textColor = () -> {
-        return Core.theme.getTextColor();
+        return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
     };
     public boolean isPressed;
     private final ArrayList<Runnable> listeners = new ArrayList<>();
@@ -39,20 +39,20 @@ public class VRMenuComponentButton extends VRMenuComponent{
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
         Color col;
         if(darker){
-             col = Core.theme.getDarkButtonColor();
+             col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
             if(enabled){
-                if(isPressed)col = Core.theme.getDarkerDarkButtonColor();
-                else if(!isDeviceOver.isEmpty())col = Core.theme.getBrighterDarkButtonColor();
+                if(isPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
             }else{
-                col = Core.theme.getDarkerDarkButtonColor();
+                col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
             }
         }else{
-            col = Core.theme.getButtonColor();
+            col = Core.theme.getComponentColor(Core.getThemeIndex(this));
             if(enabled){
-                if(isPressed)col = Core.theme.getDarkerButtonColor();
-                else if(!isDeviceOver.isEmpty())col = Core.theme.getBrighterButtonColor();
+                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
             }else{
-                col = Core.theme.getDarkerButtonColor();
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
             }
         }
         Core.applyColor(col);

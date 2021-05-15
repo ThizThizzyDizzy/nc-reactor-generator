@@ -29,9 +29,9 @@ public class MenuComponentTextDisplay extends MenuComponent{
     }
     @Override
     public void render(){
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getTextViewBackgroundColor());
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         for(int i = 0; i<strs.length; i++){
             String str = strs[i];
             if(centered){

@@ -11,12 +11,12 @@ public abstract class EditorTool{
         this.editor = editor;
         this.id = id;
     }
-    public abstract void render(double x, double y, double width, double height);
-    public void render(int x, int y, int z, double width, double height, double depth){
+    public abstract void render(double x, double y, double width, double height, int themeIndex);
+    public void render(int x, int y, int z, double width, double height, double depth, int themeIndex){
         GL11.glPushMatrix();
         GL11.glTranslated(x, y+height, z+depth+.001);//1mm
         GL11.glScaled(1, -1, 1);//flip Y
-        render(0, 0, width, height);//draw 2D
+        render(0, 0, width, height, themeIndex);//draw 2D
         GL11.glPopMatrix();
     }//TODO VR: make this abstract fancy tool rendering
     public abstract void mouseReset(EditorSpace editorSpace, int button);

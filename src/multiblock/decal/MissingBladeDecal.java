@@ -8,12 +8,12 @@ public class MissingBladeDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getRed());
+        Core.applyColor(Core.theme.getDecalColorMissingBlade());
         drawRect(x+blockSize*.375, y+blockSize*.375, x+blockSize*.625, y+blockSize*.625, 0);
     }
     @Override
     public void render3D(double x, double y, double z, double blockSize){
-        Core.applyColor(Core.theme.getRed());
+        Core.applyColor(Core.theme.getDecalColorMissingBlade());
         VRCore.drawCube(x+blockSize*.375, y+blockSize*.375, z+blockSize*.375, x+blockSize*.625, y+blockSize*.625, z+blockSize*.625, 0);
     }
     @Override

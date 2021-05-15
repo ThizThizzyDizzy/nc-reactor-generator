@@ -8,7 +8,7 @@ import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuComponentMinimalistButton extends MenuComponentButton{
     private final boolean darker;
     private Supplier<Color> textColor = () -> {
-        return Core.theme.getTextColor();
+        return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
     };
     public MenuComponentMinimalistButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover){
         this(x, y, width, height, label, enabled, useMouseover, false);
@@ -26,20 +26,20 @@ public class MenuComponentMinimalistButton extends MenuComponentButton{
     public void render(){
         Color col;
         if(darker){
-             col = Core.theme.getDarkButtonColor();
+             col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
             if(enabled){
-                if(isPressed)col = Core.theme.getDarkerDarkButtonColor();
-                else if(isMouseOver)col = Core.theme.getBrighterDarkButtonColor();
+                if(isPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
+                else if(isMouseOver)col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
             }else{
-                col = Core.theme.getDarkerDarkButtonColor();
+                col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
             }
         }else{
-            col = Core.theme.getButtonColor();
+            col = Core.theme.getComponentColor(Core.getThemeIndex(this));
             if(enabled){
-                if(isPressed)col = Core.theme.getDarkerButtonColor();
-                else if(isMouseOver)col = Core.theme.getBrighterButtonColor();
+                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(isMouseOver)col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
             }else{
-                col = Core.theme.getDarkerButtonColor();
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
             }
         }
         Core.applyColor(col);

@@ -62,27 +62,27 @@ public class MenuComponentMinimalistSlider extends MenuComponent{
         }
         Color col;
         if(darker){
-             col = Core.theme.getBrighterDarkButtonColor();
+            col = Core.theme.getSecondarySliderColor();
             if(enabled){
-                if(isPressed)col = Core.theme.getBrighterDarkerDarkerDarkButtonColor();
-                else if(isMouseOver)col = Core.theme.getBrighterBrighterDarkButtonColor();
+                if(isPressed)col = Core.theme.getSecondarySliderPressedColor();
+                else if(isMouseOver)col = Core.theme.getSecondarySliderMouseoverColor();
             }else{
-                col = Core.theme.getBrighterDarkerDarkerDarkButtonColor();
+                col = Core.theme.getSecondarySliderDisabledColor();
             }
         }else{
-            col = Core.theme.getBrighterButtonColor();
+            col = Core.theme.getSliderColor();
             if(enabled){
-                if(isPressed)col = Core.theme.getBrighterDarkerDarkerButtonColor();
-                else if(isMouseOver)col = Core.theme.getBrighterBrighterButtonColor();
+                if(isPressed)col = Core.theme.getSliderPressedColor();
+                else if(isMouseOver)col = Core.theme.getSliderMouseoverColor();
             }else{
-                col = Core.theme.getBrighterDarkerButtonColor();
+                col = Core.theme.getSliderDisabledColor();
             }
         }
-        Core.applyColor(darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor());
+        Core.applyColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
         drawRect(x, y, x+width, y+height, 0);
         Core.applyColor(col);
         drawRect(x+sliderX, y, x+sliderX+sliderHeight, y+sliderHeight, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawCenteredText(x+textInset, y+sliderHeight+textInset, x+width-textInset, y+height-textInset, name+": "+getValueS());
     }
     @Override

@@ -5,7 +5,7 @@ import java.io.IOException;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.Core;
-import planner.Theme;
+import planner.theme.Theme;
 import planner.exception.MissingConfigurationEntryException;
 import planner.file.FileFormat;
 import planner.file.FileReader;

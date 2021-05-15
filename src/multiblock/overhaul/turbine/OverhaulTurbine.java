@@ -442,15 +442,15 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public FormattedText getTooltip(boolean full){
         String tooltip;
         FormattedText text = new FormattedText();
-        if(numControllers<1)text.addText("No controller!", Core.theme.getRed());
-        if(numControllers>1)text.addText("Too many controllers!", Core.theme.getRed());
-        if(missingCasings>0)text.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getRed());
-        if(!hasInlet)text.addText("Missing inlet!", Core.theme.getRed());
-        if(!hasOutlet)text.addText("Missing outlet!", Core.theme.getRed());
-        text.addText(bearingDiameter==0?"Invalid Bearing!":"Bearing Diameter: "+bearingDiameter, bearingDiameter==0?Core.theme.getRed():Core.theme.getTextColor());
+        if(numControllers<1)text.addText("No controller!", Core.theme.getTooltipInvalidTextColor());
+        if(numControllers>1)text.addText("Too many controllers!", Core.theme.getTooltipInvalidTextColor());
+        if(missingCasings>0)text.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getTooltipInvalidTextColor());
+        if(!hasInlet)text.addText("Missing inlet!", Core.theme.getTooltipInvalidTextColor());
+        if(!hasOutlet)text.addText("Missing outlet!", Core.theme.getTooltipInvalidTextColor());
+        text.addText(bearingDiameter==0?"Invalid Bearing!":"Bearing Diameter: "+bearingDiameter, bearingDiameter==0?Core.theme.getTooltipInvalidTextColor():Core.theme.getTooltipTextColor());
         if(bladesComplete!=null){
             for(int i = 0; i<bladesComplete.length; i++){
-                if(!bladesComplete[i])text.addText("Blade "+(i+1)+" incomplete!", Core.theme.getRed());
+                if(!bladesComplete[i])text.addText("Blade "+(i+1)+" incomplete!", Core.theme.getTooltipInvalidTextColor());
             }
         }
         if(rotorValid){
@@ -468,7 +468,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     + "Coil Efficiency: "+percent(coilEfficiency, 2);
         }
         tooltip+=getModuleTooltip();
-        text.addText(tooltip, rotorValid?Core.theme.getTextColor():Core.theme.getRed());
+        text.addText(tooltip, rotorValid?Core.theme.getTooltipTextColor():Core.theme.getTooltipInvalidTextColor());
         return text;
     }
     @Override

@@ -273,7 +273,7 @@ public class VRCore{
                 if(rightEyeBuffer==null){
                     rightEyeBuffer = new Framebuffer(helper, "Right Eye Framebuffer", vrWidth, vrHeight);
                 }
-                Color background = Core.theme.getBackgroundColor();
+                Color background = Core.theme.getMenuBackgroundColor();
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
                 TrackedDevicePose.Buffer tdpb = TrackedDevicePose.create(k_unMaxTrackedDeviceCount);
                 TrackedDevicePose.Buffer tdpb2 = TrackedDevicePose.create(k_unMaxTrackedDeviceCount);

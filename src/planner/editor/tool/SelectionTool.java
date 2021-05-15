@@ -15,8 +15,8 @@ public class SelectionTool extends EditorTool{
     private int[] rightDragStart;
     private int[] rightDragEnd;
     @Override
-    public void render(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getTextColor());
+    public void render(double x, double y, double width, double height, int themeIndex){
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         Renderer2D.drawRect(x+width/10, y+height/10, x+width/3, y+height/6, 0);
         Renderer2D.drawRect(x+width/10, y+height/10, x+width/6, y+height/3, 0);
         Renderer2D.drawRect(x+width-width/10, y+height/10, x+width-width/3, y+height/6, 0);

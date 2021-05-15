@@ -17,23 +17,22 @@ public class MenuComponentToggleBlock extends MenuComponent{
     }
     @Override
     public void render(){
-        Color col = isMouseOver?Core.theme.getBrighterEditorListBorderColor():Core.theme.getEditorListBorderColor();
+        Color col = isMouseOver?Core.theme.getEditorListBackgroundMouseoverColor(Core.getThemeIndex(this)):Core.theme.getEditorListBackgroundColor(Core.getThemeIndex(this));
         Core.applyColor(col);
         drawRect(x, y, x+width, y+height, 0);
-        Core.applyColor(Core.theme.getTextColor());
         drawText();
         double border = height/8;
         if(!enabled){
-            Core.applyColor(Core.theme.getFadeout());
+            Core.applyColor(Core.theme.getToggleBlockFadeout(Core.getThemeIndex(this)));
             drawRect(x, y, x+width, y+height, 0);
         }
         if(isMouseOver){
-            Core.applyColor(Core.theme.getEditorListBorderColor(), .6375f);
+            Core.applyColor(Core.theme.getEditorListLightMouseoverColor(Core.getThemeIndex(this)), .6375f);
             drawRect(x, y, x+border, y+border, 0);
             drawRect(x+width-border, y, x+width, y+border, 0);
             drawRect(x, y+height-border, x+border, y+height, 0);
             drawRect(x+width-border, y+height-border, x+width, y+height, 0);
-            Core.applyColor(Core.theme.getTextColor(), .6375f);
+            Core.applyColor(Core.theme.getEditorListDarkMouseoverColor(Core.getThemeIndex(this)), .6375f);
             drawRect(x+border, y, x+width-border, y+border, 0);
             drawRect(x+border, y+height-border, x+width-border, y+height, 0);
             drawRect(x, y+border, x+border, y+height-border, 0);
@@ -48,7 +47,7 @@ public class MenuComponentToggleBlock extends MenuComponent{
             }else{
                 text = min+"-"+max;
             }
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
             drawText(text);
         }
     }

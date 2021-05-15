@@ -14,11 +14,11 @@ public class CutTool extends EditorTool{
     private int[] dragStart;
     private int[] dragEnd;
     @Override
-    public void render(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getTextColor());
+    public void render(double x, double y, double width, double height, int themeIndex){
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         ImageStash.instance.bindTexture(0);
-        Core.drawCircle(x+width*.3, y+height*.3, width*.075, width*.125, Core.theme.getTextColor());
-        Core.drawCircle(x+width*.3, y+height*.7, width*.075, width*.125, Core.theme.getTextColor());
+        Core.drawCircle(x+width*.3, y+height*.3, width*.075, width*.125, Core.theme.getEditorToolTextColor(themeIndex));
+        Core.drawCircle(x+width*.3, y+height*.7, width*.075, width*.125, Core.theme.getEditorToolTextColor(themeIndex));
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2d(x+width*.4, y+height*.35);
         GL11.glVertex2d(x+width*.35, y+height*.4);

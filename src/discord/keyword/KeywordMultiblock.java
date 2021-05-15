@@ -24,7 +24,7 @@ public class KeywordMultiblock extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(0, 255, 0);
+        return Core.theme.getKeywordColorMultiblock();
     }
     @Override
     public String getRegex(){

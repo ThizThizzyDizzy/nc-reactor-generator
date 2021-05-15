@@ -7,7 +7,9 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.MenuMain;
+import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
+import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblock extends MenuComponent{
     private final MenuMain main;
@@ -16,7 +18,7 @@ public class MenuComponentMultiblock extends MenuComponent{
         @Override
         public void renderForeground(){
             super.renderForeground();
-            Core.applyColor(Core.theme.getTextColor());
+            Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
             GL11.glBegin(GL11.GL_TRIANGLES);
             GL11.glVertex2d(x+width*.25, y+height*.75);
             GL11.glVertex2d(x+width*.375, y+height*.75);
@@ -57,21 +59,26 @@ public class MenuComponentMultiblock extends MenuComponent{
         if(main.settingInputs!=null&&!has){
             isMouseOver = false;
         }
-        if(isMouseOver&&!isSelected)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
-        else Core.applyColor(isSelected?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
+        if(isSelected){
+            if(isMouseOver)Core.applyColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
+            else Core.applyColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
+        }else{
+            if(isMouseOver)Core.applyColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
+            else Core.applyColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        }
         drawRect(x, y, x+width, y+height, 0);
         if(main.getSelectedMultiblock()!=null&&main.getSelectedMultiblock() instanceof OverhaulTurbine&&((OverhaulTurbine)main.getSelectedMultiblock()).inputs.contains(multiblock)){
-            Core.applyColor(Core.theme.getRGBA(1, 1, 0, 1), .25f);
+            Core.applyColor(Core.theme.getMultiblockSelectedInputColor(), .25f);
             drawRect(x, y, x+width, y+height, 0);
         }
         if(main.settingInputs!=null&&!has){
-            Core.applyColor(Core.theme.getRGBA(0, 0, 0, 1), .25f);
+            Core.applyColor(Core.theme.getMultiblockInvalidInputColor(), .25f);
             drawRect(x, y, x+width, y+height, 0);
         }
     }
     @Override
     public void renderForeground(){
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText(x, y, x+width, y+height/4, multiblock.getName());
         drawText(x, y+height/4, x+width, y+height/2, multiblock.getDefinitionName());
     }

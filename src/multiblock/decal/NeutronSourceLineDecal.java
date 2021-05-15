@@ -10,7 +10,7 @@ public class NeutronSourceLineDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        Core.applyColor(Core.theme.getRGBA(1, 0.5f, 0, 1));
+        Core.applyColor(Core.theme.getDecalColorNeutronSourceLine());
         switch(direction){
             case PX:
             case NX:

@@ -12,7 +12,7 @@ public class MenuComponentLabel extends MenuComponent implements Searchable{
     public final boolean darker;
     public double textInset = 4;
     public Supplier<Color> textColor = () -> {
-        return Core.theme.getTextColor();
+        return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
     };
     private boolean noBackground;
     public MenuComponentLabel(double x, double y, double width, double height, String label){
@@ -30,7 +30,7 @@ public class MenuComponentLabel extends MenuComponent implements Searchable{
     @Override
     public void render(){
         if(!noBackground){
-            Core.applyColor(darker?Core.theme.getDarkButtonColor():Core.theme.getButtonColor());
+            Core.applyColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
             drawRect(x, y, x+width, y+height, 0);
         }
         Core.applyColor(textColor.get());

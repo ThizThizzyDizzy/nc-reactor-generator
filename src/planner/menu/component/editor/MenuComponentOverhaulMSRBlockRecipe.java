@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import multiblock.configuration.overhaul.fissionmsr.Block;
 import multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
 import planner.Core;
+import planner.menu.component.MenuComponentMinimaList;
+import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -16,14 +18,19 @@ public class MenuComponentOverhaulMSRBlockRecipe extends MenuComponent implement
     }
     @Override
     public void render(){
-        if(isMouseOver&&!isSelected)Core.applyAverageColor(Core.theme.getButtonColor(), Core.theme.getSelectedMultiblockColor());
-        else Core.applyColor(isSelected?Core.theme.getSelectedMultiblockColor():Core.theme.getButtonColor());
+        if(isSelected){
+            if(isMouseOver)Core.applyColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
+            else Core.applyColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
+        }else{
+            if(isMouseOver)Core.applyColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
+            else Core.applyColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        }
         drawRect(x, y, x+width, y+height, 0);
         if(recipe.inputTexture!=null){
             Core.applyWhite();
             drawRect(x, y, x+height, y+height, Core.getTexture(recipe.inputDisplayTexture));
         }
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText();
     }
     public void drawText(){

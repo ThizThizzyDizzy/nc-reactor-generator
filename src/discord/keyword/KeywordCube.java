@@ -1,5 +1,6 @@
 package discord.keyword;
 import discord.Keyword;
+import planner.Core;
 import simplelibrary.image.Color;
 public class KeywordCube extends Keyword{
     public int size;
@@ -12,7 +13,7 @@ public class KeywordCube extends Keyword{
     }
     @Override
     public Color getColor(){
-        return new Color(255,0,0);
+        return Core.theme.getKeywordColorCube();
     }
     @Override
     public String getRegex(){

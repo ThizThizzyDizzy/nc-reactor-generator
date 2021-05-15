@@ -87,7 +87,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/standard/outside.png"));
             }
         });
@@ -100,7 +100,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/night/outside.png"));
             }
         });
@@ -113,7 +113,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/winter/outside.png"));
             }
         });
@@ -126,7 +126,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/tropical/outside.png"));
             }
         });
@@ -139,7 +139,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/wasteland/outside.png"));
             }
         });
@@ -152,7 +152,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/space/outside.png"));
             }
         });
@@ -166,7 +166,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/standard/inside.png"));
             }
         });
@@ -179,7 +179,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/night/inside.png"));
             }
         });
@@ -192,7 +192,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/winter/inside.png"));
             }
         });
@@ -205,7 +205,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/tropical/inside.png"));
             }
         });
@@ -218,7 +218,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/wasteland/inside.png"));
             }
         });
@@ -231,7 +231,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyAverageColor(Core.theme.getBackgroundColor(), Core.theme.getWhite());
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/credits/space/inside.png"));
             }
         });
@@ -257,7 +257,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getCreditsImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/credits/main_menu.png"));
             }
         });
@@ -272,7 +272,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getCreditsImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/credits/config.png"));
             }
         });
@@ -287,7 +287,7 @@ public class MenuCredits extends Menu{
             }
             @Override
             public void render(){
-                Core.applyColor(Core.theme.getBackgroundColor());
+                Core.applyColor(Core.theme.getCreditsImageColor());
                 drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/credits/block_config.png"));
             }
         });
@@ -296,6 +296,8 @@ public class MenuCredits extends Menu{
         text("Thank you to my patrons:", 1.25, "patreon.com/thizthizzydizzy");
         text();
         text("Thalzamar", 1.25);
+        text();
+        text("Mstk", 1.25);
         divider();
         text("Thank you to tomdodd4598 for creating such an amazing mod", 1.25, "https://www.curseforge.com/minecraft/mc-mods/nuclearcraft-overhauled");
         divider();
@@ -428,7 +430,7 @@ public class MenuCredits extends Menu{
             c.x = gui.helper.displayWidth()-c.width;
         }
         super.render(millisSinceLastTick);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getCreditsTextColor());
         float actualPressEscToEndTimer = Math.max(0, pressEscToEndTimer-millisSinceLastTick/50f);
         float prog = 1-Math.max(0,Math.min(1,(actualPressEscToEndTimer)/20f));
         drawCenteredText(0, -pressEscToExitHeight*prog, gui.helper.displayWidth(), pressEscToExitHeight-pressEscToExitHeight*prog, "Press escape to exit credits");
@@ -443,7 +445,7 @@ public class MenuCredits extends Menu{
         super.onMouseMove(x, y);
     }
     public void render3D(int millisSinceLastTick){
-        Core.applyColor(Core.theme.getBackgroundColor());
+        Core.applyColor(Core.theme.getCreditsImageColor());
         for(BackgroundElement element : backgroundElements){
             GL11.glPushMatrix();
             GL11.glTranslated(element.x/(gui.helper.displayHeight()/2), (element.y+((creditsSpeed*backgroundElemSpeedMult/element.z)*millisSinceLastTick/50f))/(gui.helper.displayHeight()/2), -element.z);

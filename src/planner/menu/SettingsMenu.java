@@ -13,7 +13,7 @@ public abstract class SettingsMenu extends Menu{
         super(gui, parent);
         sidebar = add(new MenuComponentMinimaList(0, 0, 384, 0, 0));
         sidebar.setBackgroundColor(() -> {
-            return Core.theme.getSidebarColor();
+            return Core.theme.getSettingsSidebarColor();
         });
         MenuComponentMinimalistButton btn = addToSidebar(new MenuComponentMinimalistButton(0, 0, 0, 48, "Done", true, true));
         btn.addActionListener((e) -> {

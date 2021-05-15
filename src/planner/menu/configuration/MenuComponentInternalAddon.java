@@ -25,13 +25,13 @@ public class MenuComponentInternalAddon extends MenuComponent{
     }
     @Override
     public void render(){
-        if(isMouseOver)Core.applyColor(Core.theme.getSelectedMultiblockColor());
-        else Core.applyColor(Core.theme.getButtonColor());
+        if(isMouseOver)Core.applyColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
+        else Core.applyColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
         drawRect(x, y, x+width, y+height, 0);
     }
     @Override
     public void renderForeground(){
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         String str;
         if(actualAddon.overhaulVersion==null&&actualAddon.underhaulVersion==null){
             str = actualAddon.name;

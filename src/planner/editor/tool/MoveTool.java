@@ -20,8 +20,8 @@ public class MoveTool extends EditorTool{
     private int[] leftDragStart;
     private int[] leftDragEnd;
     @Override
-    public void render(double x, double y, double width, double height){
-        Core.applyColor(Core.theme.getTextColor());
+    public void render(double x, double y, double width, double height, int themeIndex){
+        Core.applyColor(Core.theme.getEditorToolTextColor(themeIndex));
         double w = width/16;
         double h = height/16;
         Renderer2D.drawRect(x+width/2-w, y+height/4, x+width/2+w, y+height*3/4, 0);
@@ -49,7 +49,7 @@ public class MoveTool extends EditorTool{
     }
     @Override
     public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
             if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
@@ -89,6 +89,8 @@ public class MoveTool extends EditorTool{
                     if(sy<y1||sy>y2)continue;
                     Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
                     if(!editorSpace.isSpaceValid(b, bx, by, bz))continue;
+                    if(b!=null)Core.applyWhite(.5f);
+                    else Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
                     Renderer2D.drawRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, b==null?0:Core.getTexture(b.getTexture()));
                 }
             }
@@ -97,7 +99,7 @@ public class MoveTool extends EditorTool{
     }
     @Override
     public void drawVRGhosts(EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
-        Core.applyColor(Core.theme.getEditorListBorderColor(), .5f);
+        Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
             double border = blockSize/64;
             if(!editor.isControlPressed(id)){
@@ -120,6 +122,8 @@ public class MoveTool extends EditorTool{
                     if(bz<bbox.z1||bz>bbox.z2)continue;
                     Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
                     if(b==null&&editor.getMultiblock().getBlock(bx, by, bz)==null)continue;//already air, don't need to higlight air again
+                    if(b!=null)Core.applyWhite(.5f);
+                    else Core.applyColor(Core.theme.getEditorBackgroundColor(), .5f);
                     VRCore.drawCube(x+bx*blockSize-border, y+by*blockSize-border, z+bz*blockSize-border, x+(bx+1)*blockSize+border, y+(by+1)*blockSize+border, z+(bz+1)*blockSize+border, b==null?0:Core.getTexture(b.getTexture()));
                 }
             }

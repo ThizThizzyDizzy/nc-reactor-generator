@@ -12,11 +12,9 @@ public class CellFluxDecal extends Decal{
     }
     @Override
     public void render(double x, double y, double blockSize){
-        float r = 1-((flux*2f/criticality)-1f);
-        float g = (flux*2f/criticality);
-        Core.applyColor(Core.theme.getRGBA(Math.max(0, Math.min(1,r)), Math.max(0,Math.min(1,g)), 0, 1));
+        Core.applyColor(Core.theme.getDecalColorCellFlux(flux, criticality));
         drawRect(x, y+blockSize*.4, x+blockSize*Math.min(1, flux*1d/criticality), y+blockSize*.6, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getDecalTextColor());
         FontManager.setFont("small");
         drawCenteredText(x, y+blockSize*.4, x+blockSize, y+blockSize*.6, flux+"/"+criticality);
         FontManager.setFont("high resolution");

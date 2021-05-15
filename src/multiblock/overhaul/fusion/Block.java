@@ -148,24 +148,24 @@ public class Block extends multiblock.Block{
     @Override
     public void renderOverlay(double x, double y, double width, double height, Multiblock multiblock){
         if(!isValid()){
-            drawOutline(x, y, width, height, Core.theme.getRed());
+            drawOutline(x, y, width, height, Core.theme.getBlockColorOutlineInvalid());
         }
         if(isBreedingBlanketAugmented()){
-            drawOutline(x, y, width, height, Core.theme.getGreen());
+            drawOutline(x, y, width, height, Core.theme.getBlockColorOutlineActive());
         }
         OverhaulFusionReactor.Cluster cluster = this.cluster;
         if(cluster!=null){
             Color primaryColor = null;
             if(cluster.netHeat>0){
-                primaryColor = Color.RED;
+                primaryColor = Core.theme.getClusterOverheatingColor();
             }
             if(cluster.coolingPenaltyMult<1){
-                primaryColor = Color.BLUE;
+                primaryColor = Core.theme.getClusterOvercoolingColor();
             }
             if(primaryColor!=null){
-                Core.applyColor(Core.theme.getRGBA(primaryColor), .125f);
+                Core.applyColor(primaryColor, .125f);
                 Renderer2D.drawRect(x, y, x+width, y+height, 0);
-                Core.applyColor(Core.theme.getRGBA(primaryColor), .75f);
+                Core.applyColor(primaryColor, .75f);
                 double border = width/8;
                 boolean top = cluster.contains(this.x, this.y, z-1);
                 boolean right = cluster.contains(this.x+1, this.y, z);
@@ -198,13 +198,13 @@ public class Block extends multiblock.Block{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.PINK;
+                secondaryColor = Core.theme.getClusterDisconnectedColor();
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.WHITE;
+                secondaryColor = Core.theme.getClusterInvalidColor();
             }
             if(secondaryColor!=null){
-                Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor), .75f);
+                Core.applyColor(secondaryColor, .75f);
                 double border = width/8;
                 boolean top = cluster.contains(this.x, this.y, z-1);
                 boolean right = cluster.contains(this.x+1, this.y, z);
@@ -232,23 +232,23 @@ public class Block extends multiblock.Block{
     @Override
     public void renderOverlay(double x, double y, double z, double width, double height, double depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getRed(), faceRenderFunc);
+            drawOutline(x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
         }
         if(isBreedingBlanketAugmented()){
-            drawOutline(x, y, z, width, height, depth, Core.theme.getGreen(), faceRenderFunc);
+            drawOutline(x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
         }
         OverhaulFusionReactor.Cluster cluster = this.cluster;
         if(cluster!=null){
             double border = width/16;
             Color primaryColor = null;
             if(cluster.netHeat>0){
-                primaryColor = Color.RED;
+                primaryColor = Core.theme.getClusterOverheatingColor();
             }
             if(cluster.coolingPenaltyMult<1){
-                primaryColor = Color.BLUE;
+                primaryColor = Core.theme.getClusterOvercoolingColor();
             }
             if(primaryColor!=null){
-                Core.applyColor(Core.theme.getRGBA(primaryColor));
+                Core.applyColor(primaryColor);
                 VRCore.drawPrimaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
                     boolean d1 = cluster.contains(this.x+t[0].x, this.y+t[0].y, this.z+t[0].z);
                     boolean d2 = cluster.contains(this.x+t[1].x, this.y+t[1].y, this.z+t[1].z);
@@ -260,13 +260,13 @@ public class Block extends multiblock.Block{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.PINK;
+                secondaryColor = Core.theme.getClusterDisconnectedColor();
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.WHITE;
+                secondaryColor = Core.theme.getClusterInvalidColor();
             }
             if(secondaryColor!=null){
-                Core.applyAverageColor(secondaryColor, Core.theme.getRGBA(secondaryColor));
+                Core.applyColor(secondaryColor);
                 VRCore.drawSecondaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
                     boolean d1 = cluster.contains(this.x+t[0].x, this.y+t[0].y, this.z+t[0].z);
                     boolean d2 = cluster.contains(this.x+t[1].x, this.y+t[1].y, this.z+t[1].z);

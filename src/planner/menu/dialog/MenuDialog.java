@@ -25,11 +25,11 @@ public class MenuDialog extends Menu{
         try{
             if(parent!=null)parent.render(millisSinceLastTick);
         }catch(Exception ignored){}
-        Core.applyAverageColor(Core.theme.getTextColor(), Core.theme.getBackgroundColor());
+        Core.applyColor(Core.theme.getDialogBorderColor());
         double w = Math.max(gui.helper.displayWidth()*minWidth, Math.min(gui.helper.displayWidth()*maxWidth, textBox.width));
         double h = Math.max(gui.helper.displayHeight()*minHeight, Math.min(gui.helper.displayHeight()*maxHeight, textBox.height));
         drawRect(gui.helper.displayWidth()/2-w/2-border, gui.helper.displayHeight()/2-h/2-border, gui.helper.displayWidth()/2+w/2+border, gui.helper.displayHeight()/2+h/2+border+buttonHeight, 0);
-        Core.applyColor(Core.theme.getEditorListBorderColor());
+        Core.applyColor(Core.theme.getDialogBackgroundColor());
         drawRect(gui.helper.displayWidth()/2-w/2, gui.helper.displayHeight()/2-h/2, gui.helper.displayWidth()/2+w/2, gui.helper.displayHeight()/2+h/2, 0);
         Core.applyWhite();
         textPanel.x = gui.helper.displayWidth()/2-w/2;

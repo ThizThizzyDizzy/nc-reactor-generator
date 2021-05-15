@@ -29,13 +29,13 @@ public class VRMenuComponentFusionBlockRecipe extends VRMenuComponent{
     }
     @Override
     public void renderComponent(TrackedDevicePose.Buffer tdpb){
-        Color col = isDeviceOver.isEmpty()?Core.theme.getEditorListBorderColor():Core.theme.getBrighterEditorListBorderColor();
-        Core.applyColor(col);
+        Core.applyColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
         VRCore.drawCube(0, 0, 0, width, height, depth, 0);
-        Core.applyColor(Core.theme.getTextColor());
+        Core.applyColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
         if(editor.getSelectedOverhaulFusionBlockRecipe(id).equals(recipe)){
             VRCore.drawCubeOutline(-.0025, -.0025, -.0025, width+.0025, height+.0025, depth+.0025, .0025);//2.5mm
         }
+        Core.applyColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText(recipe.getInputDisplayName());
     }
     public void drawText(String text){
