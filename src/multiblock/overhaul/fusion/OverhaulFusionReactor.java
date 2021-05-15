@@ -436,7 +436,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     @Override
     public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
         presets.add(new Priority.Preset("Efficiency", priorities.get(0), priorities.get(1), priorities.get(2), priorities.get(3)).addAlternative("Efficient"));
-        presets.add(new Priority.Preset("Output", priorities.get(0), priorities.get(1), priorities.get(3), priorities.get(2)));
+        presets.add(new Priority.Preset("Output", priorities.get(0), priorities.get(1), priorities.get(3), priorities.get(2)).addAlternative("Power"));
     }
     @Override
     public void getSymmetries(ArrayList<Symmetry> symmetries){

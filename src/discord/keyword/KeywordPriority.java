@@ -28,7 +28,7 @@ public class KeywordPriority extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "efficien(t|cy)|output|irradiat(e|or|ion)|fuel ?usage|cell ?count|(breed(er|ing) ?)?speed|breed(er|ing)";
+        return "efficien(t|cy)|power|output|irradiat(e|or|ion)|fuel ?usage|cell ?count|(breed(er|ing) ?)?speed|breed(er|ing)";
     }
     @Override
     public Keyword newInstance(){
