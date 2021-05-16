@@ -800,8 +800,8 @@ public class MenuConfiguration extends ConfigurationMenu{
                                         Core.configuration.overhaul.turbine.allBlocks.add(block);
                                         turbineBlocks.add(block);
                                         //</editor-fold>
-                                    }else if(register.startsWith("registerRTG")){
-                                        //ignored
+                                    }else if(register.startsWith("registerBattery")){//ignored
+                                    }else if(register.startsWith("registerRTG")){//ignored
                                     }else if(register.startsWith("registerFissionSource")){
                                         if(configuration.overhaul.fissionSFR==null){
                                             Sys.error(ErrorLevel.severe, "Cannot register fission source without SFR configuration!", null, ErrorCategory.fileIO);
