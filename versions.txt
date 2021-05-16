@@ -79,3 +79,4 @@
 3.0.7=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v3.0.7/NC-Reactor-Generator-3.0.7.jar
 3.0.8=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v3.0.8/NC-Reactor-Generator-3.0.8.jar
 3.1=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v3.1/NC-Reactor-Generator-3.1.jar
+3.2=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v3.2/NC-Reactor-Generator-3.2.jar
