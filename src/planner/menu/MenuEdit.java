@@ -193,6 +193,7 @@ public class MenuEdit extends Menu implements Editor{
         this.multiblock = multiblock;
         multibwauk.setScrollMagnitude(CELL_SIZE*scrollMagnitude);
         back.addActionListener((e) -> {
+            suggestionTask = null;
             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransitionX.slideOut((parts.x+parts.width)/gui.helper.displayWidth()), 5));
         });
         undo.addActionListener((e) -> {
@@ -1013,6 +1014,10 @@ public class MenuEdit extends Menu implements Editor{
                         protected void denied(Suggestion suggestion){
                             total++;
                             task.name = s.name+" ("+passed+"|"+(total)+")";
+                        }
+                        @Override
+                        public boolean acceptingSuggestions(){
+                            return super.acceptingSuggestions()&&suggestionTask==theTask;
                         }
                     });
                     task.finish();
