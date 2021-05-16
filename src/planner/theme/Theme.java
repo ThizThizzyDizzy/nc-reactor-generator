@@ -9,9 +9,10 @@ public abstract class Theme{
     public static final SolidColorTheme STANDARD, GOLD, CRACKER, CHOCOLATE, MARSHMALLOW;
     public static final Theme QUESTIONQUESTIONQUESTION;
     static{
+        Random rand = new Random();
         newCategory("General");
-        addTheme(STANDARD = new SolidColorTheme("Light", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f));
-        addTheme(new SolidColorTheme("Light, but darker", new Color(50, 50, 50), new Color(.5f, .5f, .5f, 1f), .3125f, .75f));
+        addTheme(STANDARD = new StandardTheme("Light", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f));
+        addTheme(new StandardTheme("Light, but darker", new Color(50, 50, 50), new Color(.5f, .5f, .5f, 1f), .3125f, .75f));
         newCategory("Materials");
         addTheme(new SolidColorTheme("Water", new Color(64, 78, 203)));
         addTheme(new SolidColorTheme("Iron", new Color(229, 229, 229)));
@@ -156,12 +157,12 @@ public abstract class Theme{
         addTheme(MARSHMALLOW = new SolidColorTheme("Marshmallow", new Color(248, 248, 248)));
         addTheme(new SmoreTheme("S'more", CRACKER, CHOCOLATE, MARSHMALLOW));
         addTheme(new SmoreTheme("Golden S'more", GOLD, CHOCOLATE, MARSHMALLOW));
+        addTheme(new SmoreTheme("Rainbow S'more", new RainbowTheme("Rainbow Cracker", 0, 0.25f, 0.9f, 1), new RainbowTheme("Rainbow Chocolate", 0.333f, 0.25f, 1f, 0.5f), new RainbowTheme("Rainbow Marshmallow", 0.777f, 0.25f, 0.5f, 1f)));
         newCategory("Other");
-        addTheme(new ChangingTheme("Random", () -> {
-            Random rand = new Random();
+        addTheme(new ChangingColorTheme("Random", () -> {
             return new SolidColorTheme("Random", new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
         }));
-        addTheme(QUESTIONQUESTIONQUESTION = new ChangingTheme("???", () -> {
+        addTheme(QUESTIONQUESTIONQUESTION = new ChangingColorTheme("???", () -> {
             return new RandomColorsTheme("???");
         }));
         addTheme(new SiezureTheme("Disco"));

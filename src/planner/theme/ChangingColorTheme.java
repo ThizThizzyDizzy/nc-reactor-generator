@@ -1,577 +1,544 @@
 package planner.theme;
-import planner.Core;
+import java.util.function.Supplier;
 import simplelibrary.image.Color;
-import static simplelibrary.opengl.Renderer2D.*;
-public class SmoreTheme extends ColorTheme{
-    private final ColorTheme cracker;
-    private final ColorTheme chocolate;
-    private final ColorTheme marshmallow;
-    public SmoreTheme(String name, ColorTheme cracker, ColorTheme chocolate, ColorTheme marshmallow){
+public class ChangingColorTheme extends ColorTheme{
+    protected ColorTheme current;
+    private final Supplier<ColorTheme> theme;
+    public ChangingColorTheme(String name, Supplier<ColorTheme> theme){
         super(name);
-        this.cracker = cracker;
-        this.chocolate = chocolate;
-        this.marshmallow = marshmallow;
+        this.theme = theme;
+        current = theme.get();
+    }
+    @Override
+    public void onSet(){
+        current = theme.get();
     }
     @Override
     public Color getKeywordBackgroundColor(){
-        return cracker.getKeywordBackgroundColor();
+        return current.getKeywordBackgroundColor();
     }
     @Override
     public Color getKeywordColorBlind(){
-        return cracker.getKeywordColorBlind();
+        return current.getKeywordColorBlind();
     }
     @Override
     public Color getKeywordColorUnderhaul(){
-        return cracker.getKeywordColorUnderhaul();
+        return current.getKeywordColorUnderhaul();
     }
     @Override
     public Color getKeywordColorSymmetry(){
-        return cracker.getKeywordColorSymmetry();
+        return current.getKeywordColorSymmetry();
     }
     @Override
     public Color getKeywordColorPriority(){
-        return cracker.getKeywordColorPriority();
+        return current.getKeywordColorPriority();
     }
     @Override
     public Color getKeywordColorOverhaul(){
-        return cracker.getKeywordColorOverhaul();
+        return current.getKeywordColorOverhaul();
     }
     @Override
     public Color getKeywordColorMultiblock(){
-        return cracker.getKeywordColorMultiblock();
+        return current.getKeywordColorMultiblock();
     }
     @Override
     public Color getKeywordColorFuel(){
-        return cracker.getKeywordColorFuel();
+        return current.getKeywordColorFuel();
     }
     @Override
     public Color getKeywordColorFormat(){
-        return cracker.getKeywordColorFormat();
+        return current.getKeywordColorFormat();
     }
     @Override
     public Color getKeywordColorCuboid(){
-        return cracker.getKeywordColorCuboid();
+        return current.getKeywordColorCuboid();
     }
     @Override
     public Color getKeywordColorCube(){
-        return cracker.getKeywordColorCube();
+        return current.getKeywordColorCube();
     }
     @Override
     public Color getKeywordColorConfiguration(){
-        return cracker.getKeywordColorConfiguration();
+        return current.getKeywordColorConfiguration();
     }
     @Override
     public Color getKeywordColorBlockRange(){
-        return cracker.getKeywordColorBlockRange();
+        return current.getKeywordColorBlockRange();
     }
     @Override
     public Color getDecalColorAdjacentCell(){
-        return cracker.getDecalColorAdjacentCell();
+        return current.getDecalColorAdjacentCell();
     }
     @Override
     public Color getDecalColorAdjacentModerator(){
-        return cracker.getDecalColorAdjacentModerator();
+        return current.getDecalColorAdjacentModerator();
     }
     @Override
     public Color getDecalColorAdjacentModeratorLine(float efficiency){
-        return cracker.getDecalColorAdjacentModeratorLine(efficiency);
+        return current.getDecalColorAdjacentModeratorLine(efficiency);
     }
     @Override
     public Color getDecalColorUnderhaulModeratorLine(){
-        return cracker.getDecalColorUnderhaulModeratorLine();
+        return current.getDecalColorUnderhaulModeratorLine();
     }
     @Override
     public Color getDecalColorReflectorAdjacentModeratorLine(){
-        return cracker.getDecalColorReflectorAdjacentModeratorLine();
+        return current.getDecalColorReflectorAdjacentModeratorLine();
     }
     @Override
     public Color getDecalColorOverhaulModeratorLine(float efficiency){
-        return cracker.getDecalColorOverhaulModeratorLine(efficiency);
+        return current.getDecalColorOverhaulModeratorLine(efficiency);
     }
     @Override
     public Color getDecalTextColor(){
-        return chocolate.getDecalTextColor();
+        return current.getDecalTextColor();
     }
     @Override
     public Color getDecalColorNeutronSourceTarget(){
-        return cracker.getDecalColorNeutronSourceTarget();
+        return current.getDecalColorNeutronSourceTarget();
     }
     @Override
     public Color getDecalColorNeutronSourceNoTarget(){
-        return cracker.getDecalColorNeutronSourceNoTarget();
+        return current.getDecalColorNeutronSourceNoTarget();
     }
     @Override
     public Color getDecalColorNeutronSourceLine(){
-        return cracker.getDecalColorNeutronSourceLine();
+        return current.getDecalColorNeutronSourceLine();
     }
     @Override
     public Color getDecalColorNeutronSource(){
-        return cracker.getDecalColorNeutronSource();
+        return current.getDecalColorNeutronSource();
     }
     @Override
     public Color getDecalColorModeratorActive(){
-        return cracker.getDecalColorModeratorActive();
+        return current.getDecalColorModeratorActive();
     }
     @Override
     public Color getDecalColorMissingCasing(){
-        return cracker.getDecalColorMissingCasing();
+        return current.getDecalColorMissingCasing();
     }
     @Override
     public Color getDecalColorMissingBlade(){
-        return cracker.getDecalColorMissingBlade();
+        return current.getDecalColorMissingBlade();
     }
     @Override
     public Color getDecalColorIrradiatorAdjacentModeratorLine(){
-        return cracker.getDecalColorIrradiatorAdjacentModeratorLine();
+        return current.getDecalColorIrradiatorAdjacentModeratorLine();
     }
     @Override
     public Color getDecalColorCellFlux(int flux, int criticality){
-        return cracker.getDecalColorCellFlux(flux, criticality);
+        return current.getDecalColorCellFlux(flux, criticality);
     }
     @Override
     public Color getDecalColorBlockValid(){
-        return cracker.getDecalColorBlockValid();
+        return current.getDecalColorBlockValid();
     }
     @Override
     public Color getDecalColorBlockInvalid(){
-        return cracker.getDecalColorBlockInvalid();
+        return current.getDecalColorBlockInvalid();
     }
     @Override
     public Color getBlockColorOutlineInvalid(){
-        return cracker.getBlockColorOutlineInvalid();
+        return current.getBlockColorOutlineInvalid();
     }
     @Override
     public Color getBlockColorOutlineActive(){
-        return cracker.getBlockColorOutlineActive();
+        return current.getBlockColorOutlineActive();
     }
     @Override
     public Color getBlockColorSourceCircle(float efficiency, boolean selfPriming){
-        return cracker.getBlockColorSourceCircle(efficiency, selfPriming);
+        return current.getBlockColorSourceCircle(efficiency, selfPriming);
     }
     @Override
     public Color getClusterOverheatingColor(){
-        return cracker.getClusterOverheatingColor();
+        return current.getClusterOverheatingColor();
     }
     @Override
     public Color getClusterOvercoolingColor(){
-        return cracker.getClusterOvercoolingColor();
+        return current.getClusterOvercoolingColor();
     }
     @Override
     public Color getClusterDisconnectedColor(){
-        return cracker.getClusterDisconnectedColor();
+        return current.getClusterDisconnectedColor();
     }
     @Override
     public Color getClusterInvalidColor(){
-        return cracker.getClusterInvalidColor();
+        return current.getClusterInvalidColor();
     }
     @Override
     public Color getTooltipInvalidTextColor(){
-        return chocolate.getTooltipInvalidTextColor();
+        return current.getTooltipInvalidTextColor();
     }
     @Override
     public Color getTooltipTextColor(){
-        return chocolate.getTooltipTextColor();
+        return current.getTooltipTextColor();
     }
     @Override
     public Color getEditorToolTextColor(int index){
-        return pickTheme(index).getEditorToolTextColor(index);
+        return current.getEditorToolTextColor(index);
     }
     @Override
     public Color getEditorToolBackgroundColor(int index){
-        return pickTheme(index).getEditorToolBackgroundColor(index);
+        return current.getEditorToolBackgroundColor(index);
     }
     @Override
     public Color getSelectionColor(){
-        return cracker.getSelectionColor();
+        return current.getSelectionColor();
     }
     @Override
     public Color getEditorBackgroundColor(){
-        return marshmallow.getEditorBackgroundColor();
+        return current.getEditorBackgroundColor();
     }
     @Override
     public Color getImageExportBackgroundColor(){
-        return cracker.getImageExportBackgroundColor();
+        return current.getImageExportBackgroundColor();
     }
     @Override
     public Color getImageExportTextColor(){
-        return chocolate.getImageExportTextColor();
+        return current.getImageExportTextColor();
     }
     @Override
     public Color getComponentTextColor(int index){
-        return pickTheme(index).getComponentTextColor(index);
+        return current.getComponentTextColor(index);
     }
     @Override
     public Color getMouseoverSelectedComponentColor(int index){
-        return pickTheme(index).getMouseoverSelectedComponentColor(index);
+        return current.getMouseoverSelectedComponentColor(index);
     }
     @Override
     public Color getSelectedComponentColor(int index){
-        return pickTheme(index).getSelectedComponentColor(index);
+        return current.getSelectedComponentColor(index);
     }
     @Override
     public Color getMouseoverComponentColor(int index){
-        return pickTheme(index).getMouseoverComponentColor(index);
+        return current.getMouseoverComponentColor(index);
     }
     @Override
     public Color getComponentColor(int index){
-        return pickTheme(index).getComponentColor(index);
+        return current.getComponentColor(index);
     }
     @Override
     public Color getEditorBackgroundMouseoverColor(){
-        return cracker.getEditorBackgroundMouseoverColor();
+        return current.getEditorBackgroundMouseoverColor();
     }
     @Override
     public Color getEditorGridColor(){
-        return cracker.getEditorGridColor();
+        return current.getEditorGridColor();
     }
     @Override
     public Color getSuggestionOutlineColor(){
-        return cracker.getSuggestionOutlineColor();
+        return current.getSuggestionOutlineColor();
     }
     @Override
     public Color getEditorMouseoverLightColor(){
-        return cracker.getEditorMouseoverLightColor();
+        return current.getEditorMouseoverLightColor();
     }
     @Override
     public Color getEditorMouseoverDarkColor(){
-        return cracker.getEditorMouseoverDarkColor();
+        return current.getEditorMouseoverDarkColor();
     }
     @Override
     public Color getEditorMouseoverLineColor(){
-        return cracker.getEditorMouseoverLineColor();
+        return current.getEditorMouseoverLineColor();
     }
     @Override
     public Color getEditorListBackgroundMouseoverColor(int index){
-        return pickTheme(index).getEditorListBackgroundMouseoverColor(index);
+        return current.getEditorListBackgroundMouseoverColor(index);
     }
     @Override
     public Color getEditorListBackgroundColor(int index){
-        return pickTheme(index).getEditorListBackgroundColor(index);
+        return current.getEditorListBackgroundColor(index);
     }
     @Override
     public Color getEditorListLightSelectedColor(int index){
-        return pickTheme(index).getEditorListLightSelectedColor(index);
+        return current.getEditorListLightSelectedColor(index);
     }
     @Override
     public Color getEditorListDarkSelectedColor(int index){
-        return pickTheme(index).getEditorListDarkSelectedColor(index);
+        return current.getEditorListDarkSelectedColor(index);
     }
     @Override
     public Color getEditorListLightMouseoverColor(int index){
-        return pickTheme(index).getEditorListLightMouseoverColor(index);
+        return current.getEditorListLightMouseoverColor(index);
     }
     @Override
     public Color getEditorListDarkMouseoverColor(int index){
-        return pickTheme(index).getEditorListDarkMouseoverColor(index);
+        return current.getEditorListDarkMouseoverColor(index);
     }
     @Override
     public Color getMultiblockSelectedInputColor(){
-        return cracker.getMultiblockSelectedInputColor();
+        return current.getMultiblockSelectedInputColor();
     }
     @Override
     public Color getMultiblockInvalidInputColor(){
-        return cracker.getMultiblockInvalidInputColor();
+        return current.getMultiblockInvalidInputColor();
     }
     @Override
     public Color getSecondaryComponentColor(int index){
-        return pickTheme(index).getSecondaryComponentColor(index);
+        return current.getSecondaryComponentColor(index);
     }
     @Override
     public Color getProgressBarBackgroundColor(){
-        return cracker.getProgressBarBackgroundColor();
+        return current.getProgressBarBackgroundColor();
     }
     @Override
     public Color getProgressBarColor(){
-        return cracker.getProgressBarColor();
+        return current.getProgressBarColor();
     }
     @Override
     public Color getMultiblockDisplayBorderColor(){
-        return cracker.getMultiblockDisplayBorderColor();
+        return current.getMultiblockDisplayBorderColor();
     }
     @Override
     public Color getMultiblockDisplayBackgroundColor(){
-        return cracker.getMultiblockDisplayBackgroundColor();
+        return current.getMultiblockDisplayBackgroundColor();
     }
     @Override
     public Color getToggleBlockFadeout(int index){
-        return pickTheme(index).getToggleBlockFadeout(index);
+        return current.getToggleBlockFadeout(index);
     }
     @Override
     public Color getTutorialBackgroundColor(){
-        return cracker.getTutorialBackgroundColor();
+        return current.getTutorialBackgroundColor();
     }
     @Override
     public Color getScrollbarButtonColor(){
-        return cracker.getScrollbarButtonColor();
+        return current.getScrollbarButtonColor();
     }
     @Override
     public Color getBlockUnknownColor(){
-        return cracker.getBlockUnknownColor();
+        return current.getBlockUnknownColor();
     }
     @Override
     public Color getBlockTextColor(){
-        return chocolate.getBlockTextColor();
+        return current.getBlockTextColor();
     }
     @Override
     public Color getScrollbarBackgroundColor(){
-        return cracker.getScrollbarBackgroundColor();
+        return current.getScrollbarBackgroundColor();
     }
     @Override
     public Color getComponentPressedColor(int index){
-        return pickTheme(index).getComponentPressedColor(index);
+        return current.getComponentPressedColor(index);
     }
     @Override
     public Color getComponentMouseoverColor(int index){
-        return pickTheme(index).getComponentMouseoverColor(index);
+        return current.getComponentMouseoverColor(index);
     }
     @Override
     public Color getComponentDisabledColor(int index){
-        return pickTheme(index).getComponentDisabledColor(index);
+        return current.getComponentDisabledColor(index);
     }
     @Override
     public Color getSecondaryComponentPressedColor(int index){
-        return pickTheme(index).getSecondaryComponentPressedColor(index);
+        return current.getSecondaryComponentPressedColor(index);
     }
     @Override
     public Color getSecondaryComponentMouseoverColor(int index){
-        return pickTheme(index).getSecondaryComponentMouseoverColor(index);
+        return current.getSecondaryComponentMouseoverColor(index);
     }
     @Override
     public Color getSecondaryComponentDisabledColor(int index){
-        return pickTheme(index).getSecondaryComponentDisabledColor(index);
+        return current.getSecondaryComponentDisabledColor(index);
     }
     @Override
     public Color getSliderColor(){
-        return cracker.getSliderColor();
+        return current.getSliderColor();
     }
     @Override
     public Color getSliderPressedColor(){
-        return cracker.getSliderPressedColor();
+        return current.getSliderPressedColor();
     }
     @Override
     public Color getSliderMouseoverColor(){
-        return cracker.getSliderMouseoverColor();
+        return current.getSliderMouseoverColor();
     }
     @Override
     public Color getSliderDisabledColor(){
-        return cracker.getSliderDisabledColor();
+        return current.getSliderDisabledColor();
     }
     @Override
     public Color getSecondarySliderColor(){
-        return cracker.getSecondarySliderColor();
+        return current.getSecondarySliderColor();
     }
     @Override
     public Color getSecondarySliderPressedColor(){
-        return cracker.getSecondarySliderPressedColor();
+        return current.getSecondarySliderPressedColor();
     }
     @Override
     public Color getSecondarySliderMouseoverColor(){
-        return cracker.getSecondarySliderMouseoverColor();
+        return current.getSecondarySliderMouseoverColor();
     }
     @Override
     public Color getSecondarySliderDisabledColor(){
-        return cracker.getSecondarySliderDisabledColor();
+        return current.getSecondarySliderDisabledColor();
     }
     @Override
     public Color getTextBoxBorderColor(){
-        return cracker.getTextBoxBorderColor();
+        return current.getTextBoxBorderColor();
     }
     @Override
     public Color getTextBoxColor(){
-        return cracker.getTextBoxColor();
+        return current.getTextBoxColor();
     }
     @Override
     public Color getTextViewBackgroundColor(){
-        return cracker.getTextViewBackgroundColor();
+        return current.getTextViewBackgroundColor();
     }
     @Override
     public Color getToggleBoxBorderColor(int index){
-        return pickTheme(index).getToggleBoxBorderColor(index);
+        return current.getToggleBoxBorderColor(index);
     }
     @Override
     public Color getSecondaryToggleBoxBorderColor(int index){
-        return pickTheme(index).getSecondaryToggleBoxBorderColor(index);
+        return current.getSecondaryToggleBoxBorderColor(index);
     }
     @Override
     public Color getToggleBoxBackgroundColor(int index){
-        return pickTheme(index).getToggleBoxBackgroundColor(index);
+        return current.getToggleBoxBackgroundColor(index);
     }
     @Override
     public Color getToggleBoxSelectedColor(int index){
-        return pickTheme(index).getToggleBoxSelectedColor(index);
+        return current.getToggleBoxSelectedColor(index);
     }
     @Override
     public Color getToggleBoxMouseoverColor(int index){
-        return pickTheme(index).getToggleBoxMouseoverColor(index);
+        return current.getToggleBoxMouseoverColor(index);
     }
     @Override
     public Color getMouseoverUnselectableComponentColor(int index){
-        return pickTheme(index).getMouseoverUnselectableComponentColor(index);
+        return current.getMouseoverUnselectableComponentColor(index);
     }
     @Override
     public Color getConfigurationSidebarColor(){
-        return cracker.getConfigurationSidebarColor();
+        return current.getConfigurationSidebarColor();
     }
     @Override
     public Color getConfigurationWarningTextColor(){
-        return chocolate.getConfigurationWarningTextColor();
+        return current.getConfigurationWarningTextColor();
     }
     @Override
     public Color getConfigurationDividerColor(){
-        return cracker.getConfigurationDividerColor();
+        return current.getConfigurationDividerColor();
     }
     @Override
     public Color getDialogBorderColor(){
-        return cracker.getDialogBorderColor();
+        return current.getDialogBorderColor();
     }
     @Override
     public Color getDialogBackgroundColor(){
-        return cracker.getDialogBackgroundColor();
+        return current.getDialogBackgroundColor();
     }
     @Override
     public Color getCreditsImageColor(){
-        return cracker.getCreditsImageColor();
+        return current.getCreditsImageColor();
     }
     @Override
     public Color getCreditsBrightImageColor(){
-        return cracker.getCreditsBrightImageColor();
+        return current.getCreditsBrightImageColor();
     }
     @Override
     public Color getCreditsTextColor(){
-        return chocolate.getCreditsTextColor();
+        return current.getCreditsTextColor();
     }
     @Override
     public Color get3DMultiblockOutlineColor(){
-        return cracker.get3DMultiblockOutlineColor();
+        return current.get3DMultiblockOutlineColor();
     }
     @Override
     public Color get3DDeviceoverOutlineColor(){
-        return cracker.get3DDeviceoverOutlineColor();
+        return current.get3DDeviceoverOutlineColor();
     }
     @Override
     public Color getAddButtonTextColor(){
-        return chocolate.getAddButtonTextColor();
+        return current.getAddButtonTextColor();
     }
     @Override
     public Color getDeleteButtonTextColor(){
-        return chocolate.getDeleteButtonTextColor();
+        return current.getDeleteButtonTextColor();
     }
     @Override
     public Color getConvertButtonTextColor(){
-        return chocolate.getConvertButtonTextColor();
+        return current.getConvertButtonTextColor();
     }
     @Override
     public Color getInputsButtonTextColor(){
-        return chocolate.getInputsButtonTextColor();
+        return current.getInputsButtonTextColor();
     }
     @Override
     public Color getMetadataPanelBackgroundColor(){
-        return cracker.getMetadataPanelBackgroundColor();
+        return current.getMetadataPanelBackgroundColor();
     }
     @Override
     public Color getMetadataPanelHeaderColor(){
-        return cracker.getMetadataPanelHeaderColor();
+        return current.getMetadataPanelHeaderColor();
     }
     @Override
     public Color getMetadataPanelTextColor(){
-        return chocolate.getMetadataPanelTextColor();
+        return current.getMetadataPanelTextColor();
     }
     @Override
     public Color getMultiblocksListHeaderColor(){
-        return cracker.getMultiblocksListHeaderColor();
+        return current.getMultiblocksListHeaderColor();
     }
     @Override
     public Color getRecoveryModeColor(int index){
-        return pickTheme(index).getComponentColor(0);
+        return current.getRecoveryModeColor(index);
     }
     @Override
     public Color getRecoveryModeTextColor(){
-        return chocolate.getRecoveryModeTextColor();
+        return current.getRecoveryModeTextColor();
     }
     @Override
     public Color getRotateMultiblockTextColor(){
-        return chocolate.getRotateMultiblockTextColor();
+        return current.getRotateMultiblockTextColor();
     }
     @Override
     public Color getResizeMenuTextColor(){
-        return chocolate.getResizeMenuTextColor();
+        return current.getResizeMenuTextColor();
     }
     @Override
     public Color getMenuBackgroundColor(){
-        return chocolate.getMenuBackgroundColor();
+        return current.getMenuBackgroundColor();
     }
     @Override
     public Color getSettingsSidebarColor(){
-        return chocolate.getSettingsSidebarColor();
+        return current.getSettingsSidebarColor();
     }
     @Override
     public Color getWhiteColor(){
-        return marshmallow.getWhiteColor();
+        return current.getWhiteColor();
     }
     @Override
     public Color getTutorialTextColor(){
-        return chocolate.getTutorialTextColor();
+        return current.getTutorialTextColor();
     }
     @Override
     public Color getVRComponentColor(int index){
-        return pickTheme(index).getVRComponentColor(index);
+        return current.getVRComponentColor(index);
     }
     @Override
     public Color getVRDeviceoverComponentColor(int index){
-        return pickTheme(index).getVRDeviceoverComponentColor(index);
+        return current.getVRDeviceoverComponentColor(index);
     }
     @Override
     public Color getVRSelectedOutlineColor(int index){
-        return pickTheme(index).getVRSelectedOutlineColor(index);
+        return current.getVRSelectedOutlineColor(index);
     }
     @Override
     public Color getVRPanelOutlineColor(){
-        return cracker.getVRPanelOutlineColor();
+        return current.getVRPanelOutlineColor();
     }
     @Override
     public Color getVRMultitoolTextColor(){
-        return chocolate.getVRMultitoolTextColor();
+        return current.getVRMultitoolTextColor();
     }
     @Override
     public void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
-        for(int i = 0; i<4; i++){
-            Color col;
-            if(darker){
-                 col = getSecondaryComponentColor(i);
-                if(enabled){
-                    if(pressed)col = getSecondaryComponentPressedColor(i);
-                    else if(mouseOver)col = getSecondaryComponentMouseoverColor(i);
-                }else{
-                    col = getSecondaryComponentDisabledColor(i);
-                }
-            }else{
-                col = getComponentColor(i);
-                if(enabled){
-                    if(pressed)col = getComponentPressedColor(i);
-                    else if(mouseOver)col = getComponentMouseoverColor(i);
-                }else{
-                    col = getComponentDisabledColor(i);
-                }
-            }
-            Core.applyColor(col);
-            drawRect(x, y+height*i/4d, x+width, y+height*(i+1)/4d, 0);
-        }
+        current.drawThemeButtonBackground(x, y, width, height, darker, enabled, pressed, mouseOver);
     }
     @Override
     public void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text){
-        for(int i = 0; i<4; i++){
-            Core.applyColor(getComponentTextColor(i));
-            drawCenteredTextWithBounds(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, x, y+height*i/4d, x+width, y+height*(i+1)/4d, text);
-        }
-    }
-    private ColorTheme pickTheme(int index){
-        if(index%3==0)return cracker;
-        if(index%3==1)return chocolate;
-        if(index%3==2)return marshmallow;
-        return cracker;
-    }
-    @Override
-    public boolean shouldContantlyUpdateBackground(){
-        return chocolate.shouldContantlyUpdateBackground();
+        current.drawThemeButtonText(x, y, width, height, textHeight, text);
     }
 }
