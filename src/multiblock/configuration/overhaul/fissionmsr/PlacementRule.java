@@ -78,7 +78,7 @@ public class PlacementRule extends RuleContainer implements Searchable{
             for(Block b : configuration.allBlocks){
                 if(b.parent!=null)continue;
                 for(String s : b.getLegacyNames()){
-                    if(s.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH).replace("_", " "))||s.toLowerCase(Locale.ENGLISH).contains(strs[0].toLowerCase(Locale.ENGLISH))){
+                    if(s.toLowerCase(Locale.ENGLISH).contains("heater")&&s.toLowerCase(Locale.ENGLISH).matches("[\\s^]"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"[\\s$]")){
                         int len = s.length();
                         if(block==null||len<shortest){
                             block = b;

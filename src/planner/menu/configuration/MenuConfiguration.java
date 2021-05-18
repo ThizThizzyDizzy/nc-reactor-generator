@@ -16,6 +16,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
+import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.ImageIO;
 import planner.file.FileFormat;
@@ -1076,5 +1077,59 @@ public class MenuConfiguration extends ConfigurationMenu{
             }
         }
         return combined;
+    }
+    @Override
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        if(pressed&&button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
+            if(configuration.underhaul!=null){
+                if(configuration.underhaul.fissionSFR!=null){
+                    for(multiblock.configuration.underhaul.fissionsfr.Block b : configuration.underhaul.fissionSFR.blocks){
+                        check(b, b);
+                    }
+                }
+            }
+            if(configuration.overhaul!=null){
+                if(configuration.overhaul.fissionSFR!=null){
+                    for(multiblock.configuration.overhaul.fissionsfr.Block b : configuration.overhaul.fissionSFR.blocks){
+                        check(b, b);
+                    }
+                }
+                if(configuration.overhaul.fissionMSR!=null){
+                    for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.blocks){
+                        check(b, b);
+                    }
+                }
+                if(configuration.overhaul.turbine!=null){
+                    for(multiblock.configuration.overhaul.turbine.Block b : configuration.overhaul.turbine.blocks){
+                        check(b, b);
+                    }
+                }
+            }
+        }
+        super.onMouseButton(x, y, button, pressed, mods);
+    }
+    private void check(multiblock.configuration.underhaul.fissionsfr.Block parent, multiblock.configuration.underhaul.fissionsfr.RuleContainer b){
+        for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rul : b.rules){
+            if(rul.block!=null&&!rul.block.getDisplayName().contains("Cooler"))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
+            check(parent, rul);
+        }
+    }
+    private void check(multiblock.configuration.overhaul.fissionsfr.Block parent, multiblock.configuration.overhaul.fissionsfr.RuleContainer b){
+        for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rul : b.rules){
+            if(rul.block!=null&&!rul.block.getDisplayName().contains("Sink"))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
+            check(parent, rul);
+        }
+    }
+    private void check(multiblock.configuration.overhaul.fissionmsr.Block parent, multiblock.configuration.overhaul.fissionmsr.RuleContainer b){
+        for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rul : b.rules){
+            if(rul.block!=null&&(rul.block.getDisplayName().contains(" Port")||!rul.block.getDisplayName().contains("Heater")))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
+            check(parent, rul);
+        }
+    }
+    private void check(multiblock.configuration.overhaul.turbine.Block parent, multiblock.configuration.overhaul.turbine.RuleContainer b){
+        for(multiblock.configuration.overhaul.turbine.PlacementRule rul : b.rules){
+            if(rul.block!=null&&!rul.block.getDisplayName().contains("Coil"))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
+            check(parent, rul);
+        }
     }
 }
