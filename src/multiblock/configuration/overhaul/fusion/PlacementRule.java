@@ -85,11 +85,11 @@ public class PlacementRule extends RuleContainer implements Searchable{
                 if(min==max)return "Exactly "+min+" "+blockType.name;
                 return "Between "+min+" and "+max+" "+blockType.name;
             case AXIAL:
-                if(max==6)return "At least "+min+" Axial pairs of "+block.name;
+                if(max==3)return "At least "+min+" Axial pairs of "+block.name;
                 if(min==max)return "Exactly "+min+" Axial pairs of "+block.name;
                 return "Between "+min+" and "+max+" Axial pairs of "+block.name;
             case AXIAL_GROUP:
-                if(max==6)return "At least "+min+" Axial pairs of "+blockType.name;
+                if(max==3)return "At least "+min+" Axial pairs of "+blockType.name;
                 if(min==max)return "Exactly "+min+" Axial pairs of "+blockType.name;
                 return "Between "+min+" and "+max+" Axial pairs of "+blockType.name;
             case VERTEX:
