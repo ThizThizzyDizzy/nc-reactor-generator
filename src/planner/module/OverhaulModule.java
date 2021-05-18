@@ -88,6 +88,11 @@ public class OverhaulModule extends Module{
         });
         Configuration.internalAddons.add(() -> {
             return AddonConfiguration.convert(FileReader.read(() -> {
+                return getInputStream("configurations/addons/bes.ncpf");
+            }).configuration);
+        });
+        Configuration.internalAddons.add(() -> {
+            return AddonConfiguration.convert(FileReader.read(() -> {
                 return getInputStream("configurations/addons/aop.ncpf");
             }).configuration);
         });

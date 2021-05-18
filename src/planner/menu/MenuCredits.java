@@ -70,6 +70,9 @@ public class MenuCredits extends Menu{
         text("Nuclear Tree Factory", 1.25, "https://www.curseforge.com/minecraft/customization/nuclear-tree-factory");
         text("made by joendter");
         text();
+        text("Binary's Extra Stuff", 1.25, "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes");
+        text("made by binary_nexus");
+        text();
         text("AOP", 1.25, "https://www.curseforge.com/minecraft/customization/aop");
         text("made by Thalzamar");
         text();

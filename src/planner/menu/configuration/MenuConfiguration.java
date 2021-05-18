@@ -494,430 +494,450 @@ public class MenuConfiguration extends ConfigurationMenu{
                 }else loadAddon(new File(fil));
             }
         }else{
-            //load ZS because it's easier than the slow method
-            ArrayList<multiblock.configuration.overhaul.turbine.Block> turbineBlocks = new ArrayList<>();
-            HashMap<multiblock.configuration.overhaul.turbine.Block, String> turbineRules = new HashMap<>();
-            ArrayList<multiblock.configuration.overhaul.fissionsfr.Block> fissionSFRBlocks = new ArrayList<>();
-            ArrayList<multiblock.configuration.overhaul.fissionsfr.BlockRecipe> fissionSFRRecipes = new ArrayList<>();
-            HashMap<multiblock.configuration.overhaul.fissionsfr.Block, String> fissionSFRRules = new HashMap<>();
-            ArrayList<multiblock.configuration.overhaul.fissionmsr.Block> fissionMSRBlocks = new ArrayList<>();
-            ArrayList<multiblock.configuration.overhaul.fissionmsr.BlockRecipe> fissionMSRRecipes = new ArrayList<>();
-            HashMap<multiblock.configuration.overhaul.fissionmsr.Block, String> fissionMSRRules = new HashMap<>();
-            for(String fil : files){
-                if(fil.endsWith(".zs")){
-                    //<editor-fold defaultstate="collapsed" desc="Loading ZS file">
-                    if(configuration.overhaul==null){
-                        Sys.error(ErrorLevel.severe, "Cannot load ZS file with no overhaul configuration!", null, ErrorCategory.fileIO);
-                        continue;
-                    }
-                    try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(fil))))){
-                        String line;
-                        int lineNum = 0;
-                        while((line = reader.readLine())!=null){
-                            line = line.trim();
-                            if(line.startsWith("mods.nuclearcraft."))line = line.substring("mods.nuclearcraft.".length());
-                            lineNum++;
-                            try{
-                                //<editor-fold defaultstate="collapsed" desc="parsing line">
-                                if(line.startsWith("SolidFission.")){
-                                    String fission = line.substring("SolidFission.".length());
-                                    if(fission.startsWith("addRecipe")){
-                                        //<editor-fold defaultstate="collapsed" desc="addRecipe">
-                                        if(configuration.overhaul.fissionSFR==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot add fission fuel without SFR configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        String[] args = fission.substring(fission.indexOf('(')+1, fission.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String inputName = args[0].substring(1, args[0].length()-1);
-                                        String outputName = args[1].substring(1, args[1].length()-1);
-                                        int time = Integer.parseInt(args[2]);
-                                        int heat = Integer.parseInt(args[3]);
-                                        float efficiency = Float.parseFloat(args[4]);
-                                        int criticality = Integer.parseInt(args[5]);
-                                        boolean selfPriming = Boolean.parseBoolean(args[6]);
-                                        for(multiblock.configuration.overhaul.fissionsfr.Block block : Core.configuration.overhaul.fissionSFR.blocks){
-                                            if(block.recipes.isEmpty())continue;
-                                            if(block.fuelCell){
-                                                multiblock.configuration.overhaul.fissionsfr.Block fake = null;
-                                                for(multiblock.configuration.overhaul.fissionsfr.Block possible : configuration.overhaul.fissionSFR.allBlocks){
-                                                    if(possible.name.equals(block.name))fake = possible;
-                                                }
-                                                if(fake==null){
-                                                    fake = new multiblock.configuration.overhaul.fissionsfr.Block(block.name);
-                                                    fake.fuelCell = block.fuelCell;
-                                                    fake.moderator = block.moderator;
-                                                    fake.shield = block.shield;
-                                                    fake.heatsink = block.heatsink;
-                                                    fake.reflector = block.reflector;
-                                                    fake.irradiator = block.irradiator;
-                                                    configuration.overhaul.fissionSFR.allBlocks.add(fake);
-                                                }
-                                                multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe(inputName, outputName);
-                                                recipe.fuelCellTime = time;
-                                                recipe.fuelCellHeat = heat;
-                                                recipe.fuelCellEfficiency = efficiency;
-                                                recipe.fuelCellCriticality = criticality;
-                                                recipe.fuelCellSelfPriming = selfPriming;
-                                                fake.recipes.add(recipe);
-                                                block.allRecipes.add(recipe);
-                                                fissionSFRRecipes.add(recipe);
+            try{
+                //load ZS because it's easier than the slow method
+                ArrayList<multiblock.configuration.overhaul.turbine.Block> turbineBlocks = new ArrayList<>();
+                HashMap<multiblock.configuration.overhaul.turbine.Block, String> turbineRules = new HashMap<>();
+                ArrayList<multiblock.configuration.overhaul.fissionsfr.Block> fissionSFRBlocks = new ArrayList<>();
+                ArrayList<multiblock.configuration.overhaul.fissionsfr.BlockRecipe> fissionSFRRecipes = new ArrayList<>();
+                HashMap<multiblock.configuration.overhaul.fissionsfr.Block, String> fissionSFRRules = new HashMap<>();
+                ArrayList<multiblock.configuration.overhaul.fissionmsr.Block> fissionMSRBlocks = new ArrayList<>();
+                ArrayList<multiblock.configuration.overhaul.fissionmsr.BlockRecipe> fissionMSRRecipes = new ArrayList<>();
+                HashMap<multiblock.configuration.overhaul.fissionmsr.Block, String> fissionMSRRules = new HashMap<>();
+                for(String fil : files){
+                    if(fil.endsWith(".zs")){
+                        //<editor-fold defaultstate="collapsed" desc="Loading ZS file">
+                        if(configuration.overhaul==null){
+                            Sys.error(ErrorLevel.severe, "Cannot load ZS file with no overhaul configuration!", null, ErrorCategory.fileIO);
+                            continue;
+                        }
+                        try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(fil))))){
+                            String line;
+                            int lineNum = 0;
+                            while((line = reader.readLine())!=null){
+                                line = line.trim();
+                                if(line.startsWith("mods.nuclearcraft."))line = line.substring("mods.nuclearcraft.".length());
+                                lineNum++;
+                                try{
+                                    //<editor-fold defaultstate="collapsed" desc="parsing line">
+                                    if(line.startsWith("SolidFission.")){
+                                        String fission = line.substring("SolidFission.".length());
+                                        if(fission.startsWith("addRecipe")){
+                                            //<editor-fold defaultstate="collapsed" desc="addRecipe">
+                                            if(configuration.overhaul.fissionSFR==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot add fission fuel without SFR configuration!", null, ErrorCategory.fileIO);
+                                                continue;
                                             }
-                                        }
-                                        //</editor-fold>
-                                    }
-                                }
-                                if(line.startsWith("SaltFission.")){
-                                    String fission = line.substring("SaltFission.".length());
-                                    if(fission.startsWith("addRecipe")){
-                                        //<editor-fold defaultstate="collapsed" desc="addRecipe">
-                                        if(configuration.overhaul.fissionMSR==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot add fission fuel without MSR configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        String[] args = fission.substring(fission.indexOf('(')+1, fission.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String inputName = args[0].substring(1, args[0].length()-1);
-                                        String outputName = args[1].substring(1, args[1].length()-1);
-                                        float time = Float.parseFloat(args[2]);
-                                        int heat = Integer.parseInt(args[3]);
-                                        float efficiency = Float.parseFloat(args[4]);
-                                        int criticality = Integer.parseInt(args[5]);
-                                        //decay factor ???
-                                        boolean selfPriming = Boolean.parseBoolean(args[7]);
-                                        for(multiblock.configuration.overhaul.fissionmsr.Block block : Core.configuration.overhaul.fissionMSR.blocks){
-                                            if(block.recipes.isEmpty())continue;
-                                            if(block.fuelVessel){
-                                                multiblock.configuration.overhaul.fissionmsr.Block fake = null;
-                                                for(multiblock.configuration.overhaul.fissionmsr.Block possible : configuration.overhaul.fissionMSR.allBlocks){
-                                                    if(possible.name.equals(block.name))fake = possible;
+                                            String[] args = fission.substring(fission.indexOf('(')+1, fission.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String inputName = args[0].substring(1, args[0].length()-1);
+                                            String outputName = args[1].substring(1, args[1].length()-1);
+                                            int time = Integer.parseInt(args[2]);
+                                            int heat = Integer.parseInt(args[3]);
+                                            float efficiency = Float.parseFloat(args[4]);
+                                            int criticality = Integer.parseInt(args[5]);
+                                            boolean selfPriming = Boolean.parseBoolean(args[6]);
+                                            for(multiblock.configuration.overhaul.fissionsfr.Block block : Core.configuration.overhaul.fissionSFR.blocks){
+                                                if(block.recipes.isEmpty())continue;
+                                                if(block.fuelCell){
+                                                    multiblock.configuration.overhaul.fissionsfr.Block fake = null;
+                                                    for(multiblock.configuration.overhaul.fissionsfr.Block possible : configuration.overhaul.fissionSFR.allBlocks){
+                                                        if(possible.name.equals(block.name))fake = possible;
+                                                    }
+                                                    if(fake==null){
+                                                        fake = new multiblock.configuration.overhaul.fissionsfr.Block(block.name);
+                                                        fake.fuelCell = block.fuelCell;
+                                                        fake.moderator = block.moderator;
+                                                        fake.shield = block.shield;
+                                                        fake.heatsink = block.heatsink;
+                                                        fake.reflector = block.reflector;
+                                                        fake.irradiator = block.irradiator;
+                                                        configuration.overhaul.fissionSFR.allBlocks.add(fake);
+                                                    }
+                                                    multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe(inputName, outputName);
+                                                    recipe.fuelCellTime = time;
+                                                    recipe.fuelCellHeat = heat;
+                                                    recipe.fuelCellEfficiency = efficiency;
+                                                    recipe.fuelCellCriticality = criticality;
+                                                    recipe.fuelCellSelfPriming = selfPriming;
+                                                    fake.recipes.add(recipe);
+                                                    block.allRecipes.add(recipe);
+                                                    fissionSFRRecipes.add(recipe);
                                                 }
-                                                if(fake==null){
-                                                    fake = new multiblock.configuration.overhaul.fissionmsr.Block(block.name);
-                                                    fake.fuelVessel = block.fuelVessel;
-                                                    fake.moderator = block.moderator;
-                                                    fake.shield = block.shield;
-                                                    fake.heater = block.heater;
-                                                    fake.reflector = block.reflector;
-                                                    fake.irradiator = block.irradiator;
-                                                    configuration.overhaul.fissionMSR.allBlocks.add(fake);
-                                                }
-                                                multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(inputName, outputName);
-                                                recipe.inputRate = recipe.outputRate = 1;
-                                                recipe.fuelVesselTime = (int)time;
-                                                recipe.fuelVesselHeat = heat;
-                                                recipe.fuelVesselEfficiency = efficiency;
-                                                recipe.fuelVesselCriticality = criticality;
-                                                recipe.fuelVesselSelfPriming = selfPriming;
-                                                fake.recipes.add(recipe);
-                                                block.allRecipes.add(recipe);
-                                                fissionMSRRecipes.add(recipe);
                                             }
+                                            //</editor-fold>
                                         }
-                                        //</editor-fold>
                                     }
-                                }
-                                if(line.startsWith("FissionIrradiator.")){
-                                    String fission = line.substring("FissionIrradiator.".length());
-                                    if(fission.startsWith("addRecipe")){
-                                        //<editor-fold defaultstate="collapsed" desc="addRecipe">
-                                        if(configuration.overhaul.fissionSFR==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot add fission irradiator recipe without SFR configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        if(configuration.overhaul.fissionMSR==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot add fission irradiator recipe without MSR configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        String[] args = fission.substring(fission.indexOf('(')+1, fission.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String inputName = args[0].substring(1, args[0].length()-1);
-                                        String outputName = args[1].substring(1, args[1].length()-1);
-                                        float heatPerFlux = Float.parseFloat(args[3]);
-                                        float efficiency = Float.parseFloat(args[4]);
-                                        for(multiblock.configuration.overhaul.fissionsfr.Block block : Core.configuration.overhaul.fissionSFR.blocks){
-                                            if(block.recipes.isEmpty())continue;
-                                            if(block.irradiator){
-                                                multiblock.configuration.overhaul.fissionsfr.Block fake = null;
-                                                for(multiblock.configuration.overhaul.fissionsfr.Block possible : configuration.overhaul.fissionSFR.allBlocks){
-                                                    if(possible.name.equals(block.name))fake = possible;
-                                                }
-                                                if(fake==null){
-                                                    fake = new multiblock.configuration.overhaul.fissionsfr.Block(block.name);
-                                                    fake.fuelCell = block.fuelCell;
-                                                    fake.moderator = block.moderator;
-                                                    fake.shield = block.shield;
-                                                    fake.heatsink = block.heatsink;
-                                                    fake.reflector = block.reflector;
-                                                    fake.irradiator = block.irradiator;
-                                                    configuration.overhaul.fissionSFR.allBlocks.add(fake);
-                                                }
-                                                multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe(inputName, outputName);
-                                                recipe.irradiatorEfficiency = efficiency;
-                                                recipe.irradiatorHeat = heatPerFlux;
-                                                fake.recipes.add(recipe);
-                                                block.allRecipes.add(recipe);
-                                                fissionSFRRecipes.add(recipe);
+                                    if(line.startsWith("SaltFission.")){
+                                        String fission = line.substring("SaltFission.".length());
+                                        if(fission.startsWith("addRecipe")){
+                                            //<editor-fold defaultstate="collapsed" desc="addRecipe">
+                                            if(configuration.overhaul.fissionMSR==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot add fission fuel without MSR configuration!", null, ErrorCategory.fileIO);
+                                                continue;
                                             }
-                                        }
-                                        for(multiblock.configuration.overhaul.fissionmsr.Block block : Core.configuration.overhaul.fissionMSR.blocks){
-                                            if(block.recipes.isEmpty())continue;
-                                            if(block.irradiator){
-                                                multiblock.configuration.overhaul.fissionmsr.Block fake = null;
-                                                for(multiblock.configuration.overhaul.fissionmsr.Block possible : configuration.overhaul.fissionMSR.allBlocks){
-                                                    if(possible.name.equals(block.name))fake = possible;
+                                            String[] args = fission.substring(fission.indexOf('(')+1, fission.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String inputName = args[0].substring(1, args[0].length()-1);
+                                            String outputName = args[1].substring(1, args[1].length()-1);
+                                            float time = Float.parseFloat(args[2]);
+                                            int heat = Integer.parseInt(args[3]);
+                                            float efficiency = Float.parseFloat(args[4]);
+                                            int criticality = Integer.parseInt(args[5]);
+                                            //decay factor ???
+                                            boolean selfPriming = Boolean.parseBoolean(args[7]);
+                                            for(multiblock.configuration.overhaul.fissionmsr.Block block : Core.configuration.overhaul.fissionMSR.blocks){
+                                                if(block.recipes.isEmpty())continue;
+                                                if(block.fuelVessel){
+                                                    multiblock.configuration.overhaul.fissionmsr.Block fake = null;
+                                                    for(multiblock.configuration.overhaul.fissionmsr.Block possible : configuration.overhaul.fissionMSR.allBlocks){
+                                                        if(possible.name.equals(block.name))fake = possible;
+                                                    }
+                                                    if(fake==null){
+                                                        fake = new multiblock.configuration.overhaul.fissionmsr.Block(block.name);
+                                                        fake.fuelVessel = block.fuelVessel;
+                                                        fake.moderator = block.moderator;
+                                                        fake.shield = block.shield;
+                                                        fake.heater = block.heater;
+                                                        fake.reflector = block.reflector;
+                                                        fake.irradiator = block.irradiator;
+                                                        configuration.overhaul.fissionMSR.allBlocks.add(fake);
+                                                    }
+                                                    multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(inputName, outputName);
+                                                    recipe.inputRate = recipe.outputRate = 1;
+                                                    recipe.fuelVesselTime = (int)time;
+                                                    recipe.fuelVesselHeat = heat;
+                                                    recipe.fuelVesselEfficiency = efficiency;
+                                                    recipe.fuelVesselCriticality = criticality;
+                                                    recipe.fuelVesselSelfPriming = selfPriming;
+                                                    fake.recipes.add(recipe);
+                                                    block.allRecipes.add(recipe);
+                                                    fissionMSRRecipes.add(recipe);
                                                 }
-                                                if(fake==null){
-                                                    fake = new multiblock.configuration.overhaul.fissionmsr.Block(block.name);
-                                                    fake.fuelVessel = block.fuelVessel;
-                                                    fake.moderator = block.moderator;
-                                                    fake.shield = block.shield;
-                                                    fake.heater = block.heater;
-                                                    fake.reflector = block.reflector;
-                                                    fake.irradiator = block.irradiator;
-                                                    configuration.overhaul.fissionMSR.allBlocks.add(fake);
-                                                }
-                                                multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(inputName, outputName);
-                                                recipe.irradiatorEfficiency = efficiency;
-                                                recipe.irradiatorHeat = heatPerFlux;
-                                                fake.recipes.add(recipe);
-                                                block.allRecipes.add(recipe);
-                                                fissionMSRRecipes.add(recipe);
                                             }
+                                            //</editor-fold>
                                         }
-                                        //</editor-fold>
                                     }
-                                }
-                                if(line.startsWith("Registration.")){
-                                    String register = line.substring("Registration.".length());
-                                    if(register.startsWith("registerFissionSink")){
-                                        //<editor-fold defaultstate="collapsed" desc="registerFissionSink">
-                                        if(configuration.overhaul.fissionSFR==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot register fission sink without SFR configuration!", null, ErrorCategory.fileIO);
-                                            continue;
+                                    if(line.startsWith("FissionIrradiator.")){
+                                        String fission = line.substring("FissionIrradiator.".length());
+                                        if(fission.startsWith("addRecipe")){
+                                            //<editor-fold defaultstate="collapsed" desc="addRecipe">
+                                            if(configuration.overhaul.fissionSFR==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot add fission irradiator recipe without SFR configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            if(configuration.overhaul.fissionMSR==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot add fission irradiator recipe without MSR configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            String[] args = fission.substring(fission.indexOf('(')+1, fission.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String inputName = args[0].substring(1, args[0].length()-1);
+                                            String outputName = args[1].substring(1, args[1].length()-1);
+                                            float heatPerFlux = Float.parseFloat(args[3]);
+                                            float efficiency = Float.parseFloat(args[4]);
+                                            for(multiblock.configuration.overhaul.fissionsfr.Block block : Core.configuration.overhaul.fissionSFR.blocks){
+                                                if(block.recipes.isEmpty())continue;
+                                                if(block.irradiator){
+                                                    multiblock.configuration.overhaul.fissionsfr.Block fake = null;
+                                                    for(multiblock.configuration.overhaul.fissionsfr.Block possible : configuration.overhaul.fissionSFR.allBlocks){
+                                                        if(possible.name.equals(block.name))fake = possible;
+                                                    }
+                                                    if(fake==null){
+                                                        fake = new multiblock.configuration.overhaul.fissionsfr.Block(block.name);
+                                                        fake.fuelCell = block.fuelCell;
+                                                        fake.moderator = block.moderator;
+                                                        fake.shield = block.shield;
+                                                        fake.heatsink = block.heatsink;
+                                                        fake.reflector = block.reflector;
+                                                        fake.irradiator = block.irradiator;
+                                                        configuration.overhaul.fissionSFR.allBlocks.add(fake);
+                                                    }
+                                                    multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe(inputName, outputName);
+                                                    recipe.irradiatorEfficiency = efficiency;
+                                                    recipe.irradiatorHeat = heatPerFlux;
+                                                    fake.recipes.add(recipe);
+                                                    block.allRecipes.add(recipe);
+                                                    fissionSFRRecipes.add(recipe);
+                                                }
+                                            }
+                                            for(multiblock.configuration.overhaul.fissionmsr.Block block : Core.configuration.overhaul.fissionMSR.blocks){
+                                                if(block.recipes.isEmpty())continue;
+                                                if(block.irradiator){
+                                                    multiblock.configuration.overhaul.fissionmsr.Block fake = null;
+                                                    for(multiblock.configuration.overhaul.fissionmsr.Block possible : configuration.overhaul.fissionMSR.allBlocks){
+                                                        if(possible.name.equals(block.name))fake = possible;
+                                                    }
+                                                    if(fake==null){
+                                                        fake = new multiblock.configuration.overhaul.fissionmsr.Block(block.name);
+                                                        fake.fuelVessel = block.fuelVessel;
+                                                        fake.moderator = block.moderator;
+                                                        fake.shield = block.shield;
+                                                        fake.heater = block.heater;
+                                                        fake.reflector = block.reflector;
+                                                        fake.irradiator = block.irradiator;
+                                                        configuration.overhaul.fissionMSR.allBlocks.add(fake);
+                                                    }
+                                                    multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(inputName, outputName);
+                                                    recipe.irradiatorEfficiency = efficiency;
+                                                    recipe.irradiatorHeat = heatPerFlux;
+                                                    fake.recipes.add(recipe);
+                                                    block.allRecipes.add(recipe);
+                                                    fissionMSRRecipes.add(recipe);
+                                                }
+                                            }
+                                            //</editor-fold>
                                         }
-                                        String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String name = args[0].substring(1, args[0].length()-1);
-                                        int cooling = Integer.parseInt(args[1]);
-                                        String rule = args[2].substring(1, args[2].length()-1);
-                                        multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block("nuclearcraft:solid_fission_sink_"+name);
-                                        block.heatsink = true;
-                                        block.heatsinkHasBaseStats = true;
-                                        block.heatsinkCooling = cooling;
-                                        block.functional = true;
-                                        block.cluster = true;
-                                        fissionSFRRules.put(block, rule);
-                                        configuration.overhaul.fissionSFR.blocks.add(block);
-                                        Core.configuration.overhaul.fissionSFR.allBlocks.add(block);
-                                        fissionSFRBlocks.add(block);
-                                        //</editor-fold>
-                                    }else if(register.startsWith("registerFissionHeater")){
-                                        //<editor-fold defaultstate="collapsed" desc="registerFissionHeater">
-                                        if(configuration.overhaul.fissionMSR==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot register fission sink without MSR configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String name = args[0].substring(1, args[0].length()-1);
-                                        String inputName = args[1].substring(1, args[1].length()-1);
-                                        int inputRate = Integer.parseInt(args[2]);
-                                        String outputName = args[3].substring(1, args[3].length()-1);
-                                        int outputRate = Integer.parseInt(args[4]);
-                                        int cooling = Integer.parseInt(args[5]);
-                                        String rule = args[6].substring(1, args[6].length()-1);
-                                        multiblock.configuration.overhaul.fissionmsr.Block block = new multiblock.configuration.overhaul.fissionmsr.Block("nuclearcraft:salt_fission_heater_"+name);
-                                        block.heater = true;
-                                        block.moderator = true;
-                                        block.moderatorHasBaseStats = true;
-                                        block.functional = true;
-                                        block.cluster = true;
-                                        multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(inputName, outputName);
-                                        recipe.inputRate = inputRate;
-                                        recipe.outputRate = outputRate;
-                                        recipe.heaterCooling = cooling;
-                                        block.recipes.add(recipe);
-                                        block.allRecipes.add(recipe);
-                                        block.port = new multiblock.configuration.overhaul.fissionmsr.Block("nuclearcraft:fission_heater_port_"+name);
-                                        fissionMSRRules.put(block, rule);
-                                        configuration.overhaul.fissionMSR.blocks.add(block);
-                                        Core.configuration.overhaul.fissionMSR.allBlocks.add(block);
-                                        fissionMSRBlocks.add(block);
-                                        //</editor-fold>
-                                    }else if(register.startsWith("registerTurbineCoil")){
-                                        //<editor-fold defaultstate="collapsed" desc="registerTurbineCoil">
-                                        if(configuration.overhaul.turbine==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot register turbine coil without turbine configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String name = args[0].substring(1, args[0].length()-1);
-                                        float efficiency = Float.parseFloat(args[1]);
-                                        String rule = args[2].substring(1, args[2].length()-1);
-                                        multiblock.configuration.overhaul.turbine.Block block = new multiblock.configuration.overhaul.turbine.Block("nuclearcraft:turbine_dynamo_coil_"+name);
-                                        block.coil = true;
-                                        block.coilEfficiency = efficiency;
-                                        turbineRules.put(block, rule);
-                                        configuration.overhaul.turbine.blocks.add(block);
-                                        Core.configuration.overhaul.turbine.allBlocks.add(block);
-                                        turbineBlocks.add(block);
-                                        //</editor-fold>
-                                    }else if(register.startsWith("registerTurbineStator")){
-                                        //<editor-fold defaultstate="collapsed" desc="registerTurbineStator">
-                                        if(configuration.overhaul.turbine==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot register turbine stator without turbine configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String name = args[0].substring(1, args[0].length()-1);
-                                        float expansion = Float.parseFloat(args[1]);
-                                        multiblock.configuration.overhaul.turbine.Block block = new multiblock.configuration.overhaul.turbine.Block("nuclearcraft:turbine_rotor_stator_"+name);
-                                        block.blade = true;
-                                        block.bladeExpansion = expansion;
-                                        block.bladeStator = true;
-                                        configuration.overhaul.turbine.blocks.add(block);
-                                        Core.configuration.overhaul.turbine.allBlocks.add(block);
-                                        turbineBlocks.add(block);
-                                        //</editor-fold>
-                                    }else if(register.startsWith("registerTurbineBlade")){
-                                        //<editor-fold defaultstate="collapsed" desc="registerTurbineBlade">
-                                        if(configuration.overhaul.turbine==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot register turbine blade without turbine configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String name = args[0].substring(1, args[0].length()-1);
-                                        float efficiency = Float.parseFloat(args[1]);
-                                        float expansion = Float.parseFloat(args[2]);
-                                        multiblock.configuration.overhaul.turbine.Block block = new multiblock.configuration.overhaul.turbine.Block("nuclearcraft:turbine_rotor_blade_"+name);
-                                        block.blade = true;
-                                        block.bladeEfficiency = efficiency;
-                                        block.bladeExpansion = expansion;
-                                        configuration.overhaul.turbine.blocks.add(block);
-                                        Core.configuration.overhaul.turbine.allBlocks.add(block);
-                                        turbineBlocks.add(block);
-                                        //</editor-fold>
-                                    }else if(register.startsWith("registerBattery")){//ignored
-                                    }else if(register.startsWith("registerRTG")){//ignored
-                                    }else if(register.startsWith("registerFissionSource")){
-                                        if(configuration.overhaul.fissionSFR==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot register fission source without SFR configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        if(configuration.overhaul.fissionMSR==null){
-                                            Sys.error(ErrorLevel.severe, "Cannot register fission source without MSR configuration!", null, ErrorCategory.fileIO);
-                                            continue;
-                                        }
-                                        String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
-                                        for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                        String name = args[0].substring(1, args[0].length()-1);
-                                        float efficiency = Float.parseFloat(args[1]);
-                                        multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block("nuclearcraft:fission_source_"+name);
-                                        block.casing = true;
-                                        block.source = true;
-                                        block.sourceEfficiency = efficiency;
-                                        configuration.overhaul.fissionSFR.blocks.add(block);
-                                        Core.configuration.overhaul.fissionSFR.allBlocks.add(block);
-                                        fissionSFRBlocks.add(block);
-                                        multiblock.configuration.overhaul.fissionmsr.Block mblock = new multiblock.configuration.overhaul.fissionmsr.Block("nuclearcraft:fission_source_"+name);
-                                        mblock.casing = true;
-                                        mblock.source = true;
-                                        mblock.sourceEfficiency = efficiency;
-                                        configuration.overhaul.fissionMSR.blocks.add(mblock);
-                                        Core.configuration.overhaul.fissionMSR.allBlocks.add(mblock);
-                                        fissionMSRBlocks.add(mblock);
-                                    }else{
-                                        Sys.error(ErrorLevel.severe, "Unknown ZS register: "+register, null, ErrorCategory.fileIO);
                                     }
+                                    if(line.startsWith("Registration.")){
+                                        String register = line.substring("Registration.".length());
+                                        if(register.startsWith("registerFissionSink")){
+                                            //<editor-fold defaultstate="collapsed" desc="registerFissionSink">
+                                            if(configuration.overhaul.fissionSFR==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot register fission sink without SFR configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String name = args[0].substring(1, args[0].length()-1);
+                                            int cooling = Integer.parseInt(args[1]);
+                                            String rule = args[2].substring(1, args[2].length()-1);
+                                            multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block("nuclearcraft:solid_fission_sink_"+name);
+                                            block.heatsink = true;
+                                            block.heatsinkHasBaseStats = true;
+                                            block.heatsinkCooling = cooling;
+                                            block.functional = true;
+                                            block.cluster = true;
+                                            fissionSFRRules.put(block, rule);
+                                            configuration.overhaul.fissionSFR.blocks.add(block);
+                                            Core.configuration.overhaul.fissionSFR.allBlocks.add(block);
+                                            fissionSFRBlocks.add(block);
+                                            //</editor-fold>
+                                        }else if(register.startsWith("registerFissionHeater")){
+                                            //<editor-fold defaultstate="collapsed" desc="registerFissionHeater">
+                                            if(configuration.overhaul.fissionMSR==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot register fission sink without MSR configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String name = args[0].substring(1, args[0].length()-1);
+                                            String inputName = args[1].substring(1, args[1].length()-1);
+                                            int inputRate = Integer.parseInt(args[2]);
+                                            String outputName = args[3].substring(1, args[3].length()-1);
+                                            int outputRate = Integer.parseInt(args[4]);
+                                            int cooling = Integer.parseInt(args[5]);
+                                            String rule = args[6].substring(1, args[6].length()-1);
+                                            multiblock.configuration.overhaul.fissionmsr.Block block = new multiblock.configuration.overhaul.fissionmsr.Block("nuclearcraft:salt_fission_heater_"+name);
+                                            block.heater = true;
+                                            block.moderator = true;
+                                            block.moderatorHasBaseStats = true;
+                                            block.functional = true;
+                                            block.cluster = true;
+                                            multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(inputName, outputName);
+                                            recipe.inputRate = inputRate;
+                                            recipe.outputRate = outputRate;
+                                            recipe.heaterCooling = cooling;
+                                            block.recipes.add(recipe);
+                                            block.allRecipes.add(recipe);
+                                            block.port = new multiblock.configuration.overhaul.fissionmsr.Block("nuclearcraft:fission_heater_port_"+name);
+                                            fissionMSRRules.put(block, rule);
+                                            configuration.overhaul.fissionMSR.blocks.add(block);
+                                            Core.configuration.overhaul.fissionMSR.allBlocks.add(block);
+                                            fissionMSRBlocks.add(block);
+                                            //</editor-fold>
+                                        }else if(register.startsWith("registerTurbineCoil")){
+                                            //<editor-fold defaultstate="collapsed" desc="registerTurbineCoil">
+                                            if(configuration.overhaul.turbine==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot register turbine coil without turbine configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String name = args[0].substring(1, args[0].length()-1);
+                                            float efficiency = Float.parseFloat(args[1]);
+                                            String rule = args[2].substring(1, args[2].length()-1);
+                                            multiblock.configuration.overhaul.turbine.Block block = new multiblock.configuration.overhaul.turbine.Block("nuclearcraft:turbine_dynamo_coil_"+name);
+                                            block.coil = true;
+                                            block.coilEfficiency = efficiency;
+                                            turbineRules.put(block, rule);
+                                            configuration.overhaul.turbine.blocks.add(block);
+                                            Core.configuration.overhaul.turbine.allBlocks.add(block);
+                                            turbineBlocks.add(block);
+                                            //</editor-fold>
+                                        }else if(register.startsWith("registerTurbineStator")){
+                                            //<editor-fold defaultstate="collapsed" desc="registerTurbineStator">
+                                            if(configuration.overhaul.turbine==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot register turbine stator without turbine configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String name = args[0].substring(1, args[0].length()-1);
+                                            float expansion = Float.parseFloat(args[1]);
+                                            multiblock.configuration.overhaul.turbine.Block block = new multiblock.configuration.overhaul.turbine.Block("nuclearcraft:turbine_rotor_stator_"+name);
+                                            block.blade = true;
+                                            block.bladeExpansion = expansion;
+                                            block.bladeStator = true;
+                                            configuration.overhaul.turbine.blocks.add(block);
+                                            Core.configuration.overhaul.turbine.allBlocks.add(block);
+                                            turbineBlocks.add(block);
+                                            //</editor-fold>
+                                        }else if(register.startsWith("registerTurbineBlade")){
+                                            //<editor-fold defaultstate="collapsed" desc="registerTurbineBlade">
+                                            if(configuration.overhaul.turbine==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot register turbine blade without turbine configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String name = args[0].substring(1, args[0].length()-1);
+                                            float efficiency = Float.parseFloat(args[1]);
+                                            float expansion = Float.parseFloat(args[2]);
+                                            multiblock.configuration.overhaul.turbine.Block block = new multiblock.configuration.overhaul.turbine.Block("nuclearcraft:turbine_rotor_blade_"+name);
+                                            block.blade = true;
+                                            block.bladeEfficiency = efficiency;
+                                            block.bladeExpansion = expansion;
+                                            configuration.overhaul.turbine.blocks.add(block);
+                                            Core.configuration.overhaul.turbine.allBlocks.add(block);
+                                            turbineBlocks.add(block);
+                                            //</editor-fold>
+                                        }else if(register.startsWith("registerBattery")){//ignored
+                                        }else if(register.startsWith("registerRTG")){//ignored
+                                        }else if(register.startsWith("registerFissionSource")){
+                                            if(configuration.overhaul.fissionSFR==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot register fission source without SFR configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            if(configuration.overhaul.fissionMSR==null){
+                                                Sys.error(ErrorLevel.severe, "Cannot register fission source without MSR configuration!", null, ErrorCategory.fileIO);
+                                                continue;
+                                            }
+                                            String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
+                                            for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                            String name = args[0].substring(1, args[0].length()-1);
+                                            float efficiency = Float.parseFloat(args[1]);
+                                            multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block("nuclearcraft:fission_source_"+name);
+                                            block.casing = true;
+                                            block.source = true;
+                                            block.sourceEfficiency = efficiency;
+                                            configuration.overhaul.fissionSFR.blocks.add(block);
+                                            Core.configuration.overhaul.fissionSFR.allBlocks.add(block);
+                                            fissionSFRBlocks.add(block);
+                                            multiblock.configuration.overhaul.fissionmsr.Block mblock = new multiblock.configuration.overhaul.fissionmsr.Block("nuclearcraft:fission_source_"+name);
+                                            mblock.casing = true;
+                                            mblock.source = true;
+                                            mblock.sourceEfficiency = efficiency;
+                                            configuration.overhaul.fissionMSR.blocks.add(mblock);
+                                            Core.configuration.overhaul.fissionMSR.allBlocks.add(mblock);
+                                            fissionMSRBlocks.add(mblock);
+                                        }else{
+                                            Sys.error(ErrorLevel.severe, "Unknown ZS register: "+register, null, ErrorCategory.fileIO);
+                                        }
+                                    }
+        //</editor-fold>
+                                }catch(Exception ex){
+                                    Sys.error(ErrorLevel.severe, "Failed to parse "+new File(fil).getName()+" line "+lineNum+"!", ex, ErrorCategory.fileIO);
                                 }
+                            }
+                        }catch(IOException ex){
+                            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.fileIO);
+                        }
     //</editor-fold>
-                            }catch(Exception ex){
-                                Sys.error(ErrorLevel.severe, "Failed to parse "+new File(fil).getName()+" line "+lineNum+"!", ex, ErrorCategory.fileIO);
-                            }
-                        }
-                    }catch(IOException ex){
-                        Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.fileIO);
                     }
-//</editor-fold>
                 }
-            }
-            for(multiblock.configuration.overhaul.fissionsfr.Block block : fissionSFRRules.keySet()){
-                block.rules.add(multiblock.configuration.overhaul.fissionsfr.PlacementRule.parseNC(Core.configuration.overhaul.fissionSFR, fissionSFRRules.get(block)));
-            }
-            for(multiblock.configuration.overhaul.fissionmsr.Block block : fissionMSRRules.keySet()){
-                block.rules.add(multiblock.configuration.overhaul.fissionmsr.PlacementRule.parseNC(Core.configuration.overhaul.fissionMSR, fissionMSRRules.get(block)));
-            }
-            for(multiblock.configuration.overhaul.turbine.Block block : turbineRules.keySet()){
-                block.rules.add(multiblock.configuration.overhaul.turbine.PlacementRule.parseNC(Core.configuration.overhaul.turbine, turbineRules.get(block)));
-            }
-            for(String fil : files){
-                if(fil.endsWith("en_us.lang")){
-                    try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(fil))))){
-                        String line;
-                        LINE:while((line = reader.readLine())!=null){
-                            if(line.trim().startsWith("tile.nuclearcraft.")){
-                                String lin = line.trim().substring("tile.nuclearcraft.".length());
-                                String blockName = lin.split("\\=")[0];
-                                blockName = "nuclearcraft:"+blockName.substring(0, blockName.length()-5);
-                                String displayName = lin.split("\\=", 2)[1].replace("Turbine ", "").replace("Fission ", "");
-                                for(multiblock.configuration.overhaul.fissionsfr.Block block : fissionSFRBlocks){
-                                    if(block.name.equals(blockName)){
-                                        block.displayName = displayName;
-                                        break;
+                for(multiblock.configuration.overhaul.fissionsfr.Block block : fissionSFRRules.keySet()){
+                    block.rules.add(multiblock.configuration.overhaul.fissionsfr.PlacementRule.parseNC(Core.configuration.overhaul.fissionSFR, fissionSFRRules.get(block)));
+                }
+                for(multiblock.configuration.overhaul.fissionmsr.Block block : fissionMSRRules.keySet()){
+                    block.rules.add(multiblock.configuration.overhaul.fissionmsr.PlacementRule.parseNC(Core.configuration.overhaul.fissionMSR, fissionMSRRules.get(block)));
+                }
+                for(multiblock.configuration.overhaul.turbine.Block block : turbineRules.keySet()){
+                    block.rules.add(multiblock.configuration.overhaul.turbine.PlacementRule.parseNC(Core.configuration.overhaul.turbine, turbineRules.get(block)));
+                }
+                for(String fil : files){
+                    if(fil.endsWith("en_us.lang")){
+                        try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(fil))))){
+                            String line;
+                            LINE:while((line = reader.readLine())!=null){
+                                if(line.trim().startsWith("tile.nuclearcraft.")){
+                                    String lin = line.trim().substring("tile.nuclearcraft.".length());
+                                    String blockName = lin.split("\\=")[0];
+                                    blockName = "nuclearcraft:"+blockName.substring(0, blockName.length()-5);
+                                    String displayName = lin.split("\\=", 2)[1].replace("Turbine ", "").replace("Fission ", "");
+                                    for(multiblock.configuration.overhaul.fissionsfr.Block block : fissionSFRBlocks){
+                                        if(block.name.equals(blockName)){
+                                            block.displayName = displayName;
+                                            break;
+                                        }
+                                        if(block.port!=null&&block.port.name.equals(blockName)){
+                                            block.port.displayName = displayName;
+                                            block.port.portOutputDisplayName = displayName+" (Output)";
+                                        }
                                     }
-                                    if(block.port!=null&&block.port.name.equals(blockName)){
-                                        block.port.displayName = displayName;
-                                        block.port.portOutputDisplayName = displayName+" (Output)";
+                                    for(multiblock.configuration.overhaul.fissionmsr.Block block : fissionMSRBlocks){
+                                        if(block.name.equals(blockName)){
+                                            block.displayName = displayName;
+                                            break;
+                                        }
+                                        if(block.port!=null&&block.port.name.equals(blockName)){
+                                            block.port.displayName = displayName;
+                                            block.port.portOutputDisplayName = displayName+" (Output)";
+                                        }
                                     }
-                                }
-                                for(multiblock.configuration.overhaul.fissionmsr.Block block : fissionMSRBlocks){
-                                    if(block.name.equals(blockName)){
-                                        block.displayName = displayName;
-                                        break;
-                                    }
-                                    if(block.port!=null&&block.port.name.equals(blockName)){
-                                        block.port.displayName = displayName;
-                                        block.port.portOutputDisplayName = displayName+" (Output)";
-                                    }
-                                }
-                                for(multiblock.configuration.overhaul.turbine.Block block : turbineBlocks){
-                                    if(block.name.equals(blockName)){
-                                        block.displayName = displayName;
-                                    }
-                                }
-                            }
-                            if(line.trim().startsWith("item.")){
-                                String lin = line.trim().substring("item.".length());
-                                String blockName = lin.split("\\=")[0].replaceFirst("\\.", ":");
-                                blockName = blockName.substring(0, blockName.length()-5);
-                                String displayName = lin.split("\\=", 2)[1].replace(" Fuel Pellet", "");
-                                for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : fissionSFRRecipes){
-                                    if(recipe.inputName.equals(blockName)){
-                                        recipe.inputDisplayName = displayName;
-                                    }
-                                    if(recipe.outputName.equals(blockName)){
-                                        recipe.outputDisplayName = displayName;
+                                    for(multiblock.configuration.overhaul.turbine.Block block : turbineBlocks){
+                                        if(block.name.equals(blockName)){
+                                            block.displayName = displayName;
+                                        }
                                     }
                                 }
-                                for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
-                                    if(recipe.inputName.equals(blockName)){
-                                        recipe.inputDisplayName = displayName;
+                                if(line.trim().startsWith("item.")){
+                                    String lin = line.trim().substring("item.".length());
+                                    String blockName = lin.split("\\=")[0].replaceFirst("\\.", ":");
+                                    blockName = blockName.substring(0, blockName.length()-5);
+                                    String displayName = lin.split("\\=", 2)[1].replace(" Fuel Pellet", "");
+                                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : fissionSFRRecipes){
+                                        if(recipe.inputName.equals(blockName)){
+                                            recipe.inputDisplayName = displayName;
+                                        }
+                                        if(recipe.outputName.equals(blockName)){
+                                            recipe.outputDisplayName = displayName;
+                                        }
                                     }
-                                    if(recipe.outputName.equals(blockName)){
-                                        recipe.outputDisplayName = displayName;
+                                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
+                                        if(recipe.inputName.equals(blockName)){
+                                            recipe.inputDisplayName = displayName;
+                                        }
+                                        if(recipe.outputName.equals(blockName)){
+                                            recipe.outputDisplayName = displayName;
+                                        }
                                     }
                                 }
-                            }
-                            if(line.trim().startsWith("fluid.")){
-                                String lin = line.trim().substring("fluid.".length());
-                                String fluidName = lin.split("\\=")[0];
-                                String displayName = lin.split("\\=", 2)[1].replace("Molten FLiBe Salt Solution of ", "").replace(" Fuel", "");
-                                for(multiblock.configuration.overhaul.fissionsfr.Block block : fissionSFRBlocks){
-                                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : block.allRecipes){
+                                if(line.trim().startsWith("fluid.")){
+                                    String lin = line.trim().substring("fluid.".length());
+                                    String fluidName = lin.split("\\=")[0];
+                                    String displayName = lin.split("\\=", 2)[1].replace("Molten FLiBe Salt Solution of ", "").replace(" Fuel", "");
+                                    for(multiblock.configuration.overhaul.fissionsfr.Block block : fissionSFRBlocks){
+                                        for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : block.allRecipes){
+                                            if(recipe.inputName.equals(fluidName)){
+                                                recipe.inputDisplayName = displayName;
+                                            }
+                                            if(recipe.outputName.equals(fluidName)){
+                                                recipe.outputDisplayName = displayName;
+                                            }
+                                        }
+                                    }
+                                    for(multiblock.configuration.overhaul.fissionmsr.Block block : fissionMSRBlocks){
+                                        for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : block.allRecipes){
+                                            if(recipe.inputName.equals(fluidName)){
+                                                recipe.inputDisplayName = displayName;
+                                            }
+                                            if(recipe.outputName.equals(fluidName)){
+                                                recipe.outputDisplayName = displayName;
+                                            }
+                                        }
+                                    }
+                                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
                                         if(recipe.inputName.equals(fluidName)){
                                             recipe.inputDisplayName = displayName;
                                         }
@@ -926,83 +946,67 @@ public class MenuConfiguration extends ConfigurationMenu{
                                         }
                                     }
                                 }
-                                for(multiblock.configuration.overhaul.fissionmsr.Block block : fissionMSRBlocks){
-                                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : block.allRecipes){
-                                        if(recipe.inputName.equals(fluidName)){
-                                            recipe.inputDisplayName = displayName;
-                                        }
-                                        if(recipe.outputName.equals(fluidName)){
-                                            recipe.outputDisplayName = displayName;
-                                        }
-                                    }
-                                }
-                                for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
-                                    if(recipe.inputName.equals(fluidName)){
-                                        recipe.inputDisplayName = displayName;
-                                    }
-                                    if(recipe.outputName.equals(fluidName)){
-                                        recipe.outputDisplayName = displayName;
-                                    }
-                                }
                             }
+                        }catch(IOException ex){
+                            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.fileIO);
                         }
-                    }catch(IOException ex){
-                        Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.fileIO);
                     }
                 }
-            }
-            for(String fil : files){
-                if(fil.endsWith(".png")){
-                    File file = new File(fil);
-                    try{
-                        String name = consolidateZSName(file.getName().substring(0, file.getName().length()-4));//cut of the .png
-                        for(multiblock.configuration.overhaul.fissionsfr.Block b : fissionSFRBlocks){
-                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
-                            if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("sink_", ""))){
-                                Image portTexture = ImageIO.read(file);
-                                b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
-                                b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
-                            }
-                            for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.allRecipes){
-                                if(recipe.inputName.equals(name)){
-                                    recipe.setInputTexture(ImageIO.read(file));
+                for(String fil : files){
+                    if(fil.endsWith(".png")){
+                        File file = new File(fil);
+                        try{
+                            String name = consolidateZSName(file.getName().substring(0, file.getName().length()-4));//cut of the .png
+                            for(multiblock.configuration.overhaul.fissionsfr.Block b : fissionSFRBlocks){
+                                if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
+                                if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("sink_", ""))){
+                                    Image portTexture = ImageIO.read(file);
+                                    b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
+                                    b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
                                 }
-                                if(recipe.outputName.equals(name)){
-                                    recipe.setOutputTexture(ImageIO.read(file));
-                                }
-                            }
-                        }
-                        for(multiblock.configuration.overhaul.fissionmsr.Block b : fissionMSRBlocks){
-                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
-                            if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("heater_", ""))){
-                                Image portTexture = ImageIO.read(file);
-                                b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
-                                b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
-                            }
-                            for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.allRecipes){
-                                if(recipe.inputName.equals(name)){
-                                    recipe.setInputTexture(ImageIO.read(file));
-                                }
-                                if(recipe.outputName.equals(name)){
-                                    recipe.setOutputTexture(ImageIO.read(file));
+                                for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.allRecipes){
+                                    if(recipe.inputName.equals(name)){
+                                        recipe.setInputTexture(ImageIO.read(file));
+                                    }
+                                    if(recipe.outputName.equals(name)){
+                                        recipe.setOutputTexture(ImageIO.read(file));
+                                    }
                                 }
                             }
+                            for(multiblock.configuration.overhaul.fissionmsr.Block b : fissionMSRBlocks){
+                                if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
+                                if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("heater_", ""))){
+                                    Image portTexture = ImageIO.read(file);
+                                    b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
+                                    b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
+                                }
+                                for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.allRecipes){
+                                    if(recipe.inputName.equals(name)){
+                                        recipe.setInputTexture(ImageIO.read(file));
+                                    }
+                                    if(recipe.outputName.equals(name)){
+                                        recipe.setOutputTexture(ImageIO.read(file));
+                                    }
+                                }
+                            }
+                            for(multiblock.configuration.overhaul.turbine.Block b : turbineBlocks){
+                                if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
+                            }
+                            for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : fissionSFRRecipes){
+                                if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(ImageIO.read(file));
+                                if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(ImageIO.read(file));
+                            }
+                            for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
+                                if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(ImageIO.read(file));
+                                if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(ImageIO.read(file));
+                            }
+                        }catch(IOException ex){
+                            Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.fileIO);
                         }
-                        for(multiblock.configuration.overhaul.turbine.Block b : turbineBlocks){
-                            if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(file));
-                        }
-                        for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : fissionSFRRecipes){
-                            if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(ImageIO.read(file));
-                            if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(ImageIO.read(file));
-                        }
-                        for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
-                            if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(ImageIO.read(file));
-                            if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(ImageIO.read(file));
-                        }
-                    }catch(IOException ex){
-                        Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.fileIO);
                     }
                 }
+            }catch(Exception ex){
+                Sys.error(ErrorLevel.severe, null, ex, ErrorCategory.fileIO);
             }
         }
         onGUIOpened();

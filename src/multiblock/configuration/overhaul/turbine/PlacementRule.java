@@ -30,6 +30,7 @@ public class PlacementRule extends RuleContainer implements Searchable{
             }
             return rule;
         }
+        if(str.startsWith("at least "))str = str.substring("at least ".length());
         boolean exactly = str.startsWith("exactly");
         if(exactly)str = str.substring(7).trim();
         int amount = 0;
@@ -67,7 +68,7 @@ public class PlacementRule extends RuleContainer implements Searchable{
             }
             for(Block b : configuration.allBlocks){
                 for(String s : b.getLegacyNames()){
-                    if(s.toLowerCase(Locale.ENGLISH).contains("coil")&&s.toLowerCase(Locale.ENGLISH).matches("[\\s^]"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"[\\s$]")){
+                    if(s.toLowerCase(Locale.ENGLISH).contains("coil")&&s.toLowerCase(Locale.ENGLISH).matches("[\\s^]?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"[\\s$]?.*")){
                         int len = s.length();
                         if(block==null||len<shortest){
                             block = b;
@@ -76,6 +77,7 @@ public class PlacementRule extends RuleContainer implements Searchable{
                     }
                 }
             }
+            if(block==null)throw new IllegalArgumentException("Could not find block matching rule bit "+str+"!");
         }
         if(exactly&&axial){
             PlacementRule rule = new PlacementRule();
