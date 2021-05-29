@@ -2,3 +2,7 @@
 /*.iml
 /libraries
 /out
+/nbproject
+
+/errors
+/settings.dat
