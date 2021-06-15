@@ -1,5 +1,4 @@
 package planner;
-import planner.theme.Theme;
 import discord.Bot;
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,6 +56,7 @@ import planner.module.OverhaulModule;
 import planner.module.PrimeFuelModule;
 import planner.module.RainbowFactorModule;
 import planner.module.UnderhaulModule;
+import planner.theme.Theme;
 import planner.tutorial.Tutorial;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;
