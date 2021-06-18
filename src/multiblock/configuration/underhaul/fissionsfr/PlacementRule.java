@@ -91,9 +91,9 @@ public class PlacementRule extends RuleContainer implements Searchable{
     }
     public Config save(Configuration parent, FissionSFRConfiguration configuration){
         Config config = Config.newConfig();
-        byte blockIndex = (byte)(configuration.blocks.indexOf(block)+1);
+        int blockIndex = configuration.blocks.indexOf(block)+1;
         if(parent!=null){
-            blockIndex = (byte)(parent.underhaul.fissionSFR.allBlocks.indexOf(block)+1);
+            blockIndex = parent.underhaul.fissionSFR.allBlocks.indexOf(block)+1;
         }
         switch(ruleType){
             case BETWEEN:
