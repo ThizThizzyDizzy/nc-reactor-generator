@@ -125,9 +125,9 @@ public class PlacementRule extends RuleContainer implements Searchable{
     public byte max;
     public Config save(Configuration parent, TurbineConfiguration configuration){
         Config config = Config.newConfig();
-        byte blockIndex = (byte)(configuration.blocks.indexOf(block)+1);
+        int blockIndex = configuration.blocks.indexOf(block)+1;
         if(parent!=null){
-            blockIndex = (byte)(parent.overhaul.turbine.allBlocks.indexOf(block)+1);
+            blockIndex = parent.overhaul.turbine.allBlocks.indexOf(block)+1;
         }
         switch(ruleType){
             case BETWEEN:

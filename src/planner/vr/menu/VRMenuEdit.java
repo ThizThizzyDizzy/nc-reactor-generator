@@ -507,15 +507,15 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }//doesn't do alpha
     @Override
     public multiblock.configuration.overhaul.fusion.BlockRecipe getSelectedOverhaulFusionBlockRecipe(int id){
-        return ((multiblock.overhaul.fusion.Block)getSelectedBlock(id)).template.allRecipes.get(selectedFusionBlockRecipe.get(id));
+        return ((multiblock.overhaul.fusion.Block)getSelectedBlock(id)).template.allRecipes.isEmpty()?null:((multiblock.overhaul.fusion.Block)getSelectedBlock(id)).template.allRecipes.get(selectedFusionBlockRecipe.get(id));
     }
     @Override
     public multiblock.configuration.overhaul.fissionsfr.BlockRecipe getSelectedOverhaulSFRBlockRecipe(int id){
-        return ((multiblock.overhaul.fissionsfr.Block)getSelectedBlock(id)).template.allRecipes.get(selectedSFRBlockRecipe.get(id));
+        return ((multiblock.overhaul.fissionsfr.Block)getSelectedBlock(id)).template.allRecipes.isEmpty()?null:((multiblock.overhaul.fissionsfr.Block)getSelectedBlock(id)).template.allRecipes.get(selectedSFRBlockRecipe.get(id));
     }
     @Override
     public multiblock.configuration.overhaul.fissionmsr.BlockRecipe getSelectedOverhaulMSRBlockRecipe(int id){
-        return ((multiblock.overhaul.fissionmsr.Block)getSelectedBlock(id)).template.allRecipes.get(selectedMSRBlockRecipe.get(id));
+        return ((multiblock.overhaul.fissionmsr.Block)getSelectedBlock(id)).template.allRecipes.isEmpty()?null:((multiblock.overhaul.fissionmsr.Block)getSelectedBlock(id)).template.allRecipes.get(selectedMSRBlockRecipe.get(id));
     }
     public VRMenu alreadyOpen(){
         openProgress = openTime;

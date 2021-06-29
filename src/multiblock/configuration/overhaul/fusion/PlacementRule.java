@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.Axis;
 import multiblock.Direction;
+import multiblock.Edge3;
 import multiblock.Vertex;
 import multiblock.configuration.Configuration;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
@@ -17,9 +18,9 @@ public class PlacementRule extends RuleContainer implements Searchable{
     public byte max;
     public Config save(Configuration parent, FusionConfiguration configuration){
         Config config = Config.newConfig();
-        byte blockIndex = (byte)(configuration.blocks.indexOf(block)+1);
+        int blockIndex = configuration.blocks.indexOf(block)+1;
         if(parent!=null){
-            blockIndex = (byte)(parent.overhaul.fusion.allBlocks.indexOf(block)+1);
+            blockIndex = parent.overhaul.fusion.allBlocks.indexOf(block)+1;
         }
         switch(ruleType){
             case BETWEEN:
@@ -70,6 +71,14 @@ public class PlacementRule extends RuleContainer implements Searchable{
                 }
                 config.set("rules", ruls);
                 break;
+            case EDGE:
+                config.set("type", (byte)8);
+                config.set("block", blockIndex);
+                break;
+            case EDGE_GROUP:
+                config.set("type", (byte)9);
+                config.set("block", (byte)blockType.ordinal());
+                break;
         }
         return config;
     }
@@ -108,6 +117,10 @@ public class PlacementRule extends RuleContainer implements Searchable{
                     s+=" OR "+rule.toString();
                 }
                 return s.isEmpty()?s:s.substring(4);
+            case EDGE:
+                return "Two "+block.getDisplayName()+" at the same edge";
+            case EDGE_GROUP:
+                return "Two "+blockType.name+" at the same edge";
         }
         return "Unknown Rule";
     }
@@ -287,6 +300,69 @@ public class PlacementRule extends RuleContainer implements Searchable{
                     if(rule.isValid(block, reactor))return true;
                 }
                 return false;
+            case EDGE:
+                dirs = new ArrayList<>();
+                for(Direction d : Direction.values()){
+                    multiblock.overhaul.fusion.Block b = reactor.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                    if(b.template==this.block)dirs.add(d);
+                }
+                for(Edge3 e : Edge3.values()){
+                    boolean missingOne = false;
+                    for(Direction d : e.directions){
+                        if(!dirs.contains(d))missingOne = true;
+                    }
+                    if(!missingOne)return true;
+                }
+                return false;
+            case EDGE_GROUP:
+                dirs = new ArrayList<>();
+                for(Direction d : Direction.values()){
+                    multiblock.overhaul.fusion.Block b = reactor.getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                    switch(blockType){
+                        case AIR:
+                            if(b==null){
+                                dirs.add(d);
+                                continue;
+                            }
+                            break;
+                        case BREEDING_BLANKET:
+                            if(!b.isBreedingBlanket())continue;
+                            break;
+                        case CONDUCTOR:
+                            if(!b.isConductor())continue;
+                            break;
+                        case CONNECTOR:
+                            if(!b.isConnector())continue;
+                            break;
+                        case HEATING_BLANKET:
+                            if(!b.isHeatingBlanket())continue;
+                            break;
+                        case HEAT_SINK:
+                            if(!b.isHeatsink())continue;
+                            break;
+                        case POLOIDAL_ELECTROMAGNET:
+                            if(!b.isElectromagnet()||!reactor.isPoloidal(b))continue;
+                            break;
+                        case REFLECTOR:
+                            if(!b.isReflector())continue;
+                            break;
+                        case SHIELDING:
+                            if(!b.isShielding())continue;
+                            break;
+                        case TOROIDAL_ELECTROMAGNET:
+                            if(!b.isElectromagnet()||!reactor.isToroidal(b))continue;
+                            break;
+                    }
+                    if(b.template==this.block)dirs.add(d);
+                }
+                for(Edge3 e : Edge3.values()){
+                    boolean missingOne = false;
+                    for(Direction d : e.directions){
+                        if(!dirs.contains(d))missingOne = true;
+                    }
+                    if(!missingOne)return true;
+                }
+                return false;
         }
         throw new IllegalArgumentException("Unknown rule type: "+ruleType);
     }
@@ -320,7 +396,9 @@ public class PlacementRule extends RuleContainer implements Searchable{
         AXIAL_GROUP("Axial (Group)"),
         VERTEX_GROUP("Vertex (Group)"),
         OR("Or"),
-        AND("And");
+        AND("And"),
+        EDGE("Edge"),
+        EDGE_GROUP("Edge (Group)");
         private final String name;
         private RuleType(String name){
             this.name = name;
