@@ -33,9 +33,9 @@ public class FileReader{
         formats.add(new NCPF6Reader());
         formats.add(new NCPF7Reader());
         formats.add(new NCPF8Reader());
-        formats.add(new NCPF9Reader());
-        formats.add(new NCPFVersions.NCPF10());// .ncpf version 10
-        formats.add(new NCPFVersions.NCPF11());// .ncpf version 11
+        formats.add(new NCPF9Reader());// .ncpf version 9
+        formats.add(new NCPF10Reader());// .ncpf version 10
+        formats.add(new NCPF11Reader());// .ncpf version 11
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){

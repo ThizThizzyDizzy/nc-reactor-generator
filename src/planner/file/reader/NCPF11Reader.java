@@ -23,13 +23,7 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public abstract class NCPFReaderBase implements FormatReader {
-    private final byte targetVersion;
-
-    protected NCPFReaderBase(byte version) {
-        this.targetVersion = version;
-    }
-
+public class NCPF11Reader implements FormatReader {
     @Override
     public boolean formatMatches(InputStream in){
         try{
@@ -37,7 +31,7 @@ public abstract class NCPFReaderBase implements FormatReader {
             header.load(in);
             in.close();
             byte version = header.get("version", (byte)0);
-            return version == targetVersion;
+            return version == getTargetVersion();
         } catch(Throwable t){
             return false;
         }
@@ -50,7 +44,12 @@ public abstract class NCPFReaderBase implements FormatReader {
     HashMap<multiblock.configuration.overhaul.fusion.PlacementRule, Integer> overhaulFusionPostLoadMap = new HashMap<>();
     HashMap<OverhaulTurbine, ArrayList<Integer>> overhaulTurbinePostLoadInputsMap = new HashMap<>();
 
-    protected abstract int readRuleBlockIndex(Config config, String name);
+    protected byte getTargetVersion() {
+        return (byte) 11;
+    }
+    protected int readRuleBlockIndex(Config config, String name) {
+        return config.get(name);
+    }
 
     @Override
     public synchronized NCPFFile read(InputStream in){
@@ -419,7 +418,7 @@ public abstract class NCPFReaderBase implements FormatReader {
             throw new RuntimeException(ex);
         }
     }
-    private multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
+    protected multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
         multiblock.configuration.underhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
         byte type = ruleCfg.get("type");
         switch(type){
@@ -525,7 +524,7 @@ public abstract class NCPFReaderBase implements FormatReader {
         }
         return rule;
     }
-    private multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverSFRRule(Config ruleCfg){
+    protected multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverSFRRule(Config ruleCfg){
         multiblock.configuration.overhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
         byte type = ruleCfg.get("type");
         switch(type){
@@ -667,7 +666,7 @@ public abstract class NCPFReaderBase implements FormatReader {
         }
         return rule;
     }
-    private multiblock.configuration.overhaul.fissionmsr.PlacementRule readOverMSRRule(Config ruleCfg){
+    protected multiblock.configuration.overhaul.fissionmsr.PlacementRule readOverMSRRule(Config ruleCfg){
         multiblock.configuration.overhaul.fissionmsr.PlacementRule rule = new multiblock.configuration.overhaul.fissionmsr.PlacementRule();
         byte type = ruleCfg.get("type");
         switch(type){
@@ -809,7 +808,7 @@ public abstract class NCPFReaderBase implements FormatReader {
         }
         return rule;
     }
-    private multiblock.configuration.overhaul.turbine.PlacementRule readOverTurbineRule(Config ruleCfg){
+    protected multiblock.configuration.overhaul.turbine.PlacementRule readOverTurbineRule(Config ruleCfg){
         multiblock.configuration.overhaul.turbine.PlacementRule rule = new multiblock.configuration.overhaul.turbine.PlacementRule();
         byte type = ruleCfg.get("type");
         switch(type){
@@ -906,7 +905,7 @@ public abstract class NCPFReaderBase implements FormatReader {
         }
         return rule;
     }
-    private multiblock.configuration.overhaul.fusion.PlacementRule readOverFusionRule(Config ruleCfg){
+    protected multiblock.configuration.overhaul.fusion.PlacementRule readOverFusionRule(Config ruleCfg){
         multiblock.configuration.overhaul.fusion.PlacementRule rule = new multiblock.configuration.overhaul.fusion.PlacementRule();
         byte type = ruleCfg.get("type");
         switch(type){
@@ -2361,7 +2360,7 @@ public abstract class NCPFReaderBase implements FormatReader {
         }
         return configuration;
     }
-    private Image loadNCPFTexture(ConfigNumberList texture){
+    protected Image loadNCPFTexture(ConfigNumberList texture){
         int size = (int) texture.get(0);
         Image image = new Image(size, size);
         int index = 1;
