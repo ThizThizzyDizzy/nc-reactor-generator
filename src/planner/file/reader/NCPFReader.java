@@ -23,7 +23,27 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class NCPF11Reader implements FormatReader{
+public class NCPFReader implements FormatReader{
+    public enum TargetVersion {
+        V10((byte) 10),
+        V11((byte) 11);
+
+        final byte versionFlag;
+        TargetVersion(byte versionFlag) {
+            this.versionFlag = versionFlag;
+        }
+
+        boolean after(TargetVersion ver) {
+            return versionFlag >= ver.versionFlag;
+        }
+    }
+
+    private final TargetVersion targetVersion;
+
+    public NCPFReader(TargetVersion version) {
+        this.targetVersion = version;
+    }
+
     @Override
     public boolean formatMatches(InputStream in){
         try{
@@ -31,8 +51,8 @@ public class NCPF11Reader implements FormatReader{
             header.load(in);
             in.close();
             byte version = header.get("version", (byte)0);
-            return version == 11 || version == 10;
-        }catch(Throwable t){
+            return version == targetVersion.versionFlag;
+        } catch(Throwable t){
             return false;
         }
     }
@@ -44,10 +64,13 @@ public class NCPF11Reader implements FormatReader{
     HashMap<multiblock.configuration.overhaul.fusion.PlacementRule, Integer> overhaulFusionPostLoadMap = new HashMap<>();
     HashMap<OverhaulTurbine, ArrayList<Integer>> overhaulTurbinePostLoadInputsMap = new HashMap<>();
 
-    private static Integer getByteOrInt(Config config, String name) {
+    private boolean afterVer(TargetVersion v) {
+        return targetVersion.after(v);
+    }
+    private Integer readRuleBlockIndex(Config config, String name) {
         Object c = config.get(name);
-        if (c instanceof Byte) return (int) (byte) c;
-        return (Integer) c;
+        if (afterVer(TargetVersion.V11)) return (int) c;
+        else return (int) (byte) c;
     }
 
     @Override
@@ -423,19 +446,19 @@ public class NCPF11Reader implements FormatReader{
         switch(type){
             case 0:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
-                underhaulPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                underhaulPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 1:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                underhaulPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                underhaulPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 2:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.VERTEX;
-                underhaulPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                underhaulPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 break;
             case 3:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
@@ -529,19 +552,19 @@ public class NCPF11Reader implements FormatReader{
         switch(type){
             case 0:
                 rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
-                overhaulSFRPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulSFRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 1:
                 rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                overhaulSFRPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulSFRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 2:
                 rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.VERTEX;
-                overhaulSFRPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulSFRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 break;
             case 3:
                 rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
@@ -671,19 +694,19 @@ public class NCPF11Reader implements FormatReader{
         switch(type){
             case 0:
                 rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN;
-                overhaulMSRPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulMSRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 1:
                 rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL;
-                overhaulMSRPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulMSRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 2:
                 rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.VERTEX;
-                overhaulMSRPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulMSRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 break;
             case 3:
                 rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
@@ -813,19 +836,19 @@ public class NCPF11Reader implements FormatReader{
         switch(type){
             case 0:
                 rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN;
-                overhaulTurbinePostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulTurbinePostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 1:
                 rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL;
-                overhaulTurbinePostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulTurbinePostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 2:
                 rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.EDGE;
-                overhaulTurbinePostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulTurbinePostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 break;
             case 3:
                 rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN_GROUP;
@@ -910,19 +933,19 @@ public class NCPF11Reader implements FormatReader{
         switch(type){
             case 0:
                 rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.BETWEEN;
-                overhaulFusionPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulFusionPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 1:
                 rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.AXIAL;
-                overhaulFusionPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulFusionPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 2:
                 rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.VERTEX;
-                overhaulFusionPostLoadMap.put(rule, getByteOrInt(ruleCfg, "block"));
+                overhaulFusionPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 break;
             case 3:
                 rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.BETWEEN_GROUP;
