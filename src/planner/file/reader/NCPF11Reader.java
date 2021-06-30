@@ -1,9 +1,5 @@
 package planner.file.reader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.PartialConfiguration;
@@ -23,6 +19,12 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 public class NCPF11Reader implements FormatReader {
     @Override
     public boolean formatMatches(InputStream in){

@@ -1,26 +1,20 @@
 package planner.file.reader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import multiblock.CuboidalMultiblock;
+
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
-import multiblock.configuration.PartialConfiguration;
-import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import multiblock.overhaul.turbine.OverhaulTurbine;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import planner.file.FormatReader;
 import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.image.Image;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 public class NCPF9Reader extends NCPF10Reader {
     protected byte getTargetVersion() {
         return (byte) 9;
@@ -31,6 +25,18 @@ public class NCPF9Reader extends NCPF10Reader {
     }
     protected int parseOutputRate(Config blockCfg) {
         return blockCfg.get("outputRate", 0);
+    }
+
+    protected void loadTurbineEfficiencyFactors(Config turbine, Configuration configuration) {
+        configuration.overhaul.turbine.throughputEfficiencyLeniencyMult = turbine.get("throughputEfficiencyLeniencyMult");
+        configuration.overhaul.turbine.throughputEfficiencyLeniencyThreshold = turbine.get("throughputEfficiencyLeniencyThreshold");
+    }
+
+    protected float readOutputRatio(Config config, String name) {
+        return config.getFloat(name);
+    }
+    protected boolean readBladeStator(multiblock.configuration.overhaul.turbine.Block blade, Config config, String name) {
+        return config.get(name);
     }
 
     @Override
@@ -407,7 +413,7 @@ public class NCPF9Reader extends NCPF10Reader {
             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
             for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
                 Config coolantRecipeCfg = (Config)irit.next();
-                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.getFloat("outputRatio"));
+                multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), readOutputRatio(coolantRecipeCfg, "outputRatio"));
                 parent.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
             }
             for(multiblock.configuration.overhaul.fissionsfr.Block b : parent.overhaul.fissionSFR.allBlocks){
@@ -584,8 +590,7 @@ public class NCPF9Reader extends NCPF10Reader {
                 configuration.overhaul.turbine.minLength = turbine.get("minLength");
                 configuration.overhaul.turbine.maxSize = turbine.get("maxSize");
                 configuration.overhaul.turbine.fluidPerBlade = turbine.get("fluidPerBlade");
-                configuration.overhaul.turbine.throughputEfficiencyLeniencyMult = turbine.get("throughputEfficiencyLeniencyMult");
-                configuration.overhaul.turbine.throughputEfficiencyLeniencyThreshold = turbine.get("throughputEfficiencyLeniencyThreshold");
+                loadTurbineEfficiencyFactors(turbine, configuration);
                 configuration.overhaul.turbine.throughputFactor = turbine.get("throughputFactor");
                 configuration.overhaul.turbine.powerBonus = turbine.get("powerBonus");
             }
@@ -618,7 +623,7 @@ public class NCPF9Reader extends NCPF10Reader {
                 blade.blade = true;
                 blade.bladeExpansion = blockCfg.get("expansion");
                 blade.bladeEfficiency = blockCfg.get("efficiency");
-                blade.bladeStator = blockCfg.get("stator");
+                blade.bladeStator = readBladeStator(blade, blockCfg, "stator");
                 if(blockCfg.hasProperty("texture"))blade.setTexture(loadNCPFTexture(blockCfg.get("texture")));
                 parent.overhaul.turbine.allBlocks.add(blade);configuration.overhaul.turbine.blocks.add(blade);
             }
@@ -737,7 +742,7 @@ public class NCPF9Reader extends NCPF10Reader {
             ConfigList coolantRecipes = fusion.get("coolantRecipes");
             for(Iterator coit = coolantRecipes.iterator(); coit.hasNext();){
                 Config coolantRecipeCfg = (Config)coit.next();
-                multiblock.configuration.overhaul.fusion.CoolantRecipe coolantRecipe = new multiblock.configuration.overhaul.fusion.CoolantRecipe(coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.getFloat("outputRatio"));
+                multiblock.configuration.overhaul.fusion.CoolantRecipe coolantRecipe = new multiblock.configuration.overhaul.fusion.CoolantRecipe(coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), readOutputRatio(coolantRecipeCfg, "outputRatio"));
                 configuration.overhaul.fusion.allCoolantRecipes.add(coolantRecipe);configuration.overhaul.fusion.coolantRecipes.add(coolantRecipe);
             }
         }
