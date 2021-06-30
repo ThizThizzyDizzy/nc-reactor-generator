@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import planner.file.reader.NCPF10Reader;
 import planner.file.reader.NCPF11Reader;
 import planner.file.reader.NCPF1Reader;
 import planner.file.reader.NCPF2Reader;
@@ -58,8 +57,7 @@ public class FileReader{
         formats.add(new NCPF7Reader());
         formats.add(new NCPF8Reader());
         formats.add(new NCPF9Reader());
-        formats.add(new NCPF10Reader());
-        formats.add(new NCPF11Reader());
+        formats.add(new NCPF11Reader());// .ncpf versions 10-11
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){
