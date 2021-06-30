@@ -23,24 +23,10 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class NCPFReader implements FormatReader{
-    public enum TargetVersion {
-        V10((byte) 10),
-        V11((byte) 11);
+public abstract class NCPFReaderBase implements FormatReader {
+    private final byte targetVersion;
 
-        final byte versionFlag;
-        TargetVersion(byte versionFlag) {
-            this.versionFlag = versionFlag;
-        }
-
-        boolean after(TargetVersion ver) {
-            return versionFlag >= ver.versionFlag;
-        }
-    }
-
-    private final TargetVersion targetVersion;
-
-    public NCPFReader(TargetVersion version) {
+    protected NCPFReaderBase(byte version) {
         this.targetVersion = version;
     }
 
@@ -51,7 +37,7 @@ public class NCPFReader implements FormatReader{
             header.load(in);
             in.close();
             byte version = header.get("version", (byte)0);
-            return version == targetVersion.versionFlag;
+            return version == targetVersion;
         } catch(Throwable t){
             return false;
         }
@@ -64,14 +50,7 @@ public class NCPFReader implements FormatReader{
     HashMap<multiblock.configuration.overhaul.fusion.PlacementRule, Integer> overhaulFusionPostLoadMap = new HashMap<>();
     HashMap<OverhaulTurbine, ArrayList<Integer>> overhaulTurbinePostLoadInputsMap = new HashMap<>();
 
-    private boolean afterVer(TargetVersion v) {
-        return targetVersion.after(v);
-    }
-    private Integer readRuleBlockIndex(Config config, String name) {
-        Object c = config.get(name);
-        if (afterVer(TargetVersion.V11)) return (int) c;
-        else return (int) (byte) c;
-    }
+    protected abstract int readRuleBlockIndex(Config config, String name);
 
     @Override
     public synchronized NCPFFile read(InputStream in){

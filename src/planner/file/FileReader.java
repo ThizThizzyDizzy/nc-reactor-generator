@@ -3,32 +3,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import planner.file.reader.NCPFReader;
-import planner.file.reader.NCPF1Reader;
-import planner.file.reader.NCPF2Reader;
-import planner.file.reader.NCPF3Reader;
-import planner.file.reader.NCPF4Reader;
-import planner.file.reader.NCPF5Reader;
-import planner.file.reader.NCPF6Reader;
-import planner.file.reader.NCPF7Reader;
-import planner.file.reader.NCPF8Reader;
-import planner.file.reader.NCPF9Reader;
-import planner.file.reader.OverhaulHellrageMSR1Reader;
-import planner.file.reader.OverhaulHellrageMSR2Reader;
-import planner.file.reader.OverhaulHellrageMSR3Reader;
-import planner.file.reader.OverhaulHellrageMSR4Reader;
-import planner.file.reader.OverhaulHellrageMSR5Reader;
-import planner.file.reader.OverhaulHellrageMSR6Reader;
-import planner.file.reader.OverhaulHellrageSFR1Reader;
-import planner.file.reader.OverhaulHellrageSFR2Reader;
-import planner.file.reader.OverhaulHellrageSFR3Reader;
-import planner.file.reader.OverhaulHellrageSFR4Reader;
-import planner.file.reader.OverhaulHellrageSFR5Reader;
-import planner.file.reader.OverhaulHellrageSFR6Reader;
-import planner.file.reader.OverhaulNCConfigReader;
-import planner.file.reader.UnderhaulHellrage1Reader;
-import planner.file.reader.UnderhaulHellrage2Reader;
-import planner.file.reader.UnderhaulNCConfigReader;
+
+import planner.file.reader.*;
+
 public class FileReader{
     public static final ArrayList<FormatReader> formats = new ArrayList<>();
     static{
@@ -57,8 +34,8 @@ public class FileReader{
         formats.add(new NCPF7Reader());
         formats.add(new NCPF8Reader());
         formats.add(new NCPF9Reader());
-        formats.add(new NCPFReader(NCPFReader.TargetVersion.V10));// .ncpf version 10
-        formats.add(new NCPFReader(NCPFReader.TargetVersion.V11));// .ncpf version 11
+        formats.add(new NCPFVersions.NCPF10());// .ncpf version 10
+        formats.add(new NCPFVersions.NCPF11());// .ncpf version 11
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){
