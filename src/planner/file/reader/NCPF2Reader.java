@@ -2,6 +2,7 @@ package planner.file.reader;
 
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractPlacementRule;
+import multiblock.configuration.Configuration;
 import multiblock.configuration.IBlockTemplate;
 import multiblock.configuration.IBlockType;
 import planner.file.NCPFFile;
@@ -41,6 +42,11 @@ public class NCPF2Reader extends NCPF3Reader {
             }
         }
         return multiblock;
+    }
+
+    @Override
+    protected void loadOverhaulTurbineBlocks(Config overhaul, Configuration parent, Configuration configuration, boolean loadSettings) {
+        // turbines did not exist in NCPF 2
     }
 
     protected <Rule extends AbstractPlacementRule<BlockType, Template>,

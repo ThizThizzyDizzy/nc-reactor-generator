@@ -1,6 +1,7 @@
 package planner.file.reader;
 
 import multiblock.Multiblock;
+import multiblock.configuration.Configuration;
 import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
 
@@ -32,5 +33,11 @@ public class NCPF1Reader extends NCPF2Reader {
             }
         }
         return multiblock;
+    }
+
+    @Override
+    protected void loadOverhaulMSRBlocks(Config overhaul, Configuration parent, Configuration configuration,
+                                         boolean loadSettings, boolean loadingAddon) {
+        // MSR reactors did not exist in NCPF 1
     }
 }
