@@ -42,4 +42,10 @@ public class UnderhaulConfiguration{
             fissionSFR.convertAddon(parent, convertTo);
         }
     }
+    public void makeAddon(UnderhaulConfiguration parent, UnderhaulConfiguration addon){
+        if(fissionSFR!=null){
+            addon.fissionSFR = new FissionSFRConfiguration();
+            fissionSFR.makeAddon(parent.fissionSFR, addon.fissionSFR);
+        }
+    }
 }

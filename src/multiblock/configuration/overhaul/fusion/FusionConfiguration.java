@@ -227,4 +227,47 @@ public class FusionConfiguration extends AbstractBlockContainer<Block> {
             }
         }
     }
+    public void makeAddon(FusionConfiguration parent, FusionConfiguration addon){
+        B:for(Block b : blocks){
+            for(Block pb : parent.blocks){
+                if(pb.name.equals(b.name)){
+                    ArrayList<BlockRecipe> extras = new ArrayList<>();
+                    R:for(BlockRecipe r : b.recipes){
+                        for(BlockRecipe pr : pb.recipes){
+                            if(r.inputName.equals(pr.inputName))continue R;
+                        }
+                        extras.add(r);
+                    }
+                    if(!extras.isEmpty()){
+                        addon.allBlocks.add(b);
+                        b.recipes.clear();
+                        b.allRecipes.clear();
+                        b.recipes.addAll(extras);
+                        pb.allRecipes.addAll(extras);
+                    }
+                    continue B;
+                }
+            }
+            addon.blocks.add(b);
+            parent.allBlocks.add(b);
+        }
+        C:for(CoolantRecipe c : coolantRecipes){
+            for(CoolantRecipe pc : parent.coolantRecipes){
+                if(pc.inputName.equals(c.inputName)){
+                    continue C;
+                }
+            }
+            addon.coolantRecipes.add(c);
+            parent.allCoolantRecipes.add(c);
+        }
+        R:for(Recipe r : recipes){
+            for(Recipe pr : parent.recipes){
+                if(pr.inputName.equals(r.inputName)){
+                    continue R;
+                }
+            }
+            addon.recipes.add(r);
+            parent.allRecipes.add(r);
+        }
+    }
 }

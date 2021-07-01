@@ -318,4 +318,37 @@ public class Configuration{
         }
         return nam;
     }
+    public Configuration copy(){
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        NCPFFile saver = new NCPFFile();
+        saver.configuration = this;
+        FileWriter.write(saver, out, FileWriter.NCPF);
+        try{
+            out.close();
+        }catch(IOException ex){
+            throw new RuntimeException(ex);
+        }
+        Configuration copy = FileReader.read(() -> {
+            return new ByteArrayInputStream(out.toByteArray());
+        }).configuration;
+        if(copy.overhaul!=null&&copy.overhaul.fissionMSR!=null){
+            for(int i = 0; i<copy.overhaul.fissionMSR.allBlocks.size(); i++){
+                copy.overhaul.fissionMSR.allBlocks.get(i).displayTexture = overhaul.fissionMSR.allBlocks.get(i).displayTexture;
+            }
+        }
+        return copy;
+    }
+    public Configuration makeAddon(Configuration parent){
+        Configuration addon = new Configuration("Nuclearcraft CT Additions", "Unknown", null);
+        addon.addon = true;
+        if(overhaul!=null){
+            addon.overhaul = new OverhaulConfiguration();
+            overhaul.makeAddon(parent.overhaul, addon.overhaul);
+        }
+        if(underhaul!=null){
+            addon.underhaul = new UnderhaulConfiguration();
+            underhaul.makeAddon(parent.underhaul, addon.underhaul);
+        }
+        return addon;
+    }
 }
