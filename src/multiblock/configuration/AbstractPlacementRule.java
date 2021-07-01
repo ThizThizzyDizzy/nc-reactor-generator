@@ -8,8 +8,7 @@ import simplelibrary.config2.ConfigList;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public abstract class AbstractPlacementRule<BlockType extends IBlockType<Template>,
-        Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {
+public abstract class AbstractPlacementRule<BlockType extends IBlockType<Template>, Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {
     public RuleType ruleType = RuleType.BETWEEN;
     public BlockType blockType;
     public Template block;
@@ -19,8 +18,8 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType<Templat
 
     protected abstract AbstractBlockContainer<Template> getContainerFromParent(Configuration parent);
 
+    public abstract AbstractPlacementRule<BlockType, Template> newRule();
     protected abstract byte saveBlockType(BlockType type);
-
     public abstract BlockType loadBlockType(byte type);
 
     public Config save(Configuration parent, AbstractBlockContainer<Template> configuration) {
@@ -128,8 +127,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType<Templat
                 for (Axis axis : axes) {
                     T b1 = reactor.getBlock(block.x - axis.x, block.y - axis.y, block.z - axis.z);
                     T b2 = reactor.getBlock(block.x + axis.x, block.y + axis.y, block.z + axis.z);
-                    if (b1 != null && b1.getTemplate() == this.block && b1.isActive() &&
-                            b2 != null && b2.getTemplate() == this.block && b2.isActive())
+                    if (b1 != null && b1.getTemplate() == this.block && b1.isActive() && b2 != null && b2.getTemplate() == this.block && b2.isActive())
                         num++;
                 }
                 return num >= min && num <= max;
@@ -265,9 +263,9 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType<Templat
      * Add new emum variants only to the end of the list.
      */
     public enum RuleType {
-        BETWEEN("Between"), AXIAL("Axial"), VERTEX("Vertex"), BETWEEN_GROUP("Between (Group)"),
-        AXIAL_GROUP("Axial (Group)"), VERTEX_GROUP("Vertex (Group"), OR("Or"), AND("And"), EDGE("Edge"),
-        EDGE_GROUP("Edge (Group)");
+        BETWEEN("Between"), AXIAL("Axial"), VERTEX("Vertex"), BETWEEN_GROUP("Between (Group)"), AXIAL_GROUP("Axial " +
+                "(Group)"), VERTEX_GROUP("Vertex (Group"), OR("Or"), AND("And"), EDGE("Edge"), EDGE_GROUP("Edge " +
+                "(Group)");
         public final String name;
 
         RuleType(String name) {
@@ -283,7 +281,104 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType<Templat
     @Override
     public boolean stillEquals(RuleContainer<BlockType, Template> rc) {
         AbstractPlacementRule<BlockType, Template> pr = (AbstractPlacementRule<BlockType, Template>) rc;
-        return pr.ruleType == ruleType && Objects.equals(pr.block, block) &&
-                pr.min == min && pr.max == max;
+        return pr.ruleType == ruleType && Objects.equals(pr.block, block) && pr.min == min && pr.max == max;
+    }
+
+    protected BlockType parseBlockType(AbstractBlockContainer<Template> configuration, String str) {
+        throw new RuntimeException("parseNC not supported");
+    }
+    protected Template parseTemplate(AbstractBlockContainer<Template> configuration, String str) {
+        throw new RuntimeException("parseNC not supported");
+    }
+
+    protected void parseNcInto(AbstractBlockContainer<Template> configuration, String str) {
+        if (str.contains("||")) {
+            this.ruleType = RuleType.OR;
+            for (String sub : str.split("\\|\\|")) {
+                AbstractPlacementRule<BlockType, Template> rul = newRule();
+                rul.parseNcInto(configuration, sub.trim());
+                this.rules.add(rul);
+            }
+        } else if (str.contains("&&")) {
+            this.ruleType = RuleType.AND;
+            for (String sub : str.split("&&")) {
+                AbstractPlacementRule<BlockType, Template> rul = newRule();
+                rul.parseNcInto(configuration, sub.trim());
+                this.rules.add(rul);
+            }
+        } else {
+            if (str.startsWith("at least ")) str = str.substring("at least ".length());
+            boolean exactly = str.startsWith("exactly");
+            if (exactly) str = str.substring(7).trim();
+
+            int amount = 0;
+            if (str.startsWith("zero")) {
+                amount = 0;
+                str = str.substring(4).trim();
+            } else if (str.startsWith("one")) {
+                amount = 1;
+                str = str.substring(3).trim();
+            } else if (str.startsWith("two")) {
+                amount = 2;
+                str = str.substring(3).trim();
+            } else if (str.startsWith("three")) {
+                amount = 3;
+                str = str.substring(5).trim();
+            } else if (str.startsWith("four")) {
+                amount = 4;
+                str = str.substring(4).trim();
+            } else if (str.startsWith("five")) {
+                amount = 5;
+                str = str.substring(4).trim();
+            } else if (str.startsWith("six")) {
+                amount = 6;
+                str = str.substring(3).trim();
+            }
+
+            boolean axial = str.startsWith("axial");
+            if (axial) str = str.substring(5).trim();
+
+            BlockType type = parseBlockType(configuration, str);
+            Template block = type == null ? parseTemplate(configuration, str) : null;
+
+            if (type == null && block == null)
+                throw new IllegalArgumentException("Failed to parse rule " + str + ": block is null!");
+            if (exactly && axial) {
+                this.ruleType = RuleType.AND;
+                AbstractPlacementRule<BlockType, Template> rul1 = newRule();
+                AbstractPlacementRule<BlockType, Template> rul2 = newRule();
+                if (type != null) {
+                    rul1.ruleType = RuleType.BETWEEN_GROUP;
+                    rul2.ruleType = RuleType.AXIAL_GROUP;
+                    rul1.blockType = rul2.blockType = type;
+                } else {
+                    rul1.ruleType = RuleType.BETWEEN;
+                    rul2.ruleType = RuleType.AXIAL;
+                    rul1.block = rul2.block = block;
+                }
+                rul1.min = rul1.max = (byte) amount;
+                rul2.min = rul2.max = (byte) (amount / 2);
+                this.rules.add(rul1);
+                this.rules.add(rul2);
+            } else {
+                int min = amount;
+                int max = 6;
+                if (exactly) max = min;
+
+                if (type != null) {
+                    this.ruleType = axial ? RuleType.AXIAL_GROUP : RuleType.BETWEEN_GROUP;
+                    this.blockType = type;
+                } else {
+                    this.ruleType = axial ? RuleType.AXIAL : RuleType.BETWEEN;
+                    this.block = block;
+                }
+                if (axial) {
+                    min /= 2;
+                    max /= 2;
+                }
+                this.min = (byte) min;
+                this.max = (byte) max;
+            }
+        }
     }
 }
