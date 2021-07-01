@@ -4,22 +4,14 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import multiblock.Multiblock;
-import multiblock.configuration.AddonConfiguration;
-import multiblock.configuration.Configuration;
-import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.*;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-public class FissionSFRConfiguration{
-    public ArrayList<Block> allBlocks = new ArrayList<>();//because I feel like being complicated, this is filled with parent duplicates for addons with recipes
+public class FissionSFRConfiguration extends AbstractBlockContainer<Block>  {
     public ArrayList<CoolantRecipe> allCoolantRecipes = new ArrayList<>();
-    /**
-     * @deprecated You should probably be using allBlocks
-     */
-    @Deprecated
-    public ArrayList<Block> blocks = new ArrayList<>();
     /**
      * @deprecated You should probably be using allCoolantRecipes
      */
@@ -211,19 +203,19 @@ public class FissionSFRConfiguration{
         }
         return false;
     }
-    private ArrayList<Block> getAllUsedBlocks(RuleContainer container){
+    private ArrayList<Block> getAllUsedBlocks(RuleContainer<PlacementRule.BlockType, Block> container){
         ArrayList<Block> used = new ArrayList<>();
-        for(PlacementRule rule : container.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : container.rules){
             used.addAll(getAllUsedBlocks(rule));
             if(rule.block!=null)used.add(rule.block);
         }
         return used;
     }
-    private ArrayList<PlacementRule> getAllSubRules(RuleContainer container){
+    private ArrayList<PlacementRule> getAllSubRules(RuleContainer<PlacementRule.BlockType, Block> container){
         ArrayList<PlacementRule> rules = new ArrayList<>();
-        for(PlacementRule rule : container.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : container.rules){
             rules.addAll(getAllSubRules(rule));
-            rules.add(rule);
+            rules.add((PlacementRule) rule);
         }
         return rules;
     }

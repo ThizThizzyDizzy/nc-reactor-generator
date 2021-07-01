@@ -1,10 +1,10 @@
 package multiblock.overhaul.fissionsfr;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.function.Function;
+
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.ITemplateAccess;
 import multiblock.configuration.overhaul.fissionsfr.PlacementRule;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
@@ -12,7 +12,11 @@ import planner.vr.VRCore;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.Renderer2D;
-public class Block extends multiblock.Block{
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Function;
+public class Block extends multiblock.Block implements ITemplateAccess<multiblock.configuration.overhaul.fissionsfr.Block> {
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
@@ -235,7 +239,7 @@ public class Block extends multiblock.Block{
                 tip+="\nCooling: "+template.allRecipes.get(0).heatsinkCooling+"H/t";
             }
         }
-        for(PlacementRule rule : template.rules){
+        for(AbstractPlacementRule<?, ?> rule : template.rules){
             tip+="\nRequires "+rule.toString();
         }
         return tip;
@@ -468,7 +472,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean calculateRules(Multiblock multiblock){
-        for(PlacementRule rule : template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.fissionsfr.Block> rule : template.rules){
             if(!rule.isValid(this, (OverhaulSFR) multiblock)){
                 return false;
             }
@@ -490,15 +494,15 @@ public class Block extends multiblock.Block{
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
         if(totalDist>1)return false;//too far away
         if(hasRules()){
-            for(PlacementRule rule : template.rules){
-                if(ruleHas(rule, other))return true;
+            for(AbstractPlacementRule<?, ?> rule : template.rules){
+                if(ruleHas((PlacementRule) rule, other))return true;
             }
         }
         return false;
     }
-    private boolean ruleHas(PlacementRule rule, Block b){
-        if(rule.block==b.template)return true;
-        for(PlacementRule rul : rule.rules){
+    private boolean ruleHas(AbstractPlacementRule<?, ?> rule, Block b){
+        if(rule.block ==b.template)return true;
+        for(AbstractPlacementRule<?, ?> rul : rule.rules){
             if(ruleHas(rul, b))return true;
         }
         return false;
@@ -602,5 +606,10 @@ public class Block extends multiblock.Block{
         ArrayList<String> searchables = template.getSearchableNames();
         for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
         return searchables;
+    }
+
+    @Override
+    public multiblock.configuration.overhaul.fissionsfr.Block getTemplate() {
+        return template;
     }
 }

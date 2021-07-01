@@ -1,41 +1,17 @@
 package multiblock.overhaul.fissionsfr;
+
 import generator.Priority;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import multiblock.Action;
-import multiblock.CuboidalMultiblock;
-import multiblock.Direction;
-import multiblock.FluidStack;
-import multiblock.Multiblock;
-import multiblock.PartCount;
-import multiblock.Range;
+import multiblock.*;
 import multiblock.action.SetblockAction;
 import multiblock.action.SetblocksAction;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import multiblock.configuration.overhaul.fissionsfr.PlacementRule;
-import multiblock.decal.AdjacentModeratorLineDecal;
-import multiblock.decal.BlockInvalidDecal;
-import multiblock.decal.BlockValidDecal;
-import multiblock.decal.CellFluxDecal;
-import multiblock.decal.IrradiatorAdjacentModeratorLineDecal;
-import multiblock.decal.MissingCasingDecal;
-import multiblock.decal.ModeratorActiveDecal;
-import multiblock.decal.NeutronSourceDecal;
-import multiblock.decal.NeutronSourceLineDecal;
-import multiblock.decal.NeutronSourceNoTargetDecal;
-import multiblock.decal.NeutronSourceTargetDecal;
-import multiblock.decal.OverhaulModeratorLineDecal;
-import multiblock.decal.ReflectorAdjacentModeratorLineDecal;
+import multiblock.decal.*;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
-import multiblock.ppe.ClearInvalid;
-import multiblock.ppe.PostProcessingEffect;
-import multiblock.ppe.SFRFill;
-import multiblock.ppe.SFRSourceSaturate;
-import multiblock.ppe.SmartFillOverhaulSFR;
+import multiblock.ppe.*;
 import multiblock.symmetry.AxialSymmetry;
 import multiblock.symmetry.Symmetry;
 import planner.Core;
@@ -52,6 +28,11 @@ import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Color;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 public class OverhaulSFR extends CuboidalMultiblock<Block>{
     public CoolantRecipe coolantRecipe;
     public ArrayList<Cluster> clusters = new ArrayList<>();
@@ -1205,7 +1186,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         if(!block.isHeatsink())return false;
         if(!block.template.heatsinkHasBaseStats&&block.recipe==null)return false;//empty heatsink
         boolean wasValid = block.heatsinkValid;
-        for(PlacementRule rule : block.template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.fissionsfr.Block> rule : block.template.rules){
             if(!rule.isValid(block, this)){
                 if(block.heatsinkValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x,block.y,block.z));
                 block.heatsinkValid = false;

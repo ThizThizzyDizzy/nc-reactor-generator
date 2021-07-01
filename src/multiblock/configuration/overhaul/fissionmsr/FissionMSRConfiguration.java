@@ -153,7 +153,7 @@ public class FissionMSRConfiguration extends AbstractBlockContainer<Block> {
     }
     @Override
     public boolean equals(Object obj){
-        if(obj!=null&&obj instanceof FissionMSRConfiguration){
+        if(obj instanceof FissionMSRConfiguration){
             FissionMSRConfiguration fsfrc = (FissionMSRConfiguration)obj;
             return Objects.equals(fsfrc.blocks, blocks)
                     &&minSize==fsfrc.minSize

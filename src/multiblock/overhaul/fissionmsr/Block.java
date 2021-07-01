@@ -1,21 +1,21 @@
 package multiblock.overhaul.fissionmsr;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.function.Function;
+
 import multiblock.Direction;
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.ITemplateAccess;
-import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
 import planner.vr.VRCore;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.Renderer2D;
-public class Block extends multiblock.Block
-        implements ITemplateAccess<multiblock.configuration.overhaul.fissionmsr.Block> {
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Function;
+public class Block extends multiblock.Block implements ITemplateAccess<multiblock.configuration.overhaul.fissionmsr.Block> {
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */

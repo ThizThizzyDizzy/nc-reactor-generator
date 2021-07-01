@@ -1,4 +1,5 @@
 package planner.menu.configuration.overhaul.fissionsfr;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.Block;
 import multiblock.configuration.overhaul.fissionsfr.PlacementRule;
@@ -158,8 +159,8 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                 break;
         }
         placementRules.components.clear();
-        for(PlacementRule rul : rule.rules){
-            placementRules.add(new MenuComponentPlacementRule(rul));
+        for(AbstractPlacementRule<PlacementRule.BlockType, Block> rul : rule.rules){
+            placementRules.add(new MenuComponentPlacementRule((PlacementRule) rul));
         }
         min.setValue(rule.min);
         max.setValue(rule.max);

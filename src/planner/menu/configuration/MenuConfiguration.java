@@ -1120,8 +1120,8 @@ public class MenuConfiguration extends ConfigurationMenu{
             check(parent, rul);
         }
     }
-    private void check(multiblock.configuration.overhaul.fissionsfr.Block parent, multiblock.configuration.overhaul.fissionsfr.RuleContainer b){
-        for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rul : b.rules){
+    private void check(multiblock.configuration.overhaul.fissionsfr.Block parent, multiblock.configuration.RuleContainer<?, ?> b){
+        for(AbstractPlacementRule<?, ?> rul : b.rules){
             if(rul.block!=null&&!rul.block.getDisplayName().contains("Sink"))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
             check(parent, rul);
         }

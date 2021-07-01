@@ -48,12 +48,10 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         public String toString() {
             return name;
         }
-
         @Override
         public boolean isAir() {
             return this == AIR;
         }
-
         @Override
         public String getDisplayName() {
             return name;

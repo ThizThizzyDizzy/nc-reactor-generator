@@ -2,6 +2,8 @@ package planner.menu.configuration.overhaul.fissionsfr;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.Block;
 import multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
@@ -379,8 +381,8 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         coolantVent.isToggledOn = block.coolantVent;
         coolantVentOutputDisplayName.text = block.coolantVentOutputDisplayName==null?"":block.coolantVentOutputDisplayName;
         placementRules.components.clear();
-        for(PlacementRule rule : block.rules){
-            placementRules.add(new MenuComponentPlacementRule(rule));
+        for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : block.rules){
+            placementRules.add(new MenuComponentPlacementRule((PlacementRule) rule));
         }
         blockRecipes.components.clear();
         for(BlockRecipe recipe : block.recipes){
