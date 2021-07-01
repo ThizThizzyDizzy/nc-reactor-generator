@@ -1,8 +1,7 @@
 package planner.file.reader;
 
 import multiblock.Multiblock;
-import multiblock.configuration.Configuration;
-import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.*;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
@@ -445,99 +444,49 @@ public class NCPF11Reader implements FormatReader {
     }
     //</editor-fold>
 
-    protected multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg){
-        multiblock.configuration.underhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.underhaul.fissionsfr.PlacementRule();
+    protected <Rule extends AbstractPlacementRule<BlockType, Template>,
+            BlockType extends IBlockType,
+            Template extends IBlockTemplate> Rule readGenericRule(HashMap<Rule, Integer> postMap, Rule rule, Config ruleCfg){
         byte type = ruleCfg.get("type");
         switch(type){
             case 0:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
-                underhaulPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
+                postMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 1:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                underhaulPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
+                postMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 2:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.VERTEX;
-                underhaulPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
+                postMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 break;
             case 3:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                byte blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                }
+                rule.blockType = rule.loadBlockType(ruleCfg.get("block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 4:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                }
+                rule.blockType = rule.loadBlockType(ruleCfg.get("block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 5:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.VERTEX_GROUP;
-                blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.COOLER;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                }
+                rule.blockType = rule.loadBlockType(ruleCfg.get("block"));
                 break;
             case 6:
                 rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.OR;
                 ConfigList rules = ruleCfg.get("rules");
                 for(Iterator rit = rules.iterator(); rit.hasNext();){
                     Config rulC = (Config)rit.next();
-                    rule.rules.add(readUnderRule(rulC));
+                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
                 }
                 break;
             case 7:
@@ -545,544 +494,29 @@ public class NCPF11Reader implements FormatReader {
                 rules = ruleCfg.get("rules");
                 for(Iterator rit = rules.iterator(); rit.hasNext();){
                     Config rulC = (Config)rit.next();
-                    rule.rules.add(readUnderRule(rulC));
+                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
                 }
                 break;
         }
         return rule;
+    }
+
+    protected multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg) {
+        return readGenericRule(underhaulPostLoadMap, new multiblock.configuration.underhaul.fissionsfr.PlacementRule(), ruleCfg);
     }
     protected multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverSFRRule(Config ruleCfg){
-        multiblock.configuration.overhaul.fissionsfr.PlacementRule rule = new multiblock.configuration.overhaul.fissionsfr.PlacementRule();
-        byte type = ruleCfg.get("type");
-        switch(type){
-            case 0:
-                rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
-                overhaulSFRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 1:
-                rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                overhaulSFRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 2:
-                rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.VERTEX;
-                overhaulSFRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                break;
-            case 3:
-                rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
-                byte blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                }
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 4:
-                rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                }
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 5:
-                rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.VERTEX_GROUP;
-                blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.HEATSINK;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.FUEL_CELL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.SHIELD;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.IRRADIATOR;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                }
-                break;
-            case 6:
-                rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.OR;
-                ConfigList rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readOverSFRRule(rulC));
-                }
-                break;
-            case 7:
-                rule.ruleType = multiblock.configuration.overhaul.fissionsfr.PlacementRule.RuleType.AND;
-                rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readOverSFRRule(rulC));
-                }
-                break;
-        }
-        return rule;
+        return readGenericRule(overhaulSFRPostLoadMap, new multiblock.configuration.overhaul.fissionsfr.PlacementRule(), ruleCfg);
     }
     protected multiblock.configuration.overhaul.fissionmsr.PlacementRule readOverMSRRule(Config ruleCfg){
-        multiblock.configuration.overhaul.fissionmsr.PlacementRule rule = new multiblock.configuration.overhaul.fissionmsr.PlacementRule();
-        byte type = ruleCfg.get("type");
-        switch(type){
-            case 0:
-                rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN;
-                overhaulMSRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 1:
-                rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL;
-                overhaulMSRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 2:
-                rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.VERTEX;
-                overhaulMSRPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                break;
-            case 3:
-                rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.BETWEEN_GROUP;
-                byte blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                }
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 4:
-                rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AXIAL_GROUP;
-                blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                }
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 5:
-                rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.VERTEX_GROUP;
-                blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.HEATER;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.VESSEL;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.MODERATOR;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.SHIELD;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.IRRADIATOR;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                }
-                break;
-            case 6:
-                rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.OR;
-                ConfigList rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readOverMSRRule(rulC));
-                }
-                break;
-            case 7:
-                rule.ruleType = multiblock.configuration.overhaul.fissionmsr.PlacementRule.RuleType.AND;
-                rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readOverMSRRule(rulC));
-                }
-                break;
-        }
-        return rule;
+        return readGenericRule(overhaulMSRPostLoadMap, new multiblock.configuration.overhaul.fissionmsr.PlacementRule(), ruleCfg);
     }
     protected multiblock.configuration.overhaul.turbine.PlacementRule readOverTurbineRule(Config ruleCfg){
-        multiblock.configuration.overhaul.turbine.PlacementRule rule = new multiblock.configuration.overhaul.turbine.PlacementRule();
-        byte type = ruleCfg.get("type");
-        switch(type){
-            case 0:
-                rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN;
-                overhaulTurbinePostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 1:
-                rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL;
-                overhaulTurbinePostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 2:
-                rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.EDGE;
-                overhaulTurbinePostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                break;
-            case 3:
-                rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.BETWEEN_GROUP;
-                byte coilType = ruleCfg.get("block");
-                switch(coilType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.CASING;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.COIL;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.BEARING;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.CONNECTOR;
-                        break;
-                }
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 4:
-                rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AXIAL_GROUP;
-                coilType = ruleCfg.get("block");
-                switch(coilType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.CASING;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.COIL;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.BEARING;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.CONNECTOR;
-                        break;
-                }
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 5:
-                rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.EDGE_GROUP;
-                coilType = ruleCfg.get("block");
-                switch(coilType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.CASING;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.COIL;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.BEARING;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.CONNECTOR;
-                        break;
-                }
-                break;
-            case 6:
-                rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.OR;
-                ConfigList rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readOverTurbineRule(rulC));
-                }
-                break;
-            case 7:
-                rule.ruleType = multiblock.configuration.overhaul.turbine.PlacementRule.RuleType.AND;
-                rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readOverTurbineRule(rulC));
-                }
-                break;
-        }
-        return rule;
+        return readGenericRule(overhaulTurbinePostLoadMap, new multiblock.configuration.overhaul.turbine.PlacementRule(), ruleCfg);
     }
-    protected multiblock.configuration.overhaul.fusion.PlacementRule readOverFusionRule(Config ruleCfg){
-        multiblock.configuration.overhaul.fusion.PlacementRule rule = new multiblock.configuration.overhaul.fusion.PlacementRule();
-        byte type = ruleCfg.get("type");
-        switch(type){
-            case 0:
-                rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.BETWEEN;
-                overhaulFusionPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 1:
-                rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.AXIAL;
-                overhaulFusionPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 2:
-                rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.VERTEX;
-                overhaulFusionPostLoadMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                break;
-            case 3:
-                rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.BETWEEN_GROUP;
-                byte blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.TOROIDAL_ELECTROMAGNET;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.POLOIDAL_ELECTROMAGNET;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.HEATING_BLANKET;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.BREEDING_BLANKET;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.HEAT_SINK;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.SHIELDING;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                    case 9:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.CONNECTOR;
-                        break;
-                }
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 4:
-                rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.AXIAL_GROUP;
-                blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.TOROIDAL_ELECTROMAGNET;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.POLOIDAL_ELECTROMAGNET;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.HEATING_BLANKET;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.BREEDING_BLANKET;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.HEAT_SINK;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.SHIELDING;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                    case 9:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.CONNECTOR;
-                        break;
-                }
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 5:
-                rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.VERTEX_GROUP;
-                blockType = ruleCfg.get("block");
-                switch(blockType){
-                    case 0:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.AIR;
-                        break;
-                    case 1:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.TOROIDAL_ELECTROMAGNET;
-                        break;
-                    case 2:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.POLOIDAL_ELECTROMAGNET;
-                        break;
-                    case 3:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.HEATING_BLANKET;
-                        break;
-                    case 4:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.BREEDING_BLANKET;
-                        break;
-                    case 5:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.REFLECTOR;
-                        break;
-                    case 6:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.HEAT_SINK;
-                        break;
-                    case 7:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.SHIELDING;
-                        break;
-                    case 8:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.CONDUCTOR;
-                        break;
-                    case 9:
-                        rule.blockType = multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.CONNECTOR;
-                        break;
-                }
-                break;
-            case 6:
-                rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.OR;
-                ConfigList rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readOverFusionRule(rulC));
-                }
-                break;
-            case 7:
-                rule.ruleType = multiblock.configuration.overhaul.fusion.PlacementRule.RuleType.AND;
-                rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readOverFusionRule(rulC));
-                }
-                break;
-        }
-        return rule;
+    protected multiblock.configuration.overhaul.fusion.PlacementRule readOverFusionRule(Config ruleCfg) {
+        return readGenericRule(overhaulFusionPostLoadMap, new multiblock.configuration.overhaul.fusion.PlacementRule(), ruleCfg);
     }
+
     protected Configuration loadConfiguration(Config config){
         boolean partial = config.get("partial");
         Configuration configuration;
