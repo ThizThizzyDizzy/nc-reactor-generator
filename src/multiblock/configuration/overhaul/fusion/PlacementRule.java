@@ -29,10 +29,17 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     }
 
     public enum BlockType implements IBlockType {
-        AIR("Air"), TOROIDAL_ELECTROMAGNET("Toroidal Electromagnet"),
-        POLOIDAL_ELECTROMAGNET("Poloidal Electromagnet"), HEATING_BLANKET("Heating Blanket"),
-        BREEDING_BLANKET("Breeding Blanket"), REFLECTOR("Reflector"), HEAT_SINK("Heat Sink"), SHIELDING("Shielding"),
-        CONDUCTOR("Conductor"), CONNECTOR("Connector");
+        AIR("Air"),
+        TOROIDAL_ELECTROMAGNET("Toroidal Electromagnet"),
+        POLOIDAL_ELECTROMAGNET("Poloidal Electromagnet"),
+        HEATING_BLANKET("Heating Blanket"),
+        BREEDING_BLANKET("Breeding Blanket"),
+        REFLECTOR("Reflector"),
+        HEAT_SINK("Heat Sink"),
+        SHIELDING("Shielding"),
+        CONDUCTOR("Conductor"),
+        CONNECTOR("Connector");
+
         private final String name;
 
         BlockType(String name) {

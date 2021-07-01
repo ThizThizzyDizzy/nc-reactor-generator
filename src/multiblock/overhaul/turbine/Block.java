@@ -3,12 +3,14 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.ITemplateAccess;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.image.Image;
-public class Block extends multiblock.Block{
+public class Block extends multiblock.Block implements ITemplateAccess<multiblock.configuration.overhaul.turbine.Block> {
     public multiblock.configuration.overhaul.turbine.Block template;
     public boolean valid;
     public Block(Configuration configuration, int x, int y, int z, multiblock.configuration.overhaul.turbine.Block block){
@@ -69,7 +71,7 @@ public class Block extends multiblock.Block{
                 + "\nEfficiency: "+template.coilEfficiency;
         }
         if(template!=null){
-            for(PlacementRule rule : template.rules){
+            for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.turbine.Block> rule : template.rules){
                 tip+="\nRequires "+rule.toString();
             }
         }
@@ -111,8 +113,8 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean calculateRules(Multiblock multiblock){
-        for(PlacementRule rule : template.rules){
-            if(!rule.isValid(this, (OverhaulTurbine) multiblock)){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.turbine.Block> rule : template.rules){
+            if(!rule.isValid(this, multiblock)){
                 return false;
             }
         }
@@ -132,18 +134,17 @@ public class Block extends multiblock.Block{
         Block other = (Block) oth;
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
         if(totalDist>1)return false;//too far away
-        if(isConnector()&&other.isCoil())return true;
         if(hasRules()){
-            for(PlacementRule rule : template.rules){
-                if(ruleHas(rule, other))return true;
+            for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.turbine.Block> rule : template.rules){
+                if(ruleHas((PlacementRule) rule, other))return true;
             }
         }
         return false;
     }
     private boolean ruleHas(PlacementRule rule, Block b){
         if(rule.block==b.template)return true;
-        for(PlacementRule rul : rule.rules){
-            if(ruleHas(rul, b))return true;
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.turbine.Block> rul : rule.rules){
+            if(ruleHas((PlacementRule) rul, b))return true;
         }
         return false;
     }
@@ -198,5 +199,10 @@ public class Block extends multiblock.Block{
         ArrayList<String> searchables = template.getSearchableNames();
         for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
         return searchables;
+    }
+
+    @Override
+    public multiblock.configuration.overhaul.turbine.Block getTemplate() {
+        return template;
     }
 }

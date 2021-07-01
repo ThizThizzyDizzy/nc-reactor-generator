@@ -2,6 +2,8 @@ package planner.menu.configuration.overhaul.turbine;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.Block;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
@@ -129,8 +131,8 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         coil.isToggledOn = block.coil;
         coilEfficiency.text = block.coilEfficiency+"";
         placementRules.components.clear();
-        for(PlacementRule rule : block.rules){
-            placementRules.add(new MenuComponentPlacementRule(rule));
+        for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : block.rules){
+            placementRules.add(new MenuComponentPlacementRule((PlacementRule) rule));
         }
     }
     @Override

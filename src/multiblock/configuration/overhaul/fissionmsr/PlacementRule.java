@@ -36,8 +36,15 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     }
 
     public enum BlockType implements IBlockType {
-        AIR("Air"), CASING("Casing"), HEATER("Heater"), VESSEL("Fuel Vessel"), MODERATOR("Moderator"), REFLECTOR(
-                "Reflector"), SHIELD("Neutron Shield"), IRRADIATOR("Irradiator"), CONDUCTOR("Conductor");
+        AIR("Air"),
+        CASING("Casing"),
+        HEATER("Heater"),
+        VESSEL("Fuel Vessel"),
+        MODERATOR("Moderator"),
+        REFLECTOR("Reflector"),
+        SHIELD("Neutron Shield"),
+        IRRADIATOR("Irradiator"),
+        CONDUCTOR("Conductor");
 
         public final String name;
 

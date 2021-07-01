@@ -44,6 +44,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         SHIELD("Neutron Shield"),
         IRRADIATOR("Irradiator"),
         CONDUCTOR("Conductor");
+
         public final String name;
         BlockType(String name){
             this.name = name;

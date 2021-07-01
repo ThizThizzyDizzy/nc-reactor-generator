@@ -11,6 +11,7 @@ import multiblock.FluidStack;
 import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.action.SetblockAction;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
 import multiblock.configuration.overhaul.turbine.Recipe;
@@ -427,7 +428,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public boolean calculateCoil(Block block, boolean addDecals){
         if(!block.isCoil()&&!block.isConnector())return false;
         boolean wasValid = block.valid;
-        for(PlacementRule rule : block.template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.turbine.Block> rule : block.template.rules){
             if(!rule.isValid(block, this)){
                 if(block.valid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
                 block.valid = false;
