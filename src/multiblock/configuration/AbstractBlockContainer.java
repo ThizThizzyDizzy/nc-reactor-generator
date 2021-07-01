@@ -9,4 +9,22 @@ public abstract class AbstractBlockContainer<Template extends IBlockTemplate> {
      */
     @Deprecated
     public ArrayList<Template> blocks = new ArrayList<>();
+
+    protected ArrayList<Template> getAllUsedBlocks(RuleContainer<?, Template> container){
+        ArrayList<Template> used = new ArrayList<>();
+        for(AbstractPlacementRule<?, Template> rule : container.rules){
+            used.addAll(getAllUsedBlocks(rule));
+            if(rule.block!=null)used.add(rule.block);
+        }
+        return used;
+    }
+    protected <BlockType extends IBlockType<Template>> ArrayList<AbstractPlacementRule<BlockType, Template>> getAllSubRules(RuleContainer<BlockType, Template> container){
+        ArrayList<AbstractPlacementRule<BlockType, Template>> rules = new ArrayList<>();
+        for(AbstractPlacementRule<BlockType, Template> rule : container.rules){
+            rules.addAll(getAllSubRules(rule));
+            rules.add(rule);
+        }
+        return rules;
+    }
+
 }

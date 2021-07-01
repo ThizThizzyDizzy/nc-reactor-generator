@@ -1,26 +1,20 @@
 package multiblock.configuration.overhaul.fusion;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+
 import multiblock.Multiblock;
-import multiblock.configuration.AddonConfiguration;
-import multiblock.configuration.Configuration;
-import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.*;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-public class FusionConfiguration{
-    public ArrayList<Block> allBlocks = new ArrayList<>();
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+public class FusionConfiguration extends AbstractBlockContainer<Block> {
     public ArrayList<Recipe> allRecipes = new ArrayList<>();
     public ArrayList<CoolantRecipe> allCoolantRecipes = new ArrayList<>();
-    /**
-     * @deprecated You should probably be using allBlocks
-     */
-    @Deprecated
-    public ArrayList<Block> blocks = new ArrayList<>();
     /**
      * @deprecated You should probably be using allRecipes
      */
@@ -190,7 +184,7 @@ public class FusionConfiguration{
     }
     @Override
     public boolean equals(Object obj){
-        if(obj!=null&&obj instanceof FusionConfiguration){
+        if(obj instanceof FusionConfiguration){
             FusionConfiguration fc = (FusionConfiguration)obj;
             return Objects.equals(fc.blocks, blocks)
                     &&Objects.equals(fc.recipes, recipes)
@@ -209,25 +203,9 @@ public class FusionConfiguration{
         }
         return false;
     }
-    private ArrayList<Block> getAllUsedBlocks(RuleContainer container){
-        ArrayList<Block> used = new ArrayList<>();
-        for(PlacementRule rule : container.rules){
-            used.addAll(getAllUsedBlocks(rule));
-            if(rule.block!=null)used.add(rule.block);
-        }
-        return used;
-    }
-    private ArrayList<PlacementRule> getAllSubRules(RuleContainer container){
-        ArrayList<PlacementRule> rules = new ArrayList<>();
-        for(PlacementRule rule : container.rules){
-            rules.addAll(getAllSubRules(rule));
-            rules.add(rule);
-        }
-        return rules;
-    }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
         for(Block block : blocks){
-            for(PlacementRule rule : getAllSubRules(block)){
+            for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : getAllSubRules(block)){
                 if(rule.block==null)continue;
                 if(parent.overhaul!=null&&parent.overhaul.fusion!=null&&parent.overhaul.fusion.blocks.contains(rule.block)){
                     rule.block = convertTo.overhaul.fusion.convert(rule.block);

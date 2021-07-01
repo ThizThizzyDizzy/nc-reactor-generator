@@ -44,7 +44,7 @@ import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class OverhaulFusionReactor extends Multiblock<Block>{
+public class OverhaulFusionReactor extends Multiblock<Block> {
     public CoolantRecipe coolantRecipe;
     public int innerRadius;
     public int coreSize;

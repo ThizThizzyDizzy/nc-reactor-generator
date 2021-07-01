@@ -1,5 +1,6 @@
 package multiblock.configuration.overhaul.fissionmsr;
 
+import multiblock.Multiblock;
 import multiblock.configuration.AbstractBlockContainer;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
@@ -58,7 +59,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         }
 
         @Override
-        public boolean blockMatches(multiblock.Block rb) {
+        public boolean blockMatches(Multiblock<?> generator, multiblock.Block rb) {
             multiblock.overhaul.fissionmsr.Block b = (multiblock.overhaul.fissionmsr.Block) rb;
             switch (this) {
                 case CASING:

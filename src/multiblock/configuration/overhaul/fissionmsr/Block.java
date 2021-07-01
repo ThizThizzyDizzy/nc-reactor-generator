@@ -1,7 +1,4 @@
 package multiblock.configuration.overhaul.fissionmsr;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Objects;
 
 import multiblock.configuration.*;
 import planner.Core;
@@ -11,6 +8,10 @@ import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
+
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Objects;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Searchable, IBlockTemplate {
     public static Block controller(String name, String displayName, String texture){
         Block block = new Block(name);

@@ -119,7 +119,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType<Templat
                     num = 6 - block.getAdjacent(reactor).size();
                 } else {
                     for (T b : block.getActiveAdjacent(reactor)) {
-                        if (blockType.blockMatches(b)) num++;
+                        if (blockType.blockMatches(reactor, b)) num++;
                     }
                 }
                 return num >= min && num <= max;
@@ -144,7 +144,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType<Templat
                         T b2 = reactor.getBlock(block.x + axis.x, block.y + axis.y, block.z + axis.z);
                         if (b1 == null || b2 == null) continue;
                         if (!b1.isActive() || !b2.isActive()) continue;
-                        if (blockType.blockMatches(b1) && blockType.blockMatches(b2)) num++;
+                        if (blockType.blockMatches(reactor, b1) && blockType.blockMatches(reactor, b2)) num++;
                     }
                 }
                 return num >= min && num <= max;
@@ -172,7 +172,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType<Templat
                     if (blockType.isAir()) {
                         if (b == null) dirs.add(d);
                     } else {
-                        if (blockType.blockMatches(b)) dirs.add(d);
+                        if (blockType.blockMatches(reactor, b)) dirs.add(d);
                     }
                 }
                 for (Vertex e : Vertex.values()) {
@@ -220,7 +220,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType<Templat
                     if (blockType.isAir()) {
                         if (b == null) dirs.add(d);
                     } else {
-                        if (blockType.blockMatches(b)) dirs.add(d);
+                        if (blockType.blockMatches(reactor, b)) dirs.add(d);
                     }
                 }
                 for (Edge3 e : Edge3.values()) {
