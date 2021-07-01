@@ -749,7 +749,7 @@ public class NCPF11Reader implements FormatReader {
                         block.sourceEfficiency = sourceCfg.get("efficiency");
                     }
                     if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
-                    if(hasRecipes){
+                    if(hasRecipes && (loadingAddon || !configuration.addon)){
                         Config portCfg = blockCfg.get("port");
                         block.port = new multiblock.configuration.overhaul.fissionsfr.Block(portCfg.get("name"));
                         block.port.parent = block;
@@ -974,7 +974,7 @@ public class NCPF11Reader implements FormatReader {
                         block.sourceEfficiency = sourceCfg.get("efficiency");
                     }
                     if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
-                    if(hasRecipes){
+                    if(hasRecipes && (loadingAddon || !configuration.addon)){
                         Config portCfg = blockCfg.get("port");
                         block.port = new multiblock.configuration.overhaul.fissionmsr.Block(portCfg.get("name"));
                         block.port.parent = block;
