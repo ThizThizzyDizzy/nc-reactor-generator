@@ -12,6 +12,7 @@ import multiblock.Multiblock;
 import multiblock.PartCount;
 import multiblock.action.SetblockAction;
 import multiblock.action.SetblocksAction;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
@@ -38,7 +39,7 @@ import planner.module.Module;
 import simplelibrary.Queue;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
-public class UnderhaulSFR extends CuboidalMultiblock<Block>{
+public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     public int netHeat;
     private int power, heat, cooling, cells;
     private float efficiency;
@@ -240,7 +241,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
     public boolean calculateCooler(Block block, boolean addDecals){
         if(block.template.cooling==0)return false;
         boolean wasValid = block.coolerValid;
-        for(PlacementRule rule : block.template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.underhaul.fissionsfr.Block> rule : block.template.rules){
             if(!rule.isValid(block, this)){
                 if(block.coolerValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x,block.y,block.z));
                 block.coolerValid = false;

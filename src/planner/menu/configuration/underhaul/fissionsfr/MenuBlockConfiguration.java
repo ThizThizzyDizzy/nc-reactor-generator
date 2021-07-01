@@ -2,6 +2,8 @@ package planner.menu.configuration.underhaul.fissionsfr;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Block;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
@@ -115,8 +117,8 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         controller.isToggledOn = block.controller;
         active.text = block.active==null?"":block.active;
         placementRules.components.clear();
-        for(PlacementRule rule : block.rules){
-            placementRules.add(new MenuComponentPlacementRule(rule));
+        for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : block.rules){
+            placementRules.add(new MenuComponentPlacementRule((PlacementRule) rule));
         }
     }
     @Override

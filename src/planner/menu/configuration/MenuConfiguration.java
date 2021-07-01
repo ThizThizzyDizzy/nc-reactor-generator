@@ -1114,8 +1114,8 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
         super.onMouseButton(x, y, button, pressed, mods);
     }
-    private void check(multiblock.configuration.underhaul.fissionsfr.Block parent, multiblock.configuration.underhaul.fissionsfr.RuleContainer b){
-        for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rul : b.rules){
+    private void check(multiblock.configuration.underhaul.fissionsfr.Block parent, multiblock.configuration.RuleContainer<?, ?> b){
+        for(AbstractPlacementRule<?, ?> rul : b.rules){
             if(rul.block!=null&&!rul.block.getDisplayName().contains("Cooler"))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
             check(parent, rul);
         }
