@@ -574,4 +574,8 @@ public class SmoreTheme extends ColorTheme{
     public boolean shouldContantlyUpdateBackground(){
         return chocolate.shouldContantlyUpdateBackground();
     }
+    @Override
+    public Color getSettingsMergeTextColor(){
+        return marshmallow.getSettingsMergeTextColor();
+    }
 }

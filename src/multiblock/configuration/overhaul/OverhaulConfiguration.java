@@ -88,4 +88,22 @@ public class OverhaulConfiguration{
             fusion.convertAddon(parent, convertTo);
         }
     }
+    public void makeAddon(OverhaulConfiguration parent, OverhaulConfiguration addon){
+        if(fissionSFR!=null){
+            addon.fissionSFR = new FissionSFRConfiguration();
+            fissionSFR.makeAddon(parent.fissionSFR, addon.fissionSFR);
+        }
+        if(fissionMSR!=null){
+            addon.fissionMSR = new FissionMSRConfiguration();
+            fissionMSR.makeAddon(parent.fissionMSR, addon.fissionMSR);
+        }
+        if(turbine!=null){
+            addon.turbine = new TurbineConfiguration();
+            turbine.makeAddon(parent.turbine, addon.turbine);
+        }
+        if(fusion!=null){
+            addon.fusion = new FusionConfiguration();
+            fusion.makeAddon(parent.fusion, addon.fusion);
+        }
+    }
 }

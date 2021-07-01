@@ -4,8 +4,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
+import org.lwjgl.glfw.GLFW;
 import planner.Core;
-import planner.theme.Theme;
 import planner.exception.MissingConfigurationEntryException;
 import planner.file.FileFormat;
 import planner.file.FileReader;
@@ -13,7 +13,6 @@ import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
-import planner.menu.component.MenuComponentMinimalistOptionButton;
 import planner.menu.component.MenuComponentToggleBox;
 import planner.menu.configuration.MenuConfiguration;
 import planner.module.Module;
@@ -138,7 +137,21 @@ public class MenuSettings extends SettingsMenu{
         quickLoadList.height = gui.helper.displayHeight()/3-quickLoadLabel.height;
         currentConfigLabel.y = quickLoadList.y+quickLoadList.height;
         save.y = load.y = modify.y = currentConfigLabel.y+currentConfigLabel.height;
+        if(Core.isShiftPressed()&&Core.isControlPressed()&&Core.configuration.name.equals("NuclearCraft Info")){
+            Core.applyColor(Core.theme.getSettingsMergeTextColor());
+            drawCenteredText(sidebar.width, gui.helper.displayHeight()-50, gui.helper.displayWidth(), gui.helper.displayHeight(), "Ctrl+Shift+MMB to convert to addon");
+            Core.applyWhite();
+        }
         super.render(millisSinceLastTick);
     }
-    
+    @Override
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        super.onMouseButton(x, y, button, pressed, mods);
+        if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE&&Core.isShiftPressed()&&Core.isControlPressed()&&Core.configuration.name.equals("NuclearCraft Info")){
+            Configuration config = Configuration.configurations.get(0).copy();
+            config.addons.add(Core.configuration.makeAddon(config));
+            Core.configuration = config;
+            onGUIOpened();
+        }
+    }
 }
