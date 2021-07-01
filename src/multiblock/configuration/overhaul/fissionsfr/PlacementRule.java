@@ -34,7 +34,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         return BlockType.values()[type];
     }
 
-    public enum BlockType implements IBlockType<Block> {
+    public enum BlockType implements IBlockType {
         AIR("Air"),
         CASING("Casing"),
         HEATSINK("Heatsink"),

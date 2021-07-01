@@ -18,7 +18,7 @@ public abstract class AbstractBlockContainer<Template extends IBlockTemplate> {
         }
         return used;
     }
-    protected <BlockType extends IBlockType<Template>> ArrayList<AbstractPlacementRule<BlockType, Template>> getAllSubRules(RuleContainer<BlockType, Template> container){
+    protected <BlockType extends IBlockType> ArrayList<AbstractPlacementRule<BlockType, Template>> getAllSubRules(RuleContainer<BlockType, Template> container){
         ArrayList<AbstractPlacementRule<BlockType, Template>> rules = new ArrayList<>();
         for(AbstractPlacementRule<BlockType, Template> rule : container.rules){
             rules.addAll(getAllSubRules(rule));

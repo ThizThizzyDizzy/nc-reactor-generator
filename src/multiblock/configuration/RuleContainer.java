@@ -4,7 +4,7 @@ import multiblock.MultiblockBit;
 
 import java.util.ArrayList;
 
-public abstract class RuleContainer<BlockType extends IBlockType<Template>, Template extends IBlockTemplate>
+public abstract class RuleContainer<BlockType extends IBlockType, Template extends IBlockTemplate>
         extends MultiblockBit {
     public ArrayList<AbstractPlacementRule<BlockType, Template>> rules = new ArrayList<>();
 

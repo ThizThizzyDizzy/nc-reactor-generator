@@ -28,7 +28,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         return BlockType.values()[type];
     }
 
-    public enum BlockType implements IBlockType<Block> {
+    public enum BlockType implements IBlockType {
         AIR("Air"), TOROIDAL_ELECTROMAGNET("Toroidal Electromagnet"),
         POLOIDAL_ELECTROMAGNET("Poloidal Electromagnet"), HEATING_BLANKET("Heating Blanket"),
         BREEDING_BLANKET("Breeding Blanket"), REFLECTOR("Reflector"), HEAT_SINK("Heat Sink"), SHIELDING("Shielding"),

@@ -8,7 +8,7 @@ import simplelibrary.config2.ConfigList;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public abstract class AbstractPlacementRule<BlockType extends IBlockType<Template>, Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {
+public abstract class AbstractPlacementRule<BlockType extends IBlockType, Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {
     public RuleType ruleType = RuleType.BETWEEN;
     public BlockType blockType;
     public Template block;
