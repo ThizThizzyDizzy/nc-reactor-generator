@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Block;
 import multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
@@ -332,8 +334,8 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         source.isToggledOn = block.source;
         sourceEfficiency.text = block.sourceEfficiency+"";
         placementRules.components.clear();
-        for(PlacementRule rule : block.rules){
-            placementRules.add(new MenuComponentPlacementRule(rule));
+        for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : block.rules){
+            placementRules.add(new MenuComponentPlacementRule((PlacementRule) rule));
         }
         blockRecipes.components.clear();
         for(BlockRecipe recipe : block.recipes){

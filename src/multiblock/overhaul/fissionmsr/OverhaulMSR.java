@@ -13,6 +13,7 @@ import multiblock.PartCount;
 import multiblock.Range;
 import multiblock.action.SetblockAction;
 import multiblock.action.SetblocksAction;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
 import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
@@ -1312,7 +1313,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         if(!block.isHeater())return false;
         if(!block.template.heaterHasBaseStats&&block.recipe==null)return false;//empty heater
         boolean wasValid = block.heaterValid;
-        for(PlacementRule rule : block.template.rules){
+        for(AbstractPlacementRule rule : block.template.rules){
             if(!rule.isValid(block, this)){
                 if(block.heaterValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
                 block.heaterValid = false;
