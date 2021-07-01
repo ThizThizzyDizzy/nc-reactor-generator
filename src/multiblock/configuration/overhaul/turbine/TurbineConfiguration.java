@@ -229,4 +229,24 @@ public class TurbineConfiguration{
             }
         }
     }
+    public void makeAddon(TurbineConfiguration parent, TurbineConfiguration addon){
+        B:for(Block b : blocks){
+            for(Block pb : parent.blocks){
+                if(pb.name.equals(b.name)){
+                    continue B;
+                }
+            }
+            addon.blocks.add(b);
+            parent.allBlocks.add(b);
+        }
+        C:for(Recipe c : recipes){
+            for(Recipe pc : parent.recipes){
+                if(pc.inputName.equals(c.inputName)){
+                    continue C;
+                }
+            }
+            addon.recipes.add(c);
+            parent.allRecipes.add(c);
+        }
+    }
 }

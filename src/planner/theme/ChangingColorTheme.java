@@ -541,4 +541,8 @@ public class ChangingColorTheme extends ColorTheme{
     public void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text){
         current.drawThemeButtonText(x, y, width, height, textHeight, text);
     }
+    @Override
+    public Color getSettingsMergeTextColor(){
+        return current.getSettingsMergeTextColor();
+    }
 }

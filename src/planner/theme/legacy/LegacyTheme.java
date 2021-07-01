@@ -526,6 +526,10 @@ public abstract class LegacyTheme extends ColorTheme{
     public Color getVRMultitoolTextColor(){
         return getTextColor();
     }
+    @Override
+    public Color getSettingsMergeTextColor(){
+        return getTextColor();
+    }
     public abstract Color getBackgroundColor();
     public abstract Color getTextColor();
     public abstract Color getHeaderColor();

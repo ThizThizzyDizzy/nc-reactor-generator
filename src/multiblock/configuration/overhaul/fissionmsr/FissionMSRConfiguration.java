@@ -213,4 +213,29 @@ public class FissionMSRConfiguration{
             }
         }
     }
+    public void makeAddon(FissionMSRConfiguration parent, FissionMSRConfiguration addon){
+        B:for(Block b : blocks){
+            for(Block pb : parent.blocks){
+                if(pb.name.equals(b.name)){
+                    ArrayList<BlockRecipe> extras = new ArrayList<>();
+                    R:for(BlockRecipe r : b.recipes){
+                        for(BlockRecipe pr : pb.recipes){
+                            if(r.inputName.equals(pr.inputName))continue R;
+                        }
+                        extras.add(r);
+                    }
+                    if(!extras.isEmpty()){
+                        addon.allBlocks.add(b);
+                        b.recipes.clear();
+                        b.allRecipes.clear();
+                        b.recipes.addAll(extras);
+                        pb.allRecipes.addAll(extras);
+                    }
+                    continue B;
+                }
+            }
+            addon.blocks.add(b);
+            parent.allBlocks.add(b);
+        }
+    }
 }

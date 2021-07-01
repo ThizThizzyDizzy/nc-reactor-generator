@@ -207,4 +207,24 @@ public class FissionSFRConfiguration{
             }
         }
     }
+    public void makeAddon(FissionSFRConfiguration parent, FissionSFRConfiguration addon){
+        B:for(Block b : blocks){
+            for(Block pb : parent.blocks){
+                if(pb.name.equals(b.name)){
+                    continue B;
+                }
+            }
+            addon.blocks.add(b);
+            parent.allBlocks.add(b);
+        }
+        f:for(Fuel f : fuels){
+            for(Fuel pf : parent.fuels){
+                if(pf.name.equals(f.name)){
+                    continue f;
+                }
+            }
+            addon.fuels.add(f);
+            parent.allFuels.add(f);
+        }
+    }
 }

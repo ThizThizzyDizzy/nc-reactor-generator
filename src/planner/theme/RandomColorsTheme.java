@@ -134,6 +134,7 @@ public class RandomColorsTheme extends ColorTheme{
     private Color vrSelectedOutlineColor;
     private Color vrPanelOutlineColor;
     private Color vrMultitoolTextColor;
+    private Color settingsMergeTextColor;
     public RandomColorsTheme(String name){
         super(name);
     }
@@ -691,5 +692,9 @@ public class RandomColorsTheme extends ColorTheme{
     private Color gen(Color color){
         if(color!=null)return color;
         return new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+    }
+    @Override
+    public Color getSettingsMergeTextColor(){
+        return settingsMergeTextColor = gen(settingsMergeTextColor);
     }
 }

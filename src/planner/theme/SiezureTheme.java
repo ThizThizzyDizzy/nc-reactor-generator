@@ -692,4 +692,9 @@ public class SiezureTheme extends ColorTheme{
     public boolean shouldContantlyUpdateBackground(){
         return true;
     }
+    @Override
+    public Color getSettingsMergeTextColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getSettingsMergeTextColor();
+        return rand();
+    }
 }
