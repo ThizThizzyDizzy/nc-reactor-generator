@@ -444,53 +444,44 @@ public class NCPF11Reader implements FormatReader {
     }
     //</editor-fold>
 
+    protected AbstractPlacementRule.RuleType mapRuleType(AbstractPlacementRule<?, ?> rule, byte type) {
+        return AbstractPlacementRule.RuleType.values()[type];
+    }
+
     protected <Rule extends AbstractPlacementRule<BlockType, Template>,
             BlockType extends IBlockType,
             Template extends IBlockTemplate> Rule readGenericRule(HashMap<Rule, Integer> postMap, Rule rule, Config ruleCfg){
         byte type = ruleCfg.get("type");
-        switch(type){
-            case 0:
-                rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN;
+        rule.ruleType = mapRuleType(rule, type);
+        switch(rule.ruleType){
+            case BETWEEN:
+            case AXIAL:
                 postMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
-            case 1:
-                rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL;
-                postMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 2:
-                rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.VERTEX;
+            case VERTEX:
+            case EDGE:
                 postMap.put(rule, readRuleBlockIndex(ruleCfg, "block"));
                 break;
-            case 3:
-                rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.BETWEEN_GROUP;
+            case BETWEEN_GROUP:
+            case AXIAL_GROUP:
                 rule.blockType = rule.loadBlockType(ruleCfg.get("block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
-            case 4:
-                rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AXIAL_GROUP;
-                rule.blockType = rule.loadBlockType(ruleCfg.get("block"));
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
-                break;
-            case 5:
-                rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.VERTEX_GROUP;
+            case VERTEX_GROUP:
+            case EDGE_GROUP:
                 rule.blockType = rule.loadBlockType(ruleCfg.get("block"));
                 break;
-            case 6:
-                rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.OR;
+            case OR:
                 ConfigList rules = ruleCfg.get("rules");
                 for(Iterator rit = rules.iterator(); rit.hasNext();){
                     Config rulC = (Config)rit.next();
                     rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
                 }
                 break;
-            case 7:
-                rule.ruleType = multiblock.configuration.underhaul.fissionsfr.PlacementRule.RuleType.AND;
+            case AND:
                 rules = ruleCfg.get("rules");
                 for(Iterator rit = rules.iterator(); rit.hasNext();){
                     Config rulC = (Config)rit.next();

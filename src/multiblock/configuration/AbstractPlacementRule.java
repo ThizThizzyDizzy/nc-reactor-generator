@@ -263,9 +263,15 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
      * Add new emum variants only to the end of the list.
      */
     public enum RuleType {
-        BETWEEN("Between"), AXIAL("Axial"), VERTEX("Vertex"), BETWEEN_GROUP("Between (Group)"), AXIAL_GROUP("Axial " +
-                "(Group)"), VERTEX_GROUP("Vertex (Group"), OR("Or"), AND("And"), EDGE("Edge"), EDGE_GROUP("Edge " +
-                "(Group)");
+        BETWEEN("Between"),
+        AXIAL("Axial"),
+        VERTEX("Vertex"),
+        BETWEEN_GROUP("Between (Group)"),
+        AXIAL_GROUP("Axial (Group)"),
+        VERTEX_GROUP("Vertex (Group"),
+        OR("Or"), AND("And"),
+        EDGE("Edge"),
+        EDGE_GROUP("Edge (Group)");
         public final String name;
 
         RuleType(String name) {
