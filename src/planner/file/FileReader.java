@@ -25,14 +25,14 @@ public class FileReader{
         formats.add(new OverhaulHellrageMSR4Reader());// hellrage MSR .json 2.0.31
         formats.add(new OverhaulHellrageMSR5Reader());// hellrage MSR .json 2.0.32-2.0.37
         formats.add(new OverhaulHellrageMSR6Reader());// hellrage MSR .json 2.1.1-2.1.7 (present)
-        formats.add(new NCPF1Reader());
-        formats.add(new NCPF2Reader());
-        formats.add(new NCPF3Reader());
-        formats.add(new NCPF4Reader());
-        formats.add(new NCPF5Reader());
-        formats.add(new NCPF6Reader());
-        formats.add(new NCPF7Reader());
-        formats.add(new NCPF8Reader());
+        formats.add(new NCPF1Reader());// .ncpf version 1
+        formats.add(new NCPF2Reader());// .ncpf version 2
+        formats.add(new NCPF3Reader());// .ncpf version 3
+        formats.add(new NCPF4Reader());// .ncpf version 4
+        formats.add(new NCPF5Reader());// .ncpf version 5
+        formats.add(new NCPF6Reader());// .ncpf version 6
+        formats.add(new NCPF7Reader());// .ncpf version 7
+        formats.add(new NCPF8Reader());// .ncpf version 8
         formats.add(new NCPF9Reader());// .ncpf version 9
         formats.add(new NCPF10Reader());// .ncpf version 10
         formats.add(new NCPF11Reader());// .ncpf version 11
