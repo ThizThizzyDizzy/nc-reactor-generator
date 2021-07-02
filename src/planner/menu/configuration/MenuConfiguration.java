@@ -90,6 +90,7 @@ public class MenuConfiguration extends ConfigurationMenu{
             add(saveAddon);
             saveAddon.addActionListener((e) -> {
                 if(configuration.addon){
+                    onGUIClosed();
                     try{
                         Core.createFileChooser(new File(configuration.name), (file) -> {
                             if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
@@ -106,6 +107,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     }catch(IOException ex){
                         Sys.error(ErrorLevel.severe, "Failed to save addon!", ex, ErrorCategory.fileIO);
                     }
+                    onGUIOpened();
                 }else{
                     gui.open(new MenuConfiguration(gui, this, Core.configuration));
                 }
