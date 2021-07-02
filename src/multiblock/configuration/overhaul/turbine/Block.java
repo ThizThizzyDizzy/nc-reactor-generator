@@ -1,15 +1,15 @@
 package multiblock.configuration.overhaul.turbine;
 import java.util.ArrayList;
 import java.util.Objects;
-import multiblock.configuration.Configuration;
-import multiblock.configuration.TextureManager;
+
+import multiblock.configuration.*;
 import planner.Core;
 import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class Block extends RuleContainer implements Searchable{
+public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Searchable, IBlockTemplate {
     public static Block controller(String name, String displayName, String texture){
         Block block = new Block(name);
         block.displayName = displayName;
@@ -163,7 +163,7 @@ public class Block extends RuleContainer implements Searchable{
         }
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
-            for(PlacementRule rule : rules){
+            for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : rules){
                 ruls.add(rule.save(parent, configuration));
             }
             config.set("rules", ruls);
@@ -208,7 +208,7 @@ public class Block extends RuleContainer implements Searchable{
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> nams = getLegacyNames();
         nams.add(getDisplayName());
-        for(PlacementRule r : rules)nams.addAll(r.getSearchableNames());
+        for(AbstractPlacementRule<PlacementRule.BlockType, Block> r : rules)nams.addAll(r.getSearchableNames());
         return nams;
     }
 }

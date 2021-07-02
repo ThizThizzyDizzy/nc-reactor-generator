@@ -3,12 +3,14 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.ITemplateAccess;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.image.Image;
-public class Block extends multiblock.Block{
+public class Block extends multiblock.Block implements ITemplateAccess<multiblock.configuration.underhaul.fissionsfr.Block> {
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
@@ -112,7 +114,7 @@ public class Block extends multiblock.Block{
                 + "\nCooling: "+getCooling()+"H/t";
             if(template.active!=null)tip+="\nActive ("+template.active+")";
         }
-        for(PlacementRule rule : template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.underhaul.fissionsfr.Block> rule : template.rules){
             tip+="\nRequires "+rule.toString();
         }
         return tip;
@@ -141,7 +143,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean calculateRules(Multiblock multiblock){
-        for(PlacementRule rule : template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.underhaul.fissionsfr.Block> rule : template.rules){
             if(!rule.isValid(this, (UnderhaulSFR) multiblock)){
                 return false;
             }
@@ -163,16 +165,16 @@ public class Block extends multiblock.Block{
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
         if(totalDist>1)return false;//too far away
         if(hasRules()){
-            for(PlacementRule rule : template.rules){
-                if(ruleHas(rule, other))return true;
+            for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.underhaul.fissionsfr.Block> rule : template.rules){
+                if(ruleHas((PlacementRule) rule, other))return true;
             }
         }
         return false;
     }
     private boolean ruleHas(PlacementRule rule, Block b){
         if(rule.block==b.template)return true;
-        for(PlacementRule rul : rule.rules){
-            if(ruleHas(rul, b))return true;
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.underhaul.fissionsfr.Block> rul : rule.rules){
+            if(ruleHas((PlacementRule) rul, b))return true;
         }
         return false;
     }
@@ -220,5 +222,10 @@ public class Block extends multiblock.Block{
         ArrayList<String> searchables = template.getSearchableNames();
         for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
         return searchables;
+    }
+
+    @Override
+    public multiblock.configuration.underhaul.fissionsfr.Block getTemplate() {
+        return template;
     }
 }

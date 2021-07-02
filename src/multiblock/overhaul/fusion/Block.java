@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import multiblock.Direction;
 import multiblock.Multiblock;
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.ITemplateAccess;
 import multiblock.configuration.overhaul.fusion.PlacementRule;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
@@ -11,7 +13,7 @@ import planner.vr.VRCore;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.Renderer2D;
-public class Block extends multiblock.Block{
+public class Block extends multiblock.Block implements ITemplateAccess<multiblock.configuration.overhaul.fusion.Block> {
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
@@ -140,7 +142,7 @@ public class Block extends multiblock.Block{
                 tip+="\nCooling: "+template.heatsinkCooling+"H/t";
             }
         }
-        for(PlacementRule rule : template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.fusion.Block> rule : template.rules){
             tip+="\nRequires "+rule.toString();
         }
         return tip;
@@ -334,7 +336,7 @@ public class Block extends multiblock.Block{
     }
     @Override
     public boolean calculateRules(Multiblock multiblock){
-        for(PlacementRule rule : template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.fusion.Block> rule : template.rules){
             if(!rule.isValid(this, (OverhaulFusionReactor) multiblock)){
                 return false;
             }
@@ -356,16 +358,16 @@ public class Block extends multiblock.Block{
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
         if(totalDist>1)return false;//too far away
         if(hasRules()){
-            for(PlacementRule rule : template.rules){
-                if(ruleHas(rule, other))return true;
+            for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.fusion.Block> rule : template.rules){
+                if(ruleHas((PlacementRule) rule, other))return true;
             }
         }
         return false;
     }
     private boolean ruleHas(PlacementRule rule, Block b){
         if(rule.block==b.template)return true;
-        for(PlacementRule rul : rule.rules){
-            if(ruleHas(rul, b))return true;
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.fusion.Block> rul : rule.rules){
+            if(ruleHas((PlacementRule) rul, b))return true;
         }
         return false;
     }
@@ -452,7 +454,7 @@ public class Block extends multiblock.Block{
         if(!isHeatsink())return false;
         if(!template.heatsinkHasBaseStats&&recipe==null)return false;//empty heatsink
         boolean wasValid = heatsinkValid;
-        for(PlacementRule rule : template.rules){
+        for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.fusion.Block> rule : template.rules){
             if(!rule.isValid(this, reactor)){
                 heatsinkValid = false;
                 return wasValid!=heatsinkValid;
@@ -476,5 +478,10 @@ public class Block extends multiblock.Block{
         ArrayList<String> searchables = template.getSearchableNames();
         for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
         return searchables;
+    }
+
+    @Override
+    public multiblock.configuration.overhaul.fusion.Block getTemplate() {
+        return template;
     }
 }

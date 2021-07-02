@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.TextureManager;
@@ -1112,26 +1114,26 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
         super.onMouseButton(x, y, button, pressed, mods);
     }
-    private void check(multiblock.configuration.underhaul.fissionsfr.Block parent, multiblock.configuration.underhaul.fissionsfr.RuleContainer b){
-        for(multiblock.configuration.underhaul.fissionsfr.PlacementRule rul : b.rules){
+    private void check(multiblock.configuration.underhaul.fissionsfr.Block parent, multiblock.configuration.RuleContainer<?, ?> b){
+        for(AbstractPlacementRule<?, ?> rul : b.rules){
             if(rul.block!=null&&!rul.block.getDisplayName().contains("Cooler"))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
             check(parent, rul);
         }
     }
-    private void check(multiblock.configuration.overhaul.fissionsfr.Block parent, multiblock.configuration.overhaul.fissionsfr.RuleContainer b){
-        for(multiblock.configuration.overhaul.fissionsfr.PlacementRule rul : b.rules){
+    private void check(multiblock.configuration.overhaul.fissionsfr.Block parent, multiblock.configuration.RuleContainer<?, ?> b){
+        for(AbstractPlacementRule<?, ?> rul : b.rules){
             if(rul.block!=null&&!rul.block.getDisplayName().contains("Sink"))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
             check(parent, rul);
         }
     }
-    private void check(multiblock.configuration.overhaul.fissionmsr.Block parent, multiblock.configuration.overhaul.fissionmsr.RuleContainer b){
-        for(multiblock.configuration.overhaul.fissionmsr.PlacementRule rul : b.rules){
+    private void check(multiblock.configuration.overhaul.fissionmsr.Block parent, multiblock.configuration.RuleContainer<?, ?> b){
+        for(AbstractPlacementRule<?, ?> rul : b.rules){
             if(rul.block!=null&&(rul.block.getDisplayName().contains(" Port")||!rul.block.getDisplayName().contains("Heater")))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
             check(parent, rul);
         }
     }
-    private void check(multiblock.configuration.overhaul.turbine.Block parent, multiblock.configuration.overhaul.turbine.RuleContainer b){
-        for(multiblock.configuration.overhaul.turbine.PlacementRule rul : b.rules){
+    private void check(multiblock.configuration.overhaul.turbine.Block parent, multiblock.configuration.RuleContainer<?, ?> b){
+        for(AbstractPlacementRule<?, ?> rul : b.rules){
             if(rul.block!=null&&!rul.block.getDisplayName().contains("Coil"))Sys.error(ErrorLevel.warning, "Found block "+parent.getDisplayName()+" using "+rul.block.getDisplayName()+" in its placement rules!", null, ErrorCategory.bug);
             check(parent, rul);
         }

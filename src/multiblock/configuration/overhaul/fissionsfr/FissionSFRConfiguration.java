@@ -1,25 +1,19 @@
 package multiblock.configuration.overhaul.fissionsfr;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+
 import multiblock.Multiblock;
-import multiblock.configuration.AddonConfiguration;
-import multiblock.configuration.Configuration;
-import multiblock.configuration.PartialConfiguration;
+import multiblock.configuration.*;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-public class FissionSFRConfiguration{
-    public ArrayList<Block> allBlocks = new ArrayList<>();//because I feel like being complicated, this is filled with parent duplicates for addons with recipes
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
     public ArrayList<CoolantRecipe> allCoolantRecipes = new ArrayList<>();
-    /**
-     * @deprecated You should probably be using allBlocks
-     */
-    @Deprecated
-    public ArrayList<Block> blocks = new ArrayList<>();
     /**
      * @deprecated You should probably be using allCoolantRecipes
      */
@@ -198,7 +192,7 @@ public class FissionSFRConfiguration{
     }
     @Override
     public boolean equals(Object obj){
-        if(obj!=null&&obj instanceof FissionSFRConfiguration){
+        if(obj instanceof FissionSFRConfiguration){
             FissionSFRConfiguration fsfrc = (FissionSFRConfiguration)obj;
             return Objects.equals(fsfrc.blocks, blocks)
                     &&Objects.equals(fsfrc.coolantRecipes, coolantRecipes)
@@ -211,25 +205,9 @@ public class FissionSFRConfiguration{
         }
         return false;
     }
-    private ArrayList<Block> getAllUsedBlocks(RuleContainer container){
-        ArrayList<Block> used = new ArrayList<>();
-        for(PlacementRule rule : container.rules){
-            used.addAll(getAllUsedBlocks(rule));
-            if(rule.block!=null)used.add(rule.block);
-        }
-        return used;
-    }
-    private ArrayList<PlacementRule> getAllSubRules(RuleContainer container){
-        ArrayList<PlacementRule> rules = new ArrayList<>();
-        for(PlacementRule rule : container.rules){
-            rules.addAll(getAllSubRules(rule));
-            rules.add(rule);
-        }
-        return rules;
-    }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
         for(Block block : blocks){
-            for(PlacementRule rule : getAllSubRules(block)){
+            for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : getAllSubRules(block)){
                 if(rule.block==null)continue;
                 if(parent.overhaul!=null&&parent.overhaul.fissionSFR!=null&&parent.overhaul.fissionSFR.blocks.contains(rule.block)){
                     rule.block = convertTo.overhaul.fissionSFR.convert(rule.block);

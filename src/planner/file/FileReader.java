@@ -3,33 +3,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import planner.file.reader.NCPF10Reader;
-import planner.file.reader.NCPF11Reader;
-import planner.file.reader.NCPF1Reader;
-import planner.file.reader.NCPF2Reader;
-import planner.file.reader.NCPF3Reader;
-import planner.file.reader.NCPF4Reader;
-import planner.file.reader.NCPF5Reader;
-import planner.file.reader.NCPF6Reader;
-import planner.file.reader.NCPF7Reader;
-import planner.file.reader.NCPF8Reader;
-import planner.file.reader.NCPF9Reader;
-import planner.file.reader.OverhaulHellrageMSR1Reader;
-import planner.file.reader.OverhaulHellrageMSR2Reader;
-import planner.file.reader.OverhaulHellrageMSR3Reader;
-import planner.file.reader.OverhaulHellrageMSR4Reader;
-import planner.file.reader.OverhaulHellrageMSR5Reader;
-import planner.file.reader.OverhaulHellrageMSR6Reader;
-import planner.file.reader.OverhaulHellrageSFR1Reader;
-import planner.file.reader.OverhaulHellrageSFR2Reader;
-import planner.file.reader.OverhaulHellrageSFR3Reader;
-import planner.file.reader.OverhaulHellrageSFR4Reader;
-import planner.file.reader.OverhaulHellrageSFR5Reader;
-import planner.file.reader.OverhaulHellrageSFR6Reader;
-import planner.file.reader.OverhaulNCConfigReader;
-import planner.file.reader.UnderhaulHellrage1Reader;
-import planner.file.reader.UnderhaulHellrage2Reader;
-import planner.file.reader.UnderhaulNCConfigReader;
+
+import planner.file.reader.*;
+
 public class FileReader{
     public static final ArrayList<FormatReader> formats = new ArrayList<>();
     static{
@@ -49,17 +25,17 @@ public class FileReader{
         formats.add(new OverhaulHellrageMSR4Reader());// hellrage MSR .json 2.0.31
         formats.add(new OverhaulHellrageMSR5Reader());// hellrage MSR .json 2.0.32-2.0.37
         formats.add(new OverhaulHellrageMSR6Reader());// hellrage MSR .json 2.1.1-2.1.7 (present)
-        formats.add(new NCPF1Reader());
-        formats.add(new NCPF2Reader());
-        formats.add(new NCPF3Reader());
-        formats.add(new NCPF4Reader());
-        formats.add(new NCPF5Reader());
-        formats.add(new NCPF6Reader());
-        formats.add(new NCPF7Reader());
-        formats.add(new NCPF8Reader());
-        formats.add(new NCPF9Reader());
-        formats.add(new NCPF10Reader());
-        formats.add(new NCPF11Reader());
+        formats.add(new NCPF1Reader());// .ncpf version 1
+        formats.add(new NCPF2Reader());// .ncpf version 2
+        formats.add(new NCPF3Reader());// .ncpf version 3
+        formats.add(new NCPF4Reader());// .ncpf version 4
+        formats.add(new NCPF5Reader());// .ncpf version 5
+        formats.add(new NCPF6Reader());// .ncpf version 6
+        formats.add(new NCPF7Reader());// .ncpf version 7
+        formats.add(new NCPF8Reader());// .ncpf version 8
+        formats.add(new NCPF9Reader());// .ncpf version 9
+        formats.add(new NCPF10Reader());// .ncpf version 10
+        formats.add(new NCPF11Reader());// .ncpf version 11
     }
     public static NCPFFile read(InputStreamProvider provider){
         for(FormatReader reader : formats){
