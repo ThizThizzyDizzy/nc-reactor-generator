@@ -1,15 +1,17 @@
 package multiblock.configuration.overhaul.fusion;
-
-import multiblock.configuration.*;
+import java.util.ArrayList;
+import java.util.Objects;
+import multiblock.configuration.AbstractPlacementRule;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.IBlockTemplate;
+import multiblock.configuration.RuleContainer;
+import multiblock.configuration.TextureManager;
 import planner.Core;
 import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-
-import java.util.ArrayList;
-import java.util.Objects;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Searchable, IBlockTemplate {
     public String name;
     public String displayName;

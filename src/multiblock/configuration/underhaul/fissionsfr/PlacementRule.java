@@ -1,18 +1,9 @@
 package multiblock.configuration.underhaul.fissionsfr;
-import java.util.ArrayList;
-import java.util.Objects;
-import multiblock.Axis;
-import multiblock.Direction;
 import multiblock.Multiblock;
-import multiblock.Vertex;
 import multiblock.configuration.AbstractBlockContainer;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.IBlockType;
-import multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import planner.menu.component.Searchable;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
 public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType, Block> {
     public static PlacementRule atLeast(int min, BlockType block){
         PlacementRule rule = new PlacementRule();

@@ -3,8 +3,6 @@ import java.util.ArrayList;
 import multiblock.configuration.overhaul.fusion.Block;
 import multiblock.configuration.overhaul.fusion.BlockRecipe;
 import planner.Core;
-import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;

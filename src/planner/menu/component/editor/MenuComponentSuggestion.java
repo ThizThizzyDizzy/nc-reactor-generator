@@ -5,8 +5,6 @@ import java.util.List;
 import planner.Core;
 import planner.editor.suggestion.Suggestion;
 import planner.menu.MenuEdit;
-import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.image.Image;

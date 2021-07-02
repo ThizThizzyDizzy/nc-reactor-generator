@@ -2,8 +2,6 @@ package planner.menu.component.editor;
 import planner.Core;
 import planner.Task;
 import planner.menu.MenuEdit;
-import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblockProgressBar extends MenuComponent{
     private static final double textHeight = 20;

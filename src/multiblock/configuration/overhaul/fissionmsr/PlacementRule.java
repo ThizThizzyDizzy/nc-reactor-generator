@@ -1,13 +1,10 @@
 package multiblock.configuration.overhaul.fissionmsr;
-
+import java.util.Locale;
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractBlockContainer;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.IBlockType;
-
-import java.util.Locale;
-
 public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType, Block> {
     public static PlacementRule parseNC(FissionMSRConfiguration configuration, String str) {
         PlacementRule rule = new PlacementRule();

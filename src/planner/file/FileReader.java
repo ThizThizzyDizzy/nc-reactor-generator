@@ -3,9 +3,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-
 import planner.file.reader.*;
-
 public class FileReader{
     public static final ArrayList<FormatReader> formats = new ArrayList<>();
     static{

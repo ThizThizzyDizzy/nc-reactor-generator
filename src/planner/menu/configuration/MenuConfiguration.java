@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.AddonConfiguration;
 import multiblock.configuration.Configuration;

@@ -1,14 +1,10 @@
 package multiblock.configuration.overhaul.turbine;
-
+import java.util.Locale;
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractBlockContainer;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.IBlockType;
-
-import java.util.Locale;
-import java.util.Objects;
-
 public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType, Block> {
     public static PlacementRule parseNC(TurbineConfiguration configuration, String str) {
         PlacementRule rule = new PlacementRule();

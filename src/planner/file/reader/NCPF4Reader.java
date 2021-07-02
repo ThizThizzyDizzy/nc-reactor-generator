@@ -5,10 +5,12 @@ import multiblock.configuration.PartialConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import simplelibrary.config2.Config;
 public class NCPF4Reader extends NCPF5Reader {
+    @Override
     protected byte getTargetVersion() {
         return (byte) 4;
     }
 
+    @Override
     protected Configuration loadConfiguration(Config config){
         boolean partial = config.get("partial");
         Configuration configuration;

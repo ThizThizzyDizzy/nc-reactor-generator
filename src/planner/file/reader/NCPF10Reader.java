@@ -4,12 +4,15 @@ import multiblock.configuration.AbstractPlacementRule;
 import simplelibrary.config2.Config;
 
 public class NCPF10Reader extends NCPF11Reader {
+    @Override
     protected byte getTargetVersion() {
         return (byte) 10;
     }
+    @Override
     protected int readRuleBlockIndex(Config config, String name) {
         return (byte) config.get(name);
     }
+    @Override
     protected AbstractPlacementRule.RuleType mapRuleType(AbstractPlacementRule<?, ?> rule, byte type) {
         switch (type) {
             case 0:

@@ -1,13 +1,15 @@
 package multiblock.configuration;
-
-import multiblock.*;
+import java.util.ArrayList;
+import java.util.Objects;
+import multiblock.Axis;
+import multiblock.Block;
+import multiblock.Direction;
+import multiblock.Edge3;
+import multiblock.Multiblock;
+import multiblock.Vertex;
 import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-
-import java.util.ArrayList;
-import java.util.Objects;
-
 public abstract class AbstractPlacementRule<BlockType extends IBlockType, Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {
     public RuleType ruleType = RuleType.BETWEEN;
     public BlockType blockType;

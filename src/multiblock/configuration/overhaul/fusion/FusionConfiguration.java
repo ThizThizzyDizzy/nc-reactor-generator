@@ -1,5 +1,8 @@
 package multiblock.configuration.overhaul.fusion;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import multiblock.Multiblock;
 import multiblock.configuration.*;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
@@ -7,11 +10,6 @@ import multiblock.overhaul.fusion.OverhaulFusionReactor;
 import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 public class FusionConfiguration extends AbstractBlockContainer<Block> {
     public ArrayList<Recipe> allRecipes = new ArrayList<>();
     public ArrayList<CoolantRecipe> allCoolantRecipes = new ArrayList<>();

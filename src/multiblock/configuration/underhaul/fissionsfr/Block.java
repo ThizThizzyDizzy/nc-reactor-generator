@@ -1,8 +1,11 @@
 package multiblock.configuration.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Objects;
-
-import multiblock.configuration.*;
+import multiblock.configuration.AbstractPlacementRule;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.IBlockTemplate;
+import multiblock.configuration.RuleContainer;
+import multiblock.configuration.TextureManager;
 import planner.Core;
 import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
@@ -10,7 +13,6 @@ import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
-
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Searchable, IBlockTemplate {
     public static Block cooler(String name, String displayName, int cooling, String texture, PlacementRule... rules){
         Block block = new Block(name);

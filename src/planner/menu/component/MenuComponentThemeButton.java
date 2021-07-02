@@ -2,7 +2,6 @@ package planner.menu.component;
 import planner.Core;
 import planner.theme.Theme;
 import simplelibrary.font.FontManager;
-import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 public class MenuComponentThemeButton extends MenuComponentMinimalistButton{
     private final Theme theme;
     public MenuComponentThemeButton(Theme theme){
