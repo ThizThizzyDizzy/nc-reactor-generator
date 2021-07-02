@@ -346,6 +346,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
             boolean axial = str.startsWith("axial");
             if (axial) str = str.substring(5).trim();
 
+            if(str.startsWith("of any "))str = str.substring("of any ".length());
             BlockType type = parseBlockType(configuration, str);
             Template block = type == null ? parseTemplate(configuration, str) : null;
 

@@ -12,6 +12,9 @@ public class Task{
         subtasks.add(subtask);
         return subtask;
     }
+    public synchronized Task addSubtask(String name){
+        return addSubtask(new Task(name));
+    }
     public synchronized Task getCurrentSubtask(){
         for(Task t : subtasks){
             if(t.isFinished())continue;

@@ -156,9 +156,11 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         }
         return false;
     }
+    @Override
     public String getDisplayName(){
         return displayName==null?name:displayName;
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(legacyNames);
         allNames.add(name);

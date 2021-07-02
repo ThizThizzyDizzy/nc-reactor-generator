@@ -199,11 +199,13 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                 &&b.outlet==outlet
                 &&Core.areImagesEqual(b.texture, texture);
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(legacyNames);
         allNames.add(name);
         return allNames;
     }
+    @Override
     public String getDisplayName(){
         return displayName==null?name:displayName;
     }

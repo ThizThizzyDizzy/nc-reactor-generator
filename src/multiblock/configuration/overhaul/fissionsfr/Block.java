@@ -503,9 +503,11 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                 &&Core.areImagesEqual(b.portOutputTexture, portOutputTexture)
                 &&b.recipes.equals(recipes);
     }
+    @Override
     public String getDisplayName(){
         return displayName==null?name:displayName;
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(legacyNames);
         allNames.add(name);

@@ -92,7 +92,13 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         }
         for(Block b : configuration.allBlocks){
             for(String s : b.getLegacyNames()){
-                if(s.toLowerCase(Locale.ENGLISH).contains("coil")&&s.toLowerCase(Locale.ENGLISH).matches("[\\s^]?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"[\\s$]?.*")){
+                if(str.endsWith(" coil")||str.endsWith(" coils")){
+                    String withoutTheCoil = str.substring(0, str.indexOf(" coil"));
+                    if(s.equals("nuclearcraft:turbine_dynamo_coil_"+withoutTheCoil)){
+                        return b;
+                    }
+                }
+                if(s.toLowerCase(Locale.ENGLISH).contains("coil")&&s.toLowerCase(Locale.ENGLISH).matches("(\\s|^)?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"(\\s|$)?.*")){
                     int len = s.length();
                     if(block==null||len<shortest){
                         block = b;

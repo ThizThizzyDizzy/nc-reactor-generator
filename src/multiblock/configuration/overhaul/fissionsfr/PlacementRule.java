@@ -111,7 +111,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         for(Block b : configuration.allBlocks){
             if(b.parent!=null)continue;
             for(String s : b.getLegacyNames()){
-                if(s.toLowerCase(Locale.ENGLISH).contains("sink")&&s.toLowerCase(Locale.ENGLISH).matches("[\\s^]?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"[\\s$]?.*")){
+                if(s.toLowerCase(Locale.ENGLISH).contains("sink")&&s.toLowerCase(Locale.ENGLISH).matches("(\\s|^)?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"(\\s|$)?.*")){
                     int len = s.length();
                     if(block==null||len<shortest){
                         block = b;
