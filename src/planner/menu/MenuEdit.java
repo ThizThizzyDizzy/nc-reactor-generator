@@ -421,7 +421,7 @@ public class MenuEdit extends Menu implements Editor{
                     min = Math.min(min,d);
                 }
                 ImageStash.instance.bindTexture(0);
-                turbineGraph = new Framebuffer(gui.helper, null, (int)width, (int)height);
+                if(turbineGraph==null||(int)width!=turbineGraph.width||(int)height!=turbineGraph.height)turbineGraph = new Framebuffer(gui.helper, null, (int)width, (int)height);
                 turbineGraph.bindRenderTarget2D();
                 GL11.glColor4d(0, 0, 0, 1);
                 GL11.glBegin(GL11.GL_QUADS);
