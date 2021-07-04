@@ -1,31 +1,35 @@
-package planner.menu.configuration.overhaul.fissionmsr;
-import multiblock.configuration.AbstractPlacementRule;
-import multiblock.configuration.Configuration;
-import multiblock.configuration.overhaul.fissionmsr.Block;
-import multiblock.configuration.overhaul.fissionmsr.PlacementRule;
+package planner.menu.configuration;
+
+import multiblock.configuration.*;
 import planner.Core;
-import planner.menu.component.MenuComponentDropdownList;
-import planner.menu.component.MenuComponentLabel;
-import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.MenuComponentMinimalistButton;
-import planner.menu.component.MenuComponentMinimalistSlider;
-import planner.menu.configuration.ConfigurationMenu;
+import planner.menu.component.*;
 import simplelibrary.font.FontManager;
+import simplelibrary.image.Image;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
-public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
+
+public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
+        Template extends IBlockTemplate,
+        PlacementRule extends AbstractPlacementRule<BlockType, Template>> extends ConfigurationMenu {
+
     private final PlacementRule rule;
     private final MenuComponentDropdownList type, block;
-    private MenuComponentMinimalistSlider min, max;
+    private final MenuComponentMinimalistSlider min, max;
     private final MenuComponentLabel placementRulesLabel;
     private final MenuComponentMinimaList placementRules;
     private final MenuComponentMinimalistButton addRule;
+    private final AbstractBlockContainer<Template> blockList;
+    private final BlockType[] blockTypes;
     private boolean refreshNeeded = false;
-    public MenuPlacementRuleConfiguration(GUI gui, Menu parent, Configuration configuration, PlacementRule rule){
+
+    public MenuPlacementRuleConfiguration(GUI gui, Menu parent, Configuration configuration, PlacementRule rule,
+                                          AbstractBlockContainer<Template> blockList, BlockType[] blockTypes){
         super(gui, parent, configuration, "Placement Rule");
+        this.blockList = blockList;
+        this.blockTypes = blockTypes;
         type = add(new MenuComponentDropdownList(sidebar.width, 0, 0, 64));
-        for(PlacementRule.RuleType ruleType : PlacementRule.RuleType.values()){
+        for(AbstractPlacementRule.RuleType ruleType : AbstractPlacementRule.RuleType.values()){
             type.add(new MenuComponentLabel(0, 0, 0, 0, ruleType.name){
                 @Override
                 public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
@@ -48,8 +52,8 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
         addRule = add(new MenuComponentMinimalistButton(sidebar.width, 0, 0, 48, "New Rule", true, true));
         addRule.addActionListener((e) -> {
             PlacementRule rul;
-            rule.rules.add(rul = new PlacementRule());
-            gui.open(new MenuPlacementRuleConfiguration(gui, parent, configuration, rul));
+            rule.rules.add(rul = (PlacementRule) rule.newRule());
+            gui.open(new MenuPlacementRuleConfiguration<BlockType, Template, PlacementRule>(gui, parent, configuration, rul, blockList, blockTypes));
         });
         this.rule = rule;
     }
@@ -60,8 +64,8 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
         switch(rule.ruleType){
             case BETWEEN_GROUP:
             case AXIAL_GROUP:
-                for(PlacementRule.BlockType type : PlacementRule.BlockType.values()){
-                    block.add(new MenuComponentLabel(0, 0, 0, 0, type.name){
+                for(BlockType type : blockTypes){
+                    block.add(new MenuComponentLabel(0, 0, 0, 0, type.getDisplayName()){
                         @Override
                         public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
                             super.onMouseButton(x, y, button, pressed, mods);
@@ -78,8 +82,8 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                 addRule.x = placementRules.x = placementRulesLabel.x = -50000;//unless the screen's over 50k wide, this should be good
                 break;
             case VERTEX_GROUP:
-                for(PlacementRule.BlockType type : PlacementRule.BlockType.values()){
-                    block.add(new MenuComponentLabel(0, 0, 0, 0, type.name){
+                for(BlockType type : blockTypes){
+                    block.add(new MenuComponentLabel(0, 0, 0, 0, type.getDisplayName()){
                         @Override
                         public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
                             super.onMouseButton(x, y, button, pressed, mods);
@@ -98,7 +102,7 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                 break;
             case BETWEEN:
             case AXIAL:
-                for(Block b : Core.configuration.overhaul.fissionMSR.allBlocks){
+                for(Template b : blockList.allBlocks){
                     block.add(new MenuComponentLabel(0, 0, 0, 0, b.getDisplayName()){
                         @Override
                         public void drawText(){
@@ -107,7 +111,8 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                             double textHeight = (int)((height-textInset*2)*scale)-4;
                             drawText(x+height+textInset, y+height/2-textHeight/2, x+width-textInset, y+height/2+textHeight/2, text);
                             Core.applyWhite();
-                            if(b.texture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(b.displayTexture));
+                            Image displayTexture = b.getDisplayTexture();
+                            if(displayTexture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(displayTexture));
                         }
                         @Override
                         public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
@@ -120,12 +125,12 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                         }
                     });
                 }
-                block.setSelectedIndex(rule.block==null?0:Core.configuration.overhaul.fissionMSR.allBlocks.indexOf(rule.block));
+                block.setSelectedIndex(rule.block==null?0:blockList.allBlocks.indexOf(rule.block));
                 block.preferredHeight = min.height = max.height = 64;
                 addRule.x = placementRules.x = placementRulesLabel.x = -50000;//unless the screen's over 50k wide, this should be good
                 break;
             case VERTEX:
-                for(Block b : Core.configuration.overhaul.fissionMSR.allBlocks){
+                for(Template b : blockList.allBlocks){
                     block.add(new MenuComponentLabel(0, 0, 0, 0, b.getDisplayName()){
                         @Override
                         public void drawText(){
@@ -134,7 +139,8 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                             double textHeight = (int)((height-textInset*2)*scale)-4;
                             drawText(x+height+textInset, y+height/2-textHeight/2, x+width-textInset, y+height/2+textHeight/2, text);
                             Core.applyWhite();
-                            if(b.texture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(b.displayTexture));
+                            Image displayTexture = b.getDisplayTexture();
+                            if(displayTexture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(displayTexture));
                         }
                         @Override
                         public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
@@ -147,7 +153,7 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                         }
                     });
                 }
-                block.setSelectedIndex(rule.block==null?0:Core.configuration.overhaul.fissionMSR.allBlocks.indexOf(rule.block));
+                block.setSelectedIndex(rule.block==null?0:blockList.allBlocks.indexOf(rule.block));
                 block.preferredHeight = 64;
                 min.height = max.height = 0;
                 addRule.x = placementRules.x = placementRulesLabel.x = -50000;//unless the screen's over 50k wide, this should be good
@@ -159,8 +165,8 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                 break;
         }
         placementRules.components.clear();
-        for(AbstractPlacementRule<PlacementRule.BlockType, Block> rul : rule.rules){
-            placementRules.add(new MenuComponentPlacementRule((PlacementRule) rul));
+        for(AbstractPlacementRule<BlockType, Template> rul : rule.rules){
+            placementRules.add(new MenuComponentPlacementRule(rul));
         }
         min.setValue(rule.min);
         max.setValue(rule.max);
@@ -170,30 +176,30 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
         rule.ruleType = PlacementRule.RuleType.values()[type.getSelectedIndex()];
         switch(rule.ruleType){
             case BETWEEN_GROUP:
-                rule.blockType = PlacementRule.BlockType.values()[block.getSelectedIndex()];
+                rule.blockType = blockTypes[block.getSelectedIndex()];
                 rule.min = (byte) Math.min(min.getValue(), max.getValue());
                 rule.max = (byte) Math.max(min.getValue(), max.getValue());
                 break;
             case AXIAL_GROUP:
-                rule.blockType = PlacementRule.BlockType.values()[block.getSelectedIndex()];
+                rule.blockType = blockTypes[block.getSelectedIndex()];
                 rule.min = (byte) Math.min(3, Math.min(min.getValue(), max.getValue()));
                 rule.max = (byte) Math.min(3, Math.max(min.getValue(), max.getValue()));
                 break;
             case VERTEX_GROUP:
-                rule.blockType = PlacementRule.BlockType.values()[block.getSelectedIndex()];
+                rule.blockType = blockTypes[block.getSelectedIndex()];
                 break;
             case BETWEEN:
-                rule.block = Core.configuration.overhaul.fissionMSR.allBlocks.get(block.getSelectedIndex());
+                rule.block = blockList.allBlocks.get(block.getSelectedIndex());
                 rule.min = (byte) Math.min(min.getValue(), max.getValue());
                 rule.max = (byte) Math.max(min.getValue(), max.getValue());
                 break;
             case AXIAL:
-                rule.block = Core.configuration.overhaul.fissionMSR.allBlocks.get(block.getSelectedIndex());
+                rule.block = blockList.allBlocks.get(block.getSelectedIndex());
                 rule.min = (byte) Math.min(3, Math.min(min.getValue(), max.getValue()));
                 rule.max = (byte) Math.min(3, Math.max(min.getValue(), max.getValue()));
                 break;
             case VERTEX:
-                rule.block = Core.configuration.overhaul.fissionMSR.allBlocks.get(block.getSelectedIndex());
+                rule.block = blockList.allBlocks.get(block.getSelectedIndex());
                 break;
             case AND:
             case OR:
@@ -231,7 +237,7 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                     return;
                 }
                 if(button==((MenuComponentPlacementRule) c).edit){
-                    gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, ((MenuComponentPlacementRule) c).rule));
+                    gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, ((MenuComponentPlacementRule) c).rule, blockList, blockTypes));
                     return;
                 }
             }

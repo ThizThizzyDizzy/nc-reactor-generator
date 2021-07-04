@@ -17,6 +17,8 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.component.MenuComponentToggleBox;
 import planner.menu.configuration.ConfigurationMenu;
+import planner.menu.configuration.MenuComponentPlacementRule;
+import planner.menu.configuration.MenuPlacementRuleConfiguration;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
@@ -319,7 +321,10 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         addRule.addActionListener((e) -> {
             PlacementRule rule;
             block.rules.add(rule = new PlacementRule());
-            gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, rule));
+            gui.open(new MenuPlacementRuleConfiguration(
+                    gui, this, configuration, rule,Core.configuration.overhaul.fissionSFR,
+                    multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.values()
+            ));
         });
         addBlockRecipe.addActionListener((e) -> {
             BlockRecipe recipe = new BlockRecipe("nuclearcraft:input", "nuclearcraft:output");
@@ -382,7 +387,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         coolantVentOutputDisplayName.text = block.coolantVentOutputDisplayName==null?"":block.coolantVentOutputDisplayName;
         placementRules.components.clear();
         for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : block.rules){
-            placementRules.add(new MenuComponentPlacementRule((PlacementRule) rule));
+            placementRules.add(new MenuComponentPlacementRule(rule));
         }
         blockRecipes.components.clear();
         for(BlockRecipe recipe : block.recipes){
@@ -657,7 +662,11 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
                     return;
                 }
                 if(button==((MenuComponentPlacementRule) c).edit){
-                    gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, ((MenuComponentPlacementRule) c).rule));
+                    gui.open(new MenuPlacementRuleConfiguration(
+                            gui, this, configuration,
+                            ((MenuComponentPlacementRule<PlacementRule.BlockType, Block, PlacementRule>) c).rule,
+                            Core.configuration.overhaul.fissionSFR, PlacementRule.BlockType.values())
+                    );
                     return;
                 }
             }

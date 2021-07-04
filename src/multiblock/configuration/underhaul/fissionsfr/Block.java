@@ -169,4 +169,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         for(AbstractPlacementRule<PlacementRule.BlockType, Block> r : rules)nams.addAll(r.getSearchableNames());
         return nams;
     }
+    public Image getDisplayTexture() {
+        return displayTexture;
+    }
 }
