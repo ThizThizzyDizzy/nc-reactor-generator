@@ -99,7 +99,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
     }
 
     private boolean isAirMatch() {
-        return isSpecificBlock && blockType.isAir();
+        return !isSpecificBlock && blockType != null && blockType.isAir();
     }
     private <T extends Block & ITemplateAccess<Template>> boolean blockMatches(T block, Multiblock<T> reactor) {
         if (isSpecificBlock) return block != null && block.getTemplate() == this.block;
