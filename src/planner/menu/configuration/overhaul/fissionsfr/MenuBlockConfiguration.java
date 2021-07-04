@@ -2,7 +2,6 @@ package planner.menu.configuration.overhaul.fissionsfr;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.Block;

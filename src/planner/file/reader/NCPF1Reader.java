@@ -1,16 +1,17 @@
 package planner.file.reader;
 
+import java.io.InputStream;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
-
-import java.io.InputStream;
 public class NCPF1Reader extends NCPF2Reader {
+    @Override
     protected byte getTargetVersion() {
         return (byte) 1;
     }
 
+    @Override
     protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in) {
         Config data = Config.newConfig();
         data.load(in);

@@ -1,17 +1,19 @@
 package multiblock.configuration.overhaul.fissionsfr;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import multiblock.Multiblock;
-import multiblock.configuration.*;
+import multiblock.configuration.AbstractBlockContainer;
+import multiblock.configuration.AbstractPlacementRule;
+import multiblock.configuration.AddonConfiguration;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.PartialConfiguration;
 import multiblock.configuration.overhaul.OverhaulConfiguration;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import planner.exception.MissingConfigurationEntryException;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
     public ArrayList<CoolantRecipe> allCoolantRecipes = new ArrayList<>();
     /**

@@ -10,11 +10,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class NCPF10Reader extends NCPF11Reader {
+    @Override
     protected byte getTargetVersion() {
         return (byte) 10;
-    }
-    protected int readRuleBlockIndex(Config config, String name) {
-        return (byte) config.get(name);
     }
 
     protected enum LegacyRuleType {

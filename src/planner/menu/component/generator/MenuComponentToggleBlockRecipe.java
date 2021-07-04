@@ -1,5 +1,4 @@
 package planner.menu.component.generator;
-import multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
 import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import simplelibrary.font.FontManager;

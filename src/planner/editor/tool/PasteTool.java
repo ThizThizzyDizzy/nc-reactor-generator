@@ -36,8 +36,7 @@ public class PasteTool extends EditorTool{
             ArrayList<ClipboardEntry> clipboard = new ArrayList<>(editor.getClipboard(id));
             for(Iterator<ClipboardEntry> it = clipboard.iterator(); it.hasNext();){
                 ClipboardEntry entry = it.next();
-                if(!editorSpace.contains(x+entry.x, y+entry.y, z+entry.z))it.remove();
-                if(!editorSpace.isSpaceValid(entry.block, x+entry.x, y+entry.y, z+entry.z))it.remove();
+                if(!editorSpace.contains(x+entry.x, y+entry.y, z+entry.z)||!editorSpace.isSpaceValid(entry.block, x+entry.x, y+entry.y, z+entry.z))it.remove();
             }
             editor.action(new PasteAction(clipboard, x, y, z), true);
         }

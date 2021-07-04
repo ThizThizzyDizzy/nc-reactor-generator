@@ -1,5 +1,7 @@
 package planner.file.reader;
-
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
@@ -8,15 +10,13 @@ import multiblock.configuration.IBlockType;
 import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
 public class NCPF2Reader extends NCPF3Reader {
+    @Override
     protected byte getTargetVersion() {
         return (byte) 2;
     }
 
+    @Override
     protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in) {
         Config data = Config.newConfig();
         data.load(in);
@@ -118,14 +118,17 @@ public class NCPF2Reader extends NCPF3Reader {
         return rule;
     }
 
+    @Override
     protected multiblock.configuration.underhaul.fissionsfr.PlacementRule readUnderRule(Config ruleCfg) {
         return readGenericRuleNcpf2(underhaulPostLoadMap, new multiblock.configuration.underhaul.fissionsfr.PlacementRule(),
                 ruleCfg, multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.CASING);
     }
+    @Override
     protected multiblock.configuration.overhaul.fissionsfr.PlacementRule readOverSFRRule(Config ruleCfg){
         return readGenericRuleNcpf2(overhaulSFRPostLoadMap, new multiblock.configuration.overhaul.fissionsfr.PlacementRule(),
                 ruleCfg, multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.CASING);
     }
+    @Override
     protected multiblock.configuration.overhaul.fissionmsr.PlacementRule readOverMSRRule(Config ruleCfg){
         return readGenericRuleNcpf2(overhaulMSRPostLoadMap, new multiblock.configuration.overhaul.fissionmsr.PlacementRule(),
                 ruleCfg, multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.CASING);

@@ -6,7 +6,6 @@ import planner.Core;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.VRMenuEdit;
-import simplelibrary.image.Color;
 public class VRMenuComponentEditorListBlock extends VRMenuComponent{
     private final VRMenuEdit editor;
     private final Block block;

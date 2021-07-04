@@ -1,5 +1,6 @@
 package planner.file.reader;
-
+import java.util.ArrayList;
+import java.util.Iterator;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
@@ -12,10 +13,8 @@ import planner.file.NCPFFile;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 public class NCPF9Reader extends NCPF10Reader {
+    @Override
     protected byte getTargetVersion() {
         return (byte) 9;
     }

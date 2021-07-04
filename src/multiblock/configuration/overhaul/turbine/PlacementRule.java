@@ -1,14 +1,10 @@
 package multiblock.configuration.overhaul.turbine;
-
+import java.util.Locale;
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractBlockContainer;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.IBlockType;
-
-import java.util.Locale;
-import java.util.Objects;
-
 public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType, Block> {
     public static PlacementRule parseNC(TurbineConfiguration configuration, String str) {
         PlacementRule rule = new PlacementRule();
@@ -96,7 +92,13 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         }
         for(Block b : configuration.allBlocks){
             for(String s : b.getLegacyNames()){
-                if(s.toLowerCase(Locale.ENGLISH).contains("coil")&&s.toLowerCase(Locale.ENGLISH).matches("[\\s^]?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"[\\s$]?.*")){
+                if(str.endsWith(" coil")||str.endsWith(" coils")){
+                    String withoutTheCoil = str.substring(0, str.indexOf(" coil"));
+                    if(s.equals("nuclearcraft:turbine_dynamo_coil_"+withoutTheCoil)){
+                        return b;
+                    }
+                }
+                if(s.toLowerCase(Locale.ENGLISH).contains("coil")&&s.toLowerCase(Locale.ENGLISH).matches("(\\s|^)?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"(\\s|$)?.*")){
                     int len = s.length();
                     if(block==null||len<shortest){
                         block = b;

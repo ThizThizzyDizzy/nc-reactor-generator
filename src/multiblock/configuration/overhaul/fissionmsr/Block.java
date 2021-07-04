@@ -1,6 +1,12 @@
 package multiblock.configuration.overhaul.fissionmsr;
-
-import multiblock.configuration.*;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Objects;
+import multiblock.configuration.AbstractPlacementRule;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.IBlockTemplate;
+import multiblock.configuration.RuleContainer;
+import multiblock.configuration.TextureManager;
 import planner.Core;
 import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
@@ -8,10 +14,6 @@ import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
-
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Objects;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Searchable, IBlockTemplate {
     public static Block controller(String name, String displayName, String texture){
         Block block = new Block(name);
@@ -499,9 +501,11 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                 &&Core.areImagesEqual(b.portOutputTexture, portOutputTexture)
                 &&b.recipes.equals(recipes);
     }
+    @Override
     public String getDisplayName(){
         return displayName==null?name:displayName;
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(legacyNames);
         allNames.add(name);

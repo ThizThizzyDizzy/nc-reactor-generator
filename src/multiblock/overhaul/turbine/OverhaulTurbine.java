@@ -168,7 +168,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         future.clear();
     }
     public void contractDiameter(int i){
-        if(getInternalWidth()+i>getMaxX())return;
+        if(getInternalWidth()-i<getMinX())return;
         blockGrids.clear();
         x-=i;
         y-=i;

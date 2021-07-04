@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Block;

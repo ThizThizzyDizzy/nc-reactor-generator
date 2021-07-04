@@ -5,8 +5,6 @@ import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.editor.suggestion.Suggestor;
 import planner.menu.MenuEdit;
-import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;

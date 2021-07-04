@@ -5,5 +5,10 @@
 /nbproject
 
 /errors
+/crash-reports
 /settings.dat
+/smorebank.dat
 /*.ncpf
+
+/build.xml
+/manifest.mf

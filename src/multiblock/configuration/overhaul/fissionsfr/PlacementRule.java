@@ -1,12 +1,10 @@
 package multiblock.configuration.overhaul.fissionsfr;
-
+import java.util.Locale;
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractBlockContainer;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.IBlockType;
-
-import java.util.Locale;
 public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType, Block> {
     public static PlacementRule parseNC(FissionSFRConfiguration configuration, String str) {
         PlacementRule rule = new PlacementRule();
@@ -99,6 +97,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         else if(str.startsWith("conductor"))return BlockType.CONDUCTOR;
         else if(str.startsWith("sink"))return BlockType.HEATSINK;
         else if(str.startsWith("shield"))return BlockType.SHIELD;
+        else if(str.startsWith("irradiator"))return BlockType.IRRADIATOR;
         else return null;
     }
 
@@ -113,7 +112,13 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         for(Block b : configuration.allBlocks){
             if(b.parent!=null)continue;
             for(String s : b.getLegacyNames()){
-                if(s.toLowerCase(Locale.ENGLISH).contains("sink")&&s.toLowerCase(Locale.ENGLISH).matches("[\\s^]?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"[\\s$]?.*")){
+                if(str.endsWith(" sink")||str.endsWith(" sinks")){
+                    String withoutTheSink = str.substring(0, str.indexOf(" sink"));
+                    if(s.equals("nuclearcraft:solid_fission_sink_"+withoutTheSink)){
+                        return b;
+                    }
+                }
+                if(s.toLowerCase(Locale.ENGLISH).contains("sink")&&s.toLowerCase(Locale.ENGLISH).matches("(\\s|^)?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"(\\s|$)?.*")){
                     int len = s.length();
                     if(block==null||len<shortest){
                         block = b;

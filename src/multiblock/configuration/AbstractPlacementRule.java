@@ -1,13 +1,15 @@
 package multiblock.configuration;
-
-import multiblock.*;
+import java.util.ArrayList;
+import java.util.Objects;
+import multiblock.Axis;
+import multiblock.Block;
+import multiblock.Direction;
+import multiblock.Edge3;
+import multiblock.Multiblock;
+import multiblock.Vertex;
 import planner.menu.component.Searchable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-
-import java.util.ArrayList;
-import java.util.Objects;
-
 public abstract class AbstractPlacementRule<BlockType extends IBlockType, Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {
     public RuleType ruleType = RuleType.BETWEEN;
     public boolean isSpecificBlock = false;
@@ -277,6 +279,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
             boolean axial = str.startsWith("axial");
             if (axial) str = str.substring(5).trim();
 
+            if(str.startsWith("of any "))str = str.substring("of any ".length());
             BlockType type = parseBlockType(configuration, str);
             Template block = type == null ? parseTemplate(configuration, str) : null;
 

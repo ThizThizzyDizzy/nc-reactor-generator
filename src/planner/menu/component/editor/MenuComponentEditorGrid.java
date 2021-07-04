@@ -189,7 +189,7 @@ public class MenuComponentEditorGrid extends MenuComponent{
                 for(Suggestion s : editor.getSuggestions()){
                     if(affects(s, x, y)){
                         if(s.selected&&s.result!=null){
-                            Block b = s.result.getBlock(x, layer, y);
+                            Block b = s.result.getBlock(bx, by, bz);
                             Core.applyWhite(resonatingAlpha+.5f);
                             if(b==null){
                                 drawRect(X, Y, X+blockSize, Y+blockSize, 0);

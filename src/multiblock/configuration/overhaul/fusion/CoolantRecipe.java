@@ -1,14 +1,12 @@
 package multiblock.configuration.overhaul.fusion;
-
+import java.util.ArrayList;
+import java.util.Objects;
 import multiblock.configuration.TextureManager;
 import planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-
-import java.util.ArrayList;
-import java.util.Objects;
 public class CoolantRecipe{
     public String inputName;
     public String inputDisplayName;
