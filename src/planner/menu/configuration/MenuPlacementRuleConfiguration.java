@@ -131,6 +131,12 @@ public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
                 }
             });
         }
+
+        if (rule.isSpecificBlock) {
+            block.setSelectedIndex(rule.block == null ? 0 : blockTypes.length + blockList.allBlocks.indexOf(rule.block));
+        } else {
+            block.setSelectedIndex(rule.blockType == null ? 0 : rule.blockType.ordinal());
+        }
     }
 
     private void setRuleBlock() {
