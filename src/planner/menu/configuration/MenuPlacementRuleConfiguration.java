@@ -57,103 +57,26 @@ public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
         });
         this.rule = rule;
     }
+
     @Override
     public void onGUIOpened(){
         type.setSelectedIndex(rule.ruleType.ordinal());
         block.clear();
         switch(rule.ruleType){
-            case BETWEEN_GROUP:
-            case AXIAL_GROUP:
-                for(BlockType type : blockTypes){
-                    block.add(new MenuComponentLabel(0, 0, 0, 0, type.getDisplayName()){
-                        @Override
-                        public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-                            super.onMouseButton(x, y, button, pressed, mods);
-                            if(button==0&&pressed){
-                                isSelected = false;
-                                block.isSelected = false;
-                                MenuPlacementRuleConfiguration.this.selected = null;
-                            }
-                        }
-                    });
-                }
-                block.setSelectedIndex(rule.blockType.ordinal());
-                block.preferredHeight = min.height = max.height = 64;
-                addRule.x = placementRules.x = placementRulesLabel.x = -50000;//unless the screen's over 50k wide, this should be good
-                break;
-            case VERTEX_GROUP:
-                for(BlockType type : blockTypes){
-                    block.add(new MenuComponentLabel(0, 0, 0, 0, type.getDisplayName()){
-                        @Override
-                        public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-                            super.onMouseButton(x, y, button, pressed, mods);
-                            if(button==0&&pressed){
-                                isSelected = false;
-                                block.isSelected = false;
-                                MenuPlacementRuleConfiguration.this.selected = null;
-                            }
-                        }
-                    });
-                }
-                block.setSelectedIndex(rule.blockType.ordinal());
-                block.preferredHeight = 64;
-                min.height = max.height = 0;
-                addRule.x = placementRules.x = placementRulesLabel.x = -50000;//unless the screen's over 50k wide, this should be good
-                break;
             case BETWEEN:
             case AXIAL:
-                for(Template b : blockList.allBlocks){
-                    block.add(new MenuComponentLabel(0, 0, 0, 0, b.getDisplayName()){
-                        @Override
-                        public void drawText(){
-                            double textLength = FontManager.getLengthForStringWithHeight(text, height);
-                            double scale = Math.min(1, (width-height-textInset*2)/textLength);
-                            double textHeight = (int)((height-textInset*2)*scale)-4;
-                            drawText(x+height+textInset, y+height/2-textHeight/2, x+width-textInset, y+height/2+textHeight/2, text);
-                            Core.applyWhite();
-                            Image displayTexture = b.getDisplayTexture();
-                            if(displayTexture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(displayTexture));
-                        }
-                        @Override
-                        public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-                            super.onMouseButton(x, y, button, pressed, mods);
-                            if(button==0&&pressed){
-                                isSelected = false;
-                                block.isSelected = false;
-                                MenuPlacementRuleConfiguration.this.selected = null;
-                            }
-                        }
-                    });
-                }
-                block.setSelectedIndex(rule.block==null?0:blockList.allBlocks.indexOf(rule.block));
+                setupBlocks();
                 block.preferredHeight = min.height = max.height = 64;
                 addRule.x = placementRules.x = placementRulesLabel.x = -50000;//unless the screen's over 50k wide, this should be good
+
+                int maximum = rule.ruleType == AbstractPlacementRule.RuleType.AXIAL ? 3 : 6;
+                min.maximum = max.maximum = maximum;
+                if (min.getValue() > maximum) min.setValue(maximum);
+                if (max.getValue() > maximum) max.setValue(maximum);
                 break;
             case VERTEX:
-                for(Template b : blockList.allBlocks){
-                    block.add(new MenuComponentLabel(0, 0, 0, 0, b.getDisplayName()){
-                        @Override
-                        public void drawText(){
-                            double textLength = FontManager.getLengthForStringWithHeight(text, height);
-                            double scale = Math.min(1, (width-height-textInset*2)/textLength);
-                            double textHeight = (int)((height-textInset*2)*scale)-4;
-                            drawText(x+height+textInset, y+height/2-textHeight/2, x+width-textInset, y+height/2+textHeight/2, text);
-                            Core.applyWhite();
-                            Image displayTexture = b.getDisplayTexture();
-                            if(displayTexture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(displayTexture));
-                        }
-                        @Override
-                        public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-                            super.onMouseButton(x, y, button, pressed, mods);
-                            if(button==0&&pressed){
-                                isSelected = false;
-                                block.isSelected = false;
-                                MenuPlacementRuleConfiguration.this.selected = null;
-                            }
-                        }
-                    });
-                }
-                block.setSelectedIndex(rule.block==null?0:blockList.allBlocks.indexOf(rule.block));
+            case EDGE:
+                setupBlocks();
                 block.preferredHeight = 64;
                 min.height = max.height = 0;
                 addRule.x = placementRules.x = placementRulesLabel.x = -50000;//unless the screen's over 50k wide, this should be good
@@ -171,38 +94,82 @@ public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
         min.setValue(rule.min);
         max.setValue(rule.max);
     }
+    private void setupBlocks() {
+        for(BlockType type : blockTypes){
+            block.add(new MenuComponentLabel(0, 0, 0, 0, "Any "+type.getDisplayName()){
+                @Override
+                public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+                    super.onMouseButton(x, y, button, pressed, mods);
+                    if(button==0&&pressed){
+                        isSelected = false;
+                        block.isSelected = false;
+                        MenuPlacementRuleConfiguration.this.selected = null;
+                    }
+                }
+            });
+        }
+        for(Template b : blockList.allBlocks){
+            block.add(new MenuComponentLabel(0, 0, 0, 0, b.getDisplayName()){
+                @Override
+                public void drawText(){
+                    double textLength = FontManager.getLengthForStringWithHeight(text, height);
+                    double scale = Math.min(1, (width-height-textInset*2)/textLength);
+                    double textHeight = (int)((height-textInset*2)*scale)-4;
+                    drawText(x+height+textInset, y+height/2-textHeight/2, x+width-textInset, y+height/2+textHeight/2, text);
+                    Core.applyWhite();
+                    Image displayTexture = b.getDisplayTexture();
+                    if(displayTexture!=null)drawRect(x, y, x+height, y+height, Core.getTexture(displayTexture));
+                }
+                @Override
+                public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+                    super.onMouseButton(x, y, button, pressed, mods);
+                    if(button==0&&pressed){
+                        isSelected = false;
+                        block.isSelected = false;
+                        MenuPlacementRuleConfiguration.this.selected = null;
+                    }
+                }
+            });
+        }
+    }
+
+    private void setRuleBlock() {
+        rule.rules.clear();
+
+        int selectedIndex = block.getSelectedIndex();
+        if (selectedIndex < blockTypes.length) {
+            rule.isSpecificBlock = false;
+            rule.block = null;
+            rule.blockType = blockTypes[selectedIndex];
+        } else {
+            rule.isSpecificBlock = true;
+            rule.block = blockList.allBlocks.get(selectedIndex - blockTypes.length);
+            rule.blockType = null;
+        }
+    }
+
     @Override
     public void onGUIClosed(){
         rule.ruleType = PlacementRule.RuleType.values()[type.getSelectedIndex()];
-        switch(rule.ruleType){
-            case BETWEEN_GROUP:
-                rule.blockType = blockTypes[block.getSelectedIndex()];
-                rule.min = (byte) Math.min(min.getValue(), max.getValue());
-                rule.max = (byte) Math.max(min.getValue(), max.getValue());
-                break;
-            case AXIAL_GROUP:
-                rule.blockType = blockTypes[block.getSelectedIndex()];
-                rule.min = (byte) Math.min(3, Math.min(min.getValue(), max.getValue()));
-                rule.max = (byte) Math.min(3, Math.max(min.getValue(), max.getValue()));
-                break;
-            case VERTEX_GROUP:
-                rule.blockType = blockTypes[block.getSelectedIndex()];
-                break;
+        switch(rule.ruleType) {
             case BETWEEN:
-                rule.block = blockList.allBlocks.get(block.getSelectedIndex());
+                setRuleBlock();
                 rule.min = (byte) Math.min(min.getValue(), max.getValue());
                 rule.max = (byte) Math.max(min.getValue(), max.getValue());
                 break;
             case AXIAL:
-                rule.block = blockList.allBlocks.get(block.getSelectedIndex());
+                setRuleBlock();
                 rule.min = (byte) Math.min(3, Math.min(min.getValue(), max.getValue()));
                 rule.max = (byte) Math.min(3, Math.max(min.getValue(), max.getValue()));
                 break;
             case VERTEX:
-                rule.block = blockList.allBlocks.get(block.getSelectedIndex());
+                setRuleBlock();
                 break;
             case AND:
             case OR:
+                rule.isSpecificBlock = false;
+                rule.block = null;
+                rule.blockType = null;
                 break;
         }
     }

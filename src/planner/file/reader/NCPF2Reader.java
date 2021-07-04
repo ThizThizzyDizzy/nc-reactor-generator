@@ -58,24 +58,28 @@ public class NCPF2Reader extends NCPF3Reader {
         switch(type){
             case 0:
                 rule.ruleType = AbstractPlacementRule.RuleType.BETWEEN;
+                rule.isSpecificBlock = true;
                 postMap.put(rule, ruleCfg.get("block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 1:
                 rule.ruleType = AbstractPlacementRule.RuleType.AXIAL;
+                rule.isSpecificBlock = true;
                 postMap.put(rule, ruleCfg.get("block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 2:
-                rule.ruleType = AbstractPlacementRule.RuleType.BETWEEN_GROUP;
+                rule.ruleType = AbstractPlacementRule.RuleType.BETWEEN;
+                rule.isSpecificBlock = false;
                 rule.blockType = rule.loadBlockType(ruleCfg.get("block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
                 break;
             case 3:
-                rule.ruleType = AbstractPlacementRule.RuleType.AXIAL_GROUP;
+                rule.ruleType = AbstractPlacementRule.RuleType.AXIAL;
+                rule.isSpecificBlock = false;
                 rule.blockType = rule.loadBlockType(ruleCfg.get("block"));
                 rule.min = ruleCfg.get("min");
                 rule.max = ruleCfg.get("max");
@@ -83,11 +87,13 @@ public class NCPF2Reader extends NCPF3Reader {
             case 4:
                 rule.ruleType = AbstractPlacementRule.RuleType.AND;
                 Rule vert = (Rule) rule.newRule();
-                vert.ruleType = AbstractPlacementRule.RuleType.VERTEX_GROUP;
+                vert.ruleType = AbstractPlacementRule.RuleType.VERTEX;
+                rule.isSpecificBlock = false;
                 vert.blockType = casing;
                 rule.rules.add(vert);
                 Rule exact = (Rule) rule.newRule();
-                exact.ruleType = AbstractPlacementRule.RuleType.BETWEEN_GROUP;
+                exact.ruleType = AbstractPlacementRule.RuleType.BETWEEN;
+                rule.isSpecificBlock = false;
                 exact.blockType = casing;
                 exact.min = exact.max = 3;
                 rule.rules.add(exact);
