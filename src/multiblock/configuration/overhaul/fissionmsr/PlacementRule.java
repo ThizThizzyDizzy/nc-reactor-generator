@@ -100,6 +100,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         else if (str.startsWith("sink")) return BlockType.HEATER;
         else if (str.startsWith("heater")) return BlockType.HEATER;
         else if (str.startsWith("shield")) return BlockType.SHIELD;
+        else if (str.startsWith("irradiator")) return BlockType.IRRADIATOR;
         else return null;
     }
 
@@ -107,13 +108,26 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     protected Block parseTemplate(AbstractBlockContainer<Block> configuration, String str) {
         Block block = null;
         int shortest = 0;
+        if(str.startsWith("water heater")||str.startsWith("water sink"))str = "standard"+str.substring("water".length());
         String[] strs = str.split(" ");
-        if (strs.length != 2 || !strs[1].startsWith("heater")) {
+        if (strs.length != 2 || !(strs[1].startsWith("heater")||strs[1].startsWith("sink"))) {
             throw new IllegalArgumentException("Unknown rule bit: " + str);
         }
         for (Block b : configuration.allBlocks) {
             if (b.parent != null) continue;
             for (String s : b.getLegacyNames()) {
+                if(str.endsWith(" heater")||str.endsWith(" heaters")){
+                    String withoutTheHeater = str.substring(0, str.indexOf(" heater"));
+                    if(s.equals("nuclearcraft:salt_fission_heater_"+withoutTheHeater)){
+                        return b;
+                    }
+                }
+                if(str.endsWith(" sink")||str.endsWith(" sinks")){
+                    String withoutTheSink = str.substring(0, str.indexOf(" sink"));
+                    if(s.equals("nuclearcraft:salt_fission_heater_"+withoutTheSink)){
+                        return b;
+                    }
+                }
                 if (s.toLowerCase(Locale.ENGLISH).contains("heater")
                         && s.toLowerCase(Locale.ENGLISH).matches("(\\s|^)?" + strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]") + "(\\s|$)?.*")) {
                     int len = s.length();
