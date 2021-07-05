@@ -4,11 +4,11 @@ import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Block;
 import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
+import planner.Core;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
-import planner.menu.component.MenuComponentTextureButton;
 import planner.menu.component.MenuComponentToggleBox;
 import planner.menu.configuration.ConfigurationMenu;
 import simplelibrary.opengl.gui.GUI;
@@ -45,7 +45,10 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         addRule.addActionListener((e) -> {
             PlacementRule rule;
             block.rules.add(rule = new PlacementRule());
-            gui.open(new MenuPlacementRuleConfiguration(gui, parent, configuration, rule));
+            gui.open(new MenuPlacementRuleConfiguration(
+                    gui, this, configuration, rule,Core.configuration.underhaul.fissionSFR,
+                    multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.values()
+            ));
         });
         this.block = block;
     }
@@ -132,7 +135,11 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
                     return;
                 }
                 if(button==((MenuComponentPlacementRule) c).edit){
-                    gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, ((MenuComponentPlacementRule) c).rule));
+                    gui.open(new MenuPlacementRuleConfiguration(
+                            gui, this, configuration,
+                            ((MenuComponentPlacementRule<PlacementRule.BlockType, Block, PlacementRule>) c).rule,
+                            Core.configuration.underhaul.fissionSFR, PlacementRule.BlockType.values())
+                    );
                     return;
                 }
             }

@@ -4,11 +4,11 @@ import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.Block;
 import multiblock.configuration.overhaul.turbine.PlacementRule;
+import planner.Core;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
-import planner.menu.component.MenuComponentTextureButton;
 import planner.menu.component.MenuComponentToggleBox;
 import planner.menu.configuration.ConfigurationMenu;
 import simplelibrary.opengl.gui.GUI;
@@ -51,7 +51,10 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         addRule.addActionListener((e) -> {
             PlacementRule rule;
             block.rules.add(rule = new PlacementRule());
-            gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, rule));
+            gui.open(new MenuPlacementRuleConfiguration(
+                    gui, this, configuration, rule,Core.configuration.overhaul.turbine,
+                    multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.values()
+            ));
         });
         this.block = block;
     }
@@ -163,7 +166,11 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
                     return;
                 }
                 if(button==((MenuComponentPlacementRule) c).edit){
-                    gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, ((MenuComponentPlacementRule) c).rule));
+                    gui.open(new MenuPlacementRuleConfiguration(
+                            gui, this, configuration,
+                            ((MenuComponentPlacementRule<PlacementRule.BlockType, Block, PlacementRule>) c).rule,
+                            Core.configuration.overhaul.turbine, PlacementRule.BlockType.values())
+                    );
                     return;
                 }
             }

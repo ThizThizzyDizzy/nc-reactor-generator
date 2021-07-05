@@ -7,7 +7,8 @@ import multiblock.configuration.IBlockType;
 public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType, Block> {
     public static PlacementRule atLeast(int min, BlockType block){
         PlacementRule rule = new PlacementRule();
-        rule.ruleType = RuleType.BETWEEN_GROUP;
+        rule.ruleType = RuleType.BETWEEN;
+        rule.isSpecificBlock = false;
         rule.blockType = block;
         rule.min = (byte)Math.min(6,Math.max(1,min));
         rule.max = 6;
@@ -16,6 +17,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     public static PlacementRule atLeast(int min, Block block){
         PlacementRule rule = new PlacementRule();
         rule.ruleType = RuleType.BETWEEN;
+        rule.isSpecificBlock = true;
         rule.block = block;
         rule.min = (byte)Math.min(6,Math.max(1,min));
         rule.max = 6;
@@ -23,7 +25,8 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     }
     public static PlacementRule exactly(int num, BlockType block){
         PlacementRule rule = new PlacementRule();
-        rule.ruleType = RuleType.BETWEEN_GROUP;
+        rule.ruleType = RuleType.BETWEEN;
+        rule.isSpecificBlock = false;
         rule.blockType = block;
         rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
         return rule;
@@ -31,13 +34,15 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     public static PlacementRule exactly(int num, Block block){
         PlacementRule rule = new PlacementRule();
         rule.ruleType = RuleType.BETWEEN;
+        rule.isSpecificBlock = true;
         rule.block = block;
         rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
         return rule;
     }
     public static PlacementRule axis(BlockType block){
         PlacementRule rule = new PlacementRule();
-        rule.ruleType = RuleType.AXIAL_GROUP;
+        rule.ruleType = RuleType.AXIAL;
+        rule.isSpecificBlock = false;
         rule.blockType = block;
         rule.min = 1;
         rule.max = 3;
@@ -46,6 +51,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     public static PlacementRule axis(Block block){
         PlacementRule rule = new PlacementRule();
         rule.ruleType = RuleType.AXIAL;
+        rule.isSpecificBlock = true;
         rule.block = block;
         rule.min = 1;
         rule.max = 3;
@@ -69,7 +75,8 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     }
     public static PlacementRule vertex(BlockType block){
         PlacementRule rule = new PlacementRule();
-        rule.ruleType = RuleType.VERTEX_GROUP;
+        rule.ruleType = RuleType.VERTEX;
+        rule.isSpecificBlock = false;
         rule.blockType = block;
         return rule;
     }

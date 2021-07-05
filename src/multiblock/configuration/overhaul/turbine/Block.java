@@ -199,13 +199,11 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                 &&b.outlet==outlet
                 &&Core.areImagesEqual(b.texture, texture);
     }
-    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(legacyNames);
         allNames.add(name);
         return allNames;
     }
-    @Override
     public String getDisplayName(){
         return displayName==null?name:displayName;
     }
@@ -215,5 +213,8 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         nams.add(getDisplayName());
         for(AbstractPlacementRule<PlacementRule.BlockType, Block> r : rules)nams.addAll(r.getSearchableNames());
         return nams;
+    }
+    public Image getDisplayTexture() {
+        return displayTexture;
     }
 }

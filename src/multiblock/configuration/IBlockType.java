@@ -7,4 +7,7 @@ public interface IBlockType {
     boolean isAir();
     String getDisplayName();
     boolean blockMatches(Multiblock<?> reactor, Block b);
+    int ordinal();
+
+
 }

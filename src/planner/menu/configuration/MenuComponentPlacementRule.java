@@ -1,10 +1,16 @@
-package planner.menu.configuration.underhaul.fissionsfr;
-import multiblock.configuration.underhaul.fissionsfr.PlacementRule;
+package planner.menu.configuration;
+import multiblock.configuration.AbstractPlacementRule;
+import multiblock.configuration.IBlockTemplate;
+import multiblock.configuration.IBlockType;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentPlacementRule extends MenuComponent{
+
+public class MenuComponentPlacementRule<BlockType extends IBlockType,
+        Template extends IBlockTemplate,
+        PlacementRule extends AbstractPlacementRule<BlockType, Template>> extends MenuComponent {
+
     public final PlacementRule rule;
     public final MenuComponentMinimalistButton edit = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, true){
         @Override
