@@ -26,12 +26,13 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
     public abstract BlockType loadBlockType(byte type);
 
     private void configSaveBlock(Config config, Configuration parent, AbstractBlockContainer<Template> configuration) {
+        config.set("isSpecificBlock", isSpecificBlock);
         if (isSpecificBlock) {
             int blockIndex = configuration.blocks.indexOf(block) + 1;
             if (parent != null) {
                 blockIndex = getContainerFromParent(parent).allBlocks.indexOf(block) + 1;
             }
-            config.set("blockIdx", blockIndex);
+            config.set("block", blockIndex);
         } else {
             config.set("blockType", saveBlockType(blockType));
         }

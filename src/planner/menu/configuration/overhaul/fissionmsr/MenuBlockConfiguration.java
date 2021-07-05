@@ -13,6 +13,8 @@ import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.component.MenuComponentTextureButton;
 import planner.menu.component.MenuComponentToggleBox;
 import planner.menu.configuration.ConfigurationMenu;
+import planner.menu.configuration.MenuComponentPlacementRule;
+import planner.menu.configuration.MenuPlacementRuleConfiguration;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;

@@ -447,11 +447,10 @@ public class NCPF11Reader implements FormatReader {
     protected <Rule extends AbstractPlacementRule<BlockType, Template>,
             BlockType extends IBlockType,
             Template extends IBlockTemplate> void readRuleBlock(HashMap<Rule, Integer> postMap, Rule rule, Config ruleCfg) {
-        if (ruleCfg.hasProperty("blockIdx")) {
-            rule.isSpecificBlock = true;
-            postMap.put(rule, ruleCfg.getInt("blockIdx"));
-        } else {
-            rule.isSpecificBlock = false;
+        rule.isSpecificBlock = ruleCfg.get("isSpecificBlock");
+        if(rule.isSpecificBlock){
+            postMap.put(rule, ruleCfg.getInt("block"));
+        }else{
             rule.blockType = rule.loadBlockType(ruleCfg.getByte("blockType"));
         }
     }
