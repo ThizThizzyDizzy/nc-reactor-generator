@@ -1,21 +1,13 @@
 package planner.menu.configuration.underhaul.fissionsfr;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
-import planner.Core;
-import planner.ImageIO;
-import planner.file.FileFormat;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
+import planner.menu.component.MenuComponentTextureButton;
 import planner.menu.configuration.ConfigurationMenu;
-import simplelibrary.Sys;
-import simplelibrary.error.ErrorCategory;
-import simplelibrary.error.ErrorLevel;
-import simplelibrary.image.Image;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -27,34 +19,7 @@ public class MenuFuelConfiguration extends ConfigurationMenu{
     private final MenuComponentMinimaList legacyNames;
     public MenuFuelConfiguration(GUI gui, Menu parent, Configuration configuration, Fuel fuel){
         super(gui, parent, configuration, fuel.getDisplayName());
-        texture = add(new MenuComponentMinimalistButton(sidebar.width, 0, 192, 192, "Set Texture", true, true){
-            @Override
-            public void render(){
-                if(fuel.texture!=null){
-                    Core.applyWhite();
-                    drawRect(x, y, x+width, y+height, Core.getTexture(fuel.texture));
-                    return;
-                }
-                super.render();
-            }
-            @Override
-            public boolean onFilesDropped(double x, double y, String[] files){
-                for(String s : files){
-                    if(s.endsWith(".png")){
-                        try{
-                            Image img = ImageIO.read(new File(s));
-                            if(img==null)continue;
-                            if(img.getWidth()!=img.getHeight()){
-                                Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                                continue;
-                            }
-                            fuel.setTexture(img);
-                        }catch(IOException ex){}
-                    }
-                }
-                return super.onFilesDropped(x, y, files);
-            }
-        }.setTooltip("Click to change texture\nYou can also drag-and-drop texture files here"));
+        texture = add(new MenuComponentTextureButton(sidebar.width, 0, 192, 192, "Set Texture", true, true, ()->{return fuel.texture;}, fuel::setTexture).setTooltip("Click to change texture\nYou can also drag-and-drop texture files here"));
         name = add(new MenuComponentMinimalistTextBox(texture.x+texture.width, 0, 0, 48, "", true, "Name").setTooltip("The ingame name of this fuel. Must be namespace:name or namespace:name:metadata\n(Metadata should be included if and only if the item has metadata, regardless of wheather it's 0 or not)"));
         displayName = add(new MenuComponentMinimalistTextBox(name.x, 0, 0, 48, "", true, "Display Name").setTooltip("The user-friendly name of this fuel."));
         legacyNamesLabel = add(new MenuComponentLabel(name.x, 48, 0, 32, "Legacy Names", true).setTooltip("A list of old names for NCPF back-compatibility"));
@@ -62,23 +27,6 @@ public class MenuFuelConfiguration extends ConfigurationMenu{
         power = add(new MenuComponentMinimalistTextBox(sidebar.width, texture.height, 0, 48, "", true, "Power").setFloatFilter());
         heat = add(new MenuComponentMinimalistTextBox(sidebar.width, texture.height, 0, 48, "", true, "Heat").setFloatFilter());
         time = add(new MenuComponentMinimalistTextBox(sidebar.width, texture.height, 0, 48, "", true, "Time").setIntFilter());
-        texture.addActionListener((e) -> {
-            try{
-                Core.createFileChooser((file) -> {
-                    try{
-                        Image img = ImageIO.read(file);
-                        if(img==null)return;
-                        if(img.getWidth()!=img.getHeight()){
-                            Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                            return;
-                        }
-                        fuel.setTexture(img);
-                    }catch(IOException ex){}
-                }, FileFormat.PNG);
-            }catch(IOException ex){
-                Sys.error(ErrorLevel.severe, "Failed to load image!", ex, ErrorCategory.fileIO);
-            }
-        });
         this.fuel = fuel;
     }
     @Override
