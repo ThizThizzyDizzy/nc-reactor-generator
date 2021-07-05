@@ -1,21 +1,13 @@
 package planner.menu.configuration.overhaul.fissionsfr;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
-import planner.Core;
-import planner.ImageIO;
-import planner.file.FileFormat;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
+import planner.menu.component.MenuComponentTextureButton;
 import planner.menu.configuration.ConfigurationMenu;
-import simplelibrary.Sys;
-import simplelibrary.error.ErrorCategory;
-import simplelibrary.error.ErrorLevel;
-import simplelibrary.image.Image;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -27,104 +19,16 @@ public class MenuCoolantRecipeConfiguration extends ConfigurationMenu{
     private final MenuComponentMinimaList inputLegacyNames;
     public MenuCoolantRecipeConfiguration(GUI gui, Menu parent, Configuration configuration, CoolantRecipe coolantRecipe){
         super(gui, parent, configuration, "Coolant Recipe");
-        inputTexture = add(new MenuComponentMinimalistButton(sidebar.width, 0, 192, 192, "Set Input Texture", true, true){
-            @Override
-            public void render(){
-                if(coolantRecipe.inputTexture!=null){
-                    Core.applyWhite();
-                    drawRect(x, y, x+width, y+height, Core.getTexture(coolantRecipe.inputTexture));
-                    return;
-                }
-                super.render();
-            }
-            @Override
-            public boolean onFilesDropped(double x, double y, String[] files){
-                for(String s : files){
-                    if(s.endsWith(".png")){
-                        try{
-                            Image img = ImageIO.read(new File(s));
-                            if(img==null)continue;
-                            if(img.getWidth()!=img.getHeight()){
-                                Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                                continue;
-                            }
-                            coolantRecipe.setInputTexture(img);
-                        }catch(IOException ex){}
-                    }
-                }
-                return super.onFilesDropped(x, y, files);
-            }
-        }.setTooltip("Click to change texture\nYou can also drag-and-drop texture files here"));
+        inputTexture = add(new MenuComponentTextureButton(sidebar.width, 0, 192, 192, "Set Input Texture", true, true, ()->{return coolantRecipe.inputTexture;}, coolantRecipe::setInputTexture).setTooltip("Click to change texture\nYou can also drag-and-drop texture files here"));
         inputName = add(new MenuComponentMinimalistTextBox(inputTexture.x+inputTexture.width, 0, 0, 48, "", true, "Input Name").setTooltip("The ingame name of the coolant recipe input. This should be the name of the fluid itself, not the fluid block or bucket."));
         inputDisplayName = add(new MenuComponentMinimalistTextBox(inputName.x, 0, 0, 48, "", true, "Input Display Name").setTooltip("The user-friendly name of the coolant recipe input."));
         inputLegacyNamesLabel = add(new MenuComponentLabel(inputName.x, 48, 0, 32, "Legacy Names", true).setTooltip("A list of old names for NCPF back-compatibility"));
         inputLegacyNames = add(new MenuComponentMinimaList(inputName.x, 48+32, 0, inputTexture.height-inputLegacyNamesLabel.height-inputName.height, 16));
-        outputTexture = add(new MenuComponentMinimalistButton(sidebar.width, inputTexture.height, 128, 128, "Set Output Texture", true, true){
-            @Override
-            public void render(){
-                if(coolantRecipe.outputTexture!=null){
-                    Core.applyWhite();
-                    drawRect(x, y, x+width, y+height, Core.getTexture(coolantRecipe.outputTexture));
-                    return;
-                }
-                super.render();
-            }
-            @Override
-            public boolean onFilesDropped(double x, double y, String[] files){
-                for(String s : files){
-                    if(s.endsWith(".png")){
-                        try{
-                            Image img = ImageIO.read(new File(s));
-                            if(img==null)continue;
-                            if(img.getWidth()!=img.getHeight()){
-                                Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                                continue;
-                            }
-                            coolantRecipe.setOutputTexture(img);
-                        }catch(IOException ex){}
-                    }
-                }
-                return super.onFilesDropped(x, y, files);
-            }
-        }.setTooltip("Click to change texture\nYou can also drag-and-drop texture files here"));
+        outputTexture = add(new MenuComponentTextureButton(sidebar.width, inputTexture.height, 128, 128, "Set Output Texture", true, true, ()->{return coolantRecipe.outputTexture;}, coolantRecipe::setOutputTexture).setTooltip("Click to change texture\nYou can also drag-and-drop texture files here"));
         outputName = add(new MenuComponentMinimalistTextBox(sidebar.width, inputTexture.height, 0, 48, "", true, "Output Name").setTooltip("The ingame name of the coolant recipe output. This should be the name of the fluid itself, not the fluid block or bucket."));
         outputDisplayName = add(new MenuComponentMinimalistTextBox(outputName.x, outputName.y+outputName.height, 0, 48, "", true, "Output Display Name").setTooltip("The user-friendly name of the coolant recipe output."));
         outputRatio = add(new MenuComponentMinimalistTextBox(sidebar.width, inputTexture.height+outputTexture.height, 0, 48, "", true, "Output Ratio").setFloatFilter());
         heat = add(new MenuComponentMinimalistTextBox(sidebar.width, inputTexture.height+outputTexture.height, 0, 48, "", true, "Heat").setIntFilter());
-        inputTexture.addActionListener((e) -> {
-            try{
-                Core.createFileChooser((file) -> {
-                    try{
-                        Image img = ImageIO.read(file);
-                        if(img==null)return;
-                        if(img.getWidth()!=img.getHeight()){
-                            Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                            return;
-                        }
-                        coolantRecipe.setInputTexture(img);
-                    }catch(IOException ex){}
-                }, FileFormat.PNG);
-            }catch(IOException ex){
-                Sys.error(ErrorLevel.severe, "Failed to load image!", ex, ErrorCategory.fileIO);
-            }
-        });
-        outputTexture.addActionListener((e) -> {
-            try{
-                Core.createFileChooser((file) -> {
-                    try{
-                        Image img = ImageIO.read(file);
-                        if(img==null)return;
-                        if(img.getWidth()!=img.getHeight()){
-                            Sys.error(ErrorLevel.minor, "Image is not square!", null, ErrorCategory.fileIO, false);
-                            return;
-                        }
-                        coolantRecipe.setOutputTexture(img);
-                    }catch(IOException ex){}
-                }, FileFormat.PNG);
-            }catch(IOException ex){
-                Sys.error(ErrorLevel.severe, "Failed to load image!", ex, ErrorCategory.fileIO);
-            }
-        });
         this.coolantRecipe = coolantRecipe;
     }
     @Override
