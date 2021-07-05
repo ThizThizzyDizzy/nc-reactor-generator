@@ -19,7 +19,7 @@ public class MenuFuelConfiguration extends ConfigurationMenu{
     private final MenuComponentMinimaList legacyNames;
     public MenuFuelConfiguration(GUI gui, Menu parent, Configuration configuration, Fuel fuel){
         super(gui, parent, configuration, fuel.getDisplayName());
-        texture = add(new MenuComponentTextureButton(sidebar.width, 0, 192, 192, "Set Texture", true, true, ()->{return fuel.texture;}, fuel::setTexture).setTooltip("Click to change texture\nYou can also drag-and-drop texture files here"));
+        texture = add(new MenuComponentTextureButton(sidebar.width, 0, 192, 192, null, true, true, ()->{return fuel.texture;}, fuel::setTexture));
         name = add(new MenuComponentMinimalistTextBox(texture.x+texture.width, 0, 0, 48, "", true, "Name").setTooltip("The ingame name of this fuel. Must be namespace:name or namespace:name:metadata\n(Metadata should be included if and only if the item has metadata, regardless of wheather it's 0 or not)"));
         displayName = add(new MenuComponentMinimalistTextBox(name.x, 0, 0, 48, "", true, "Display Name").setTooltip("The user-friendly name of this fuel."));
         legacyNamesLabel = add(new MenuComponentLabel(name.x, 48, 0, 32, "Legacy Names", true).setTooltip("A list of old names for NCPF back-compatibility"));

@@ -30,13 +30,13 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
     private boolean refreshNeeded = false;
     public MenuBlockConfiguration(GUI gui, Menu parent, Configuration configuration, Block block){
         super(gui, parent, configuration, block.getDisplayName());
-        texture = add(new MenuComponentTextureButton(sidebar.width, 0, 192, 192, "Set Texture", true, true, ()->{return block.texture;}, block::setTexture).setTooltip("Click to change texture\nYou can also drag-and-drop texture files here"));
+        texture = add(new MenuComponentTextureButton(sidebar.width, 0, 192, 192, null, true, true, ()->{return block.texture;}, block::setTexture));
         name = add(new MenuComponentMinimalistTextBox(texture.x+texture.width, 0, 0, 48, "", true, "Name").setTooltip("The ingame name of this block. Must be namespace:name or namespace:name:metadata\n(Metadata should be included if and only if the item has metadata, regardless of wheather it's 0 or not)"));
         displayName = add(new MenuComponentMinimalistTextBox(name.x, 0, 0, 48, "", true, "Display Name").setTooltip("The user-friendly name of this block."));
         legacyNamesLabel = add(new MenuComponentLabel(name.x, 48, 0, 32, "Legacy Names", true).setTooltip("A list of old names for NCPF back-compatibility"));
         legacyNames = add(new MenuComponentMinimaList(name.x, 48+32, 0, texture.height-legacyNamesLabel.height-name.height, 16));
-        portInputTexture = add(new MenuComponentTextureButton(sidebar.width, texture.height, 72, 72, "Set Port Texture", true, true, ()->{return block.port==null?null:block.port.texture;}, (t)->{if(block.port!=null)block.port.setTexture(t);}).setTooltip("Click to change port input texture\nYou can also drag-and-drop texture files here"));
-        portOutputTexture = add(new MenuComponentTextureButton(sidebar.width, portInputTexture.y+portInputTexture.height, 72, 72, "Set Port Output Texture", true, true, ()->{return block.port==null?null:block.port.portOutputTexture;}, (t)->{if(block.port!=null)block.port.setPortOutputTexture(t);}).setTooltip("Click to change port output texture\nYou can also drag-and-drop texture files here"));
+        portInputTexture = add(new MenuComponentTextureButton(sidebar.width, texture.height, 72, 72, "Port Input", true, true, ()->{return block.port==null?null:block.port.texture;}, (t)->{if(block.port!=null)block.port.setTexture(t);}));
+        portOutputTexture = add(new MenuComponentTextureButton(sidebar.width, portInputTexture.y+portInputTexture.height, 72, 72, "Port Output", true, true, ()->{return block.port==null?null:block.port.portOutputTexture;}, (t)->{if(block.port!=null)block.port.setPortOutputTexture(t);}));
         portName = add(new MenuComponentMinimalistTextBox(sidebar.width+portInputTexture.width, portInputTexture.y, 0, 48, "", true, "Port Name").setTooltip("The ingame name of this block's access port. Must be namespace:name or namespace:name:metadata\n(Metadata should be included if and only if the item has metadata, regardless of wheather it's 0 or not)"));
         portInputDisplayName = add(new MenuComponentMinimalistTextBox(sidebar.width+portInputTexture.width, portInputTexture.y+portName.height, 0, 48, "", true, "Port Input Display Name").setTooltip("The user-friendly name of the port in input mode."));
         portOutputDisplayName = add(new MenuComponentMinimalistTextBox(sidebar.width+portInputTexture.width, portInputDisplayName.y+portInputDisplayName.height, 0, 48, "", true, "Port Output Display Name").setTooltip("The user-friendly name of the port in output mode."));
@@ -65,7 +65,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         shieldHasBaseStats = add(new MenuComponentToggleBox(shield.x, shield.y+shield.height, 0, 32, "Has base stats", false));
         shieldHeat = add(new MenuComponentMinimalistTextBox(shield.x, shieldHasBaseStats.y+shieldHasBaseStats.height, 0, 48, "", true, "Heat per Flux").setIntFilter());
         shieldEfficiency = add(new MenuComponentMinimalistTextBox(shield.x, shieldHeat.y+shieldHeat.height, 0, 48, "", true, "Efficiency").setFloatFilter());
-        shieldClosedTexture = add(new MenuComponentTextureButton(shield.x, shieldHasBaseStats.y+shieldHasBaseStats.height, 96, 96, "Closed Texture", true, true, ()->{return block.shieldClosedTexture;}, block::setShieldClosedTexture).setTooltip("Click to change closed texture\nYou can also drag-and-drop texture files here"));
+        shieldClosedTexture = add(new MenuComponentTextureButton(shield.x, shieldHasBaseStats.y+shieldHasBaseStats.height, 96, 96, "Closed", true, true, ()->{return block.shieldClosedTexture;}, block::setShieldClosedTexture));
         heatsink = add(new MenuComponentToggleBox(shield.x, shieldEfficiency.y+shieldEfficiency.height, 0, 48, "Heatsink", false, true));
         heatsinkHasBaseStats = add(new MenuComponentToggleBox(heatsink.x, heatsink.y+heatsink.height, 0, 32, "Has base stats", false));
         heatsinkCooling = add(new MenuComponentMinimalistTextBox(heatsink.x, heatsinkHasBaseStats.y+heatsinkHasBaseStats.height, 0, 48, "", true, "Cooling").setIntFilter());
@@ -79,7 +79,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
         irradiatorHeat = add(new MenuComponentMinimalistTextBox(irradiator.x, irradiatorEfficiency.y+irradiatorEfficiency.height, 0, 48, "", true, "Heat").setFloatFilter());
         coolantVent = add(new MenuComponentToggleBox(sidebar.width, irradiatorHeat.y+irradiatorHeat.height, 0, 48, "Coolant Vent", false, true));
         coolantVentOutputDisplayName = add(new MenuComponentMinimalistTextBox(coolantVent.x, coolantVent.y+coolantVent.height, 0, 48, "", true, "Output display name").setTooltip("The user-friendly name of the vent in output mode."));
-        coolantVentOutputTexture = add(new MenuComponentTextureButton(shield.x, coolantVent.y+coolantVent.height, 96, 96, "Output Texture", true, true, ()->{return block.coolantVentOutputTexture;}, block::setCoolantVentOutputTexture).setTooltip("Click to change vent output texture\nYou can also drag-and-drop texture files here"));
+        coolantVentOutputTexture = add(new MenuComponentTextureButton(shield.x, coolantVent.y+coolantVent.height, 96, 96, "Vent Output", true, true, ()->{return block.coolantVentOutputTexture;}, block::setCoolantVentOutputTexture));
         blockRecipesLabel = add(new MenuComponentLabel(sidebar.width, Math.max(sourceEfficiency.y+sourceEfficiency.height, Math.max(heatsinkCooling.y+heatsinkCooling.height, coolantVentOutputTexture.y+coolantVentOutputTexture.height)), 0, 48, "Block Recipes", true));
         blockRecipes = add(new MenuComponentMinimaList(sidebar.width, blockRecipesLabel.y+blockRecipesLabel.height, 0, 0, 16));
         addBlockRecipe = add(new MenuComponentMinimalistButton(sidebar.width, 0, 0, 48, "New Recipe", true, true));

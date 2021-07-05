@@ -1,6 +1,7 @@
 package planner.menu.component;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import planner.Core;
@@ -14,8 +15,8 @@ import static simplelibrary.opengl.Renderer2D.drawRect;
 public class MenuComponentTextureButton extends MenuComponentMinimalistButton{
     private final Supplier<Image> texture;
     private final Consumer<Image> setTextureFunc;
-    public MenuComponentTextureButton(double x, double y, double width, double height, String label, boolean enabled, boolean useMouseover, Supplier<Image> texture, Consumer<Image> setTextureFunc){
-        super(x, y, width, height, label, enabled, useMouseover);
+    public MenuComponentTextureButton(double x, double y, double width, double height, String textureName, boolean enabled, boolean useMouseover, Supplier<Image> texture, Consumer<Image> setTextureFunc){
+        super(x, y, width, height, textureName!=null?"Set "+textureName+" Texture":"Set Texture", enabled, useMouseover);
         this.texture = texture;
         this.setTextureFunc = setTextureFunc;
         addActionListener((e) -> {
@@ -36,6 +37,7 @@ public class MenuComponentTextureButton extends MenuComponentMinimalistButton{
                 Sys.error(ErrorLevel.severe, "Failed to load texture!", ex, ErrorCategory.fileIO);
             }
         });
+        setTooltip("Click or drop files to change "+(textureName==null?"":(textureName.toLowerCase(Locale.ENGLISH)+" "))+"texture");
     }
     @Override
     public void render(){
