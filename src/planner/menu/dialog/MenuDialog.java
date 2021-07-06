@@ -7,9 +7,11 @@ import planner.menu.component.MenuComponentTextDisplay;
 import simplelibrary.opengl.gui.ActionListener;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
+import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuDialog extends Menu{
     private MenuComponentMinimalistScrollable textPanel = add(new MenuComponentMinimalistScrollable(0, 0, 0, 0, 16, 16));
     public MenuComponentTextDisplay textBox = textPanel.add(new MenuComponentTextDisplay(""));
+    public MenuComponent content = textBox;
     public double maxWidth = 0.5d;
     public double maxHeight = 0.5d;
     public double minWidth = 0.25d;
@@ -26,8 +28,8 @@ public class MenuDialog extends Menu{
             if(parent!=null)parent.render(millisSinceLastTick);
         }catch(Exception ignored){}
         Core.applyColor(Core.theme.getDialogBorderColor());
-        double w = Math.max(gui.helper.displayWidth()*minWidth, Math.min(gui.helper.displayWidth()*maxWidth, textBox.width));
-        double h = Math.max(gui.helper.displayHeight()*minHeight, Math.min(gui.helper.displayHeight()*maxHeight, textBox.height));
+        double w = Math.max(gui.helper.displayWidth()*minWidth, Math.min(gui.helper.displayWidth()*maxWidth, content.width));
+        double h = Math.max(gui.helper.displayHeight()*minHeight, Math.min(gui.helper.displayHeight()*maxHeight, content.height));
         drawRect(gui.helper.displayWidth()/2-w/2-border, gui.helper.displayHeight()/2-h/2-border, gui.helper.displayWidth()/2+w/2+border, gui.helper.displayHeight()/2+h/2+border+buttonHeight, 0);
         Core.applyColor(Core.theme.getDialogBackgroundColor());
         drawRect(gui.helper.displayWidth()/2-w/2, gui.helper.displayHeight()/2-h/2, gui.helper.displayWidth()/2+w/2, gui.helper.displayHeight()/2+h/2, 0);
@@ -50,5 +52,10 @@ public class MenuDialog extends Menu{
         MenuComponentMinimalistButton b = new MenuComponentMinimalistButton(0, 0, 0, buttonHeight, text, true, true);
         b.addActionListener(onClick);
         buttons.add(add(b));
+    }
+    public <T extends MenuComponent> T setContent(T component){
+        textPanel.components.remove(content);
+        content = textPanel.add(component);
+        return component;
     }
 }
