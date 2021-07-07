@@ -538,6 +538,7 @@ public class MenuConfiguration extends ConfigurationMenu{
         Task readZS = task.addSubtask("Parsing ZS files");
         Task readLang = task.addSubtask("Parsing lang files");
         Task setPlacementRules = task.addSubtask("Setting placement rules");
+        Task gatherTextures = task.addSubtask("Gathering Textures");
         Task readPNG = task.addSubtask("Reading PNG files");
         Task gatherLegacyNames = task.addSubtask("Gathering legacy names");
         ArrayList<multiblock.configuration.overhaul.turbine.Block> turbineBlocks = new ArrayList<>();
@@ -1001,54 +1002,287 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
         setPlacementRules.finish();
 //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Gather textures">
+        for(Supplier<AddonConfiguration> supplier : Configuration.internalAddonCache.keySet()){
+            AddonConfiguration addon = Configuration.internalAddonCache.get(supplier);
+            gatherTextures.name = "Gathering textures from "+addon.toString();
+            if(addon.self.overhaul!=null&&configuration.overhaul!=null){
+                if(addon.self.overhaul.fissionSFR!=null&&configuration.overhaul.fissionSFR!=null){
+                    for(multiblock.configuration.overhaul.fissionsfr.Block b : addon.self.overhaul.fissionSFR.blocks){
+                        for(multiblock.configuration.overhaul.fissionsfr.Block b2 : configuration.overhaul.fissionSFR.blocks){
+                            if(b.name.equals(b2.name)){
+                                if(b.texture!=null)b2.setTexture(b.texture);//probably should copy instead of using the same object, but this shouldn't break anything, right?
+                                if(b.shieldClosedTexture!=null)b2.setPortOutputTexture(b.shieldClosedTexture);
+                                if(b.coolantVentOutputTexture!=null)b2.setPortOutputTexture(b.coolantVentOutputTexture);
+                                if(b.port!=null&&b2.port!=null){
+                                    if(b.port.name.equals(b2.port.name)){
+                                        if(b.port.texture!=null)b2.port.setTexture(b.port.texture);
+                                        if(b.port.portOutputTexture!=null)b2.port.setPortOutputTexture(b.port.portOutputTexture);
+                                    }
+                                }
+                                for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe r : b.recipes){
+                                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe r2 : b2.recipes){
+                                        if(r.inputName.equals(r2.inputName))if(r.inputTexture!=null)r2.setInputTexture(r.inputTexture);
+                                        if(r.outputName.equals(r2.outputName))if(r.outputTexture!=null)r2.setOutputTexture(r.outputTexture);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(multiblock.configuration.overhaul.fissionsfr.Block b : addon.self.overhaul.fissionSFR.allBlocks){
+                        for(multiblock.configuration.overhaul.fissionsfr.Block b2 : configuration.overhaul.fissionSFR.allBlocks){
+                            if(b.name.equals(b2.name)){
+                                if(b.texture!=null)b2.setTexture(b.texture);
+                                if(b.shieldClosedTexture!=null)b2.setPortOutputTexture(b.shieldClosedTexture);
+                                if(b.coolantVentOutputTexture!=null)b2.setPortOutputTexture(b.coolantVentOutputTexture);
+                                if(b.port!=null&&b2.port!=null){
+                                    if(b.port.name.equals(b2.port.name)){
+                                        if(b.port.texture!=null)b2.port.setTexture(b.port.texture);
+                                        if(b.port.portOutputTexture!=null)b2.port.setPortOutputTexture(b.port.portOutputTexture);
+                                    }
+                                }
+                                for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe r : b.recipes){
+                                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe r2 : b2.recipes){
+                                        if(r.inputName.equals(r2.inputName))if(r.inputTexture!=null)r2.setInputTexture(r.inputTexture);
+                                        if(r.outputName.equals(r2.outputName))if(r.outputTexture!=null)r2.setOutputTexture(r.outputTexture);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(multiblock.configuration.overhaul.fissionsfr.CoolantRecipe c : addon.self.overhaul.fissionSFR.coolantRecipes){
+                        for(multiblock.configuration.overhaul.fissionsfr.CoolantRecipe c2 : configuration.overhaul.fissionSFR.coolantRecipes){
+                            if(c.inputName.equals(c2.inputName))if(c.inputTexture!=null)c2.setInputTexture(c.inputTexture);
+                            if(c.outputName.equals(c2.outputName))if(c.outputTexture!=null)c2.setOutputTexture(c.outputTexture);
+                        }
+                    }
+                }
+                if(addon.self.overhaul.fissionMSR!=null&&configuration.overhaul.fissionMSR!=null){
+                    for(multiblock.configuration.overhaul.fissionmsr.Block b : addon.self.overhaul.fissionMSR.blocks){
+                        for(multiblock.configuration.overhaul.fissionmsr.Block b2 : configuration.overhaul.fissionMSR.blocks){
+                            if(b.name.equals(b2.name)){
+                                if(b.texture!=null)b2.setTexture(b.texture);
+                                if(b.shieldClosedTexture!=null)b2.setPortOutputTexture(b.shieldClosedTexture);
+                                if(b.port!=null&&b2.port!=null){
+                                    if(b.port.name.equals(b2.port.name)){
+                                        if(b.port.texture!=null)b2.port.setTexture(b.port.texture);
+                                        if(b.port.portOutputTexture!=null)b2.port.setPortOutputTexture(b.port.portOutputTexture);
+                                    }
+                                }
+                                for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe r : b.recipes){
+                                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe r2 : b2.recipes){
+                                        if(r.inputName.equals(r2.inputName))if(r.inputTexture!=null)r2.setInputTexture(r.inputTexture);
+                                        if(r.outputName.equals(r2.outputName))if(r.outputTexture!=null)r2.setOutputTexture(r.outputTexture);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(multiblock.configuration.overhaul.fissionmsr.Block b : addon.self.overhaul.fissionMSR.allBlocks){
+                        for(multiblock.configuration.overhaul.fissionmsr.Block b2 : configuration.overhaul.fissionMSR.allBlocks){
+                            if(b.name.equals(b2.name)){
+                                if(b.texture!=null)b2.setTexture(b.texture);
+                                if(b.shieldClosedTexture!=null)b2.setPortOutputTexture(b.shieldClosedTexture);
+                                if(b.port!=null&&b2.port!=null){
+                                    if(b.port.name.equals(b2.port.name)){
+                                        if(b.port.texture!=null)b2.port.setTexture(b.port.texture);
+                                        if(b.port.portOutputTexture!=null)b2.port.setPortOutputTexture(b.port.portOutputTexture);
+                                    }
+                                }
+                                for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe r : b.recipes){
+                                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe r2 : b2.recipes){
+                                        if(r.inputName.equals(r2.inputName))if(r.inputTexture!=null)r2.setInputTexture(r.inputTexture);
+                                        if(r.outputName.equals(r2.outputName))if(r.outputTexture!=null)r2.setOutputTexture(r.outputTexture);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(addon.self.overhaul.turbine!=null&&configuration.overhaul.turbine!=null){
+                    for(multiblock.configuration.overhaul.turbine.Block b : addon.self.overhaul.turbine.blocks){
+                        for(multiblock.configuration.overhaul.turbine.Block b2 : configuration.overhaul.turbine.blocks){
+                            if(b.name.equals(b2.name)){
+                                if(b.texture!=null)b2.setTexture(b.texture);
+                            }
+                        }
+                    }
+                    for(multiblock.configuration.overhaul.turbine.Block b : addon.self.overhaul.turbine.allBlocks){
+                        for(multiblock.configuration.overhaul.turbine.Block b2 : configuration.overhaul.turbine.allBlocks){
+                            if(b.name.equals(b2.name)){
+                                if(b.texture!=null)b2.setTexture(b.texture);
+                            }
+                        }
+                    }
+                    for(multiblock.configuration.overhaul.turbine.Recipe r : addon.self.overhaul.turbine.recipes){
+                        for(multiblock.configuration.overhaul.turbine.Recipe r2 : configuration.overhaul.turbine.recipes){
+                            if(r.inputName.equals(r2.inputName))if(r.inputTexture!=null)r2.setInputTexture(r.inputTexture);
+                            if(r.outputName.equals(r2.outputName))if(r.outputTexture!=null)r2.setOutputTexture(r.outputTexture);
+                        }
+                    }
+                }
+                if(addon.self.overhaul.fusion!=null&&configuration.overhaul.fusion!=null){
+                    for(multiblock.configuration.overhaul.fusion.Block b : addon.self.overhaul.fusion.blocks){
+                        for(multiblock.configuration.overhaul.fusion.Block b2 : configuration.overhaul.fusion.blocks){
+                            if(b.name.equals(b2.name)){
+                                if(b.texture!=null)b2.setTexture(b.texture);
+                                for(multiblock.configuration.overhaul.fusion.BlockRecipe r : b.recipes){
+                                    for(multiblock.configuration.overhaul.fusion.BlockRecipe r2 : b2.recipes){
+                                        if(r.inputName.equals(r2.inputName))if(r.inputTexture!=null)r2.setInputTexture(r.inputTexture);
+                                        if(r.outputName.equals(r2.outputName))if(r.outputTexture!=null)r2.setOutputTexture(r.outputTexture);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(multiblock.configuration.overhaul.fusion.Block b : addon.self.overhaul.fusion.allBlocks){
+                        for(multiblock.configuration.overhaul.fusion.Block b2 : configuration.overhaul.fusion.allBlocks){
+                            if(b.name.equals(b2.name)){
+                                if(b.texture!=null)b2.setTexture(b.texture);
+                                for(multiblock.configuration.overhaul.fusion.BlockRecipe r : b.recipes){
+                                    for(multiblock.configuration.overhaul.fusion.BlockRecipe r2 : b2.recipes){
+                                        if(r.inputName.equals(r2.inputName))if(r.inputTexture!=null)r2.setInputTexture(r.inputTexture);
+                                        if(r.outputName.equals(r2.outputName))if(r.outputTexture!=null)r2.setOutputTexture(r.outputTexture);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(multiblock.configuration.overhaul.fusion.CoolantRecipe c : addon.self.overhaul.fusion.coolantRecipes){
+                        for(multiblock.configuration.overhaul.fusion.CoolantRecipe c2 : configuration.overhaul.fusion.coolantRecipes){
+                            if(c.inputName.equals(c2.inputName))if(c.inputTexture!=null)c2.setInputTexture(c.inputTexture);
+                            if(c.outputName.equals(c2.outputName))if(c.outputTexture!=null)c2.setOutputTexture(c.outputTexture);
+                        }
+                    }
+                    for(multiblock.configuration.overhaul.fusion.Recipe r : addon.self.overhaul.fusion.recipes){
+                        for(multiblock.configuration.overhaul.fusion.Recipe r2 : configuration.overhaul.fusion.recipes){
+                            if(r.inputName.equals(r2.inputName))if(r.inputTexture!=null)r2.setInputTexture(r.inputTexture);
+                            if(r.outputName.equals(r2.outputName))if(r.outputTexture!=null)r2.setOutputTexture(r.outputTexture);
+                        }
+                    }
+                }
+            }
+        }
+        gatherTextures.finish();
+//</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="PNG files">
         for(int idx = 0; idx<pngFiles.size(); idx++){
-            InputStream in = pngFiles.get(idx);
             String filename = pngNames.get(idx);
             try{
+                Image img = ImageIO.read(pngFiles.get(idx));
                 String name = consolidateZSName(filename.substring(0, filename.length()-4));//cut of the .png
-                for(multiblock.configuration.overhaul.fissionsfr.Block b : fissionSFRBlocks){
-                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(in));
+                if(configuration.overhaul.fissionSFR!=null)for(multiblock.configuration.overhaul.fissionsfr.Block b : configuration.overhaul.fissionSFR.blocks){
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
                     if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("sink_", ""))){
-                        Image portTexture = ImageIO.read(in);
+                        Image portTexture = img;
                         b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
                         b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
                     }
-                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.allRecipes){
-                        if(recipe.inputName.equals(name)){
-                            recipe.setInputTexture(ImageIO.read(in));
+                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.recipes){
+                        if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1))){
+                            recipe.setInputTexture(img);
                         }
-                        if(recipe.outputName.equals(name)){
-                            recipe.setOutputTexture(ImageIO.read(in));
+                        if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1))){
+                            recipe.setOutputTexture(img);
+                        }
+                    }
+                }
+                if(configuration.overhaul.fissionSFR!=null)for(multiblock.configuration.overhaul.fissionsfr.Block b : configuration.overhaul.fissionSFR.allBlocks){
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
+                    if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("sink_", ""))){
+                        Image portTexture = img;
+                        b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
+                        b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
+                    }
+                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.recipes){
+                        if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1))){
+                            recipe.setInputTexture(img);
+                        }
+                        if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1))){
+                            recipe.setOutputTexture(img);
+                        }
+                    }
+                }
+                for(multiblock.configuration.overhaul.fissionsfr.Block b : fissionSFRBlocks){
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
+                    if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("sink_", ""))){
+                        Image portTexture = img;
+                        b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
+                        b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
+                    }
+                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.recipes){
+                        if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1))){
+                            recipe.setInputTexture(img);
+                        }
+                        if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1))){
+                            recipe.setOutputTexture(img);
+                        }
+                    }
+                }
+                if(configuration.overhaul.fissionMSR!=null)for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.blocks){
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
+                    if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("heater_", ""))){
+                        Image portTexture = img;
+                        b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
+                        b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
+                    }
+                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.recipes){
+                        if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1))){
+                            recipe.setInputTexture(img);
+                        }
+                        if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1))){
+                            recipe.setOutputTexture(img);
+                        }
+                    }
+                }
+                if(configuration.overhaul.fissionMSR!=null)for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
+                    if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("heater_", ""))){
+                        Image portTexture = img;
+                        b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
+                        b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
+                    }
+                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.recipes){
+                        if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1))){
+                            recipe.setInputTexture(img);
+                        }
+                        if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1))){
+                            recipe.setOutputTexture(img);
                         }
                     }
                 }
                 for(multiblock.configuration.overhaul.fissionmsr.Block b : fissionMSRBlocks){
-                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(in));
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
                     if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("heater_", ""))){
-                        Image portTexture = ImageIO.read(in);
+                        Image portTexture = img;
                         b.port.setTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/input"), portTexture));
                         b.port.setPortOutputTexture(alphaOver(TextureManager.getImage("overhaul/msr/port/output"), portTexture));
                     }
-                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.allRecipes){
-                        if(recipe.inputName.equals(name)){
-                            recipe.setInputTexture(ImageIO.read(in));
+                    for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.recipes){
+                        if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1))){
+                            recipe.setInputTexture(img);
                         }
-                        if(recipe.outputName.equals(name)){
-                            recipe.setOutputTexture(ImageIO.read(in));
+                        if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1))){
+                            recipe.setOutputTexture(img);
                         }
                     }
                 }
+                if(configuration.overhaul.turbine!=null)for(multiblock.configuration.overhaul.turbine.Block b : configuration.overhaul.turbine.blocks){
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
+                }
+                if(configuration.overhaul.turbine!=null)for(multiblock.configuration.overhaul.turbine.Block b : configuration.overhaul.turbine.allBlocks){
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
+                }
                 for(multiblock.configuration.overhaul.turbine.Block b : turbineBlocks){
-                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(ImageIO.read(in));
+                    if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
                 }
                 for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : fissionSFRRecipes){
-                    if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(ImageIO.read(in));
-                    if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(ImageIO.read(in));
+                    if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(img);
+                    if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(img);
                 }
                 for(multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
-                    if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(ImageIO.read(in));
-                    if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(ImageIO.read(in));
+                    if(name.equals(recipe.inputName.substring(recipe.inputName.indexOf(":")+1)))recipe.setInputTexture(img);
+                    if(name.equals(recipe.outputName.substring(recipe.outputName.indexOf(":")+1)))recipe.setOutputTexture(img);
                 }
             }catch(IOException ex){
                 Sys.error(ErrorLevel.severe, "Could not read image file "+filename+"!", ex, ErrorCategory.fileIO);
