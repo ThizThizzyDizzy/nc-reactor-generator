@@ -734,6 +734,35 @@ public class MenuConfiguration extends ConfigurationMenu{
                                 //</editor-fold>
                             }
                         }
+                        if(line.startsWith("Turbine.")){
+                            String turbine = line.substring("Turbine.".length());
+                            if(turbine.startsWith("addRecipe")){
+                                //<editor-fold defaultstate="collapsed" desc="addRecipe">
+                                if(configuration.overhaul.turbine==null){
+                                    Sys.error(ErrorLevel.severe, "Cannot add turbine recipe without Turbine configuration!", null, ErrorCategory.fileIO);
+                                    continue;
+                                }
+                                String[] args = turbine.substring(turbine.indexOf('(')+1, turbine.indexOf(')')).split(",");
+                                for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                String input = args[0];
+                                String output = args[1];
+                                String inputName = input.substring(1, input.indexOf('>'));
+                                String outputName = output.substring(1, output.indexOf('>'));
+                                if(inputName.startsWith("liquid:"))inputName = inputName.substring("liquid:".length());
+                                if(outputName.startsWith("liquid:"))outputName = outputName.substring("liquid:".length());
+                                input = input.substring(input.indexOf('>')+1);
+                                output = output.substring(output.indexOf('>')+1);
+                                int inputCount = input.startsWith("*")?Integer.parseInt(input.substring(1)):0;
+                                int outputCount = output.startsWith("*")?Integer.parseInt(output.substring(1)):0;
+                                //pow exp spinup
+                                double power = Double.parseDouble(args[2]);
+                                double expansion = Double.parseDouble(args[3]);
+                                multiblock.configuration.overhaul.turbine.Recipe recipe = new multiblock.configuration.overhaul.turbine.Recipe(inputName, outputName, power, expansion);
+                                configuration.overhaul.turbine.allRecipes.add(recipe);
+                                configuration.overhaul.turbine.recipes.add(recipe);
+                                //</editor-fold>
+                            }
+                        }
                         if(line.startsWith("Registration.")){
                             String register = line.substring("Registration.".length());
                             if(register.startsWith("registerFissionSink")){
