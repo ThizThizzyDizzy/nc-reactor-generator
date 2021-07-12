@@ -1,5 +1,4 @@
 package planner.menu.dialog;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.function.Consumer;
 import multiblock.configuration.TextureManager;
@@ -55,7 +54,7 @@ public class MenuGenerateTexture extends MenuDialog{
                     public void updateColor(){
                         if(text.isEmpty())return;
                         try{
-                            text = text.toUpperCase(Locale.ENGLISH);
+                            text = text.toUpperCase(Locale.ROOT);
                             if(text.startsWith("#")){
                                 //hex
                                 String text = this.text;

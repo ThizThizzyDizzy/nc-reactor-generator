@@ -32,10 +32,10 @@ public abstract class KeywordCommand extends Command{
     @Override
     public final void run(net.dv8tion.jda.api.entities.User user, MessageChannel channel, String args, boolean debug){
         ArrayList<Keyword> words = new ArrayList<>();
-        String str = args.toLowerCase(Locale.ENGLISH);
+        String str = args.toLowerCase(Locale.ROOT);
         for(String regex : keywordOrder){
             Pattern p = Pattern.compile("(^|\\s|,)"+regex+"(\\s|$|,)");
-            String theArgs = (keywords.get(regex).caseSensitive()?args:args.toLowerCase(Locale.ENGLISH));
+            String theArgs = (keywords.get(regex).caseSensitive()?args:args.toLowerCase(Locale.ROOT));
             Matcher m = p.matcher(theArgs);
             int end = 0;
             while(m.find(end)){

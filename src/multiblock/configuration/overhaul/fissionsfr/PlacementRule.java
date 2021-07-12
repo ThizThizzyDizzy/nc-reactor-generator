@@ -118,7 +118,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
                         return b;
                     }
                 }
-                if(s.toLowerCase(Locale.ENGLISH).contains("sink")&&s.toLowerCase(Locale.ENGLISH).matches("(\\s|^)?"+strs[0].toLowerCase(Locale.ENGLISH).replace("_", "[_ ]")+"(\\s|$)?.*")){
+                if(s.toLowerCase(Locale.ROOT).contains("sink")&&s.toLowerCase(Locale.ROOT).matches("(\\s|^)?"+strs[0].toLowerCase(Locale.ROOT).replace("_", "[_ ]")+"(\\s|$)?.*")){
                     int len = s.length();
                     if(block==null||len<shortest){
                         block = b;

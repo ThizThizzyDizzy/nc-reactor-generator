@@ -10,7 +10,7 @@ public class KeywordMultiblock extends Keyword{
         super("Multiblock");
     }
     public Multiblock getMultiblock(boolean overhaul){
-        String fullMultiblockName = (overhaul?"Overhaul ":"Underhaul ")+text.toUpperCase(Locale.ENGLISH);
+        String fullMultiblockName = (overhaul?"Overhaul ":"Underhaul ")+text.toUpperCase(Locale.ROOT);
         Multiblock multiblock = null;
         for(Multiblock m : Core.multiblockTypes){
             if(m.getDefinitionName().equalsIgnoreCase(fullMultiblockName))multiblock = m;
@@ -19,7 +19,7 @@ public class KeywordMultiblock extends Keyword{
     }
     @Override
     public boolean doRead(String input){
-        text = input.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("-", "").replace("reactor", "").replace("solidfueled", "sfr").replace("moltensalt", "msr");
+        text = input.toLowerCase(Locale.ROOT).replace(" ", "").replace("-", "").replace("reactor", "").replace("solidfueled", "sfr").replace("moltensalt", "msr");
         return true;
     }
     @Override

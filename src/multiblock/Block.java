@@ -299,13 +299,13 @@ public abstract class Block extends MultiblockBit implements Searchable{
     public abstract Block copy();
     public abstract boolean isEqual(Block other);
     public boolean roughMatch(String blockNam){
-        blockNam = blockNam.toLowerCase(Locale.ENGLISH);
+        blockNam = blockNam.toLowerCase(Locale.ROOT);
         if(blockNam.endsWith("s"))blockNam = blockNam.substring(0, blockNam.length()-1);
         blockNam = blockNam.replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" coolant", "").replace(" heater", "").replace("fuel ", "").replace(" reflector", "");
         if(blockNam.endsWith("s"))blockNam = blockNam.substring(0, blockNam.length()-1);
         String blockName = getName();
         if(blockName.endsWith("s"))blockName = blockName.substring(0, blockName.length()-1);
-        blockName = blockName.toLowerCase(Locale.ENGLISH).replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" coolant", "").replace(" heater", "").replace("fuel ", "").replace(" reflector", "");
+        blockName = blockName.toLowerCase(Locale.ROOT).replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" coolant", "").replace(" heater", "").replace("fuel ", "").replace(" reflector", "");
         if(blockName.endsWith("s"))blockName = blockName.substring(0, blockName.length()-1);
         return blockNam.equalsIgnoreCase(blockName);
     }

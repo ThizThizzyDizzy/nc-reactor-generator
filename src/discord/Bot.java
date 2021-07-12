@@ -281,7 +281,7 @@ public class Bot extends ListenerAdapter{
                 }
                 Multiblock template = multiblockKeyword.getMultiblock(overhaul);
                 if(template==null){
-                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase(Locale.ENGLISH)+"`!").queue();
+                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase(Locale.ROOT)+"`!").queue();
                     return;
                 }
                 multiblock = template.newInstance(configuration);
@@ -426,7 +426,7 @@ public class Bot extends ListenerAdapter{
                 for(String format : formatStrings){
                     for(FormatWriter writer : FileWriter.formats){
                         for(String extention : writer.getFileFormat().extensions){
-                            if(format.toLowerCase(Locale.ENGLISH).contains(extention)){
+                            if(format.toLowerCase(Locale.ROOT).contains(extention)){
                                 formats.add(writer);
                                 break;
                             }
@@ -602,7 +602,7 @@ public class Bot extends ListenerAdapter{
                     generator.stopAllThreads();
                     Multiblock finalMultiblock = generator.getMainMultiblock();
                     if(finalMultiblock==null||finalMultiblock.isEmpty()){
-                        generateMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase(Locale.ENGLISH)+" was generated. :(").build()).queue();
+                        generateMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase(Locale.ROOT)+" was generated. :(").build()).queue();
                     }else{
                         generateMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField(generator.multiblock.getGeneralName(), finalMultiblock.getBotTooltip(), false).build()).queue();
                         NCPFFile ncpf = new NCPFFile();
@@ -743,7 +743,7 @@ public class Bot extends ListenerAdapter{
                 }
                 Multiblock template = multiblockKeyword.getMultiblock(overhaul);
                 if(template==null){
-                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase(Locale.ENGLISH)+"`!").queue();
+                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase(Locale.ROOT)+"`!").queue();
                     return;
                 }
                 multiblock = template.newInstance(configuration);
@@ -879,7 +879,7 @@ public class Bot extends ListenerAdapter{
                 for(String format : formatStrings){
                     for(FormatWriter writer : FileWriter.formats){
                         for(String extention : writer.getFileFormat().extensions){
-                            if(format.toLowerCase(Locale.ENGLISH).contains(extention)){
+                            if(format.toLowerCase(Locale.ROOT).contains(extention)){
                                 formats.add(writer);
                                 break;
                             }
@@ -969,7 +969,7 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                     if(finalMultiblock==null||finalMultiblock.isEmpty()){
-                        channel.sendMessage(createEmbed("No "+mb.getGeneralName().toLowerCase(Locale.ENGLISH)+" was found. try `-generate` to make a new "+mb.getGeneralName().toLowerCase(Locale.ENGLISH)+".").build()).queue();
+                        channel.sendMessage(createEmbed("No "+mb.getGeneralName().toLowerCase(Locale.ROOT)+" was found. try `-generate` to make a new "+mb.getGeneralName().toLowerCase(Locale.ROOT)+".").build()).queue();
                     }else{
                         NCPFFile ncpf = new NCPFFile();
                         ncpf.multiblocks.add(finalMultiblock);
@@ -2211,7 +2211,7 @@ public class Bot extends ListenerAdapter{
     public void storeMultiblocks(Message message){
         for(Attachment att : message.getAttachments()){
             if(att!=null&&att.getFileExtension()!=null){
-                switch(att.getFileExtension().toLowerCase(Locale.ENGLISH)){
+                switch(att.getFileExtension().toLowerCase(Locale.ROOT)){
                     case "png":
                     case "gif":
                     case "jpg":

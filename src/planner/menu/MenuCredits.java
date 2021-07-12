@@ -78,6 +78,12 @@ public class MenuCredits extends Menu{
         text();
         text("NCO Confectionery", 1.25, "https://www.curseforge.com/minecraft/customization/nco-confectionery");
         text("made by FishingPole");
+        text();
+        text("Thorium Mixed Fuels", 1.25, "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
+        text("made by Thalzamar");
+        text();
+        text("Inert Matrix Fuels", 1.25, "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
+        text("made by Cassandra");
         divider();
         text("Hut images", 1.25);
         gap();

@@ -106,7 +106,7 @@ public class Main{
         ArrayList<String> theargs = new ArrayList<>(Arrays.asList(args));
         String osName = System.getProperty("os.name");
         if(osName==null)osName = "null";
-        osName = osName.toLowerCase(Locale.ENGLISH);
+        osName = osName.toLowerCase(Locale.ROOT);
         if(osName.contains("win"))os = OS_WINDOWS;
         if(osName.contains("mac"))os = OS_MACOS;
         if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
@@ -132,7 +132,7 @@ public class Main{
                         int arch = ARCH_UNKNOWN;
                         String osArch = System.getProperty("os.arch");
                         if(osArch==null)osArch = "null";
-                        osArch = osArch.toLowerCase(Locale.ENGLISH);
+                        osArch = osArch.toLowerCase(Locale.ROOT);
                         if(osArch.equals("amd64"))arch = ARCH_X64;
                         if(osArch.equals("x86"))arch = ARCH_X86;
                         System.out.println("OS: Windows");
@@ -186,7 +186,7 @@ public class Main{
                         int arch = ARCH_UNKNOWN;
                         String osArch = System.getProperty("os.arch");
                         if(osArch==null)osArch = "null";
-                        osArch = osArch.toLowerCase(Locale.ENGLISH);
+                        osArch = osArch.toLowerCase(Locale.ROOT);
                         if(osArch.equals("amd64"))arch = ARCH_X64;
                         if(osArch.equals("x64"))arch = ARCH_X64;
                         if(osArch.equals("arm32"))arch = ARCH_ARM32;

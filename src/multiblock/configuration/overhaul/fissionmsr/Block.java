@@ -442,12 +442,12 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         if(parent!=null)return parent.convertToMSR(template);
         for(BlockRecipe recipe : allRecipes){
             for(String inputName : recipe.getLegacyNames()){
-                if(inputName.equals(template.inputName)||inputName.toLowerCase(Locale.ENGLISH).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ENGLISH).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return recipe;
+                if(inputName.equals(template.inputName)||inputName.toLowerCase(Locale.ROOT).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ROOT).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return recipe;
             }
         }
         for(BlockRecipe recipe : recipes){
             for(String inputName : recipe.getLegacyNames()){
-                if(inputName.equals(template.inputName)||inputName.toLowerCase(Locale.ENGLISH).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ENGLISH).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return recipe;
+                if(inputName.equals(template.inputName)||inputName.toLowerCase(Locale.ROOT).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ROOT).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return recipe;
             }
         }
         throw new IllegalArgumentException("Failed to find match for block recipe "+template.inputName+"!");

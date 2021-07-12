@@ -441,12 +441,12 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         if(heatsink)return null;
         for(BlockRecipe recipe : allRecipes){
             for(String inputName : recipe.getLegacyNames()){
-                if(inputName.equals(template.inputName)||inputName.trim().toLowerCase(Locale.ENGLISH).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ENGLISH).replace(" fluoride", "").replace("mf4", "mox")))return recipe;
+                if(inputName.equals(template.inputName)||inputName.trim().toLowerCase(Locale.ROOT).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ROOT).replace(" fluoride", "").replace("mf4", "mox")))return recipe;
             }
         }
         for(BlockRecipe recipe : recipes){
             for(String inputName : recipe.getLegacyNames()){
-                if(inputName.equals(template.inputName)||inputName.trim().toLowerCase(Locale.ENGLISH).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ENGLISH).replace(" fluoride", "").replace("mf4", "mox")))return recipe;
+                if(inputName.equals(template.inputName)||inputName.trim().toLowerCase(Locale.ROOT).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ROOT).replace(" fluoride", "").replace("mf4", "mox")))return recipe;
             }
         }
         throw new IllegalArgumentException("Failed to find match for block recipe "+template.inputName+"!");

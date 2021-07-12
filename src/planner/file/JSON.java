@@ -22,7 +22,7 @@ public class JSON{
     public static JSONObject parse(File file) throws IOException{
         return parse(new FileInputStream(file));
     }
-    public static JSONObject parse(InputStream stream) throws IOException{
+    public static JSONObject parse(InputStream stream){
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(stream))){
             Queue<Character> json = new Queue<>();
             int c;
@@ -35,6 +35,8 @@ public class JSON{
             JSONObject obj = new JSONObject(json);
             if(debug)System.out.println("Finished Parsing!");
             return obj;
+        }catch(IOException ex){
+            throw new RuntimeException(ex);
         }
     }
     public static class JSONObject extends HashMap<String, Object>{

@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
@@ -501,7 +502,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                                         pngNames.add(nam.substring("textures/".length()));
                                         textures.put(nam.substring("textures/".length(), nam.length()-4), ImageIO.read(file.getInputStream(entry)));
                                     }else if(nam.contains(".")&&!nam.endsWith("/"))System.err.println(nam);
-                                }catch(IOException ex){
+                                }catch(Exception ex){
                                     Sys.error(ErrorLevel.warning, "Failed to load file "+entry.getName(), ex, ErrorCategory.fileIO);
                                 }
                             });
@@ -549,7 +550,10 @@ public class MenuConfiguration extends ConfigurationMenu{
         ArrayList<multiblock.configuration.overhaul.fissionmsr.Block> fissionMSRBlocks = new ArrayList<>();
         ArrayList<multiblock.configuration.overhaul.fissionmsr.BlockRecipe> fissionMSRRecipes = new ArrayList<>();
         HashMap<multiblock.configuration.overhaul.fissionmsr.Block, String> fissionMSRRules = new HashMap<>();
+        HashMap<multiblock.configuration.overhaul.fissionsfr.BlockRecipe, String[]> fissionSFRLangKeys = new HashMap<>();
+        HashMap<multiblock.configuration.overhaul.fissionsfr.BlockRecipe, String[]> fissionSFRSpecialTextureKeys = new HashMap<>();
         //<editor-fold defaultstate="collapsed" desc="ZS files">
+        HashMap<String, Integer> fissionFuelMetas = new HashMap<>();
         for(int idx = 0; idx<zsFiles.size(); idx++){
             InputStream in = zsFiles.get(idx);
             if(configuration.overhaul==null){
@@ -750,6 +754,8 @@ public class MenuConfiguration extends ConfigurationMenu{
                                 String outputName = output.substring(1, output.indexOf('>'));
                                 if(inputName.startsWith("liquid:"))inputName = inputName.substring("liquid:".length());
                                 if(outputName.startsWith("liquid:"))outputName = outputName.substring("liquid:".length());
+                                if(inputName.startsWith("fluid:"))inputName = inputName.substring("fluid:".length());
+                                if(outputName.startsWith("fluid:"))outputName = outputName.substring("fluid:".length());
                                 input = input.substring(input.indexOf('>')+1);
                                 output = output.substring(output.indexOf('>')+1);
                                 int inputCount = input.startsWith("*")?Integer.parseInt(input.substring(1)):0;
@@ -765,7 +771,154 @@ public class MenuConfiguration extends ConfigurationMenu{
                         }
                         if(line.startsWith("Registration.")){
                             String register = line.substring("Registration.".length());
-                            if(register.startsWith("registerFissionSink")){
+                            if(register.startsWith("registerFissionFuel")){
+                                //<editor-fold defaultstate="collapsed" desc="registerFissionFuel">
+                                String[] args = register.substring(register.indexOf('(')+1, register.indexOf(')')).split(",");
+                                for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                String itemID = args[0].substring(1, args[0].length()-1);
+                                String fuelName = args[1].substring(1, args[1].length()-1).toLowerCase(Locale.ROOT);
+                                String itemModel = args[2].substring(1, args[2].length()-1);
+                                String oreDict = args[3].substring(1, args[3].length()-1);
+                                int time = Integer.parseInt(args[4]);
+                                int heat = Integer.parseInt(args[5]);
+                                double efficiency = Double.parseDouble(args[6]);
+                                int crit = Integer.parseInt(args[7]);
+                                double decay = Double.parseDouble(args[8]);
+                                boolean prime = Boolean.parseBoolean(args[9]);
+                                double fissionRadiation = Double.parseDouble(args[10]);
+                                double fuelRadiation = Double.parseDouble(args[11]);
+                                double depletedRadiation = Double.parseDouble(args[12]);
+                                boolean raw = Boolean.parseBoolean(args[13]);
+                                boolean carbide = Boolean.parseBoolean(args[14]);
+                                boolean triso = Boolean.parseBoolean(args[15]);
+                                boolean oxide = Boolean.parseBoolean(args[16]);
+                                boolean nitride = Boolean.parseBoolean(args[17]);
+                                boolean zirconiumAlloy = Boolean.parseBoolean(args[18]);
+                                Integer fluidColor = args.length>19?Integer.parseInt(args[19]):null;
+                                Integer depletedFluidColor = args.length>20?Integer.parseInt(args[20]):null;
+                                int meta = fissionFuelMetas.getOrDefault(itemID, -1);
+                                if(raw)meta++;
+                                if(carbide)meta++;
+                                if(triso)meta++;
+                                if(oxide)meta++;
+                                int oxMeta = meta;
+                                if(nitride)meta++;
+                                int niMeta = meta;
+                                if(zirconiumAlloy)meta++;
+                                int zaMeta = meta;
+                                if(triso)meta++;
+                                if(oxide)meta++;
+                                int oxMetaDepleted = meta;
+                                if(nitride)meta++;
+                                int niMetaDepleted = meta;
+                                if(zirconiumAlloy)meta++;
+                                int zaMetaDepleted = meta;
+                                fissionFuelMetas.put(itemID, meta);
+                                if(raw||carbide||triso||oxide||nitride||zirconiumAlloy){
+                                    //<editor-fold defaultstate="collapsed" desc="SFR Fuels">
+                                    if(configuration.overhaul.fissionSFR==null){
+                                        Sys.error(ErrorLevel.severe, "Cannot register fission fuel without SFR configuration!", null, ErrorCategory.fileIO);
+                                        continue;
+                                    }
+                                    for(multiblock.configuration.overhaul.fissionsfr.Block block : Core.configuration.overhaul.fissionSFR.blocks){
+                                        if(block.recipes.isEmpty())continue;
+                                        if(block.fuelCell){
+                                            multiblock.configuration.overhaul.fissionsfr.Block fake = null;
+                                            for(multiblock.configuration.overhaul.fissionsfr.Block possible : configuration.overhaul.fissionSFR.allBlocks){
+                                                if(possible.name.equals(block.name))fake = possible;
+                                            }
+                                            if(fake==null){
+                                                fake = new multiblock.configuration.overhaul.fissionsfr.Block(block.name);
+                                                fake.fuelCell = block.fuelCell;
+                                                fake.moderator = block.moderator;
+                                                fake.shield = block.shield;
+                                                fake.heatsink = block.heatsink;
+                                                fake.reflector = block.reflector;
+                                                fake.irradiator = block.irradiator;
+                                                configuration.overhaul.fissionSFR.allBlocks.add(fake);
+                                            }
+                                            if(oxide){
+                                                multiblock.configuration.overhaul.fissionsfr.BlockRecipe ox = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe("nuclearcraft:"+itemID+":"+oxMeta, "nuclearcraft:"+itemID+":"+oxMetaDepleted);
+                                                ox.fuelCellTime = time;
+                                                ox.fuelCellHeat = heat;
+                                                ox.fuelCellEfficiency = (float)efficiency;
+                                                ox.fuelCellCriticality = crit;
+                                                ox.fuelCellSelfPriming = prime;
+                                                fake.recipes.add(ox);
+                                                block.allRecipes.add(ox);
+                                                fissionSFRRecipes.add(ox);
+                                                fissionSFRLangKeys.put(ox, new String[]{"item.nuclearcraft."+itemID+"."+fuelName+"_ox.name", "item.nuclearcraft."+itemID+".depleted_"+fuelName+"_ox.name"});
+                                                fissionSFRSpecialTextureKeys.put(ox, new String[]{fuelName+"_ox", "depleted_"+fuelName+"_ox"});
+                                            }
+                                            if(nitride){
+                                                multiblock.configuration.overhaul.fissionsfr.BlockRecipe ni = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe("nuclearcraft:"+itemID+":"+niMeta, "nuclearcraft:"+itemID+":"+niMetaDepleted);
+                                                ni.fuelCellTime = (int)(time*1.25);
+                                                ni.fuelCellHeat = (int)(heat*.8);
+                                                ni.fuelCellEfficiency = (float)efficiency;
+                                                ni.fuelCellCriticality = (int)(crit*1.25);
+                                                ni.fuelCellSelfPriming = prime;
+                                                fake.recipes.add(ni);
+                                                block.allRecipes.add(ni);
+                                                fissionSFRRecipes.add(ni);
+                                                fissionSFRLangKeys.put(ni, new String[]{"item.nuclearcraft."+itemID+"."+fuelName+"_ni.name", "item.nuclearcraft."+itemID+".depleted_"+fuelName+"_ni.name"});
+                                                fissionSFRSpecialTextureKeys.put(ni, new String[]{fuelName+"_ni", "depleted_"+fuelName+"_ni"});
+                                            }
+                                            if(zirconiumAlloy){
+                                                multiblock.configuration.overhaul.fissionsfr.BlockRecipe za = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe("nuclearcraft:"+itemID+":"+zaMeta, "nuclearcraft:"+itemID+":"+zaMetaDepleted);
+                                                za.fuelCellTime = (int)(time*.8);
+                                                za.fuelCellHeat = (int)(heat*1.25);
+                                                za.fuelCellEfficiency = (float)efficiency;
+                                                za.fuelCellCriticality = (int)(crit*.85);
+                                                za.fuelCellSelfPriming = prime;
+                                                fake.recipes.add(za);
+                                                block.allRecipes.add(za);
+                                                fissionSFRRecipes.add(za);
+                                                fissionSFRLangKeys.put(za, new String[]{"item.nuclearcraft."+itemID+"."+fuelName+"_za.name", "item.nuclearcraft."+itemID+".depleted_"+fuelName+"_za.name"});
+                                                fissionSFRSpecialTextureKeys.put(za, new String[]{fuelName+"_za", "depleted_"+fuelName+"_za"});
+                                            }
+                                        }
+                                    }
+                                    //</editor-fold>
+                                }
+                                if(fluidColor!=null&&depletedFluidColor!=null){
+                                    //<editor-fold defaultstate="collapsed" desc="MSR Fuel">
+                                    if(configuration.overhaul.fissionMSR==null){
+                                        Sys.error(ErrorLevel.severe, "Cannot register fission fuel without MSR configuration!", null, ErrorCategory.fileIO);
+                                        continue;
+                                    }
+                                    for(multiblock.configuration.overhaul.fissionmsr.Block block : Core.configuration.overhaul.fissionMSR.blocks){
+                                        if(block.recipes.isEmpty())continue;
+                                        if(block.fuelVessel){
+                                            multiblock.configuration.overhaul.fissionmsr.Block fake = null;
+                                            for(multiblock.configuration.overhaul.fissionmsr.Block possible : configuration.overhaul.fissionMSR.allBlocks){
+                                                if(possible.name.equals(block.name))fake = possible;
+                                            }
+                                            if(fake==null){
+                                                fake = new multiblock.configuration.overhaul.fissionmsr.Block(block.name);
+                                                fake.fuelVessel = block.fuelVessel;
+                                                fake.moderator = block.moderator;
+                                                fake.shield = block.shield;
+                                                fake.heater = block.heater;
+                                                fake.reflector = block.reflector;
+                                                fake.irradiator = block.irradiator;
+                                                configuration.overhaul.fissionMSR.allBlocks.add(fake);
+                                            }
+                                            multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(name+"_fluoride_flibe", "depleted_"+name+"_fluoride_flibe");
+                                            recipe.inputRate = recipe.outputRate = 1;
+                                            recipe.fuelVesselTime = (int)(time*1.25);
+                                            recipe.fuelVesselHeat = (int)(heat*.8);
+                                            recipe.fuelVesselEfficiency = (float)efficiency;
+                                            recipe.fuelVesselCriticality = crit;
+                                            recipe.fuelVesselSelfPriming = prime;
+                                            fake.recipes.add(recipe);
+                                            block.allRecipes.add(recipe);
+                                            fissionMSRRecipes.add(recipe);
+                                        }
+                                    }
+                                    //</editor-fold>
+                                }
+                                //</editor-fold>
+                            }else if(register.startsWith("registerFissionSink")){
                                 //<editor-fold defaultstate="collapsed" desc="registerFissionSink">
                                 if(configuration.overhaul.fissionSFR==null){
                                     Sys.error(ErrorLevel.severe, "Cannot register fission sink without SFR configuration!", null, ErrorCategory.fileIO);
@@ -926,6 +1079,11 @@ public class MenuConfiguration extends ConfigurationMenu{
             try(BufferedReader reader = new BufferedReader(new InputStreamReader(in))){
                 String line;
                 LINE:while((line = reader.readLine())!=null){
+                    for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe rec : fissionSFRLangKeys.keySet()){
+                        String[] langKeys = fissionSFRLangKeys.get(rec);
+                        if(line.trim().startsWith(langKeys[0]+"="))rec.inputDisplayName = line.trim().substring((langKeys[0]+"=").length()).replace(" Fuel Pellet", "");
+                        if(line.trim().startsWith(langKeys[1]+"="))rec.outputDisplayName = line.trim().substring((langKeys[1]+"=").length()).replace(" Fuel Pellet", "");
+                    }
                     if(line.trim().startsWith("tile.nuclearcraft.")){
                         String lin = line.trim().substring("tile.nuclearcraft.".length());
                         String blockName = lin.split("\\=")[0];
@@ -1200,6 +1358,11 @@ public class MenuConfiguration extends ConfigurationMenu{
             try{
                 Image img = ImageIO.read(pngFiles.get(idx));
                 String name = consolidateZSName(filename.substring(0, filename.length()-4));//cut of the .png
+                for(multiblock.configuration.overhaul.fissionsfr.BlockRecipe rec : fissionSFRSpecialTextureKeys.keySet()){
+                    String[] texKeys = fissionSFRSpecialTextureKeys.get(rec);
+                    if(name.equals(texKeys[0]))rec.setInputTexture(img);
+                    if(name.equals(texKeys[1]))rec.setOutputTexture(img);
+                }
                 if(configuration.overhaul.fissionSFR!=null)for(multiblock.configuration.overhaul.fissionsfr.Block b : configuration.overhaul.fissionSFR.blocks){
                     if(name.equals(consolidateZSName(b.name.substring(b.name.indexOf(":")+1))))b.setTexture(img);
                     if(b.port!=null&&name.equals("port_"+consolidateZSName(b.name.substring(b.name.indexOf(":")+1)).replace("sink_", ""))){

@@ -44,7 +44,7 @@ public abstract class CoilSymmetry extends Symmetry<OverhaulTurbine>{
         super(axis+" Coil Symmetry");
     }
     public boolean matches(String sym){
-        switch(sym.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("-", "").replace("symmetry", "").replace("symmetrical", "")){
+        switch(sym.toLowerCase(Locale.ROOT).replace(" ", "").replace("-", "").replace("symmetry", "").replace("symmetrical", "")){
             case "x":
                 return this==X;
             case "y":

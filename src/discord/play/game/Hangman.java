@@ -63,7 +63,7 @@ public class Hangman extends Game{
         ArrayList<Block> blocks = basis.getBlocks();
         ArrayList<Block> unique = new ArrayList<>();
         for(Block b : blocks){
-            if(b.getName().toLowerCase(Locale.ENGLISH).contains("active")){
+            if(b.getName().toLowerCase(Locale.ROOT).contains("active")){
                 usesActive = true;
             }
         }
@@ -77,7 +77,7 @@ public class Hangman extends Game{
         if(!usesActive){
             for(Iterator<Block> it = available.iterator(); it.hasNext();){
                 Block next = it.next();
-                if(next.getName().toLowerCase(Locale.ENGLISH).contains("active")){
+                if(next.getName().toLowerCase(Locale.ROOT).contains("active")){
                     it.remove();
                 }
             }
@@ -114,7 +114,7 @@ public class Hangman extends Game{
     }
     private void guess(MessageChannel channel, Block b){
         update();
-        if(b.getName().toLowerCase(Locale.ENGLISH).contains("active")&&!usesActive){
+        if(b.getName().toLowerCase(Locale.ROOT).contains("active")&&!usesActive){
             channel.sendMessage("This reactor contains no active coolers!").queue();
             return;
         }

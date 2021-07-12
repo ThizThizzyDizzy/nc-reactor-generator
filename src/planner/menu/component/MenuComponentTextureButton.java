@@ -41,7 +41,7 @@ public class MenuComponentTextureButton extends MenuComponentMinimalistButton{
                 Sys.error(ErrorLevel.severe, "Failed to load texture!", ex, ErrorCategory.fileIO);
             }
         });
-        setTooltip("Click or drop files to change "+(textureName==null?"":(textureName.toLowerCase(Locale.ENGLISH)+" "))+"texture\nOr right click to generate a texture");
+        setTooltip("Click or drop files to change "+(textureName==null?"":(textureName.toLowerCase(Locale.ROOT)+" "))+"texture\nOr right click to generate a texture");
     }
     @Override
     public void render(){

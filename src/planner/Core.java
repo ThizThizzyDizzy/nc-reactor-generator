@@ -269,7 +269,7 @@ public class Core extends Renderer2D{
                 for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
                     if(b.heater&&!b.getDisplayName().contains("Standard")){
                         try{
-                            b.setInternalTexture(TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ENGLISH).replace(" coolant heater", "").replace("liquid ", "")));
+                            b.setInternalTexture(TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", "")));
                         }catch(Exception ex){
                             Sys.error(ErrorLevel.warning, "Failed to load internal texture for MSR Block: "+b.name, ex, ErrorCategory.fileIO);
                         }

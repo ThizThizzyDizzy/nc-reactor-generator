@@ -111,5 +111,15 @@ public class OverhaulModule extends Module{
                 return getInputStream("configurations/addons/nco_confectionery.ncpf");
             }).configuration);
         });
+        Configuration.internalAddons.add(() -> {
+            return AddonConfiguration.convert(FileReader.read(() -> {
+                return getInputStream("configurations/addons/thorium_mixed_fuels.ncpf");
+            }).configuration);
+        });
+        Configuration.internalAddons.add(() -> {
+            return AddonConfiguration.convert(FileReader.read(() -> {
+                return getInputStream("configurations/addons/inert_matrix_fuels.ncpf");
+            }).configuration);
+        });
     }
 }
