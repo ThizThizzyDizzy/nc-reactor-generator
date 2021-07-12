@@ -19,14 +19,10 @@ public class JSON{
         for(char c : str.toCharArray())json.enqueue(c);
         return new JSONObject(json);
     }
-    public static JSONObject parse(File file){
-        try{
-            return parse(new FileInputStream(file));
-        }catch(IOException ex){
-            throw new RuntimeException(ex);
-        }
+    public static JSONObject parse(File file) throws IOException{
+        return parse(new FileInputStream(file));
     }
-    public static JSONObject parse(InputStream stream){
+    public static JSONObject parse(InputStream stream) throws IOException{
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(stream))){
             Queue<Character> json = new Queue<>();
             int c;
@@ -39,8 +35,6 @@ public class JSON{
             JSONObject obj = new JSONObject(json);
             if(debug)System.out.println("Finished Parsing!");
             return obj;
-        }catch(IOException ex){
-            throw new RuntimeException(ex);
         }
     }
     public static class JSONObject extends HashMap<String, Object>{

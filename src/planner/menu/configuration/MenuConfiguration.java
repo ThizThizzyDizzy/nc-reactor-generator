@@ -502,7 +502,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                                         textures.put(nam.substring("textures/".length(), nam.length()-4), ImageIO.read(file.getInputStream(entry)));
                                     }else if(nam.contains(".")&&!nam.endsWith("/"))System.err.println(nam);
                                 }catch(IOException ex){
-                                    throw new RuntimeException(ex);
+                                    Sys.error(ErrorLevel.warning, "Failed to load file "+entry.getName(), ex, ErrorCategory.fileIO);
                                 }
                             });
                         }catch(Exception ex){
