@@ -329,6 +329,9 @@ public class MenuComponentEditorGrid extends MenuComponent{
                             for(multiblock.configuration.overhaul.fissionsfr.Block possible : multiblock.getConfiguration().overhaul.fissionSFR.allBlocks){
                                 if(possible.source)sources.add(possible);
                             }
+                            sources.sort((o1, o2) -> {
+                                return (int)((o1.sourceEfficiency-o2.sourceEfficiency)*10000);
+                            });
                             int idx = sources.size()-1;
                             if(b.source!=null)idx = sources.indexOf(b.source.template)-1;
                             if(idx<-1)idx = sources.size()-1;
@@ -351,6 +354,9 @@ public class MenuComponentEditorGrid extends MenuComponent{
                             for(multiblock.configuration.overhaul.fissionmsr.Block possible : multiblock.getConfiguration().overhaul.fissionMSR.allBlocks){
                                 if(possible.source)sources.add(possible);
                             }
+                            sources.sort((o1, o2) -> {
+                                return (int)((o1.sourceEfficiency-o2.sourceEfficiency)*10000);
+                            });
                             int idx = sources.size()-1;
                             if(b.source!=null)idx = sources.indexOf(b.source.template)-1;
                             if(idx<-1)idx = sources.size()-1;

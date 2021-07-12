@@ -237,6 +237,10 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
                 tip+="\nCooling: "+template.allRecipes.get(0).heatsinkCooling+"H/t";
             }
         }
+        if(isNeutronSource()){
+            tip+="\nNeutron Source";
+            tip+="\nEfficiency: "+template.sourceEfficiency;
+        }
         for(AbstractPlacementRule<?, ?> rule : template.rules){
             tip+="\nRequires "+rule.toString();
         }
@@ -303,6 +307,9 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
     }
     public boolean isConductor(){
         return template.conductor;
+    }
+    public boolean isNeutronSource(){
+        return template.source;
     }
     public boolean isFunctional(){
         if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;

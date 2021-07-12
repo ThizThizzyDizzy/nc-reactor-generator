@@ -142,6 +142,7 @@ public abstract class LegacyTheme extends ColorTheme{
     }
     @Override
     public Color getBlockColorSourceCircle(float efficiency, boolean selfPriming){
+        if(efficiency>1)return getRGBA(0, 1, (float)Math.min(.9, Math.pow(efficiency-1, .25)), 1);
         float fac = selfPriming?1:(float) Math.pow(efficiency, 10);
         float r = selfPriming?0:Math.min(1, -2*fac+2);
         float g = selfPriming?0:Math.min(1, fac*2);
