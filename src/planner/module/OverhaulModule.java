@@ -73,6 +73,16 @@ public class OverhaulModule extends Module{
         });
         Configuration.internalAddons.add(() -> {
             return AddonConfiguration.convert(FileReader.read(() -> {
+                return getInputStream("configurations/addons/moar_fuels_lite.ncpf");
+            }).configuration);
+        });
+        Configuration.internalAddons.add(() -> {
+            return AddonConfiguration.convert(FileReader.read(() -> {
+                return getInputStream("configurations/addons/moar_fuels_ultra_lite.ncpf");
+            }).configuration);
+        });
+        Configuration.internalAddons.add(() -> {
+            return AddonConfiguration.convert(FileReader.read(() -> {
                 return getInputStream("configurations/addons/moar_reactor_functionality.ncpf");
             }).configuration);
         });
