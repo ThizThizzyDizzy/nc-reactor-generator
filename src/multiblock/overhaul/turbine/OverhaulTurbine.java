@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import multiblock.Axis;
 import multiblock.CuboidalMultiblock;
+import multiblock.Direction;
 import multiblock.EditorSpace;
 import multiblock.FluidStack;
 import multiblock.Multiblock;
@@ -428,6 +429,21 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public boolean calculateCoil(Block block, boolean addDecals){
         if(!block.isCoil()&&!block.isConnector())return false;
         boolean wasValid = block.valid;
+        boolean hasAny = false;
+        for(Direction d : directions){
+            if(contains(block.x+d.x, block.y+d.y, block.z+d.z)){
+                Block b = getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                if(b!=null&&(b.isCoil()||b.isConnector()||b.isBearing())&&b.isValid()){
+                    hasAny = true;
+                    break;
+                }
+            }
+        }
+        if(!hasAny){
+            if(block.valid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
+            block.valid = false;
+            return wasValid!=block.valid;
+        }
         for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.turbine.Block> rule : block.template.rules){
             if(!rule.isValid(block, this)){
                 if(block.valid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
