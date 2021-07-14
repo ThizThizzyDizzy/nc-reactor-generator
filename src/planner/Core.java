@@ -75,6 +75,7 @@ import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.GUI;
+import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.texture.TexturePack;
 import simplelibrary.texture.TexturePackManager;
@@ -138,8 +139,7 @@ public class Core extends Renderer2D{
         if(Main.isBot)Bot.start(args);
         System.out.println("Starting up");
         Thread debug = new Thread(() -> {
-            try{
-                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))){
                 while(helper.running){
                     String line = reader.readLine();
                     switch(line.trim()){
@@ -148,9 +148,9 @@ public class Core extends Renderer2D{
                             break;
                     }
                 }
-                reader.close();
             }catch(IOException ex){}
         });
+        debug.setName("Console debug thread");
         debug.setDaemon(true);
         debug.start();
         Sys.initLWJGLGame(new File("errors/"), new ErrorHandler() {
@@ -279,7 +279,15 @@ public class Core extends Renderer2D{
         }
         Configuration.configurations.get(0).impose(configuration);
         System.out.println("Initializing GUI");
-        gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper);
+        gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper){
+            @Override
+            public void onKeyEvent(int key, int scancode, int event, int modifiers){
+                super.onKeyEvent(key, scancode, event, modifiers);
+                if(event==GLFW.GLFW_PRESS&&key==GLFW.GLFW_KEY_C&&Core.isControlPressed()&&Core.isShiftPressed()&&Core.isAltPressed()){
+                    throw new RuntimeException("Ctrl+Shift+Alt+C Debug crash");
+                }
+            }
+        };
         if(Main.isBot)gui.open(new MenuDiscord(gui));
         else gui.open(new MenuMain(gui));
         System.out.println("Render initialization complete!");
@@ -698,6 +706,24 @@ public class Core extends Renderer2D{
             return false;
         }
     }
+    public static String getCrashReportData(){
+        String s = "";
+        s+=Core.configuration.getCrashReportData()+"\n";
+        s+="Theme: "+theme.getClass().getName()+" "+theme.name+"\n\n";
+        s += "GUI menu stack:\n";
+        if(gui!=null){
+            Menu m = gui.menu;
+            if(m==null)s+="null\n";
+            while(m!=null){
+                s+=m.getClass().getName()+"\n";
+                if(m instanceof DebugInfoProvider){
+                    s+=DebugInfoProvider.asString(1, ((DebugInfoProvider)m).getDebugInfo(new HashMap<>()));
+                }
+                m = m.parent;
+            }
+        }
+        return s;
+    }
     public static interface BufferRenderer{
         void render(Framebuffer buff);
     }
@@ -931,6 +957,7 @@ public class Core extends Renderer2D{
         }else{
             System.err.println("Autosave Failed!");
         }
+        Main.generateCrashReport("Manually closed on error", null);
         helper.running = false;
     }
     public static int getThemeIndex(MenuComponent comp){

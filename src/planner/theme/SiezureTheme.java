@@ -31,7 +31,7 @@ public class SiezureTheme extends ColorTheme{
                     Core.setTheme(Theme.QUESTIONQUESTIONQUESTION);
                 }
             }
-        });
+        }, name+" Theme");
         t.setDaemon(true);
         t.start();
     }

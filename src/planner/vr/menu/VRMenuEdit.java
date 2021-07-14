@@ -26,6 +26,7 @@ import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_R
 import static org.lwjgl.openvr.VR.ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32;
 import org.lwjgl.openvr.VRSystem;
 import planner.Core;
+import planner.DebugInfoProvider;
 import planner.Task;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
@@ -53,7 +54,7 @@ import planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;
 import planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import planner.vr.menu.component.VRMenuComponentToolPanel;
 import simplelibrary.image.Color;
-public class VRMenuEdit extends VRMenu implements Editor{
+public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
     public VRMenuComponentButton resize = add(new VRMenuComponentButton(1, 1.625, -.5, 1, .125, .1, 0, -90, 0, "Resize", true, false));
     public final HashMap<Integer, ArrayList<EditorTool>> editorTools = new HashMap<>();
@@ -607,5 +608,10 @@ public class VRMenuEdit extends VRMenu implements Editor{
     }
     private void deselectAll(int id){
         setSelection(id, new ArrayList<>());
+    }
+    @Override
+    public HashMap<String, Object> getDebugInfo(HashMap<String, Object> debugInfo){
+        debugInfo.put("multiblock-type", multiblock.getDefinitionName());
+        return debugInfo;
     }
 }

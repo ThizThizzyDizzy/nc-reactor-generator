@@ -26,7 +26,7 @@ public class RainbowTheme extends ChangingColorTheme{
                     Logger.getLogger(RainbowTheme.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        });
+        }, name+" Theme");
         t.setDaemon(true);
         t.start();
         this.saturation = saturation;

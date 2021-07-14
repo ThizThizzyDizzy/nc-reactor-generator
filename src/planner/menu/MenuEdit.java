@@ -29,6 +29,7 @@ import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
+import planner.DebugInfoProvider;
 import planner.Task;
 import planner.editor.ClipboardEntry;
 import planner.editor.Editor;
@@ -78,7 +79,7 @@ import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
 import simplelibrary.opengl.gui.components.MenuComponentButton;
-public class MenuEdit extends Menu implements Editor{
+public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
     public Framebuffer turbineGraph;
     public ArrayList<ClipboardEntry> clipboard = new ArrayList<>();
@@ -1402,5 +1403,10 @@ public class MenuEdit extends Menu implements Editor{
             }
         }
         if(button==calcStep)multiblock.recalcStep();
+    }
+    @Override
+    public HashMap<String, Object> getDebugInfo(HashMap<String, Object> debugInfo){
+        debugInfo.put("multiblock-type", multiblock.getDefinitionName());
+        return debugInfo;
     }
 }

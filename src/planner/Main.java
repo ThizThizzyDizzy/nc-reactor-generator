@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 public class Main{
@@ -81,21 +82,7 @@ public class Main{
                 saved = true;
             }catch(Exception e){}
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+")", ex);
-            GregorianCalendar calendar = new GregorianCalendar();
-            File file = new File("crash-reports"+File.separatorChar+"crash-"+calendar.getTime().toString().replace(":", "-")+".txt");
-            if(!file.getParentFile().exists())file.getParentFile().mkdirs();
-            int i = 1;
-            while(file.exists()){
-                file = new File("crash-reports"+File.separatorChar+"crash-"+calendar.getTime().toString().replace(":", "-")+"_"+i+".txt");
-                i++;
-            }
-            try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))){
-                writer.write("CAUGHT ERROR: "+ex.getClass().getName()+" on main thread! (Autosave "+(saved?"Successful":"Failed")+")");
-                writer.write(ex.getMessage()+"\n");
-                for(StackTraceElement e : ex.getStackTrace()){
-                    writer.write(e.toString()+"\n");
-                }
-            }catch(IOException ex1){}
+            generateCrashReport("Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+") ", ex);
             System.exit(0);
         }
     }
@@ -448,5 +435,43 @@ public class Main{
         params.addAll(Arrays.asList(applicationArgs));
         ProcessBuilder builder = new ProcessBuilder(params);
         return builder.start();
+    }
+    public static void generateCrashReport(String message, Throwable ex){
+        GregorianCalendar calendar = new GregorianCalendar();
+        File file = new File("crash-reports"+File.separatorChar+"crash-"+calendar.getTime().toString().replace(":", "-")+".txt");
+        if(!file.getParentFile().exists())file.getParentFile().mkdirs();
+        int i = 1;
+        while(file.exists()){
+            file = new File("crash-reports"+File.separatorChar+"crash-"+calendar.getTime().toString().replace(":", "-")+"_"+i+".txt");
+            i++;
+        }
+        try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))){
+            writer.write("Planner version "+VersionManager.currentVersion+"\n");
+            writer.write("OS: "+System.getProperty("os.name")+" ("+System.getProperty("os.arch")+")\n\n");
+            writer.write(message+"\n");
+            if(ex!=null){
+                writer.write(ex.getClass().getName()+": "+ex.getMessage()+"\n");
+                for(StackTraceElement e : ex.getStackTrace()){
+                    writer.write(" at "+e.toString()+"\n");
+                }
+                Throwable throwable = ex;
+                while(throwable.getCause()!=null){
+                    throwable = throwable.getCause();
+                    writer.write("Caused by "+throwable.getClass().getName()+": "+throwable.getMessage()+"\n");
+                    for(StackTraceElement e : throwable.getStackTrace()){
+                        writer.write(" at "+e.toString()+"\n");
+                    }
+                }
+            }
+            writer.write("\n"+Core.getCrashReportData()+"\n");
+            writer.write("Threads: \n");
+            Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
+            for(Thread t : threads.keySet()){
+                writer.write(t.getName()+": "+t.getState().toString()+(t.isDaemon()?" [D]":"")+"\n");
+                for(StackTraceElement e : threads.get(t)){
+                    writer.write("  "+e.toString()+"\n");
+                }
+            }
+        }catch(IOException e){}
     }
 }

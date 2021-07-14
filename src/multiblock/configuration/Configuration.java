@@ -351,4 +351,10 @@ public class Configuration{
         }
         return addon;
     }
+    public String getCrashReportData(){
+        String s = "Configuration: "+toString()+"\n";
+        s+="Addons: "+addons.size()+"\n";
+        for(Configuration c : addons)s+="- "+c.toString()+"\n";
+        return s;
+    }
 }

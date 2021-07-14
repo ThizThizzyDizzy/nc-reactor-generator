@@ -1,12 +1,20 @@
 package planner.menu.dialog;
+import java.util.HashMap;
 import planner.Core;
+import planner.DebugInfoProvider;
 import planner.menu.MenuMain;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
-public class MenuSevereError extends MenuDialog{
+public class MenuSevereError extends MenuDialog implements DebugInfoProvider{
+    private final Throwable error;
+    private final String message;
+    private final ErrorCategory category;
     public MenuSevereError(GUI gui, Menu parent, String message, Throwable error, ErrorCategory category){
         super(gui, parent);
+        this.message = message;
+        this.error = error;
+        this.category = category;
         String details = "";
         Throwable t = error;
         while(t!=null){
@@ -36,5 +44,12 @@ public class MenuSevereError extends MenuDialog{
         addButton("Exit", (e) -> {
             Core.autoSaveAndExit();
         });
+    }
+    @Override
+    public HashMap<String, Object> getDebugInfo(HashMap<String, Object> debugInfo){
+        debugInfo.put("message", message);
+        debugInfo.put("error", error);
+        debugInfo.put("category", category);
+        return debugInfo;
     }
 }

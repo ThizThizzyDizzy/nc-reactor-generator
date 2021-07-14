@@ -1,13 +1,21 @@
 package planner.menu.dialog;
+import java.util.HashMap;
 import java.util.Random;
+import planner.DebugInfoProvider;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
-public class MenuWarningMessage extends MenuDialog{
+public class MenuWarningMessage extends MenuDialog implements DebugInfoProvider{
     private static final String[] extraPossibilities = new String[]{"Got it", "Thanks", "Great", "Cool", "Alright", "Yep", "Awknowledged", "Aye", "Ignore", "Skip"};
     private static final Random rand = new Random();
+    private final Throwable error;
+    private final String message;
+    private final ErrorCategory category;
     public MenuWarningMessage(GUI gui, Menu parent, String message, Throwable error, ErrorCategory category){
         super(gui, parent);
+        this.message = message;
+        this.error = error;
+        this.category = category;
         String details = "";
         Throwable t = error;
         while(t!=null){
@@ -33,5 +41,12 @@ public class MenuWarningMessage extends MenuDialog{
         addButton(rand.nextDouble()<.01?extraPossibilities[rand.nextInt(extraPossibilities.length)]:"OK", (e) -> {
             close();
         });
+    }
+    @Override
+    public HashMap<String, Object> getDebugInfo(HashMap<String, Object> debugInfo){
+        debugInfo.put("message", message);
+        debugInfo.put("error", error);
+        debugInfo.put("category", category);
+        return debugInfo;
     }
 }

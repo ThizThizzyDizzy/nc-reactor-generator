@@ -1,11 +1,19 @@
 package planner.menu.dialog;
+import java.util.HashMap;
 import planner.Core;
+import planner.DebugInfoProvider;
 import planner.menu.MenuMain;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.opengl.gui.GUI;
-public class MenuCriticalError extends MenuDialog{
+public class MenuCriticalError extends MenuDialog implements DebugInfoProvider{
+    private final Throwable error;
+    private final String message;
+    private final ErrorCategory category;
     public MenuCriticalError(GUI gui, String message, Throwable error, ErrorCategory category){
         super(gui, null);
+        this.message = message;
+        this.error = error;
+        this.category = category;
         maxWidth = maxHeight = 1;
         String details = "";
         Throwable t = error;
@@ -33,5 +41,12 @@ public class MenuCriticalError extends MenuDialog{
         addButton("Exit", (e) -> {
             Core.autoSaveAndExit();
         });
+    }
+    @Override
+    public HashMap<String, Object> getDebugInfo(HashMap<String, Object> debugInfo){
+        debugInfo.put("message", message);
+        debugInfo.put("error", error);
+        debugInfo.put("category", category);
+        return debugInfo;
     }
 }

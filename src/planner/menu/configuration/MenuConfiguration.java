@@ -275,7 +275,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     }
                 }
                 threadHasStopped = true;
-            }).start();
+            }, "Addon caching thread").start();
         }
     }
     @Override
