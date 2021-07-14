@@ -122,6 +122,8 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
                 return num >= min && num <= max;
             case AXIAL:
                 for (Axis axis : axes) {
+                    if(!reactor.contains(block.x - axis.x, block.y - axis.y, block.z - axis.z))continue;
+                    if(!reactor.contains(block.x + axis.x, block.y + axis.y, block.z + axis.z))continue;
                     T b1 = reactor.getBlock(block.x - axis.x, block.y - axis.y, block.z - axis.z);
                     T b2 = reactor.getBlock(block.x + axis.x, block.y + axis.y, block.z + axis.z);
                     if (isAirMatch) {
@@ -137,6 +139,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
             case EDGE:
                 boolean[] dirs = new boolean[Direction.values().length];
                 for (Direction d : Direction.values()) {
+                    if(!reactor.contains(block.x + d.x, block.y + d.y, block.z + d.z))continue;
                     T b = reactor.getBlock(block.x + d.x, block.y + d.y, block.z + d.z);
                     if (isAirMatch) {
                         if (b == null) dirs[d.ordinal()] = true;
