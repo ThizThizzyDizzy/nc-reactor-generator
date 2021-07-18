@@ -84,6 +84,9 @@ public class MenuCredits extends Menu{
         text();
         text("Inert Matrix Fuels", 1.25, "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
         text("made by Cassandra");
+        text();
+        text("Alloy Heat Sinks", 1.25, "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks");
+        text("made by Cn-285");
         divider();
         text("Hut images", 1.25);
         gap();

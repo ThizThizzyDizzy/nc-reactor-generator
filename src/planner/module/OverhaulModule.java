@@ -121,5 +121,10 @@ public class OverhaulModule extends Module{
                 return getInputStream("configurations/addons/inert_matrix_fuels.ncpf");
             }).configuration);
         });
+        Configuration.internalAddons.add(() -> {
+            return AddonConfiguration.convert(FileReader.read(() -> {
+                return getInputStream("configurations/addons/alloy_heat_sinks.ncpf");
+            }).configuration);
+        });
     }
 }
