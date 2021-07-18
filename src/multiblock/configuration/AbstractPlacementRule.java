@@ -144,6 +144,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
                     if (isAirMatch) {
                         if (b == null) dirs[d.ordinal()] = true;
                     } else {
+                        if(b==null)continue;
                         if (b.isActive() && blockMatches(b, reactor)) dirs[d.ordinal()] = true;
                     }
                 }
