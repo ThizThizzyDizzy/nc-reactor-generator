@@ -226,7 +226,7 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
     @Override
     public boolean stillEquals(RuleContainer<BlockType, Template> rc) {
         AbstractPlacementRule<BlockType, Template> pr = (AbstractPlacementRule<BlockType, Template>) rc;
-        return pr.ruleType == ruleType && Objects.equals(pr.block, block) && pr.min == min && pr.max == max;
+        return pr.ruleType == ruleType && (pr.block==null?block==null:(block!=null&&Objects.equals(pr.block.getName(), block.getName()))) && pr.min == min && pr.max == max;
     }
 
     protected BlockType parseBlockType(AbstractBlockContainer<Template> configuration, String str) {

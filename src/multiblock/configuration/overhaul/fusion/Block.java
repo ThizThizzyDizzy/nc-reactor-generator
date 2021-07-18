@@ -184,6 +184,10 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         return allNames;
     }
     @Override
+    public String getName(){
+        return name;
+    }
+    @Override
     public String getDisplayName(){
         return displayName==null?name:displayName;
     }

@@ -721,7 +721,7 @@ public class NCPF9Reader extends NCPF10Reader {
                     if(b.breedingBlanket){
                         multiblock.configuration.overhaul.fusion.BlockRecipe breebrecipe = new multiblock.configuration.overhaul.fusion.BlockRecipe(breedingBlanketRecipeCfg.get("name"), "null");
                         breebrecipe.breedingBlanketEfficiency = breedingBlanketRecipeCfg.get("efficiency");
-                        breebrecipe.breedingBlanketHeat = breedingBlanketRecipeCfg.get("heat");
+                        breebrecipe.breedingBlanketHeat = ((Number)breedingBlanketRecipeCfg.get("heat")).floatValue();
                         breebrecipe.breedingBlanketAugmented = b.breedingBlanketAugmented;
                         b.allRecipes.add(breebrecipe);b.recipes.add(breebrecipe);
                     }

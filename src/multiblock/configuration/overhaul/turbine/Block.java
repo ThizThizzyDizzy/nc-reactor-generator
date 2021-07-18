@@ -204,6 +204,10 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         allNames.add(name);
         return allNames;
     }
+    @Override
+    public String getName(){
+        return name;
+    }
     public String getDisplayName(){
         return displayName==null?name:displayName;
     }

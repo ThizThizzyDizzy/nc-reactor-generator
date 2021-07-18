@@ -504,6 +504,10 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                 &&b.recipes.equals(recipes);
     }
     @Override
+    public String getName(){
+        return name;
+    }
+    @Override
     public String getDisplayName(){
         return displayName==null?name:displayName;
     }

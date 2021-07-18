@@ -247,6 +247,37 @@ public class MenuCredits extends Menu{
         text();
         text("by Gliese 832 c");
         divider();
+        text("Fusion test blanket textures", 1.25);
+        gap();
+        addSecondary(new MenuComponent(4/9f, 0, defaultSize*2, defaultSize*2){
+            @Override
+            public void render(int millisSinceLastTick){
+                x-=width/2;
+                super.render(millisSinceLastTick);
+                x+=width/2;
+            }
+            @Override
+            public void render(){
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
+                drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/overhaul/fusion/heating_blanket.png"));
+            }
+        });
+        add(new MenuComponent(5/9f, 0, defaultSize*2, defaultSize*2){
+            @Override
+            public void render(int millisSinceLastTick){
+                x-=width/2;
+                super.render(millisSinceLastTick);
+                x+=width/2;
+            }
+            @Override
+            public void render(){
+                Core.applyColor(Core.theme.getCreditsBrightImageColor());
+                drawRect(x, y, x+width, y+height, ImageStash.instance.getTexture("/textures/overhaul/fusion/breeding_blanket.png"));
+            }
+        });
+        text();
+        text("by Cn-285");
+        divider();
         text("Libraries", 1.25);
         gap(2);
         text("LWJGL", 1.125);
