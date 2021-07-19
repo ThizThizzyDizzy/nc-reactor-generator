@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
 import planner.Core;
+import planner.menu.component.Pinnable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class Recipe{
+public class Recipe implements Pinnable{
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();
@@ -107,5 +108,15 @@ public class Recipe{
     }
     public String getInputDisplayName(){
         return inputDisplayName==null?inputName:inputDisplayName;
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> lst = getLegacyNames();
+        lst.add(getInputDisplayName());
+        return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return inputName;
     }
 }

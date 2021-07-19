@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
 import planner.Core;
+import planner.menu.component.Pinnable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class Recipe{
+public class Recipe implements Pinnable{
     public static Recipe recipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, double power, double coefficient){
         Recipe recipe = new Recipe(inputName, outputName, power, coefficient);
         recipe.inputDisplayName = inputDisplayName;
@@ -111,5 +112,15 @@ public class Recipe{
     }
     public String getOutputDisplayName(){
         return outputDisplayName==null?outputName:outputDisplayName;
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> lst = getLegacyNames();
+        lst.add(getInputDisplayName());
+        return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return inputName;
     }
 }

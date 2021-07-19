@@ -1,9 +1,10 @@
 package planner.menu.component;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 public interface Searchable{
-    public Iterable<String> getSearchableNames();//[\s\A](-([\w\d]+)|-\"(.+?)\")[\Z\s]
+    public ArrayList<String> getSearchableNames();//[\s\A](-([\w\d]+)|-\"(.+?)\")[\Z\s]
     public static final String excludePattern = "(\\s|^)(-([\\w\\d]+)|-\\\"(.+?)\\\")($|\\s)";
     public static boolean isValidForSearch(Searchable searchable, String searchText){
         String regex = ".*";

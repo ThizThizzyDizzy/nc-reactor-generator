@@ -5,10 +5,10 @@ import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.editor.suggestion.Suggestor;
 import planner.menu.MenuEdit;
-import planner.menu.component.Searchable;
+import planner.menu.component.Pinnable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentSuggestor extends MenuComponent implements Searchable{
+public class MenuComponentSuggestor extends MenuComponent implements Pinnable{
     private final MenuEdit editor;
     public final Suggestor suggestor;
     public boolean enabled = false;
@@ -54,5 +54,9 @@ public class MenuComponentSuggestor extends MenuComponent implements Searchable{
         ArrayList<String> lst = new ArrayList<>(Arrays.asList(suggestor.name));
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return suggestor.name;
     }
 }

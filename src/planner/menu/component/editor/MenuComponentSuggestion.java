@@ -1,7 +1,6 @@
 package planner.menu.component.editor;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import planner.Core;
 import planner.editor.suggestion.Suggestion;
 import planner.menu.MenuEdit;
@@ -70,7 +69,7 @@ public class MenuComponentSuggestion extends MenuComponent implements Searchable
         }
     }
     @Override
-    public List<String> getSearchableNames(){
+    public ArrayList<String> getSearchableNames(){
         ArrayList<String> lst = new ArrayList<>(Arrays.asList(suggestion.getName()));
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;

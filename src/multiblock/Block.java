@@ -5,7 +5,7 @@ import multiblock.configuration.Configuration;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
-import planner.menu.component.Searchable;
+import planner.menu.component.Pinnable;
 import planner.vr.VRCore;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;
@@ -13,7 +13,7 @@ import simplelibrary.image.Color;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
-public abstract class Block extends MultiblockBit implements Searchable{
+public abstract class Block extends MultiblockBit implements Pinnable{
     protected Configuration configuration;
     public int x;
     public int y;

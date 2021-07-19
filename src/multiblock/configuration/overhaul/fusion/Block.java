@@ -7,12 +7,12 @@ import multiblock.configuration.IBlockTemplate;
 import multiblock.configuration.RuleContainer;
 import multiblock.configuration.TextureManager;
 import planner.Core;
-import planner.menu.component.Searchable;
+import planner.menu.component.Pinnable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Searchable, IBlockTemplate {
+public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
     public String name;
     public String displayName;
     public ArrayList<String> legacyNames = new ArrayList<>();
@@ -198,7 +198,12 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         for(AbstractPlacementRule<PlacementRule.BlockType, Block> r : rules)nams.addAll(r.getSearchableNames());
         return nams;
     }
+    @Override
     public Image getDisplayTexture() {
         return displayTexture;
+    }
+    @Override
+    public String getPinnedName(){
+        return name;
     }
 }

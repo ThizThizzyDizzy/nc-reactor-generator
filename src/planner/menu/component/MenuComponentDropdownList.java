@@ -23,6 +23,31 @@ public class MenuComponentDropdownList extends MenuComponent{
                 if(getSelectedIndex()==-1)setSelectedIndex(0);
                 return ret;
             }
+            @Override
+            public void onMouseButton(double x, double y, int button, boolean pressed, int mods) {
+                super.onMouseButton(x, y, button, pressed, mods);
+                if(button==0&&pressed&&Core.isShiftPressed()){
+                    //doing it again, but this time not actually passing events, just checking for pinned stuff to toggle
+                    if(x>width-(hasVertScrollbar()?vertScrollbarWidth:0)||y>height-(hasHorizScrollbar()?horizScrollbarHeight:0)){//Click events on the scrollbar
+                        x=y=Double.NaN;
+                    }else{
+                        x+=getHorizScroll();
+                        y+=getVertScroll();
+                    }
+                    boolean clicked = false;
+                    for(int i = components.size()-1; i>=0; i--){
+                        if(i>=components.size()) continue;
+                        MenuComponent component = components.get(i);
+                        if(!Double.isNaN(x)&&!clicked&&isClickWithinBounds(x, y, component.x, component.y, component.x+component.width, component.y+component.height)){
+                            clicked = true;
+                            if(component instanceof Pinnable){
+                                Pinnable.togglePin((Pinnable)component);
+                                refreshSearch();
+                            }
+                        }
+                    }
+                }
+            }
         };
         searchBox = new MenuComponentMinimalistTextBox(0, 0, width, searchable?height:0, "", searchable, "Search", 0){
             @Override
@@ -168,12 +193,7 @@ public class MenuComponentDropdownList extends MenuComponent{
         allComponents.clear();
     }
     public void refreshSearch(){
-        ArrayList<MenuComponent> searched = new ArrayList<>();
-        for(MenuComponent c : allComponents){
-            if(c instanceof Searchable){
-                if(Searchable.isValidForSearch((Searchable)c, searchBox.text))searched.add(c);
-            }else searched.add(c);
-        }
+        ArrayList<MenuComponent> searched = Pinnable.searchAndSort(allComponents, searchBox.text);
         int idx = getSelectedIndex();
         synchronized(list){
             list.components.clear();

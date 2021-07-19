@@ -1,10 +1,12 @@
 package planner.menu.component.editor;
+import java.util.ArrayList;
 import multiblock.Block;
 import planner.Core;
 import planner.menu.MenuEdit;
+import planner.menu.component.Pinnable;
 import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentEditorListBlock extends MenuComponent{
+public class MenuComponentEditorListBlock extends MenuComponent implements Pinnable{
     private final MenuEdit editor;
     public final Block block;
     public MenuComponentEditorListBlock(MenuEdit editor, Block block){
@@ -55,5 +57,21 @@ public class MenuComponentEditorListBlock extends MenuComponent{
     @Override
     public double getTooltipOffsetY(){
         return height;
+    }
+    @Override
+    public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
+        if(button==0&&pressed&&editor.isShiftPressed(0)){
+            Pinnable.togglePin(this);
+            editor.refreshPartsList();
+        }
+        else super.onMouseButton(x, y, button, pressed, mods);
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        return block.getSearchableNames();
+    }
+    @Override
+    public String getPinnedName(){
+        return block.getPinnedName();
     }
 }

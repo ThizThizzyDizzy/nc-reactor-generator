@@ -54,6 +54,7 @@ import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.component.MenuComponentMinimalistTextView;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentToggleBox;
+import planner.menu.component.Pinnable;
 import planner.menu.component.Searchable;
 import planner.menu.component.editor.MenuComponentCoolantRecipe;
 import planner.menu.component.editor.MenuComponentEditorGrid;
@@ -1233,12 +1234,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             if(c instanceof MenuComponentOverhaulFusionBlockRecipe&&was==((MenuComponentOverhaulFusionBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);
         }
     }
-    private synchronized void refreshPartsList(){
+    public synchronized void refreshPartsList(){
         List<Block> availableBlocks = ((Multiblock<Block>)multiblock).getAvailableBlocks();
-        ArrayList<Block> searchedAvailable = new ArrayList<>();
-        for(Block b : availableBlocks){
-            if(Searchable.isValidForSearch(b, partsSearch.text))searchedAvailable.add(b);
-        }
+        ArrayList<Block> searchedAvailable = Pinnable.searchAndSort(availableBlocks, partsSearch.text);
         Block selectedBlock = getSelectedBlock(0);
         int i = 0;
         int idx = 0;

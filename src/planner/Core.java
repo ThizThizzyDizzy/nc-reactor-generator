@@ -64,6 +64,7 @@ import planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import planner.vr.menu.component.VRMenuComponentToolPanel;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
+import simplelibrary.config2.ConfigList;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorHandler;
 import simplelibrary.error.ErrorLevel;
@@ -105,6 +106,7 @@ public class Core extends Renderer2D{
     public static boolean invertUndoRedo;
     public static boolean autoBuildCasing = true;
     public static boolean recoveryMode = false;
+    public static final ArrayList<String> pinnedStrs = new ArrayList<>();
     static{
         resetMetadata();
         modules.add(new UnderhaulModule());
@@ -262,6 +264,10 @@ public class Core extends Renderer2D{
             tutorialShown = settings.get("tutorialShown", false);
             invertUndoRedo = settings.get("invertUndoRedo", false);
             autoBuildCasing = settings.get("autoBuildCasing", true);
+            ConfigList lst = settings.getConfigList("pins", new ConfigList());
+            for(int i = 0; i<lst.size(); i++){
+                pinnedStrs.add(lst.getString(i));
+            }
         }
         refreshModules();
         for(Configuration configuration : Configuration.configurations){
@@ -328,6 +334,9 @@ public class Core extends Renderer2D{
             settings.set("tutorialShown", tutorialShown);
             settings.set("invertUndoRedo", invertUndoRedo);
             settings.set("autoBuildCasing", autoBuildCasing);
+            ConfigList pins = new ConfigList();
+            for(String s : pinnedStrs)pins.add(s);
+            settings.set("pins", pins);
             settings.save();
             if(Main.isBot){
                 Bot.stop();

@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
 import planner.Core;
+import planner.menu.component.Pinnable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class Fuel{
+public class Fuel implements Pinnable{
     public static Fuel fuel(String name, String displayName, float power, float heat, int time, String texture){
         Fuel fuel = new Fuel(name, power, heat, time);
         fuel.displayName = displayName;
@@ -80,5 +81,15 @@ public class Fuel{
     }
     public String getDisplayName(){
         return displayName==null?name:displayName;
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> lst = getLegacyNames();
+        lst.add(getDisplayName());
+        return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return name;
     }
 }

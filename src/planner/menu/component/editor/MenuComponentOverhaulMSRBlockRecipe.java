@@ -3,10 +3,10 @@ import java.util.ArrayList;
 import multiblock.configuration.overhaul.fissionmsr.Block;
 import multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
 import planner.Core;
-import planner.menu.component.Searchable;
+import planner.menu.component.Pinnable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentOverhaulMSRBlockRecipe extends MenuComponent implements Searchable{
+public class MenuComponentOverhaulMSRBlockRecipe extends MenuComponent implements Pinnable{
     private final Block block;
     public final BlockRecipe recipe;
     public MenuComponentOverhaulMSRBlockRecipe(Block block, BlockRecipe recipe){
@@ -71,9 +71,12 @@ public class MenuComponentOverhaulMSRBlockRecipe extends MenuComponent implement
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        ArrayList<String> lst = recipe.getLegacyNames();
-        lst.add(recipe.getInputDisplayName());
+        ArrayList<String> lst = recipe.getSearchableNames();
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return recipe.getPinnedName();
     }
 }

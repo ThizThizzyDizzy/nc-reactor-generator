@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 import multiblock.configuration.TextureManager;
 import planner.Core;
+import planner.menu.component.Pinnable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class BlockRecipe{
+public class BlockRecipe implements Pinnable{
     public static BlockRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
         BlockRecipe recipe = new BlockRecipe(inputName, outputName);
         recipe.inputDisplayName = inputDisplayName;
@@ -192,5 +193,15 @@ public class BlockRecipe{
     }
     public String getOutputDisplayName(){
         return outputDisplayName==null?outputName:outputDisplayName;
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> lst = getLegacyNames();
+        lst.add(getInputDisplayName());
+        return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return inputName;
     }
 }

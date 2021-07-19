@@ -2,10 +2,10 @@ package planner.menu.component.editor;
 import java.util.ArrayList;
 import multiblock.configuration.overhaul.fusion.Recipe;
 import planner.Core;
-import planner.menu.component.Searchable;
+import planner.menu.component.Pinnable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentOverhaulFusionRecipe extends MenuComponent implements Searchable{
+public class MenuComponentOverhaulFusionRecipe extends MenuComponent implements Pinnable{
     public final Recipe recipe;
     public MenuComponentOverhaulFusionRecipe(Recipe recipe){
         super(0, 0, 0, 0);
@@ -39,9 +39,12 @@ public class MenuComponentOverhaulFusionRecipe extends MenuComponent implements 
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        ArrayList<String> lst = recipe.getLegacyNames();
-        lst.add(recipe.getInputDisplayName());
+        ArrayList<String> lst = recipe.getSearchableNames();
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return recipe.getPinnedName();
     }
 }

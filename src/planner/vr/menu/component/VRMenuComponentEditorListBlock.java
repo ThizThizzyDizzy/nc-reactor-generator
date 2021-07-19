@@ -1,12 +1,14 @@
 package planner.vr.menu.component;
+import java.util.ArrayList;
 import multiblock.Block;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 import planner.Core;
+import planner.menu.component.Pinnable;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.VRMenuEdit;
-public class VRMenuComponentEditorListBlock extends VRMenuComponent{
+public class VRMenuComponentEditorListBlock extends VRMenuComponent implements Pinnable{
     private final VRMenuEdit editor;
     private final Block block;
     private final int id;
@@ -32,12 +34,21 @@ public class VRMenuComponentEditorListBlock extends VRMenuComponent{
         super.keyEvent(device, button, pressed);
         if(pressed){
             if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-                editor.selectedBlock.put(id, blockID);
+                if(editor.isShiftPressed(device))Pinnable.togglePin(this);
+                else editor.selectedBlock.put(id, blockID);
             }
         }
     }
     @Override
     public String getTooltip(int device){
         return block.getListTooltip();
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        return block.getSearchableNames();
+    }
+    @Override
+    public String getPinnedName(){
+        return block.getPinnedName();
     }
 }

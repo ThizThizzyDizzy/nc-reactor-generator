@@ -607,7 +607,7 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
         return Core.hasAlpha(against.getBaseTexture());
     }
     @Override
-    public Iterable<String> getSearchableNames(){
+    public ArrayList<String> getSearchableNames(){
         ArrayList<String> searchables = template.getSearchableNames();
         for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
         return searchables;
@@ -616,5 +616,9 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
     @Override
     public multiblock.configuration.overhaul.fissionsfr.Block getTemplate() {
         return template;
+    }
+    @Override
+    public String getPinnedName(){
+        return template.getPinnedName();
     }
 }

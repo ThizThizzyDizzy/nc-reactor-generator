@@ -2,10 +2,10 @@ package planner.menu.component.editor;
 import java.util.ArrayList;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.Core;
-import planner.menu.component.Searchable;
+import planner.menu.component.Pinnable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentUnderFuel extends MenuComponent implements Searchable{
+public class MenuComponentUnderFuel extends MenuComponent implements Pinnable{
     private final Fuel fuel;
     public MenuComponentUnderFuel(Fuel fuel){
         super(0, 0, 0, 0);
@@ -42,9 +42,12 @@ public class MenuComponentUnderFuel extends MenuComponent implements Searchable{
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        ArrayList<String> lst = fuel.getLegacyNames();
-        lst.add(fuel.getDisplayName());
+        ArrayList<String> lst = fuel.getSearchableNames();
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return fuel.getPinnedName();
     }
 }

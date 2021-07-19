@@ -3,10 +3,10 @@ import java.util.ArrayList;
 import multiblock.configuration.overhaul.fusion.Block;
 import multiblock.configuration.overhaul.fusion.BlockRecipe;
 import planner.Core;
-import planner.menu.component.Searchable;
+import planner.menu.component.Pinnable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
-public class MenuComponentOverhaulFusionBlockRecipe extends MenuComponent implements Searchable{
+public class MenuComponentOverhaulFusionBlockRecipe extends MenuComponent implements Pinnable{
     private final Block block;
     public final BlockRecipe recipe;
     public MenuComponentOverhaulFusionBlockRecipe(Block block, BlockRecipe recipe){
@@ -54,9 +54,12 @@ public class MenuComponentOverhaulFusionBlockRecipe extends MenuComponent implem
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        ArrayList<String> lst = recipe.getLegacyNames();
-        lst.add(recipe.getInputDisplayName());
+        ArrayList<String> lst = recipe.getSearchableNames();
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
+    }
+    @Override
+    public String getPinnedName(){
+        return recipe.getPinnedName();
     }
 }
