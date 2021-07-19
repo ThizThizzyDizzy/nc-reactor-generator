@@ -1227,6 +1227,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 blockRecipe.add(new MenuComponentOverhaulFusionBlockRecipe(b, recipe));
             }
         }
+        if(!blockRecipe.list.components.isEmpty())blockRecipe.setSelectedIndex(blockRecipe.allComponents.indexOf(blockRecipe.list.components.get(0)));
         for(int i = 0; i<blockRecipe.allComponents.size(); i++){
             MenuComponent c = blockRecipe.allComponents.get(i);
             if(c instanceof MenuComponentOverhaulSFRBlockRecipe&&was==((MenuComponentOverhaulSFRBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);

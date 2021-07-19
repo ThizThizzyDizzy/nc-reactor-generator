@@ -7,7 +7,7 @@ import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentDropdownList extends MenuComponent{
     public double preferredHeight;
     public final MenuComponentMinimalistTextBox searchBox;
-    private final MenuComponentMinimaList list;
+    public final MenuComponentMinimaList list;
     public boolean isDown = false;
     public ArrayList<MenuComponent> allComponents = new ArrayList<>();
     public MenuComponentDropdownList(double x, double y, double width, double height){
