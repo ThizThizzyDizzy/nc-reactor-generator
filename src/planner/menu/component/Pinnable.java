@@ -11,7 +11,7 @@ public interface Pinnable extends Searchable{
             T c = it.next();
             if(c instanceof Pinnable){
                 if(Pinnable.isPinned((Pinnable)c)){
-                    outputList.add(c);
+                    if(Searchable.isValidForSearch((Searchable)c, searchText))outputList.add(c);
                     it.remove();
                 }
             }
