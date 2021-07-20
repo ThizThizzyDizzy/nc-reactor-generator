@@ -56,7 +56,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
             block.rules.add(rule = new PlacementRule());
             gui.open(new MenuPlacementRuleConfiguration(
                     gui, this, configuration, rule,Core.configuration.overhaul.turbine,
-                    multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.values()
+                    multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.values()
             ));
         });
         this.block = block;

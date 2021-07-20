@@ -1,8 +1,15 @@
 package planner.menu.configuration;
-
-import multiblock.configuration.*;
+import multiblock.configuration.AbstractBlockContainer;
+import multiblock.configuration.AbstractPlacementRule;
+import multiblock.configuration.Configuration;
+import multiblock.configuration.IBlockTemplate;
+import multiblock.configuration.IBlockType;
 import planner.Core;
-import planner.menu.component.*;
+import planner.menu.component.MenuComponentDropdownList;
+import planner.menu.component.MenuComponentLabel;
+import planner.menu.component.MenuComponentMinimaList;
+import planner.menu.component.MenuComponentMinimalistButton;
+import planner.menu.component.MenuComponentMinimalistSlider;
 import simplelibrary.font.FontManager;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.gui.GUI;
@@ -53,7 +60,7 @@ public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
         addRule.addActionListener((e) -> {
             PlacementRule rul;
             rule.rules.add(rul = (PlacementRule) rule.newRule());
-            gui.open(new MenuPlacementRuleConfiguration<BlockType, Template, PlacementRule>(gui, parent, configuration, rul, blockList, blockTypes));
+            gui.open(new MenuPlacementRuleConfiguration<>(gui, parent, configuration, rul, blockList, blockTypes));
         });
         this.rule = rule;
     }

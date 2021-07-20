@@ -32,7 +32,6 @@ public interface Pinnable extends Searchable{
         synchronized(Core.pinnedStrs){
             if(isPinned(p))Core.pinnedStrs.remove(p.getPinnedName());
             else Core.pinnedStrs.add(p.getPinnedName());
-            System.out.println(p.getPinnedName()+" "+isPinned(p));
         }
     }
     public String getPinnedName();

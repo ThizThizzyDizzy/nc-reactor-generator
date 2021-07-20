@@ -87,7 +87,7 @@ public class MenuBlockConfiguration extends ConfigurationMenu{
             PlacementRule rule;
             block.rules.add(rule = new PlacementRule());
             gui.open(new MenuPlacementRuleConfiguration(
-                    gui, this, configuration, rule,Core.configuration.overhaul.fissionSFR,
+                    gui, this, configuration, rule,Core.configuration.overhaul.fissionMSR,
                     multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.values()
             ));
         });
