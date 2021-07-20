@@ -32,6 +32,7 @@ import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
 import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.component.MenuComponentProgressBar;
+import planner.menu.configuration.overhaul.MenuOverhaulFusionConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulMSRConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulSFRConfiguration;
 import planner.menu.configuration.overhaul.MenuOverhaulTurbineConfiguration;
@@ -224,7 +225,7 @@ public class MenuConfiguration extends ConfigurationMenu{
             gui.open(new MenuOverhaulTurbineConfiguration(gui, this, configuration));
         });
         overhaulFusion.addActionListener((e) -> {
-//            gui.open(new MenuOverhaulFusionConfiguration(gui, this, configuration));
+            gui.open(new MenuOverhaulFusionConfiguration(gui, this, configuration));
         });
     }
     @Override

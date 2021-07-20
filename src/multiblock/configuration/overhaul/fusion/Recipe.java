@@ -109,6 +109,9 @@ public class Recipe implements Pinnable{
     public String getInputDisplayName(){
         return inputDisplayName==null?inputName:inputDisplayName;
     }
+    public String getOutputDisplayName(){
+        return outputDisplayName==null?outputName:outputDisplayName;
+    }
     @Override
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> lst = getLegacyNames();
