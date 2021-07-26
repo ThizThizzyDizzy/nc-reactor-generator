@@ -75,7 +75,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
                 case IRRADIATOR:
                     return b.isIrradiator();
                 case MODERATOR:
-                    return b.isModerator();
+                    return b.isModeratorActive();
                 case REFLECTOR:
                     return b.isReflector();
                 case SHIELD:

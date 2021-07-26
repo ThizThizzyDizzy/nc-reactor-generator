@@ -65,7 +65,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
             multiblock.overhaul.fusion.Block b = (multiblock.overhaul.fusion.Block) rb;
             switch (this) {
                 case BREEDING_BLANKET:
-                    return b.isBreedingBlanket();
+                    return b.isBreedingBlanketAugmented();
                 case CONDUCTOR:
                     return b.isConductor();
                 case CONNECTOR:
