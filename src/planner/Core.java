@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +42,7 @@ import planner.menu.MenuCredits;
 import planner.menu.MenuDiscord;
 import planner.menu.MenuEdit;
 import planner.menu.MenuMain;
+import planner.menu.MenuTransition;
 import planner.menu.MenuTutorial;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
@@ -107,6 +109,7 @@ public class Core extends Renderer2D{
     public static boolean autoBuildCasing = true;
     public static boolean recoveryMode = false;
     public static final ArrayList<String> pinnedStrs = new ArrayList<>();
+    private static Random rand = new Random();
     static{
         resetMetadata();
         modules.add(new UnderhaulModule());
@@ -286,12 +289,39 @@ public class Core extends Renderer2D{
         Configuration.configurations.get(0).impose(configuration);
         System.out.println("Initializing GUI");
         gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper){
+            private boolean b;
+            private double x,y,o,to;
             @Override
             public void onKeyEvent(int key, int scancode, int event, int modifiers){
                 super.onKeyEvent(key, scancode, event, modifiers);
                 if(event==GLFW.GLFW_PRESS&&key==GLFW.GLFW_KEY_C&&Core.isControlPressed()&&Core.isShiftPressed()&&Core.isAltPressed()){
                     throw new RuntimeException("Ctrl+Shift+Alt+C Debug crash");
                 }
+            }
+            @Override
+            public <V extends Menu> V open(Menu menu){
+                if(!(menu instanceof MenuTransition)){
+                    if(rand.nextDouble()<.0001){
+                        to = Math.max(0,Math.min(1,rand.nextGaussian()/3));
+                        x = rand.nextDouble()*helper.displayWidth();
+                        y = rand.nextDouble()*helper.displayHeight();
+                    }
+                    else to = 0;
+                }else to = 0;
+                return super.open(menu);
+            }
+            @Override
+            public synchronized void render(int millisSinceLastTick){
+                helper.make2D();
+                o = o*.999+to*.001;
+                int min = 1;
+                int max = 4;
+                for(int i = min; i<=max; i++){
+                    GL11.glColor4d(1, 1, 1, ((-1/(max-min))*(i-min)+1)*o);
+                    drawRegularPolygon(x-10, y, i, 10, 0, 0);
+                    drawRegularPolygon(x+10, y, i, 10, 0, 0);
+                }
+                super.render(millisSinceLastTick);
             }
         };
         if(Main.isBot)gui.open(new MenuDiscord(gui));
