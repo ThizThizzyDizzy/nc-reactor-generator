@@ -1153,6 +1153,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 }
                 if(block.isReflector()){
                     if(length==0)break;
+                    if(length>getConfiguration().overhaul.fissionSFR.neutronReach/2)break;
                     if(!block.template.reflectorHasBaseStats&&block.recipe==null)break;//empty reflector
                     block.reflectorActive = true;
                     if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
