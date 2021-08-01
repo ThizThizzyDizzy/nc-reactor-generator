@@ -393,8 +393,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     public UnderhaulSFR doCopy(){
         UnderhaulSFR copy = blankCopy();
         forEachPosition((x, y, z) -> {
-            Block get = getBlock(x, y, z);
-            if(get!=null)copy.setBlockExact(x, y, z, get.copy());
+            copy.setBlock(x, y, z, getBlock(x, y, z));
         });
         copy.netHeat = netHeat;
         copy.power = power;
@@ -473,7 +472,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                             Block was = multiblock.getBlock(x, y, z);
                             if(was!=null&&was.isFuelCell())return;
                             ArrayList<Action> actions = new ArrayList<>();
-                            actions.add(new SetblockAction(x, y, z, cell.newInstance(x, y, z)));
+                            actions.add(new SetblockAction(x, y, z, cell));
                             SetblocksAction multi = new SetblocksAction(moderator);
                             DIRECTION:for(Direction d : directions){
                                 ArrayList<int[]> toSet = new ArrayList<>();
@@ -555,7 +554,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                 for(Block b : blocks){
                     multiblock.forEachInternalPosition((x, y, z) -> {
                         Block was = multiblock.getBlock(x, y, z);
-                        if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), priorities, b.template.displayTexture));
+                        if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b), priorities, b.template.displayTexture));
                     });
                 }
             }
@@ -592,7 +591,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                     multiblock.forEachInternalPosition((x, y, z) -> {
                         Block was = multiblock.getBlock(x, y, z);
                         if(was!=null&&was.isModerator())return;
-                        if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b.newInstance(x, y, z)), priorities, b.template.displayTexture));
+                        if(suggestor.acceptingSuggestions())suggestor.suggest(new Suggestion(was==null?"Add "+b.getName():"Replace "+was.getName()+" with "+b.getName(), new SetblockAction(x, y, z, b), priorities, b.template.displayTexture));
                     });
                 }
             }
@@ -631,7 +630,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                     for(Block newBlock : blocks){
                         Block block = multiblock.getBlock(x, y, z);
                         if(block==null||block.canBeQuickReplaced()){
-                            if(newBlock.template.cooling>(block==null||!block.isActive()?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities, newBlock.template.displayTexture));
+                            if(newBlock.template.cooling>(block==null||!block.isActive()?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities, newBlock.template.displayTexture));
                             else suggestor.task.max--;
                         }
                     }
@@ -672,7 +671,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                     for(Block newBlock : blocks){
                         Block block = multiblock.getBlock(x, y, z);
                         if(block==null||block.canBeQuickReplaced()){
-                            if(newBlock.template.cooling>(block==null||!block.isActive()?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities, newBlock.template.displayTexture));
+                            if(newBlock.template.cooling>(block==null||!block.isActive()?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities, newBlock.template.displayTexture));
                             else suggestor.task.max--;
                         }
                     }

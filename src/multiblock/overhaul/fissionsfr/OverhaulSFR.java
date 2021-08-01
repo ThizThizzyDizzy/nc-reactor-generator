@@ -47,6 +47,7 @@ import planner.editor.suggestion.Suggestor;
 import planner.exception.MissingConfigurationEntryException;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.menu.component.Pinnable;
 import planner.menu.component.generator.MenuComponentOverhaulSFRToggleBlockRecipe;
 import planner.module.Module;
 import simplelibrary.Queue;
@@ -1680,8 +1681,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     public OverhaulSFR doCopy(){
         OverhaulSFR copy = blankCopy();
         forEachPosition((x, y, z) -> {
-            Block get = getBlock(x, y, z);
-            if(get!=null)copy.setBlockExact(x, y, z, get.copy());
+            copy.setBlock(x, y, z, getBlock(x, y, z));
         });
         synchronized(clusters){
             for(Cluster cluster : clusters){
@@ -1767,7 +1767,15 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 ArrayList<Block> cells = new ArrayList<>();
                 for(Block baseCell : baseCells){
                     if(baseCell.template.fuelCellHasBaseStats)cells.add(baseCell);
+                    boolean hasPinned = false;
                     for(BlockRecipe recipe : baseCell.template.allRecipes){
+                        if(Pinnable.isPinned(recipe)){
+                            hasPinned = true;
+                            break;
+                        }
+                    }
+                    for(BlockRecipe recipe : baseCell.template.allRecipes){
+                        if(hasPinned&&!Pinnable.isPinned(recipe))continue;
                         Block cell = baseCell.copy();
                         cell.recipe = recipe;
                         cells.add(cell);

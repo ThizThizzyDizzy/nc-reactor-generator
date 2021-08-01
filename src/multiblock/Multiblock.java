@@ -73,7 +73,7 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public void setBlockExact(int x, int y, int z, T block){
         for(BlockGrid<T> grid : blockGrids){
             if(grid.contains(x,y,z)){
-                grid.setBlock(x, y, z, block==null?null:(T)block.copy(x, y, z));
+                grid.setBlock(x, y, z, block);//block==null?null:(T)block.copy(x, y, z));//dunno why this was the same as setBlock :thonk:
                 return;
             }
         }
@@ -655,6 +655,14 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
     public boolean isValid(Block block, int x, int y, int z){
         Block b = block.newInstance(x, y, z);
         return b.hasRules()&&b.calculateRules(this);
+    }
+    public boolean isValid(Block block, int x, int y, int z, T assumingBlock, int assumingX, int assumingY, int assumingZ){
+        T was = getBlock(assumingX, assumingY, assumingZ);
+        setBlockExact(assumingX, assumingY, assumingZ, assumingBlock);
+        Block b = block.newInstance(x, y, z);
+        boolean ret = b.hasRules()&&b.calculateRules(this);
+        setBlockExact(assumingX, assumingY, assumingZ, was);
+        return ret;
     }
     public abstract String getDescriptionTooltip();
     public float get3DPreviewScale(){

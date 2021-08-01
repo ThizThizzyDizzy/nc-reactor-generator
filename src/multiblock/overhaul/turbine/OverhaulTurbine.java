@@ -598,8 +598,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public OverhaulTurbine doCopy(){
         OverhaulTurbine copy = blankCopy();
         forEachPosition((x, y, z) -> {
-            Block get = getBlock(x, y, z);
-            if(get!=null)copy.setBlockExact(x, y, z, (Block)get.copy());
+            copy.setBlock(x, y, z, getBlock(x, y, z));
         });
         copy.rotorValid = rotorValid;
         copy.bladeCount = bladeCount;
@@ -744,7 +743,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                                 continue;
                             }
                             for(Block newBlock : blocks){
-                                if(newBlock.template.coilEfficiency>(block==null?0:block.template.coilEfficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                if(newBlock.template.coilEfficiency>(block==null?0:block.template.coilEfficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                             if(block!=null){
@@ -783,7 +782,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 for(int z = 1; z<getExternalDepth()-1; z++){
                     Block block = multiblock.getBlock(x, y, z);
                     for(Block newBlock : blades){
-                        suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                        suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                     }
                 }
             }

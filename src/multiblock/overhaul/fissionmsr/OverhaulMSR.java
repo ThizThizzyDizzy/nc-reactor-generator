@@ -45,6 +45,7 @@ import planner.editor.suggestion.Suggestor;
 import planner.exception.MissingConfigurationEntryException;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
+import planner.menu.component.Pinnable;
 import planner.menu.component.generator.MenuComponentMSRToggleBlockRecipe;
 import planner.module.Module;
 import simplelibrary.Queue;
@@ -1967,8 +1968,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public synchronized OverhaulMSR doCopy(){
         OverhaulMSR copy = blankCopy();
         forEachPosition((x, y, z) -> {
-            Block get = getBlock(x, y, z);
-            if(get!=null)copy.setBlockExact(x, y, z, get.copy());
+            copy.setBlock(x, y, z, getBlock(x, y, z));
         });
         synchronized(clusters){
             for(Cluster cluster : clusters){
@@ -2050,7 +2050,15 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 ArrayList<Block> vessels = new ArrayList<>();
                 for(Block baseVessel : baseVessels){
                     if(baseVessel.template.fuelVesselHasBaseStats)vessels.add(baseVessel);
+                    boolean hasPinned = false;
                     for(BlockRecipe recipe : baseVessel.template.allRecipes){
+                        if(Pinnable.isPinned(recipe)){
+                            hasPinned = true;
+                            break;
+                        }
+                    }
+                    for(BlockRecipe recipe : baseVessel.template.allRecipes){
+                        if(hasPinned&&!Pinnable.isPinned(recipe))continue;
                         Block vessel = baseVessel.copy();
                         vessel.recipe = recipe;
                         vessels.add(vessel);

@@ -740,8 +740,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
     public OverhaulFusionReactor doCopy(){
         OverhaulFusionReactor copy = blankCopy();
         forEachPosition((x, y, z) -> {
-            Block get = getBlock(x, y, z);
-            if(get!=null)copy.setBlockExact(x, y, z, (Block)get.copy());
+            copy.setBlock(x, y, z, getBlock(x, y, z));
         });
         synchronized(clusters){
             for(Cluster cluster : clusters){
@@ -935,7 +934,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                                 int oldCooling = 0;
                                 if(block.template.heatsinkHasBaseStats||block.recipe!=null)oldCooling = block.recipe==null?block.template.heatsinkCooling:block.recipe.heatsinkCooling;
                                 int newCooling = newBlock.recipe==null?newBlock.template.heatsinkCooling:newBlock.recipe.heatsinkCooling;
-                                if(newCooling>oldCooling&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                if(newCooling>oldCooling&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }

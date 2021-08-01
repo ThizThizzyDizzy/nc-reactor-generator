@@ -2,7 +2,6 @@ package multiblock.action;
 import java.util.ArrayList;
 import multiblock.Action;
 import multiblock.Block;
-import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 public class SetblockAction extends Action{
     public final int x;
@@ -16,13 +15,10 @@ public class SetblockAction extends Action{
         this.z = z;
         this.block = block;
     }
-    public SetblockAction(int x, int y, int z, CuboidalMultiblock currentMultiblock, Block newInstance){
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
         if(allowUndo)was = multiblock.getBlock(x, y, z);
-        multiblock.setBlockExact(x, y, z, block);
+        multiblock.setBlock(x, y, z, block);
     }
     @Override
     public void doUndo(Multiblock multiblock){

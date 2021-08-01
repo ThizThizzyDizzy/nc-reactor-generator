@@ -154,7 +154,7 @@ public class RainbowFactorModule extends Module<Float>{
                         for(multiblock.underhaul.fissionsfr.Block newBlock : blocks){
                             multiblock.underhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }
@@ -197,7 +197,7 @@ public class RainbowFactorModule extends Module<Float>{
                         for(multiblock.overhaul.fissionsfr.Block newBlock : blocks){
                             multiblock.overhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                if(newBlock.template.heatsinkCooling>(block==null?0:block.template.heatsinkCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                if(newBlock.template.heatsinkCooling>(block==null?0:block.template.heatsinkCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }
@@ -240,7 +240,7 @@ public class RainbowFactorModule extends Module<Float>{
                         for(multiblock.overhaul.fissionmsr.Block newBlock : blocks){
                             multiblock.overhaul.fissionmsr.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                if(newBlock.template.heaterCooling>(block==null?0:block.template.heaterCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                if(newBlock.template.heaterCooling>(block==null?0:block.template.heaterCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }
@@ -283,7 +283,7 @@ public class RainbowFactorModule extends Module<Float>{
                         for(multiblock.overhaul.fusion.Block newBlock : blocks){
                             multiblock.overhaul.fusion.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                if(newBlock.template.heatsinkCooling>(block==null?0:block.template.heatsinkCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities));
+                                if(newBlock.template.heatsinkCooling>(block==null?0:block.template.heatsinkCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }

@@ -28,7 +28,7 @@ public class SmartFillOverhaulFusion extends PostProcessingEffect<OverhaulFusion
                 if(!available.isEmpty()){
                     Block b = available.get(rand.nextInt(available.size()));
                     coolingAdded[0]+=b.template.heatsinkCooling;
-                    multiblock.queueAction(new SetblockAction(x, y, z, b.newInstance(x, y, z)));
+                    multiblock.queueAction(new SetblockAction(x, y, z, b));
                 }
             }
         });
