@@ -1,5 +1,5 @@
 package multiblock.ppe;
-import generator.Settings;
+import generator.MultiblockGenerator;
 import multiblock.Multiblock;
 public abstract class PostProcessingEffect<T extends Multiblock>{
     public final String name;
@@ -11,7 +11,7 @@ public abstract class PostProcessingEffect<T extends Multiblock>{
         this.preSymmetry = preSymmetry;
         this.postSymmetry = postSymmetry;
     }
-    public abstract void apply(T multiblock, Settings settings);
+    public abstract void apply(T multiblock, MultiblockGenerator generator);
     public boolean defaultEnabled(){
         return false;
     }

@@ -1,5 +1,5 @@
 package multiblock.ppe;
-import generator.Settings;
+import generator.MultiblockGenerator;
 import multiblock.Block;
 import multiblock.Multiblock;
 public class ClearInvalid extends PostProcessingEffect{
@@ -7,7 +7,7 @@ public class ClearInvalid extends PostProcessingEffect{
         super("Remove Invalid Blocks", true, true, true);
     }
     @Override
-    public void apply(Multiblock multiblock, Settings settings){
+    public void apply(Multiblock multiblock, MultiblockGenerator generator){
         multiblock.forEachPosition((x, y, z) -> {
             Block b = multiblock.getBlock(x, y, z);
             if(b==null)return;

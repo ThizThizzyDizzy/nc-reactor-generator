@@ -1,6 +1,8 @@
 package generator;
+import generator.setting.Setting;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import multiblock.Block;
@@ -8,7 +10,6 @@ import multiblock.Multiblock;
 import multiblock.Range;
 import planner.FormattedText;
 import planner.exception.MissingConfigurationEntryException;
-import planner.menu.component.MenuComponentMinimaList;
 public abstract class MultiblockGenerator{
     public int iterations = 0;
     public final Object iterationSynchronizer = new Object();
@@ -19,14 +20,17 @@ public abstract class MultiblockGenerator{
         generators.add(new CoreBasedGenerator(null));
         generators.add(new StandardGenerator(null));
     }
-    protected ArrayList<Priority> priorities;
+    public ArrayList<Setting> settings = new ArrayList<>();
     private Object threadronyzer = new Object();
     public final Multiblock multiblock;
     private ArrayList<UUID> threads = new ArrayList<>();
     private HashMap<UUID, Long> crashedThreads = new HashMap<>();
+    private ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
     public MultiblockGenerator(Multiblock multiblock){
         this.multiblock = multiblock;
-        if(multiblock!=null)priorities = multiblock.getGenerationPriorities();
+        if(multiblock!=null){
+            createSettings();
+        }
     }
     public abstract MultiblockGenerator newInstance(Multiblock multi);
     public abstract ArrayList<Multiblock>[] getMultiblockLists();
@@ -39,9 +43,7 @@ public abstract class MultiblockGenerator{
         }
         return valid;
     }
-    public abstract void addSettings(MenuComponentMinimaList generatorSettings, Multiblock multi);
-    public abstract void refreshSettingsFromGUI(ArrayList<Range<Block>> allowedBlocks);
-    public abstract void refreshSettings(Settings settings);
+    protected abstract void createSettings();
     public int getActiveThreads(){
         synchronized(threadronyzer){
             return threads.size();
@@ -116,5 +118,12 @@ public abstract class MultiblockGenerator{
             if(System.nanoTime()-crashedThreads.get(uid)<=crashedThreadTime)crashed++;
         }
         return crashed;
+    }
+    public List<Range<Block>> getAllowedBlocks(){
+        return allowedBlocks;
+    }
+    public void setAllowedBlocks(ArrayList<Range<Block>> allowedBlocks){
+        this.allowedBlocks.clear();
+        this.allowedBlocks.addAll(allowedBlocks);
     }
 }

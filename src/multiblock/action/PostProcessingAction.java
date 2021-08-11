@@ -1,5 +1,5 @@
 package multiblock.action;
-import generator.Settings;
+import generator.MultiblockGenerator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import multiblock.Action;
@@ -10,10 +10,10 @@ import multiblock.ppe.PostProcessingEffect;
 public class PostProcessingAction extends Action<Multiblock>{
     private final PostProcessingEffect postProcessingEffect;
     private HashMap<BlockPos, Block> was = new HashMap<>();
-    private final Settings settings;
-    public PostProcessingAction(PostProcessingEffect postProcessingEffect, Settings settings){
+    private final MultiblockGenerator generator;
+    public PostProcessingAction(PostProcessingEffect postProcessingEffect, MultiblockGenerator generator){
         this.postProcessingEffect = postProcessingEffect;
-        this.settings = settings;
+        this.generator = generator;
     }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
@@ -22,7 +22,7 @@ public class PostProcessingAction extends Action<Multiblock>{
                 was.put(new BlockPos(x,y,z), multiblock.getBlock(x, y, z));
             });
         }
-        postProcessingEffect.apply(multiblock, settings);
+        postProcessingEffect.apply(multiblock, generator);
     }
     @Override
     public void doUndo(Multiblock multiblock){

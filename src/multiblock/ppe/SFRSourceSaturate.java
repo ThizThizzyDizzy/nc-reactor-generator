@@ -1,5 +1,5 @@
 package multiblock.ppe;
-import generator.Settings;
+import generator.MultiblockGenerator;
 import multiblock.configuration.overhaul.fissionsfr.Block;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 public class SFRSourceSaturate extends PostProcessingEffect<OverhaulSFR>{
@@ -9,7 +9,7 @@ public class SFRSourceSaturate extends PostProcessingEffect<OverhaulSFR>{
         this.source = block;
     }
     @Override
-    public void apply(OverhaulSFR multiblock, Settings settings){
+    public void apply(OverhaulSFR multiblock, MultiblockGenerator generator){
         multiblock.forEachPosition((x, y, z) -> {
             if(multiblock.getBlock(x, y, z)!=null&&multiblock.getBlock(x, y, z).template.fuelCell)multiblock.getBlock(x, y, z).addNeutronSource(multiblock, source);
         });

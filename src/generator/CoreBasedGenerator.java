@@ -1,6 +1,13 @@
 package generator;
+import generator.setting.SettingBoolean;
+import generator.setting.SettingInt;
+import generator.setting.SettingPercentage;
+import generator.setting.SettingPostProcessingEffects;
+import generator.setting.SettingPriorities;
+import generator.setting.SettingSymmetries;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import multiblock.Block;
 import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
@@ -15,34 +22,13 @@ import multiblock.ppe.PostProcessingEffect;
 import multiblock.symmetry.Symmetry;
 import multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import planner.exception.MissingConfigurationEntryException;
-import planner.menu.component.MenuComponentLabel;
-import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.MenuComponentMinimalistButton;
-import planner.menu.component.MenuComponentMinimalistTextBox;
-import planner.menu.component.MenuComponentToggleBox;
-import planner.menu.component.generator.MenuComponentPostProcessingEffect;
-import planner.menu.component.generator.MenuComponentPriority;
-import planner.menu.component.generator.MenuComponentSymmetry;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public class CoreBasedGenerator extends MultiblockGenerator{
-    MenuComponentMinimalistTextBox finalMultiblockCount;
-    MenuComponentMinimalistTextBox workingMultiblockCount;
-    MenuComponentMinimalistTextBox finalCoreCount;
-    MenuComponentMinimalistTextBox workingCoreCount;
-    MenuComponentMinimalistTextBox timeout;
-    MenuComponentMinimaList finalPrioritiesList;
-    MenuComponentMinimaList corePrioritiesList;
-    MenuComponentMinimalistButton moveFinalUp;
-    MenuComponentMinimalistButton moveFinalDown;
-    MenuComponentMinimalistButton moveCoreUp;
-    MenuComponentMinimalistButton moveCoreDown;
-    MenuComponentMinimaList symmetriesList;
-    MenuComponentMinimaList postProcessingEffectsList;
-    MenuComponentMinimalistTextBox changeChance;
-    MenuComponentMinimalistTextBox morphChance;
-    MenuComponentToggleBox variableRate;
-    MenuComponentToggleBox fillAir;
-    private CoreBasedGeneratorSettings settings = new CoreBasedGeneratorSettings(this);
+    public SettingInt finalMultiblockCount, workingMultiblockCount, finalCoreCount, workingCoreCount, timeout;
+    public SettingPriorities finalPriorities, corePriorities;
+    public SettingPercentage changeChance, morphChance;
+    public SettingBoolean variableRate, fillAir;
+    public SettingSymmetries symmetries;
+    public SettingPostProcessingEffects postProcessingEffects;
     private final ArrayList<Multiblock> finalMultiblocks = new ArrayList<>();
     private final ArrayList<Multiblock> workingMultiblocks = new ArrayList<>();
     private final ArrayList<Multiblock> finalCores = new ArrayList<>();
@@ -65,135 +51,34 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         return "Core-based";
     }
     @Override
-    public void addSettings(MenuComponentMinimaList generatorSettings, Multiblock multi){
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Final Multiblocks", true));
-        finalMultiblockCount = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "6", true).setIntFilter()).setTooltip("This is the number of multiblocks that are kept as the best generated multiblocks\nWhen you close the generator, only the best of these will be kept");
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Working Multiblocks", true));
-        workingMultiblockCount = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "6", true).setIntFilter()).setTooltip("This is the number of multiblocks that are actively being worked on\nEvery thread will work on all working multiblocks");
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Final Cores", true));
-        finalCoreCount = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "6", true).setIntFilter()).setTooltip("This is the number of multiblock cores that are kept as the best generated cores\nThese are the basis for generating multiblocks");
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Working Cores", true));
-        workingCoreCount = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "6", true).setIntFilter()).setTooltip("This is the number of multiblock cores that are actively being worked on\nEvery thread will work on all working cores");
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Timeout (sec)", true));
-        timeout = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "10", true).setIntFilter()).setTooltip("If a multiblock hasn't changed for this long, it will be reset\nThis is to avoid running into generation dead-ends");
-        int numFinal = 0, numCore = 0;
-        for(Priority p : priorities){
-            if(p.isFinal())numFinal++;
-            if(p.isCore())numCore++;
+    protected void createSettings(){
+        settings.add(finalMultiblockCount = new SettingInt("Final Multiblocks", 1, 64, 1, "This is the number of multiblocks that are kept as the best generated multiblocks\nWhen you close the generator, only the best of these will be kept"));
+        settings.add(workingMultiblockCount = new SettingInt("Working Multiblocks", 1, 1024, 3, "This is the number of multiblocks that are actively being worked on\nEvery thread will work on all working multiblocks"));
+        settings.add(finalCoreCount = new SettingInt("Final Cores", 1, 64, 1, "This is the number of multiblock cores that are kept as the best generated cores\nThese are the basis for generating multiblocks"));
+        settings.add(workingCoreCount = new SettingInt("Working Cores", 1, 1024, 3, "This is the number of multiblock cores that are actively being worked on\nEvery thread will work on all working cores"));
+        settings.add(timeout = new SettingInt("Timeout (sec)", 0, 86400, 10, "If a multiblock hasn't changed for this long, it will be reset\nThis is to avoid running into generation dead-ends"));
+        ArrayList<Priority> finalList = new ArrayList<>(multiblock.getGenerationPriorities());
+        for(Iterator<Priority> it = finalList.iterator(); it.hasNext();){
+            Priority p = it.next();
+            if(!p.isFinal())it.remove();
         }
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Final Priorities", true));
-        finalPrioritiesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, numFinal*32, 24){
-            @Override
-            public void render(int millisSinceLastTick){
-                for(simplelibrary.opengl.gui.components.MenuComponent c : components){
-                    c.width = width-(hasVertScrollbar()?vertScrollbarWidth:0);
-                }
-                super.render(millisSinceLastTick);
-            }
-        });
-        finalPrioritiesList.components.clear();
-        for(Priority priority : priorities){
-            if(priority.isFinal())finalPrioritiesList.add(new MenuComponentPriority(priority));
+        settings.add(finalPriorities = new SettingPriorities("Final Priorities", finalList));
+        ArrayList<Priority> coreList = new ArrayList<>(multiblock.getGenerationPriorities());
+        for(Iterator<Priority> it = coreList.iterator(); it.hasNext();){
+            Priority p = it.next();
+            if(!p.isCore())it.remove();
         }
-        MenuComponent finalPriorityButtonHolder = generatorSettings.add(new MenuComponent(0, 0, 0, 32){
-            @Override
-            public void renderBackground(){
-                components.get(1).x = width/2;
-                components.get(0).width = components.get(1).width = width/2;
-                components.get(0).height = components.get(1).height = height;
-            }
-            @Override
-            public void render(){}
-        });
-        moveFinalUp = finalPriorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Up", true, true).setTooltip("Move the selected priority up so it is more important"));
-        moveFinalUp.addActionListener((e) -> {
-            int index = finalPrioritiesList.getSelectedIndex();
-            if(index==-1||index==0)return;
-            finalPrioritiesList.components.add(index-1, finalPrioritiesList.components.remove(index));
-//            refreshPriorities();
-            finalPrioritiesList.setSelectedIndex(index-1);
-        });
-        moveFinalDown = finalPriorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Down", true, true).setTooltip("Move the selected priority down so it is less important"));
-        moveFinalDown.addActionListener((e) -> {
-            int index = finalPrioritiesList.getSelectedIndex();
-            if(index==-1||index==finalPrioritiesList.components.size()-1)return;
-            finalPrioritiesList.components.add(index+1, finalPrioritiesList.components.remove(index));
-//            refreshPriorities();
-            finalPrioritiesList.setSelectedIndex(index+1);
-        });
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Core Priorities", true));
-        corePrioritiesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, numCore*32, 24){
-            @Override
-            public void render(int millisSinceLastTick){
-                for(simplelibrary.opengl.gui.components.MenuComponent c : components){
-                    c.width = width-(hasVertScrollbar()?vertScrollbarWidth:0);
-                }
-                super.render(millisSinceLastTick);
-            }
-        });
-        corePrioritiesList.components.clear();
-        for(Priority priority : priorities){
-            if(priority.isCore())corePrioritiesList.add(new MenuComponentPriority(priority));
-        }
-        MenuComponent priorityButtonHolder = generatorSettings.add(new MenuComponent(0, 0, 0, 32){
-            @Override
-            public void renderBackground(){
-                components.get(1).x = width/2;
-                components.get(0).width = components.get(1).width = width/2;
-                components.get(0).height = components.get(1).height = height;
-            }
-            @Override
-            public void render(){}
-        });
-        moveCoreUp = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Up", true, true).setTooltip("Move the selected priority up so it is more important"));
-        moveCoreUp.addActionListener((e) -> {
-            int index = corePrioritiesList.getSelectedIndex();
-            if(index==-1||index==0)return;
-            corePrioritiesList.components.add(index-1, corePrioritiesList.components.remove(index));
-//            refreshPriorities();
-            corePrioritiesList.setSelectedIndex(index-1);
-        });
-        moveCoreDown = priorityButtonHolder.add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Move Down", true, true).setTooltip("Move the selected priority down so it is less important"));
-        moveCoreDown.addActionListener((e) -> {
-            int index = corePrioritiesList.getSelectedIndex();
-            if(index==-1||index==corePrioritiesList.components.size()-1)return;
-            corePrioritiesList.components.add(index+1, corePrioritiesList.components.remove(index));
-//            refreshPriorities();
-            corePrioritiesList.setSelectedIndex(index+1);
-        });
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Generator Settings", true));
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 24, "Change Chance", true));
-        changeChance = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, "1", true).setFloatFilter(0f, 100f).setSuffix("%")).setTooltip("If variable rate is on: Each iteration, each block in the reactor has an x% chance of changing\nIf variable rate is off: Each iteration, exactly x% of the blocks in the reactor will change (minimum of 1)");
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 24, "Morph Chance", true));
-        morphChance = generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 32, ".01", true).setFloatFilter(0f, 100f).setSuffix("%")).setTooltip("If variable rate is on: Each iteration, each block in the reactor has an x% chance of changing\nIf variable rate is off: Each iteration, exactly x% of the blocks in the reactor will change (minimum of 1)\nThis applies only to Core blocks, such as cells and moderators");
-        variableRate = generatorSettings.add(new MenuComponentToggleBox(0, 0, 0, 32, "Variable Rate", true));
-        fillAir = generatorSettings.add(new MenuComponentToggleBox(0, 0, 0, 32, "Fill Air", false));
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Symmetry Settings", true));
-        ArrayList<Symmetry> symmetries = multi.getSymmetries();
-        symmetriesList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, symmetries.size()*32, 24));
-        for(Symmetry symmetry : symmetries){
-            symmetriesList.add(new MenuComponentSymmetry(symmetry));
-        }
-        generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, "Post-Processing", true));
-        ArrayList<PostProcessingEffect> postProcessingEffects = multi.getPostProcessingEffects();
-        postProcessingEffectsList = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, postProcessingEffects.size()*32, 24));
-        for(PostProcessingEffect postProcessingEffect : postProcessingEffects){
-            postProcessingEffectsList.add(new MenuComponentPostProcessingEffect(postProcessingEffect));
-        }
+        settings.add(corePriorities = new SettingPriorities("Core Priorities", finalList));
+        settings.add(changeChance = new SettingPercentage("Change Chance", .01, "If variable rate is on: Each iteration, each block in the reactor has an x% chance of changing\nIf variable rate is off: Each iteration, exactly x% of the blocks in the reactor will change (minimum of 1)"));
+        settings.add(morphChance = new SettingPercentage("Morph Chance", .0001, "If variable rate is on: Each iteration, each block in the reactor has an x% chance of changing\nIf variable rate is off: Each iteration, exactly x% of the blocks in the reactor will change (minimum of 1)\nThis applies only to Core blocks, such as cells and moderators"));
+        settings.add(variableRate = new SettingBoolean("Variable Rate", true));
+        settings.add(fillAir = new SettingBoolean("Fill Air", false));
+        settings.add(symmetries = new SettingSymmetries("Symmetry Settings", multiblock.getSymmetries()));
+        settings.add(postProcessingEffects = new SettingPostProcessingEffects("Post-Processing", multiblock.getPostProcessingEffects()));
     }
     @Override
     public MultiblockGenerator newInstance(Multiblock multi){
         return new CoreBasedGenerator(multi);
-    }
-    @Override
-    public void refreshSettingsFromGUI(ArrayList<Range<Block>> allowedBlocks){
-        settings.refresh(allowedBlocks);
-    }
-    @Override
-    public void refreshSettings(Settings settings){
-        if(settings instanceof CoreBasedGeneratorSettings){
-            this.settings.refresh((CoreBasedGeneratorSettings)settings);
-        }else throw new IllegalArgumentException("Passed invalid settings to Core-based generator!");
     }
     @Override
     public void tick(){
@@ -203,17 +88,17 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         synchronized(workingCores){
             coreSize = workingCores.size();
         }
-        if(coreSize<settings.workingCores){
+        if(coreSize<workingCoreCount.getValue()){
             Multiblock inst = multiblock.blankCopy();
             inst.recalculate();
             synchronized(workingCores){
                 workingCores.add(inst);
             }
-        }else if(coreSize>settings.workingCores){
+        }else if(coreSize>workingCoreCount.getValue()){
             synchronized(workingCores){
                 Multiblock worst = null;
                 for(Multiblock mb : workingCores){
-                    if(worst==null||worst.isBetterThan(mb, settings.corePriorities)){
+                    if(worst==null||worst.isBetterThan(mb, corePriorities.getValue())){
                         worst = mb;
                     }
                 }
@@ -237,24 +122,24 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         //</editor-fold>
         if(currentMultiblockCore==null)return;//there's nothing to do!
         //<editor-fold defaultstate="collapsed" desc="Process Core">
-        if(settings.variableRate){
+        if(variableRate.getValue()){
             final CuboidalMultiblock cmc = (CuboidalMultiblock)currentMultiblockCore;
             cmc.forEachInternalPosition((x, y, z) -> {
                 Block b = cmc.getBlock(x, y, z);
-                if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
-                    Block randBlock = randCore(cmc, settings.allowedBlocks);
+                if(rand.nextDouble()<changeChance.getValue()||(fillAir.getValue()&&b==null)){
+                    Block randBlock = randCore(cmc, getAllowedBlocks());
                     if(randBlock==null||!randBlock.isCore()||!cmc.canBePlacedWithinCasing(randBlock))return;//nope
                     cmc.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cmc, randBlock.newInstance(x, y, z))));
                 }
             });
             cmc.buildDefaultCasing();
         }else{
-            int changes = (int) Math.max(1, Math.round(settings.getChangeChance()*currentMultiblockCore.getTotalVolume()));
+            int changes = (int) Math.max(1, Math.round(changeChance.getValue()*currentMultiblockCore.getTotalVolume()));
             ArrayList<int[]> pool = new ArrayList<>();
             final CuboidalMultiblock cmc = (CuboidalMultiblock)currentMultiblockCore;
             cmc.forEachInternalPosition((x, y, z) -> {
-                if(settings.fillAir&&cmc.getBlock(x, y, z)==null){
-                    Block randBlock = randCore(cmc, settings.allowedBlocks);
+                if(fillAir.getValue()&&cmc.getBlock(x, y, z)==null){
+                    Block randBlock = randCore(cmc, getAllowedBlocks());
                     if(randBlock==null||!randBlock.isCore()||!cmc.canBePlacedWithinCasing(randBlock))return;//nope
                     cmc.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cmc, randBlock.newInstance(x, y, z))));
                     return;
@@ -266,29 +151,29 @@ public class CoreBasedGenerator extends MultiblockGenerator{
                 if(pool.isEmpty())break;
                 int[] pos = pool.remove(rand.nextInt(pool.size()));
                 Block b = currentMultiblockCore.getBlock(pos[0], pos[1], pos[2]);
-                Block randBlock = randCore(currentMultiblockCore, settings.allowedBlocks);
+                Block randBlock = randCore(currentMultiblockCore, getAllowedBlocks());
                 if(randBlock==null||!randBlock.isCore())continue;//nope
                 currentMultiblockCore.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblockCore, randBlock.newInstance(pos[0], pos[1], pos[2]))));
             }
         }
         currentMultiblockCore.performActions(false);
-        for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.core&&effect.preSymmetry)currentMultiblockCore.action(new PostProcessingAction(effect, settings), true, false);
+        for(PostProcessingEffect effect : postProcessingEffects.getValue()){
+            if(effect.core&&effect.preSymmetry)currentMultiblockCore.action(new PostProcessingAction(effect, this), true, false);
         }
-        for(Symmetry symmetry : settings.symmetries){
+        for(Symmetry symmetry : symmetries.getValue()){
             currentMultiblockCore.queueAction(new SymmetryAction(symmetry));
         }
         currentMultiblockCore.performActions(false);
         currentMultiblockCore.recalculate();
-        for(PostProcessingEffect effect : settings.postProcessingEffects){
-            if(effect.core&&effect.postSymmetry)currentMultiblockCore.action(new PostProcessingAction(effect, settings), true, false);
+        for(PostProcessingEffect effect : postProcessingEffects.getValue()){
+            if(effect.core&&effect.postSymmetry)currentMultiblockCore.action(new PostProcessingAction(effect, this), true, false);
         }
 //</editor-fold>
         synchronized(workingCores.get(coreIndex)){
             Multiblock mult = workingCores.get(coreIndex);
             finalizeCore(mult);
-            if(currentMultiblockCore.isBetterThan(mult, settings.corePriorities)){workingCores.set(coreIndex, currentMultiblockCore.copy());}
-            else if(mult.millisSinceLastChange()>settings.timeout*1000){
+            if(currentMultiblockCore.isBetterThan(mult, corePriorities.getValue())){workingCores.set(coreIndex, currentMultiblockCore.copy());}
+            else if(mult.millisSinceLastChange()>timeout.getValue()*1000){
                 Multiblock m = multiblock.blankCopy();
                 m.recalculate();
                 workingCores.set(coreIndex, m);
@@ -307,7 +192,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             synchronized(workingMultiblocks){
                 workingSize = workingMultiblocks.size();
             }
-            if(workingSize<settings.workingMultiblocks){
+            if(workingSize<workingMultiblockCount.getValue()){
                 Multiblock inst;
                 synchronized(finalCores){
                     inst = finalCores.get(rand.nextInt(finalCores.size())).copy();
@@ -315,11 +200,11 @@ public class CoreBasedGenerator extends MultiblockGenerator{
                 synchronized(workingMultiblocks){
                     workingMultiblocks.add(inst);
                 }
-            }else if(workingSize>settings.workingMultiblocks){
+            }else if(workingSize>workingMultiblockCount.getValue()){
                 synchronized(workingMultiblocks){
                     Multiblock worst = null;
                     for(Multiblock mb : workingMultiblocks){
-                        if(worst==null||worst.isBetterThan(mb, settings.finalPriorities)){
+                        if(worst==null||worst.isBetterThan(mb, finalPriorities.getValue())){
                             worst = mb;
                         }
                     }
@@ -344,27 +229,27 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             //</editor-fold>
             if(currentMultiblock==null)return;//there's nothing to do!
             //<editor-fold defaultstate="collapsed" desc="Process Multiblock">
-            if(settings.variableRate){
+            if(variableRate.getValue()){
                 final CuboidalMultiblock cm = (CuboidalMultiblock)currentMultiblock;
                 cm.forEachInternalPosition((x, y, z) -> {
                     Block b = cm.getBlock(x, y, z);
-                    boolean morph = rand.nextDouble()<settings.getMorphChance();
+                    boolean morph = rand.nextDouble()<morphChance.getValue();
                     if(b!=null&&(b.isCore()&&!morph))return;
-                    if(rand.nextDouble()<settings.getChangeChance()||(settings.fillAir&&b==null)){
-                        Block randBlock = rand(cm, settings.allowedBlocks);
+                    if(rand.nextDouble()<changeChance.getValue()||(fillAir.getValue()&&b==null)){
+                        Block randBlock = rand(cm, getAllowedBlocks());
                         if(randBlock==null||(randBlock.isCore()&&!morph)||!cm.canBePlacedWithinCasing(randBlock))return;//nope
                         cm.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cm, randBlock.newInstance(x, y, z))));
                     }
                 });
                 cm.buildDefaultCasing();
             }else{
-                int changes = (int) Math.max(1, Math.round(settings.getChangeChance()*currentMultiblock.getTotalVolume()));
+                int changes = (int) Math.max(1, Math.round(changeChance.getValue()*currentMultiblock.getTotalVolume()));
                 ArrayList<int[]> pool = new ArrayList<>();
                 final CuboidalMultiblock cm = (CuboidalMultiblock)currentMultiblock;
                 cm.forEachInternalPosition((x, y, z) -> {
-                    if(settings.fillAir&&cm.getBlock(x, y, z)==null){
-                        Block randBlock = rand(cm, settings.allowedBlocks);
-                        boolean morph = rand.nextDouble()<settings.getMorphChance();
+                    if(fillAir.getValue()&&cm.getBlock(x, y, z)==null){
+                        Block randBlock = rand(cm, getAllowedBlocks());
+                        boolean morph = rand.nextDouble()<morphChance.getValue();
                         if(randBlock==null||(randBlock.isCore()&&!morph)||!cm.canBePlacedWithinCasing(randBlock))return;//nope
                         cm.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cm, randBlock.newInstance(x, y, z))));
                         return;
@@ -376,31 +261,31 @@ public class CoreBasedGenerator extends MultiblockGenerator{
                     if(pool.isEmpty())break;
                     int[] pos = pool.remove(rand.nextInt(pool.size()));
                     Block b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
-                        boolean morph = rand.nextDouble()<settings.getMorphChance();
+                        boolean morph = rand.nextDouble()<morphChance.getValue();
                     if(b!=null&&(b.isCore()&&!morph))continue;
-                    Block randBlock = rand(currentMultiblock, settings.allowedBlocks);
+                    Block randBlock = rand(currentMultiblock, getAllowedBlocks());
                     if(randBlock==null||randBlock.isCore()&&!morph)continue;//nope
                     currentMultiblock.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
                 }
             }
             currentMultiblock.performActions(false);
-            for(PostProcessingEffect effect : settings.postProcessingEffects){
-                if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), true, false);
+            for(PostProcessingEffect effect : postProcessingEffects.getValue()){
+                if(effect.preSymmetry)currentMultiblock.action(new PostProcessingAction(effect, this), true, false);
             }
-            for(Symmetry symmetry : settings.symmetries){
+            for(Symmetry symmetry : symmetries.getValue()){
                 currentMultiblock.queueAction(new SymmetryAction(symmetry));
             }
             currentMultiblock.performActions(false);
             currentMultiblock.recalculate();
-            for(PostProcessingEffect effect : settings.postProcessingEffects){
-                if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, settings), true, false);
+            for(PostProcessingEffect effect : postProcessingEffects.getValue()){
+                if(effect.postSymmetry)currentMultiblock.action(new PostProcessingAction(effect, this), true, false);
             }
     //</editor-fold>
             synchronized(workingMultiblocks.get(idx)){
                 Multiblock mult = workingMultiblocks.get(idx);
                 finalize(mult);
-                if(currentMultiblock.isBetterThan(mult, settings.finalPriorities)){workingMultiblocks.set(idx, currentMultiblock.copy());}
-                else if(mult.millisSinceLastChange()>settings.timeout*1000){
+                if(currentMultiblock.isBetterThan(mult, finalPriorities.getValue())){workingMultiblocks.set(idx, currentMultiblock.copy());}
+                else if(mult.millisSinceLastChange()>timeout.getValue()*1000){
                     synchronized(finalCores){
                         workingMultiblocks.set(idx, finalCores.get(rand.nextInt(finalCores.size())).copy());
                     }
@@ -443,13 +328,13 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         if(worst==null)return;
         synchronized(finalCores){
         //<editor-fold defaultstate="collapsed" desc="Adding/removing final multiblocks">
-            if(finalCores.size()<settings.finalCores){
+            if(finalCores.size()<finalCoreCount.getValue()){
                 finalCores.add(worst.copy());
                 return;
-            }else if(finalCores.size()>settings.finalCores){
+            }else if(finalCores.size()>finalCoreCount.getValue()){
                 Multiblock wrst = null;
                 for(Multiblock mb : finalCores){
-                    if(wrst==null||wrst.isBetterThan(mb, settings.corePriorities)){
+                    if(wrst==null||wrst.isBetterThan(mb, corePriorities.getValue())){
                         wrst = mb;
                     }
                 }
@@ -460,7 +345,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
 //</editor-fold>
             for(int i = 0; i<finalCores.size(); i++){
                 Multiblock multi = finalCores.get(i);
-                if(worst.isBetterThan(multi, settings.corePriorities)){
+                if(worst.isBetterThan(multi, corePriorities.getValue())){
                     finalCores.set(i, worst.copy());
                     return;
                 }
@@ -471,13 +356,13 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         if(worst==null)return;
         synchronized(finalMultiblocks){
         //<editor-fold defaultstate="collapsed" desc="Adding/removing final multiblocks">
-            if(finalMultiblocks.size()<settings.finalMultiblocks){
+            if(finalMultiblocks.size()<finalMultiblockCount.getValue()){
                 finalMultiblocks.add(worst.copy());
                 return;
-            }else if(finalMultiblocks.size()>settings.finalMultiblocks){
+            }else if(finalMultiblocks.size()>finalMultiblockCount.getValue()){
                 Multiblock wrst = null;
                 for(Multiblock mb : finalMultiblocks){
-                    if(wrst==null||wrst.isBetterThan(mb, settings.finalPriorities)){
+                    if(wrst==null||wrst.isBetterThan(mb, finalPriorities.getValue())){
                         wrst = mb;
                     }
                 }
@@ -488,7 +373,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
 //</editor-fold>
             for(int i = 0; i<finalMultiblocks.size(); i++){
                 Multiblock multi = finalMultiblocks.get(i);
-                if(worst.isBetterThan(multi, settings.finalPriorities)){
+                if(worst.isBetterThan(multi, finalPriorities.getValue())){
                     finalMultiblocks.set(i, worst.copy());
                     return;
                 }
@@ -504,20 +389,20 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             multiblock.recalculate();
         }
         if(!multiblock.isShapeEqual(this.multiblock))return;
-        for(Range<Block> range : settings.allowedBlocks){
+        for(Range<Block> range : getAllowedBlocks()){
             for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
                 if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
             }
         }
         ALLOWED:for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
-            for(Range<Block> range : settings.allowedBlocks){
+            for(Range<Block> range : getAllowedBlocks()){
                 if(range.obj.isEqual(block))continue ALLOWED;
             }
             multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
         }
         finalize(multiblock);
     }
-    private <T extends Object> T rand(Multiblock multiblock, ArrayList<Range<T>> ranges){
+    private <T extends Object> T rand(Multiblock multiblock, List<Range<T>> ranges){
         if(ranges.isEmpty())return null;
         for(Range<T> range : ranges){
             if(range.min==0&&range.max==Integer.MAX_VALUE)continue;
@@ -529,7 +414,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         }
         return randRange.obj;
     }
-    private <T extends Block> T randCore(Multiblock multiblock, ArrayList<Range<T>> ranges){
+    private <T extends Block> T randCore(Multiblock multiblock, List<Range<T>> ranges){
         ArrayList<Range<T>> coreRanges = new ArrayList<>(ranges);
         for(Iterator<Range<T>> it = coreRanges.iterator(); it.hasNext();){
             Range<T> next = it.next();

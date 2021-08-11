@@ -1,5 +1,5 @@
 package multiblock.ppe;
-import generator.Settings;
+import generator.MultiblockGenerator;
 import multiblock.configuration.overhaul.fissionmsr.Block;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 public class MSRSourceSaturate extends PostProcessingEffect<OverhaulMSR>{
@@ -9,7 +9,7 @@ public class MSRSourceSaturate extends PostProcessingEffect<OverhaulMSR>{
         this.source = block;
     }
     @Override
-    public void apply(OverhaulMSR multiblock, Settings settings){
+    public void apply(OverhaulMSR multiblock, MultiblockGenerator generator){
         multiblock.forEachPosition((x, y, z) -> {
             if(multiblock.getBlock(x, y, z)!=null&&multiblock.getBlock(x, y, z).template.fuelVessel)multiblock.getBlock(x, y, z).addNeutronSource(multiblock, source);
         });

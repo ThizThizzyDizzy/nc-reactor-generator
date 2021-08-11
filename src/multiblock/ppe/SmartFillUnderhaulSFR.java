@@ -1,5 +1,5 @@
 package multiblock.ppe;
-import generator.Settings;
+import generator.MultiblockGenerator;
 import java.util.ArrayList;
 import java.util.Random;
 import multiblock.Range;
@@ -11,7 +11,7 @@ public class SmartFillUnderhaulSFR extends PostProcessingEffect<UnderhaulSFR>{
         super("Smart Fill", false, true, false);
     }
     @Override
-    public void apply(UnderhaulSFR multiblock, Settings settings){
+    public void apply(UnderhaulSFR multiblock, MultiblockGenerator generator){
         Random rand = new Random();
         final int coolingToAdd = multiblock.netHeat;
         int[] coolingAdded = new int[1];
@@ -20,7 +20,7 @@ public class SmartFillUnderhaulSFR extends PostProcessingEffect<UnderhaulSFR>{
             Block block = multiblock.getBlock(x, y, z);
             if(block==null){
                 ArrayList<Block> available = new ArrayList<>();
-                for(Range<multiblock.Block> range : settings.getAllowedBlocks()){
+                for(Range<multiblock.Block> range : generator.getAllowedBlocks()){
                     if(range.max!=Integer.MAX_VALUE&&multiblock.count(range.obj)>=range.max)continue;
                     Block blok = (Block)range.obj;
                     if(blok.isCooler()&&multiblock.isValid(blok, x, y, z))available.add(blok);

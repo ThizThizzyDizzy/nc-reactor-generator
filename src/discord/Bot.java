@@ -25,13 +25,10 @@ import discord.play.smivilization.HutThingColorable;
 import discord.play.smivilization.HutType;
 import discord.play.smivilization.Placement;
 import generator.CoreBasedGenerator;
-import generator.CoreBasedGeneratorSettings;
 import generator.MultiblockGenerator;
 import generator.OverhaulTurbineStandardGenerator;
-import generator.OverhaulTurbineStandardGeneratorSettings;
 import generator.Priority;
 import generator.StandardGenerator;
-import generator.StandardGeneratorSettings;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
 import java.io.File;
@@ -464,105 +461,92 @@ public class Bot extends ListenerAdapter{
                 }
                 if(generator instanceof StandardGenerator){
                     //<editor-fold defaultstate="collapsed" desc="StandardGenerator">
-                    StandardGeneratorSettings settings = new StandardGeneratorSettings((StandardGenerator)generator);
-                    settings.finalMultiblocks = 1;
-                    settings.workingMultiblocks = 1;
-                    settings.timeout = 10;
+                    StandardGenerator gen = (StandardGenerator)generator;
+                    gen.workingMultiblockCount.setValue(1);
+                    gen.timeout.setValue(10);
                     priority.set(priorities);
-                    settings.priorities.addAll(priorities);
-                    settings.symmetries.addAll(symmetries);
+                    gen.priorities.setValue(priorities);
+                    gen.symmetries.setValue(symmetries);
+                    ArrayList<PostProcessingEffect> selectedPPEs = new ArrayList<>();
                     ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
                     for(PostProcessingEffect ppe : ppes){
                         if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
-                            settings.postProcessingEffects.add(ppe);
+                            selectedPPEs.add(ppe);
                         }
                     }
-                    for(Range<Block> range : blockRanges){
-                        if(range.min==0&&range.max==0)continue;
-                        settings.allowedBlocks.add(range);
-                    }
-                    FOR:for(Block b : availableBlocks){
-                        for(Range<Block> range : blockRanges){
-                            if(range.obj==b)continue FOR;
-                        }
-                        if(b.defaultEnabled())settings.allowedBlocks.add(new Range(b, 0));
-                    }
-                    settings.changeChancePercent = 1;
-                    settings.variableRate = true;
-                    settings.lockCore = false;
-                    settings.fillAir = true;
-                    generator.refreshSettings(settings);
+                    gen.postProcessingEffects.setValue(selectedPPEs);
+                    gen.changeChance.setValue(.01);
+                    gen.variableRate.setValue(true);
+                    gen.lockCore.setValue(false);
+                    gen.fillAir.setValue(true);
 //</editor-fold>
                 }else if(generator instanceof OverhaulTurbineStandardGenerator){
                     //<editor-fold defaultstate="collapsed" desc="OverhaulTurbineStandardGenerator">
-                    OverhaulTurbineStandardGeneratorSettings settings = new OverhaulTurbineStandardGeneratorSettings((OverhaulTurbineStandardGenerator)generator);
-                    settings.finalMultiblocks = 1;
-                    settings.workingMultiblocks = 1;
-                    settings.timeout = 10;
+                    OverhaulTurbineStandardGenerator gen = (OverhaulTurbineStandardGenerator)generator;
+                    gen.workingMultiblockCount.setValue(1);
+                    gen.timeout.setValue(10);
                     priority.set(priorities);
-                    settings.priorities.addAll(priorities);
-                    settings.symmetries.addAll(symmetries);
+                    gen.priorities.setValue(priorities);
+                    gen.symmetries.setValue(symmetries);
+                    ArrayList<PostProcessingEffect> selectedPPEs = new ArrayList<>();
                     ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
                     for(PostProcessingEffect ppe : ppes){
                         if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
-                            settings.postProcessingEffects.add(ppe);
+                            selectedPPEs.add(ppe);
                         }
                     }
-                    for(Range<Block> range : blockRanges){
-                        if(range.min==0&&range.max==0)continue;
-                        settings.allowedBlocks.add(range);
-                    }
-                    FOR:for(Block b : availableBlocks){
-                        for(Range<Block> range : blockRanges){
-                            if(range.obj==b)continue FOR;
-                        }
-                        if(b.defaultEnabled())settings.allowedBlocks.add(new Range(b, 0));
-                    }
-                    settings.changeChancePercent = 1;
-                    settings.variableRate = true;
-                    settings.lockCore = false;
-                    settings.fillAir = true;
-                    generator.refreshSettings(settings);
+                    gen.postProcessingEffects.setValue(selectedPPEs);
+                    gen.changeChance.setValue(.01);
+                    gen.variableRate.setValue(true);
+                    gen.lockCore.setValue(false);
+                    gen.fillAir.setValue(true);
 //</editor-fold>
                 }else if(generator instanceof CoreBasedGenerator){
                     //<editor-fold defaultstate="collapsed" desc="CoreBasedGenerator">
-                    CoreBasedGeneratorSettings settings = new CoreBasedGeneratorSettings((CoreBasedGenerator)generator);
-                    settings.finalMultiblocks = 1;
-                    settings.workingMultiblocks = 1;
-                    settings.workingCores = 1;
-                    settings.finalCores = 1;
-                    settings.timeout = 10;
+                    CoreBasedGenerator gen = (CoreBasedGenerator)generator;
+                    gen.finalMultiblockCount.setValue(1);
+                    gen.workingMultiblockCount.setValue(1);;
+                    gen.workingCoreCount.setValue(1);
+                    gen.finalCoreCount.setValue(1);
+                    gen.timeout.setValue(10);
                     priority.set(priorities);
+                    ArrayList<Priority> corePriorities = new ArrayList<>();
+                    ArrayList<Priority> finalPriorities = new ArrayList<>();
                     for(Priority p : priorities){
-                        if(p.isCore())settings.corePriorities.add(p);
-                        if(p.isFinal())settings.finalPriorities.add(p);
+                        if(p.isCore())corePriorities.add(p);
+                        if(p.isFinal())finalPriorities.add(p);
                     }
-                    settings.symmetries.addAll(symmetries);
+                    gen.corePriorities.setValue(corePriorities);
+                    gen.finalPriorities.setValue(finalPriorities);
+                    gen.symmetries.setValue(symmetries);
+                    ArrayList<PostProcessingEffect> selectedPPEs = new ArrayList<>();
                     ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
                     for(PostProcessingEffect ppe : ppes){
                         if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
-                            settings.postProcessingEffects.add(ppe);
+                            selectedPPEs.add(ppe);
                         }
                     }
-                    for(Range<Block> range : blockRanges){
-                        if(range.min==0&&range.max==0)continue;
-                        settings.allowedBlocks.add(range);
-                    }
-                    FOR:for(Block b : availableBlocks){
-                        for(Range<Block> range : blockRanges){
-                            if(range.obj==b)continue FOR;
-                        }
-                        if(b.defaultEnabled())settings.allowedBlocks.add(new Range(b, 0));
-                    }
-                    settings.changeChancePercent = 1;
-                    settings.morphChancePercent = .01f;
-                    settings.variableRate = true;
-                    settings.fillAir = true;
-                    generator.refreshSettings(settings);
+                    gen.postProcessingEffects.setValue(selectedPPEs);
+                    gen.changeChance.setValue(.01);
+                    gen.morphChance.setValue(.0001);
+                    gen.variableRate.setValue(true);
+                    gen.fillAir.setValue(true);
 //</editor-fold>
                 }else{
-                    throw new IllegalArgumentException("I don't know how to use the non-standard generators!");
+                    throw new IllegalArgumentException("I don't know how to use this generator: "+generator.getClass().getName());
                 }
+                ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
+                for(Range<Block> range : blockRanges){
+                    if(range.min==0&&range.max==0)continue;
+                    allowedBlocks.add(range);
+                }
+                FOR:for(Block b : availableBlocks){
+                    for(Range<Block> range : blockRanges){
+                        if(range.obj==b)continue FOR;
+                    }
+                    if(b.defaultEnabled())allowedBlocks.add(new Range(b, 0));
+                }
+                generator.setAllowedBlocks(allowedBlocks);
                 Core.configuration = configuration;
                 //<editor-fold defaultstate="collapsed" desc="Generation">
                 Thread t = new Thread(() -> {

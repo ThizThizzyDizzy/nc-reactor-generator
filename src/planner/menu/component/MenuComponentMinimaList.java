@@ -6,6 +6,7 @@ import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponentList;
 public class MenuComponentMinimaList extends MenuComponentList{
     private Supplier<Color> backgroundColor;
+    private boolean enableSelection = true;
     public MenuComponentMinimaList(double x, double y, double width, double height, double scrollbarWidth){
         this(x, y, width, height, scrollbarWidth, false);
     }
@@ -87,6 +88,7 @@ public class MenuComponentMinimaList extends MenuComponentList{
     }
     @Override
     public void renderBackground(){
+        if(!enableSelection)selected = null;
         if(backgroundColor!=null){
             Color c = backgroundColor.get();
             GL11.glColor4f(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, c.getAlpha()/255f);
@@ -101,11 +103,16 @@ public class MenuComponentMinimaList extends MenuComponentList{
     }
     @Override
     public void setSelectedIndex(int index){
+        if(!enableSelection)index = -1;
         super.setSelectedIndex(index);
         if(index<0||index>=components.size()) selected = null;
         else selected = components.get(index);
     }
     public void setBackgroundColor(Supplier<Color> c){
         backgroundColor = c;
+    }
+    public MenuComponentMinimaList disableSelection(){
+        enableSelection = false;
+        return this;
     }
 }

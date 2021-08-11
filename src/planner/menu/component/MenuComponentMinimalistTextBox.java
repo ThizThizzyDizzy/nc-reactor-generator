@@ -6,6 +6,7 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
     private static final int NONE = 0;
     private static final int INT = 1;
     private static final int FLOAT = 2;
+    private static final int DOUBLE = 3;
     private int filter = NONE;
     private String suffix = "";
     private Number min;
@@ -106,6 +107,22 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
                 text = lastText;
             }
         }
+        if(filter==DOUBLE){
+            if(text.trim().isEmpty())text = "0";
+            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+            if(text.startsWith("--"))text = text.substring(2);
+            try{
+                double val = Double.parseDouble(text);
+                if(min!=null&&val<min.doubleValue()){
+                    text = min.toString();
+                }
+                if(max!=null&&val>max.doubleValue()){
+                    text = max.toString();
+                }
+            }catch(NumberFormatException ex){
+                text = lastText;
+            }
+        }
         while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
         if(text.startsWith(".")){
             while(text.endsWith("0"))text = text.substring(0, text.length()-1);
@@ -148,6 +165,22 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
                 text = lastText;
             }
         }
+        if(filter==DOUBLE){
+            if(text.trim().isEmpty())text = "0";
+            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+            if(text.startsWith("--"))text = text.substring(2);
+            try{
+                double val = Double.parseDouble(text);
+                if(min!=null&&val<min.doubleValue()){
+                    text = min.toString();
+                }
+                if(max!=null&&val>max.doubleValue()){
+                    text = max.toString();
+                }
+            }catch(NumberFormatException ex){
+                text = lastText;
+            }
+        }
         while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
         if(text.startsWith(".")){
             while(text.endsWith("0"))text = text.substring(0, text.length()-1);
@@ -170,6 +203,15 @@ public class MenuComponentMinimalistTextBox extends MenuComponentTextBox{
         this.min = min;
         this.max = max;
         filter = FLOAT;
+        return this;
+    }
+    public MenuComponentMinimalistTextBox setDoubleFilter(){
+        return setDoubleFilter(null, null);
+    }
+    public MenuComponentMinimalistTextBox setDoubleFilter(Double min, Double max){
+        this.min = min;
+        this.max = max;
+        filter = DOUBLE;
         return this;
     }
     public MenuComponentMinimalistTextBox setSuffix(String suffix){

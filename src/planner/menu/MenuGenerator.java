@@ -1,5 +1,6 @@
 package planner.menu;
 import generator.MultiblockGenerator;
+import generator.setting.Setting;
 import java.util.ArrayList;
 import multiblock.Block;
 import multiblock.Multiblock;
@@ -58,7 +59,7 @@ public class MenuGenerator extends Menu{
                 MenuComponentToggleBlock t = (MenuComponentToggleBlock)c;
                 if(t.enabled)allowedBlocks.add(new Range<>(t.block,t.min,t.max==0?Integer.MAX_VALUE:t.max));
             }
-            generator.refreshSettingsFromGUI(allowedBlocks);
+            generator.setAllowedBlocks(allowedBlocks);
             if(threads<=0){
                 try{
                     generator.importMultiblock(multiblock);
@@ -146,7 +147,9 @@ public class MenuGenerator extends Menu{
             blocks.add(new MenuComponentToggleBlock(b));
         }
         generatorSettings.components.clear();
-        generator.addSettings(generatorSettings, multiblock);
+        for(Setting setting : generator.settings){
+            setting.buildComponents(generatorSettings);
+        }
         multiblockSettings.components.clear();
         multiblock.addGeneratorSettings(multiblockSettings);
     }

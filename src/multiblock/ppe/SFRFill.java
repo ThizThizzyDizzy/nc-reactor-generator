@@ -1,5 +1,5 @@
 package multiblock.ppe;
-import generator.Settings;
+import generator.MultiblockGenerator;
 import multiblock.configuration.overhaul.fissionsfr.Block;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 public class SFRFill extends PostProcessingEffect<OverhaulSFR>{
@@ -9,7 +9,7 @@ public class SFRFill extends PostProcessingEffect<OverhaulSFR>{
         this.block = block;
     }
     @Override
-    public void apply(OverhaulSFR multiblock, Settings settings){
+    public void apply(OverhaulSFR multiblock, MultiblockGenerator generator){
         multiblock.forEachPosition((x, y, z) -> {
             if(multiblock.getBlock(x, y, z)==null||multiblock.getBlock(x, y, z).isConductor()||multiblock.getBlock(x, y, z).isInert())multiblock.setBlock(x, y, z, new multiblock.overhaul.fissionsfr.Block(multiblock.getConfiguration(), x, y, z, block));
         });
