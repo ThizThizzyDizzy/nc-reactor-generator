@@ -105,6 +105,8 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     protected Block parseTemplate(AbstractBlockContainer<Block> configuration, String str) {
         Block block = null;
         int shortest = 0;
+        str = str.replace(" heat heater", " heater");
+        str = str.replace(" heat sink", " sink");
         String[] strs = str.split(" ");
         if(strs.length!=2||!strs[1].startsWith("sink")){
             throw new IllegalArgumentException("Unknown rule bit: "+str);

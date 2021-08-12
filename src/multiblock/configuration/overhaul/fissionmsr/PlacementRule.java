@@ -108,6 +108,8 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     protected Block parseTemplate(AbstractBlockContainer<Block> configuration, String str) {
         Block block = null;
         int shortest = 0;
+        str = str.replace(" heat heater", " heater");
+        str = str.replace(" heat sink", " sink");
         if(str.startsWith("water heater")||str.startsWith("water sink"))str = "standard"+str.substring("water".length());
         String[] strs = str.split(" ");
         if (strs.length != 2 || !(strs[1].startsWith("heater")||strs[1].startsWith("sink"))) {

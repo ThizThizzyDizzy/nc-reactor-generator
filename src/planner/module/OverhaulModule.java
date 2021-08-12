@@ -126,5 +126,15 @@ public class OverhaulModule extends Module{
                 return getInputStream("configurations/addons/alloy_heat_sinks.ncpf");
             }).configuration);
         });
+        Configuration.internalAddons.add(() -> {
+            return AddonConfiguration.convert(FileReader.read(() -> {
+                return getInputStream("configurations/addons/spicy_heat_sinks_stable.ncpf");
+            }).configuration);
+        });
+        Configuration.internalAddons.add(() -> {
+            return AddonConfiguration.convert(FileReader.read(() -> {
+                return getInputStream("configurations/addons/spicy_heat_sinks_unstable.ncpf");
+            }).configuration);
+        });
     }
 }
