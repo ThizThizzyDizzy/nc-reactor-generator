@@ -718,4 +718,8 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
             hasPlacedTheController[0] = true;
         });
     }
+    @Override
+    public String getPreviewTexture(){
+        return "tutorials/planner/introduction/underhaul_example";
+    }
 }

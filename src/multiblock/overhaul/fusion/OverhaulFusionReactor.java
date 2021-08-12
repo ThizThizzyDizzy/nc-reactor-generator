@@ -943,4 +943,8 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
             }
         });
     }
+    @Override
+    public String getPreviewTexture(){
+        return null;
+    }
 }

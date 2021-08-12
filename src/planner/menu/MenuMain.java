@@ -28,7 +28,9 @@ import simplelibrary.Queue;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;
+import simplelibrary.font.FontManager;
 import simplelibrary.opengl.ImageStash;
+import static simplelibrary.opengl.Renderer2D.drawCenteredText;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;
@@ -428,7 +430,23 @@ public class MenuMain extends Menu{
         components.removeAll(multiblockButtons);
         multiblockButtons.clear();
         for(Multiblock m : Core.multiblockTypes){
-            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true).setTooltip(m.getDescriptionTooltip()));
+            String tex = m.getPreviewTexture();
+            MenuComponentMinimalistButton button = add(new MenuComponentMinimalistButton(0, 0, 0, 0, m.getDefinitionName(), true, true, true){
+                @Override
+                public void drawText(){
+                    if(tex!=null){
+                        String text = label;
+                        double textLength = FontManager.getLengthForStringWithHeight(text, height);
+                        double scale = Math.min(1, (width-textInset*2)/textLength);
+                        double textHeight = (int)((height-textInset*2)*scale)-4;
+                        textHeight = Math.min(textHeight, height/8);
+                        drawCenteredText(x, y+height-height/16-textHeight/2, x+width, y+height-height/16+textHeight/2, text);
+                        Core.applyWhite();
+                        drawRect(x+width/16, y, x+width-width/16, y+height-height/8, ImageStash.instance.getTexture("/textures/"+tex+".png"));
+                    }
+                    else super.drawText();
+                }
+            }.setTooltip(m.getDescriptionTooltip()));
             button.addActionListener((e) -> {
                 Multiblock mb = m.newInstance();
                 if(mb instanceof OverhaulTurbine)((OverhaulTurbine)mb).setBearing(1);

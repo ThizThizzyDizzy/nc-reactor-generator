@@ -746,4 +746,5 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
         forceRescan = true;
         groupCache.clear();
     }
+    public abstract String getPreviewTexture();
 }

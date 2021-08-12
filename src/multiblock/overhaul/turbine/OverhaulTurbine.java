@@ -919,4 +919,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public int getMaxBearingDiameter(){
         return getInternalWidth()-2;
     }
+    @Override
+    public String getPreviewTexture(){
+        return "tutorials/planner/introduction/overhaul_turbine";
+    }
 }
