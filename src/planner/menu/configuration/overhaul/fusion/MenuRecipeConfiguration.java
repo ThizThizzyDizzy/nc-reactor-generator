@@ -61,10 +61,10 @@ public class MenuRecipeConfiguration extends ConfigurationMenu{
         }
         recipe.outputName = outputName.text;
         recipe.outputDisplayName = outputDisplayName.text.trim().isEmpty()?null:outputDisplayName.text;
-        recipe.efficiency = Integer.parseInt(efficiency.text);
+        recipe.efficiency = Float.parseFloat(efficiency.text);
         recipe.heat = Integer.parseInt(heat.text);
         recipe.time = Integer.parseInt(time.text);
-        recipe.fluxiness = Integer.parseInt(fluxiness.text);
+        recipe.fluxiness = Float.parseFloat(fluxiness.text);
     }
     @Override
     public void tick(){

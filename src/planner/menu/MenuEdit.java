@@ -55,7 +55,6 @@ import planner.menu.component.MenuComponentMinimalistTextView;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentToggleBox;
 import planner.menu.component.Pinnable;
-import planner.menu.component.Searchable;
 import planner.menu.component.editor.MenuComponentCoolantRecipe;
 import planner.menu.component.editor.MenuComponentEditorGrid;
 import planner.menu.component.editor.MenuComponentEditorListBlock;

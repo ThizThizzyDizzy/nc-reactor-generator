@@ -144,11 +144,11 @@ public class MenuOverhaulFusionConfiguration extends ConfigurationMenu{
         sparsityPenaltyMult.y = sparsityPenaltyThreshold.y = coolingEfficiencyLeniency.y = maxInnerRadius.y+maxInnerRadius.height;
         sparsityPenaltyThreshold.x = sidebar.width+w/3;
         coolingEfficiencyLeniency.x = sidebar.width+w*2/3;
-        addBlock.width = addCoolantRecipe.width = addRecipe.width = blocksLabel.width = coolantRecipesLabel.width = recipesLabel.width = blocksList.width = coolantRecipesList.width = recipesList.width = w/2;
+        addBlock.width = addCoolantRecipe.width = addRecipe.width = blocksLabel.width = coolantRecipesLabel.width = recipesLabel.width = blocksList.width = coolantRecipesList.width = recipesList.width = w/3;
         addCoolantRecipe.x = coolantRecipesLabel.x = coolantRecipesList.x = blocksLabel.x+blocksLabel.width;
         addRecipe.x = recipesLabel.x = recipesList.x = coolantRecipesLabel.x+coolantRecipesLabel.width;
         addBlock.y = addCoolantRecipe.y = addRecipe.y = Core.helper.displayHeight()-addBlock.height;
-        blocksList.height = coolantRecipesList.height = recipesLabel.height = addBlock.y-(coolantRecipesLabel.y+coolantRecipesLabel.height);
+        blocksList.height = coolantRecipesList.height = recipesList.height = addBlock.y-(coolantRecipesLabel.y+coolantRecipesLabel.height);
         super.render(millisSinceLastTick);
     }
     @Override
