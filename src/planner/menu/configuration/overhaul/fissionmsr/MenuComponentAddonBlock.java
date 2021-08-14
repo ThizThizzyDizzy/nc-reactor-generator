@@ -30,12 +30,25 @@ public class MenuComponentAddonBlock extends MenuComponent{
             GL11.glVertex2d(x+width*.625, y+height*.25);
             GL11.glEnd();
         }
+        @Override
+        public void action(){
+            onEditPressed.run();
+        }
     }.setTooltip("Modify block"));
-    public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "-", true, true, true).setTooltip("Remove block"));
-    public MenuComponentAddonBlock(Block parent, Block block){
+    public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "-", true, true, true){
+        @Override
+        public void action(){
+            onDeletePressed.run();
+        }
+    }.setTooltip("Remove block"));
+    private final Runnable onEditPressed;
+    private final Runnable onDeletePressed;
+    public MenuComponentAddonBlock(Block parent, Block block, Runnable onEditPressed, Runnable onDeletePressed){
         super(0, 0, 0, 50);
         this.parent = parent;
         this.block = block;
+        this.onEditPressed = onEditPressed;
+        this.onDeletePressed = onDeletePressed;
     }
     @Override
     public void renderBackground(){

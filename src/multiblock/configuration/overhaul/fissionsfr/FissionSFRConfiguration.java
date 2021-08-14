@@ -208,6 +208,7 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
         return false;
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
+        if(convertTo.overhaul.turbine==null)throw new IllegalArgumentException("Cannot convert to null Overhaul SFR configuration!");
         for(Block block : blocks){
             for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : getAllSubRules(block)){
                 if(rule.block==null)continue;
@@ -264,5 +265,41 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
             addon.coolantRecipes.add(c);
             parent.allCoolantRecipes.add(c);
         }
+    }
+    public int getMinSize(){
+        return minSize;
+    }
+    public int getMaxSize(){
+        return maxSize;
+    }
+    public int getNeutronReach(){
+        return neutronReach;
+    }
+    public int getCoolingEfficiencyLeniency(){
+        return coolingEfficiencyLeniency;
+    }
+    public float getSparsityPenaltyMult(){
+        return sparsityPenaltyMult;
+    }
+    public float getSparsityPenaltyThreshold(){
+        return sparsityPenaltyThreshold;
+    }
+    public void setMinSize(int minSize){
+        this.minSize = minSize;
+    }
+    public void setMaxSize(int maxSize){
+        this.maxSize = maxSize;
+    }
+    public void setNeutronReach(int neutronReach){
+        this.neutronReach = neutronReach;
+    }
+    public void setCoolingEfficiencyLeniency(int coolingEfficiencyLeniency){
+        this.coolingEfficiencyLeniency = coolingEfficiencyLeniency;
+    }
+    public void setSparsityPenaltyMult(float sparsityPenaltyMult){
+        this.sparsityPenaltyMult = sparsityPenaltyMult;
+    }
+    public void setSparsityPenaltyThreshold(float sparsityPenaltyThreshold){
+        this.sparsityPenaltyThreshold = sparsityPenaltyThreshold;
     }
 }

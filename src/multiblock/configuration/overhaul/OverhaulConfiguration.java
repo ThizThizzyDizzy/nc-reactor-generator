@@ -75,6 +75,7 @@ public class OverhaulConfiguration{
         return super.equals(obj);
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
+        if(convertTo.overhaul==null)throw new IllegalArgumentException("Cannot convert to null overhaul configuration!");
         if(fissionSFR!=null){
             fissionSFR.convertAddon(parent, convertTo);
         }

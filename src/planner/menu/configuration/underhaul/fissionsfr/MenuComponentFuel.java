@@ -28,6 +28,10 @@ public class MenuComponentFuel extends MenuComponent{
             GL11.glVertex2d(x+width*.625, y+height*.25);
             GL11.glEnd();
         }
+        @Override
+        public void action(){
+            onEditPressed.run();
+        }
     }.setTooltip("Modify fuel"));
     public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, true){
         @Override
@@ -46,10 +50,18 @@ public class MenuComponentFuel extends MenuComponent{
             GL11.glVertex2d(x+width*.8, y+height*.9);
             GL11.glEnd();
         }
+        @Override
+        public void action(){
+            onDeletePressed.run();
+        }
     }.setTooltip("Delete fuel"));
-    public MenuComponentFuel(Fuel fuel){
+    private final Runnable onEditPressed;
+    private final Runnable onDeletePressed;
+    public MenuComponentFuel(Fuel fuel, Runnable onEditPressed, Runnable onDeletePressed){
         super(0, 0, 0, 100);
         this.fuel = fuel;
+        this.onEditPressed = onEditPressed;
+        this.onDeletePressed = onDeletePressed;
     }
     @Override
     public void renderBackground(){

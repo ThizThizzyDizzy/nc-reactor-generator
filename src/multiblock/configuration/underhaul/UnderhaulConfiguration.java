@@ -38,6 +38,7 @@ public class UnderhaulConfiguration{
         return super.equals(obj);
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
+        if(convertTo.underhaul==null)throw new IllegalArgumentException("Cannot convert to null underhaul configuration!");
         if(fissionSFR!=null){
             fissionSFR.convertAddon(parent, convertTo);
         }

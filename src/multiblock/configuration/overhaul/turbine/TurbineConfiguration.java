@@ -186,6 +186,7 @@ public class TurbineConfiguration extends AbstractBlockContainer<Block> {
         return false;
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
+        if(convertTo.overhaul.turbine==null)throw new IllegalArgumentException("Cannot convert to null turbine configuration!");
         for(Block block : blocks){
             for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : getAllSubRules(block)){
                 if(rule.block==null)continue;
@@ -228,5 +229,53 @@ public class TurbineConfiguration extends AbstractBlockContainer<Block> {
             addon.recipes.add(c);
             parent.allRecipes.add(c);
         }
+    }
+    public int getMinWidth(){
+        return minWidth;
+    }
+    public int getMinLength(){
+        return minLength;
+    }
+    public int getMaxSize(){
+        return maxSize;
+    }
+    public int getFluidPerBlade(){
+        return fluidPerBlade;
+    }
+    public float getThroughputFactor(){
+        return throughputFactor;
+    }
+    public float getPowerBonus(){
+        return powerBonus;
+    }
+    public float getThroughputEfficiencyLeniencyMult(){
+        return throughputEfficiencyLeniencyMult;
+    }
+    public float getThroughputEfficiencyLeniencyThreshold(){
+        return throughputEfficiencyLeniencyThreshold;
+    }
+    public void setMinWidth(int minWidth){
+        this.minWidth = minWidth;
+    }
+    public void setMinLength(int minLength){
+        this.minLength = minLength;
+    }
+    public void setMaxSize(int maxSize){
+        this.maxSize = maxSize;
+    }
+    public void setFluidPerBlade(int fluidPerBlade){
+        this.fluidPerBlade = fluidPerBlade;
+    }
+    public void setThroughputFactor(float throughputFactor){
+        this.throughputFactor = throughputFactor;
+    }
+    public void setPowerBonus(float powerBonus){
+        this.powerBonus = powerBonus;
+    }
+    public void setThroughputEfficiencyLeniencyMult(float throughputEfficiencyLeniencyMult){
+        this.throughputEfficiencyLeniencyMult = throughputEfficiencyLeniencyMult;
+    }
+    public void setThroughputEfficiencyLeniencyThreshold(float throughputEfficiencyLeniencyThreshold){
+        this.throughputEfficiencyLeniencyThreshold = throughputEfficiencyLeniencyThreshold;
     }
 }

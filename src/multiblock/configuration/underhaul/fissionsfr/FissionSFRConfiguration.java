@@ -164,6 +164,7 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
         return false;
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
+        if(convertTo.overhaul.turbine==null)throw new IllegalArgumentException("Cannot convert to null Underhaul SFR configuration!");
         for(Block block : blocks){
             for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : getAllSubRules(block)){
                 if(rule.block==null)continue;
@@ -206,5 +207,41 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
             addon.fuels.add(f);
             parent.allFuels.add(f);
         }
+    }
+    public int getMinSize(){
+        return minSize;
+    }
+    public int getMaxSize(){
+        return maxSize;
+    }
+    public int getNeutronReach(){
+        return neutronReach;
+    }
+    public float getModeratorExtraPower(){
+        return moderatorExtraPower;
+    }
+    public float getModeratorExtraHeat(){
+        return moderatorExtraHeat;
+    }
+    public int getActiveCoolerRate(){
+        return activeCoolerRate;
+    }
+    public void setMinSize(int minSize){
+        this.minSize = minSize;
+    }
+    public void setMaxSize(int maxSize){
+        this.maxSize = maxSize;
+    }
+    public void setNeutronReach(int neutronReach){
+        this.neutronReach = neutronReach;
+    }
+    public void setModeratorExtraPower(float moderatorExtraPower){
+        this.moderatorExtraPower = moderatorExtraPower;
+    }
+    public void setModeratorExtraHeat(float moderatorExtraHeat){
+        this.moderatorExtraHeat = moderatorExtraHeat;
+    }
+    public void setActiveCoolerRate(int activeCoolerRate){
+        this.activeCoolerRate = activeCoolerRate;
     }
 }

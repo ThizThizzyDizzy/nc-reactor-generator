@@ -6,10 +6,17 @@ import planner.menu.component.MenuComponentMinimalistButton;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentPossibleAddonBlock extends MenuComponent{
     public final Block block;
-    public final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true, true).setTooltip("Add block (for block recipes)"));
-    public MenuComponentPossibleAddonBlock(Block block){
+    public final MenuComponentMinimalistButton add = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "+", true, true, true){
+        @Override
+        public void action(){
+            onAddPressed.run();
+        }
+    }.setTooltip("Add block (for block recipes)"));
+    private final Runnable onAddPressed;
+    public MenuComponentPossibleAddonBlock(Block block, Runnable onAddPressed){
         super(0, 0, 0, 50);
         this.block = block;
+        this.onAddPressed = onAddPressed;
     }
     @Override
     public void renderBackground(){

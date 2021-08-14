@@ -202,6 +202,7 @@ public class FusionConfiguration extends AbstractBlockContainer<Block> {
         return false;
     }
     public void convertAddon(AddonConfiguration parent, Configuration convertTo) throws MissingConfigurationEntryException{
+        if(convertTo.overhaul.turbine==null)throw new IllegalArgumentException("Cannot convert to null Overhaul Fusion configuration!");
         for(Block block : blocks){
             for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : getAllSubRules(block)){
                 if(rule.block==null)continue;
@@ -267,5 +268,72 @@ public class FusionConfiguration extends AbstractBlockContainer<Block> {
             addon.recipes.add(r);
             parent.allRecipes.add(r);
         }
+    }
+    //This is so I can use lambdas in the configuration menus, I haven't gone completely crazy yet
+    public int getMinInnerRadius(){
+        return minInnerRadius;
+    }
+    public int getMaxInnerRadius(){
+        return maxInnerRadius;
+    }
+    public int getMinCoreSize(){
+        return minCoreSize;
+    }
+    public int getMaxCoreSize(){
+        return maxCoreSize;
+    }
+    public int getMinToroidWidth(){
+        return minToroidWidth;
+    }
+    public int getMaxToroidWidth(){
+        return maxToroidWidth;
+    }
+    public int getMinLiningThickness(){
+        return minLiningThickness;
+    }
+    public int getMaxLiningThickness(){
+        return maxLiningThickness;
+    }
+    public float getSparsityPenaltyMult(){
+        return sparsityPenaltyMult;
+    }
+    public float getSparsityPenaltyThreshold(){
+        return sparsityPenaltyThreshold;
+    }
+    public int getCoolingEfficiencyLeniency(){
+        return coolingEfficiencyLeniency;
+    }
+    public void setMinInnerRadius(int minInnerRadius){
+        this.minInnerRadius = minInnerRadius;
+    }
+    public void setMaxInnerRadius(int maxInnerRadius){
+        this.maxInnerRadius = maxInnerRadius;
+    }
+    public void setMinCoreSize(int minCoreSize){
+        this.minCoreSize = minCoreSize;
+    }
+    public void setMaxCoreSize(int maxCoreSize){
+        this.maxCoreSize = maxCoreSize;
+    }
+    public void setMinToroidWidth(int minToroidWidth){
+        this.minToroidWidth = minToroidWidth;
+    }
+    public void setMaxToroidWidth(int maxToroidWidth){
+        this.maxToroidWidth = maxToroidWidth;
+    }
+    public void setMinLiningThickness(int minLiningThickness){
+        this.minLiningThickness = minLiningThickness;
+    }
+    public void setMaxLiningThickness(int maxLiningThickness){
+        this.maxLiningThickness = maxLiningThickness;
+    }
+    public void setSparsityPenaltyMult(float sparsityPenaltyMult){
+        this.sparsityPenaltyMult = sparsityPenaltyMult;
+    }
+    public void setSparsityPenaltyThreshold(float sparsityPenaltyThreshold){
+        this.sparsityPenaltyThreshold = sparsityPenaltyThreshold;
+    }
+    public void setCoolingEfficiencyLeniency(int coolingEfficiencyLeniency){
+        this.coolingEfficiencyLeniency = coolingEfficiencyLeniency;
     }
 }
