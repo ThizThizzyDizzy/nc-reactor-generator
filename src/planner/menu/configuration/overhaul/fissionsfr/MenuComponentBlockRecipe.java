@@ -32,6 +32,10 @@ public class MenuComponentBlockRecipe extends MenuComponent{
             GL11.glVertex2d(x+width*.625, y+height*.25);
             GL11.glEnd();
         }
+        @Override
+        public void action(){
+            onEditPressed.run();
+        }
     }.setTooltip("Modify block recipe"));
     public final MenuComponentMinimalistButton delete = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "", true, true, true){
         @Override
@@ -50,11 +54,19 @@ public class MenuComponentBlockRecipe extends MenuComponent{
             GL11.glVertex2d(x+width*.8, y+height*.9);
             GL11.glEnd();
         }
+        @Override
+        public void action(){
+            onDeletePressed.run();
+        }
     }.setTooltip("Delete block recipe"));
-    public MenuComponentBlockRecipe(Block block, BlockRecipe blockRecipe){
+    private final Runnable onEditPressed;
+    private final Runnable onDeletePressed;
+    public MenuComponentBlockRecipe(Block block, BlockRecipe blockRecipe, Runnable onEditPressed, Runnable onDeletePressed){
         super(0, 0, 0, 100);
         this.block = block;
         this.blockRecipe = blockRecipe;
+        this.onEditPressed = onEditPressed;
+        this.onDeletePressed = onDeletePressed;
     }
     @Override
     public void renderBackground(){

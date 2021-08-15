@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import multiblock.configuration.Configuration;
-import planner.Core;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -81,7 +80,7 @@ public class MultiblockConfigurationMenu extends ConfigurationMenu{
             MenuComponentMinimalistButton button = listButtons.get(i);
             label.width = list.width = button.width = w/lists.size();
             label.x = list.x = button.x = sidebar.width+w/lists.size()*i;
-            button.y = Core.helper.displayHeight()-button.height;
+            button.y = gui.helper.displayHeight()-button.height;
             list.height = button.y-(label.y+label.height);
         }
         super.render(millisSinceLastTick);
@@ -90,6 +89,7 @@ public class MultiblockConfigurationMenu extends ConfigurationMenu{
     public void onGUIOpened(){
         for(MenuComponentMinimalistTextBox box : open.keySet()){
             box.text = open.get(box).get();
+            if(box.text==null)box.text = "";
         }
         for(MenuComponentLabel label : labelNames.keySet()){
             label.text = labelNames.get(label).get();

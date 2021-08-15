@@ -60,7 +60,7 @@ public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
         addRule.addActionListener((e) -> {
             PlacementRule rul;
             rule.rules.add(rul = (PlacementRule) rule.newRule());
-            gui.open(new MenuPlacementRuleConfiguration<>(gui, parent, configuration, rul, blockList, blockTypes));
+            gui.open(new MenuPlacementRuleConfiguration<>(gui, this, configuration, rul, blockList, blockTypes));
         });
         this.rule = rule;
     }
@@ -96,7 +96,12 @@ public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
         }
         placementRules.components.clear();
         for(AbstractPlacementRule<BlockType, Template> rul : rule.rules){
-            placementRules.add(new MenuComponentPlacementRule(rul));
+            placementRules.add(new MenuComponentPlacementRule(rul, ()->{//edit
+                gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, rul, blockList, blockTypes));
+            }, ()->{//delete
+                rule.rules.remove(rul);
+                refreshNeeded = true;
+            }));
         }
         min.setValue(rule.min);
         max.setValue(rule.max);
@@ -196,7 +201,7 @@ public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
     }
     @Override
     public void render(int millisSinceLastTick){
-        type.width = block.width = placementRulesLabel.width = placementRules.width = addRule.width = Core.helper.displayWidth()-sidebar.width;
+        type.width = block.width = placementRulesLabel.width = placementRules.width = addRule.width = gui.helper.displayWidth()-sidebar.width;
         min.width = max.width = block.width/2;
         max.x = min.x+min.width;
         block.y = type.y+type.height;
@@ -206,22 +211,5 @@ public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
         addRule.y = gui.helper.displayHeight()-addRule.height;
         placementRules.height = addRule.y-placementRules.y;
         super.render(millisSinceLastTick);
-    }
-    @Override
-    public void buttonClicked(MenuComponentButton button){
-        for(simplelibrary.opengl.gui.components.MenuComponent c : placementRules.components){
-            if(c instanceof MenuComponentPlacementRule){
-                if(button==((MenuComponentPlacementRule) c).delete){
-                    rule.rules.remove(((MenuComponentPlacementRule)c).rule);
-                    refreshNeeded = true;
-                    return;
-                }
-                if(button==((MenuComponentPlacementRule) c).edit){
-                    gui.open(new MenuPlacementRuleConfiguration(gui, this, configuration, ((MenuComponentPlacementRule) c).rule, blockList, blockTypes));
-                    return;
-                }
-            }
-        }
-        super.buttonClicked(button);
     }
 }

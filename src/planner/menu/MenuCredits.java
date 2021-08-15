@@ -449,14 +449,14 @@ public class MenuCredits extends Menu{
         for(Iterator<BackgroundElement> it = backgroundElements.iterator(); it.hasNext();){
             BackgroundElement e = it.next();
             e.y+=creditsSpeed*backgroundElemSpeedMult/e.z;
-            if(e.y>Core.helper.displayHeight()*e.z)it.remove();
+            if(e.y>gui.helper.displayHeight()*e.z)it.remove();
             if(e.threeD)e.rot+=creditsSpeed*backgroundElemRotSpeedMult;
         }
         if(rand.nextDouble()<backgroundElemChance){
             backgroundElements.enqueue(elem = possibleBackgroundElements.get(rand.nextInt(possibleBackgroundElements.size())).copy());
             elem.z = rand.nextDouble()*3+1;
-            elem.x = (rand.nextDouble()*3-1)*elem.z*Core.helper.displayWidth();
-            elem.y = -Core.helper.displayHeight()*elem.z;
+            elem.x = (rand.nextDouble()*3-1)*elem.z*gui.helper.displayWidth();
+            elem.y = -gui.helper.displayHeight()*elem.z;
         }
     }
     @Override

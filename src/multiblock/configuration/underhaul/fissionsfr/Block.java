@@ -177,6 +177,9 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         for(AbstractPlacementRule<PlacementRule.BlockType, Block> r : rules)nams.addAll(r.getSearchableNames());
         return nams;
     }
+    public Image getTexture(){
+        return texture;
+    }
     @Override
     public Image getDisplayTexture() {
         return displayTexture;
@@ -184,5 +187,50 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     @Override
     public String getPinnedName(){
         return name;
+    }
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setDisplayName(String displayName){
+        this.displayName = displayName;
+    }
+    public void setLegacyNames(ArrayList<String> legacyNames){
+        this.legacyNames = new ArrayList<>(legacyNames);
+    }
+    public boolean isFuelCell(){
+        return fuelCell;
+    }
+    public boolean isModerator(){
+        return moderator;
+    }
+    public boolean isCasing(){
+        return casing;
+    }
+    public boolean isController(){
+        return controller;
+    }
+    public int getCooling(){
+        return cooling;
+    }
+    public void setFuelCell(boolean fuelCell){
+        this.fuelCell = fuelCell;
+    }
+    public void setModerator(boolean moderator){
+        this.moderator = moderator;
+    }
+    public void setCasing(boolean casing){
+        this.casing = casing;
+    }
+    public void setController(boolean controller){
+        this.controller = controller;
+    }
+    public void setCooling(int cooling){
+        this.cooling = cooling;
+    }
+    public String getActive(){
+        return active;
+    }
+    public void setActive(String active){
+        this.active = active;
     }
 }

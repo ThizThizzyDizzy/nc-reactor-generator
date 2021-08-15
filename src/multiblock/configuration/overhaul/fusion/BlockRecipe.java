@@ -95,9 +95,15 @@ public class BlockRecipe implements Pinnable{
         }
         return config;
     }
+    public Image getInputTexture(){
+        return inputTexture;
+    }
     public void setInputTexture(Image image){
         inputTexture = image;
         inputDisplayTexture = TextureManager.convert(image);
+    }
+    public Image getOutputTexture(){
+        return outputTexture;
     }
     public void setOutputTexture(Image image){
         outputTexture = image;
@@ -140,5 +146,68 @@ public class BlockRecipe implements Pinnable{
     @Override
     public String getPinnedName(){
         return inputName;
+    }
+    public void setInputName(String inputName){
+        this.inputName = inputName;
+    }
+    public void setInputDisplayName(String inputDisplayName){
+        this.inputDisplayName = inputDisplayName;
+    }
+    public void setOutputName(String outputName){
+        this.outputName = outputName;
+    }
+    public void setOutputDisplayName(String outputDisplayName){
+        this.outputDisplayName = outputDisplayName;
+    }
+    public void setInputLegacyNames(ArrayList<String> inputLegacyNames){
+        this.inputLegacyNames = new ArrayList<>(inputLegacyNames);
+    }
+    public int getInputRate(){
+        return inputRate;
+    }
+    public int getOutputRate(){
+        return outputRate;
+    }
+    public boolean isBreedingBlanketAugmented(){
+        return breedingBlanketAugmented;
+    }
+    public float getBreedingBlanketEfficiency(){
+        return breedingBlanketEfficiency;
+    }
+    public float getBreedingBlanketHeat(){
+        return breedingBlanketHeat;
+    }
+    public float getShieldingShieldiness(){
+        return shieldingShieldiness;
+    }
+    public float getReflectorEfficiency(){
+        return reflectorEfficiency;
+    }
+    public int getHeatsinkCooling(){
+        return heatsinkCooling;
+    }
+    public void setInputRate(int inputRate){
+        this.inputRate = inputRate;
+    }
+    public void setOutputRate(int outputRate){
+        this.outputRate = outputRate;
+    }
+    public void setBreedingBlanketAugmented(boolean breedingBlanketAugmented){
+        this.breedingBlanketAugmented = breedingBlanketAugmented;
+    }
+    public void setBreedingBlanketEfficiency(float breedingBlanketEfficiency){
+        this.breedingBlanketEfficiency = breedingBlanketEfficiency;
+    }
+    public void setBreedingBlanketHeat(float breedingBlanketHeat){
+        this.breedingBlanketHeat = breedingBlanketHeat;
+    }
+    public void setShieldingShieldiness(float shieldingShieldiness){
+        this.shieldingShieldiness = shieldingShieldiness;
+    }
+    public void setReflectorEfficiency(float reflectorEfficiency){
+        this.reflectorEfficiency = reflectorEfficiency;
+    }
+    public void setHeatsinkCooling(int heatsinkCooling){
+        this.heatsinkCooling = heatsinkCooling;
     }
 }

@@ -60,6 +60,9 @@ public class Fuel implements Pinnable{
         texture = image;
         displayTexture = TextureManager.convert(image);
     }
+    public Image getTexture(){
+        return texture;
+    }
     @Override
     public boolean equals(Object obj){
         if(obj!=null&&obj instanceof Fuel){
@@ -91,5 +94,32 @@ public class Fuel implements Pinnable{
     @Override
     public String getPinnedName(){
         return name;
+    }
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setDisplayName(String displayName){
+        this.displayName = displayName;
+    }
+    public void setLegacyNames(ArrayList<String> legacyNames){
+        this.legacyNames = new ArrayList<>(legacyNames);
+    }
+    public float getPower(){
+        return power;
+    }
+    public float getHeat(){
+        return heat;
+    }
+    public int getTime(){
+        return time;
+    }
+    public void setPower(float power){
+        this.power = power;
+    }
+    public void setHeat(float heat){
+        this.heat = heat;
+    }
+    public void setTime(int time){
+        this.time = time;
     }
 }

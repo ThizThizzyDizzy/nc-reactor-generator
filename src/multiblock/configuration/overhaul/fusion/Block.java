@@ -128,6 +128,9 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         }
         return config;
     }
+    public Image getTexture(){
+        return texture;
+    }
     public void setTexture(Image image){
         texture = image;
         displayTexture = TextureManager.convert(image);
@@ -205,5 +208,146 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     @Override
     public String getPinnedName(){
         return name;
+    }
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setDisplayName(String displayName){
+        this.displayName = displayName;
+    }
+    public void setLegacyNames(ArrayList<String> legacyNames){
+        this.legacyNames = new ArrayList<>(legacyNames);
+    }
+    public boolean isCluster(){
+        return cluster;
+    }
+    public boolean isCreateCluster(){
+        return createCluster;
+    }
+    public boolean isConductor(){
+        return conductor;
+    }
+    public boolean isConnector(){
+        return connector;
+    }
+    public boolean isCore(){
+        return core;
+    }
+    public boolean isElectromagnet(){
+        return electromagnet;
+    }
+    public boolean isHeatingBlanket(){
+        return heatingBlanket;
+    }
+    public boolean isFunctional(){
+        return functional;
+    }
+    public boolean isBreedingBlanket(){
+        return breedingBlanket;
+    }
+    public boolean isBreedingBlanketHasBaseStats(){
+        return breedingBlanketHasBaseStats;
+    }
+    public boolean isBreedingBlanketAugmented(){
+        return breedingBlanketAugmented;
+    }
+    public float getBreedingBlanketEfficiency(){
+        return breedingBlanketEfficiency;
+    }
+    public float getBreedingBlanketHeat(){
+        return breedingBlanketHeat;
+    }
+    public boolean isShielding(){
+        return shielding;
+    }
+    public boolean isShieldingHasBaseStats(){
+        return shieldingHasBaseStats;
+    }
+    public float getShieldingShieldiness(){
+        return shieldingShieldiness;
+    }
+    public boolean isReflector(){
+        return reflector;
+    }
+    public boolean isReflectorHasBaseStats(){
+        return reflectorHasBaseStats;
+    }
+    public float getReflectorEfficiency(){
+        return reflectorEfficiency;
+    }
+    public boolean isHeatsink(){
+        return heatsink;
+    }
+    public boolean isHeatsinkHasBaseStats(){
+        return heatsinkHasBaseStats;
+    }
+    public int getHeatsinkCooling(){
+        return heatsinkCooling;
+    }
+    public void setCluster(boolean cluster){
+        this.cluster = cluster;
+    }
+    public void setCreateCluster(boolean createCluster){
+        this.createCluster = createCluster;
+    }
+    public void setConductor(boolean conductor){
+        this.conductor = conductor;
+    }
+    public void setConnector(boolean connector){
+        this.connector = connector;
+    }
+    public void setCore(boolean core){
+        this.core = core;
+    }
+    public void setElectromagnet(boolean electromagnet){
+        this.electromagnet = electromagnet;
+    }
+    public void setHeatingBlanket(boolean heatingBlanket){
+        this.heatingBlanket = heatingBlanket;
+    }
+    public void setFunctional(boolean functional){
+        this.functional = functional;
+    }
+    public void setBreedingBlanket(boolean breedingBlanket){
+        this.breedingBlanket = breedingBlanket;
+    }
+    public void setBreedingBlanketHasBaseStats(boolean breedingBlanketHasBaseStats){
+        this.breedingBlanketHasBaseStats = breedingBlanketHasBaseStats;
+    }
+    public void setBreedingBlanketAugmented(boolean breedingBlanketAugmented){
+        this.breedingBlanketAugmented = breedingBlanketAugmented;
+    }
+    public void setBreedingBlanketEfficiency(float breedingBlanketEfficiency){
+        this.breedingBlanketEfficiency = breedingBlanketEfficiency;
+    }
+    public void setBreedingBlanketHeat(float breedingBlanketHeat){
+        this.breedingBlanketHeat = breedingBlanketHeat;
+    }
+    public void setShielding(boolean shielding){
+        this.shielding = shielding;
+    }
+    public void setShieldingHasBaseStats(boolean shieldingHasBaseStats){
+        this.shieldingHasBaseStats = shieldingHasBaseStats;
+    }
+    public void setShieldingShieldiness(float shieldingShieldiness){
+        this.shieldingShieldiness = shieldingShieldiness;
+    }
+    public void setReflector(boolean reflector){
+        this.reflector = reflector;
+    }
+    public void setReflectorHasBaseStats(boolean reflectorHasBaseStats){
+        this.reflectorHasBaseStats = reflectorHasBaseStats;
+    }
+    public void setReflectorEfficiency(float reflectorEfficiency){
+        this.reflectorEfficiency = reflectorEfficiency;
+    }
+    public void setHeatsink(boolean heatsink){
+        this.heatsink = heatsink;
+    }
+    public void setHeatsinkHasBaseStats(boolean heatsinkHasBaseStats){
+        this.heatsinkHasBaseStats = heatsinkHasBaseStats;
+    }
+    public void setHeatsinkCooling(int heatsinkCooling){
+        this.heatsinkCooling = heatsinkCooling;
     }
 }

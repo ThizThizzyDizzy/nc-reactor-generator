@@ -173,6 +173,9 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         }
         return config;
     }
+    public Image getTexture(){
+        return texture;
+    }
     public void setTexture(Image image){
         texture = image;
         displayTexture = TextureManager.convert(image);
@@ -225,5 +228,98 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     @Override
     public String getPinnedName(){
         return name;
+    }
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setDisplayName(String displayName){
+        this.displayName = displayName;
+    }
+    public void setLegacyNames(ArrayList<String> legacyNames){
+        this.legacyNames = new ArrayList<>(legacyNames);
+    }
+    public boolean isBlade(){
+        return blade;
+    }
+    public float getBladeEfficiency(){
+        return bladeEfficiency;
+    }
+    public float getBladeExpansion(){
+        return bladeExpansion;
+    }
+    public boolean isBladeStator(){
+        return bladeStator;
+    }
+    public boolean isCoil(){
+        return coil;
+    }
+    public float getCoilEfficiency(){
+        return coilEfficiency;
+    }
+    public boolean isBearing(){
+        return bearing;
+    }
+    public boolean isShaft(){
+        return shaft;
+    }
+    public boolean isConnector(){
+        return connector;
+    }
+    public boolean isController(){
+        return controller;
+    }
+    public boolean isCasing(){
+        return casing;
+    }
+    public boolean isCasingEdge(){
+        return casingEdge;
+    }
+    public boolean isInlet(){
+        return inlet;
+    }
+    public boolean isOutlet(){
+        return outlet;
+    }
+    public void setBlade(boolean blade){
+        this.blade = blade;
+    }
+    public void setBladeEfficiency(float bladeEfficiency){
+        this.bladeEfficiency = bladeEfficiency;
+    }
+    public void setBladeExpansion(float bladeExpansion){
+        this.bladeExpansion = bladeExpansion;
+    }
+    public void setBladeStator(boolean bladeStator){
+        this.bladeStator = bladeStator;
+    }
+    public void setCoil(boolean coil){
+        this.coil = coil;
+    }
+    public void setCoilEfficiency(float coilEfficiency){
+        this.coilEfficiency = coilEfficiency;
+    }
+    public void setBearing(boolean bearing){
+        this.bearing = bearing;
+    }
+    public void setShaft(boolean shaft){
+        this.shaft = shaft;
+    }
+    public void setConnector(boolean connector){
+        this.connector = connector;
+    }
+    public void setController(boolean controller){
+        this.controller = controller;
+    }
+    public void setCasing(boolean casing){
+        this.casing = casing;
+    }
+    public void setCasingEdge(boolean casingEdge){
+        this.casingEdge = casingEdge;
+    }
+    public void setInlet(boolean inlet){
+        this.inlet = inlet;
+    }
+    public void setOutlet(boolean outlet){
+        this.outlet = outlet;
     }
 }

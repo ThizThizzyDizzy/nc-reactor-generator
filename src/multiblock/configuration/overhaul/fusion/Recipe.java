@@ -30,9 +30,15 @@ public class Recipe implements Pinnable{
         this.time = time;
         this.fluxiness = fluxiness;
     }
+    public Image getInputTexture(){
+        return inputTexture;
+    }
     public void setInputTexture(Image image){
         inputTexture = image;
         inputDisplayTexture = TextureManager.convert(image);
+    }
+    public Image getOutputTexture(){
+        return outputTexture;
     }
     public void setOutputTexture(Image image){
         outputTexture = image;
@@ -121,5 +127,44 @@ public class Recipe implements Pinnable{
     @Override
     public String getPinnedName(){
         return inputName;
+    }
+    public void setInputName(String inputName){
+        this.inputName = inputName;
+    }
+    public void setInputDisplayName(String inputDisplayName){
+        this.inputDisplayName = inputDisplayName;
+    }
+    public void setInputLegacyNames(ArrayList<String> inputLegacyNames){
+        this.inputLegacyNames = new ArrayList<>(inputLegacyNames);
+    }
+    public void setOutputName(String outputName){
+        this.outputName = outputName;
+    }
+    public void setOutputDisplayName(String outputDisplayName){
+        this.outputDisplayName = outputDisplayName;
+    }
+    public float getEfficiency(){
+        return efficiency;
+    }
+    public int getHeat(){
+        return heat;
+    }
+    public int getTime(){
+        return time;
+    }
+    public float getFluxiness(){
+        return fluxiness;
+    }
+    public void setEfficiency(float efficiency){
+        this.efficiency = efficiency;
+    }
+    public void setHeat(int heat){
+        this.heat = heat;
+    }
+    public void setTime(int time){
+        this.time = time;
+    }
+    public void setFluxiness(float fluxiness){
+        this.fluxiness = fluxiness;
     }
 }

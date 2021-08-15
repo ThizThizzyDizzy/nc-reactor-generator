@@ -375,6 +375,9 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         }
         return config;
     }
+    public Image getTexture(){
+        return texture;
+    }
     public void setTexture(Image image){
         texture = image;
         displayTexture = TextureManager.convert(image);
@@ -396,9 +399,15 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         }
         displayTexture = displayImg;
     }
+    public Image getPortOutputTexture(){
+        return portOutputTexture;
+    }
     public void setPortOutputTexture(Image image){
         portOutputTexture = image;
         portOutputDisplayTexture = TextureManager.convert(image);
+    }
+    public Image getShieldClosedTexture(){
+        return shieldClosedTexture;
     }
     public void setShieldClosedTexture(Image image){
         shieldClosedTexture = image;
@@ -532,5 +541,233 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     @Override
     public String getPinnedName(){
         return name;
+    }
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setDisplayName(String displayName){
+        this.displayName = displayName;
+    }
+    public void setPortOutputDisplayName(String portOutputDisplayName){
+        this.portOutputDisplayName = portOutputDisplayName;
+    }
+    public void setLegacyNames(ArrayList<String> legacyNames){
+        this.legacyNames = new ArrayList<>(legacyNames);
+    }
+    public boolean isCluster(){
+        return cluster;
+    }
+    public boolean isCreateCluster(){
+        return createCluster;
+    }
+    public boolean isConductor(){
+        return conductor;
+    }
+    public boolean isFunctional(){
+        return functional;
+    }
+    public boolean isBlocksLOS(){
+        return blocksLOS;
+    }
+    public boolean isCasing(){
+        return casing;
+    }
+    public boolean isCasingEdge(){
+        return casingEdge;
+    }
+    public boolean isController(){
+        return controller;
+    }
+    public boolean isFuelVessel(){
+        return fuelVessel;
+    }
+    public boolean isFuelVesselHasBaseStats(){
+        return fuelVesselHasBaseStats;
+    }
+    public float getFuelVesselEfficiency(){
+        return fuelVesselEfficiency;
+    }
+    public int getFuelVesselHeat(){
+        return fuelVesselHeat;
+    }
+    public int getFuelVesselCriticality(){
+        return fuelVesselCriticality;
+    }
+    public boolean isFuelVesselSelfPriming(){
+        return fuelVesselSelfPriming;
+    }
+    public boolean isIrradiator(){
+        return irradiator;
+    }
+    public boolean isIrradiatorHasBaseStats(){
+        return irradiatorHasBaseStats;
+    }
+    public float getIrradiatorEfficiency(){
+        return irradiatorEfficiency;
+    }
+    public float getIrradiatorHeat(){
+        return irradiatorHeat;
+    }
+    public boolean isReflector(){
+        return reflector;
+    }
+    public boolean isReflectorHasBaseStats(){
+        return reflectorHasBaseStats;
+    }
+    public float getReflectorEfficiency(){
+        return reflectorEfficiency;
+    }
+    public float getReflectorReflectivity(){
+        return reflectorReflectivity;
+    }
+    public boolean isModerator(){
+        return moderator;
+    }
+    public boolean isModeratorHasBaseStats(){
+        return moderatorHasBaseStats;
+    }
+    public int getModeratorFlux(){
+        return moderatorFlux;
+    }
+    public float getModeratorEfficiency(){
+        return moderatorEfficiency;
+    }
+    public boolean isModeratorActive(){
+        return moderatorActive;
+    }
+    public boolean isShield(){
+        return shield;
+    }
+    public boolean isShieldHasBaseStats(){
+        return shieldHasBaseStats;
+    }
+    public int getShieldHeat(){
+        return shieldHeat;
+    }
+    public float getShieldEfficiency(){
+        return shieldEfficiency;
+    }
+    public boolean isHeater(){
+        return heater;
+    }
+    public boolean isHeaterHasBaseStats(){
+        return heaterHasBaseStats;
+    }
+    public int getHeaterCooling(){
+        return heaterCooling;
+    }
+    public boolean isSource(){
+        return source;
+    }
+    public float getSourceEfficiency(){
+        return sourceEfficiency;
+    }
+    public void setCluster(boolean cluster){
+        this.cluster = cluster;
+    }
+    public void setCreateCluster(boolean createCluster){
+        this.createCluster = createCluster;
+    }
+    public void setConductor(boolean conductor){
+        this.conductor = conductor;
+    }
+    public void setFunctional(boolean functional){
+        this.functional = functional;
+    }
+    public void setBlocksLOS(boolean blocksLOS){
+        this.blocksLOS = blocksLOS;
+    }
+    public void setCasing(boolean casing){
+        this.casing = casing;
+    }
+    public void setCasingEdge(boolean casingEdge){
+        this.casingEdge = casingEdge;
+    }
+    public void setController(boolean controller){
+        this.controller = controller;
+    }
+    public void setFuelVessel(boolean fuelVessel){
+        this.fuelVessel = fuelVessel;
+    }
+    public void setFuelVesselHasBaseStats(boolean fuelVesselHasBaseStats){
+        this.fuelVesselHasBaseStats = fuelVesselHasBaseStats;
+    }
+    public void setFuelVesselEfficiency(float fuelVesselEfficiency){
+        this.fuelVesselEfficiency = fuelVesselEfficiency;
+    }
+    public void setFuelVesselHeat(int fuelVesselHeat){
+        this.fuelVesselHeat = fuelVesselHeat;
+    }
+    public void setFuelVesselCriticality(int fuelVesselCriticality){
+        this.fuelVesselCriticality = fuelVesselCriticality;
+    }
+    public void setFuelVesselSelfPriming(boolean fuelVesselSelfPriming){
+        this.fuelVesselSelfPriming = fuelVesselSelfPriming;
+    }
+    public void setIrradiator(boolean irradiator){
+        this.irradiator = irradiator;
+    }
+    public void setIrradiatorHasBaseStats(boolean irradiatorHasBaseStats){
+        this.irradiatorHasBaseStats = irradiatorHasBaseStats;
+    }
+    public void setIrradiatorEfficiency(float irradiatorEfficiency){
+        this.irradiatorEfficiency = irradiatorEfficiency;
+    }
+    public void setIrradiatorHeat(float irradiatorHeat){
+        this.irradiatorHeat = irradiatorHeat;
+    }
+    public void setReflector(boolean reflector){
+        this.reflector = reflector;
+    }
+    public void setReflectorHasBaseStats(boolean reflectorHasBaseStats){
+        this.reflectorHasBaseStats = reflectorHasBaseStats;
+    }
+    public void setReflectorEfficiency(float reflectorEfficiency){
+        this.reflectorEfficiency = reflectorEfficiency;
+    }
+    public void setReflectorReflectivity(float reflectorReflectivity){
+        this.reflectorReflectivity = reflectorReflectivity;
+    }
+    public void setModerator(boolean moderator){
+        this.moderator = moderator;
+    }
+    public void setModeratorHasBaseStats(boolean moderatorHasBaseStats){
+        this.moderatorHasBaseStats = moderatorHasBaseStats;
+    }
+    public void setModeratorFlux(int moderatorFlux){
+        this.moderatorFlux = moderatorFlux;
+    }
+    public void setModeratorEfficiency(float moderatorEfficiency){
+        this.moderatorEfficiency = moderatorEfficiency;
+    }
+    public void setModeratorActive(boolean moderatorActive){
+        this.moderatorActive = moderatorActive;
+    }
+    public void setShield(boolean shield){
+        this.shield = shield;
+    }
+    public void setShieldHasBaseStats(boolean shieldHasBaseStats){
+        this.shieldHasBaseStats = shieldHasBaseStats;
+    }
+    public void setShieldHeat(int shieldHeat){
+        this.shieldHeat = shieldHeat;
+    }
+    public void setShieldEfficiency(float shieldEfficiency){
+        this.shieldEfficiency = shieldEfficiency;
+    }
+    public void setHeater(boolean heater){
+        this.heater = heater;
+    }
+    public void setHeaterHasBaseStats(boolean heaterHasBaseStats){
+        this.heaterHasBaseStats = heaterHasBaseStats;
+    }
+    public void setHeaterCooling(int heaterCooling){
+        this.heaterCooling = heaterCooling;
+    }
+    public void setSource(boolean source){
+        this.source = source;
+    }
+    public void setSourceEfficiency(float sourceEfficiency){
+        this.sourceEfficiency = sourceEfficiency;
     }
 }

@@ -159,9 +159,15 @@ public class BlockRecipe implements Pinnable{
         }
         return config;
     }
+    public Image getInputTexture(){
+        return inputTexture;
+    }
     public void setInputTexture(Image image){
         inputTexture = image;
         inputDisplayTexture = TextureManager.convert(image);
+    }
+    public Image getOutputTexture(){
+        return outputTexture;
     }
     public void setOutputTexture(Image image){
         outputTexture = image;
@@ -213,5 +219,116 @@ public class BlockRecipe implements Pinnable{
     @Override
     public String getPinnedName(){
         return inputName;
+    }
+    public void setInputName(String inputName){
+        this.inputName = inputName;
+    }
+    public void setInputDisplayName(String inputDisplayName){
+        this.inputDisplayName = inputDisplayName;
+    }
+    public void setOutputName(String outputName){
+        this.outputName = outputName;
+    }
+    public void setOutputDisplayName(String outputDisplayName){
+        this.outputDisplayName = outputDisplayName;
+    }
+    public void setInputLegacyNames(ArrayList<String> inputLegacyNames){
+        this.inputLegacyNames = new ArrayList<>(inputLegacyNames);
+    }
+    public int getInputRate(){
+        return inputRate;
+    }
+    public int getOutputRate(){
+        return outputRate;
+    }
+    public float getFuelVesselEfficiency(){
+        return fuelVesselEfficiency;
+    }
+    public int getFuelVesselHeat(){
+        return fuelVesselHeat;
+    }
+    public int getFuelVesselCriticality(){
+        return fuelVesselCriticality;
+    }
+    public boolean isFuelVesselSelfPriming(){
+        return fuelVesselSelfPriming;
+    }
+    public float getIrradiatorEfficiency(){
+        return irradiatorEfficiency;
+    }
+    public float getIrradiatorHeat(){
+        return irradiatorHeat;
+    }
+    public float getReflectorEfficiency(){
+        return reflectorEfficiency;
+    }
+    public float getReflectorReflectivity(){
+        return reflectorReflectivity;
+    }
+    public int getModeratorFlux(){
+        return moderatorFlux;
+    }
+    public float getModeratorEfficiency(){
+        return moderatorEfficiency;
+    }
+    public boolean isModeratorActive(){
+        return moderatorActive;
+    }
+    public int getShieldHeat(){
+        return shieldHeat;
+    }
+    public float getShieldEfficiency(){
+        return shieldEfficiency;
+    }
+    public int getHeaterCooling(){
+        return heaterCooling;
+    }
+    public void setInputRate(int inputRate){
+        this.inputRate = inputRate;
+    }
+    public void setOutputRate(int outputRate){
+        this.outputRate = outputRate;
+    }
+    public void setFuelVesselEfficiency(float fuelVesselEfficiency){
+        this.fuelVesselEfficiency = fuelVesselEfficiency;
+    }
+    public void setFuelVesselHeat(int fuelVesselHeat){
+        this.fuelVesselHeat = fuelVesselHeat;
+    }
+    public void setFuelVesselCriticality(int fuelVesselCriticality){
+        this.fuelVesselCriticality = fuelVesselCriticality;
+    }
+    public void setFuelVesselSelfPriming(boolean fuelVesselSelfPriming){
+        this.fuelVesselSelfPriming = fuelVesselSelfPriming;
+    }
+    public void setIrradiatorEfficiency(float irradiatorEfficiency){
+        this.irradiatorEfficiency = irradiatorEfficiency;
+    }
+    public void setIrradiatorHeat(float irradiatorHeat){
+        this.irradiatorHeat = irradiatorHeat;
+    }
+    public void setReflectorEfficiency(float reflectorEfficiency){
+        this.reflectorEfficiency = reflectorEfficiency;
+    }
+    public void setReflectorReflectivity(float reflectorReflectivity){
+        this.reflectorReflectivity = reflectorReflectivity;
+    }
+    public void setModeratorFlux(int moderatorFlux){
+        this.moderatorFlux = moderatorFlux;
+    }
+    public void setModeratorEfficiency(float moderatorEfficiency){
+        this.moderatorEfficiency = moderatorEfficiency;
+    }
+    public void setModeratorActive(boolean moderatorActive){
+        this.moderatorActive = moderatorActive;
+    }
+    public void setShieldHeat(int shieldHeat){
+        this.shieldHeat = shieldHeat;
+    }
+    public void setShieldEfficiency(float shieldEfficiency){
+        this.shieldEfficiency = shieldEfficiency;
+    }
+    public void setHeaterCooling(int heaterCooling){
+        this.heaterCooling = heaterCooling;
     }
 }

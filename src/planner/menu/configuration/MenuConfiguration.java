@@ -328,7 +328,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                 }
             }
         }
-        importAddon.y = createAddon.y = Core.helper.displayHeight()-importAddon.height-(badThing?64:0);
+        importAddon.y = createAddon.y = gui.helper.displayHeight()-importAddon.height-(badThing?64:0);
         addonsList.height = importAddon.y-addonsList.y;
         Core.applyColor(Core.theme.getConfigurationDividerColor());
         drawRect(underhaulTitle.x+underhaulTitle.width, underhaulTitle.y, overhaulTitle.x, overhaulFusion.y+overhaulFusion.height, 0);
