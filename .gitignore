@@ -9,6 +9,7 @@
 /settings.dat
 /smorebank.dat
 /*.ncpf
+/version.version
 
 /build.xml
 /manifest.mf
