@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import planner.Core;
 import planner.editor.suggestion.Suggestor;
 import planner.menu.MenuEdit;
-import planner.menu.component.Pinnable;
+import planner.Pinnable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentSuggestor extends MenuComponent implements Pinnable{

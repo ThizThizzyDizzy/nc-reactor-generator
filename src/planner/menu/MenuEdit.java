@@ -54,7 +54,7 @@ import planner.menu.component.MenuComponentMinimalistTextBox;
 import planner.menu.component.MenuComponentMinimalistTextView;
 import planner.menu.component.MenuComponentMulticolumnMinimaList;
 import planner.menu.component.MenuComponentToggleBox;
-import planner.menu.component.Pinnable;
+import planner.Pinnable;
 import planner.menu.component.editor.MenuComponentCoolantRecipe;
 import planner.menu.component.editor.MenuComponentEditorGrid;
 import planner.menu.component.editor.MenuComponentEditorListBlock;
@@ -224,7 +224,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
         });
         generate.addActionListener((e) -> {
-            gui.open(new MenuTransition(gui, this, new MenuGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
+            gui.open(new MenuTransition(gui, this, new MenuOldGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
         });
         refreshPartsList();
         if(multiblock instanceof UnderhaulSFR){

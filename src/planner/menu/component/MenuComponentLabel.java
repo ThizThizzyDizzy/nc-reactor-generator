@@ -1,4 +1,5 @@
 package planner.menu.component;
+import planner.Searchable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;

@@ -449,8 +449,7 @@ public class MenuMain extends Menu{
             }.setTooltip(m.getDescriptionTooltip()));
             button.addActionListener((e) -> {
                 Multiblock mb = m.newInstance();
-                if(mb instanceof OverhaulTurbine)((OverhaulTurbine)mb).setBearing(1);
-                if(mb instanceof CuboidalMultiblock)((CuboidalMultiblock)mb).buildDefaultCasing();
+                mb.init();
                 Core.multiblocks.add(mb);
                 adding = false;
                 refresh();

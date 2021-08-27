@@ -720,6 +720,6 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     }
     @Override
     public String getPreviewTexture(){
-        return "tutorials/planner/introduction/underhaul_example";
+        return "multiblocks/underhaul_sfr";
     }
 }

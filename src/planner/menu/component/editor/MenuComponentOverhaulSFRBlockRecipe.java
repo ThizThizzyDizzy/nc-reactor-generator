@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import multiblock.configuration.overhaul.fissionsfr.Block;
 import multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
 import planner.Core;
-import planner.menu.component.Pinnable;
+import planner.Pinnable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentOverhaulSFRBlockRecipe extends MenuComponent implements Pinnable{

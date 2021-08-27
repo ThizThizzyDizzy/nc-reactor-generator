@@ -401,4 +401,9 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         casingPending = true;
     }
     public abstract void buildDefaultCasing();
+    @Override
+    public void init(){
+        super.init();
+        buildDefaultCasing();
+    }
 }

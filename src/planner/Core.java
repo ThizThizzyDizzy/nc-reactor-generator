@@ -59,6 +59,7 @@ import planner.module.PrimeFuelModule;
 import planner.module.RainbowFactorModule;
 import planner.module.UnderhaulModule;
 import planner.theme.Theme;
+import planner.theme.ThemeCategory;
 import planner.tutorial.Tutorial;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;

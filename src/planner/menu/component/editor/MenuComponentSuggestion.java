@@ -4,7 +4,7 @@ import java.util.Arrays;
 import planner.Core;
 import planner.editor.suggestion.Suggestion;
 import planner.menu.MenuEdit;
-import planner.menu.component.Searchable;
+import planner.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.gui.components.MenuComponent;

@@ -1,4 +1,5 @@
 package planner.menu.component;
+import planner.Pinnable;
 import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;

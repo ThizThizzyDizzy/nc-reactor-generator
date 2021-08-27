@@ -5,7 +5,7 @@ import multiblock.configuration.Configuration;
 import org.lwjgl.opengl.GL11;
 import planner.Core;
 import planner.exception.MissingConfigurationEntryException;
-import planner.menu.component.Pinnable;
+import planner.Pinnable;
 import planner.vr.VRCore;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;

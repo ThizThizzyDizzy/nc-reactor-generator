@@ -1,7 +1,6 @@
 package planner.file.reader;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
@@ -101,17 +100,15 @@ public class NCPF2Reader extends NCPF3Reader {
             case 5:
                 rule.ruleType = AbstractPlacementRule.RuleType.OR;
                 ConfigList rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
+                for(int i = 0; i<rules.size(); i++){
+                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rules.getConfig(i)));
                 }
                 break;
             case 6:
                 rule.ruleType = AbstractPlacementRule.RuleType.AND;
                 rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
+                for(int i = 0; i<rules.size(); i++){
+                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rules.getConfig(i)));
                 }
                 break;
         }

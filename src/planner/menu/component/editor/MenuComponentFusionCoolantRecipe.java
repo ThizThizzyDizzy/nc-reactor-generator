@@ -2,7 +2,7 @@ package planner.menu.component.editor;
 import java.util.ArrayList;
 import multiblock.configuration.overhaul.fusion.CoolantRecipe;
 import planner.Core;
-import planner.menu.component.Pinnable;
+import planner.Pinnable;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentFusionCoolantRecipe extends MenuComponent implements Pinnable{

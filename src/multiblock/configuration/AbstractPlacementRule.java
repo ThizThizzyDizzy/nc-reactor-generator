@@ -7,7 +7,7 @@ import multiblock.Direction;
 import multiblock.Edge3;
 import multiblock.Multiblock;
 import multiblock.Vertex;
-import planner.menu.component.Searchable;
+import planner.Searchable;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public abstract class AbstractPlacementRule<BlockType extends IBlockType, Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {

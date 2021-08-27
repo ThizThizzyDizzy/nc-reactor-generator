@@ -33,20 +33,21 @@ public class UnderhaulHellrage1Reader implements FormatReader{
         JSON.JSONArray compressedReactor = hellrage.getJSONArray("CompressedReactor");
         for(Object o : compressedReactor){
             JSON.JSONObject ob = (JSON.JSONObject) o;
-            String name = ob.keySet().iterator().next();
-            multiblock.configuration.underhaul.fissionsfr.Block block = null;
-            for(multiblock.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.allBlocks){
-                for(String nam : blok.getLegacyNames())if(nam.toLowerCase(Locale.ENGLISH).replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
-            }
-            if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
-            JSON.JSONArray blocks = ob.getJSONArray(name);
-            for(Object blok : blocks){
-                String blokLoc = (String) blok;
-                String[] blockLoc = blokLoc.split(",");
-                int x = Integer.parseInt(blockLoc[0]);
-                int y = Integer.parseInt(blockLoc[1]);
-                int z = Integer.parseInt(blockLoc[2]);
-                sfr.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
+            for(String name : ob.keySet()){
+                multiblock.configuration.underhaul.fissionsfr.Block block = null;
+                for(multiblock.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.allBlocks){
+                    for(String nam : blok.getLegacyNames())if(nam.toLowerCase(Locale.ENGLISH).replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                }
+                if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                JSON.JSONArray blocks = ob.getJSONArray(name);
+                for(Object blok : blocks){
+                    String blokLoc = (String) blok;
+                    String[] blockLoc = blokLoc.split(",");
+                    int x = Integer.parseInt(blockLoc[0]);
+                    int y = Integer.parseInt(blockLoc[1]);
+                    int z = Integer.parseInt(blockLoc[2]);
+                    sfr.setBlockExact(x, y, z, new multiblock.underhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
+                }
             }
         }
         NCPFFile file = new NCPFFile();

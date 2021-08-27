@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import multiblock.Block;
 import planner.Core;
 import planner.menu.MenuEdit;
-import planner.menu.component.Pinnable;
+import planner.Pinnable;
 import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentEditorListBlock extends MenuComponent implements Pinnable{

@@ -1,6 +1,5 @@
 package planner.file.reader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.UnderhaulConfiguration;
@@ -171,8 +170,8 @@ public class NCPF9Reader extends NCPF10Reader {
         if(data.hasProperty("inputs")){
             overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
             ConfigNumberList inputs = data.get("inputs");
-            for(Number number : inputs.iterable()){
-                overhaulTurbinePostLoadInputsMap.get(overhaulTurbine).add(number.intValue());
+            for(int i = 0; i<inputs.size(); i++){
+                overhaulTurbinePostLoadInputsMap.get(overhaulTurbine).add((int)inputs.get(i));
             }
         }
         ArrayList<multiblock.configuration.overhaul.turbine.Block> allCoils = new ArrayList<>();
@@ -247,8 +246,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
                 ConfigList blocks = fissionSFR.get("blocks");
                 underhaulPostLoadMap.clear();
-                for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                    Config blockCfg = (Config)bit.next();
+                for(int i = 0; i<blocks.size(); i++){
+                    Config blockCfg = blocks.getConfig(i);
                     multiblock.configuration.underhaul.fissionsfr.Block block = new multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
                     block.active = blockCfg.get("active");
                     block.cooling = blockCfg.get("cooling", 0);
@@ -257,9 +256,8 @@ public class NCPF9Reader extends NCPF10Reader {
                     if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
                     if(blockCfg.hasProperty("rules")){
                         ConfigList rules = blockCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config ruleCfg = (Config)rit.next();
-                            block.rules.add(readUnderRule(ruleCfg));
+                        for(int idx = 0; idx<rules.size(); idx++){
+                            block.rules.add(readUnderRule(rules.getConfig(idx)));
                         }
                     }
                     parent.underhaul.fissionSFR.allBlocks.add(block);configuration.underhaul.fissionSFR.blocks.add(block);
@@ -274,8 +272,8 @@ public class NCPF9Reader extends NCPF10Reader {
                     }
                 }
                 ConfigList fuels = fissionSFR.get("fuels");
-                for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                    Config fuelCfg = (Config)fit.next();
+                for(int i = 0; i<fuels.size(); i++){
+                    Config fuelCfg = fuels.getConfig(i);
                     multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
                     parent.underhaul.fissionSFR.allFuels.add(fuel);configuration.underhaul.fissionSFR.fuels.add(fuel);
                 }
@@ -297,8 +295,8 @@ public class NCPF9Reader extends NCPF10Reader {
             }
             ConfigList blocks = fissionSFR.get("blocks");
             overhaulSFRPostLoadMap.clear();
-            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<blocks.size(); i++){
+                Config blockCfg = blocks.getConfig(i);
                 multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
@@ -336,9 +334,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 if(blockCfg.hasProperty("closedTexture"))block.setShieldClosedTexture(loadNCPFTexture(blockCfg.get("closedTexture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
-                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                        Config ruleCfg = (Config)rit.next();
-                        block.rules.add(readOverSFRRule(ruleCfg));
+                    for(int idx = 0; idx<rules.size(); idx++){
+                        block.rules.add(readOverSFRRule(rules.getConfig(idx)));
                     }
                 }
                 parent.overhaul.fissionSFR.allBlocks.add(block);configuration.overhaul.fissionSFR.blocks.add(block);
@@ -363,8 +360,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
             }
             ConfigList fuels = fissionSFR.get("fuels");
-            for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                Config fuelCfg = (Config)fit.next();
+            for(int i = 0; i<fuels.size(); i++){
+                Config fuelCfg = fuels.getConfig(i);
                 multiblock.configuration.overhaul.fissionsfr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe(fuelCfg.get("name"), "null");
                 fuel.fuelCellEfficiency = fuelCfg.get("efficiency");
                 fuel.fuelCellHeat = fuelCfg.get("heat");
@@ -383,16 +380,16 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
             }
             ConfigList sources = fissionSFR.get("sources");
-            for(Iterator sit = sources.iterator(); sit.hasNext();){
-                Config sourceCfg = (Config)sit.next();
+            for(int i = 0; i<sources.size(); i++){
+                Config sourceCfg = sources.getConfig(i);
                 multiblock.configuration.overhaul.fissionsfr.Block source = new multiblock.configuration.overhaul.fissionsfr.Block(sourceCfg.get("name"));
                 source.source = true;
                 source.sourceEfficiency = sourceCfg.get("efficiency");
                 parent.overhaul.fissionSFR.allBlocks.add(source);configuration.overhaul.fissionSFR.blocks.add(source);
             }
             ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
-            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
-                Config irradiatorRecipeCfg = (Config)irit.next();
+            for(int i = 0; i<irradiatorRecipes.size(); i++){
+                Config irradiatorRecipeCfg = irradiatorRecipes.getConfig(i);
                 multiblock.configuration.overhaul.fissionsfr.BlockRecipe irrecipe = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe(irradiatorRecipeCfg.get("name"), "null");
                 irrecipe.irradiatorEfficiency = irradiatorRecipeCfg.get("efficiency");
                 irrecipe.irradiatorHeat = irradiatorRecipeCfg.get("heat");
@@ -408,8 +405,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
             }
             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
-            for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
-                Config coolantRecipeCfg = (Config)irit.next();
+            for(int i = 0; i<coolantRecipes.size(); i++){
+                Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), readOutputRatio(coolantRecipeCfg, "outputRatio"));
                 parent.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
             }
@@ -445,8 +442,8 @@ public class NCPF9Reader extends NCPF10Reader {
             }
             ConfigList blocks = fissionMSR.get("blocks");
             overhaulMSRPostLoadMap.clear();
-            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<blocks.size(); i++){
+                Config blockCfg = blocks.getConfig(i);
                 multiblock.configuration.overhaul.fissionmsr.Block block = new multiblock.configuration.overhaul.fissionmsr.Block(blockCfg.get("name"));
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
@@ -487,9 +484,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 if(blockCfg.hasProperty("closedTexture"))block.setShieldClosedTexture(loadNCPFTexture(blockCfg.get("closedTexture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
-                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                        Config ruleCfg = (Config)rit.next();
-                        block.rules.add(readOverMSRRule(ruleCfg));
+                    for(int idx = 0; idx<rules.size(); idx++){
+                        block.rules.add(readOverMSRRule(rules.getConfig(idx)));
                     }
                 }
                 parent.overhaul.fissionMSR.allBlocks.add(block);configuration.overhaul.fissionMSR.blocks.add(block);
@@ -514,8 +510,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
             }
             ConfigList fuels = fissionMSR.get("fuels");
-            for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                Config fuelCfg = (Config)fit.next();
+            for(int i = 0; i<fuels.size(); i++){
+                Config fuelCfg = fuels.getConfig(i);
                 multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
                 fuel.inputRate = fuel.outputRate = 1;
                 fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
@@ -535,16 +531,16 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
             }
             ConfigList sources = fissionMSR.get("sources");
-            for(Iterator sit = sources.iterator(); sit.hasNext();){
-                Config sourceCfg = (Config)sit.next();
+            for(int i = 0; i<sources.size(); i++){
+                Config sourceCfg = sources.getConfig(i);
                 multiblock.configuration.overhaul.fissionmsr.Block source = new multiblock.configuration.overhaul.fissionmsr.Block(sourceCfg.get("name"));
                 source.source = true;
                 source.sourceEfficiency = sourceCfg.get("efficiency");
                 parent.overhaul.fissionMSR.allBlocks.add(source);configuration.overhaul.fissionMSR.blocks.add(source);
             }
             ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
-            for(Iterator irit = irradiatorRecipes.iterator(); irit.hasNext();){
-                Config irradiatorRecipeCfg = (Config)irit.next();
+            for(int i = 0; i<irradiatorRecipes.size(); i++){
+                Config irradiatorRecipeCfg = irradiatorRecipes.getConfig(i);
                 multiblock.configuration.overhaul.fissionmsr.BlockRecipe irrecipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(irradiatorRecipeCfg.get("name"), "null");
                 irrecipe.irradiatorEfficiency = irradiatorRecipeCfg.get("efficiency");
                 irrecipe.irradiatorHeat = irradiatorRecipeCfg.get("heat");
@@ -592,8 +588,8 @@ public class NCPF9Reader extends NCPF10Reader {
             }
             ConfigList coils = turbine.get("coils");
             overhaulTurbinePostLoadMap.clear();
-            for(Iterator bit = coils.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<coils.size(); i++){
+                Config blockCfg = coils.getConfig(i);
                 multiblock.configuration.overhaul.turbine.Block coil = new multiblock.configuration.overhaul.turbine.Block(blockCfg.get("name"));
                 coil.bearing = blockCfg.get("bearing", false);
                 coil.connector = blockCfg.get("connector", false);
@@ -605,16 +601,15 @@ public class NCPF9Reader extends NCPF10Reader {
                 if(blockCfg.hasProperty("texture"))coil.setTexture(loadNCPFTexture(blockCfg.get("texture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
-                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                        Config ruleCfg = (Config)rit.next();
-                        coil.rules.add(readOverTurbineRule(ruleCfg));
+                    for(int idx = 0; idx<rules.size(); idx++){
+                        coil.rules.add(readOverTurbineRule(rules.getConfig(idx)));
                     }
                 }
                 parent.overhaul.turbine.allBlocks.add(coil);configuration.overhaul.turbine.blocks.add(coil);
             }
             ConfigList blades = turbine.get("blades");
-            for(Iterator bit = blades.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<blades.size(); i++){
+                Config blockCfg = blades.getConfig(i);
                 multiblock.configuration.overhaul.turbine.Block blade = new multiblock.configuration.overhaul.turbine.Block(blockCfg.get("name"));
                 blade.blade = true;
                 blade.bladeExpansion = blockCfg.get("expansion");
@@ -639,8 +634,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
             }
             ConfigList recipes = turbine.get("recipes");
-            for(Iterator irit = recipes.iterator(); irit.hasNext();){
-                Config recipeCfg = (Config)irit.next();
+            for(int i = 0; i<recipes.size(); i++){
+                Config recipeCfg = recipes.getConfig(i);
                 multiblock.configuration.overhaul.turbine.Recipe recipe = new multiblock.configuration.overhaul.turbine.Recipe(recipeCfg.get("input"), recipeCfg.get("output"), recipeCfg.get("power"), recipeCfg.get("coefficient"));
                 parent.overhaul.turbine.allRecipes.add(recipe);configuration.overhaul.turbine.recipes.add(recipe);
             }
@@ -666,8 +661,8 @@ public class NCPF9Reader extends NCPF10Reader {
             }
             ConfigList blocks = fusion.get("blocks");
             overhaulFusionPostLoadMap.clear();
-            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<blocks.size(); i++){
+                Config blockCfg = blocks.getConfig(i);
                 multiblock.configuration.overhaul.fusion.Block block = new multiblock.configuration.overhaul.fusion.Block(blockCfg.get("name"));
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
@@ -698,9 +693,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
-                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                        Config ruleCfg = (Config)rit.next();
-                        block.rules.add(readOverFusionRule(ruleCfg));
+                    for(int idx = 0; idx<rules.size(); idx++){
+                        block.rules.add(readOverFusionRule(rules.getConfig(idx)));
                     }
                 }
                 configuration.overhaul.fusion.allBlocks.add(block);configuration.overhaul.fusion.blocks.add(block);
@@ -715,8 +709,8 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
             }
             ConfigList breedingBlanketRecipes = fusion.get("breedingBlanketRecipes");
-            for(Iterator irit = breedingBlanketRecipes.iterator(); irit.hasNext();){
-                Config breedingBlanketRecipeCfg = (Config)irit.next();
+            for(int i = 0; i<breedingBlanketRecipes.size(); i++){
+                Config breedingBlanketRecipeCfg = breedingBlanketRecipes.getConfig(i);
                 for(multiblock.configuration.overhaul.fusion.Block b : configuration.overhaul.fusion.allBlocks){
                     if(b.breedingBlanket){
                         multiblock.configuration.overhaul.fusion.BlockRecipe breebrecipe = new multiblock.configuration.overhaul.fusion.BlockRecipe(breedingBlanketRecipeCfg.get("name"), "null");
@@ -728,14 +722,14 @@ public class NCPF9Reader extends NCPF10Reader {
                 }
             }
             ConfigList recipes = fusion.get("recipes");
-            for(Iterator irit = recipes.iterator(); irit.hasNext();){
-                Config recipeCfg = (Config)irit.next();
+            for(int i = 0; i<recipes.size(); i++){
+                Config recipeCfg = recipes.getConfig(i);
                 multiblock.configuration.overhaul.fusion.Recipe recipe = new multiblock.configuration.overhaul.fusion.Recipe(recipeCfg.get("name"), "null", recipeCfg.get("efficiency"), recipeCfg.get("heat"), recipeCfg.get("time"), recipeCfg.getFloat("fluxiness"));
                 configuration.overhaul.fusion.allRecipes.add(recipe);configuration.overhaul.fusion.recipes.add(recipe);
             }
             ConfigList coolantRecipes = fusion.get("coolantRecipes");
-            for(Iterator coit = coolantRecipes.iterator(); coit.hasNext();){
-                Config coolantRecipeCfg = (Config)coit.next();
+            for(int i = 0; i<coolantRecipes.size(); i++){
+                Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 multiblock.configuration.overhaul.fusion.CoolantRecipe coolantRecipe = new multiblock.configuration.overhaul.fusion.CoolantRecipe(coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), readOutputRatio(coolantRecipeCfg, "outputRatio"));
                 configuration.overhaul.fusion.allCoolantRecipes.add(coolantRecipe);configuration.overhaul.fusion.coolantRecipes.add(coolantRecipe);
             }

@@ -1,4 +1,4 @@
-package planner.menu.component;
+package planner;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -47,7 +47,7 @@ import planner.editor.suggestion.Suggestor;
 import planner.exception.MissingConfigurationEntryException;
 import planner.file.NCPFFile;
 import planner.menu.component.MenuComponentMinimaList;
-import planner.menu.component.Pinnable;
+import planner.Pinnable;
 import planner.menu.component.generator.MenuComponentOverhaulSFRToggleBlockRecipe;
 import planner.module.Module;
 import simplelibrary.Queue;
@@ -2145,6 +2145,6 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     }
     @Override
     public String getPreviewTexture(){
-        return "tutorials/planner/introduction/overhaul_example";
+        return "multiblocks/overhaul_sfr";
     }
 }

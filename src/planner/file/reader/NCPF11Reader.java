@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import multiblock.Multiblock;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.Configuration;
@@ -351,8 +350,8 @@ public class NCPF11Reader implements FormatReader {
         if(data.hasProperty("inputs")){
             overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
             ConfigNumberList inputs = data.get("inputs");
-            for(Number number : inputs.iterable()){
-                overhaulTurbinePostLoadInputsMap.get(overhaulTurbine).add(number.intValue());
+            for(int i = 0; i<inputs.size(); i++){
+                overhaulTurbinePostLoadInputsMap.get(overhaulTurbine).add((int)inputs.get(i));
             }
         }
         ConfigNumberList blocks = data.get("blocks");
@@ -472,16 +471,14 @@ public class NCPF11Reader implements FormatReader {
                 break;
             case OR:
                 ConfigList rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
+                for(int i = 0; i<rules.size(); i++){
+                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rules.getConfig(i)));
                 }
                 break;
             case AND:
                 rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
+                for(int i = 0; i<rules.size(); i++){
+                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rules.getConfig(i)));
                 }
                 break;
         }
@@ -569,14 +566,14 @@ public class NCPF11Reader implements FormatReader {
                     configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
                 }
                 underhaulPostLoadMap.clear();
-                for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                    Config blockCfg = (Config)bit.next();
+                for(int i = 0; i<blocks.size(); i++){
+                    Config blockCfg = blocks.getConfig(i);
                     multiblock.configuration.underhaul.fissionsfr.Block block = new multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
                     block.displayName = blockCfg.get("displayName");
                     if(blockCfg.hasProperty("legacyNames")){
                         ConfigList names = blockCfg.getConfigList("legacyNames");
-                        for(int i = 0; i<names.size(); i++){
-                            block.legacyNames.add(names.get(i));
+                        for(int idx = 0; idx<names.size(); idx++){
+                            block.legacyNames.add(names.get(idx));
                         }
                     }
                     block.active = blockCfg.get("active");
@@ -588,9 +585,8 @@ public class NCPF11Reader implements FormatReader {
                     if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
                     if(blockCfg.hasProperty("rules")){
                         ConfigList rules = blockCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config ruleCfg = (Config)rit.next();
-                            block.rules.add(readUnderRule(ruleCfg));
+                        for(int idx = 0; idx<rules.size(); idx++){
+                            block.rules.add(readUnderRule(rules.getConfig(idx)));
                         }
                     }
                     parent.underhaul.fissionSFR.allBlocks.add(block);configuration.underhaul.fissionSFR.blocks.add(block);
@@ -605,14 +601,14 @@ public class NCPF11Reader implements FormatReader {
                     }
                 }
                 ConfigList fuels = fissionSFR.get("fuels");
-                for(Iterator fit = fuels.iterator(); fit.hasNext();){
-                    Config fuelCfg = (Config)fit.next();
+                for(int i = 0; i<fuels.size(); i++){
+                    Config fuelCfg = fuels.getConfig(i);
                     multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
                     fuel.displayName = fuelCfg.get("displayName");
                     if(fuelCfg.hasProperty("legacyNames")){
                         ConfigList names = fuelCfg.getConfigList("legacyNames");
-                        for(int i = 0; i<names.size(); i++){
-                            fuel.legacyNames.add(names.get(i));
+                        for(int idx = 0; idx<names.size(); idx++){
+                            fuel.legacyNames.add(names.get(idx));
                         }
                     }
                     if(fuelCfg.hasProperty("texture"))fuel.setTexture(loadNCPFTexture(fuelCfg.get("texture")));
@@ -638,8 +634,8 @@ public class NCPF11Reader implements FormatReader {
             }
             ConfigList blocks = fissionSFR.get("blocks");
             overhaulSFRPostLoadMap.clear();
-            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<blocks.size(); i++){
+                Config blockCfg = blocks.getConfig(i);
                 multiblock.configuration.overhaul.fissionsfr.Block originalBlock = null;
                 multiblock.configuration.overhaul.fissionsfr.Block block = new multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
                 if (loadingAddon) {
@@ -653,8 +649,8 @@ public class NCPF11Reader implements FormatReader {
                     block.displayName = blockCfg.get("displayName");
                     if(blockCfg.hasProperty("legacyNames")){
                         ConfigList names = blockCfg.getConfigList("legacyNames");
-                        for(int i = 0; i<names.size(); i++){
-                            block.legacyNames.add(names.get(i));
+                        for(int idx = 0; idx<names.size(); idx++){
+                            block.legacyNames.add(names.get(idx));
                         }
                     }
                     block.cluster = blockCfg.get("cluster", false);
@@ -746,9 +742,8 @@ public class NCPF11Reader implements FormatReader {
                     }
                     if(blockCfg.hasProperty("rules")){
                         ConfigList rules = blockCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config ruleCfg = (Config)rit.next();
-                            block.rules.add(readOverSFRRule(ruleCfg));
+                        for(int idx = 0; idx<rules.size(); idx++){
+                            block.rules.add(readOverSFRRule(rules.getConfig(idx)));
                         }
                     }
                 }else{
@@ -760,8 +755,8 @@ public class NCPF11Reader implements FormatReader {
                     block.heatsink = blockCfg.hasProperty("heatsink");
                 }
                 ConfigList recipes = blockCfg.get("recipes", new ConfigList());
-                for(int i = 0; i<recipes.size(); i++){
-                    Config recipeCfg = recipes.get(i);
+                for(int idx = 0; idx<recipes.size(); idx++){
+                    Config recipeCfg = recipes.get(idx);
                     Config inputCfg = recipeCfg.get("input");
                     Config outputCfg = recipeCfg.get("output");
                     multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionsfr.BlockRecipe(inputCfg.get("name"), outputCfg.get("name"));
@@ -833,8 +828,8 @@ public class NCPF11Reader implements FormatReader {
                 }
             }
             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
-            for(Iterator irit = coolantRecipes.iterator(); irit.hasNext();){
-                Config coolantRecipeCfg = (Config)irit.next();
+            for(int i = 0; i<coolantRecipes.size(); i++){
+                Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 Config inputCfg = coolantRecipeCfg.get("input");
                 Config outputCfg = coolantRecipeCfg.get("output");
                 multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(inputCfg.get("name"), outputCfg.get("name"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.getFloat("outputRatio"));
@@ -868,8 +863,8 @@ public class NCPF11Reader implements FormatReader {
             }
             ConfigList blocks = fissionMSR.get("blocks");
             overhaulMSRPostLoadMap.clear();
-            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<blocks.size(); i++){
+                Config blockCfg = blocks.getConfig(i);
                 multiblock.configuration.overhaul.fissionmsr.Block theBlockThatThisBlockIsAnAddonRecipeBlockFor = null;
                 multiblock.configuration.overhaul.fissionmsr.Block block = new multiblock.configuration.overhaul.fissionmsr.Block(blockCfg.get("name"));
                 if (loadingAddon) {
@@ -883,8 +878,8 @@ public class NCPF11Reader implements FormatReader {
                     block.displayName = blockCfg.get("displayName");
                     if(blockCfg.hasProperty("legacyNames")){
                         ConfigList names = blockCfg.getConfigList("legacyNames");
-                        for(int i = 0; i<names.size(); i++){
-                            block.legacyNames.add(names.get(i));
+                        for(int idx = 0; idx<names.size(); idx++){
+                            block.legacyNames.add(names.get(idx));
                         }
                     }
                     block.cluster = blockCfg.get("cluster", false);
@@ -970,9 +965,8 @@ public class NCPF11Reader implements FormatReader {
                     }
                     if(blockCfg.hasProperty("rules")){
                         ConfigList rules = blockCfg.get("rules");
-                        for(Iterator rit = rules.iterator(); rit.hasNext();){
-                            Config ruleCfg = (Config)rit.next();
-                            block.rules.add(readOverMSRRule(ruleCfg));
+                        for(int idx = 0; idx<rules.size(); idx++){
+                            block.rules.add(readOverMSRRule(rules.getConfig(idx)));
                         }
                     }
                 }else{
@@ -984,8 +978,8 @@ public class NCPF11Reader implements FormatReader {
                     block.heater = blockCfg.hasProperty("heater");
                 }
                 ConfigList recipes = blockCfg.get("recipes", new ConfigList());
-                for(int i = 0; i<recipes.size(); i++){
-                    Config recipeCfg = recipes.get(i);
+                for(int idx = 0; idx<recipes.size(); idx++){
+                    Config recipeCfg = recipes.get(idx);
                     Config inputCfg = recipeCfg.get("input");
                     Config outputCfg = recipeCfg.get("output");
                     multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new multiblock.configuration.overhaul.fissionmsr.BlockRecipe(inputCfg.get("name"), outputCfg.get("name"));
@@ -1076,14 +1070,14 @@ public class NCPF11Reader implements FormatReader {
             }
             ConfigList blocks = turbine.get("blocks");
             overhaulTurbinePostLoadMap.clear();
-            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<blocks.size(); i++){
+                Config blockCfg = blocks.getConfig(i);
                 multiblock.configuration.overhaul.turbine.Block block = new multiblock.configuration.overhaul.turbine.Block(blockCfg.get("name"));
                 block.displayName = blockCfg.get("displayName");
                 if(blockCfg.hasProperty("legacyNames")){
                     ConfigList names = blockCfg.getConfigList("legacyNames");
-                    for(int i = 0; i<names.size(); i++){
-                        block.legacyNames.add(names.get(i));
+                    for(int idx = 0; idx<names.size(); idx++){
+                        block.legacyNames.add(names.get(idx));
                     }
                 }
                 Config bladeCfg = blockCfg.get("blade");
@@ -1109,9 +1103,8 @@ public class NCPF11Reader implements FormatReader {
                 if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
-                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                        Config ruleCfg = (Config)rit.next();
-                        block.rules.add(readOverTurbineRule(ruleCfg));
+                    for(int idx = 0; idx<rules.size(); idx++){
+                        block.rules.add(readOverTurbineRule(rules.getConfig(idx)));
                     }
                 }
                 parent.overhaul.turbine.allBlocks.add(block);configuration.overhaul.turbine.blocks.add(block);
@@ -1126,8 +1119,8 @@ public class NCPF11Reader implements FormatReader {
                 }
             }
             ConfigList recipes = turbine.get("recipes");
-            for(Iterator irit = recipes.iterator(); irit.hasNext();){
-                Config recipeCfg = (Config)irit.next();
+            for(int i = 0; i<recipes.size(); i++){
+                Config recipeCfg = recipes.getConfig(i);
                 Config inputCfg = recipeCfg.get("input");
                 Config outputCfg = recipeCfg.get("output");
                 multiblock.configuration.overhaul.turbine.Recipe recipe = new multiblock.configuration.overhaul.turbine.Recipe(inputCfg.get("name"), outputCfg.get("name"), recipeCfg.get("power"), recipeCfg.get("coefficient"));
@@ -1166,14 +1159,14 @@ public class NCPF11Reader implements FormatReader {
             }
             ConfigList blocks = fusion.get("blocks");
             overhaulFusionPostLoadMap.clear();
-            for(Iterator bit = blocks.iterator(); bit.hasNext();){
-                Config blockCfg = (Config)bit.next();
+            for(int i = 0; i<blocks.size(); i++){
+                Config blockCfg = blocks.getConfig(i);
                 multiblock.configuration.overhaul.fusion.Block block = new multiblock.configuration.overhaul.fusion.Block(blockCfg.get("name"));
                 block.displayName = blockCfg.get("displayName");
                 if(blockCfg.hasProperty("legacyNames")){
                     ConfigList names = blockCfg.getConfigList("legacyNames");
-                    for(int i = 0; i<names.size(); i++){
-                        block.legacyNames.add(names.get(i));
+                    for(int idx = 0; idx<names.size(); idx++){
+                        block.legacyNames.add(names.get(idx));
                     }
                 }
                 block.cluster = blockCfg.get("cluster", false);
@@ -1222,14 +1215,13 @@ public class NCPF11Reader implements FormatReader {
                 if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
-                    for(Iterator rit = rules.iterator(); rit.hasNext();){
-                        Config ruleCfg = (Config)rit.next();
-                        block.rules.add(readOverFusionRule(ruleCfg));
+                    for(int idx = 0; idx<rules.size(); idx++){
+                        block.rules.add(readOverFusionRule(rules.getConfig(idx)));
                     }
                 }
                 ConfigList recipes = blockCfg.get("recipes", new ConfigList());
-                for(int i = 0; i<recipes.size(); i++){
-                    Config recipeCfg = recipes.get(i);
+                for(int idx = 0; idx<recipes.size(); idx++){
+                    Config recipeCfg = recipes.get(idx);
                     Config inputCfg = recipeCfg.get("input");
                     Config outputCfg = recipeCfg.get("output");
                     multiblock.configuration.overhaul.fusion.BlockRecipe recipe = new multiblock.configuration.overhaul.fusion.BlockRecipe(inputCfg.get("name"), outputCfg.get("name"));
@@ -1277,8 +1269,8 @@ public class NCPF11Reader implements FormatReader {
                 }
             }
             ConfigList recipes = fusion.get("recipes");
-            for(Iterator irit = recipes.iterator(); irit.hasNext();){
-                Config recipeCfg = (Config)irit.next();
+            for(int i = 0; i<recipes.size(); i++){
+                Config recipeCfg = recipes.getConfig(i);
                 Config inputCfg = recipeCfg.get("input");
                 Config outputCfg = recipeCfg.get("output");
                 multiblock.configuration.overhaul.fusion.Recipe recipe = new multiblock.configuration.overhaul.fusion.Recipe(inputCfg.get("name"), outputCfg.get("name"), recipeCfg.get("efficiency"), recipeCfg.get("heat"), recipeCfg.get("time"), recipeCfg.getFloat("fluxiness"));
@@ -1295,8 +1287,8 @@ public class NCPF11Reader implements FormatReader {
                 configuration.overhaul.fusion.allRecipes.add(recipe);configuration.overhaul.fusion.recipes.add(recipe);
             }
             ConfigList coolantRecipes = fusion.get("coolantRecipes");
-            for(Iterator coit = coolantRecipes.iterator(); coit.hasNext();){
-                Config coolantRecipeCfg = (Config)coit.next();
+            for(int i = 0; i<coolantRecipes.size(); i++){
+                Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 Config inputCfg = coolantRecipeCfg.get("input");
                 Config outputCfg = coolantRecipeCfg.get("output");
                 multiblock.configuration.overhaul.fusion.CoolantRecipe coolantRecipe = new multiblock.configuration.overhaul.fusion.CoolantRecipe(inputCfg.get("name"), outputCfg.get("name"), coolantRecipeCfg.get("heat"), coolantRecipeCfg.getFloat("outputRatio"));

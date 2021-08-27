@@ -1,13 +1,11 @@
 package planner.file.reader;
 
+import java.util.HashMap;
 import multiblock.configuration.AbstractPlacementRule;
 import multiblock.configuration.IBlockTemplate;
 import multiblock.configuration.IBlockType;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
-
-import java.util.HashMap;
-import java.util.Iterator;
 
 public class NCPF10Reader extends NCPF11Reader {
     @Override
@@ -92,16 +90,14 @@ public class NCPF10Reader extends NCPF11Reader {
                 break;
             case OR:
                 ConfigList rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
+                for(int i = 0; i<rules.size(); i++){
+                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rules.getConfig(i)));
                 }
                 break;
             case AND:
                 rules = ruleCfg.get("rules");
-                for(Iterator rit = rules.iterator(); rit.hasNext();){
-                    Config rulC = (Config)rit.next();
-                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rulC));
+                for(int i = 0; i<rules.size(); i++){
+                    rule.rules.add(readGenericRule(postMap, (Rule) rule.newRule(), rules.getConfig(i)));
                 }
                 break;
         }

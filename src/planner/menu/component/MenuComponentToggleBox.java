@@ -23,8 +23,8 @@ public class MenuComponentToggleBox extends MenuComponent{
     }
     @Override
     public void render(){
-//        Core.applyColor(darker?Core.theme.getSecondaryComponentColor():Core.theme.getComponentColor());
-//        drawRect(x, y, x+width, y+height, 0);//why is this here?
+        Core.applyColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        drawRect(x, y, x+width, y+height, 0);//why is this here?
         Core.applyColor(darker?Core.theme.getSecondaryToggleBoxBorderColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBorderColor(Core.getThemeIndex(this)));
         drawRect(x, y, x+height, y+height, 0);
         Core.applyColor(isToggledOn?Core.theme.getToggleBoxMouseoverColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBackgroundColor(Core.getThemeIndex(this)));

@@ -4,7 +4,7 @@ import multiblock.Block;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 import planner.Core;
-import planner.menu.component.Pinnable;
+import planner.Pinnable;
 import planner.vr.VRCore;
 import planner.vr.VRMenuComponent;
 import planner.vr.menu.VRMenuEdit;
