@@ -43,7 +43,7 @@ public class Main{
         addRequiredLibrary("https://github.com/ThizThizzyDizzy/SimpleLibraryPlus/releases/download/v1.5/SimpleLibraryPlus-1.5.jar", "SimpleLibraryPlus-1.5.jar");
         addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/joml-1.10.0.jar", "joml-1.10.0.jar");
         if(isBot){
-            addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies.jar", "JDA-4.2.0_168-withDependencies.jar");
+            addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.3.0/JDA-4.3.0_277-withDependencies-min.jar", "JDA-4.3.0_277-withDependencies-min.jar");
         }
     }
     public static void main(String[] args){

@@ -128,6 +128,7 @@ public class Hut{
     }
     public void sendExteriorImage(MessageChannel channel){
         sendImage(channel, "outside", (buff) -> {
+            GL11.glColor4d(1, 1, 1, 1);
             Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside.png"));
             boolean hasLamp = false;
             for(HutThing thing : furniture){
@@ -143,6 +144,7 @@ public class Hut{
     }
     public void sendInteriorImage(MessageChannel channel){
         sendImage(channel, "inside", (buff) -> {
+            GL11.glColor4d(1, 1, 1, 1);
             Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
@@ -164,6 +166,7 @@ public class Hut{
     }
     public void sendHighlightImage(MessageChannel channel, List<HutThing> highlights){
         sendImage(channel, "inside", (buff) -> {
+            GL11.glColor4d(1, 1, 1, 1);
             Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
@@ -260,6 +263,7 @@ public class Hut{
     }
     public void sendPlacementHighlightImage(MessageChannel channel, HutThing highlightedThing, List<Placement> highlights){
         sendImage(channel, "inside", (buff) -> {
+            GL11.glColor4d(1, 1, 1, 1);
             Renderer2D.drawRect(0, 0, buff.width, buff.height, ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);

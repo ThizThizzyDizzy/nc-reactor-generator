@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
@@ -76,6 +77,7 @@ import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import planner.Core;
 import planner.Core.BufferRenderer;
@@ -1334,6 +1336,13 @@ public class Bot extends ListenerAdapter{
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 ArrayList<Long> smorepilers = new ArrayList<>(SmoreBot.smores.keySet());
                 Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(SmoreBot.smores.get(o2)-SmoreBot.smores.get(o1)));
+                for(Iterator<Long> it = smorepilers.iterator(); it.hasNext();){
+                    try{
+                        guild.retrieveMemberById(it.next()).complete();
+                    }catch(ErrorResponseException ex){
+                        it.remove();
+                    }
+                }
                 EmbedBuilder builder = createEmbed("S'moreboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
@@ -1352,6 +1361,13 @@ public class Bot extends ListenerAdapter{
                 ArrayList<Long> smorepilers = new ArrayList<>(SmoreBot.smores.keySet());
                 Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(SmoreBot.smores.get(o1)-SmoreBot.smores.get(o2)));
                 EmbedBuilder builder = createEmbed("Snoreboard");
+                for(Iterator<Long> it = smorepilers.iterator(); it.hasNext();){
+                    try{
+                        guild.retrieveMemberById(it.next()).complete();
+                    }catch(ErrorResponseException ex){
+                        it.remove();
+                    }
+                }
                 String mess = "";
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
                     mess+=nick(guild.retrieveMemberById(smorepilers.get(i)).complete())+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
@@ -1368,6 +1384,13 @@ public class Bot extends ListenerAdapter{
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 ArrayList<Long> snommers = new ArrayList<>(SmoreBot.eaten.keySet());
                 Collections.sort(snommers, (Long o1, Long o2) -> (int)(SmoreBot.eaten.get(o2)-SmoreBot.eaten.get(o1)));
+                for(Iterator<Long> it = snommers.iterator(); it.hasNext();){
+                    try{
+                        guild.retrieveMemberById(it.next()).complete();
+                    }catch(ErrorResponseException ex){
+                        it.remove();
+                    }
+                }
                 EmbedBuilder builder = createEmbed("Nomboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, snommers.size()); i++){
@@ -1385,6 +1408,13 @@ public class Bot extends ListenerAdapter{
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 ArrayList<Long> glowshroompilers = new ArrayList<>(SmoreBot.glowshrooms.keySet());
                 Collections.sort(glowshroompilers, (Long o1, Long o2) -> (int)(SmoreBot.glowshrooms.get(o2)-SmoreBot.glowshrooms.get(o1)));
+                for(Iterator<Long> it = glowshroompilers.iterator(); it.hasNext();){
+                    try{
+                        guild.retrieveMemberById(it.next()).complete();
+                    }catch(ErrorResponseException ex){
+                        it.remove();
+                    }
+                }
                 EmbedBuilder builder = createEmbed("Glowboard");
                 String mess = "";
                 for(int i = 0; i<Math.min(5, glowshroompilers.size()); i++){
