@@ -58,6 +58,11 @@ public class FusionConfiguration extends AbstractBlockContainer<Block> {
         for(Recipe recipe : this.recipes){
             recipes.add(recipe.save(partial));
         }
+        if(parent!=null){
+            for(Block b : allBlocks){
+                blocks.add(b.save(parent, this, partial));
+            }
+        }
         config.set("recipes", recipes);
         ConfigList coolantRecipes = new ConfigList();
         for(CoolantRecipe coolantRecipe : this.coolantRecipes){

@@ -49,6 +49,11 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
             if(block.parent!=null)continue;
             blocks.add(block.save(parent, this, partial));
         }
+        if(parent!=null){
+            for(Block b : allBlocks){
+                blocks.add(b.save(parent, this, partial));
+            }
+        }
         config.set("blocks", blocks);
         ConfigList coolantRecipes = new ConfigList();
         for(CoolantRecipe recipe : this.coolantRecipes){

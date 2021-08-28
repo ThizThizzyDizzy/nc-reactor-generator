@@ -36,6 +36,9 @@ public class OverhaulModule extends Module{
     }
     @Override
     public void addConfigurations(){
+        Configuration.configurations.add(FileReader.read(() -> {
+            return getInputStream("configurations/aapn.ncpf");
+        }).configuration.addAlternative("AAPN"));
         Configuration.internalAddons.add(() -> {
             return AddonConfiguration.convert(FileReader.read(() -> {
                 return getInputStream("configurations/addons/extreme_reactors.ncpf");
