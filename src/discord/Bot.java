@@ -1314,6 +1314,45 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(user.getIdLong()==210445638532333569L){//it's thiz, check for more arguments
+                    do{
+                        args = args.trim();
+                        if(args.isEmpty()){
+                            break;
+                        }
+                        String[] argses = args.split(" ");
+                        if(argses.length!=1){
+                            break;
+                        }
+                        String target = argses[0];
+                        long targetID = 0;
+                        if(target.startsWith("<@")&&target.endsWith(">")){
+                            if(target.contains("!"))target = target.substring(1);
+                            try{
+                                targetID = Long.parseLong(target.substring(2, target.length()-1));
+                            }catch(Exception ex){
+                                return;
+                            }
+                        }else{
+                            try{
+                                targetID = Long.parseLong(target);
+                            }catch(Exception ex){
+                                return;
+                            }
+                        }
+                        User targetUser;
+                        try{
+                            targetUser = jda.retrieveUserById(targetID).complete();
+                            if(targetUser==null){
+                                return;
+                            }
+                        }catch(Exception ex){
+                            return;
+                        }
+                        channel.sendMessage(SmoreBot.getSmoreCountS(targetUser.getIdLong())).queue();
+                        return;
+                    }while(false);
+                }
                 channel.sendMessage(SmoreBot.getSmoreCountS(user.getIdLong())).queue();
             }
         });
@@ -2150,6 +2189,14 @@ public class Bot extends ListenerAdapter{
                 SmoreBot.glowshrooms.put(targetUser.getIdLong(), amt);
             }
         });
+        SecretCommand cookie = new SecretCommand("cookie"){
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                cookies++;
+            }
+        };
+        botCommands.add(cookie);
+        playCommands.add(cookie);
     }
     private static String nick(Member member){
         if(member==null)return ":shrug:";
@@ -2317,6 +2364,9 @@ public class Bot extends ListenerAdapter{
     }
     public static void stop(){
         SmoreBot.save();
+        config = Config.newConfig(new File(new File("special.dat").getAbsolutePath()));
+        config.set("cookies", cookies);
+        config.save();
         if(jda!=null)jda.shutdownNow();
         jda = null;
         FileWriter.botRunning = false;
