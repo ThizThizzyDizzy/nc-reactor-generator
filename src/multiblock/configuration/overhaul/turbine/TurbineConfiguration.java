@@ -65,7 +65,7 @@ public class TurbineConfiguration extends AbstractBlockContainer<Block> {
         ArrayList<Recipe> usedRecipes = new ArrayList<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulTurbine){
-                for(multiblock.overhaul.turbine.Block b : ((OverhaulTurbine)mb).getBlocks()){
+                for(multiblock.overhaul.turbine.Block b : ((OverhaulTurbine)mb).getBlocks(true)){
                     if(b.template!=null&&!usedBlocks.contains(b.template))usedBlocks.add(b.template);
                 }
                 if(!usedRecipes.contains(((OverhaulTurbine)mb).recipe))usedRecipes.add(((OverhaulTurbine)mb).recipe);

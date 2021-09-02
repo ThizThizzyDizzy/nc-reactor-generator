@@ -67,7 +67,7 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
         ArrayList<CoolantRecipe> usedCoolantRecipes = new ArrayList<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulSFR){
-                for(multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)mb).getBlocks()){
+                for(multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)mb).getBlocks(true)){
                     if(b.template.parent!=null)if(!usedBlocks.contains(b.template.parent))usedBlocks.add(b.template.parent);
                     if(!usedBlocks.contains(b.template))usedBlocks.add(b.template);
                     if(b.template.port!=null)if(!usedBlocks.contains(b.template.port))usedBlocks.add(b.template.port);

@@ -61,7 +61,7 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
         Set<Fuel> usedFuels = new HashSet<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof UnderhaulSFR){
-                for(multiblock.underhaul.fissionsfr.Block b : ((UnderhaulSFR)mb).getBlocks()){
+                for(multiblock.underhaul.fissionsfr.Block b : ((UnderhaulSFR)mb).getBlocks(true)){
                     usedBlocks.add(b.template);
                 }
                 usedFuels.add(((UnderhaulSFR)mb).fuel);

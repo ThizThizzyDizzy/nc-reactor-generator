@@ -27,8 +27,20 @@ public class JSON{
             Queue<Character> json = new Queue<>();
             int c;
             if(debug)System.out.print("Reading JSON file...");
+            char theChar;
+            boolean foundBrace = false;
             while((c = reader.read())!=-1){
-                json.enqueue((char)c);
+                theChar = (char)c;
+                if(!foundBrace){
+                    if(!Character.isWhitespace(theChar)){
+                        if(theChar=='{'){
+                            foundBrace = true;
+                        }else{
+                            throw new IllegalArgumentException("Invalid JSON file; no { found!");
+                        }
+                    }
+                }
+                json.enqueue(theChar);
             }
             if(debug)System.out.println("Done");
             if(debug)System.out.println("Parsing file...");

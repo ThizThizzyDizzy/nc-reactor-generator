@@ -55,7 +55,7 @@ public class FissionMSRConfiguration extends AbstractBlockContainer<Block> {
         ArrayList<Block> usedBlocks = new ArrayList<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulMSR){
-                for(multiblock.overhaul.fissionmsr.Block b : ((OverhaulMSR)mb).getBlocks()){
+                for(multiblock.overhaul.fissionmsr.Block b : ((OverhaulMSR)mb).getBlocks(true)){
                     if(b.template.parent!=null)if(!usedBlocks.contains(b.template.parent))usedBlocks.add(b.template.parent);
                     if(!usedBlocks.contains(b.template))usedBlocks.add(b.template);
                     if(b.template.port!=null)if(!usedBlocks.contains(b.template.port))usedBlocks.add(b.template.port);

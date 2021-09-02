@@ -77,7 +77,7 @@ public class FusionConfiguration extends AbstractBlockContainer<Block> {
         Set<CoolantRecipe> usedCoolantRecipes = new HashSet<>();
         for(Multiblock mb : multiblocks){
             if(mb instanceof OverhaulFusionReactor){
-                for(multiblock.overhaul.fusion.Block b : ((OverhaulFusionReactor)mb).getBlocks()){
+                for(multiblock.overhaul.fusion.Block b : ((OverhaulFusionReactor)mb).getBlocks(true)){
                     usedBlocks.add(b.template);
                 }
                 usedRecipes.add(((OverhaulFusionReactor)mb).recipe);
