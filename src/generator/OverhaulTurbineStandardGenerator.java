@@ -239,8 +239,8 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
     }
     @Override
     public void importMultiblock(Multiblock multiblock) throws MissingConfigurationEntryException{
-        multiblock.convertTo(this.multiblock.getConfiguration());
         if(!multiblock.isShapeEqual(this.multiblock))return;
+        multiblock.convertTo(this.multiblock.getConfiguration());
         for(Range<Block> range : getAllowedBlocks()){
             for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
                 if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
