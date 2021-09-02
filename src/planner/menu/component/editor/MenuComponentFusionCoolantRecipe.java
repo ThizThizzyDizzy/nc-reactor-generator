@@ -42,6 +42,10 @@ public class MenuComponentFusionCoolantRecipe extends MenuComponent implements P
         return lst;
     }
     @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        return coolantRecipe.getSimpleSearchableNames();
+    }
+    @Override
     public String getPinnedName(){
         return coolantRecipe.getPinnedName();
     }

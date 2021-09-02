@@ -112,6 +112,10 @@ public class CoolantRecipe implements Pinnable{
     }
     @Override
     public ArrayList<String> getSearchableNames(){
+        return getSimpleSearchableNames();
+    }
+    @Override
+    public ArrayList<String> getSimpleSearchableNames(){
         ArrayList<String> lst = getLegacyNames();
         lst.add(getInputDisplayName());
         return lst;

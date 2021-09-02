@@ -200,7 +200,10 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
         for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
         return searchables;
     }
-
+    @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        return template.getSimpleSearchableNames();
+    }
     @Override
     public multiblock.configuration.overhaul.turbine.Block getTemplate() {
         return template;

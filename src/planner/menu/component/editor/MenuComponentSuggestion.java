@@ -70,8 +70,13 @@ public class MenuComponentSuggestion extends MenuComponent implements Searchable
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        ArrayList<String> lst = new ArrayList<>(Arrays.asList(suggestion.getName()));
+        ArrayList<String> lst = getSimpleSearchableNames();
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
+        return lst;
+    }
+    @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        ArrayList<String> lst = new ArrayList<>(Arrays.asList(suggestion.getName()));
         return lst;
     }
 }

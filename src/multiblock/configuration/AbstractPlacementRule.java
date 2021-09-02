@@ -199,6 +199,10 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
         }
         return nams;
     }
+    @Override
+    public ArrayList<String> getSimpleSearchableNames() {
+        return getSearchableNames();
+    }
 
     /**
      * Warning: The order of enums in here is *significant*.

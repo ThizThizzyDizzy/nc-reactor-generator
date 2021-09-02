@@ -51,8 +51,13 @@ public class MenuComponentSuggestor extends MenuComponent implements Pinnable{
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        ArrayList<String> lst = new ArrayList<>(Arrays.asList(suggestor.name));
+        ArrayList<String> lst = getSimpleSearchableNames();
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
+        return lst;
+    }
+    @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        ArrayList<String> lst = new ArrayList<>(Arrays.asList(suggestor.name));
         return lst;
     }
     @Override

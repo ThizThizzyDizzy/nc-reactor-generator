@@ -8,11 +8,15 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import multiblock.Block;
+import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.IBlockTemplate;
+import multiblock.configuration.ITemplateAccess;
 import multiblock.ppe.ClearInvalid;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import planner.Searchable;
 import planner.file.FileWriter;
 import planner.file.FormatWriter;
 import planner.file.NCPFFile;
@@ -57,10 +61,13 @@ public class Hangman extends Game{
         basis.configuration = config;//why is this here...?
         basis.recalculate();
         new ClearInvalid().apply(basis, null);
+        if(basis instanceof CuboidalMultiblock){
+            ((CuboidalMultiblock)basis).buildDefaultCasing();
+        }
         basis.recalculate();
         basis.metadata.clear();
         current = basis.blankCopy();
-        ArrayList<Block> blocks = basis.getBlocks();
+        ArrayList<Block> blocks = basis.getBlocks(true);
         ArrayList<Block> unique = new ArrayList<>();
         for(Block b : blocks){
             if(b.getName().toLowerCase(Locale.ROOT).contains("active")){
@@ -92,6 +99,9 @@ public class Hangman extends Game{
             channel.sendMessage("No applicable multiblocks found!").queue();
             return false;
         }
+        for(Block b : ((Multiblock<Block>)basis).getAvailableBlocks()){
+            if(b.getName().contains("Casing")||b.getName().contains("Glass")||b.getName().contains("Controller"))silentGuess(channel, b);
+        }
         channel.sendMessage("Hangman has started!\nCurrent Multiblock: "+basis.getDimensionsStr()+" "+basis.getDefinitionName()+"\nYou have "+(maxGuesses-1)+" Incorrect guesses left."+(usesActive?"\nThis reactor has active coolers":"")).queue();
         if(!blind)exportPng(generateNCPF(current), channel);
         return true;
@@ -105,22 +115,62 @@ public class Hangman extends Game{
         String content = message.getContentDisplay().trim().replace(":", "");
         ArrayList<Block> blocks = new ArrayList<>();
         basis.getAvailableBlocks(blocks);
+        ArrayList<Block> searched = new ArrayList<>();
         for(Block b : blocks){
+            if(Searchable.isValidForSimpleSearch(b, content))searched.add(b);
             if(b.roughMatch(content)){
                 guess(message.getChannel(), b);
                 return;
             }
         }
+        if(searched.size()==1){
+            message.getChannel().sendMessage("Found one searchable result; guessing "+searched.get(0).getName()).queue();
+            guess(message.getChannel(), searched.get(0));
+        }
+    }
+    private void guess(MessageChannel channel, IBlockTemplate b){
+        guess(channel, findBlock(b), false);
+    }
+    private void silentGuess(MessageChannel channel, IBlockTemplate b){
+        guess(channel, findBlock(b), true);
+    }
+    private Block findBlock(IBlockTemplate template){
+        if(template==null)return null;
+        ArrayList<Block> blocks = new ArrayList<>();
+        basis.getAvailableBlocks(blocks);
+        for(Block b : blocks){
+            if(b instanceof ITemplateAccess){
+                if(((ITemplateAccess)b).getTemplate()==template)return b;
+            }
+        }
+        return null;
     }
     private void guess(MessageChannel channel, Block b){
+        guess(channel, b, false);
+    }
+    private void silentGuess(MessageChannel channel, Block b){
+        guess(channel, b, true);
+    }
+    private void guess(MessageChannel channel, Block b, boolean silent){
+        if(b==null)return;//ignore null blocks
+        if(!silent){
+            if(b instanceof multiblock.overhaul.fissionsfr.Block){
+                silentGuess(channel, ((multiblock.overhaul.fissionsfr.Block)b).template.port);
+                silentGuess(channel, ((multiblock.overhaul.fissionsfr.Block)b).template.parent);
+            }
+            if(b instanceof multiblock.overhaul.fissionmsr.Block){
+                silentGuess(channel, ((multiblock.overhaul.fissionmsr.Block)b).template.port);
+                silentGuess(channel, ((multiblock.overhaul.fissionmsr.Block)b).template.parent);
+            }
+        }
         update();
         if(b.getName().toLowerCase(Locale.ROOT).contains("active")&&!usesActive){
-            channel.sendMessage("This reactor contains no active coolers!").queue();
+            if(!silent)channel.sendMessage("This reactor contains no active coolers!").queue();
             return;
         }
         for(Block bl : guesses){
             if(bl.isEqual(b)){
-                channel.sendMessage("You already guessed "+b.getName()+"!").queue();
+                if(!silent)channel.sendMessage("You already guessed "+b.getName()+"!").queue();
                 return;
             }
         }
@@ -153,16 +203,16 @@ public class Hangman extends Game{
                 running = false;
                 return;
             }
-            channel.sendMessage("Nope; Try again!\nRemaining guesses: "+(maxGuesses-badGuesses)).queue();
+            if(!silent)channel.sendMessage("Nope; Try again!\nRemaining guesses: "+(maxGuesses-badGuesses)).queue();
         }else{
-            channel.sendMessage("Correct!").queue();
+            if(!silent)channel.sendMessage("Correct!").queue();
             if(current.getBlocks(true).size()==basis.getBlocks().size()){
                 channel.sendMessage("You win!\nIncorrect Guesses: "+badGuesses+"/"+(maxGuesses-1)).queue();
                 exportPng(generateNCPF(basis), channel);
                 running = false;
                 return;
             }
-            if(!blind)exportPng(generateNCPF(current), channel);
+            if(!blind&&!silent)exportPng(generateNCPF(current), channel);
         }
     }
     private void exportPng(NCPFFile ncpf, MessageChannel channel){

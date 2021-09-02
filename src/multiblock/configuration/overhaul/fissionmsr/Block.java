@@ -528,9 +528,14 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         return portOutputDisplayName==null?name:portOutputDisplayName;
     }
     @Override
-    public ArrayList<String> getSearchableNames(){
+    public ArrayList<String> getSimpleSearchableNames(){
         ArrayList<String> nams = getLegacyNames();
         nams.add(getDisplayName());
+        return nams;
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> nams = getSimpleSearchableNames();
         for(AbstractPlacementRule<PlacementRule.BlockType, Block> r : rules)nams.addAll(r.getSearchableNames());
         return nams;
     }

@@ -51,13 +51,16 @@ public abstract class KeywordCommand extends Command{
         }
         ArrayList<Object> debugText = new ArrayList<>();
         String[] strs = str.split("@@@@@");
+        String text = "";
         for(String s : strs){
             if(s.contains("@@@")){
                 debugText.add(new Color(Integer.parseInt(s.split("@@@")[0])));
                 debugText.add(s.split("@@@")[1]);
+                text+=s.split("@@@")[1];
             }else{
                 debugText.add(new Color(.5f, .5f, .5f, 1));
                 debugText.add(s);
+                text+=s;
             }
         }
         int border = 5;
@@ -67,35 +70,37 @@ public abstract class KeywordCommand extends Command{
             wide = Math.max(wide, (int)FontManager.getLengthForStringWithHeight(w.name+" | "+w.input, textHeight)+1);
         }
         int width = wide;
-        Image image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
-            Core.theme.drawKeywordBackground(0, 0, buff.width, buff.height, 1);
-            double x = 5;
-            for(Object o : debugText){
-                if(o instanceof Color){
-                    Core.applyColor((Color)o);
-                }else if(o instanceof String){
-                    String s = (String)o;
-                    double len = FontManager.getLengthForStringWithHeight(s, textHeight);
-                    Renderer2D.drawText(x, border, width+border, border+textHeight, s);
-                    x+=len;
+        if(!text.isEmpty()){
+            Image image = Bot.makeImage(width+border*2, textHeight*(1+words.size())+border*2, (buff) -> {
+                Core.theme.drawKeywordBackground(0, 0, buff.width, buff.height, 1);
+                double x = 5;
+                for(Object o : debugText){
+                    if(o instanceof Color){
+                        Core.applyColor((Color)o);
+                    }else if(o instanceof String){
+                        String s = (String)o;
+                        double len = FontManager.getLengthForStringWithHeight(s, textHeight);
+                        Renderer2D.drawText(x, border, width+border, border+textHeight, s);
+                        x+=len;
+                    }
                 }
+                for(int i = 0; i<words.size(); i++){
+                    Keyword word = words.get(i);
+                    Core.applyColor(word.getColor());
+                    Renderer2D.drawText(border, border+(i+1)*textHeight, width+border, border+(i+2)*textHeight, word.name+" | "+word.input);
+                }
+            });
+            File debugFile = new File("debug.png");
+            try{
+                FileOutputStream fos = new FileOutputStream(debugFile);
+                ImageIO.write(image, fos);
+                fos.close();
+            }catch(IOException ex){
+                Logger.getLogger(KeywordCommand.class.getName()).log(Level.SEVERE, null, ex);
             }
-            for(int i = 0; i<words.size(); i++){
-                Keyword word = words.get(i);
-                Core.applyColor(word.getColor());
-                Renderer2D.drawText(border, border+(i+1)*textHeight, width+border, border+(i+2)*textHeight, word.name+" | "+word.input);
-            }
-        });
-        File debugFile = new File("debug.png");
-        try{
-            FileOutputStream fos = new FileOutputStream(debugFile);
-            ImageIO.write(image, fos);
-            fos.close();
-        }catch(IOException ex){
-            Logger.getLogger(KeywordCommand.class.getName()).log(Level.SEVERE, null, ex);
+            channel.sendFile(debugFile, "debug.png").complete();
+            debugFile.delete();
         }
-        channel.sendFile(debugFile, "debug.png").complete();
-        debugFile.delete();
         run(channel, words, debug);
     }
     public abstract void run(MessageChannel channel, ArrayList<Keyword> keywords, boolean debug);

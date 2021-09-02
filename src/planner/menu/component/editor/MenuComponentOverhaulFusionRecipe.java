@@ -44,6 +44,10 @@ public class MenuComponentOverhaulFusionRecipe extends MenuComponent implements 
         return lst;
     }
     @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        return recipe.getSimpleSearchableNames();
+    }
+    @Override
     public String getPinnedName(){
         return recipe.getPinnedName();
     }

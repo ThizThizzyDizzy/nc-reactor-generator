@@ -12,6 +12,7 @@ import discord.keyword.KeywordPriority;
 import discord.keyword.KeywordSymmetry;
 import discord.keyword.KeywordUnderhaul;
 import discord.play.Action;
+import discord.play.Game;
 import discord.play.PlayBot;
 import discord.play.SmoreBot;
 import discord.play.action.SmoreAction;
@@ -1092,13 +1093,14 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(PlayBot.currentGame!=null){
-                    PlayBot.currentGame.running = false;
-                    channel.sendMessage(PlayBot.currentGame.getName()+" stopped.").queue();
-                    PlayBot.currentGame = null;
+                Game game = PlayBot.games.get(channel.getIdLong());
+                if(game!=null){
+                    game.running = false;
+                    channel.sendMessage(game.getName()+" stopped.").queue();
+                    PlayBot.games.remove(channel.getIdLong());
                     return;
                 }
-                channel.sendMessage("There's no game running!").queue();
+                channel.sendMessage("There's no game running in this channel!").queue();
             }
         });
         playCommands.add(new Command("smore"){
@@ -2189,6 +2191,28 @@ public class Bot extends ListenerAdapter{
                 SmoreBot.glowshrooms.put(targetUser.getIdLong(), amt);
             }
         });
+        playCommands.add(new SecretCommand("setmaxgames", "setgamelimit"){
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                args = args.trim();
+                if(args.isEmpty()){
+                    return;
+                }
+                String[] argses = args.split(" ");
+                if(argses.length!=1){
+                    return;
+                }
+                int max = 0;
+                try{
+                    max = Integer.parseInt(argses[0]);
+                }catch(Exception ex){
+                    return;
+                }
+                channel.sendMessage("set concurrent game limit to "+max).queue();
+                PlayBot.maxGames = max;
+            }
+        });
         SecretCommand cookie = new SecretCommand("cookie"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
@@ -2396,28 +2420,30 @@ public class Bot extends ListenerAdapter{
                     break;
                 }
             }
-            if(!hasPrefix)return;
-            command = command.replace("’", "'").replace("s'", "s");
-            try{
-                for(Command cmd : botCommands){
-                    for(String alt : cmd.alternates){
-                        if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
-                            String args = command.substring(alt.length()).trim();
-                            try{
-                                cmd.run(event.getAuthor(), event.getChannel(), args, debug);
-                            }catch(Exception ex){
-                                printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
+            if(hasPrefix){
+                command = command.replace("’", "'").replace("s'", "s");
+                try{
+                    for(Command cmd : botCommands){
+                        for(String alt : cmd.alternates){
+                            if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
+                                String args = command.substring(alt.length()).trim();
+                                try{
+                                    cmd.run(event.getAuthor(), event.getChannel(), args, debug);
+                                }catch(Exception ex){
+                                    printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
+                                }
                             }
                         }
                     }
+                }catch(Exception ex){
+                    printErrorMessage(event.getChannel(), "Caught exception loading command!", ex);
                 }
-            }catch(Exception ex){
-                printErrorMessage(event.getChannel(), "Caught exception loading command!", ex);
             }
         }
         if(playChannels.contains(event.getChannel().getIdLong())){
-            if(PlayBot.currentGame!=null){
-                PlayBot.currentGame.onMessage(event.getMessage());
+            Game game = PlayBot.games.get(event.getChannel().getIdLong());
+            if(game!=null){
+                game.onMessage(event.getMessage());
             }
             String command = event.getMessage().getContentRaw();
             boolean hasPrefix = false;
@@ -2428,23 +2454,24 @@ public class Bot extends ListenerAdapter{
                     break;
                 }
             }
-            if(!hasPrefix)return;
-            command = command.replace("’", "'").replace("s'", "s");
-            try{
-                for(Command cmd : playCommands){
-                    for(String alt : cmd.alternates){
-                        if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
-                            String args = command.substring(alt.length()).trim();
-                            try{
-                                cmd.run(event.getAuthor(), event.getChannel(), args, debug);
-                            }catch(Exception ex){
-                                printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
+            if(hasPrefix){
+                command = command.replace("’", "'").replace("s'", "s");
+                try{
+                    for(Command cmd : playCommands){
+                        for(String alt : cmd.alternates){
+                            if(command.equalsIgnoreCase(alt)||command.startsWith(alt+" ")){
+                                String args = command.substring(alt.length()).trim();
+                                try{
+                                    cmd.run(event.getAuthor(), event.getChannel(), args, debug);
+                                }catch(Exception ex){
+                                    printErrorMessage(event.getChannel(), "Caught exception running command `"+alt+"`!", ex);
+                                }
                             }
                         }
                     }
+                }catch(Exception ex){
+                    printErrorMessage(event.getChannel(), "Caught exception loading command!", ex);
                 }
-            }catch(Exception ex){
-                printErrorMessage(event.getChannel(), "Caught exception loading command!", ex);
             }
         }
     }

@@ -54,9 +54,14 @@ public class MenuComponentLabel extends MenuComponent implements Searchable{
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        ArrayList<String> lst = new ArrayList<>(Arrays.asList(text));
+        ArrayList<String> lst = getSimpleSearchableNames();
         String tooltip = getTooltip();
         if(tooltip!=null)for(String s : tooltip.split("\n"))lst.add(s.trim());
+        return lst;
+    }
+    @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        ArrayList<String> lst = new ArrayList<>(Arrays.asList(text));
         return lst;
     }
 }

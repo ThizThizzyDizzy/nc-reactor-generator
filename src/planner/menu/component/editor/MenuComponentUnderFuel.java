@@ -47,6 +47,10 @@ public class MenuComponentUnderFuel extends MenuComponent implements Pinnable{
         return lst;
     }
     @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        return fuel.getSimpleSearchableNames();
+    }
+    @Override
     public String getPinnedName(){
         return fuel.getPinnedName();
     }

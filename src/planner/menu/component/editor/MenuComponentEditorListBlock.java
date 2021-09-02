@@ -71,6 +71,10 @@ public class MenuComponentEditorListBlock extends MenuComponent implements Pinna
         return block.getSearchableNames();
     }
     @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        return block.getSimpleSearchableNames();
+    }
+    @Override
     public String getPinnedName(){
         return block.getPinnedName();
     }

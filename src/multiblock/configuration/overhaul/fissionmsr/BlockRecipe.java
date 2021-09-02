@@ -211,10 +211,14 @@ public class BlockRecipe implements Pinnable{
         return allNames;
     }
     @Override
-    public ArrayList<String> getSearchableNames(){
+    public ArrayList<String> getSimpleSearchableNames(){
         ArrayList<String> lst = getLegacyNames();
         lst.add(getInputDisplayName());
         return lst;
+    }
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        return getSimpleSearchableNames();
     }
     @Override
     public String getPinnedName(){

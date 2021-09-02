@@ -48,6 +48,10 @@ public class VRMenuComponentEditorListBlock extends VRMenuComponent implements P
         return block.getSearchableNames();
     }
     @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        return block.getSimpleSearchableNames();
+    }
+    @Override
     public String getPinnedName(){
         return block.getPinnedName();
     }

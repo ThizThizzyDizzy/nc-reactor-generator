@@ -87,6 +87,10 @@ public class Fuel implements Pinnable{
     }
     @Override
     public ArrayList<String> getSearchableNames(){
+        return getSimpleSearchableNames();
+    }
+    @Override
+    public ArrayList<String> getSimpleSearchableNames(){
         ArrayList<String> lst = getLegacyNames();
         lst.add(getDisplayName());
         return lst;
