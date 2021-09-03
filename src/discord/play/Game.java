@@ -6,7 +6,7 @@ public abstract class Game{
     private long lastUpdate;
     private final String name;
     public boolean running;
-    private MessageChannel channel;
+    protected MessageChannel channel;
     public Game(String name){
         this.name = name;
     }
@@ -20,7 +20,7 @@ public abstract class Game{
                     Thread.sleep(100);
                 }catch(InterruptedException ex){}
                 if(System.currentTimeMillis()-lastUpdate>timeout){
-                    stopGame();
+                    timeout();
                 }
             }
             if(PlayBot.games.get(channel.getIdLong())==this)PlayBot.games.remove(channel.getIdLong());
@@ -34,11 +34,11 @@ public abstract class Game{
     public String getName(){
         return name;
     }
-    public final void stopGame(){
+    public final void timeout(){
         running = false;
-        stop(channel);
+        onTimeout(channel);
     }
-    protected abstract void stop(MessageChannel channel);
+    protected abstract void onTimeout(MessageChannel channel);
     protected void update(){
         lastUpdate = System.currentTimeMillis();
     }

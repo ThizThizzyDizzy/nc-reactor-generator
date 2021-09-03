@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 import planner.Core;
 import planner.ImageIO;
 import simplelibrary.font.FontManager;
@@ -30,7 +31,7 @@ public abstract class KeywordCommand extends Command{
         keywordOrder.add(regex);
     }
     @Override
-    public final void run(net.dv8tion.jda.api.entities.User user, MessageChannel channel, String args, boolean debug){
+    public final void run(User user, MessageChannel channel, String args, boolean debug){
         ArrayList<Keyword> words = new ArrayList<>();
         String str = args.toLowerCase(Locale.ROOT);
         for(String regex : keywordOrder){
@@ -101,7 +102,7 @@ public abstract class KeywordCommand extends Command{
             channel.sendFile(debugFile, "debug.png").complete();
             debugFile.delete();
         }
-        run(channel, words, debug);
+        run(user, channel, words, debug);
     }
-    public abstract void run(MessageChannel channel, ArrayList<Keyword> keywords, boolean debug);
+    public abstract void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug);
 }

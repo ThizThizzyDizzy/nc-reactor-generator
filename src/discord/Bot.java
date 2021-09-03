@@ -19,6 +19,7 @@ import discord.play.action.SmoreAction;
 import discord.play.action.SmoreLordAction;
 import discord.play.action.SnoozeAction;
 import discord.play.game.Hangman;
+import discord.play.game.HeatsinkBattle;
 import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutBunch;
 import discord.play.smivilization.HutThing;
@@ -115,7 +116,7 @@ public class Bot extends ListenerAdapter{
 //                return "Toggles Debug Mode";
 //            }
 //            @Override
-//            public void run(MessageChannel channel, String args, boolean debug){
+//            public void run(User user, MessageChannel channel, String args, boolean debug){
 //                Bot.debug = !Bot.debug;
 //                channel.sendMessage("Debug mode **"+(Bot.debug?"Enabled":"Disabled")+"**").queue();
 //            }
@@ -191,7 +192,7 @@ public class Bot extends ListenerAdapter{
 "-generate an efficient 3x8x3 overhaul reactor using [NI] TBU fuel no cryotheum";
             }
             @Override
-            public void run(MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
+            public void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
                 if(generator!=null){
                     channel.sendMessage("Generator is already running!\nUse `"+prefixes.get(0)+"stop` to stop generation").queue();
                     return;
@@ -647,7 +648,7 @@ public class Bot extends ListenerAdapter{
                 return "Searches for a stored reactor that matches the given specifics. Uses same syntax as -generate";
             }
             @Override
-            public void run(MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
+            public void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
                 boolean underhaul = false;
                 boolean overhaul = false;
                 KeywordMultiblock multiblockKeyword = null;
@@ -1008,7 +1009,7 @@ public class Bot extends ListenerAdapter{
                 addKeyword(new KeywordBlind());
             }
             @Override
-            public void run(MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
+            public void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
                 boolean underhaul = false;
                 boolean overhaul = false;
                 boolean blind = false;
@@ -1035,6 +1036,61 @@ public class Bot extends ListenerAdapter{
                     }
                 }
                 PlayBot.play(channel, new Hangman(blind, new ArrayList<>(allowedMultiblocks)));
+            }
+            @Override
+            public String getHelpText(){
+                return "Play some Hangman";
+            }
+//            @Override
+//            public String getHelpText(){
+//                return "Play some Hangman";
+//            }
+//            @Override
+//            public void run(User user, MessageChannel channel, String args, boolean debug){
+//                PlayBot.play(channel, new Hangman(args.trim().equalsIgnoreCase("blind")));
+//            }
+        });
+        playCommands.add(new KeywordCommand("battle", "heatsinkbattle", "coolingbattle", "heatingbattle", "heaterbattle", "coolerbattle", "heatbattle"){
+            @Override
+            public void addKeywords(){
+                addKeyword(new KeywordUnderhaul());
+                addKeyword(new KeywordOverhaul());
+                addKeyword(new KeywordConfiguration());
+                addKeyword(new KeywordMultiblock());
+            }
+            @Override
+            public void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
+                Game game = PlayBot.games.get(channel.getIdLong());
+                if(game instanceof HeatsinkBattle){
+                    ((HeatsinkBattle)game).addPlayer(user);
+                }else{
+                    boolean underhaul = false;
+                    boolean overhaul = false;
+                    ArrayList<KeywordMultiblock> multiKeywords = new ArrayList<>();
+                    for(Keyword k :keywords){
+                        if(k instanceof KeywordUnderhaul)underhaul = true;
+                        if(k instanceof KeywordOverhaul)overhaul = true;
+                        if(k instanceof KeywordMultiblock)multiKeywords.add((KeywordMultiblock)k);
+                    }
+                    if(!underhaul&&!overhaul){
+                        underhaul = overhaul = true;
+                    }
+                    Set<Multiblock> allowedMultiblocks = new HashSet<>();
+                    for(KeywordMultiblock mk : multiKeywords){
+                        if(overhaul==true)allowedMultiblocks.add(mk.getMultiblock(true));
+                        if(underhaul==true)allowedMultiblocks.add(mk.getMultiblock(false));
+                    }
+                    allowedMultiblocks.remove(null);
+                    if(allowedMultiblocks.isEmpty()){
+                        for(Multiblock m : Core.multiblockTypes){
+                            if(m.getDefinitionName().contains("Overhaul")&&overhaul)allowedMultiblocks.add(m);
+                            if(m.getDefinitionName().contains("Underhaul")&&underhaul)allowedMultiblocks.add(m);
+                        }
+                    }
+                    HeatsinkBattle battle = new HeatsinkBattle(new ArrayList<>(allowedMultiblocks));
+                    PlayBot.play(channel, battle);
+                    battle.addPlayer(user);
+                }
             }
             @Override
             public String getHelpText(){
@@ -2443,6 +2499,9 @@ public class Bot extends ListenerAdapter{
         if(playChannels.contains(event.getChannel().getIdLong())){
             Game game = PlayBot.games.get(event.getChannel().getIdLong());
             if(game!=null){
+                if(event.getMessage().getContentDisplay().equals("(╯°□°）╯︵ ┻━┻")){
+                    event.getChannel().sendMessage("┬─┬ ノ( ゜-゜ノ)").queue();
+                }
                 game.onMessage(event.getMessage());
             }
             String command = event.getMessage().getContentRaw();

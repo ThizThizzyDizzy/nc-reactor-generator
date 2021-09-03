@@ -100,14 +100,14 @@ public class Hangman extends Game{
             return false;
         }
         for(Block b : ((Multiblock<Block>)basis).getAvailableBlocks()){
-            if(b.getName().contains("Casing")||b.getName().contains("Glass")||b.getName().contains("Controller"))silentGuess(channel, b);
+            if(b.getName().contains("Casing")||b.getName().contains("Glass")||b.getName().contains("Controller")||b.getName().contains("Vent")||b.getName().contains("Conductor"))silentGuess(channel, b);
         }
         channel.sendMessage("Hangman has started!\nCurrent Multiblock: "+basis.getDimensionsStr()+" "+basis.getDefinitionName()+"\nYou have "+(maxGuesses-1)+" Incorrect guesses left."+(usesActive?"\nThis reactor has active coolers":"")).queue();
         if(!blind)exportPng(generateNCPF(current), channel);
         return true;
     }
     @Override
-    protected void stop(MessageChannel channel){
+    protected void onTimeout(MessageChannel channel){
         channel.sendMessage("Hangman timed out!").queue();
     }
     @Override
