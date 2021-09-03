@@ -6,7 +6,7 @@ text 2 Overhaul Molten Salt Fission Reactors
 translate 2
 columns 2
 margin 2 2
-imgsq tutorials/planner/introduction/overhaul_msr.png
+imgsq multiblocks/overhaul_msr.png
 margin 0 2
 ltext 1.5 External Structure
 skip

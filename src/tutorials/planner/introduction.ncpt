@@ -12,9 +12,9 @@ text 2 Underhaul
 text 2 Overhaul
 margin 2 4
 translate 2
-imgsq tutorials/planner/introduction/underhaul_example.png
+imgsq multiblocks/underhaul_sfr.png
 translate 2
-imgsq tutorials/planner/introduction/overhaul_example.png
+imgsq multiblocks/overhaul_sfr.png
 margin 0 2
 text .8 Example SFR
 text .8 Example SFR

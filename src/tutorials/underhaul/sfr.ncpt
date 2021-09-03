@@ -6,7 +6,7 @@ text 2 Underhaul Solid-Fueled Fission Reactors
 translate 2
 columns 2
 margin 2 2
-imgsq tutorials/planner/introduction/underhaul_example.png
+imgsq multiblocks/underhaul_sfr.png
 margin 0 2
 ltext 1.5 External Structure
 skip

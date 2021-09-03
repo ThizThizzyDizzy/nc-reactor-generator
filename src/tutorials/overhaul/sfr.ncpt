@@ -6,7 +6,7 @@ text 2 Overhaul Solid-Fueled Fission Reactors
 translate 2
 columns 2
 margin 2 2
-imgsq tutorials/planner/introduction/overhaul_example.png
+imgsq multiblocks/overhaul_sfr.png
 margin 0 2
 ltext 1.5 External Structure
 skip

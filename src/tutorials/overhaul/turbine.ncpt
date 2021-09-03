@@ -6,7 +6,7 @@ text 2 Overhaul Turbines
 translate 2
 columns 2
 margin 2 2
-imgsq tutorials/planner/introduction/overhaul_turbine.png
+imgsq multiblocks/overhaul_turbine.png
 margin 0 2
 ltext 1.5 External Structure
 skip
