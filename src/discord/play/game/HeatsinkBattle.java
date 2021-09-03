@@ -124,7 +124,7 @@ public class HeatsinkBattle extends Game{
             namesMap.put(players.get(i), playernames.get(i));
         }
         Collections.sort(players, (o1, o2) -> {
-            return scoresMap.get(o1)-scoresMap.get(o2);
+            return scoresMap.get(o2)-scoresMap.get(o1);
         });
         for(int i = 0; i<players.size(); i++){
             long u = players.get(i);
@@ -167,7 +167,7 @@ public class HeatsinkBattle extends Game{
                 ArrayList<Block> searched = new ArrayList<>();
                 for(Block b : blocks){
                     if(Searchable.isValidForSimpleSearch(b, blockName))searched.add(b);
-                    if(b.roughMatch(blockName)){
+                    if(b.roughMatch(blockName.trim().replace(":", ""))){
                         block = b;
                         break;
                     }
@@ -177,13 +177,13 @@ public class HeatsinkBattle extends Game{
                     block = searched.get(0);
                 }
                 if(!current.contains(x, y, z)){
-                    message.getChannel().sendMessage(strip(message.getAuthor().getName())+" tried to steal a block by placing it outside the reactor! (-1 point)").queue();
-                    scores.set(turn, scores.get(turn)-1);
+                    message.getChannel().sendMessage(strip(message.getAuthor().getName())+" tried to steal a block by placing it outside the reactor! (-100 points)").queue();
+                    scores.set(turn, scores.get(turn)-100);
                 }else{
                     if(block==null){
                         if(blockName.toLowerCase().contains("active")){
-                            message.getChannel().sendMessage(strip(message.getAuthor().getName())+" tried to use active cooling! (-2 points)").queue();
-                            scores.set(turn, scores.get(turn)-2);
+                            message.getChannel().sendMessage(strip(message.getAuthor().getName())+" tried to use active cooling! (-200 pointss)").queue();
+                            scores.set(turn, scores.get(turn)-200);
                         }else message.getChannel().sendMessage("Invalid block! You may only use Coolers/Heatsinks/Heaters!").queue();
                     }else{
                         Block currentBlock = current.getBlock(x, y, z);
@@ -232,6 +232,7 @@ public class HeatsinkBattle extends Game{
         return file;
     }
     private void nextTurn(MessageChannel channel){
+        update();
         if(skips.size()==players.size()||getHeat()<=0){
             onTimeout(channel);//used for printing end-of-game stuff
             running = false;
@@ -248,7 +249,7 @@ public class HeatsinkBattle extends Game{
     }
     private boolean isHeatsink(Block b){
         if(b instanceof multiblock.underhaul.fissionsfr.Block){
-            if(((multiblock.underhaul.fissionsfr.Block)b).isActive())return false;//no active allowed here
+            if(((multiblock.underhaul.fissionsfr.Block)b).template.active!=null)return false;//no active allowed here
             if(((multiblock.underhaul.fissionsfr.Block)b).isCooler())return true;
         }
         if(b instanceof multiblock.overhaul.fissionsfr.Block){
