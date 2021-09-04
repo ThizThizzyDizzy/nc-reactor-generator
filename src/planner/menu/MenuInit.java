@@ -94,7 +94,7 @@ public class MenuInit extends Menu{
     }
     public MenuInit(GUI gui){
         super(gui, null);
-        progressBar = add(new MenuComponentProgressBar(0, 0, gui.helper.displayWidth(), gui.helper.displayHeight()){
+        progressBar = add(new MenuComponentProgressBar(0, 0, gui.helper.displayWidth(), gui.helper.displayHeight(), 3){
             @Override
             public Task getTask(){
                 return init;
