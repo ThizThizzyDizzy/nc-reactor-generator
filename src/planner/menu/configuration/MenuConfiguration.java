@@ -67,11 +67,13 @@ public class MenuConfiguration extends ConfigurationMenu{
     private boolean threadShouldStop = false;
     private boolean threadHasStopped = true;
     private Task importTask = null;
+    private final MenuComponentMinimalistButton validate;
     public MenuConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent, configuration, configuration.addon?configuration.name:"Configuration");
         name = add(new MenuComponentMinimalistTextBox(sidebar.width, 0, 0, 64, configuration.name, true, "Name")).setTooltip(configuration.addon?"The name of the addon\nThis should not change between versions":"The name of the modpack\nThis should not change between versions");
         underhaulTitle = add(new MenuComponentLabel(sidebar.width, name.y+name.height, 0, 48, "Underhaul"));
         overhaulTitle = add(new MenuComponentLabel(sidebar.width, name.y+name.height, 0, 48, "Overhaul"));
+        validate = addToSidebarBottom(new MenuComponentMinimalistButton(0, 0, 0, 48, "Validate "+(configuration.addon?"Addon":"Configuration"), true, true));
         configGuidelines = addToSidebarBottom(new MenuComponentMinimalistButton(0, 0, 0, 48, "Configuration Guidelines (Google doc)", true, true).setTooltip("Opens a webpage in your default browser containing configuration guidelines\nThese guidelines should be followed to ensure no conflicts arise with the default configurations"));
         configGuidelines.textInset = 0;
         overhaulVersion = add(new MenuComponentMinimalistTextBox(overhaulTitle.x, overhaulTitle.y+overhaulTitle.height, 0, 56, configuration.overhaulVersion, true, "Version")).setTooltip(configuration.addon?"The version string for the Overhaul version of this addon":"The modpack version");
@@ -211,6 +213,9 @@ public class MenuConfiguration extends ConfigurationMenu{
         });
         configGuidelines.addActionListener((e) -> {
             Core.openURL("https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit?usp=sharing");
+        });
+        validate.addActionListener((e) -> {
+            gui.open(new MenuValidateConfiguration(gui, this, configuration));
         });
         underhaulSFR.addActionListener((e) -> {
             gui.open(new MenuUnderhaulSFRConfiguration(gui, this, configuration));

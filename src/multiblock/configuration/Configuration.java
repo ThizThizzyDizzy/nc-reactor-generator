@@ -31,10 +31,11 @@ public class Configuration{
     public static final ArrayList<Configuration> configurations = new ArrayList<>();
     public static final ArrayList<Supplier<AddonConfiguration>> internalAddons = new ArrayList<>();
     public static final HashMap<Supplier<AddonConfiguration>, AddonConfiguration> internalAddonCache = new HashMap<>();
-    private static final Configuration NUCLEARCRAFT = FileReader.read(() -> {
+    private static Configuration NUCLEARCRAFT;
+    public static void initNuclearcraftConfiguration(){
+        NUCLEARCRAFT = FileReader.read(() -> {
             return getInputStream("configurations/nuclearcraft.ncpf");
         }).configuration.addAlternative("").addAlternative("SF4");
-    static{
         configurations.add(NUCLEARCRAFT);
     }
     public static void clearConfigurations(){

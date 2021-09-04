@@ -41,6 +41,7 @@ import planner.file.NCPFFile;
 import planner.menu.MenuCredits;
 import planner.menu.MenuDiscord;
 import planner.menu.MenuEdit;
+import planner.menu.MenuInit;
 import planner.menu.MenuMain;
 import planner.menu.MenuTransition;
 import planner.menu.MenuTutorial;
@@ -98,7 +99,7 @@ public class Core extends Renderer2D{
     public static HashMap<String, String> metadata = new HashMap<>();
     public static Configuration configuration = new Configuration(null, null, null);
     public static Theme theme = Theme.themes.get(0).get(0);
-    private static boolean tutorialShown = false;
+    public static boolean tutorialShown = false;
     public static int sourceCircle = -1;
     public static int outlineSquare = -1;
     public static boolean delCircle = false;
@@ -111,14 +112,6 @@ public class Core extends Renderer2D{
     public static boolean recoveryMode = false;
     public static final ArrayList<String> pinnedStrs = new ArrayList<>();
     private static Random rand = new Random();
-    static{
-        resetMetadata();
-        modules.add(new UnderhaulModule());
-        modules.add(new OverhaulModule());
-        modules.add(new FusionTestModule());
-        modules.add(new RainbowFactorModule());
-        modules.add(new PrimeFuelModule());
-    }
     public static void addModule(Module m){
         modules.add(m);
     }
@@ -238,56 +231,6 @@ public class Core extends Renderer2D{
         System.out.println("Creating GL Debug Callback");
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
         callback = GLUtil.setupDebugMessageCallback();
-        System.out.println("Loading settings");
-        File f = new File("settings.dat").getAbsoluteFile();
-        if(f.exists()){
-            Config settings = Config.newConfig(f);
-            settings.load();
-            System.out.println("Loading theme");
-            Object o = settings.get("theme");
-            if(o instanceof String){
-                setTheme(Theme.getByName((String)o));
-            }else setTheme(Theme.getByLegacyID((int)o));
-            try{
-                Config modules = settings.get("modules", Config.newConfig());
-                HashMap<Module, Boolean> moduleStates = new HashMap<>();
-                for(String key : modules.properties()){
-                    for(Module m : Core.modules){
-                        if(m.name.equals(key))moduleStates.put(m, modules.getBoolean(key));
-                    }
-                }
-                for(Module m : Core.modules){
-                    if(!moduleStates.containsKey(m))continue;
-                    if(m.isActive()){
-                        if(!moduleStates.get(m))m.deactivate();
-                    }else{
-                        if(moduleStates.get(m))m.activate();
-                    }
-                }
-            }catch(Exception ex){}
-            tutorialShown = settings.get("tutorialShown", false);
-            invertUndoRedo = settings.get("invertUndoRedo", false);
-            autoBuildCasing = settings.get("autoBuildCasing", true);
-            ConfigList lst = settings.getConfigList("pins", new ConfigList());
-            for(int i = 0; i<lst.size(); i++){
-                pinnedStrs.add(lst.getString(i));
-            }
-        }
-        refreshModules();
-        for(Configuration configuration : Configuration.configurations){
-            if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
-                for(multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-                    if(b.heater&&!b.getDisplayName().contains("Standard")){
-                        try{
-                            b.setInternalTexture(TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", "")));
-                        }catch(Exception ex){
-                            Sys.error(ErrorLevel.warning, "Failed to load internal texture for MSR Block: "+b.name, ex, ErrorCategory.fileIO);
-                        }
-                    }
-                }
-            }
-        }
-        Configuration.configurations.get(0).impose(configuration);
         System.out.println("Initializing GUI");
         gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper){
             private boolean b;
@@ -377,8 +320,7 @@ public class Core extends Renderer2D{
                 super.render(millisSinceLastTick);
             }
         };
-        if(Main.isBot)gui.open(new MenuDiscord(gui));
-        else gui.open(new MenuMain(gui));
+        gui.open(new MenuInit(gui));
         System.out.println("Render initialization complete!");
     }
     public static void tickInit(){}
@@ -386,11 +328,6 @@ public class Core extends Renderer2D{
         if(Main.headless)GLFW.glfwHideWindow(helper.getWindow());
         System.out.println("Activating GUI");
         helper.assignGUI(gui);
-        System.out.println("Startup complete!");
-        if(!tutorialShown&&!Main.isBot&&!Main.headless){
-            gui.open(new MenuTutorial(gui, gui.menu));
-            tutorialShown = true;
-        }
         System.out.println("Checking for updates...");
         Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Generator");
         if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
