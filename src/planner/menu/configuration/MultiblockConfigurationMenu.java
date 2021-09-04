@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import multiblock.configuration.Configuration;
+import org.lwjgl.glfw.GLFW;
 import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.component.MenuComponentMinimalistButton;
@@ -41,6 +42,9 @@ public class MultiblockConfigurationMenu extends ConfigurationMenu{
         return box;
     }
     protected void addList(Supplier<String> title, String buttonLabel, Runnable onButtonPressed, Consumer<MenuComponentMinimaList> addComponentsFunc){
+        addList(title, buttonLabel, onButtonPressed, addComponentsFunc, buttonLabel, onButtonPressed, false);
+    }
+    protected void addList(Supplier<String> title, String buttonLabel, Runnable onButtonPressed, Consumer<MenuComponentMinimaList> addComponentsFunc, String sneakyButtonLabel, Runnable onSneakyButtonPressed, boolean sneakyEnabled){
         MenuComponentMinimalistTextBox box = settings.isEmpty()?null:settings.get(settings.size()-1).get(0);
         MenuComponentLabel label;
         labels.add(label = add(new MenuComponentLabel(0, box!=null?box.y+box.height:0, 0, 48, title.get())));
@@ -49,8 +53,15 @@ public class MultiblockConfigurationMenu extends ConfigurationMenu{
         lists.add(list = add(new MenuComponentMinimaList(0, label.y+label.height, 0, 0, 16)));
         listButtons.add(add(new MenuComponentMinimalistButton(0, 0, 0, 48, buttonLabel, true, true){
             @Override
+            public void render(int millisSinceLastTick){
+                if(sneakyEnabled&&(gui.keyboardWereDown.contains(GLFW.GLFW_KEY_LEFT_SHIFT)||gui.keyboardWereDown.contains(GLFW.GLFW_KEY_RIGHT_SHIFT)))label = sneakyButtonLabel;
+                else label = buttonLabel;
+                super.render(millisSinceLastTick);
+            }
+            @Override
             public void action(){
-                onButtonPressed.run();
+                if(sneakyEnabled&&(gui.keyboardWereDown.contains(GLFW.GLFW_KEY_LEFT_SHIFT)||gui.keyboardWereDown.contains(GLFW.GLFW_KEY_RIGHT_SHIFT)))onSneakyButtonPressed.run();
+                else onButtonPressed.run();
             }
         }));
         adds.put(list, addComponentsFunc);

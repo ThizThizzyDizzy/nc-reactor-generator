@@ -3,6 +3,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.Block;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.Core;
+import planner.menu.configuration.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.overhaul.fissionsfr.MenuAddonBlockConfiguration;
 import planner.menu.configuration.overhaul.fissionsfr.MenuBlockConfiguration;
@@ -67,7 +68,9 @@ public class MenuOverhaulSFRConfiguration extends MultiblockConfigurationMenu{
                     refresh();
                 }));
             }
-        });
+        }, "View Placement Rule Tree", ()->{
+            gui.open(new MenuPlacementRuleTree(gui, this, configuration.overhaul.fissionSFR.allBlocks));
+        }, !configuration.addon);
         addList(()->{return "Coolant Recipes ("+configuration.overhaul.fissionSFR.coolantRecipes.size()+")";}, "Add Coolant Recipe", ()->{
             CoolantRecipe r = new CoolantRecipe("input_fluid", "output_fluid", 0, 0);
             configuration.overhaul.fissionSFR.coolantRecipes.add(r);

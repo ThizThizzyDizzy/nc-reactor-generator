@@ -3,6 +3,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.Block;
 import multiblock.configuration.overhaul.turbine.Recipe;
 import planner.Core;
+import planner.menu.configuration.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.overhaul.turbine.MenuBlockConfiguration;
 import planner.menu.configuration.overhaul.turbine.MenuComponentBlock;
@@ -37,7 +38,9 @@ public class MenuOverhaulTurbineConfiguration extends MultiblockConfigurationMen
                     refresh();
                 }));
             }
-        });
+        }, "View Placement Rule Tree", ()->{
+            gui.open(new MenuPlacementRuleTree(gui, this, configuration.overhaul.turbine.allBlocks));
+        }, !configuration.addon);
         addList(() -> {return "Recipes ("+configuration.overhaul.turbine.recipes.size()+")";}, "Add Recipe", ()->{
             Recipe r = new Recipe("input_fluid", "output_fluid", 0, 0);
             configuration.overhaul.turbine.recipes.add(r);

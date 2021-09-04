@@ -4,6 +4,7 @@ import multiblock.configuration.overhaul.fusion.Block;
 import multiblock.configuration.overhaul.fusion.CoolantRecipe;
 import multiblock.configuration.overhaul.fusion.Recipe;
 import planner.Core;
+import planner.menu.configuration.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.overhaul.fusion.MenuAddonBlockConfiguration;
 import planner.menu.configuration.overhaul.fusion.MenuBlockConfiguration;
@@ -73,7 +74,9 @@ public class MenuOverhaulFusionConfiguration extends MultiblockConfigurationMenu
                     refresh();
                 }));
             }
-        });
+        }, "View Placement Rule Tree", ()->{
+            gui.open(new MenuPlacementRuleTree(gui, this, configuration.overhaul.fusion.allBlocks));
+        }, !configuration.addon);
         addList(()->{return "Coolant Recipes ("+configuration.overhaul.fusion.coolantRecipes.size()+")";}, "Add Coolant Recipe", () -> {
             CoolantRecipe r = new CoolantRecipe("input_fluid", "output_fluid", 0, 0);
             configuration.overhaul.fusion.coolantRecipes.add(r);

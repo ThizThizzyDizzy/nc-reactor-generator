@@ -2,6 +2,7 @@ package planner.menu.configuration.overhaul;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Block;
 import planner.Core;
+import planner.menu.configuration.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.overhaul.fissionmsr.MenuAddonBlockConfiguration;
 import planner.menu.configuration.overhaul.fissionmsr.MenuBlockConfiguration;
@@ -64,6 +65,8 @@ public class MenuOverhaulMSRConfiguration extends MultiblockConfigurationMenu{
                     refresh();
                 }));
             }
-        });
+        }, "View Placement Rule Tree", ()->{
+            gui.open(new MenuPlacementRuleTree(gui, this, configuration.overhaul.fissionMSR.allBlocks));
+        }, !configuration.addon);
     }
 }

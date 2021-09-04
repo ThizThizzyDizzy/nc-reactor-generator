@@ -3,6 +3,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Block;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.Core;
+import planner.menu.configuration.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.underhaul.fissionsfr.MenuBlockConfiguration;
 import planner.menu.configuration.underhaul.fissionsfr.MenuComponentBlock;
@@ -36,7 +37,9 @@ public class MenuUnderhaulSFRConfiguration extends MultiblockConfigurationMenu{
                     refresh();
                 }));
             }
-        });
+        }, "View Placement Rule Tree", ()->{
+            gui.open(new MenuPlacementRuleTree(gui, this, configuration.underhaul.fissionSFR.allBlocks));
+        }, !configuration.addon);
         addList(() -> {return "Fuels ("+configuration.underhaul.fissionSFR.fuels.size()+")";}, "Add Fuel", ()->{
             Fuel f = new Fuel("nuclearcraft:new_fuel", 0, 0, 0);
             configuration.underhaul.fissionSFR.fuels.add(f);
