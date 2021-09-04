@@ -101,6 +101,11 @@ public class SiezureTheme extends ColorTheme{
         return rand();
     }
     @Override
+    public Color getKeywordColorSmores(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getKeywordColorSmores();
+        return rand();
+    }
+    @Override
     public Color getDecalColorAdjacentCell(){
         if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getDecalColorAdjacentCell();
         return rand();

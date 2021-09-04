@@ -35,6 +35,10 @@ public abstract class LegacyTheme extends ColorTheme{
         return new Color(0, 255, 0);
     }
     @Override
+    public Color getKeywordColorSmores(){
+        return new Color(201, 163, 64);
+    }
+    @Override
     public Color getKeywordColorFuel(){
         return new Color(255, 255, 0);
     }

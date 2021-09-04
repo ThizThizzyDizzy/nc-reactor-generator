@@ -17,6 +17,7 @@ public class RandomColorsTheme extends ColorTheme{
     private Color keywordColorCube;
     private Color keywordColorConfiguration;
     private Color keywordColorBlockRange;
+    private Color keywordColorSmores;
     private Color decalColorAdjacentCell;
     private Color decalColorAdjacentModerator;
     private HashMap<Float, Color> decalColorAdjacentModeratorLine = new HashMap<>();
@@ -189,6 +190,10 @@ public class RandomColorsTheme extends ColorTheme{
     @Override
     public Color getKeywordColorBlockRange(){
         return keywordColorBlockRange = gen(keywordColorBlockRange);
+    }
+    @Override
+    public Color getKeywordColorSmores(){
+        return keywordColorSmores = gen(keywordColorSmores);
     }
     @Override
     public Color getDecalColorAdjacentCell(){

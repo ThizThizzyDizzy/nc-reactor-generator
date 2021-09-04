@@ -2370,6 +2370,20 @@ public class Bot extends ListenerAdapter{
                     }
                 });
                 if(ncpf!=null){
+                    if(ncpf.configuration!=null){
+                        if(!ncpf.configuration.nameMatches(Configuration.configurations.get(0))){
+                            System.err.println("Configuration "+ncpf.configuration.name+" does not match! Skipping "+att.getFileName());
+                            continue;
+                        }
+                        if(!ncpf.configuration.addons.isEmpty()){
+                            System.err.println("Configuration "+ncpf.configuration.getFullName()+" has addons! Skipping "+att.getFileName());
+                            continue;
+                        }
+                    }
+                    ncpf.configuration = Configuration.configurations.get(0);
+                    for(Multiblock m : ncpf.multiblocks){
+                        m.convertTo(ncpf.configuration);
+                    }
                     synchronized(storedMultiblocks){
                         ncpf.metadata.put("Original Source", message.getJumpUrl());
                         for(Multiblock m : ncpf.multiblocks){
@@ -2379,7 +2393,7 @@ public class Bot extends ListenerAdapter{
                     }
                 }
             }catch(Exception ex){
-                System.err.println("Failed to read file: "+att.getFileName());
+                System.err.println("Failed to read file: "+(att==null?null:att.getFileName()));
             }
         }
     }

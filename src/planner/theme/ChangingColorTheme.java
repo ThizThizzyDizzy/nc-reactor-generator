@@ -66,6 +66,10 @@ public class ChangingColorTheme extends ColorTheme{
         return current.getKeywordColorBlockRange();
     }
     @Override
+    public Color getKeywordColorSmores(){
+        return current.getKeywordColorSmores();
+    }
+    @Override
     public Color getDecalColorAdjacentCell(){
         return current.getDecalColorAdjacentCell();
     }

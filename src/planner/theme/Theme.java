@@ -208,6 +208,7 @@ public abstract class Theme{
     public abstract Color getKeywordColorCube();
     public abstract Color getKeywordColorConfiguration();
     public abstract Color getKeywordColorBlockRange();
+    public abstract Color getKeywordColorSmores();
     public abstract Color getDecalColorAdjacentCell();
     public abstract Color getDecalColorAdjacentModerator();
     public abstract Color getDecalColorAdjacentModeratorLine(float efficiency);

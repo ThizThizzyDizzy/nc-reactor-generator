@@ -65,6 +65,10 @@ public class SmoreTheme extends ColorTheme{
         return cracker.getKeywordColorBlockRange();
     }
     @Override
+    public Color getKeywordColorSmores(){
+        return cracker.getKeywordColorSmores();
+    }
+    @Override
     public Color getDecalColorAdjacentCell(){
         return cracker.getDecalColorAdjacentCell();
     }

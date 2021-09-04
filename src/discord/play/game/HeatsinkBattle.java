@@ -182,7 +182,7 @@ public class HeatsinkBattle extends Game{
                 }else{
                     if(block==null){
                         if(blockName.toLowerCase().contains("active")){
-                            message.getChannel().sendMessage(strip(message.getAuthor().getName())+" tried to use active cooling! (-200 pointss)").queue();
+                            message.getChannel().sendMessage(strip(message.getAuthor().getName())+" tried to use active cooling! (-200 points)").queue();
                             scores.set(turn, scores.get(turn)-200);
                         }else message.getChannel().sendMessage("Invalid block! You may only use Coolers/Heatsinks/Heaters!").queue();
                     }else{
