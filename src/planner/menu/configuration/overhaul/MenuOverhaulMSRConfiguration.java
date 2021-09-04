@@ -2,7 +2,7 @@ package planner.menu.configuration.overhaul;
 import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionmsr.Block;
 import planner.Core;
-import planner.menu.configuration.MenuPlacementRuleTree;
+import planner.menu.configuration.tree.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.overhaul.fissionmsr.MenuAddonBlockConfiguration;
 import planner.menu.configuration.overhaul.fissionmsr.MenuBlockConfiguration;

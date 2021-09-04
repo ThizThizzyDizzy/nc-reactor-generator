@@ -3,7 +3,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.fissionsfr.Block;
 import multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import planner.Core;
-import planner.menu.configuration.MenuPlacementRuleTree;
+import planner.menu.configuration.tree.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.overhaul.fissionsfr.MenuAddonBlockConfiguration;
 import planner.menu.configuration.overhaul.fissionsfr.MenuBlockConfiguration;

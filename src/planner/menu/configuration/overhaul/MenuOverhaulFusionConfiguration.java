@@ -4,7 +4,7 @@ import multiblock.configuration.overhaul.fusion.Block;
 import multiblock.configuration.overhaul.fusion.CoolantRecipe;
 import multiblock.configuration.overhaul.fusion.Recipe;
 import planner.Core;
-import planner.menu.configuration.MenuPlacementRuleTree;
+import planner.menu.configuration.tree.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.overhaul.fusion.MenuAddonBlockConfiguration;
 import planner.menu.configuration.overhaul.fusion.MenuBlockConfiguration;

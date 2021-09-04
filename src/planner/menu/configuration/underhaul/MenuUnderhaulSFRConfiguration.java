@@ -3,7 +3,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.underhaul.fissionsfr.Block;
 import multiblock.configuration.underhaul.fissionsfr.Fuel;
 import planner.Core;
-import planner.menu.configuration.MenuPlacementRuleTree;
+import planner.menu.configuration.tree.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.underhaul.fissionsfr.MenuBlockConfiguration;
 import planner.menu.configuration.underhaul.fissionsfr.MenuComponentBlock;

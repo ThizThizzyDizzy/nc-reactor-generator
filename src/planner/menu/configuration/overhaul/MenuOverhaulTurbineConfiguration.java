@@ -3,7 +3,7 @@ import multiblock.configuration.Configuration;
 import multiblock.configuration.overhaul.turbine.Block;
 import multiblock.configuration.overhaul.turbine.Recipe;
 import planner.Core;
-import planner.menu.configuration.MenuPlacementRuleTree;
+import planner.menu.configuration.tree.MenuPlacementRuleTree;
 import planner.menu.configuration.MultiblockConfigurationMenu;
 import planner.menu.configuration.overhaul.turbine.MenuBlockConfiguration;
 import planner.menu.configuration.overhaul.turbine.MenuComponentBlock;
