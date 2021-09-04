@@ -10,7 +10,6 @@ public class BlockPos{
     }
     @Override
     public boolean equals(Object obj){
-        if(obj==null)return false;
         if(obj instanceof BlockPos){
             return x==((BlockPos)obj).x&&y==((BlockPos)obj).y&&z==((BlockPos)obj).z;
         }

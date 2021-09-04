@@ -9,9 +9,12 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import multiblock.Block;
+import multiblock.BlockPos;
 import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.configuration.Configuration;
+import multiblock.configuration.IBlockTemplate;
+import multiblock.configuration.ITemplateAccess;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
 import multiblock.overhaul.fissionsfr.OverhaulSFR;
 import multiblock.ppe.ClearInvalid;
@@ -32,7 +35,7 @@ public class HeatsinkBattle extends Game{
     private ArrayList<Long> players = new ArrayList<>();
     private ArrayList<String> playernames = new ArrayList<>();
     private ArrayList<Integer> scores = new ArrayList<>();
-    private ArrayList<HashSet<Block>> blockses = new ArrayList<>();
+    private HashMap<BlockPos, Integer> credit = new HashMap<>();
     private int turn;
     private ArrayList<Block> blocks = new ArrayList<>();
     private ArrayList<Integer> skips = new ArrayList<>();
@@ -118,7 +121,8 @@ public class HeatsinkBattle extends Game{
         HashMap<Long, Double> bonusMap = new HashMap<>();
         HashMap<Long, String> namesMap = new HashMap<>();
         for(int i = 0; i<players.size(); i++){
-            double bonus = blockses.get(i).size()/(double)blocks.size();
+            int num = countRainbowCredit(credit, i);
+            double bonus = num/(double)blocks.size();
             bonusMap.put(players.get(i), bonus);
             scoresMap.put(players.get(i), (int)(scores.get(i)*(1+bonus)));
             namesMap.put(players.get(i), playernames.get(i));
@@ -142,7 +146,6 @@ public class HeatsinkBattle extends Game{
                 channel.sendMessage("Battle has begun!").queue();
                 for(Long p : players){
                     scores.add(0);
-                    blockses.add(new HashSet<>());
                 }
                 nextTurn(message.getChannel());
             }
@@ -153,6 +156,9 @@ public class HeatsinkBattle extends Game{
             if(content.equalsIgnoreCase("forfeit")||content.equalsIgnoreCase("surrender")||content.equalsIgnoreCase("give up")||content.equalsIgnoreCase("quit")||content.equalsIgnoreCase("leave")){
                 message.getChannel().sendMessage(strip(message.getAuthor().getName())+" couldn't handle the heat!").queue();
                 skips.add(turn);
+                if(skips.size()==players.size()-1){
+                    onTimeout(channel);//one player left, end the game
+                }
                 nextTurn(channel);
                 return;
             }
@@ -194,7 +200,7 @@ public class HeatsinkBattle extends Game{
                             current.recalculate();
                             int diff = oldHeat-getHeat();
                             scores.set(turn, scores.get(turn)+diff);
-                            blockses.get(turn).add(block);
+                            credit.put(new BlockPos(x, y, z), turn);
                             String mess = "No net change!";
                             if(diff>0)mess = "Cooled down! (+"+diff+" points)";
                             if(diff<0)mess = "Temperature Increased! ("+diff+" points)";
@@ -271,5 +277,17 @@ public class HeatsinkBattle extends Game{
             return ((OverhaulMSR)current).netHeat;
         }
         return -1;
+    }
+    private int countRainbowCredit(HashMap<BlockPos, Integer> credit, int i){
+        HashSet<IBlockTemplate> templates = new HashSet<>();
+        for(BlockPos pos : credit.keySet()){
+            if(credit.get(pos)!=i)continue;//that's for a different player
+            if(!current.contains(pos.x, pos.y, pos.z))continue;//not in the reactor
+            Block b = current.getBlock(pos.x, pos.y, pos.z);
+            if(b==null)continue;//air
+            if(!b.isValid())continue;//not valid
+            templates.add(((ITemplateAccess)b).getTemplate());
+        }
+        return templates.size();
     }
 }
