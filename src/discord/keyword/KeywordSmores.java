@@ -22,7 +22,7 @@ public class KeywordSmores extends Keyword{
     }
     @Override
     public Keyword newInstance(){
-        return new KeywordUnderhaul();
+        return new KeywordSmores();
     }
     @Override
     public boolean caseSensitive(){

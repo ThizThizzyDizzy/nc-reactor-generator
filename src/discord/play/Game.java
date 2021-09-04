@@ -1,4 +1,5 @@
 package discord.play;
+import discord.play.game.StopReason;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 public abstract class Game{
@@ -36,11 +37,12 @@ public abstract class Game{
     }
     public final void timeout(){
         running = false;
-        onTimeout(channel);
+        stop(channel, StopReason.TIMEOUT);
     }
-    protected abstract void onTimeout(MessageChannel channel);
+    public abstract void stop(MessageChannel channel, StopReason reason);
     protected void update(){
         lastUpdate = System.currentTimeMillis();
     }
     public abstract void onMessage(Message message);
+    public abstract boolean canAnyoneStop();
 }

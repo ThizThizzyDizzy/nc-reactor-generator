@@ -9,6 +9,7 @@ import discord.keyword.KeywordFuel;
 import discord.keyword.KeywordMultiblock;
 import discord.keyword.KeywordOverhaul;
 import discord.keyword.KeywordPriority;
+import discord.keyword.KeywordSmores;
 import discord.keyword.KeywordSymmetry;
 import discord.keyword.KeywordUnderhaul;
 import discord.play.Action;
@@ -20,6 +21,7 @@ import discord.play.action.SmoreLordAction;
 import discord.play.action.SnoozeAction;
 import discord.play.game.Hangman;
 import discord.play.game.HeatsinkBattle;
+import discord.play.game.StopReason;
 import discord.play.smivilization.Hut;
 import discord.play.smivilization.HutBunch;
 import discord.play.smivilization.HutThing;
@@ -1057,6 +1059,7 @@ public class Bot extends ListenerAdapter{
                 addKeyword(new KeywordOverhaul());
                 addKeyword(new KeywordConfiguration());
                 addKeyword(new KeywordMultiblock());
+                addKeyword(new KeywordSmores());
             }
             @Override
             public void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
@@ -1067,10 +1070,12 @@ public class Bot extends ListenerAdapter{
                     boolean underhaul = false;
                     boolean overhaul = false;
                     ArrayList<KeywordMultiblock> multiKeywords = new ArrayList<>();
+                    int smores = 0;
                     for(Keyword k :keywords){
                         if(k instanceof KeywordUnderhaul)underhaul = true;
                         if(k instanceof KeywordOverhaul)overhaul = true;
                         if(k instanceof KeywordMultiblock)multiKeywords.add((KeywordMultiblock)k);
+                        if(k instanceof KeywordSmores)smores = ((KeywordSmores)k).numSmores;
                     }
                     if(!underhaul&&!overhaul){
                         underhaul = overhaul = true;
@@ -1087,7 +1092,7 @@ public class Bot extends ListenerAdapter{
                             if(m.getDefinitionName().contains("Underhaul")&&underhaul)allowedMultiblocks.add(m);
                         }
                     }
-                    HeatsinkBattle battle = new HeatsinkBattle(new ArrayList<>(allowedMultiblocks));
+                    HeatsinkBattle battle = new HeatsinkBattle(new ArrayList<>(allowedMultiblocks)).setSmores(smores);
                     PlayBot.play(channel, battle);
                     battle.addPlayer(user);
                 }
@@ -1151,8 +1156,13 @@ public class Bot extends ListenerAdapter{
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 Game game = PlayBot.games.get(channel.getIdLong());
                 if(game!=null){
+                    if(!game.canAnyoneStop()&&user.getIdLong()!=210445638532333569l){
+                        channel.sendMessage("You can't stop that game!");
+                        return;
+                    }
                     game.running = false;
                     channel.sendMessage(game.getName()+" stopped.").queue();
+                    game.stop(channel, StopReason.STOPGAME);
                     PlayBot.games.remove(channel.getIdLong());
                     return;
                 }

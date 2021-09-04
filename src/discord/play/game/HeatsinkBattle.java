@@ -1,6 +1,7 @@
 package discord.play.game;
 import discord.Bot;
 import discord.play.Game;
+import discord.play.SmoreBot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +40,10 @@ public class HeatsinkBattle extends Game{
     private int turn;
     private ArrayList<Block> blocks = new ArrayList<>();
     private ArrayList<Integer> skips = new ArrayList<>();
+    private int entryFee;
+    private long smorePool = 0;
+    private boolean splodoHasDonated = false;
+    private int initialHeat;
     public HeatsinkBattle(ArrayList<Multiblock> allowedMultiblocks){
         super("Heatsink Battle");
         ArrayList<Multiblock> multis = new ArrayList<>();
@@ -93,7 +98,18 @@ public class HeatsinkBattle extends Game{
         if(started)channel.sendMessage("Battle has already started!").queue();
         else{
             if(players.contains(user.getIdLong()))return;//just ignore
+            if(entryFee>0){
+                long smores = SmoreBot.getSmoreCount(user.getIdLong());
+                if(smores<entryFee){
+                    channel.sendMessage("You don't have enough s'mores to join this battle!").queue();
+                    return;
+                }
+                SmoreBot.removeSmores(user, entryFee);
+                SmoreBot.addSmores(user.getJDA().getSelfUser(), entryFee);//give them to s'plodo
+                smorePool+=entryFee;
+            }
             players.add(user.getIdLong());
+            scores.add(0);
             playernames.add(user.getName());
             if(players.size()>1)channel.sendMessage(strip(user.getName())+" Joined the Battle!").queue();
         }
@@ -104,17 +120,30 @@ public class HeatsinkBattle extends Game{
             channel.sendMessage("No applicable multiblocks found!").queue();
             return false;
         }
-        channel.sendMessage("Battle lobby created! Players can join with `-battle`; When all players are in, say `start` to start the game!\nHow to play:\n"
+        String message = "Battle lobby created! Players can join with `-battle`; When all players are in, say `start` to start the game!\nHow to play:\n"
                 + "Each turn, choose a block to place in the reactor. Your goal is to cool it down as much as possible.\nAt the end of the game, the player who provided the most cooling wins!\n"
                 + "To make a change, type `<x> <y> <z> <block name>`. (ex. `4 2 13 water`)\n"
-                + "You can replace invalid blocks and Coolers/Heatsinks/Heaters\n"
-                + "Chosen core:").queue();
+                + "You can replace invalid blocks and Coolers/Heatsinks/Heaters";
+        if(entryFee>0)message+="\n**Entry fee is <:smore:493612965195677706>"+entryFee+" each (Winner takes all!)** *S'mores will be lost if the battle times out or is stopped*";
+        message+="\nChosen core:";
+        initialHeat = getHeat();
+        channel.sendMessage(message).queue();
         exportPng(generateNCPF(current), channel);
         return true;
     }
     @Override
-    protected void onTimeout(MessageChannel channel){
+    public void stop(MessageChannel channel, StopReason reason){
+        if(!started){
+            long smoresPerPlayer = smorePool/players.size();
+            for(long u : players){
+                SmoreBot.addSmores(channel.getJDA().retrieveUserById(u).complete(), smoresPerPlayer);
+                SmoreBot.removeSmores(channel.getJDA().getSelfUser(), smoresPerPlayer);
+            }
+            channel.sendMessage("Players have been refunded <:smore:493612965195677706>"+smoresPerPlayer+" smores").queue();
+            return;
+        }
         String s = "Battle has concluded!";
+        if(reason==StopReason.TIMEOUT)s = "Battle timed out!";
         if(getHeat()<=0)s+="\nReactor was cooled!";
         s+="\nScores: ";
         HashMap<Long, Integer> scoresMap = new HashMap<>();
@@ -130,10 +159,20 @@ public class HeatsinkBattle extends Game{
         Collections.sort(players, (o1, o2) -> {
             return scoresMap.get(o2)-scoresMap.get(o1);
         });
+        long winner = -1;
         for(int i = 0; i<players.size(); i++){
             long u = players.get(i);
+            if(winner==-1&&!skips.contains(i))winner = u;
             s+="\n"+(i+1)+" - "+strip(namesMap.get(u))+" ("+scoresMap.get(u)+")";
             if(bonusMap.get(u)!=0)s+=" "+Math.round(bonusMap.get(u)*100)+"% Rainbow Bonus!";
+        }
+        if(smorePool>0){
+            if(reason==StopReason.GAME_FINISHED&&winner!=-1){
+                User winnerUser = channel.getJDA().retrieveUserById(winner).complete();
+                SmoreBot.removeSmores(channel.getJDA().getSelfUser(), smorePool);
+                SmoreBot.addSmores(winnerUser, smorePool);
+                channel.sendMessage(strip(winnerUser.getName())+" won <:smore:493612965195677706>"+smorePool+"!").queue();
+            }else channel.sendMessage("S'more pool of <:smore:493612965195677706>"+smorePool+" has been sent to "+strip(channel.getJDA().getSelfUser().getName())).queue();
         }
         channel.sendMessage(s).queue();
     }
@@ -144,9 +183,6 @@ public class HeatsinkBattle extends Game{
                 started = true;
                 turn = new Random().nextInt(players.size());
                 channel.sendMessage("Battle has begun!").queue();
-                for(Long p : players){
-                    scores.add(0);
-                }
                 nextTurn(message.getChannel());
             }
             return;
@@ -157,7 +193,9 @@ public class HeatsinkBattle extends Game{
                 message.getChannel().sendMessage(strip(message.getAuthor().getName())+" couldn't handle the heat!").queue();
                 skips.add(turn);
                 if(skips.size()==players.size()-1){
-                    onTimeout(channel);//one player left, end the game
+                    stop(channel, StopReason.GAME_FINISHED);//one player left, end the game
+                    running = false;
+                    return;
                 }
                 nextTurn(channel);
                 return;
@@ -240,7 +278,7 @@ public class HeatsinkBattle extends Game{
     private void nextTurn(MessageChannel channel){
         update();
         if(skips.size()==players.size()||getHeat()<=0){
-            onTimeout(channel);//used for printing end-of-game stuff
+            stop(channel, StopReason.GAME_FINISHED);//used for printing end-of-game stuff
             running = false;
             return;
         }
@@ -248,6 +286,19 @@ public class HeatsinkBattle extends Game{
             turn++;
             if(turn>=players.size())turn = 0;
         }while(skips.contains(turn));
+        int threshold = 50;
+        boolean met = false;
+        for(int i : scores)if(i>=threshold)met = true;
+        if(met&&!splodoHasDonated){
+            splodoHasDonated = true;
+            long splodoSmores = SmoreBot.getSmoreCount(channel.getJDA().getSelfUser().getIdLong())-smorePool;
+            long toDonate = Math.min(splodoSmores, smorePool*(players.size()-1)/2);
+            System.out.println("Donating "+toDonate+" smores");
+            if(toDonate>0){
+                smorePool+=toDonate;
+                channel.sendMessage(strip(channel.getJDA().getSelfUser().getName())+" has donated <:smore:493612965195677706>"+toDonate+" to the pool! (total: <:smore:493612965195677706>"+smorePool+")").queue();
+            }
+        }
         channel.sendMessage(strip(playernames.get(turn))+", Your turn!").queue();
     }
     private String strip(String name){
@@ -289,5 +340,13 @@ public class HeatsinkBattle extends Game{
             templates.add(((ITemplateAccess)b).getTemplate());
         }
         return templates.size();
+    }
+    public HeatsinkBattle setSmores(int smores){
+        entryFee = smores;
+        return this;
+    }
+    @Override
+    public boolean canAnyoneStop(){
+        return smorePool==0;
     }
 }

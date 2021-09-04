@@ -107,8 +107,8 @@ public class Hangman extends Game{
         return true;
     }
     @Override
-    protected void onTimeout(MessageChannel channel){
-        channel.sendMessage("Hangman timed out!").queue();
+    public void stop(MessageChannel channel, StopReason reason){
+        if(reason==StopReason.TIMEOUT)channel.sendMessage("Hangman timed out!").queue();
     }
     @Override
     public void onMessage(Message message){
@@ -236,5 +236,9 @@ public class Hangman extends Game{
         file.configuration = config;
         file.multiblocks.add(multi);
         return file;
+    }
+    @Override
+    public boolean canAnyoneStop(){
+        return true;
     }
 }
