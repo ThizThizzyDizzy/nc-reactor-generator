@@ -293,10 +293,62 @@ public class Core extends Renderer2D{
             private boolean b;
             private double x,y,o,to;
             @Override
-            public void onKeyEvent(int key, int scancode, int event, int modifiers){
-                super.onKeyEvent(key, scancode, event, modifiers);
-                if(event==GLFW.GLFW_PRESS&&key==GLFW.GLFW_KEY_C&&Core.isControlPressed()&&Core.isShiftPressed()&&Core.isAltPressed()){
-                    throw new RuntimeException("Ctrl+Shift+Alt+C Debug crash");
+            public synchronized void onCharTyped(char c){
+                try{
+                    super.onCharTyped(c);
+                }catch(Throwable t){
+                    Sys.error(ErrorLevel.severe, "Error caught in onCharTyped!", t, ErrorCategory.uncaught);
+                }
+            }
+            @Override
+            public synchronized void onFileDropped(String[] files){
+                try{
+                    super.onFileDropped(files);
+                }catch(Throwable t){
+                    Sys.error(ErrorLevel.severe, "Error caught in onFileDropped!", t, ErrorCategory.uncaught);
+                }
+            }
+            @Override
+            public synchronized void onMouseButton(int button, int action, int mods){
+                try{
+                    super.onMouseButton(button, action, mods);
+                }catch(Throwable t){
+                    Sys.error(ErrorLevel.severe, "Error caught in onMouseButton!", t, ErrorCategory.uncaught);
+                }
+            }
+            @Override
+            public synchronized void onMouseMoved(double xpos, double ypos){
+                try{
+                    super.onMouseMoved(xpos, ypos);
+                }catch(Throwable t){
+                    Sys.error(ErrorLevel.severe, "Error caught in onMouseMoved!", t, ErrorCategory.uncaught);
+                }
+            }
+            @Override
+            public synchronized void onMouseScrolled(double xoffset, double yoffset){
+                try{
+                    super.onMouseScrolled(xoffset, yoffset);
+                }catch(Throwable t){
+                    Sys.error(ErrorLevel.severe, "Error caught in onMouseScrolled!", t, ErrorCategory.uncaught);
+                }
+            }
+            @Override
+            public synchronized void onWindowFocused(boolean focused){
+                try{
+                    super.onWindowFocused(focused);
+                }catch(Throwable t){
+                    Sys.error(ErrorLevel.severe, "Error caught in onWindowFocused!", t, ErrorCategory.uncaught);
+                }
+            }
+            @Override
+            public synchronized void onKeyEvent(int key, int scancode, int event, int modifiers){
+                try{
+                    super.onKeyEvent(key, scancode, event, modifiers);
+                    if(event==GLFW.GLFW_PRESS&&key==GLFW.GLFW_KEY_C&&Core.isControlPressed()&&Core.isShiftPressed()&&Core.isAltPressed()){
+                        throw new RuntimeException("Manually triggered debug error");
+                    }
+                }catch(Throwable t){
+                    Sys.error(ErrorLevel.severe, "Error caught in onKeyEvent!", t, ErrorCategory.uncaught);
                 }
             }
             @Override
