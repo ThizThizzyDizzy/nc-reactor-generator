@@ -11,5 +11,6 @@ public class MenuRecipeConfiguration extends PartConfigurationMenu{
         addSecondarySection("Output", recipe::getOutputTexture, recipe::setOutputTexture, "The ingame name of the recipe output. This should be the name of the fluid itself, not the fluid block or bucket.","The user-friendly name of the recipe output.", ()->{return recipe.outputName;}, ()->{return recipe.outputDisplayName;}, recipe::setOutputName, recipe::setOutputDisplayName);
         addSettingDouble("Power", recipe::getPower, recipe::setPower);
         addSettingDouble("Expansion Coefficient", recipe::getCoefficient, recipe::setCoefficient);
+        finishSettingRow();
     }
 }
