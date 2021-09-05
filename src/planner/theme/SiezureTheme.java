@@ -702,4 +702,14 @@ public class SiezureTheme extends ColorTheme{
         if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getSettingsMergeTextColor();
         return rand();
     }
+    @Override
+    public Color getValidatorWarningTextColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getValidatorWarningTextColor();
+        return rand();
+    }
+    @Override
+    public Color getValidatorErrorTextColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getValidatorErrorTextColor();
+        return rand();
+    }
 }

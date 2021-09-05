@@ -136,6 +136,8 @@ public class RandomColorsTheme extends ColorTheme{
     private Color vrPanelOutlineColor;
     private Color vrMultitoolTextColor;
     private Color settingsMergeTextColor;
+    private Color validatorWarningTextColor;
+    private Color validatorErrorTextColor;
     public RandomColorsTheme(String name){
         super(name);
     }
@@ -701,5 +703,13 @@ public class RandomColorsTheme extends ColorTheme{
     @Override
     public Color getSettingsMergeTextColor(){
         return settingsMergeTextColor = gen(settingsMergeTextColor);
+    }
+    @Override
+    public Color getValidatorWarningTextColor(){
+        return validatorWarningTextColor = gen(validatorWarningTextColor);
+    }
+    @Override
+    public Color getValidatorErrorTextColor(){
+        return validatorErrorTextColor = gen(validatorErrorTextColor);
     }
 }

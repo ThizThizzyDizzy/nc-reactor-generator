@@ -549,4 +549,12 @@ public class ChangingColorTheme extends ColorTheme{
     public Color getSettingsMergeTextColor(){
         return current.getSettingsMergeTextColor();
     }
+    @Override
+    public Color getValidatorWarningTextColor(){
+        return current.getValidatorWarningTextColor();
+    }
+    @Override
+    public Color getValidatorErrorTextColor(){
+        return current.getValidatorErrorTextColor();
+    }
 }

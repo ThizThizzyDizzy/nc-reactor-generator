@@ -535,6 +535,14 @@ public abstract class LegacyTheme extends ColorTheme{
     public Color getSettingsMergeTextColor(){
         return getTextColor();
     }
+    @Override
+    public Color getValidatorWarningTextColor(){
+        return getRGBA(1, 1, 0, 1);
+    }
+    @Override
+    public Color getValidatorErrorTextColor(){
+        return getRed();
+    }
     public abstract Color getBackgroundColor();
     public abstract Color getTextColor();
     public abstract Color getHeaderColor();

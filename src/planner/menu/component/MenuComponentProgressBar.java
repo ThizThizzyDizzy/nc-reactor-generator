@@ -3,11 +3,20 @@ import planner.Core;
 import planner.Task;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public abstract class MenuComponentProgressBar extends MenuComponent{
-    private static final double textHeight = 20;
-    private static final double textInset = 2;
-    private static final double progressBarHeight = 6;
+    private final double textHeight;
+    private final double textInset;
+    private final double progressBarHeight;
     public MenuComponentProgressBar(double x, double y, double width, double height){
+        this(x, y, width, height, 1);
+    }
+    public MenuComponentProgressBar(double x, double y, double width, double height, double scale){
+        this(x, y, width, height, 20*scale, 2*scale, 6*scale);
+    }
+    public MenuComponentProgressBar(double x, double y, double width, double height, double textHeight, double textInset, double progressBarHeight){
         super(x, y, width, height);
+        this.textHeight = textHeight;
+        this.textInset = textInset;
+        this.progressBarHeight = progressBarHeight;
     }
     @Override
     public void render(){

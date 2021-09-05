@@ -12,7 +12,6 @@ import planner.menu.component.MenuComponentLabel;
 import planner.menu.component.MenuComponentMinimaList;
 import planner.menu.configuration.ConfigurationMenu;
 import simplelibrary.Stack;
-import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 import simplelibrary.opengl.gui.components.MenuComponent;

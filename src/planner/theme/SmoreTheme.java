@@ -582,4 +582,12 @@ public class SmoreTheme extends ColorTheme{
     public Color getSettingsMergeTextColor(){
         return marshmallow.getSettingsMergeTextColor();
     }
+    @Override
+    public Color getValidatorWarningTextColor(){
+        return cracker.getValidatorWarningTextColor();
+    }
+    @Override
+    public Color getValidatorErrorTextColor(){
+        return chocolate.getValidatorErrorTextColor();
+    }
 }

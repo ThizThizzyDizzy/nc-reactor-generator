@@ -327,6 +327,8 @@ public abstract class Theme{
     public abstract Color getVRPanelOutlineColor();
     public abstract Color getVRMultitoolTextColor();
     public abstract Color getSettingsMergeTextColor();
+    public abstract Color getValidatorWarningTextColor();
+    public abstract Color getValidatorErrorTextColor();
     public abstract void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver);
     public abstract void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text);
     public static Color average(Color c1, Color c2){
