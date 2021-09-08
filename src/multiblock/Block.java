@@ -290,6 +290,7 @@ public abstract class Block extends MultiblockBit implements Pinnable{
     public abstract boolean hasRules();
     public abstract boolean calculateRules(Multiblock multiblock);
     public abstract boolean matches(Block template);
+    public abstract boolean canRequire(Block other);
     public abstract boolean requires(Block other, Multiblock mb);
     public abstract boolean canGroup();
     public abstract boolean canBeQuickReplaced();

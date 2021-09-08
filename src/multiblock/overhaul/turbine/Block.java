@@ -129,6 +129,11 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
         return false;
     }
     @Override
+    public boolean canRequire(multiblock.Block oth){
+        if(template.coil||template.connector)return requires(oth, null);
+        return false;
+    }
+    @Override
     public boolean requires(multiblock.Block oth, Multiblock mb){
         if(!isCoil()&&!isConnector())return false;
         Block other = (Block) oth;
@@ -143,6 +148,7 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
     }
     private boolean ruleHas(PlacementRule rule, Block b){
         if(rule.block==b.template)return true;
+        if(rule.blockType!=null&&rule.blockType.blockMatches(null, b))return true;
         for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.turbine.Block> rul : rule.rules){
             if(ruleHas((PlacementRule) rul, b))return true;
         }

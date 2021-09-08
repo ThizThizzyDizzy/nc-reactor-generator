@@ -493,6 +493,14 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
         return false;
     }
     @Override
+    public boolean canRequire(multiblock.Block oth){
+        if(template.heatsink)return requires(oth, null);
+        Block other = (Block) oth;
+        if(template.fuelCell||template.reflector||template.irradiator||template.moderator)return other.template.moderator;
+        if(template.conductor)return other.template.cluster;
+        return false;
+    }
+    @Override
     public boolean requires(multiblock.Block oth, Multiblock mb){
         if(!template.heatsink)return false;
         Block other = (Block) oth;
@@ -507,6 +515,7 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
     }
     private boolean ruleHas(AbstractPlacementRule<?, ?> rule, Block b){
         if(rule.block ==b.template)return true;
+        if(rule.blockType!=null&&rule.blockType.blockMatches(null, b))return true;
         for(AbstractPlacementRule<?, ?> rul : rule.rules){
             if(ruleHas(rul, b))return true;
         }

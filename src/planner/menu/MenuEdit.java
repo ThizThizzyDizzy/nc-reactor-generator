@@ -602,6 +602,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
         super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
         if(isPress){
+//            if(key==GLFW.GLFW_KEY_G&&Core.isControlPressed()&&Core.isShiftPressed()&&Core.isAltPressed()){
+//                multiblock.generateCrazyGraph();
+//            }
             boolean aSearchBoxIsSelected = partsSearch.isSelected;
             for(MenuComponent c : components){
                 if(c instanceof MenuComponentDropdownList){

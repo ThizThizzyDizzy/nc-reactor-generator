@@ -352,6 +352,13 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
         return false;
     }
     @Override
+    public boolean canRequire(multiblock.Block oth){
+        if(template.heatsink)return requires(oth, null);
+        Block other = (Block) oth;
+        if(template.conductor)return other.template.cluster;
+        return false;
+    }
+    @Override
     public boolean requires(multiblock.Block oth, Multiblock mb){
         if(!template.heatsink)return false;
         Block other = (Block) oth;
@@ -366,6 +373,7 @@ public class Block extends multiblock.Block implements ITemplateAccess<multibloc
     }
     private boolean ruleHas(PlacementRule rule, Block b){
         if(rule.block==b.template)return true;
+        if(rule.blockType!=null&&rule.blockType.blockMatches(null, b))return true;
         for(AbstractPlacementRule<PlacementRule.BlockType, multiblock.configuration.overhaul.fusion.Block> rul : rule.rules){
             if(ruleHas((PlacementRule) rul, b))return true;
         }

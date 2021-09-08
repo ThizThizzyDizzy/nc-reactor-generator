@@ -751,4 +751,64 @@ public abstract class Multiblock<T extends Block> extends MultiblockBit{
      *initialize a new multiblock, filling it with default features
      */
     public void init(){}
+    private ArrayList<GraphLink> links = new ArrayList<>();
+    private HashMap<Block, String> graphBlocks = new HashMap<>();
+    private HashMap<String, String> labels = new HashMap<>();
+    public void generateCrazyGraph(){
+        for(Block b1 : getBlocks(true)){
+            if(b1.getName().contains("Casing"))continue;
+            if(b1.getName().contains("Glass"))continue;
+            if(b1.getName().contains("Source"))continue;
+            if(b1.getName().contains("Port"))continue;
+            if(b1.getName().contains("Vent"))continue;
+            for(Direction d : directions){
+                if(contains(b1.x+d.x, b1.y+d.y, b1.z+d.z)){
+                    Block b2 = getBlock(b1.x+d.x, b1.y+d.y, b1.z+d.z);
+                    if(b2==null)continue;
+                    if(b2.getName().contains("Casing"))continue;
+                    if(b2.getName().contains("Glass"))continue;
+                    if(b2.getName().contains("Source"))continue;
+                    if(b2.getName().contains("Port"))continue;
+                    if(b2.getName().contains("Vent"))continue;
+                    if(getGraphLink(b1, b2)==null&&(b1.canRequire(b2)||b2.canRequire(b1))){
+                        links.add(new GraphLink(b1, b2));
+                        if(!graphBlocks.containsKey(b1))graphBlocks.put(b1, genNewGraphName(b1));
+                        if(!graphBlocks.containsKey(b2))graphBlocks.put(b2, genNewGraphName(b2));
+                    }
+                }
+            }
+        }
+        for(String key : labels.keySet()){
+            System.out.println(key+"[label=\""+labels.get(key)+"\"]");
+        }
+        for(GraphLink link : links){
+            System.out.println(graphBlocks.get(link.b1)+" -- "+graphBlocks.get(link.b2));
+        }
+    }
+    private String genNewGraphName(Block b){
+        int i = 1;
+        String nam = b.getName().replace("Liquid", "").replace("Cooler", "").replace("Reactor", "").replace("Fuel", "").replace("Transparent", "").replace(" ", "").replace("Heat Sink", "").trim();
+        String name;
+        do{
+            name = nam+i;
+            i++;
+        }while(graphBlocks.values().contains(name));
+        labels.put(name, nam);
+        return name;
+    }
+    private GraphLink getGraphLink(Block b1, Block b2){
+        for(GraphLink l : links){
+            if(l.b1==b1&&l.b2==b2)return l;
+            if(l.b2==b1&&l.b1==b2)return l;
+        }
+        return null;
+    }
+    private static class GraphLink{
+        private final Block b1;
+        private final Block b2;
+        public GraphLink(Block b1, Block b2){
+            this.b1 = b1;
+            this.b2 = b2;
+        }
+    }
 }
