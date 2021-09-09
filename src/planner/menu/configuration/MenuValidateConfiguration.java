@@ -2044,6 +2044,24 @@ public class MenuValidateConfiguration extends ConfigurationMenu{
                     if(!b.coil)validator.warn(sectionName+" placement rule "+rule.ruleType.name+" contains a specific non-coil block!").solve(blockCfg, "Go to Block configuration");
                 }
             }
+            if(rule.blockType!=null){
+                if(rule.blockType instanceof multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType){
+                    multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType b = (multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType)rule.blockType;
+                    if(b==multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR)validator.warn(sectionName+" placement rule "+rule.ruleType.name+" contains air!").solve(blockCfg, "Go to Block configuration");
+                }
+                if(rule.blockType instanceof multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType){
+                    multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType b = (multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType)rule.blockType;
+                    if(b==multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR)validator.warn(sectionName+" placement rule "+rule.ruleType.name+" contains air!").solve(blockCfg, "Go to Block configuration");
+                }
+                if(rule.blockType instanceof multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType){
+                    multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType b = (multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType)rule.blockType;
+                    if(b==multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR)validator.warn(sectionName+" placement rule "+rule.ruleType.name+" contains air!").solve(blockCfg, "Go to Block configuration");
+                }
+                if(rule.blockType instanceof multiblock.configuration.overhaul.turbine.PlacementRule.BlockType){
+                    multiblock.configuration.overhaul.turbine.PlacementRule.BlockType b = (multiblock.configuration.overhaul.turbine.PlacementRule.BlockType)rule.blockType;
+                    if(b==multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.CASING)validator.warn(sectionName+" placement rule "+rule.ruleType.name+" contains casing!").solve(blockCfg, "Go to Block configuration");
+                }
+            }
             switch(rule.ruleType){
                 case AND:
                 case OR:

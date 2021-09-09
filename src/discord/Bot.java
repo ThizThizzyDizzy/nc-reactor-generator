@@ -1157,7 +1157,7 @@ public class Bot extends ListenerAdapter{
                 Game game = PlayBot.games.get(channel.getIdLong());
                 if(game!=null){
                     if(!game.canAnyoneStop()&&user.getIdLong()!=210445638532333569l){
-                        channel.sendMessage("You can't stop that game!");
+                        channel.sendMessage("You can't stop that game!").queue();
                         return;
                     }
                     game.running = false;

@@ -106,6 +106,8 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
                 for(Configuration c : addon.addons){
                     if(c.underhaulNameMatches(addn)){
                         foundMatch = true;
+                        if(c.underhaul==null)c.underhaul = new UnderhaulConfiguration();
+                        if(c.underhaul.fissionSFR==null)c.underhaul.fissionSFR = new FissionSFRConfiguration();
                         c.underhaul.fissionSFR.blocks.addAll(theBlocks);
                     }
                 }

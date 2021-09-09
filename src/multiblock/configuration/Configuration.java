@@ -261,7 +261,7 @@ public class Configuration{
     }
     public Configuration findMatchingAddon(Configuration addon){
         for(Configuration addn : addons){
-            if(addn.nameAndVersionMatches(addon))return addn;
+            if(addn.nameMatches(addon))return addn;
         }
         throw new NullPointerException("No matching addons found for "+addon.toString()+"!");
     }

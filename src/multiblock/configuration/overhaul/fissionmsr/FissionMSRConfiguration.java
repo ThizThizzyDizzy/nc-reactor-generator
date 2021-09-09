@@ -122,6 +122,8 @@ public class FissionMSRConfiguration extends AbstractBlockContainer<Block> {
                 for(Configuration c : addon.addons){
                     if(c.overhaulNameMatches(addn)){
                         foundMatch = true;
+                        if(c.overhaul==null)c.overhaul = new OverhaulConfiguration();
+                        if(c.overhaul.fissionMSR==null)c.overhaul.fissionMSR = new FissionMSRConfiguration();
                         c.overhaul.fissionMSR.blocks.addAll(theBlocks);
                     }
                 }

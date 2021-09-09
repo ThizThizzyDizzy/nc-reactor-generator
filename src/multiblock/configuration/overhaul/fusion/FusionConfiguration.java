@@ -125,6 +125,8 @@ public class FusionConfiguration extends AbstractBlockContainer<Block> {
                 for(Configuration c : addon.addons){
                     if(c.overhaulNameMatches(addn)){
                         foundMatch = true;
+                        if(c.overhaul==null)c.overhaul = new OverhaulConfiguration();
+                        if(c.overhaul.fusion==null)c.overhaul.fusion = new FusionConfiguration();
                         c.overhaul.fusion.blocks.addAll(theBlocks);
                     }
                 }

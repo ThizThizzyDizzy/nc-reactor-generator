@@ -143,6 +143,8 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
                 for(Configuration c : addon.addons){
                     if(c.overhaulNameMatches(addn)){
                         foundMatch = true;
+                        if(c.overhaul==null)c.overhaul = new OverhaulConfiguration();
+                        if(c.overhaul.fissionSFR==null)c.overhaul.fissionSFR = new FissionSFRConfiguration();
                         c.overhaul.fissionSFR.blocks.addAll(theBlocks);
                     }
                 }

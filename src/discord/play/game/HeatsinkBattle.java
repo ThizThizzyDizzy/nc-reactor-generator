@@ -46,6 +46,7 @@ public class HeatsinkBattle extends Game{
     private int initialHeat;
     public HeatsinkBattle(ArrayList<Multiblock> allowedMultiblocks){
         super("Heatsink Battle");
+        timeout = 600_000;//10 minutes
         ArrayList<Multiblock> multis = new ArrayList<>();
         HashMap<Multiblock, Configuration> configs = new HashMap<>();
         synchronized(Bot.storedMultiblocks){
@@ -124,7 +125,7 @@ public class HeatsinkBattle extends Game{
                 + "Each turn, choose a block to place in the reactor. Your goal is to cool it down as much as possible.\nAt the end of the game, the player who provided the most cooling wins!\n"
                 + "To make a change, type `<x> <y> <z> <block name>`. (ex. `4 2 13 water`)\n"
                 + "You can replace invalid blocks and Coolers/Heatsinks/Heaters";
-        if(entryFee>0)message+="\n**Entry fee is <:smore:493612965195677706>"+entryFee+" each (Winner takes all!)** *S'mores will be lost if the battle times out or is stopped*";
+        if(entryFee>0)message+="\n**Entry fee is <:smore:493612965195677706>"+entryFee+" each (Winner takes all!)** *S'mores will be lost if the battle is stopped*";
         message+="\nChosen core:";
         initialHeat = getHeat();
         channel.sendMessage(message).queue();
@@ -134,16 +135,19 @@ public class HeatsinkBattle extends Game{
     @Override
     public void stop(MessageChannel channel, StopReason reason){
         if(!started){
-            long smoresPerPlayer = smorePool/players.size();
-            for(long u : players){
-                SmoreBot.addSmores(channel.getJDA().retrieveUserById(u).complete(), smoresPerPlayer);
-                SmoreBot.removeSmores(channel.getJDA().getSelfUser(), smoresPerPlayer);
+            if(smorePool>0){
+                long smoresPerPlayer = smorePool/players.size();
+                for(long u : players){
+                    SmoreBot.addSmores(channel.getJDA().retrieveUserById(u).complete(), smoresPerPlayer);
+                    SmoreBot.removeSmores(channel.getJDA().getSelfUser(), smoresPerPlayer);
+                }
+                channel.sendMessage("Players have been refunded <:smore:493612965195677706>"+smoresPerPlayer).queue();
             }
-            channel.sendMessage("Players have been refunded <:smore:493612965195677706>"+smoresPerPlayer+" smores").queue();
             return;
         }
         String s = "Battle has concluded!";
         if(reason==StopReason.TIMEOUT)s = "Battle timed out!";
+        if(reason==StopReason.TIMEOUT)reason = StopReason.GAME_FINISHED;
         if(getHeat()<=0)s+="\nReactor was cooled!";
         s+="\nScores: ";
         HashMap<Long, Integer> scoresMap = new HashMap<>();
@@ -156,16 +160,23 @@ public class HeatsinkBattle extends Game{
             scoresMap.put(players.get(i), (int)(scores.get(i)*(1+bonus)));
             namesMap.put(players.get(i), playernames.get(i));
         }
+        long winner = -1;
+        long winnerScore = -1;
+        for(int i = 0; i<players.size(); i++){
+            long u = players.get(i);
+            int score = scoresMap.get(u);
+            s+="\n"+(i+1)+" - "+strip(namesMap.get(u))+" ("+scoresMap.get(u)+")";
+            if(bonusMap.get(u)!=0)s+=" "+Math.round(bonusMap.get(u)*100)+"% Rainbow Bonus!";
+            if(!skips.contains(i)){
+                if(winner==-1||score>winnerScore){
+                    winner = u;
+                    winnerScore = score;
+                }
+            }
+        }
         Collections.sort(players, (o1, o2) -> {
             return scoresMap.get(o2)-scoresMap.get(o1);
         });
-        long winner = -1;
-        for(int i = 0; i<players.size(); i++){
-            long u = players.get(i);
-            if(winner==-1&&!skips.contains(i))winner = u;
-            s+="\n"+(i+1)+" - "+strip(namesMap.get(u))+" ("+scoresMap.get(u)+")";
-            if(bonusMap.get(u)!=0)s+=" "+Math.round(bonusMap.get(u)*100)+"% Rainbow Bonus!";
-        }
         if(smorePool>0){
             if(reason==StopReason.GAME_FINISHED&&winner!=-1){
                 User winnerUser = channel.getJDA().retrieveUserById(winner).complete();
@@ -181,6 +192,7 @@ public class HeatsinkBattle extends Game{
         if(!started){
             if(message.getAuthor().getIdLong()==players.get(0)&&message.getContentRaw().trim().equalsIgnoreCase("start")){
                 started = true;
+                update();
                 turn = new Random().nextInt(players.size());
                 channel.sendMessage("Battle has begun!").queue();
                 nextTurn(message.getChannel());
@@ -276,7 +288,7 @@ public class HeatsinkBattle extends Game{
         return file;
     }
     private void nextTurn(MessageChannel channel){
-        update();
+//        update();
         if(skips.size()==players.size()||getHeat()<=0){
             stop(channel, StopReason.GAME_FINISHED);//used for printing end-of-game stuff
             running = false;
@@ -286,7 +298,7 @@ public class HeatsinkBattle extends Game{
             turn++;
             if(turn>=players.size())turn = 0;
         }while(skips.contains(turn));
-        int threshold = 50;
+        int threshold = 5000;
         boolean met = false;
         for(int i : scores)if(i>=threshold)met = true;
         if(met&&!splodoHasDonated){
@@ -347,6 +359,6 @@ public class HeatsinkBattle extends Game{
     }
     @Override
     public boolean canAnyoneStop(){
-        return smorePool==0;
+        return smorePool==0||!running;
     }
 }
