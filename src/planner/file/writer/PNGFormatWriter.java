@@ -18,7 +18,7 @@ import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 import simplelibrary.opengl.Renderer2D;
 public class PNGFormatWriter extends ImageFormatWriter{
-private final int textHeight = 20;
+    private final int textHeight = 20;
     private final int borderSize = 16;
     @Override
     public FileFormat getFileFormat(){
@@ -49,7 +49,7 @@ private final int textHeight = 20;
             }
             double partsWidth = 0;
             for(PartCount c : parts){
-                partsWidth = Math.max(partsWidth, textHeight+FontManager.getLengthForStringWithHeight(textHeight+c.count+"x "+c.name, textHeight));
+                partsWidth = Math.max(partsWidth, textHeight+FontManager.getLengthForStringWithHeight(c.count+"x "+c.name, textHeight));
             }
             final double tW = textWidth+borderSize;
             final double pW = partsWidth+borderSize;
