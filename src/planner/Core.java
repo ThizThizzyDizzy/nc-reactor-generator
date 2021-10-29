@@ -47,7 +47,6 @@ import planner.menu.dialog.MenuCriticalError;
 import planner.menu.dialog.MenuMinorError;
 import planner.menu.dialog.MenuModerateError;
 import planner.menu.dialog.MenuSevereError;
-import planner.menu.dialog.MenuUpdate;
 import planner.menu.dialog.MenuWarningMessage;
 import planner.module.Module;
 import planner.theme.Theme;
@@ -56,6 +55,7 @@ import planner.vr.VRMenuComponent;
 import planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;
 import planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import planner.vr.menu.component.VRMenuComponentToolPanel;
+import simplelibrary.Queue;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
@@ -102,6 +102,7 @@ public class Core extends Renderer2D{
     public static boolean recoveryMode = false;
     public static final ArrayList<String> pinnedStrs = new ArrayList<>();
     private static Random rand = new Random();
+    public static String str = "";
     public static void addModule(Module m){
         modules.add(m);
     }
@@ -318,12 +319,6 @@ public class Core extends Renderer2D{
         if(Main.headless)GLFW.glfwHideWindow(helper.getWindow());
         System.out.println("Activating GUI");
         helper.assignGUI(gui);
-        System.out.println("Checking for updates...");
-        Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Generator");
-        if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
-            gui.menu = new MenuUpdate(gui, gui.menu, updater);
-        }
-        System.out.println("Update Check Complete.");
     }
     public static void tick(boolean isLastTick){
         if(!isLastTick){
@@ -472,6 +467,8 @@ public class Core extends Renderer2D{
     public static void setTheme(Theme t){
         t.onSet();
         theme = t;
+        str+=t.name.charAt(0);
+        if(str.length()>5)str = str.substring(1);
         helper.setBackground(theme.getMenuBackgroundColor());
     }
     public static void applyWhite(){

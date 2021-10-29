@@ -52,6 +52,7 @@ public abstract class Theme{
         addTheme(new SolidColorTheme("Reflector", new Color(186, 144, 94)));
         addTheme(new SolidColorTheme("Conductor", new Color(129, 129, 129)));
         addTheme(new SolidColorTheme("Old Heavy Water", new Color(40, 50, 100), new Color(0.5f, 0.5f, 1f, 1f), .625f, .875f, new Color(.875f,.875f,1f,1f)));
+        addTheme(new SolidColorTheme("Kyanite", new Color(34, 210, 250)));
         addTheme(new LegacyTheme("Air"){
             @Override
             public Color getBackgroundColor(){

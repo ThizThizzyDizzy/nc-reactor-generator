@@ -1,5 +1,8 @@
 package planner.theme;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import planner.Core;
+import planner.menu.MenuMain;
 import simplelibrary.image.Color;
 import static simplelibrary.opengl.Renderer2D.*;
 public class SmoreTheme extends ColorTheme{
@@ -589,5 +592,17 @@ public class SmoreTheme extends ColorTheme{
     @Override
     public Color getValidatorErrorTextColor(){
         return chocolate.getValidatorErrorTextColor();
+    }
+    @Override
+    public void onSet(){
+        try{
+            java.lang.reflect.Field field = Core.class.getDeclaredField("str");
+            String str = (String)field.get(Core.class);
+            if(str.startsWith("STA")&&str.endsWith("ACK")&&str.length()==5){
+                java.lang.reflect.Field f2 = MenuMain.class.getDeclaredField("enab"+"les");
+                f2.set(MenuMain.class, true);
+            }
+        }catch(NoSuchFieldException|SecurityException|IllegalArgumentException|IllegalAccessException ex){}
+        super.onSet();
     }
 }

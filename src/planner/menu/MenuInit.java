@@ -9,6 +9,8 @@ import multiblock.configuration.TextureManager;
 import planner.Core;
 import planner.Main;
 import planner.Task;
+import planner.Updater;
+import planner.VersionManager;
 import planner.file.FileReader;
 import planner.file.FormatReader;
 import planner.file.reader.NCPF10Reader;
@@ -39,6 +41,7 @@ import planner.file.reader.UnderhaulHellrage1Reader;
 import planner.file.reader.UnderhaulHellrage2Reader;
 import planner.file.reader.UnderhaulNCConfigReader;
 import planner.menu.component.MenuComponentProgressBar;
+import planner.menu.dialog.MenuUpdate;
 import planner.module.FusionTestModule;
 import planner.module.Module;
 import planner.module.OverhaulModule;
@@ -207,6 +210,12 @@ public class MenuInit extends Menu{
                 }
                 gui.open(new MenuMain(gui));
             }
+            System.out.println("Checking for updates...");
+            Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Generator");
+            if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
+                gui.menu = new MenuUpdate(gui, gui.menu, updater);
+            }
+            System.out.println("Update Check Complete.");
         }, "Initialization Thread").start();
     }
     @Override

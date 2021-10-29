@@ -2,7 +2,6 @@ package planner.menu;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import multiblock.CuboidalMultiblock;
 import multiblock.Multiblock;
 import multiblock.configuration.PartialConfiguration;
 import multiblock.overhaul.fissionmsr.OverhaulMSR;
@@ -99,6 +98,7 @@ public class MenuMain extends Menu{
     private MenuComponent metadataPanel = add(new MenuComponent(0, 0, 0, 0){
         MenuComponentMulticolumnMinimaList list = add(new MenuComponentMulticolumnMinimaList(0, 0, 0, 0, 0, 50, 50));
         MenuComponentMinimalistButton done = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Done", true, true).setTooltip("Finish editing metadata"));
+        MenuComponentMinimalistButton stack = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "S'tack", true, true, true).setTooltip("What's this doing here?"));
         {
             done.addActionListener((e) -> {
                 Core.resetMetadata();
@@ -111,6 +111,9 @@ public class MenuMain extends Menu{
                 metadating = false;
                 refresh();
             });
+            stack.addActionListener((e) -> {
+                if(enables)gui.open(new MenuStackEditor(gui, MenuMain.this));
+            });
         }
         @Override
         public void renderBackground(){
@@ -121,6 +124,10 @@ public class MenuMain extends Menu{
             done.width = width;
             done.y = height-height/16;
             done.height = height/16;
+            stack.height = done.height*3/4*(enables?1:0);
+            stack.width = stack.height*4*(enables?1:0);
+            stack.y = done.y-stack.height;
+            stack.enabled = enables;
         }
         @Override
         public void render(){
@@ -168,6 +175,7 @@ public class MenuMain extends Menu{
     });
     private ArrayList<MenuComponentMinimalistButton> multiblockButtons = new ArrayList<>();
     private MenuComponentMinimalistButton multiblockCancel = add(new MenuComponentMinimalistButton(0, 0, 0, 0, "Cancel", true, true, true));
+    public static boolean enables = false;
     private boolean adding = false;
     private int addingScale = 0;
     private final int addingTime = 3;
