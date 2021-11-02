@@ -4,7 +4,6 @@ import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import org.lwjgl.glfw.GLFW;
 import simplelibrary.image.Image;
 public class SelectionTool extends EditorTool{
     public SelectionTool(Editor editor, int id){
@@ -122,8 +121,8 @@ public class SelectionTool extends EditorTool{
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = null;
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = rightDragEnd = null;
+        if(button==0)leftDragStart = leftDragEnd = null;
+        if(button==1)rightDragStart = rightDragEnd = null;
     }
     @Override
     public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
@@ -131,28 +130,28 @@ public class SelectionTool extends EditorTool{
             editor.clearSelection(id);
         }
         if(editor.isShiftPressed(id)){
-            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectGroup(id, x,y,z);
-            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectGroup(id, x,y,z);
+            if(button==0)editor.selectGroup(id, x,y,z);
+            if(button==1)editor.deselectGroup(id, x,y,z);
             return;
         }
         if(editor.isAltPressed(id)){
-            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)editor.selectCluster(id, x,y,z);
-            if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)editor.deselectCluster(id, x,y,z);
+            if(button==0)editor.selectCluster(id, x,y,z);
+            if(button==1)editor.deselectCluster(id, x,y,z);
             return;
         }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = new int[]{x,y,z};
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = new int[]{x,y,z};
+        if(button==0)leftDragStart = new int[]{x,y,z};
+        if(button==1)rightDragStart = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null)editor.select(id, leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z);
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&rightDragStart!=null)editor.deselect(id, rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z);
+        if(button==0&&leftDragStart!=null)editor.select(id, leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z);
+        if(button==1&&rightDragStart!=null)editor.deselect(id, rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z);
         mouseReset(editorSpace, button);
     }
     @Override
     public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragEnd = new int[]{x,y,z};
+        if(button==0)leftDragEnd = new int[]{x,y,z};
+        if(button==1)rightDragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

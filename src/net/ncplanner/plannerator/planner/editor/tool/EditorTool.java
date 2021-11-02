@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.Editor;
 import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
@@ -38,7 +39,7 @@ public abstract class EditorTool{
         int xDiff = toX-fromX;
         int yDiff = toY-fromY;
         int zDiff = toZ-fromZ;
-        double dist = Math.sqrt(Math.pow(fromX-toX, 2)+Math.pow(fromY-toY, 2)+Math.pow(fromZ-toZ, 2));
+        double dist = Math.sqrt(MathUtil.pow(fromX-toX, 2)+MathUtil.pow(fromY-toY, 2)+MathUtil.pow(fromZ-toZ, 2));
         ArrayList<int[]> steps = new ArrayList<>();
         if(!includeFirst)steps.add(new int[]{fromX,fromY,fromZ});
         FOR:for(float r = 0; r<1; r+=.25/dist){

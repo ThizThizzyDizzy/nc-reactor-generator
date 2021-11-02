@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.multiblock.editor.symmetry;
 import java.util.ArrayList;
-import java.util.Locale;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
+import net.ncplanner.plannerator.planner.StringUtil;
 public abstract class CoilSymmetry extends Symmetry<OverhaulTurbine>{
     public static CoilSymmetry X = new CoilSymmetry("X"){
         @Override
@@ -44,7 +44,7 @@ public abstract class CoilSymmetry extends Symmetry<OverhaulTurbine>{
         super(axis+" Coil Symmetry");
     }
     public boolean matches(String sym){
-        switch(sym.toLowerCase(Locale.ROOT).replace(" ", "").replace("-", "").replace("symmetry", "").replace("symmetrical", "")){
+        switch(StringUtil.superRemove(StringUtil.toLowerCase(sym), " ", "-", "symmetry", "symmetrical")){
             case "x":
                 return this==X;
             case "y":

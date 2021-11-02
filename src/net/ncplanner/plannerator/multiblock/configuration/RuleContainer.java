@@ -4,7 +4,6 @@ public abstract class RuleContainer<BlockType extends IBlockType, Template exten
     public ArrayList<AbstractPlacementRule<BlockType, Template>> rules = new ArrayList<>();
     @Override
     public boolean equals(Object obj){
-        if(obj==null)return false;
         if(obj instanceof RuleContainer){
             return rules.equals(((RuleContainer)obj).rules) && stillEquals((RuleContainer)obj);
         }

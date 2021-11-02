@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr;
-import java.util.Locale;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractBlockContainer;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
+import net.ncplanner.plannerator.planner.StringUtil;
 public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType, Block> {
     public static PlacementRule parseNC(FissionSFRConfiguration configuration, String str) {
         PlacementRule rule = new PlacementRule();
@@ -105,9 +105,8 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
     protected Block parseTemplate(AbstractBlockContainer<Block> configuration, String str) {
         Block block = null;
         int shortest = 0;
-        str = str.replace(" heat heater", " heater");
-        str = str.replace(" heat sink", " sink");
-        String[] strs = str.split(" ");
+        str = StringUtil.superReplace(str, " heat heater", " heater", " heat sink", " sink");
+        String[] strs = StringUtil.split(str, " ");
         if(strs.length!=2||!strs[1].startsWith("sink")){
             throw new IllegalArgumentException("Unknown rule bit: "+str);
         }
@@ -120,7 +119,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
                         return b;
                     }
                 }
-                if(s.toLowerCase(Locale.ROOT).contains("sink")&&s.toLowerCase(Locale.ROOT).matches("(\\s|^)?"+strs[0].toLowerCase(Locale.ROOT).replace("_", "[_ ]")+"(\\s|$)?.*")){
+                if(StringUtil.toLowerCase(s).contains("sink")&&StringUtil.matches(StringUtil.toLowerCase(s), "(\\s|^)?"+StringUtil.replace(StringUtil.toLowerCase(strs[0]), "_", "[_ ]")+"(\\s|$)?.*")){
                     int len = s.length();
                     if(block==null||len<shortest){
                         block = b;

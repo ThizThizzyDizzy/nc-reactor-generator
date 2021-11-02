@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.multiblock.overhaul.fissionsfr;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.Function;
 import net.ncplanner.plannerator.Renderer;
@@ -8,9 +9,11 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
+import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.PlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
@@ -382,10 +385,10 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.PINK;
+                secondaryColor = Core.theme.getClusterDisconnectedColor();
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.WHITE;
+                secondaryColor = Core.theme.getClusterInvalidColor();
             }
             if(secondaryColor!=null){
                 renderer.setColor(secondaryColor, .75f);
@@ -594,7 +597,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
             }
         }
         ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
-        keys.sort((o1, o2) -> {
+        Collections.sort(keys, (o1, o2) -> {
             return possible.get(o1)-possible.get(o2);
         });
         for(int[] key : keys){
@@ -618,7 +621,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> searchables = template.getSearchableNames();
-        for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
+        for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
         return searchables;
     }
     @Override
@@ -632,5 +635,13 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public String getPinnedName(){
         return template.getPinnedName();
+    }
+    @Override
+    public boolean hasRecipes(){
+        return !template.allRecipes.isEmpty();
+    }
+    @Override
+    public ArrayList<BlockRecipe> getRecipes(){
+        return template.allRecipes;
     }
 }

@@ -72,7 +72,7 @@ public class Renderer{
             left = (left+right)/2-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)/2;
         }
         if(snap>0){
-            left = right-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)/2;
+            left = right-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top);
         }
         while(text!=null){
             if(text.color!=null)GL11.glColor3f(text.color.getRed()/255f, text.color.getGreen()/255f, text.color.getBlue()/255f);
@@ -123,7 +123,7 @@ public class Renderer{
             left = (left+right)/2-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)/2;
         }
         if(snap>0){
-            left = right-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top)/2;
+            left = right-FontManager.getLengthForStringWithHeight(text.toString(), bottom-top);
         }
         if(text.color!=null)GL11.glColor3f(text.color.getRed()/255f, text.color.getGreen()/255f, text.color.getBlue()/255f);
         double textWidth = FontManager.getLengthForStringWithHeight(text.text, bottom-top);
@@ -165,30 +165,30 @@ public class Renderer{
     }
     /**
      * Draws formatted text with word-wrapping.
-     * @param leftEdge left edge
-     * @param topEdge top edge
-     * @param rightPossibleEdge right possible edge
-     * @param bottomEdge bottom edge
+     * @param left left edge
+     * @param top top edge
+     * @param right right possible edge
+     * @param bottom bottom edge
      * @param text The <code>FormattedText</code> to draw.
      * @param snap Which side to snap the text to. Defaults to left. -1 = left. 0 = center. 1 = right
      * @return the portion of text wrapped to the next line
      */
-    public FormattedText drawFormattedTextWithWordWrap(double leftEdge, double topEdge, double rightPossibleEdge, double bottomEdge, FormattedText text, int snap){
+    public FormattedText drawFormattedTextWithWordWrap(double left, double top, double right, double bottom, FormattedText text, int snap){
         ArrayList<FormattedText> words = text.split(" ");
-        if(words.isEmpty())return drawFormattedTextWithWrap(leftEdge, topEdge, rightPossibleEdge, bottomEdge, text, snap);
+        if(words.isEmpty())return drawFormattedTextWithWrap(left, top, right, bottom, text, snap);
         String str = words.get(0).text;
-        double height = bottomEdge-topEdge;
-        double length = rightPossibleEdge-leftEdge;
+        double height = bottom-top;
+        double length = right-left;
         for(int i = 1; i<words.size(); i++){
             String string = str+" "+words.get(i).text;
             if(FontManager.getLengthForStringWithHeight(string.trim(), height)>=length){
-                drawFormattedTextWithWrap(leftEdge, topEdge, rightPossibleEdge, bottomEdge, new FormattedText(str, text.color, text.bold, text.italic, text.underline, text.strikethrough), snap);
+                drawFormattedTextWithWrap(left, top, right, bottom, new FormattedText(str, text.color, text.bold, text.italic, text.underline, text.strikethrough), snap);
                 return new FormattedText(text.text.replaceFirst("\\Q"+str, "").trim());
             }else{
                 str = string;
             }
         }
-        return drawFormattedTextWithWrap(leftEdge, topEdge, rightPossibleEdge, bottomEdge, text, snap);
+        return drawFormattedTextWithWrap(left, top, right, bottom, text, snap);
     }
     private void drawItalicText(double left, double top, double right, double bottom, String text){
         ImageStash.instance.bindTexture(FontManager.getFontImage());
@@ -209,21 +209,21 @@ public class Renderer{
         }
         GL11.glEnd();
     }
-    public String drawTextWithWordWrap(double leftEdge, double topEdge, double rightPossibleEdge, double bottomEdge, String text){
+    public String drawTextWithWordWrap(double left, double top, double right, double bottom, String text){
         String[] words = text.split(" ");
         String str = words[0];
-        double height = bottomEdge-topEdge;
-        double length = rightPossibleEdge-leftEdge;
+        double height = bottom-top;
+        double length = right-left;
         for(int i = 1; i<words.length; i++){
             String string = str+" "+words[i];
             if(FontManager.getLengthForStringWithHeight(string.trim(), height)>=length){
-                Renderer2D.drawTextWithWrap(leftEdge, topEdge, rightPossibleEdge, bottomEdge, str.trim());
+                Renderer2D.drawTextWithWrap(left, top, right, bottom, str.trim());
                 return text.replaceFirst("\\Q"+str, "").trim();
             }else{
                 str = string;
             }
         }
-        return Renderer2D.drawTextWithWrap(leftEdge, topEdge, rightPossibleEdge, bottomEdge, text);
+        return Renderer2D.drawTextWithWrap(left, top, right, bottom, text);
     }
     public void drawCircle(double x, double y, double innerRadius, double outerRadius){
         int resolution = (int)(2*MathUtil.pi()*outerRadius);
@@ -607,5 +607,24 @@ public class Renderer{
             drawCube(x2-thickness, y2-thickness, z1+thickness, x2, y2, zm-thickness2, 0);//first sub-edge
             drawCube(x2-thickness, y2-thickness, zm+thickness2, x2, y2, z2-thickness, 0);//second sub-edge
         }
+    }
+    public void fillPolygon(double[] xPoints, double[] yPoints){
+        ImageStash.instance.bindTexture(0);
+        int points = xPoints.length;
+        if(points>4){
+            double x0 = xPoints[0];
+            double y0 = yPoints[0];
+            for(int i = 1; i<xPoints.length-1; i++){
+                fillPolygon(new double[]{x0, xPoints[i], xPoints[i+1]}, new double[]{y0, yPoints[i], yPoints[i+1]});
+            }
+            return;
+        }
+        if(points<3)throw new IllegalArgumentException("Invalid number of points for polygon: "+points);
+        if(points==3)GL11.glBegin(GL11.GL_TRIANGLES);
+        if(points==4)GL11.glBegin(GL11.GL_QUADS);
+        for(int i = 0; i<xPoints.length; i++){
+            GL11.glVertex2d(xPoints[i], yPoints[i]);
+        }
+        GL11.glEnd();
     }
 }

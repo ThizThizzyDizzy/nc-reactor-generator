@@ -22,6 +22,6 @@ public enum Direction{
     }
     @Override
     public String toString(){
-        return super.toString().replace("N", "-").replace("P", "+");
+        return super.toString().replace('N', '-').replace('P', '+');
     }
 }

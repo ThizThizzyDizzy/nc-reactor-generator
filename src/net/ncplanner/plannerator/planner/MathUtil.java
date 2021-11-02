@@ -24,6 +24,9 @@ public class MathUtil{
     public static double pow(double a, double b){
         return Math.pow(a, b);
     }
+    public static double exp(double a){
+        return Math.exp(a);
+    }
     public static long round(double d){
         return Math.round(d);
     }
@@ -156,5 +159,18 @@ public class MathUtil{
         z-=z0;
         return new Vector3f((float)x, (float)y, (float)z);
     }
-    
+    public static long nanoTime(){
+        return System.nanoTime();
+    }
+    public static boolean isPrime(int n){
+        if(n<=1)return false;for(int i = 2; i<n; i++){
+            if(n%i==0)return false;
+        }
+        return true;
+    }
+    public static int nextPrime(int n, int step){
+        if(n<=1)return 2;
+        if(isPrime(n+step))return n+step;
+        return nextPrime(n+step, step);
+    }
 }

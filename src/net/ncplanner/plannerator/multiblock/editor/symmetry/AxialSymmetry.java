@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.multiblock.editor.symmetry;
 import java.util.ArrayList;
-import java.util.Locale;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
+import net.ncplanner.plannerator.planner.StringUtil;
 public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
     public static AxialSymmetry X = new AxialSymmetry("X"){
         @Override
@@ -41,7 +41,7 @@ public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
         super(axis+" Symmetry");
     }
     public boolean matches(String sym){
-        switch(sym.toLowerCase(Locale.ROOT).replace(" ", "").replace("-", "").replace("symmetry", "").replace("symmetrical", "")){
+        switch(StringUtil.superRemove(StringUtil.toLowerCase(sym), " ", "-", "symmetry", "symmetrical")){
             case "x":
                 return this==X;
             case "y":

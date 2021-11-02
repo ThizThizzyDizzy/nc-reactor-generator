@@ -18,6 +18,9 @@ import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
+import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.Queue;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
@@ -28,7 +31,6 @@ import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.lwjgl.opengl.GL11;
-import simplelibrary.Queue;
 import simplelibrary.Stack;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigNumberList;
@@ -51,7 +53,7 @@ public abstract class Multiblock<T extends Block>{
     public boolean calculationPaused = false;//if calculation is incomplete and paused
     {
         resetMetadata();
-        lastChangeTime = System.nanoTime();
+        lastChangeTime = MathUtil.nanoTime();
     }
     public void resetMetadata(){
         metadata.clear();
@@ -393,7 +395,7 @@ public abstract class Multiblock<T extends Block>{
     }
     public void undo(boolean calculate){
         if(!history.isEmpty()){
-            lastChangeTime = System.nanoTime();
+            lastChangeTime = MathUtil.nanoTime();
             Action a = history.pop();
             ActionResult result = a.undo(this);
             if(calculate)recalculate(result);
@@ -402,7 +404,7 @@ public abstract class Multiblock<T extends Block>{
     }
     public void redo(boolean calculate){
         if(!future.isEmpty()){
-            lastChangeTime = System.nanoTime();
+            lastChangeTime = MathUtil.nanoTime();
             Action a = future.pop();
             ActionResult result = a.apply(this, true);
             if(calculate)recalculate(result);
@@ -410,7 +412,7 @@ public abstract class Multiblock<T extends Block>{
         }
     }
     public void action(Action action, boolean calculate, boolean allowUndo){
-        lastChangeTime = System.nanoTime();
+        lastChangeTime = MathUtil.nanoTime();
         ActionResult result = action.apply(this, allowUndo);
         if(calculate)recalculate(result);
         future.clear();
@@ -559,14 +561,14 @@ public abstract class Multiblock<T extends Block>{
     public abstract Multiblock<T> blankCopy();
     public Multiblock<T> copy(){
         Multiblock<T> copy = doCopy();
-        copy.metadata = (HashMap<String, String>)metadata.clone();
-        copy.moduleData = (HashMap<Module, Object>)moduleData.clone();
+        copy.metadata = new HashMap<>(metadata);
+        copy.moduleData = new HashMap<>(moduleData);
         copy.calculated = calculated;
         return copy;
     }
     public abstract Multiblock<T> doCopy();
     public long nanosSinceLastChange(){
-        return System.nanoTime()-lastChangeTime;
+        return MathUtil.nanoTime()-lastChangeTime;
     }
     public long millisSinceLastChange(){
         return nanosSinceLastChange()/1_000_000;
@@ -791,7 +793,7 @@ public abstract class Multiblock<T extends Block>{
     }
     private String genNewGraphName(Block b){
         int i = 1;
-        String nam = b.getName().replace("Liquid", "").replace("Cooler", "").replace("Reactor", "").replace("Fuel", "").replace("Transparent", "").replace(" ", "").replace("Heat Sink", "").trim();
+        String nam = StringUtil.superRemove(b.getName(), "Liquid", "Cooler", "Reactor", "Fuel", "Transparent", " ", "Heat Sink").trim();
         String name;
         do{
             name = nam+i;

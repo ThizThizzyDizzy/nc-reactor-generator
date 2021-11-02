@@ -42,16 +42,6 @@ public abstract class Module<T>{
     public String getTooltip(Multiblock m, T o){
         return null;
     }
-    protected String percent(double n, int digits){
-        double fac = Math.pow(10, digits);
-        double d = (Math.round(n*fac*100)/(double)Math.round(fac));
-        return (digits==0?Math.round(d):d)+"%";
-    }
-    protected String round(double n, int digits){
-        double fac = Math.pow(10, digits);
-        double d = Math.round(n*fac)/(double)Math.round(fac);
-        return (digits==0?Math.round(d):d)+"";
-    }
     public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){}
     public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}
     public void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){}

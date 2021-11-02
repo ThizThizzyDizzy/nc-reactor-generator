@@ -43,6 +43,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Pinnable;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
@@ -349,7 +350,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     Block block = blocks.get(i);
                     if(block.isFuelCell()){
                         if(!block.template.fuelCellHasBaseStats&&block.recipe==null)continue;
-                        float criticalityModifier = (float) (1/(1+Math.exp(2*(block.neutronFlux-2*(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)))));
+                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(block.neutronFlux-2*(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)))));
                         block.efficiency = (block.recipe==null?block.template.fuelCellEfficiency:block.recipe.fuelCellEfficiency)*block.positionalEfficiency*(block.source==null?1:block.source.template.sourceEfficiency)*criticalityModifier;
                         if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
                     }
@@ -587,7 +588,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     Block block = allBlocks.get(i);
                     if(block.isFuelCell()){
                         if(!block.template.fuelCellHasBaseStats&&block.recipe==null)continue;
-                        float criticalityModifier = (float) (1/(1+Math.exp(2*(block.neutronFlux-2*(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)))));
+                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(block.neutronFlux-2*(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)))));
                         block.efficiency = (block.recipe==null?block.template.fuelCellEfficiency:block.recipe.fuelCellEfficiency)*block.positionalEfficiency*(block.source==null?1:block.source.template.sourceEfficiency)*criticalityModifier;
                         if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
                     }
@@ -823,7 +824,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     Block block = allBlocks.get(i);
                     if(block.isFuelCell()){
                         if(!block.template.fuelCellHasBaseStats&&block.recipe==null)continue;
-                        float criticalityModifier = (float) (1/(1+Math.exp(2*(block.neutronFlux-2*(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)))));
+                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(block.neutronFlux-2*(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)))));
                         block.efficiency = (block.recipe==null?block.template.fuelCellEfficiency:block.recipe.fuelCellEfficiency)*block.positionalEfficiency*(block.source==null?1:block.source.template.sourceEfficiency)*criticalityModifier;
                         if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
                     }
@@ -1927,7 +1928,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                             for(Block b : line){
                                 actions.add(new SetblockAction(b.x, b.y, b.z, mod.newInstance(b.x, b.y, b.z)));
                             }
-                            suggestor.suggest(new Suggestion("Replace Moderator Line with "+mod.getName().replace(" Moderator", ""), actions, priorities, mod.getTexture()));
+                            suggestor.suggest(new Suggestion("Replace Moderator Line with "+StringUtil.superRemove(mod.getName(), " Moderator"), actions, priorities, mod.getTexture()));
                         }
                     }
                 }
@@ -1984,7 +1985,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 for(Block block : multiblock.getBlocks()){
                     if(!block.isModerator())continue;
                     for(Block b : moderators){
-                        suggestor.suggest(new Suggestion("Upgrade Moderator from "+block.getName().replace(" Moderator", "")+" to "+b.getName().replace(" Moderator", ""), new SetblockAction(block.x, block.y, block.z, b.newInstance(block.x, block.y, block.z)), priorities, b.getTexture()));
+                        suggestor.suggest(new Suggestion("Upgrade Moderator from "+StringUtil.superRemove(block.getName(), " Moderator")+" to "+StringUtil.superRemove(b.getName(), " Moderator"), new SetblockAction(block.x, block.y, block.z, b.newInstance(block.x, block.y, block.z)), priorities, b.getTexture()));
                     }
                 }
             }

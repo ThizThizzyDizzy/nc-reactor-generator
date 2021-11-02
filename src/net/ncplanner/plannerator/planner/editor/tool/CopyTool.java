@@ -4,7 +4,6 @@ import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import org.lwjgl.glfw.GLFW;
 import simplelibrary.image.Image;
 public class CopyTool extends EditorTool{
     public CopyTool(Editor editor, int id){
@@ -59,16 +58,16 @@ public class CopyTool extends EditorTool{
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragStart = dragEnd = null;
+        if(button==0)dragStart = dragEnd = null;
     }
     @Override
     public void mousePressed(Object layer, EditorSpace editorSpace, int x, int y, int z, int button){
         editor.clearSelection(id);
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragStart = new int[]{x,y,z};
+        if(button==0)dragStart = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(Object layer, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&dragStart!=null){
+        if(button==0&&dragStart!=null){
             editor.select(id, dragStart[0], dragStart[1], dragStart[2], x, y, z);
             editor.copySelection(id, (dragStart[0]+x)/2, (dragStart[1]+y)/2, (dragStart[2]+z)/2);
             editor.clearSelection(id);
@@ -77,7 +76,7 @@ public class CopyTool extends EditorTool{
     }
     @Override
     public void mouseDragged(Object layer, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragEnd = new int[]{x,y,z};
+        if(button==0)dragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

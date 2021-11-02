@@ -4,6 +4,7 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.planner.MathUtil;
 public class PrimeFuelModule extends Module<Integer>{
     public PrimeFuelModule(){
         super("prime_fuel");
@@ -47,19 +48,8 @@ public class PrimeFuelModule extends Module<Integer>{
     @Override
     public String getTooltip(Multiblock m, Integer o){
         if(m instanceof UnderhaulSFR||m instanceof OverhaulSFR||m instanceof OverhaulMSR){
-            return (o>2?"Previous Prime: "+nextPrime(o, -1)+"\n":"")+"Fuels: "+o+(isPrime(o)?" (Prime)":"")+"\nNext prime: "+nextPrime(o, 1);
+            return (o>2?"Previous Prime: "+MathUtil.nextPrime(o, -1)+"\n":"")+"Fuels: "+o+(MathUtil.isPrime(o)?" (Prime)":"")+"\nNext prime: "+MathUtil.nextPrime(o, 1);
         }
-        return "Rainbow Score: "+percent(o, 2);
-    }
-    private boolean isPrime(int n){
-        if(n<=1)return false;for(int i = 2; i<n; i++){
-            if(n%i==0)return false;
-        }
-        return true;
-    }
-    private int nextPrime(int n, int step){
-        if(n<=1)return 2;
-        if(isPrime(n+step))return n+step;
-        return nextPrime(n+step, step);
+        return "Rainbow Score: "+MathUtil.percent(o, 2);
     }
 }

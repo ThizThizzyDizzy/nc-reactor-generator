@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Locale;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
@@ -26,19 +26,19 @@ public class OverhaulHellrageSFR2Reader implements FormatReader{
     public synchronized NCPFFile read(InputStream in){
         JSON.JSONObject hellrage = JSON.parse(in);
         String dimS = hellrage.getString("InteriorDimensions");
-        String[] dims = dimS.split(",");
+        String[] dims = StringUtil.split(dimS, ",");
         OverhaulSFR sfr = new OverhaulSFR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0));
         JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
         for(String name : heatSinks.keySet()){
             net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block = null;
             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
-                for(String nam : blok.getLegacyNames())if(nam.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("heatsink", "").replace("liquid", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                for(String nam : blok.getLegacyNames())if(StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "heatsink", "liquid").equalsIgnoreCase(StringUtil.superRemove(StringUtil.toLowerCase(name), " ")))block = blok;
             }
             if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
             JSON.JSONArray array = heatSinks.getJSONArray(name);
             for(Object blok : array){
                 String blokLoc = (String) blok;
-                String[] blockLoc = blokLoc.split(",");
+                String[] blockLoc = StringUtil.split(blokLoc, ",");
                 int x = Integer.parseInt(blockLoc[0]);
                 int y = Integer.parseInt(blockLoc[1]);
                 int z = Integer.parseInt(blockLoc[2]);
@@ -49,13 +49,13 @@ public class OverhaulHellrageSFR2Reader implements FormatReader{
         for(String name : moderators.keySet()){
             net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block = null;
             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
-                for(String nam : blok.getLegacyNames())if(nam.toLowerCase(Locale.ENGLISH).replace(" ", "").replace("moderator", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                for(String nam : blok.getLegacyNames())if(StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "moderator").equalsIgnoreCase(StringUtil.superRemove(name, " ")))block = blok;
             }
             if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
             JSON.JSONArray array = moderators.getJSONArray(name);
             for(Object blok : array){
                 String blokLoc = (String) blok;
-                String[] blockLoc = blokLoc.split(",");
+                String[] blockLoc = StringUtil.split(blokLoc, ",");
                 int x = Integer.parseInt(blockLoc[0]);
                 int y = Integer.parseInt(blockLoc[1]);
                 int z = Integer.parseInt(blockLoc[2]);
@@ -71,7 +71,7 @@ public class OverhaulHellrageSFR2Reader implements FormatReader{
         if(conductors!=null){
             for(Object blok : conductors){
                 String blokLoc = (String) blok;
-                String[] blockLoc = blokLoc.split(",");
+                String[] blockLoc = StringUtil.split(blokLoc, ",");
                 int x = Integer.parseInt(blockLoc[0]);
                 int y = Integer.parseInt(blockLoc[1]);
                 int z = Integer.parseInt(blockLoc[2]);
@@ -90,7 +90,7 @@ public class OverhaulHellrageSFR2Reader implements FormatReader{
         JSON.JSONArray reflectors = hellrage.getJSONArray("Reflectors");
         for(Object blok : reflectors){
             String blokLoc = (String) blok;
-            String[] blockLoc = blokLoc.split(",");
+            String[] blockLoc = StringUtil.split(blokLoc, ",");
             int x = Integer.parseInt(blockLoc[0]);
             int y = Integer.parseInt(blockLoc[1]);
             int z = Integer.parseInt(blockLoc[2]);
@@ -104,18 +104,18 @@ public class OverhaulHellrageSFR2Reader implements FormatReader{
         JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
         HashMap<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> sources = new HashMap<>();
         for(String name : fuelCells.keySet()){
-            String[] fuelSettings = name.split(";");
+            String[] fuelSettings = StringUtil.split(name, ";");
             String fuelName = fuelSettings[0];
             boolean source = Boolean.parseBoolean(fuelSettings[1]);
             BlockRecipe fuel = null;
             for(BlockRecipe feul : cell.allRecipes){
-                for(String nam : feul.getLegacyNames())if(nam.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.substring(4).replace(" ", "")))fuel = feul;
+                for(String nam : feul.getLegacyNames())if(StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(fuelName.substring(4), " ")))fuel = feul;
             }
             if(fuelName.startsWith("[OX]"))fuelName = fuelName.substring(4)+" Oxide";
             if(fuelName.startsWith("[NI]"))fuelName = fuelName.substring(4)+" Nitride";
             if(fuelName.startsWith("[ZA]"))fuelName = fuelName.substring(4)+"-Zirconium Alloy";
             for(BlockRecipe feul : cell.allRecipes){
-                for(String nam : feul.getLegacyNames())if(nam.toLowerCase(Locale.ENGLISH).replace(" ", "").equalsIgnoreCase(fuelName.replace(" ", "")))fuel = feul;
+                for(String nam : feul.getLegacyNames())if(StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(fuelName, " ")))fuel = feul;
             }
             if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+name);
             net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block src = null;
@@ -130,7 +130,7 @@ public class OverhaulHellrageSFR2Reader implements FormatReader{
             JSON.JSONArray array = fuelCells.getJSONArray(name);
             for(Object blok : array){
                 String blokLoc = (String) blok;
-                String[] blockLoc = blokLoc.split(",");
+                String[] blockLoc = StringUtil.split(blokLoc, ",");
                 int x = Integer.parseInt(blockLoc[0]);
                 int y = Integer.parseInt(blockLoc[1]);
                 int z = Integer.parseInt(blockLoc[2]);

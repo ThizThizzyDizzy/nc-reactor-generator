@@ -21,12 +21,14 @@ import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FormatReader;
+import net.ncplanner.plannerator.planner.file.HeaderFormatReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.NCPFHeader;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class NCPF11Reader implements FormatReader {
+public class NCPF11Reader implements FormatReader, HeaderFormatReader {
     @Override
     public boolean formatMatches(InputStream in){
         try{
@@ -50,7 +52,27 @@ public class NCPF11Reader implements FormatReader {
     protected byte getTargetVersion() {
         return (byte) 11;
     }
-
+    @Override
+    public synchronized NCPFHeader readHeader(InputStream in){
+        try{
+            NCPFHeader ncpf = new NCPFHeader();
+            Config header = Config.newConfig();
+            header.load(in);
+            ncpf.version = header.getByte("version");
+            ncpf.multiblocks = header.get("count");
+            if(header.hasProperty("metadata")){
+                ncpf.metadata = new HashMap<>();
+                Config metadata = header.get("metadata");
+                for(String key : metadata.properties()){
+                    ncpf.metadata.put(key, metadata.get(key));
+                }
+            }
+            in.close();
+            return ncpf;
+        }catch(IOException ex){
+            throw new RuntimeException(ex);
+        }
+    }
     @Override
     public synchronized NCPFFile read(InputStream in){
         overhaulTurbinePostLoadInputsMap.clear();

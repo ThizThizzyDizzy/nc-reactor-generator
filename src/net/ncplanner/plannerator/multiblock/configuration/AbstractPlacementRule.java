@@ -8,6 +8,7 @@ import net.ncplanner.plannerator.multiblock.Edge;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Vertex;
 import net.ncplanner.plannerator.planner.Searchable;
+import net.ncplanner.plannerator.planner.StringUtil;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 public abstract class AbstractPlacementRule<BlockType extends IBlockType, Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {
@@ -88,13 +89,13 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
                 for (AbstractPlacementRule<BlockType, Template> rule : rules) {
                     s.append(" AND ").append(rule.toString());
                 }
-                return (s.length() == 0) ? s.toString() : s.substring(5);
+                return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 5);
             case OR:
                 s = new StringBuilder();
                 for (AbstractPlacementRule<BlockType, Template> rule : rules) {
                     s.append(" OR ").append(rule.toString());
                 }
-                return (s.length() == 0) ? s.toString() : s.substring(4);
+                return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 4);
         }
         return "Unknown Rule";
     }
@@ -244,14 +245,14 @@ public abstract class AbstractPlacementRule<BlockType extends IBlockType, Templa
     protected void parseNcInto(AbstractBlockContainer<Template> configuration, String str) {
         if (str.contains("||")) {
             this.ruleType = RuleType.OR;
-            for (String sub : str.split("\\|\\|")) {
+            for (String sub : StringUtil.split(str, "\\|\\|")){
                 AbstractPlacementRule<BlockType, Template> rul = newRule();
                 rul.parseNcInto(configuration, sub.trim());
                 this.rules.add(rul);
             }
         } else if (str.contains("&&")) {
             this.ruleType = RuleType.AND;
-            for (String sub : str.split("&&")) {
+            for (String sub : StringUtil.split(str, "&&")) {
                 AbstractPlacementRule<BlockType, Template> rul = newRule();
                 rul.parseNcInto(configuration, sub.trim());
                 this.rules.add(rul);

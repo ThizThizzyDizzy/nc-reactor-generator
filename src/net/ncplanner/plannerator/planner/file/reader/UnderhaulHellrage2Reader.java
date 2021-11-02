@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
-import java.util.Locale;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
@@ -39,7 +39,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
         for(String name : compressedReactor.keySet()){
             net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block block = null;
             for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.allBlocks){
-                for(String nam : blok.getLegacyNames())if(nam.toLowerCase(Locale.ENGLISH).replace("cooler", "").replace(" ", "").equalsIgnoreCase(name.replace(" ", "")))block = blok;
+                for(String nam : blok.getLegacyNames())if(StringUtil.superRemove(StringUtil.toLowerCase(nam), "cooler", " ").equalsIgnoreCase(StringUtil.superRemove(name, " ")))block = blok;
             }
             if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
             JSON.JSONArray blocks = compressedReactor.getJSONArray(name);

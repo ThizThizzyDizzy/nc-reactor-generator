@@ -4,10 +4,7 @@ import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
-import simplelibrary.opengl.ImageStash;
 public class CutTool extends EditorTool{
     public CutTool(Editor editor, int id){
         super(editor, id);
@@ -17,20 +14,10 @@ public class CutTool extends EditorTool{
     @Override
     public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        ImageStash.instance.bindTexture(0);
-        renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
         renderer.drawCircle(x+width*.3, y+height*.3, width*.075, width*.125);
         renderer.drawCircle(x+width*.3, y+height*.7, width*.075, width*.125);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex2d(x+width*.4, y+height*.35);
-        GL11.glVertex2d(x+width*.35, y+height*.4);
-        GL11.glVertex2d(x+width*.75, y+height*.8);
-        GL11.glVertex2d(x+width*.85, y+height*.8);
-        
-        GL11.glVertex2d(x+width*.4, y+height*.65);
-        GL11.glVertex2d(x+width*.35, y+height*.6);
-        GL11.glVertex2d(x+width*.75, y+height*.2);
-        GL11.glVertex2d(x+width*.85, y+height*.2);
+        renderer.fillPolygon(new double[]{x+width*.4,x+width*.35,x+width*.75,x+width*.85}, new double[]{y+height*.35,y+height*.4,y+height*.8,y+height*.8});
+        renderer.fillPolygon(new double[]{x+width*.4,x+width*.35,x+width*.75,x+width*.85}, new double[]{y+height*.65,y+height*.6,y+height*.2,y+height*.2});
     }
     @Override
     public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
@@ -68,16 +55,16 @@ public class CutTool extends EditorTool{
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragStart = dragEnd = null;
+        if(button==0)dragStart = dragEnd = null;
     }
     @Override
     public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
         editor.clearSelection(id);
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragStart = new int[]{x,y,z};
+        if(button==0)dragStart = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&dragStart!=null){
+        if(button==0&&dragStart!=null){
             editor.select(id, dragStart[0], dragStart[1], dragStart[2], x, y, z);
             editor.cutSelection(id, (dragStart[0]+x)/2, (dragStart[1]+y)/2, (dragStart[2]+z)/2);
             editor.clearSelection(id);
@@ -86,7 +73,7 @@ public class CutTool extends EditorTool{
     }
     @Override
     public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)dragEnd = new int[]{x,y,z};
+        if(button==0)dragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

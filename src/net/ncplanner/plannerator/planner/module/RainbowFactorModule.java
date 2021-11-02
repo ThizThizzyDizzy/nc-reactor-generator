@@ -10,6 +10,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 public class RainbowFactorModule extends Module<Float>{
@@ -78,7 +79,7 @@ public class RainbowFactorModule extends Module<Float>{
     }
     @Override
     public String getTooltip(Multiblock m, Float o){
-        return "Rainbow Score: "+percent(o, 2);
+        return "Rainbow Score: "+MathUtil.percent(o, 2);
     }
     @Override
     public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){

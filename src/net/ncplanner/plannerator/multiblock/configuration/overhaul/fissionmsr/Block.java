@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Objects;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
@@ -9,6 +8,7 @@ import net.ncplanner.plannerator.multiblock.configuration.RuleContainer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
+import net.ncplanner.plannerator.planner.StringUtil;
 import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
@@ -46,7 +46,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     public static Block source(String name, String displayName, String texture, float efficiency){
         Block block = new Block(name);
         block.displayName = displayName;
-        block.legacyNames.add(displayName.replace(" Neutron Source", ""));
+        block.legacyNames.add(StringUtil.superRemove(displayName, " Neutron Source"));
         block.setTexture(TextureManager.getImage(texture));
         block.casing = true;
         block.source = true;
@@ -451,12 +451,12 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         if(parent!=null)return parent.convertToMSR(template);
         for(BlockRecipe recipe : allRecipes){
             for(String inputName : recipe.getLegacyNames()){
-                if(inputName.equals(template.inputName)||inputName.toLowerCase(Locale.ROOT).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ROOT).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return recipe;
+                if(inputName.equals(template.inputName)||StringUtil.toLowerCase(inputName).startsWith(StringUtil.superReplace(StringUtil.superRemove(StringUtil.toLowerCase(template.getInputDisplayName().trim()), " oxide", " nitride", "-zirconium alloy", ""), "mox", "mf4", "mni", "mf4", "mza", "mf4")))return recipe;
             }
         }
         for(BlockRecipe recipe : recipes){
             for(String inputName : recipe.getLegacyNames()){
-                if(inputName.equals(template.inputName)||inputName.toLowerCase(Locale.ROOT).startsWith(template.getInputDisplayName().trim().toLowerCase(Locale.ROOT).replace(" oxide", "").replace(" nitride", "").replace("-zirconium alloy", "").replace("mox", "mf4").replace("mni", "mf4").replace("mza", "mf4")))return recipe;
+                if(inputName.equals(template.inputName)||StringUtil.toLowerCase(inputName).startsWith(StringUtil.superReplace(StringUtil.superRemove(StringUtil.toLowerCase(template.getInputDisplayName().trim()), " oxide", " nitride", "-zirconium alloy", ""), "mox", "mf4", "mni", "mf4", "mza", "mf4")))return recipe;
             }
         }
         throw new IllegalArgumentException("Failed to find match for block recipe "+template.inputName+"!");

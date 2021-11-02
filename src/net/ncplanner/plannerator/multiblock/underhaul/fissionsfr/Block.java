@@ -6,10 +6,12 @@ import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import simplelibrary.image.Image;
 public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block> {
@@ -231,7 +233,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> searchables = template.getSearchableNames();
-        for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
+        for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
         return searchables;
     }
     @Override
@@ -245,5 +247,13 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public String getPinnedName(){
         return template.getPinnedName();
+    }
+    @Override
+    public boolean hasRecipes(){
+        return false;
+    }
+    @Override
+    public ArrayList<? extends IBlockRecipe> getRecipes(){
+        return new ArrayList<>();
     }
 }

@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.multiblock.overhaul.fissionmsr;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.Function;
 import net.ncplanner.plannerator.Renderer;
@@ -8,8 +9,10 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
+import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
@@ -332,7 +335,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
             drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
         }
         if(recipe!=null&&(template.parent==null?template.allRecipes:template.parent.allRecipes).size()>1){
-            renderer.setWhite();
+            renderer.setWhite(template.parent==null?1:.75f);
             renderer.drawImage(recipe.inputDisplayTexture, x+width*.25, y+height*.25, x+width*.75, y+height*.75);
         }
         if(template.fuelVessel&&(template.fuelVesselHasBaseStats||recipe!=null)){
@@ -597,7 +600,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
             }
         }
         ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
-        keys.sort((o1, o2) -> {
+        Collections.sort(keys, (o1, o2) -> {
             return possible.get(o1)-possible.get(o2);
         });
         for(int[] key : keys){
@@ -621,7 +624,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> searchables = template.getSearchableNames();
-        for(String s : getListTooltip().split("\n"))searchables.add(s.trim());
+        for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
         return searchables;
     }
     @Override
@@ -635,5 +638,13 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public String getPinnedName(){
         return template.getPinnedName();
+    }
+    @Override
+    public boolean hasRecipes(){
+        return !template.allRecipes.isEmpty();
+    }
+    @Override
+    public ArrayList<BlockRecipe> getRecipes(){
+        return template.allRecipes;
     }
 }

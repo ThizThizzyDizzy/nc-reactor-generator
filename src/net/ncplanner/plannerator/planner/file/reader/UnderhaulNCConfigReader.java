@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
-import java.util.Locale;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.PlacementRule;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.ForgeConfig;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
@@ -129,7 +129,7 @@ public class UnderhaulNCConfigReader implements FormatReader{
         ConfigList power = config.getConfigList("fission_"+baseName+"_power");
         ConfigList heat = config.getConfigList("fission_"+baseName+"_heat_generation");
         for(int i = 0; i<fuelNames.length; i++){
-            Fuel fuel = Fuel.fuel("nuclearcraft:fuel_"+baseName+":"+i, fuelNames[i], (float)(power.getDouble(i)*powerMult), (float)(heat.getDouble(i)*heatMult), (int)(time.getDouble(i)/fuelUseMult), ("underhaul/fuel/fuel_"+baseName+"_"+fuelNames[i].toLowerCase(Locale.ENGLISH).replace(" oxide", "_oxide").replace("-", "_").replace("ecm_", "ec_").replace("ecf_", "ec_")).replace("fuel_mox", "fuel_mixed_oxide"));
+            Fuel fuel = Fuel.fuel("nuclearcraft:fuel_"+baseName+":"+i, fuelNames[i], (float)(power.getDouble(i)*powerMult), (float)(heat.getDouble(i)*heatMult), (int)(time.getDouble(i)/fuelUseMult), StringUtil.superReplace("underhaul/fuel/fuel_"+baseName+"_"+StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), " oxide", "_oxide", "-", "_", "ecm_", "ec_", "ecf_", "ec_"), "fuel_mox", "fuel_mixed_oxide"));
             ncpf.configuration.underhaul.fissionSFR.allFuels.add(fuel);ncpf.configuration.underhaul.fissionSFR.fuels.add(fuel);
         }
     }

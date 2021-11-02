@@ -1,14 +1,15 @@
 package net.ncplanner.plannerator.multiblock;
-import java.util.Locale;
+import java.util.ArrayList;
 import java.util.function.Function;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
+import net.ncplanner.plannerator.planner.Queue;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import org.lwjgl.opengl.GL11;
-import simplelibrary.Queue;
-import simplelibrary.font.FontManager;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
@@ -64,16 +65,15 @@ public abstract class Block implements Pinnable{
     public abstract String getTooltip(Multiblock multiblock);
     public abstract String getListTooltip();
     public void render(Renderer renderer, double x, double y, double width, double height, boolean renderOverlay, Multiblock multiblock){
-        render(renderer,x, y, width, height, renderOverlay, 1, multiblock);
+        render(renderer, x, y, width, height, renderOverlay, 1, multiblock);
     }
     public void render(Renderer renderer, double x, double y, double width, double height, boolean renderOverlay, float alpha, Multiblock multiblock){
         if(getTexture()==null){
-            renderer.setColor(Core.theme.getBlockTextColor());
-            String text = getName();
-            double textLength = FontManager.getLengthForStringWithHeight(text, height);
-            double scale = Math.min(1, (width)/textLength);
-            double textHeight = (int)((height)*scale)-4;
-            renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+            renderer.setColor(new Color(255,0,255));
+            renderer.fillRect(x, y, x+width, y+height);
+            renderer.setColor(new Color(0,0,0));
+            renderer.fillRect(x, y, x+width/2, y+height/2);
+            renderer.fillRect(x+width/2, y+height/2, x+width, y+height);
         }else{
             renderer.setWhite(alpha);
             renderer.drawImage(getTexture(), x, y, x+width, y+height);
@@ -98,16 +98,15 @@ public abstract class Block implements Pinnable{
         if(renderOverlay)renderOverlay(renderer, x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5],multiblock,faceRenderFunc);
     }
     public void renderGrayscale(Renderer renderer, double x, double y, double width, double height, boolean renderOverlay, Multiblock multiblock){
-        renderGrayscale(renderer,x, y, width, height, renderOverlay, 1, multiblock);
+        renderGrayscale(renderer, x, y, width, height, renderOverlay, 1, multiblock);
     }
     public void renderGrayscale(Renderer renderer, double x, double y, double width, double height, boolean renderOverlay, float alpha, Multiblock multiblock){
         if(getGrayscaleTexture()==null){
-            renderer.setColor(Core.theme.getBlockTextColor());
-            String text = getName();
-            double textLength = FontManager.getLengthForStringWithHeight(text, height);
-            double scale = Math.min(1, (width)/textLength);
-            double textHeight = (int)((height)*scale)-4;
-            renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+            renderer.setColor(new Color(191,191,191));
+            renderer.fillRect(x, y, x+width, y+height);
+            renderer.setColor(new Color(0,0,0));
+            renderer.fillRect(x, y, x+width/2, x+height/2);
+            renderer.fillRect(x+width/2, y+height/2, x+width, x+height);
         }else{
             renderer.setWhite(alpha);
             renderer.drawImage(getGrayscaleTexture(), x, y, x+width, y+height);
@@ -130,13 +129,13 @@ public abstract class Block implements Pinnable{
         boolean nz = faceRenderFunc.apply(Direction.NZ);
         if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
         renderer.setColor(color);
-        if(py)drawCircleBit(renderer, x,y,z,width,height,depth);
+        if(py)drawCircleBit(renderer,x,y,z,width,height,depth);
         if(pz){
             GL11.glPushMatrix();
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(90, 1, 0, 0);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawCircleBit(renderer, x,y,z,width,height,depth);
+            drawCircleBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         if(nz){
@@ -144,7 +143,7 @@ public abstract class Block implements Pinnable{
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(90, -1, 0, 0);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawCircleBit(renderer, x,y,z,width,height,depth);
+            drawCircleBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         if(nx){
@@ -152,7 +151,7 @@ public abstract class Block implements Pinnable{
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(90, 0, 0, 1);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawCircleBit(renderer, x,y,z,width,height,depth);
+            drawCircleBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         if(px){
@@ -160,7 +159,7 @@ public abstract class Block implements Pinnable{
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(90, 0, 0, -1);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawCircleBit(renderer, x,y,z,width,height,depth);
+            drawCircleBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         if(ny){
@@ -168,7 +167,7 @@ public abstract class Block implements Pinnable{
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(180, 0, 0, 1);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawCircleBit(renderer, x,y,z,width,height,depth);
+            drawCircleBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         renderer.setWhite();
@@ -225,13 +224,13 @@ public abstract class Block implements Pinnable{
         boolean nz = faceRenderFunc.apply(Direction.NZ);
         if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
         renderer.setColor(color);
-        if(py)drawOutlineBit(renderer, x,y,z,width,height,depth);
+        if(py)drawOutlineBit(renderer,x,y,z,width,height,depth);
         if(pz){
             GL11.glPushMatrix();
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(90, 1, 0, 0);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawOutlineBit(renderer, x,y,z,width,height,depth);
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         if(nz){
@@ -239,7 +238,7 @@ public abstract class Block implements Pinnable{
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(90, -1, 0, 0);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawOutlineBit(renderer, x,y,z,width,height,depth);
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         if(nx){
@@ -247,7 +246,7 @@ public abstract class Block implements Pinnable{
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(90, 0, 0, 1);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawOutlineBit(renderer, x,y,z,width,height,depth);
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         if(px){
@@ -255,7 +254,7 @@ public abstract class Block implements Pinnable{
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(90, 0, 0, -1);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawOutlineBit(renderer, x,y,z,width,height,depth);
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         if(ny){
@@ -263,7 +262,7 @@ public abstract class Block implements Pinnable{
             GL11.glTranslated(x+width/2, y+height/2, z+depth/2);
             GL11.glRotated(180, 0, 0, 1);
             GL11.glTranslated(-x-width/2, -y-height/2, -z-depth/2);
-            drawOutlineBit(renderer, x,y,z,width,height,depth);
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
             GL11.glPopMatrix();
         }
         renderer.setWhite();
@@ -299,13 +298,13 @@ public abstract class Block implements Pinnable{
     public abstract Block copy();
     public abstract boolean isEqual(Block other);
     public boolean roughMatch(String blockNam){
-        blockNam = blockNam.toLowerCase(Locale.ROOT);
+        blockNam = StringUtil.toLowerCase(blockNam);
         if(blockNam.endsWith("s"))blockNam = blockNam.substring(0, blockNam.length()-1);
-        blockNam = blockNam.replace("_", " ").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" coolant", "").replace(" heater", "").replace("fuel ", "").replace(" reflector", "");
+        blockNam = StringUtil.superRemove(StringUtil.replace(blockNam, "_", " "), "liquid ", " cooler", " heat sink", " heatsink", " sink", " neutron shield", " shield", " moderator", " coolant", " heater", "fuel ", " reflector");
         if(blockNam.endsWith("s"))blockNam = blockNam.substring(0, blockNam.length()-1);
         String blockName = getName();
         if(blockName.endsWith("s"))blockName = blockName.substring(0, blockName.length()-1);
-        blockName = blockName.toLowerCase(Locale.ROOT).replace("_", " ").replace("reactor ", "").replace("liquid ", "").replace(" cooler", "").replace(" heat sink", "").replace(" heatsink", "").replace(" sink", "").replace(" neutron shield", "").replace(" shield", "").replace(" moderator", "").replace(" coolant", "").replace(" heater", "").replace("fuel ", "").replace(" reflector", "");
+        blockName = StringUtil.superRemove(StringUtil.replace(StringUtil.toLowerCase(blockName), "_", " "), "reactor ", "liquid ", " cooler", " heat sink", " heatsink", " sink", " neutron shield", " shield", " moderator", " coolant", " heater", "fuel ", " reflector");
         if(blockName.endsWith("s"))blockName = blockName.substring(0, blockName.length()-1);
         return blockNam.equalsIgnoreCase(blockName);
     }
@@ -319,4 +318,6 @@ public abstract class Block implements Pinnable{
     public boolean shouldRenderFace(Block against){
         return against==null;
     }
+    public abstract boolean hasRecipes();
+    public abstract ArrayList<? extends IBlockRecipe> getRecipes();
 }

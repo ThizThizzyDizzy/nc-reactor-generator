@@ -344,7 +344,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                             minBladeExpansion = Math.min(blades[i].bladeExpansion, minBladeExpansion);
                             maxBladeExpansion = Math.max(blades[i].bladeExpansion, maxBladeExpansion);
                         }
-                        idealExpansion[i] = Math.pow(recipe.coefficient, (i+.5f)/blades.length);
+                        idealExpansion[i] = MathUtil.pow(recipe.coefficient, (i+.5f)/blades.length);
                         actualExpansion[i] = expansionSoFar*Math.sqrt(blades[i].bladeExpansion);
                         expansionSoFar*=blades[i].bladeExpansion;
                         rotorEfficiency+=blades[i].bladeEfficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
@@ -356,18 +356,18 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     if(minBladeExpansion<=1||minStatorExpansion>=1d){
                         effectiveMaxLength = getConfiguration().overhaul.turbine.maxSize;
                     }else{
-                        effectiveMaxLength = (int)Math.ceil(Math.max(getConfiguration().overhaul.turbine.minLength, Math.min(getConfiguration().overhaul.turbine.maxSize, (Math.log(recipe.coefficient)-getConfiguration().overhaul.turbine.maxSize*Math.log(minStatorExpansion))/(Math.log(minBladeExpansion)-Math.log(minStatorExpansion)))));
+                        effectiveMaxLength = (int)Math.ceil(Math.max(getConfiguration().overhaul.turbine.minLength, Math.min(getConfiguration().overhaul.turbine.maxSize, (MathUtil.log(recipe.coefficient)-getConfiguration().overhaul.turbine.maxSize*MathUtil.log(minStatorExpansion))/(MathUtil.log(minBladeExpansion)-MathUtil.log(minStatorExpansion)))));
                     }
                     int bladeArea = bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
                     double rate = Math.min(getInputRate(), maxInput);
                     double lengthBonus = rate/(getConfiguration().overhaul.turbine.fluidPerBlade*bladeArea*effectiveMaxLength);
                     double areaBonus = Math.sqrt(2*rate/(getConfiguration().overhaul.turbine.fluidPerBlade*(getInternalDepth())*getConfiguration().overhaul.turbine.maxSize*effectiveMaxLength));
-                    double effectiveMinLength = recipe.coefficient<=1||maxBladeExpansion<=1?getConfiguration().overhaul.turbine.maxSize:Math.ceil(Math.log(recipe.coefficient)/Math.log(maxBladeExpansion));
+                    double effectiveMinLength = recipe.coefficient<=1||maxBladeExpansion<=1?getConfiguration().overhaul.turbine.maxSize:Math.ceil(MathUtil.log(recipe.coefficient)/MathUtil.log(maxBladeExpansion));
                     int minBladeArea = ((getConfiguration().overhaul.turbine.minWidth-1)*2);
                     double absoluteLeniency = effectiveMinLength*minBladeArea*getConfiguration().overhaul.turbine.fluidPerBlade;
                     double throughputRatio = maxInput==0?1:Math.min(1, (getInputRate()+absoluteLeniency)/maxInput);
                     double throughputEfficiencyMult = throughputRatio>=getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyThreshold?1:(1-getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyMult)*Math.sin(throughputRatio*Math.PI/(2*getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyThreshold))+getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyMult;
-                    throughputEfficiency = (1+getConfiguration().overhaul.turbine.powerBonus*Math.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
+                    throughputEfficiency = (1+getConfiguration().overhaul.turbine.powerBonus*MathUtil.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
                     idealityMultiplier = Math.min(expansionSoFar, recipe.coefficient)/Math.max(expansionSoFar, recipe.coefficient);
                 }
                 calcRotor.finish();

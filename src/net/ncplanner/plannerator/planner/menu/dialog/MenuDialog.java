@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.menu.dialog;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistScrollable;
@@ -24,6 +25,7 @@ public class MenuDialog extends Menu{
     }
     @Override
     public void render(int millisSinceLastTick){
+        Renderer renderer = new Renderer();
         try{
             if(parent!=null)parent.render(millisSinceLastTick);
         }catch(Exception ignored){}

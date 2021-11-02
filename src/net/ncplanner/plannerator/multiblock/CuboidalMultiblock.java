@@ -160,13 +160,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[0]+=i;
         x+=i;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(bx==x-i+1)bx+=i;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -178,13 +179,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[0]+=i;
         x+=i;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(bx>0)bx+=i;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -196,13 +198,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[1]+=i;
         y+=i;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(by==y-i+1)by+=i;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -214,13 +217,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[1]+=i;
         y+=i;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(by>0)by+=i;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -232,13 +236,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[2]+=i;
         z+=i;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(bz==z-i+1)bz+=i;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -250,13 +255,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[2]+=i;
         z+=i;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(bz>0)bz+=i;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -268,14 +274,15 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[0]--;
         x--;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(bx==X+1)return;
             if(bx>X+1)bx--;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -287,14 +294,15 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[1]--;
         y--;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(by==Y+1)return;
             if(by>Y+1)by--;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -306,14 +314,15 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[2]--;
         z--;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(bz==Z+1)return;
             if(bz>Z+1)bz--;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -325,13 +334,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[0]++;
         x++;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(bx>X)bx++;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -343,13 +353,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[1]++;
         y++;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(by>Y)by++;
             setBlock(bx, by, bz, block);
-        });
+        };
         history.clear();
         future.clear();
         clearCaches();
@@ -361,13 +372,14 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         dimensions[2]++;
         z++;
         createBlockGrids();
-        cache.forEach((pos, block) -> {
+        for(BlockPos pos : cache.keySet()){
+            T block = cache.get(pos);
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
             if(bz>Z)bz++;
             setBlock(bx, by, bz, block);
-        });
+        }
         history.clear();
         future.clear();
         clearCaches();

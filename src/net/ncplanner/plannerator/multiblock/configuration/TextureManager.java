@@ -6,6 +6,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.Main;
+import net.ncplanner.plannerator.planner.MathUtil;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
 public class TextureManager{
@@ -35,9 +36,9 @@ public class TextureManager{
     public static final float IMG_STRAIGHT_FAC = 1.5f;
     public static int convert(int c){
         if(SEPARATE_BRIGHT_TEXTURES){
-            double f = IMG_FAC*Math.pow(c, IMG_POW);
+            double f = IMG_FAC*MathUtil.pow(c, IMG_POW);
             float g = c/255f;
-            double h = f*Math.pow(g, IMG_STRAIGHT_FAC)+c*(1-Math.pow(g, IMG_STRAIGHT_FAC));
+            double h = f*MathUtil.pow(g, IMG_STRAIGHT_FAC)+c*(1-MathUtil.pow(g, IMG_STRAIGHT_FAC));
             c = (int)h;
         }
         return c;

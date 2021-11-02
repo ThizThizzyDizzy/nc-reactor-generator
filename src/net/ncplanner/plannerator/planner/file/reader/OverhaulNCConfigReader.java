@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
-import java.util.Locale;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block;
@@ -8,6 +7,7 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Bl
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.PlacementRule;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.ForgeConfig;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
@@ -605,7 +605,7 @@ public class OverhaulNCConfigReader implements FormatReader{
         for(int i = 0; i<fuelNames.length; i++){
             if(fuelNames[i]==null)continue;
             int fuelIndex = i-i/5;
-            String tex = fuelNames[i].toLowerCase(Locale.ENGLISH).replace(" oxide", "_ox").replace("-", "_").replace(" nitride", "_ni").replace("_zirconium alloy", "_za");
+            String tex = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), " oxide", "_ox", "-", "_", " nitride", "_ni", "_zirconium alloy", "_za");
             BlockRecipe fuel = BlockRecipe.fuel("nuclearcraft:fuel_"+baseName+":"+fuelIndex, fuelNames[i], "overhaul/fuel/"+tex, "nuclearcraft:depleted_fuel_"+baseName+":"+fuelIndex, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/"+tex, (float)efficiency.getDouble(i), heat.getInt(i), (int)(time.getInt(i)*timeMult), criticality.getInt(i), selfPriming.getBoolean(i));
             cell.allRecipes.add(fuel);cell.recipes.add(fuel);
         }
@@ -618,9 +618,9 @@ public class OverhaulNCConfigReader implements FormatReader{
         ConfigList selfPriming = config.getConfigList("fission_"+baseName+"_self_priming");
         for(int i = 0; i<fuelNames.length; i++){
             if(fuelNames[i]==null)continue;
-            String baseNam = fuelNames[i].toLowerCase(Locale.ENGLISH).replace("-", "_").replace(" ", "_").replace("mf4","mix")+"_flibe";
-            if(baseName.equals("mixed"))baseNam = fuelNames[i].toLowerCase(Locale.ENGLISH).replace("-", "_").replace(" ", "_").replace("mf4","mix")+"_fluoride_flibe";
-            String tex = fuelNames[i].toLowerCase(Locale.ENGLISH).replace("-", "_").replace(" fluoride", "").replace("mf4","mix");
+            String baseNam = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), "-", "_", " ", "_", "mf4","mix")+"_flibe";
+            if(baseName.equals("mixed"))baseNam = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), "-", "_", " ", "_", "mf4","mix")+"_fluoride_flibe";
+            String tex = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), "-", "_", " fluoride", "", "mf4","mix");
             net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe.fuel(baseNam, fuelNames[i], "overhaul/fuel/msr/"+tex, "depleted_"+baseNam, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/msr/"+tex, (float)efficiency.getDouble(i), heat.getInt(i), (int)(time.getInt(i)*timeMult), criticality.getInt(i), selfPriming.getBoolean(i));
             vessel.allRecipes.add(fuel);vessel.recipes.add(fuel);
         }

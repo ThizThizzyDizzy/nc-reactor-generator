@@ -5,10 +5,7 @@ import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
-import simplelibrary.opengl.ImageStash;
 public class LineTool extends EditorTool{
     public LineTool(Editor editor, int id){
         super(editor, id);
@@ -20,13 +17,7 @@ public class LineTool extends EditorTool{
     @Override
     public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        ImageStash.instance.bindTexture(0);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex2d(x+width*.125, y+height*.75);
-        GL11.glVertex2d(x+width*.25, y+height*.875);
-        GL11.glVertex2d(x+width*.875, y+height*.25);
-        GL11.glVertex2d(x+width*.75, y+height*.125);
-        GL11.glEnd();
+        renderer.fillPolygon(new double[]{x+width*.125,x+width*.25,x+width*.875,x+width*.75}, new double[]{y+height*.75,y+height*.875,y+height*.25,y+height*.125});
     }
     @Override
     public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
@@ -74,24 +65,24 @@ public class LineTool extends EditorTool{
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = null;
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = rightDragEnd = null;
+        if(button==0)leftDragStart = leftDragEnd = null;
+        if(button==1)rightDragStart = rightDragEnd = null;
     }
     @Override
     public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = new int[]{x,y,z};
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = leftDragEnd = new int[]{x,y,z};
+        if(button==0)leftDragStart = leftDragEnd = new int[]{x,y,z};
+        if(button==1)rightDragStart = leftDragEnd = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null){
+        if(button==0&&leftDragStart!=null){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock(id));
             raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
                 if(editorSpace.isSpaceValid(set.block, X, Y, Z))set.add(X, Y, Z);
             });
             editor.setblocks(id, set);
         }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&rightDragStart!=null){
+        if(button==1&&rightDragStart!=null){
             SetblocksAction set = new SetblocksAction(null);
             raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
                 set.add(X, Y, Z);
@@ -102,8 +93,8 @@ public class LineTool extends EditorTool{
     }
     @Override
     public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragEnd = new int[]{x,y,z};
+        if(button==0)leftDragEnd = new int[]{x,y,z};
+        if(button==1)rightDragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

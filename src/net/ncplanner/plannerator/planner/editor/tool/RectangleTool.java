@@ -5,7 +5,6 @@ import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import org.lwjgl.glfw.GLFW;
 import simplelibrary.image.Image;
 public class RectangleTool extends EditorTool{
     public RectangleTool(Editor editor, int id){
@@ -78,24 +77,24 @@ public class RectangleTool extends EditorTool{
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = null;
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = rightDragEnd = null;
+        if(button==0)leftDragStart = leftDragEnd = null;
+        if(button==1)rightDragStart = rightDragEnd = null;
     }
     @Override
     public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = new int[]{x,y,z};
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragStart = new int[]{x,y,z};
+        if(button==0)leftDragStart = new int[]{x,y,z};
+        if(button==1)rightDragStart = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null){
+        if(button==0&&leftDragStart!=null){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock(id));
             foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
                 if(editorSpace.isSpaceValid(set.block, X, Y, Z))set.add(X, Y, Z);
             });
             editor.setblocks(id, set);
         }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&rightDragStart!=null){
+        if(button==1&&rightDragStart!=null){
             SetblocksAction set = new SetblocksAction(null);
             foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
                 set.add(X, Y, Z);
@@ -106,8 +105,8 @@ public class RectangleTool extends EditorTool{
     }
     @Override
     public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT)rightDragEnd = new int[]{x,y,z};
+        if(button==0)leftDragEnd = new int[]{x,y,z};
+        if(button==1)rightDragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

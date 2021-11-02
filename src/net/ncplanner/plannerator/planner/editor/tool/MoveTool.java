@@ -10,8 +10,6 @@ import net.ncplanner.plannerator.multiblock.editor.action.CopyAction;
 import net.ncplanner.plannerator.multiblock.editor.action.MoveAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
 public class MoveTool extends EditorTool{
     public MoveTool(Editor editor, int id){
@@ -26,26 +24,10 @@ public class MoveTool extends EditorTool{
         double h = height/16;
         renderer.fillRect(x+width/2-w, y+height/4, x+width/2+w, y+height*3/4);
         renderer.fillRect(x+width/4, y+height/2-h, x+width*3/4, y+height/2+h);
-        GL11.glPushMatrix();
-        GL11.glTranslated(x, y, 0);
-        GL11.glBegin(GL11.GL_TRIANGLES);
-        GL11.glVertex2d(width/4+w, height/4);
-        GL11.glVertex2d(width/2, h);
-        GL11.glVertex2d(width*3/4-w, height/4);
-        
-        GL11.glVertex2d(width/4+w, height*3/4);
-        GL11.glVertex2d(width/2, height-h);
-        GL11.glVertex2d(width*3/4-w, height*3/4);
-        
-        GL11.glVertex2d(width/4, height/4+w);
-        GL11.glVertex2d(w, height/2);
-        GL11.glVertex2d(width/4, height*3/4-h);
-        
-        GL11.glVertex2d(width*3/4, height/4+h);
-        GL11.glVertex2d(width-w, height/2);
-        GL11.glVertex2d(width*3/4, height*3/4-h);
-        GL11.glEnd();
-        GL11.glPopMatrix();
+        renderer.fillPolygon(new double[]{x+width/4+w,x+width/2,x+width*3/4-w}, new double[]{y+height/4,y+h,y+height/4});
+        renderer.fillPolygon(new double[]{x+width/4+w,x+width/2,x+width*3/4-w}, new double[]{y+height*3/4,y+height-h,y+height*3/4});
+        renderer.fillPolygon(new double[]{x+width/4,x+w,x+width/4}, new double[]{y+height/4+w,y+height/2,y+height*3/4-h});
+        renderer.fillPolygon(new double[]{x+width*3/4,x+width-w,x+width*3/4}, new double[]{y+height/4+h,y+height/2,y+height*3/4-h});
     }
     @Override
     public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
@@ -132,17 +114,17 @@ public class MoveTool extends EditorTool{
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = leftDragEnd = null;
+        if(button==0)leftDragStart = leftDragEnd = null;
     }
     @Override
     public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragStart = new int[]{x,y,z};
+        if(button==0)leftDragStart = new int[]{x,y,z};
     }
     @Override
     public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
         if(leftDragStart!=null&&leftDragEnd!=null){
             int dx = leftDragEnd[0]-leftDragStart[0], dy = leftDragEnd[1]-leftDragStart[1], dz = leftDragEnd[2]-leftDragStart[2];
-            if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&leftDragStart!=null&&leftDragEnd!=null){
+            if(button==0&&leftDragStart!=null&&leftDragEnd!=null){
                 ArrayList<int[]> selection = new ArrayList<>(editor.getSelection(id));
                 for(Iterator<int[]> it = selection.iterator(); it.hasNext();){
                     int[] i = it.next();
@@ -160,7 +142,7 @@ public class MoveTool extends EditorTool{
     }
     @Override
     public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT)leftDragEnd = new int[]{x,y,z};
+        if(button==0)leftDragEnd = new int[]{x,y,z};
     }
     @Override
     public boolean isEditTool(){

@@ -7,10 +7,7 @@ import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
-import simplelibrary.opengl.ImageStash;
 public class PencilTool extends EditorTool{
     public PencilTool(Editor editor, int id){
         super(editor, id);
@@ -24,23 +21,9 @@ public class PencilTool extends EditorTool{
     @Override
     public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        ImageStash.instance.bindTexture(0);
-        GL11.glBegin(GL11.GL_TRIANGLES);
-        GL11.glVertex2d(x+width*.25, y+height*.75);
-        GL11.glVertex2d(x+width*.375, y+height*.75);
-        GL11.glVertex2d(x+width*.25, y+height*.625);
-        GL11.glEnd();
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex2d(x+width*.4, y+height*.725);
-        GL11.glVertex2d(x+width*.275, y+height*.6);
-        GL11.glVertex2d(x+width*.5, y+height*.375);
-        GL11.glVertex2d(x+width*.625, y+height*.5);
-
-        GL11.glVertex2d(x+width*.525, y+height*.35);
-        GL11.glVertex2d(x+width*.65, y+height*.475);
-        GL11.glVertex2d(x+width*.75, y+height*.375);
-        GL11.glVertex2d(x+width*.625, y+height*.25);
-        GL11.glEnd();
+        renderer.fillPolygon(new double[]{x+width*.25, x+width*.375, x+width*.25}, new double[]{y+height*.75, y+height*.75, y+height*.625});
+        renderer.fillPolygon(new double[]{x+width*.4, x+width*.275, x+width*.5, x+width*.625}, new double[]{y+height*.725, y+height*.6, y+height*.375, y+height*.5});
+        renderer.fillPolygon(new double[]{x+width*.525, x+width*.65, x+width*.75, x+width*.625}, new double[]{y+height*.35, y+height*.475, y+height*.375, y+height*.25});
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
@@ -51,14 +34,14 @@ public class PencilTool extends EditorTool{
     @Override
     public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
         Block selected = editor.getSelectedBlock(id);
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
+        if(button==0){
             synchronized(leftSelectedBlocks){
                 if(editorSpace.isSpaceValid(selected, x, y, z))leftSelectedBlocks.add(new int[]{x,y,z});
                 leftDragStart = new int[]{x,y,z};
                 leftStart = obj;
             }
         }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+        if(button==1){
             synchronized(rightSelectedBlocks){
                 rightSelectedBlocks.add(new int[]{x,y,z});
                 rightDragStart = new int[]{x,y,z};
@@ -68,7 +51,7 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
+        if(button==0){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock(id));
             synchronized(leftSelectedBlocks){
                 for(int[] i : leftSelectedBlocks){
@@ -77,7 +60,7 @@ public class PencilTool extends EditorTool{
             }
             editor.setblocks(id, set);
         }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+        if(button==1){
             SetblocksAction set = new SetblocksAction(null);
             synchronized(rightSelectedBlocks){
                 for(int[] i : rightSelectedBlocks){
@@ -86,14 +69,14 @@ public class PencilTool extends EditorTool{
             }
             editor.setblocks(id, set);
         }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
+        if(button==0){
             leftDragStart = null;
             leftStart = null;
             synchronized(leftSelectedBlocks){
                 leftSelectedBlocks.clear();
             }
         }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+        if(button==1){
             rightDragStart = null;
             rightStart = null;
             synchronized(rightSelectedBlocks){
@@ -103,7 +86,7 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
+        if(button==0){
             if(obj!=leftStart){
                 leftDragStart = new int[]{x,y,z};
                 leftStart = obj;
@@ -123,7 +106,7 @@ public class PencilTool extends EditorTool{
                 leftDragStart = new int[]{x,y,z};
             }
         }
-        if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+        if(button==1){
             if(obj!=rightStart){
                 rightDragStart = new int[]{x,y,z};
                 rightStart = obj;

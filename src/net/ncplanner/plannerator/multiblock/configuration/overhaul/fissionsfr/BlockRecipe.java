@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Objects;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
@@ -8,7 +9,7 @@ import simplelibrary.config2.Config;
 import simplelibrary.config2.ConfigList;
 import simplelibrary.config2.ConfigNumberList;
 import simplelibrary.image.Image;
-public class BlockRecipe implements Pinnable{
+public class BlockRecipe implements Pinnable, IBlockRecipe{
     public static BlockRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
         BlockRecipe recipe = new BlockRecipe(inputName, outputName);
         recipe.inputDisplayName = inputDisplayName;
@@ -189,6 +190,7 @@ public class BlockRecipe implements Pinnable{
                 &&r.shieldEfficiency==shieldEfficiency
                 &&r.heatsinkCooling==heatsinkCooling;
     }
+    @Override
     public String getInputDisplayName(){
         return inputDisplayName==null?inputName:inputDisplayName;
     }
