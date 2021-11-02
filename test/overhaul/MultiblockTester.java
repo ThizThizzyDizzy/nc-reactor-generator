@@ -1,12 +1,12 @@
 package overhaul;
-import generator.MultiblockGenerator;
-import multiblock.configuration.Configuration;
-import multiblock.overhaul.fissionmsr.OverhaulMSR;
-import multiblock.overhaul.fissionsfr.OverhaulSFR;
-import multiblock.overhaul.turbine.OverhaulTurbine;
-import multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
+import net.ncplanner.plannerator.multiblock.configuration.Configuration;
+import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
+import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import org.junit.Test;
-import planner.Core;
+import net.ncplanner.plannerator.planner.Core;
 public class MultiblockTester{
     @Test
     public void test(){
