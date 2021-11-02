@@ -1,9 +1,8 @@
 package net.ncplanner.plannerator.multiblock;
-import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import java.util.ArrayList;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.menu.MenuEdit;

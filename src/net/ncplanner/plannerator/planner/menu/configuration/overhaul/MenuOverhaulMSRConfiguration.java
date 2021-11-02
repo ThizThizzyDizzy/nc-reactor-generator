@@ -2,13 +2,13 @@ package net.ncplanner.plannerator.planner.menu.configuration.overhaul;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.menu.configuration.tree.MenuPlacementRuleTree;
 import net.ncplanner.plannerator.planner.menu.configuration.MultiblockConfigurationMenu;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fissionmsr.MenuAddonBlockConfiguration;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fissionmsr.MenuBlockConfiguration;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fissionmsr.MenuComponentAddonBlock;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fissionmsr.MenuComponentBlock;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fissionmsr.MenuComponentPossibleAddonBlock;
+import net.ncplanner.plannerator.planner.menu.configuration.tree.MenuPlacementRuleTree;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuOverhaulMSRConfiguration extends MultiblockConfigurationMenu{

@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
 import net.ncplanner.plannerator.Renderer;
-import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.multiblock.Direction;
+import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
 import simplelibrary.font.FontManager;
 public class OverhaulModeratorLineDecal extends Decal{

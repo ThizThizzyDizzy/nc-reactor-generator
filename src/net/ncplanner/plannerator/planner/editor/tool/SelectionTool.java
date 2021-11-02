@@ -4,7 +4,6 @@ import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import org.lwjgl.glfw.GLFW;
 import simplelibrary.image.Image;
 public class SelectionTool extends EditorTool{

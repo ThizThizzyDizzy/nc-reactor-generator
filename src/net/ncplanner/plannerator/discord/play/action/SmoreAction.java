@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.discord.play.action;
+import java.util.Random;
 import net.ncplanner.plannerator.discord.play.Action;
 import net.ncplanner.plannerator.discord.play.SmoreBot;
-import java.util.Random;
 public class SmoreAction extends Action{
     public SmoreAction(){
         super(new Random().nextInt(4000*60)+8000*60);//8-12 minutes

@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
+import java.util.UUID;
+import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import java.util.UUID;
-import net.ncplanner.plannerator.Renderer;
 import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.ImageStash;
 public class TomPainting extends HutThing{

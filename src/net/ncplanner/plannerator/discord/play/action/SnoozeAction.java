@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.discord.play.action;
-import net.ncplanner.plannerator.discord.play.Action;
-import net.ncplanner.plannerator.discord.play.SmoreBot;
 import java.util.Random;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.ncplanner.plannerator.discord.play.Action;
+import net.ncplanner.plannerator.discord.play.SmoreBot;
 public class SnoozeAction extends Action{
     public SnoozeAction(){
         super(new Random().nextInt(18000*60)+2000*60);//2-20 minutes

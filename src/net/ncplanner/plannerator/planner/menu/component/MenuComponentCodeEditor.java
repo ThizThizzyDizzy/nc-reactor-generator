@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.planner.menu.component;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.Renderer;
-import static org.lwjgl.glfw.GLFW.*;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.s_tack.Tokenizer;
@@ -17,6 +16,7 @@ import net.ncplanner.plannerator.planner.s_tack.token.StringValueToken;
 import net.ncplanner.plannerator.planner.s_tack.token.Token;
 import net.ncplanner.plannerator.planner.s_tack.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.s_tack.token.operator.Operator;
+import static org.lwjgl.glfw.GLFW.*;
 import simplelibrary.font.FontManager;
 import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;

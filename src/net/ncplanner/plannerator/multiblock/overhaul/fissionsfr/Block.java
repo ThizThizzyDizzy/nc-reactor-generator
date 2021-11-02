@@ -12,7 +12,6 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Pl
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import simplelibrary.image.Color;
 import simplelibrary.image.Image;
 public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> {

@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.menu.configuration.tree;
 import net.ncplanner.plannerator.Renderer;
-import net.ncplanner.plannerator.planner.Core;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentTreeElement extends MenuComponent{
     private final MenuPlacementRuleTree ruleTree;

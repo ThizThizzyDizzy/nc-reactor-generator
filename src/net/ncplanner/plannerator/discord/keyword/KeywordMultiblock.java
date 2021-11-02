@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.discord.keyword;
-import net.ncplanner.plannerator.discord.Keyword;
 import java.util.Locale;
+import net.ncplanner.plannerator.discord.Keyword;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
 import simplelibrary.image.Color;

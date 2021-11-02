@@ -3,11 +3,10 @@ import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import net.ncplanner.plannerator.planner.vr.VRCore;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 public class LineTool extends EditorTool{

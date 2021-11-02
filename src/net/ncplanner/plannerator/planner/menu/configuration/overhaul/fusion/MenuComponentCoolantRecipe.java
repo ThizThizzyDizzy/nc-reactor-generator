@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.menu.configuration.overhaul.fusion;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentCoolantRecipe extends MenuComponent{
     public final CoolantRecipe coolantRecipe;

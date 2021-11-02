@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.module;
-import net.ncplanner.plannerator.multiblock.generator.Priority;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 public abstract class Module<T>{

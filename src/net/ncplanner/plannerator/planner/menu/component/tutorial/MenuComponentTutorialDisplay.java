@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.menu.component.tutorial;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.Renderer2D;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentTutorialDisplay extends MenuComponent{

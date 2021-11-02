@@ -3,12 +3,12 @@ import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import org.lwjgl.glfw.GLFW;
+import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistTextBox;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMulticolumnMinimaList;
-import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.menu.component.generator.MenuComponentGeneratorListBlock;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuGenerator extends Menu{

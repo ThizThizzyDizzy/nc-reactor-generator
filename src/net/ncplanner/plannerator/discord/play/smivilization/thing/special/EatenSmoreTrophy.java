@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing.special;
+import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.SmoreBot;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import java.util.UUID;
 public class EatenSmoreTrophy extends HutThing{
     public EatenSmoreTrophy(UUID uid, Hut hut){
         super(uid, hut, "Eaten S'more Trophy", "eaten trophy", -1);

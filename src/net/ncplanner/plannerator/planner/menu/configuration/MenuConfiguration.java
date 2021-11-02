@@ -20,7 +20,6 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
-import org.lwjgl.glfw.GLFW;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.Task;
@@ -38,6 +37,7 @@ import net.ncplanner.plannerator.planner.menu.configuration.overhaul.MenuOverhau
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.MenuOverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.MenuOverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.menu.configuration.underhaul.MenuUnderhaulSFRConfiguration;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;

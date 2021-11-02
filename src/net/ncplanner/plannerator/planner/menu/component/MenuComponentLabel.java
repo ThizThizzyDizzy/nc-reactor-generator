@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.menu.component;
-import net.ncplanner.plannerator.planner.Searchable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Searchable;
 import simplelibrary.font.FontManager;
 import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;

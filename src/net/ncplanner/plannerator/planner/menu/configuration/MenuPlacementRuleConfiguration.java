@@ -15,7 +15,6 @@ import simplelibrary.font.FontManager;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
-import simplelibrary.opengl.gui.components.MenuComponentButton;
 
 public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,
         Template extends IBlockTemplate,

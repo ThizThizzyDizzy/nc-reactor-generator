@@ -2,15 +2,14 @@ package net.ncplanner.plannerator.planner.vr.menu;
 import java.util.function.Consumer;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.openvr.TrackedDevicePose;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.VRMenu;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentButton;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentTextPanel;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.openvr.TrackedDevicePose;
 import simplelibrary.image.Color;
 public class VRMenuResize extends VRMenu{//TODO center the multiblock
     public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));

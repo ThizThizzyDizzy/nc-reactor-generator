@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
+import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import java.util.UUID;
 public class PuLaptop extends HutThing{
     public PuLaptop(UUID uuid, Hut hut){
         super(uuid, hut, "Pu Laptop", "pu laptop", 32);

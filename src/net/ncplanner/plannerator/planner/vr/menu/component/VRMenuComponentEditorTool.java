@@ -1,12 +1,11 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.openvr.TrackedDevicePose;
-import org.lwjgl.openvr.VR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.tool.EditorTool;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
+import org.lwjgl.openvr.TrackedDevicePose;
+import org.lwjgl.openvr.VR;
 public class VRMenuComponentEditorTool extends VRMenuComponent{
     private final EditorTool tool;
     private final VRMenuEdit editor;

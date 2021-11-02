@@ -8,11 +8,10 @@ import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.CopyAction;
 import net.ncplanner.plannerator.multiblock.editor.action.MoveAction;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import net.ncplanner.plannerator.planner.vr.VRCore;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
 public class MoveTool extends EditorTool{
     public MoveTool(Editor editor, int id){

@@ -1,13 +1,13 @@
 package net.ncplanner.plannerator.discord.play;
-import net.ncplanner.plannerator.discord.play.smivilization.Hut;
-import net.ncplanner.plannerator.discord.play.smivilization.HutBunch;
-import net.ncplanner.plannerator.discord.play.smivilization.HutType;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.ncplanner.plannerator.discord.play.smivilization.Hut;
+import net.ncplanner.plannerator.discord.play.smivilization.HutBunch;
+import net.ncplanner.plannerator.discord.play.smivilization.HutType;
 import simplelibrary.config2.Config;
 public class SmoreBot{
     public static HashMap<Long, Long> glowshrooms = new HashMap<>();

@@ -2,13 +2,12 @@ package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.Block;
-import org.lwjgl.openvr.TrackedDevicePose;
-import org.lwjgl.openvr.VR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
+import org.lwjgl.openvr.TrackedDevicePose;
+import org.lwjgl.openvr.VR;
 public class VRMenuComponentEditorListBlock extends VRMenuComponent implements Pinnable{
     private final VRMenuEdit editor;
     private final Block block;

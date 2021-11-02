@@ -1,22 +1,21 @@
 package net.ncplanner.plannerator.planner.file.writer;
-import net.ncplanner.plannerator.discord.Bot;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.discord.Bot;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import static net.ncplanner.plannerator.planner.file.FileWriter.botRunning;
 import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.font.FontManager;
 import simplelibrary.image.Image;
-import simplelibrary.opengl.ImageStash;
 public class PNGFormatWriter extends ImageFormatWriter{
     private final int textHeight = 20;
     private final int borderSize = 16;

@@ -1,15 +1,14 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import net.ncplanner.plannerator.Renderer;
-import net.ncplanner.plannerator.multiblock.editor.action.SetFusionRecipeAction;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
+import net.ncplanner.plannerator.multiblock.editor.action.SetFusionRecipeAction;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
+import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
+import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
-import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.vr.VRCore;
-import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
-import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.Renderer2D;
 public class VRMenuComponentFusionRecipe extends VRMenuComponent{

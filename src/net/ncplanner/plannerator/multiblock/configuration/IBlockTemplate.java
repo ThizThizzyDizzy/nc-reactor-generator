@@ -1,8 +1,7 @@
 package net.ncplanner.plannerator.multiblock.configuration;
 
-import simplelibrary.image.Image;
-
 import java.util.ArrayList;
+import simplelibrary.image.Image;
 
 public interface IBlockTemplate {
     String getName();

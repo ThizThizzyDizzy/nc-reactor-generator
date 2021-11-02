@@ -2,9 +2,9 @@ package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class CopyAction extends Action<Multiblock>{
     private final Editor editor;

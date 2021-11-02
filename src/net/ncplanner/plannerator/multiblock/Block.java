@@ -6,7 +6,6 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import org.lwjgl.opengl.GL11;
 import simplelibrary.Queue;
 import simplelibrary.font.FontManager;

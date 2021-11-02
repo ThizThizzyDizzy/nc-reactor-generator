@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.menu.component;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.glfw.GLFW;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.module.Module;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentModule extends MenuComponent{

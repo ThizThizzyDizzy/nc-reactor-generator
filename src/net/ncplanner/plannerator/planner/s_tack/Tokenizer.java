@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.planner.s_tack;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.ncplanner.plannerator.planner.s_tack.token.BlankToken;
 import net.ncplanner.plannerator.planner.s_tack.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.s_tack.token.CharValueToken;
@@ -109,7 +108,6 @@ import net.ncplanner.plannerator.planner.s_tack.token.operator.RemainderEqualsOp
 import net.ncplanner.plannerator.planner.s_tack.token.operator.RemainderOperator;
 import net.ncplanner.plannerator.planner.s_tack.token.operator.XOrEqualsOperator;
 import net.ncplanner.plannerator.planner.s_tack.token.operator.XOrOperator;
-import simplelibrary.Queue;
 public class Tokenizer{
     public static final ArrayList<Token> tokens = new ArrayList<>();
     static{

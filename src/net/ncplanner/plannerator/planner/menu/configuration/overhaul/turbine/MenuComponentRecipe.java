@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.menu.configuration.overhaul.turbine;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentRecipe extends MenuComponent{
     public final Recipe recipe;

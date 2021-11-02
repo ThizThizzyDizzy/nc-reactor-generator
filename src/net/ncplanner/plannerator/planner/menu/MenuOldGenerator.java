@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.menu;
-import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
-import net.ncplanner.plannerator.multiblock.generator.setting.Setting;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
 import net.ncplanner.plannerator.multiblock.editor.action.GenerateAction;
+import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
+import net.ncplanner.plannerator.multiblock.generator.setting.Setting;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentLabel;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;

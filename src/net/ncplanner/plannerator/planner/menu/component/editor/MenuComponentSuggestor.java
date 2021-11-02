@@ -2,11 +2,11 @@ package net.ncplanner.plannerator.planner.menu.component.editor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.glfw.GLFW;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.menu.MenuEdit;
-import net.ncplanner.plannerator.planner.Pinnable;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.font.FontManager;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentSuggestor extends MenuComponent implements Pinnable{

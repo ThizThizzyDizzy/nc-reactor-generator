@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.menu.component;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.gui.components.MenuComponentMulticolumnList;
 public class MenuComponentMulticolumnMinimaList extends MenuComponentMulticolumnList{
     public MenuComponentMulticolumnMinimaList(double x, double y, double width, double height, double columnWidth, double rowHeight, double scrollbarWidth){

@@ -1,24 +1,14 @@
 package net.ncplanner.plannerator.planner.menu.configuration.overhaul.turbine;
-import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.PlacementRule;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentLabel;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistTextBox;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentTextureButton;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentToggleBox;
-import net.ncplanner.plannerator.planner.menu.configuration.ConfigurationMenu;
 import net.ncplanner.plannerator.planner.menu.configuration.MenuComponentPlacementRule;
 import net.ncplanner.plannerator.planner.menu.configuration.MenuPlacementRuleConfiguration;
 import net.ncplanner.plannerator.planner.menu.configuration.PartConfigurationMenu;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
-import simplelibrary.opengl.gui.components.MenuComponent;
-import simplelibrary.opengl.gui.components.MenuComponentButton;
 public class MenuBlockConfiguration extends PartConfigurationMenu{
     public MenuBlockConfiguration(GUI gui, Menu parent, Configuration configuration, Block block){
         super(gui, parent, configuration, block.getDisplayName());

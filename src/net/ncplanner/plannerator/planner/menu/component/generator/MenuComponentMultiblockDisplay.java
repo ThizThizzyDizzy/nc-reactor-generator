@@ -4,10 +4,10 @@ import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import org.lwjgl.glfw.GLFW;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistScrollable;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistTextView;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblockDisplay extends MenuComponent{
     public Multiblock multiblock;

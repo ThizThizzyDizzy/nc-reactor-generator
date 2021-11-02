@@ -1,9 +1,8 @@
 package net.ncplanner.plannerator.planner.menu.component.editor;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import org.lwjgl.opengl.GL11;
-import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.MenuEdit;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.font.FontManager;
 import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponent;

@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
 public class PasteAction extends Action<Multiblock>{
     private final ArrayList<Block> was = new ArrayList<>();

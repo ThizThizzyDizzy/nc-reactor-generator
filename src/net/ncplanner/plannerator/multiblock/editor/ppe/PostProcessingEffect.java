@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.editor.ppe;
-import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
 public abstract class PostProcessingEffect<T extends Multiblock>{
     public final String name;
     public final boolean core;

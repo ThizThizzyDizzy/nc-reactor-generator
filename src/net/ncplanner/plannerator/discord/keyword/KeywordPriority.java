@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.discord.keyword;
-import net.ncplanner.plannerator.discord.Keyword;
-import net.ncplanner.plannerator.multiblock.generator.Priority;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.discord.Keyword;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.Core;
 import simplelibrary.image.Color;
 public class KeywordPriority extends Keyword{

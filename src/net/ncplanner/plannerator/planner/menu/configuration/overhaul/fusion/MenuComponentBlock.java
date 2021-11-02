@@ -2,9 +2,9 @@ package net.ncplanner.plannerator.planner.menu.configuration.overhaul.fusion;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentBlock extends MenuComponent{
     public final Block block;

@@ -1,10 +1,9 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
+import java.util.UUID;
+import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import java.util.UUID;
-import net.ncplanner.plannerator.Renderer;
-import simplelibrary.opengl.ImageStash;
 public class Lamp extends HutThing{
     private boolean on = true;
     public Lamp(UUID uuid, Hut hut){

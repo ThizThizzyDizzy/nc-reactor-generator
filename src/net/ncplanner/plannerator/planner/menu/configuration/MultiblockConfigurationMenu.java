@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import org.lwjgl.glfw.GLFW;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentLabel;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistTextBox;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MultiblockConfigurationMenu extends ConfigurationMenu{

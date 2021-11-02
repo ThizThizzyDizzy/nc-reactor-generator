@@ -2,9 +2,9 @@ package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.editor.Action;
 public class SetblocksAction extends Action<Multiblock>{
     public final HashSet<int[]> locations = new HashSet<>();
     public final Block block;

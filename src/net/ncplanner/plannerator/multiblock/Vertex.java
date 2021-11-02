@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.multiblock;
-import net.ncplanner.plannerator.multiblock.Direction;
 public enum Vertex{
     PPP(Direction.PX,Direction.PY,Direction.PZ),
     PPN(Direction.PX,Direction.PY,Direction.NZ),

@@ -1,16 +1,15 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.vr.Multitool;
+import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
+import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.lwjgl.openvr.TrackedDevicePose;
-import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.MathUtil;
-import net.ncplanner.plannerator.planner.vr.Multitool;
-import net.ncplanner.plannerator.planner.vr.VRCore;
-import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
-import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 public class VRMenuComponentSpecialPanel extends VRMenuComponent{
     public int activeTool = -1;
     private final VRMenuEdit editor;

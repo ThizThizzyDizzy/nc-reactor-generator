@@ -1,10 +1,4 @@
 package net.ncplanner.plannerator.multiblock.generator;
-import net.ncplanner.plannerator.multiblock.generator.setting.SettingBoolean;
-import net.ncplanner.plannerator.multiblock.generator.setting.SettingInt;
-import net.ncplanner.plannerator.multiblock.generator.setting.SettingPercentage;
-import net.ncplanner.plannerator.multiblock.generator.setting.SettingPostProcessingEffects;
-import net.ncplanner.plannerator.multiblock.generator.setting.SettingPriorities;
-import net.ncplanner.plannerator.multiblock.generator.setting.SettingSymmetries;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,9 +10,15 @@ import net.ncplanner.plannerator.multiblock.editor.action.PostProcessingAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetBladeAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SymmetryAction;
-import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.editor.ppe.PostProcessingEffect;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
+import net.ncplanner.plannerator.multiblock.generator.setting.SettingBoolean;
+import net.ncplanner.plannerator.multiblock.generator.setting.SettingInt;
+import net.ncplanner.plannerator.multiblock.generator.setting.SettingPercentage;
+import net.ncplanner.plannerator.multiblock.generator.setting.SettingPostProcessingEffects;
+import net.ncplanner.plannerator.multiblock.generator.setting.SettingPriorities;
+import net.ncplanner.plannerator.multiblock.generator.setting.SettingSymmetries;
+import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
     public SettingInt workingMultiblockCount, timeout;

@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.editor.ppe;
-import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block;
+import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 public class MSRFill extends PostProcessingEffect<OverhaulMSR>{
     private final Block block;

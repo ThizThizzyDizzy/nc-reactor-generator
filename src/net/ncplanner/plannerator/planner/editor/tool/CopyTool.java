@@ -2,9 +2,9 @@ package net.ncplanner.plannerator.planner.editor.tool;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
-import org.lwjgl.glfw.GLFW;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.image.Image;
 public class CopyTool extends EditorTool{
     public CopyTool(Editor editor, int id){

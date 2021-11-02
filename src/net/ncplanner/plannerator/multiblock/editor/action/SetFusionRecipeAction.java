@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
+import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class SetFusionRecipeAction extends Action<OverhaulFusionReactor>{

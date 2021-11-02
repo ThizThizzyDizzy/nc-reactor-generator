@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.menu.component;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.glfw.GLFW;
 import net.ncplanner.plannerator.planner.Core;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.font.FontManager;
 import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponentOptionButton;

@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.discord.play;
-import net.ncplanner.plannerator.discord.play.game.StopReason;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.ncplanner.plannerator.discord.play.game.StopReason;
 public abstract class Game{
     protected int timeout = 300_000;//5 minutes
     private long lastUpdate;

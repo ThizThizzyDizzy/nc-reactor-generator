@@ -9,7 +9,6 @@ import net.ncplanner.plannerator.multiblock.editor.action.PasteAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import simplelibrary.image.Image;
 public class PasteTool extends EditorTool{
     private int mouseX;

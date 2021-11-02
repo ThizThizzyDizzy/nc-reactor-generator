@@ -4,11 +4,11 @@ import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.FluidStack;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.MenuMain;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.gui.components.MenuComponent;
 public class MenuComponentMultiblock extends MenuComponent{
     private final MenuMain main;

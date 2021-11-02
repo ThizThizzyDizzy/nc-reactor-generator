@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.editor.suggestion;
-import net.ncplanner.plannerator.multiblock.generator.Priority;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.editor.Action;
+import net.ncplanner.plannerator.multiblock.generator.Priority;
 import simplelibrary.image.Image;
 public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T>>{
     private final ArrayList<Action<T>> suggestedActions;

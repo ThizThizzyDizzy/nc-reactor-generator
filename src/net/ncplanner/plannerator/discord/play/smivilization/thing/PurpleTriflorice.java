@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
+import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import java.util.UUID;
 public class PurpleTriflorice extends HutThing{
     public PurpleTriflorice(UUID uuid, Hut hut){
         super(uuid, hut, "Purple Triflorice", "purple triflorice", 4);

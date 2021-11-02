@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
+import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import java.util.UUID;
 import simplelibrary.image.Color;
 public class Couch extends HutThingColorable{
     public Couch(UUID uuid, Hut hut){

@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.multiblock.generator;
-import net.ncplanner.plannerator.multiblock.generator.setting.Setting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.UUID;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
+import net.ncplanner.plannerator.multiblock.generator.setting.Setting;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 public abstract class MultiblockGenerator{

@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.multiblock.editor.decal;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 public class NeutronSourceNoTargetDecal extends Decal{
     public NeutronSourceNoTargetDecal(int x, int y, int z){
         super(x, y, z);

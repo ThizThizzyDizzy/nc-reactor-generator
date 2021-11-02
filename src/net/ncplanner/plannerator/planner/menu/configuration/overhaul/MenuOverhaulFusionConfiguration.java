@@ -4,7 +4,6 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.menu.configuration.tree.MenuPlacementRuleTree;
 import net.ncplanner.plannerator.planner.menu.configuration.MultiblockConfigurationMenu;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fusion.MenuAddonBlockConfiguration;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fusion.MenuBlockConfiguration;
@@ -15,6 +14,7 @@ import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fusion.Menu
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fusion.MenuComponentRecipe;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fusion.MenuCoolantRecipeConfiguration;
 import net.ncplanner.plannerator.planner.menu.configuration.overhaul.fusion.MenuRecipeConfiguration;
+import net.ncplanner.plannerator.planner.menu.configuration.tree.MenuPlacementRuleTree;
 import simplelibrary.opengl.gui.GUI;
 import simplelibrary.opengl.gui.Menu;
 public class MenuOverhaulFusionConfiguration extends MultiblockConfigurationMenu{

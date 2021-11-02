@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.generator.setting;
-import net.ncplanner.plannerator.multiblock.generator.Priority;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentLabel;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;

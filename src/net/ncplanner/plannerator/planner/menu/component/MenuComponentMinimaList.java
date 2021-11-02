@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.menu.component;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Color;
 import simplelibrary.opengl.gui.components.MenuComponentList;
 public class MenuComponentMinimaList extends MenuComponentList{

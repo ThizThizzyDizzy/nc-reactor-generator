@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
+import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import java.util.UUID;
 public class TelevisionRemote extends HutThing{
     public TelevisionRemote(UUID uuid, Hut hut){
         super(uuid, hut, "TV Remote", "tv remote", 4);

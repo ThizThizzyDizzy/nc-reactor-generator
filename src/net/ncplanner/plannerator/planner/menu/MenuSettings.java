@@ -5,7 +5,6 @@ import java.io.IOException;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import org.lwjgl.glfw.GLFW;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
@@ -17,6 +16,7 @@ import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistB
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentToggleBox;
 import net.ncplanner.plannerator.planner.menu.configuration.MenuConfiguration;
 import net.ncplanner.plannerator.planner.module.Module;
+import org.lwjgl.glfw.GLFW;
 import simplelibrary.Sys;
 import simplelibrary.config2.Config;
 import simplelibrary.error.ErrorCategory;

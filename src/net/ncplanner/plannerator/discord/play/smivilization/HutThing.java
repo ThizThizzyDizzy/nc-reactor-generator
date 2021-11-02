@@ -3,12 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.ncplanner.plannerator.Renderer;
-import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import org.lwjgl.opengl.GL11;
-import net.ncplanner.plannerator.planner.Core;
 import simplelibrary.config2.Config;
 import simplelibrary.image.Color;
-import simplelibrary.opengl.ImageStash;
 public abstract class HutThing implements Comparable<HutThing>{
     private final String texture;
     protected final Hut hut;

@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import java.util.HashMap;
-import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.editor.Action;
 public class GenerateAction extends Action<Multiblock>{
     private final Multiblock multiblock;
     private HashMap<BlockPos, Block> was = new HashMap();

@@ -3,9 +3,9 @@ import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistButton;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.opengl.gui.components.MenuComponent;
 
 public class MenuComponentPlacementRule<BlockType extends IBlockType,

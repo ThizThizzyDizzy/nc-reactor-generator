@@ -1,12 +1,11 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.openvr.TrackedDevicePose;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.openvr.TrackedDevicePose;
 public class VRMenuComponentTextPanel extends VRMenuComponent{
     public double textInset = .025;//2.5cm
     public double textOffset = .001f;//1mm

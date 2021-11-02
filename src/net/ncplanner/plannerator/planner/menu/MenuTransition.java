@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.menu;
 import java.util.HashMap;
 import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;
 import simplelibrary.error.ErrorLevel;

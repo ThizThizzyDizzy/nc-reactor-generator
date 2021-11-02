@@ -8,8 +8,6 @@ import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
@@ -24,6 +22,8 @@ import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistT
 import net.ncplanner.plannerator.planner.menu.component.MenuComponentMulticolumnMinimaList;
 import net.ncplanner.plannerator.planner.menu.component.editor.MenuComponentMultiblock;
 import net.ncplanner.plannerator.planner.vr.VRCore;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.Queue;
 import simplelibrary.Sys;
 import simplelibrary.error.ErrorCategory;

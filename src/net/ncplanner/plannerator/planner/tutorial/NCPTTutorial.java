@@ -4,10 +4,10 @@ import java.util.Random;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.editor.action.SetSelectionAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.menu.component.editor.MenuComponentEditorGrid;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
 import simplelibrary.opengl.ImageStash;
 public class NCPTTutorial extends Tutorial{

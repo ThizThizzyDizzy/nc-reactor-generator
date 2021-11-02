@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
-import org.lwjgl.opengl.GL11;
 import net.ncplanner.plannerator.planner.editor.Editor;
+import org.lwjgl.opengl.GL11;
 import simplelibrary.image.Image;
 public abstract class EditorTool{
     public final Editor editor;

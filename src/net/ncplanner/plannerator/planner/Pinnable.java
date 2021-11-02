@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.planner;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.ncplanner.plannerator.planner.Core;
 public interface Pinnable extends Searchable{
     public static <T extends Object> ArrayList<T> searchAndSort(List<T> list, String searchText){
         list = new ArrayList<>(list);//copy so it's not destructive

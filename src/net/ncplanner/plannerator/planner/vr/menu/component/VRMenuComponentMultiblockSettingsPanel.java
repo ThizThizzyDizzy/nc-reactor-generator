@@ -5,11 +5,10 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import org.lwjgl.openvr.TrackedDevicePose;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.vr.VRCore;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
+import org.lwjgl.openvr.TrackedDevicePose;
 public class VRMenuComponentMultiblockSettingsPanel extends VRMenuComponent{
     private final VRMenuEdit editor;
     private boolean refreshNeeded = true;

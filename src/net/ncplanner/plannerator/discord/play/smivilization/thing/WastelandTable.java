@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
+import java.util.ArrayList;
+import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.PlacementPoint;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import java.util.ArrayList;
-import java.util.UUID;
 public class WastelandTable extends HutThing{
     public WastelandTable(UUID uuid, Hut hut){
         super(uuid, hut, "Wasteland Table", "wasteland table", 18);
