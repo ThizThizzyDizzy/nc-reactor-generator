@@ -32,15 +32,15 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.menu.MenuEdit;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
-import net.ncplanner.plannerator.planner.menu.component.editor.MenuComponentEditorGrid;
-import net.ncplanner.plannerator.planner.menu.component.editor.MenuComponentTurbineRotorGraph;
+import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRotorGraph;
 import net.ncplanner.plannerator.planner.module.Module;
-import simplelibrary.Queue;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.opengl.gui.components.MenuComponent;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigNumberList;
+import net.ncplanner.plannerator.planner.Queue;
+import net.ncplanner.plannerator.planner.gui.Component;
 public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public Recipe recipe;
     public boolean rotorValid;
@@ -525,7 +525,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return false;
     }
     @Override
-    public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){}
+    public void addGeneratorSettings(SingleColumnList multiblockSettings){}
     @Override
     public void getGenerationPriorities(ArrayList<Priority> priorities){
         priorities.add(new Priority<OverhaulTurbine>("Valid Rotor", true, true){
@@ -663,46 +663,46 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){}
     @Override
-    protected double[] getCubeBounds(Block block){
+    protected float[] getCubeBounds(Block block){
         int bearingMax = getExternalWidth()/2+bearingDiameter/2;
         int bearingMin = getExternalWidth()/2-bearingDiameter/2;
         boolean isXBlade = block.x>=bearingMin&&block.x<=bearingMax;
         boolean isYBlade = block.y>=bearingMin&&block.y<=bearingMax;
         if(block.isBlade()){
-            double x1 = 0;
-            double y1 = 0;
-            double z1 = 0;
-            double x2 = 1;
-            double y2 = 1;
-            double z2 = 1;
+            float x1 = 0;
+            float y1 = 0;
+            float z1 = 0;
+            float x2 = 1;
+            float y2 = 1;
+            float z2 = 1;
             if(block.template.bladeStator){
                 if(isXBlade){//side
-                    x1+=7/16d;
-                    x2-=7/16d;
-                    z1+=2/16d;
-                    z2-=2/16d;
+                    x1+=7/16f;
+                    x2-=7/16f;
+                    z1+=2/16f;
+                    z2-=2/16f;
                 }
                 if(isYBlade){//top
-                    y1+=7/16d;
-                    y2-=7/16d;
-                    z1+=2/16d;
-                    z2-=2/16d;
+                    y1+=7/16f;
+                    y2-=7/16f;
+                    z1+=2/16f;
+                    z2-=2/16f;
                 }
             }else{//blade
                 if(isXBlade){//side
-                    z1+=7/16d;
-                    z2-=7/16d;
-                    x1+=2/16d;
-                    x2-=2/16d;
+                    z1+=7/16f;
+                    z2-=7/16f;
+                    x1+=2/16f;
+                    x2-=2/16f;
                 }
                 if(isYBlade){//top
-                    z1+=7/16d;
-                    z2-=7/16d;
-                    y1+=2/16d;
-                    y2-=2/16d;
+                    z1+=7/16f;
+                    z2-=7/16f;
+                    y1+=2/16f;
+                    y2-=2/16f;
                 }
             }
-            return new double[]{x1,y1,z1,x2,y2,z2};
+            return new float[]{x1,y1,z1,x2,y2,z2};
         }
         return super.getCubeBounds(block);
     }
@@ -827,7 +827,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 return block.template.blade;
             }
             @Override
-            public void createComponents(MenuEdit editor, ArrayList<MenuComponent> comps, int cellSize){
+            public void createComponents(MenuEdit editor, ArrayList<Component> comps, int cellSize){
 //                comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 1, 1, OverhaulTurbine.this.x, OverhaulTurbine.this.y, Axis.Z, 0));
 //                comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 1, 1, OverhaulTurbine.this.x, OverhaulTurbine.this.y, Axis.Z, OverhaulTurbine.this.z+1));
                 //include the casing on the coils ones for now, because I'm to lazy to make sure it actually works without it

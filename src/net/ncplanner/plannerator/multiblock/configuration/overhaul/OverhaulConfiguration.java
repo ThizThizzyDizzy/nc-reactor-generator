@@ -10,7 +10,7 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Fi
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.FusionConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.TurbineConfiguration;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import simplelibrary.config2.Config;
+import net.ncplanner.plannerator.config2.Config;
 public class OverhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
     public FissionMSRConfiguration fissionMSR;

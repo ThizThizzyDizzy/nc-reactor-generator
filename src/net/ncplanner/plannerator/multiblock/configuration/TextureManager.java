@@ -7,19 +7,19 @@ import java.util.jar.JarFile;
 import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.MathUtil;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
 public class TextureManager{
-    public static Image getImage(String texture){
+    public static Image getImageRaw(String texture){
         try{
             if(new File("nbproject").exists()){
-                return ImageIO.read(new File("src/textures/"+texture+".png"));
+                return ImageIO.read(new File("src/"+texture));
             }else{
                 JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
                 Enumeration enumEntries = jar.entries();
                 while(enumEntries.hasMoreElements()){
                     JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals("textures/"+texture+".png")){
+                    if(file.getName().equals(texture)){
                         return ImageIO.read(jar.getInputStream(file));
                     }
                 }
@@ -29,6 +29,9 @@ public class TextureManager{
             System.err.println("Couldn't read file: "+texture);
             return new Image(1, 1);
         }
+    }
+    public static Image getImage(String texture){
+        return getImageRaw("textures/"+texture+".png");
     }
     public static boolean SEPARATE_BRIGHT_TEXTURES = true;
     public static final float IMG_FAC = .003925f;

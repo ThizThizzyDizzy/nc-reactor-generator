@@ -5,15 +5,15 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.menu.MenuEdit;
-import net.ncplanner.plannerator.planner.menu.MenuResize;
-import net.ncplanner.plannerator.planner.menu.component.editor.MenuComponentEditorGrid;
+import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
+import net.ncplanner.plannerator.planner.gui.menu.MenuResize;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuResize;
-import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
-import simplelibrary.opengl.gui.components.MenuComponent;
 public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
     protected int x;
     protected int y;
@@ -54,7 +54,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
                 return canBePlacedWithinCasing(block);
             }
             @Override
-            public void createComponents(MenuEdit editor, ArrayList<MenuComponent> comps, int cellSize){
+            public void createComponents(MenuEdit editor, ArrayList<Component> comps, int cellSize){
                 for(int y = 0; y<=CuboidalMultiblock.this.y+1; y++){
                     comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, CuboidalMultiblock.this, this, 0, 0, CuboidalMultiblock.this.x+1, CuboidalMultiblock.this.z+1, Axis.Y, y));
                 }

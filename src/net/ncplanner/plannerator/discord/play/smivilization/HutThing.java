@@ -2,10 +2,9 @@ package net.ncplanner.plannerator.discord.play.smivilization;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import net.ncplanner.plannerator.Renderer;
-import org.lwjgl.opengl.GL11;
-import simplelibrary.config2.Config;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.graphics.image.Color;
 public abstract class HutThing implements Comparable<HutThing>{
     private final String texture;
     protected final Hut hut;
@@ -80,7 +79,7 @@ public abstract class HutThing implements Comparable<HutThing>{
         return thing;
     }
     protected void postLoad(Config config){}
-    public void render(Renderer renderer, double x, double y, float scale, float imgScale){
+    public void render(Renderer renderer, float x, float y, float scale, float imgScale){
         renderer.setColor(Color.WHITE);
         boolean mirror = false;
         float center = this.x+getDimX()/2f;
@@ -89,7 +88,7 @@ public abstract class HutThing implements Comparable<HutThing>{
         if(mirror)draw(renderer, x+(getRenderWidth()-getRenderOriginX())*scale*getRenderScale()*imgScale, y-getRenderOriginY()*scale*getRenderScale()*getRenderScaleY()*imgScale, x-getRenderOriginX()*scale*getRenderScale()*imgScale, y+(getRenderHeight()-getRenderOriginY())*scale*getRenderScale()*getRenderScaleY()*imgScale);
         else draw(renderer, x-getRenderOriginX()*scale*getRenderScale()*imgScale, y-getRenderOriginY()*scale*getRenderScale()*getRenderScaleY()*imgScale, x+(getRenderWidth()-getRenderOriginX())*scale*getRenderScale()*imgScale, y+(getRenderHeight()-getRenderOriginY())*scale*getRenderScale()*getRenderScaleY()*imgScale);
     }
-    public void draw(Renderer renderer, double left, double top, double right, double bottom){
+    public void draw(Renderer renderer, float left, float top, float right, float bottom){
         renderer.drawImage(getTexture(), left, top, right, bottom);
     }
     public abstract float getRenderWidth();
@@ -155,13 +154,13 @@ public abstract class HutThing implements Comparable<HutThing>{
         return (float)Math.pow(f,1.25f);
     }
     public void render(Renderer renderer, float imgScale){
-        GL11.glColor4d(1, 1, 1, 1);
+        renderer.setWhite();
         switch(wall){
             case FLOOR:
                 float X = x+getDimX()/2;
                 float Y = y+getDimY()/2;
                 float Z = z;
-                double[] xy = Hut.convertXYZtoXY512(X, Y, Z);
+                float[] xy = Hut.convertXYZtoXY512(X, Y, Z);
                 float scale = hut.getScale(Y);
                 render(renderer, xy[0], xy[1], scale, .25f);
                 break;

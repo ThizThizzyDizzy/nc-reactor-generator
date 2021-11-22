@@ -7,8 +7,8 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 public class NCPF2Reader extends NCPF3Reader {
     @Override
     protected byte getTargetVersion() {

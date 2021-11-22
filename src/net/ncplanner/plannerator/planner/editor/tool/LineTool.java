@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.editor.tool;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.graphics.image.Image;
 public class LineTool extends EditorTool{
     public LineTool(Editor editor, int id){
         super(editor, id);
@@ -15,12 +15,12 @@ public class LineTool extends EditorTool{
     private int[] leftDragEnd;
     private int[] rightDragEnd;
     @Override
-    public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
+    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillPolygon(new double[]{x+width*.125,x+width*.25,x+width*.875,x+width*.75}, new double[]{y+height*.75,y+height*.875,y+height*.25,y+height*.125});
+        renderer.fillQuad(x+width*.125f, y+height*.75f, x+width*.25f, y+height*.875f, x+width*.875f, y+height*.25f, x+width*.75f, y+height*.125f);
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
+    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         renderer.setWhite(.5f);
         if(leftDragEnd!=null&&leftDragStart!=null)raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (bx,by,bz) -> {
             if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), bx, by, bz))return;
@@ -49,9 +49,9 @@ public class LineTool extends EditorTool{
         renderer.setWhite();
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
-        double border = blockSize/64;
+        float border = blockSize/64;
         if(leftDragEnd!=null&&leftDragStart!=null)raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
             if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), X, Y, Z))return;
             renderer.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, texture);
@@ -59,7 +59,7 @@ public class LineTool extends EditorTool{
         renderer.setWhite(.5f);
         if(rightDragEnd!=null&&rightDragStart!=null)raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
             if(editor.getMultiblock().getBlock(X, Y, Z)==null)return;
-            renderer.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, 0);
+            renderer.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, null);
         });
         renderer.setWhite();
     }

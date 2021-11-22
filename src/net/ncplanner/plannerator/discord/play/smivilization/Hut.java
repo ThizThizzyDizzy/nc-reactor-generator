@@ -7,11 +7,9 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.discord.Bot;
-import net.ncplanner.plannerator.discord.play.model.Face;
-import net.ncplanner.plannerator.discord.play.model.Model;
-import net.ncplanner.plannerator.discord.play.model.Vector3f;
 import net.ncplanner.plannerator.discord.play.smivilization.thing.Bed;
 import net.ncplanner.plannerator.discord.play.smivilization.thing.CoffeeTable;
 import net.ncplanner.plannerator.discord.play.smivilization.thing.Couch;
@@ -39,14 +37,10 @@ import net.ncplanner.plannerator.discord.play.smivilization.thing.special.EatenS
 import net.ncplanner.plannerator.discord.play.smivilization.thing.special.GlowshroomGlowshroomGlowshroomPoster;
 import net.ncplanner.plannerator.discord.play.smivilization.thing.special.PatreonPoster;
 import net.ncplanner.plannerator.discord.play.smivilization.thing.special.SmoreTrophy;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ImageIO;
-import org.lwjgl.opengl.GL11;
-import simplelibrary.CircularStream;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
-import simplelibrary.image.Color;
-import simplelibrary.opengl.ImageStash;
 public class Hut{
     /**
      * Only used to initalize new ones. do not use directly.
@@ -140,7 +134,7 @@ public class Hut{
         sendImage(channel, name, 512, 512, renderer);
     }
     public void sendImage(MessageChannel channel, String name, int width, int height, Core.BufferRenderer renderer){
-        CircularStream stream = new CircularStream(1024*1024);//1MB
+        CircularStream stream = new CircularStream(1024*1024);//1MiB
         CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), name+".png").submit();
         try{
             ImageIO.write(Bot.makeImage(width, height, renderer), stream);
@@ -152,27 +146,25 @@ public class Hut{
         }
     }
     public void sendExteriorImage(MessageChannel channel){
-        sendImage(channel, "outside", (buff) -> {
-            Renderer renderer = new Renderer();
-            GL11.glColor4d(1, 1, 1, 1);
-            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside.png", 0, 0, buff.width, buff.height);
+        sendImage(channel, "outside", (renderer, buffWidth, buffHeight) -> {
+            renderer.setWhite();
+            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside.png", 0, 0, buffWidth, buffHeight);
             boolean hasLamp = false;
             for(HutThing thing : furniture){
                 if(thing.isLamp()&&thing.isOn())hasLamp = true;
             }
             if(type==HutType.NIGHT&&hasLamp){
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside glow.png", 0, 0, buff.width, buff.height);
+                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside glow.png", 0, 0, buffWidth, buffHeight);
             }
             if(hasGlowshroom()){
-                renderer.drawImage("/textures/smivilization/glowshroom.png", 0, 0, buff.width, buff.height);
+                renderer.drawImage("/textures/smivilization/glowshroom.png", 0, 0, buffWidth, buffHeight);
             }
         });
     }
     public void sendInteriorImage(MessageChannel channel){
-        sendImage(channel, "inside", (buff) -> {
-            Renderer renderer = new Renderer();
-            GL11.glColor4d(1, 1, 1, 1);
-            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buff.width, buff.height);
+        sendImage(channel, "inside", (renderer, buffWidth, buffHeight) -> {
+            renderer.setWhite();
+            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buffWidth, buffHeight);
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
             boolean hasLamp = false;
@@ -181,7 +173,7 @@ public class Hut{
                 thing.render(renderer, .25f);
             }
             if(type==HutType.NIGHT){
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buff.width, buff.height);
+                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buffWidth, buffHeight);
             }
 //            try{
 //                drawa3DModelLikeTotalMagic(8, 0, 5, OBJLoader.loadModel("C:/Users/Thiz/Desktop/untitled.obj"));
@@ -192,10 +184,9 @@ public class Hut{
         });
     }
     public void sendHighlightImage(MessageChannel channel, List<HutThing> highlights){
-        sendImage(channel, "inside", (buff) -> {
-            Renderer renderer = new Renderer();
-            GL11.glColor4d(1, 1, 1, 1);
-            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buff.width, buff.height);
+        sendImage(channel, "inside", (renderer, buffWidth, buffHeight) -> {
+            renderer.setWhite();
+            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buffWidth, buffHeight);
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
             boolean hasLamp = false;
@@ -204,7 +195,7 @@ public class Hut{
                 thing.render(renderer, .25f);
             }
             if(type==HutType.NIGHT){
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buff.width, buff.height);
+                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buffWidth, buffHeight);
             }
             for(HutThing thing : furn){
                 float x,y,z;
@@ -240,7 +231,7 @@ public class Hut{
                         z = thing.z+thing.getDimZ()/2f;
                         break;
                 }
-                double[] xy = convertXYZtoXY512(x, y, z);
+                float[] xy = convertXYZtoXY512(x, y, z);
                 if(highlights.contains(thing)){
                     renderer.setColor(new Color(0,96,192));
                     renderer.drawCircle(xy[0], xy[1], 0, 16);
@@ -282,9 +273,9 @@ public class Hut{
                         z = thing.z+thing.getDimZ()/2f;
                         break;
                 }
-                double[] xy = convertXYZtoXY512(x, y, z);
+                float[] xy = convertXYZtoXY512(x, y, z);
                 if(highlights.contains(thing)){
-                    GL11.glColor4d(.05, .05, .05, 1);
+                    renderer.setColor(.05f, .05f, .05f, 1);
                     int textHeight = 20;
                     renderer.drawCenteredText(xy[0]-textHeight, xy[1]-textHeight/2, xy[0]+textHeight, xy[1]+textHeight/2, (highlights.indexOf(thing)+1)+"");
                 }
@@ -292,10 +283,9 @@ public class Hut{
         });
     }
     public void sendPlacementHighlightImage(MessageChannel channel, HutThing highlightedThing, List<Placement> highlights){
-        sendImage(channel, "inside", (buff) -> {
-            Renderer renderer = new Renderer();
-            GL11.glColor4d(1, 1, 1, 1);
-            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buff.width, buff.height);
+        sendImage(channel, "inside", (renderer, buffWidth, buffHeight) -> {
+            renderer.setWhite();
+            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buffWidth, buffHeight);
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
             boolean hasLamp = false;
@@ -304,7 +294,7 @@ public class Hut{
                 thing.render(renderer, .25f);
             }
             if(type==HutType.NIGHT){
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buff.width, buff.height);
+                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buffWidth, buffHeight);
             }
             for(Placement placement : highlights){
                 float x,y,z;
@@ -340,7 +330,7 @@ public class Hut{
                         z = placement.z+placement.dimZ/2f;
                         break;
                 }
-                double[] xy = convertXYZtoXY512(x, y, z);
+                float[] xy = convertXYZtoXY512(x, y, z);
                 renderer.setColor(new Color(0,96,192));
                 renderer.drawCircle(xy[0], xy[1], 0, 16);
                 renderer.setColor(new Color(0,64,128));
@@ -380,8 +370,8 @@ public class Hut{
                         z = placement.z+placement.dimZ/2f;
                         break;
                 }
-                double[] xy = convertXYZtoXY512(x, y, z);
-                GL11.glColor4d(.05, .05, .05, 1);
+                float[] xy = convertXYZtoXY512(x, y, z);
+                renderer.setColor(.05f, .05f, .05f, 1);
                 int textHeight = 20;
                 renderer.drawCenteredText(xy[0]-textHeight, xy[1]-textHeight/2, xy[0]+textHeight, xy[1]+textHeight/2, (highlights.indexOf(placement)+1)+"");
             }
@@ -483,135 +473,135 @@ public class Hut{
     private float doSomeMagic(float f){
         return (float)Math.pow(f,1.25f);
     }
-    private void drawa3DModelLikeTotalMagic(float x, float y, float z, Model model){
-        Collections.sort(model.faces, (o1, o2) -> {
-            float y1 = 0;
-            float z1 = 0;
-            for(int i : o1.verticies){
-                Vector3f vertex = model.vertices.get(i-1);
-                y1+=vertex.y;
-                z1+=vertex.z;
-            }
-            y1/=o1.verticies.size();
-            z1/=o1.verticies.size();
-            float y2 = 0;
-            float z2 = 0;
-            for(int i : o2.verticies){
-                Vector3f vertex = model.vertices.get(i-1);
-                y2+=vertex.y;
-                z2+=vertex.z;
-            }
-            y2/=o2.verticies.size();
-            z2/=o2.verticies.size();
-            if(y1==y2)return (int)((z1-z2)*1000);
-            return (int)((y1-y2)*1000);
-        });
-        int oldTexture = -1;
-        int oldPolygonSize = 0;
-        for (Face face : model.faces) {
-//            int faceY = 0;
-//            for(int i : face.verticies){
+//    private void drawa3DModelLikeTotalMagic(float x, float y, float z, Model model){
+//        Collections.sort(model.faces, (o1, o2) -> {
+//            float y1 = 0;
+//            float z1 = 0;
+//            for(int i : o1.verticies){
 //                Vector3f vertex = model.vertices.get(i-1);
-//                faceY+=vertex.y;
+//                y1+=vertex.y;
+//                z1+=vertex.z;
 //            }
-//            faceY/=face.verticies.size();
-//            if(faceY<.1f)continue;
-            int texture = face.getTexture();
-            int polygonSize = face.verticies.size();
-            if(oldTexture!=texture||oldPolygonSize!=polygonSize){
-                if(oldTexture!=-1||oldPolygonSize!=polygonSize){
-                    GL11.glEnd();
-                }
-                ImageStash.instance.bindTexture(texture);
-                switch(polygonSize){
-                    case 4:
-                        GL11.glBegin(GL11.GL_QUADS);
-                        break;
-                    default:
-                        if(polygonSize<3){
-                            throw new IllegalArgumentException("Cannot draw face with "+polygonSize+" vertecies!");
-                        }
-                    case 3:
-                        GL11.glBegin(GL11.GL_TRIANGLES);
-                        break;
-                }
-            }
-//            if(face.colorOverride!=null){
-//                GL11.glColor4d(face.colorOverride.getRed()/255d, face.colorOverride.getGreen()/255d, face.colorOverride.getBlue()/255d, 1);
+//            y1/=o1.verticies.size();
+//            z1/=o1.verticies.size();
+//            float y2 = 0;
+//            float z2 = 0;
+//            for(int i : o2.verticies){
+//                Vector3f vertex = model.vertices.get(i-1);
+//                y2+=vertex.y;
+//                z2+=vertex.z;
 //            }
-            oldTexture = texture;
-            oldPolygonSize = polygonSize;
-            if(polygonSize>4){
-                for(int i = 0; i < face.verticies.size()-2; i++){
-                    int vert1 = face.verticies.get(0);
-                    int vert2 = face.verticies.get(i+1);
-                    int vert3 = face.verticies.get(i+2);
-                    if(face.textureCoords.size()>0){
-                        float[] uv = model.textures.get(face.textureCoords.get(0)-1);
-                        GL11.glTexCoord2f(uv[0], -uv[1]);
-                    }
-                    if(face.normals.size()>0){
-                        Vector3f n = model.normals.get((int)face.normals.get(0)-1);
-                        setNormals(face.colorOverride, n.x, n.y, n.z);
-                    }
-                    Vector3f v = model.vertices.get(vert1 - 1);
-                    vertex(x+v.x, y+v.y, z+v.z);
-                    if(face.textureCoords.size()>0){
-                        float[] uv = model.textures.get(face.textureCoords.get(i+1)-1);
-                        GL11.glTexCoord2f(uv[0], -uv[1]);
-                    }
-                    if(face.normals.size()>0){
-                        Vector3f n = model.normals.get((int)face.normals.get(i+1)-1);
-                        setNormals(face.colorOverride, n.x, n.y, n.z);
-                    }
-                    v = model.vertices.get(vert2 - 1);
-                    vertex(x+v.x, y+v.y, z+v.z);
-                    if(face.textureCoords.size()>0){
-                        float[] uv = model.textures.get(face.textureCoords.get(i+2)-1);
-                        GL11.glTexCoord2f(uv[0], -uv[1]);
-                    }
-                    if(face.normals.size()>0){
-                        Vector3f n = model.normals.get((int)face.normals.get(i+2)-1);
-                        setNormals(face.colorOverride, n.x, n.y, n.z);
-                    }
-                    v = model.vertices.get(vert3 - 1);
-                    vertex(x+v.x, y+v.y, z+v.z);
-                }
-            }else{
-                for(int i = 0; i < face.verticies.size(); i++){
-                    int vert = face.verticies.get(i);
-                    if(face.textureCoords.size()>0){
-                        float[] uv = model.textures.get(face.textureCoords.get(i)-1);
-                        GL11.glTexCoord2f(uv[0], -uv[1]);
-                    }
-                    if(face.normals.size()>0){
-                        Vector3f n = model.normals.get((int)face.normals.get(i)-1);
-                        setNormals(face.colorOverride, n.x, n.y, n.z);
-                    }
-                    Vector3f v = model.vertices.get(vert - 1);
-                    vertex(x+v.x, y+v.y, z+v.z);
-                }
-            }
-        }
-        GL11.glEnd();
+//            y2/=o2.verticies.size();
+//            z2/=o2.verticies.size();
+//            if(y1==y2)return (int)((z1-z2)*1000);
+//            return (int)((y1-y2)*1000);
+//        });
+//        int oldTexture = -1;
+//        int oldPolygonSize = 0;
+//        for (Face face : model.faces) {
+////            int faceY = 0;
+////            for(int i : face.verticies){
+////                Vector3f vertex = model.vertices.get(i-1);
+////                faceY+=vertex.y;
+////            }
+////            faceY/=face.verticies.size();
+////            if(faceY<.1f)continue;
+//            int texture = face.getTexture();
+//            int polygonSize = face.verticies.size();
+//            if(oldTexture!=texture||oldPolygonSize!=polygonSize){
+//                if(oldTexture!=-1||oldPolygonSize!=polygonSize){
+//                    GL11.glEnd();
+//                }
+//                ImageStash.instance.bindTexture(texture);
+//                switch(polygonSize){
+//                    case 4:
+//                        GL11.glBegin(GL11.GL_QUADS);
+//                        break;
+//                    default:
+//                        if(polygonSize<3){
+//                            throw new IllegalArgumentException("Cannot draw face with "+polygonSize+" vertecies!");
+//                        }
+//                    case 3:
+//                        GL11.glBegin(GL11.GL_TRIANGLES);
+//                        break;
+//                }
+//            }
+////            if(face.colorOverride!=null){
+////                GL11.glColor4d(face.colorOverride.getRed()/255d, face.colorOverride.getGreen()/255d, face.colorOverride.getBlue()/255d, 1);
+////            }
+//            oldTexture = texture;
+//            oldPolygonSize = polygonSize;
+//            if(polygonSize>4){
+//                for(int i = 0; i < face.verticies.size()-2; i++){
+//                    int vert1 = face.verticies.get(0);
+//                    int vert2 = face.verticies.get(i+1);
+//                    int vert3 = face.verticies.get(i+2);
+//                    if(face.textureCoords.size()>0){
+//                        float[] uv = model.textures.get(face.textureCoords.get(0)-1);
+//                        GL11.glTexCoord2f(uv[0], -uv[1]);
+//                    }
+//                    if(face.normals.size()>0){
+//                        Vector3f n = model.normals.get((int)face.normals.get(0)-1);
+//                        setNormals(face.colorOverride, n.x, n.y, n.z);
+//                    }
+//                    Vector3f v = model.vertices.get(vert1 - 1);
+//                    vertex(x+v.x, y+v.y, z+v.z);
+//                    if(face.textureCoords.size()>0){
+//                        float[] uv = model.textures.get(face.textureCoords.get(i+1)-1);
+//                        GL11.glTexCoord2f(uv[0], -uv[1]);
+//                    }
+//                    if(face.normals.size()>0){
+//                        Vector3f n = model.normals.get((int)face.normals.get(i+1)-1);
+//                        setNormals(face.colorOverride, n.x, n.y, n.z);
+//                    }
+//                    v = model.vertices.get(vert2 - 1);
+//                    vertex(x+v.x, y+v.y, z+v.z);
+//                    if(face.textureCoords.size()>0){
+//                        float[] uv = model.textures.get(face.textureCoords.get(i+2)-1);
+//                        GL11.glTexCoord2f(uv[0], -uv[1]);
+//                    }
+//                    if(face.normals.size()>0){
+//                        Vector3f n = model.normals.get((int)face.normals.get(i+2)-1);
+//                        setNormals(face.colorOverride, n.x, n.y, n.z);
+//                    }
+//                    v = model.vertices.get(vert3 - 1);
+//                    vertex(x+v.x, y+v.y, z+v.z);
+//                }
+//            }else{
+//                for(int i = 0; i < face.verticies.size(); i++){
+//                    int vert = face.verticies.get(i);
+//                    if(face.textureCoords.size()>0){
+//                        float[] uv = model.textures.get(face.textureCoords.get(i)-1);
+//                        GL11.glTexCoord2f(uv[0], -uv[1]);
+//                    }
+//                    if(face.normals.size()>0){
+//                        Vector3f n = model.normals.get((int)face.normals.get(i)-1);
+//                        setNormals(face.colorOverride, n.x, n.y, n.z);
+//                    }
+//                    Vector3f v = model.vertices.get(vert - 1);
+//                    vertex(x+v.x, y+v.y, z+v.z);
+//                }
+//            }
+//        }
+//        GL11.glEnd();
+//    }
+//    private void setNormals(Color color, float x, float y, float z){
+//        if(color==null)color = Color.WHITE;
+//        x*=1.25;
+//        z*=.75;
+//        float mod = 20;
+//        float total = ((x+y+z)-3)*mod;
+//        GL11.glColor4f((color.getRed()+total)/255, (color.getGreen()+total)/255, (color.getBlue()+total)/255, 1);
+//    }
+//    private void vertex(float x, float y, float z){
+//        float[] pos = convertXYZtoXY512(x, y, z);
+//        GL11.glVertex2d(pos[0],pos[1]);
+//    }
+    public static float[] convertXYZtoXY512(float x, float y, float z){
+        float[] xy = convertXYZtoXY2048(x, y, z);
+        return new float[]{xy[0]/4,xy[1]/4};
     }
-    private void setNormals(Color color, float x, float y, float z){
-        if(color==null)color = Color.WHITE;
-        x*=1.25;
-        z*=.75;
-        float mod = 20;
-        float total = ((x+y+z)-3)*mod;
-        GL11.glColor4f((color.getRed()+total)/255, (color.getGreen()+total)/255, (color.getBlue()+total)/255, 1);
-    }
-    private void vertex(float x, float y, float z){
-        double[] pos = convertXYZtoXY512(x, y, z);
-        GL11.glVertex2d(pos[0],pos[1]);
-    }
-    public static double[] convertXYZtoXY512(double x, double y, double z){
-        double[] xy = convertXYZtoXY2048(x, y, z);
-        return new double[]{xy[0]/4,xy[1]/4};
-    }
-    public static double[] convertXYZtoXY2048(double x, double y, double z){
+    public static float[] convertXYZtoXY2048(float x, float y, float z){
         x/=10;
         y/=10;
         z/=10;
@@ -628,23 +618,23 @@ public class Hut{
         int[] topRightDiff = {frontTopRight[0]-backTopRight[0],frontTopRight[1]-backTopRight[1]};
         int[] bottomLeftDiff = {frontBottomLeft[0]-backBottomLeft[0],frontBottomLeft[1]-backBottomLeft[1]};
         int[] bottomRightDiff = {frontBottomRight[0]-backBottomRight[0],frontBottomRight[1]-backBottomRight[1]};
-        double[] topLeft = {backTopLeft[0]+topLeftDiff[0]*y,backTopLeft[1]+topLeftDiff[1]*y};
-        double[] topRight = {backTopRight[0]+topRightDiff[0]*y,backTopRight[1]+topRightDiff[1]*y};
-        double[] bottomLeft = {backBottomLeft[0]+bottomLeftDiff[0]*y,backBottomLeft[1]+bottomLeftDiff[1]*y};
-        double[] bottomRight = {backBottomRight[0]+bottomRightDiff[0]*y,backBottomRight[1]+bottomRightDiff[1]*y};
-        double leftHeight = Math.abs(topLeft[1]-bottomLeft[1]);//left height at depth
-        double rightHeight = Math.abs(topRight[1]-bottomRight[1]);//right height at depth
-        double bottomWidth = Math.abs(bottomLeft[0]-bottomRight[0]);//bottom width at depth
-        double topWidth = Math.abs(topLeft[0]-topRight[0]);//top width at depth
-        double bottomX = bottomLeft[0]+bottomWidth*x;
-        double topX = topLeft[0]+topWidth*x;
-        double leftY = bottomLeft[1]-leftHeight*z;
-        double rightY = bottomRight[1]-rightHeight*z;
-        double xDiff = topX-bottomX;
-        double yDiff = rightY-leftY;
-        double X = bottomX+xDiff*x;
-        double Y = leftY+yDiff*z;
-        return new double[]{X,Y};
+        float[] topLeft = {backTopLeft[0]+topLeftDiff[0]*y,backTopLeft[1]+topLeftDiff[1]*y};
+        float[] topRight = {backTopRight[0]+topRightDiff[0]*y,backTopRight[1]+topRightDiff[1]*y};
+        float[] bottomLeft = {backBottomLeft[0]+bottomLeftDiff[0]*y,backBottomLeft[1]+bottomLeftDiff[1]*y};
+        float[] bottomRight = {backBottomRight[0]+bottomRightDiff[0]*y,backBottomRight[1]+bottomRightDiff[1]*y};
+        float leftHeight = Math.abs(topLeft[1]-bottomLeft[1]);//left height at depth
+        float rightHeight = Math.abs(topRight[1]-bottomRight[1]);//right height at depth
+        float bottomWidth = Math.abs(bottomLeft[0]-bottomRight[0]);//bottom width at depth
+        float topWidth = Math.abs(topLeft[0]-topRight[0]);//top width at depth
+        float bottomX = bottomLeft[0]+bottomWidth*x;
+        float topX = topLeft[0]+topWidth*x;
+        float leftY = bottomLeft[1]-leftHeight*z;
+        float rightY = bottomRight[1]-rightHeight*z;
+        float xDiff = topX-bottomX;
+        float yDiff = rightY-leftY;
+        float X = bottomX+xDiff*x;
+        float Y = leftY+yDiff*z;
+        return new float[]{X,Y};
     }
     public float getScale(float y){
         y/=10;

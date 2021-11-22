@@ -1,6 +1,8 @@
 package net.ncplanner.plannerator.planner.theme.legacy;
+import net.ncplanner.plannerator.graphics.Font;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.theme.ColorTheme;
-import simplelibrary.image.Color;
 public abstract class LegacyTheme extends ColorTheme{
     public double moderatorLineDecalColorPow = 3;
     public LegacyTheme(String name){
@@ -672,5 +674,21 @@ public abstract class LegacyTheme extends ColorTheme{
     }
     public Color getDarkerListColor(){
         return darker(getListColor());
+    }
+    @Override
+    public Font getDefaultFont(){
+        return Core.FONT_40;
+    }
+    @Override
+    public Font getTextViewFont(){
+        return Core.FONT_20;
+    }
+    @Override
+    public Font getCodeFont(){
+        return Core.FONT_MONO_20;
+    }
+    @Override
+    public Font getDecalFont(){
+        return Core.FONT_10;
     }
 }

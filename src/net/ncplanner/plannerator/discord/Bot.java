@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -88,14 +89,10 @@ import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import simplelibrary.CircularStream;
-import simplelibrary.Stack;
-import simplelibrary.Sys;
-import simplelibrary.config2.Config;
-import simplelibrary.error.ErrorCategory;
-import simplelibrary.error.ErrorLevel;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.planner.CircularStream;
 public class Bot extends ListenerAdapter{
     public static boolean debug = false;
     private static ArrayList<String> prefixes = new ArrayList<>();
@@ -2463,7 +2460,7 @@ public class Bot extends ListenerAdapter{
             System.out.println("Bot started!");
             FileWriter.botRunning = true;
         }catch(LoginException ex){
-            Sys.error(ErrorLevel.critical, "Failed to log in!", ex, ErrorCategory.InternetIO);
+            Core.criticalError("Failed to log in!", ex);
         }
     }
     public static void stop(){

@@ -23,7 +23,7 @@ public abstract class Tutorial{
     public Tutorial(String name){
         this.name = name;
     }
-    public abstract double getHeight();
+    public abstract float getHeight();
     public void tick(int tick){}
     /**
      * Called before the coordinates are scaled for render

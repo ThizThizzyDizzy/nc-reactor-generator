@@ -24,10 +24,10 @@ import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.HeaderFormatReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
 import net.ncplanner.plannerator.planner.file.NCPFHeader;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
-import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
+import net.ncplanner.plannerator.config2.ConfigNumberList;
+import net.ncplanner.plannerator.graphics.image.Image;
 public class NCPF11Reader implements FormatReader, HeaderFormatReader {
     @Override
     public boolean formatMatches(InputStream in){

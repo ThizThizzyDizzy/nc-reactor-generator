@@ -3,7 +3,7 @@ import java.util.Locale;
 import net.ncplanner.plannerator.discord.Keyword;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class KeywordMultiblock extends Keyword{
     public String text;
     public KeywordMultiblock(){

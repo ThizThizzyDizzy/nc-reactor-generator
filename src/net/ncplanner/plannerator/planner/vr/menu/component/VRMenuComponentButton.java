@@ -1,16 +1,13 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
-import simplelibrary.font.FontManager;
-import simplelibrary.image.Color;
-import simplelibrary.opengl.ImageStash;
-import simplelibrary.opengl.Renderer2D;
+import net.ncplanner.plannerator.graphics.image.Color;
+import org.joml.Matrix4f;
 public class VRMenuComponentButton extends VRMenuComponent{
     private String text;
     public boolean enabled;
@@ -24,8 +21,8 @@ public class VRMenuComponentButton extends VRMenuComponent{
     /**
      * How far in front of the button the text should hover
      */
-    private double textOffset = .001f;//1mm
-    public VRMenuComponentButton(double x, double y, double z, double width, double height, double depth, double rx, double ry, double rz, String text, boolean enabled, boolean darker){
+    private float textOffset = .001f;//1mm
+    public VRMenuComponentButton(float x, float y, float z, float width, float height, float depth, float rx, float ry, float rz, String text, boolean enabled, boolean darker){
         super(x, y, z, width, height, depth, rx, ry, rz);
         this.text = text;
         this.enabled = enabled;
@@ -56,20 +53,19 @@ public class VRMenuComponentButton extends VRMenuComponent{
             }
         }
         renderer.setColor(col);
-        ImageStash.instance.bindTexture(0);
-        renderer.drawCube(0, 0, 0, width, height, depth, 0);
+        renderer.bindTexture(0);
+        renderer.drawCube(0, 0, 0, width, height, depth, null);
         renderer.setColor(textColor.get());
         drawText();
     }
     public void drawText(){
-        double textLength = FontManager.getLengthForStringWithHeight(text, height);
-        double scale = Math.min(1, (width-textInset*2)/textLength);
-        double textHeight = ((height-textInset*2)*scale)-.005;
-        GL11.glPushMatrix();
-        GL11.glTranslated(0, height/2, depth+textOffset);
-        GL11.glScaled(1, -1, 1);
-        Renderer2D.drawCenteredText(0, -textHeight/2, width, textHeight/2, text);
-        GL11.glPopMatrix();
+        Renderer renderer = new Renderer();
+        float textLength = renderer.getStringWidth(text, height);
+        float scale = Math.min(1, (width-textInset*2)/textLength);
+        float textHeight = ((height-textInset*2)*scale)-.005f;
+        renderer.setModel(new Matrix4f().translate(0, height/2, depth+textOffset).scale(1, -1, 1));
+        renderer.drawCenteredText(0, -textHeight/2, width, textHeight/2, text);
+        renderer.resetModelMatrix();
     }
     @Override
     public void keyEvent(int device, int button, boolean pressed){

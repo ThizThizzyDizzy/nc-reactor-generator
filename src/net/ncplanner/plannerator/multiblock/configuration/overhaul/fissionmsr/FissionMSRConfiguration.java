@@ -13,8 +13,8 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfi
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 public class FissionMSRConfiguration extends AbstractBlockContainer<Block> {
     public int minSize;
     public int maxSize;

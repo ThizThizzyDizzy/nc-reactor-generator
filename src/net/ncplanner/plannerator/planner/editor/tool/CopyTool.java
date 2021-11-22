@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.editor.tool;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.graphics.image.Image;
 public class CopyTool extends EditorTool{
     public CopyTool(Editor editor, int id){
         super(editor, id);
@@ -12,18 +12,18 @@ public class CopyTool extends EditorTool{
     private int[] dragStart;
     private int[] dragEnd;
     @Override
-    public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
+    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillRect(x+width*.35, y+height*.15, x+width*.8, y+height*.75);
+        renderer.fillRect(x+width*.35f, y+height*.15f, x+width*.8f, y+height*.75f);
         renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
-        renderer.fillRect(x+width*.4, y+height*.2, x+width*.75, y+height*.7);
+        renderer.fillRect(x+width*.4f, y+height*.2f, x+width*.75f, y+height*.7f);
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillRect(x+width*.2, y+height*.25, x+width*.65, y+height*.85);
+        renderer.fillRect(x+width*.2f, y+height*.25f, x+width*.65f, y+height*.85f);
         renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
-        renderer.fillRect(x+width*.25, y+height*.3, x+width*.6, y+height*.8);
+        renderer.fillRect(x+width*.25f, y+height*.3f, x+width*.6f, y+height*.8f);
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
+    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         if(dragEnd!=null&&dragStart!=null){
             float border = 1/8f;
             int minBX = Math.min(dragStart[0], dragEnd[0]);
@@ -53,7 +53,7 @@ public class CopyTool extends EditorTool{
         renderer.setWhite();
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         //TODO VR: Copy tool ghosts
     }
     @Override

@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.discord;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public abstract class Keyword{
     public final String name;
     protected String input;

@@ -3,7 +3,7 @@ package net.ncplanner.plannerator.planner.file.reader;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
-import simplelibrary.config2.Config;
+import net.ncplanner.plannerator.config2.Config;
 public class NCPF4Reader extends NCPF5Reader {
     @Override
     protected byte getTargetVersion() {

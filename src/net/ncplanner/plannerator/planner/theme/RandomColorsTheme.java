@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.theme;
 import java.util.HashMap;
 import java.util.Random;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class RandomColorsTheme extends ColorTheme{
     private Random rand = new Random();
     private Color keywordBackgroundColor;

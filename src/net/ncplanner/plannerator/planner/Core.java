@@ -1,13 +1,14 @@
 package net.ncplanner.plannerator.planner;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -17,9 +18,14 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.discord.Bot;
-import net.ncplanner.plannerator.multiblock.BoundingBox;
+import net.ncplanner.plannerator.graphics.Font;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.Shader;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
@@ -31,18 +37,15 @@ import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.menu.MenuCredits;
-import net.ncplanner.plannerator.planner.menu.MenuEdit;
-import net.ncplanner.plannerator.planner.menu.MenuInit;
-import net.ncplanner.plannerator.planner.menu.MenuMain;
-import net.ncplanner.plannerator.planner.menu.MenuTransition;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMulticolumnMinimaList;
-import net.ncplanner.plannerator.planner.menu.dialog.MenuCriticalError;
-import net.ncplanner.plannerator.planner.menu.dialog.MenuMinorError;
-import net.ncplanner.plannerator.planner.menu.dialog.MenuModerateError;
-import net.ncplanner.plannerator.planner.menu.dialog.MenuSevereError;
-import net.ncplanner.plannerator.planner.menu.dialog.MenuWarningMessage;
+import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.MenuInit;
+import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuCriticalError;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
@@ -50,40 +53,27 @@ import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentMultiblockSettingsPanel;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentToolPanel;
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
+import static org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.glfw.GLFWErrorCallbackI;
+import org.lwjgl.glfw.GLFWImage;
+import org.lwjgl.opengl.GL;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL30.*;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.openvr.VR;
+import static org.lwjgl.stb.STBImage.*;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.nfd.NativeFileDialog;
-import simplelibrary.Sys;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
-import simplelibrary.error.ErrorCategory;
-import simplelibrary.error.ErrorHandler;
-import simplelibrary.error.ErrorLevel;
-import simplelibrary.font.FontManager;
-import simplelibrary.game.Framebuffer;
-import simplelibrary.game.GameHelper;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
-import simplelibrary.opengl.ImageStash;
-import simplelibrary.opengl.Renderer2D;
-import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
-import simplelibrary.opengl.gui.components.MenuComponent;
-import simplelibrary.texture.TexturePack;
-import simplelibrary.texture.TexturePackManager;
 public class Core{
+    public static Logger logger = Logger.getLogger(Core.class.getName());
     public static GUI gui;
-    public static GameHelper helper;
     public static ArrayList<Long> FPStracker = new ArrayList<>();
     public static boolean debugMode = false;
-    public static final boolean is3D = true;
-    public static final boolean enableCullFace = true;
     public static final float maxYRot = 80f;
     public static float xRot = 30;
     public static float yRot = 30;
@@ -99,13 +89,21 @@ public class Core{
     public static int circleSize = 64;
     public static final ArrayList<Module> modules = new ArrayList<>();
     public static boolean vr = false;
-    private static Callback callback;
+    private static Callback glCallback;
     public static boolean invertUndoRedo;
     public static boolean autoBuildCasing = true;
     public static boolean recoveryMode = false;
     public static final ArrayList<String> pinnedStrs = new ArrayList<>();
     private static Random rand = new Random();
     public static String str = "";
+    public static long window = 0;
+    public static double lastFrame = -1;
+    private static int screenWidth = 1, screenHeight = 1;
+    public static Font FONT_20;
+    public static Font FONT_40;
+    public static Font FONT_10;
+    public static Font FONT_MONO_20;
+    private static boolean is3D = false;
     public static void addModule(Module m){
         modules.add(m);
     }
@@ -115,25 +113,61 @@ public class Core{
         metadata.put("Author", "");
     }
     public static void main(String[] args) throws NoSuchMethodException{
-        if(VR.VR_IsRuntimeInstalled()&&VR.VR_IsHmdPresent())vr = true;
-        System.out.println("Initializing GameHelper");
-        helper = new GameHelper();
-        helper.setBackground(theme.getMenuBackgroundColor());
-        helper.setDisplaySize(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1));
-        helper.setRenderInitMethod(Core.class.getDeclaredMethod("renderInit", new Class<?>[0]));
-        helper.setTickInitMethod(Core.class.getDeclaredMethod("tickInit", new Class<?>[0]));
-        helper.setFinalInitMethod(Core.class.getDeclaredMethod("finalInit", new Class<?>[0]));
-        helper.setRenderMethod(Core.class.getDeclaredMethod("render", int.class));
-        helper.setTickMethod(Core.class.getDeclaredMethod("tick", boolean.class));
-        helper.setWindowTitle(Main.applicationName+" "+VersionManager.currentVersion);
-        helper.setMode(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D);
-        helper.setAntiAliasing(4);
-        helper.setFrameOfView(90);
-        if(Main.isBot)Bot.start(args);
-        System.out.println("Starting up");
-        Thread debug = new Thread(() -> {
+        System.out.println("Checking for VR runtime");
+        if(VR.VR_IsRuntimeInstalled()&&VR.VR_IsHmdPresent()){
+            vr = true;
+            System.out.println("VR runtime found!");
+        }
+        if(Main.isBot){
+            System.out.println("Loading discord bot");
+            Bot.start(args);
+        }
+        System.out.println("Initializing GLFW");
+        if(!glfwInit())throw new RuntimeException("Failed to initialize GLFW!");
+        glfwSetErrorCallback(new GLFWErrorCallbackI() {
+            @Override
+            public void invoke(int error, long description){
+                String desc = MemoryUtil.memUTF8(description);
+                System.err.println("GLFW ERROR "+error+": "+desc);//TODO proper error handling
+            }
+        });
+        System.out.println("Initializing window");
+        //window
+        glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        //multisampling
+        glfwWindowHint(GLFW_STENCIL_BITS, 4);
+        glfwWindowHint(GLFW_SAMPLES, 4);
+        //openGL
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        if(Main.headless)glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        System.out.println("Creating window");
+        window = glfwCreateWindow(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1), Main.applicationName+" "+VersionManager.currentVersion, 0, 0);
+        if(window==0){
+            glfwTerminate();
+            throw new RuntimeException("Failed to create GLFW window!");
+        }
+        GLFWImage.Buffer iconBuffer = GLFWImage.create(1);
+        GLFWImage icon = GLFWImage.create();
+        ByteBuffer imageData = null;
+        IntBuffer iconWidth = BufferUtils.createIntBuffer(1);
+        IntBuffer iconHeight = BufferUtils.createIntBuffer(1);
+        try(InputStream input = getInputStream("/textures/icon.png")){
+            imageData = stbi_load_from_memory(loadData(input), iconWidth, iconHeight, BufferUtils.createIntBuffer(1), 4);
+        }catch(IOException ex){
+            Logger.getLogger(Core.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(imageData==null)throw new RuntimeException("Failed to load image: "+stbi_failure_reason());
+        icon.set(iconWidth.get(0), iconHeight.get(0), imageData);
+        iconBuffer.put(icon);
+        glfwSetWindowIcon(window, iconBuffer);
+        System.out.println("Initializing Console interface");
+        Thread console = new Thread(() -> {
             try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))){
-                while(helper.running){
+                while(!glfwWindowShouldClose(window)){
                     String line = reader.readLine();
                     switch(line.trim()){
                         case "fps":
@@ -143,300 +177,225 @@ public class Core{
                 }
             }catch(IOException ex){}
         });
-        debug.setName("Console debug thread");
-        debug.setDaemon(true);
-        debug.start();
-        Sys.initLWJGLGame(new File("errors/"), new ErrorHandler() {
-            private final Logger logger = Logger.getLogger(Core.class.getName());
-            @Override
-            public void log(String message, Throwable error, ErrorCategory category){
-                System.err.println(Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Log");
-                logger.log(Level.INFO, message, error);
-            }
-            @Override
-            public void warningError(String message, Throwable error, ErrorCategory category){
-                System.err.println(Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Warning");
-                logger.log(Level.WARNING, message, error);
-                if(Main.isBot)return;
-                gui.menu = new MenuWarningMessage(gui, gui.menu, message, error, category);
-            }
-            @Override
-            public void minorError(String message, Throwable error, ErrorCategory category){
-                System.err.println("Minor "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
-                logger.log(Level.SEVERE, message, error);
-                if(Main.isBot)return;
-                gui.menu = new MenuMinorError(gui, gui.menu, message, error, category);
-            }
-            @Override
-            public void moderateError(String message, Throwable error, ErrorCategory category){
-                System.err.println("Moderate "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
-                logger.log(Level.SEVERE, message, error);
-                if(Main.isBot)return;
-                gui.menu = new MenuModerateError(gui, gui.menu, message, error, category);
-            }
-            @Override
-            public void severeError(String message, Throwable error, ErrorCategory category){
-                System.err.println("Severe "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
-                logger.log(Level.SEVERE, message, error);
-                if(Main.isBot)return;
-                gui.menu = new MenuSevereError(gui, gui.menu, message, error, category);
-            }
-            @Override
-            public void criticalError(String message, Throwable error, ErrorCategory category){
-                System.err.println("Critical "+Character.toUpperCase(category.toString().charAt(0))+category.toString().substring(1)+" Error");
-                logger.log(Level.SEVERE, message, error);
-                if(Main.isBot)return;
-                gui.menu = new MenuCriticalError(gui, message, error, category);
-            }
-        }, null, helper);
-    }
-    public static void renderInit(){
-        System.out.println("Loading fonts");
-        FontManager.addFont("/simplelibrary/font");
-        FontManager.addFont("/net/ncplanner/plannerator/font/high resolution");
-        FontManager.addFont("/net/ncplanner/plannerator/font/small");
-        FontManager.addFont("/net/ncplanner/plannerator/font/slim");
-        FontManager.addFont("/net/ncplanner/plannerator/font/monospaced");
-        FontManager.setFont("high resolution");
-        System.out.println("Initializing render engine");
-        GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glEnable(GL13.GL_MULTISAMPLE);
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.01f);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_BLEND);
-        if(is3D){
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            if(enableCullFace) GL11.glEnable(GL11.GL_CULL_FACE);
-        }
-        System.out.println("Creating texture pack manager");
-        new TexturePackManager(null, new TexturePack(){
-            @Override
-            public InputStream getResourceAsStream(String name){
-                if(name.startsWith("/")){
-                    return super.getResourceAsStream(name);
-                }
-                try{
-                    return new FileInputStream(new File(name));
-                }catch(FileNotFoundException ex){}
-                return super.getResourceAsStream(name);
-            }
+        console.setName("Console interface thread");
+        console.start();
+
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1);//THIS IS VSYNC
+        glfwSetFramebufferSizeCallback(window, (window, width, height) -> {
+            screenWidth = width;
+            screenHeight = height;
+            glViewport(0, 0, width, height);
         });
-        System.out.println("Creating GL Debug Callback");
-        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
-        callback = GLUtil.setupDebugMessageCallback();
+        GL.createCapabilities();
+        
+        System.out.println("Initializing render engine");
+        glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_ALPHA_TEST);
+        glEnable(GL_MULTISAMPLE);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        glEnable(GL_STENCIL_TEST);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        if(debugMode){
+            System.out.println("Creating GL Debug Callback");
+            glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+            glCallback = GLUtil.setupDebugMessageCallback();
+        }
+        System.out.println("Loading fonts");
+        FONT_20 = Font.loadFont("standard");
+        FONT_40 = Font.loadFont("high_resolution");
+        FONT_10 = Font.loadFont("small");
+        FONT_MONO_20 = Font.loadFont("monospaced");
         System.out.println("Initializing GUI");
-        gui = new GUI(is3D?GameHelper.MODE_HYBRID:GameHelper.MODE_2D, helper){
+        gui = new GUI(window){
             private boolean b;
-            private double x,y,o,to;
+            private float x,y,o,to;
             @Override
-            public synchronized void onCharTyped(char c){
-                try{
-                    super.onCharTyped(c);
-                }catch(Throwable t){
-                    Sys.error(ErrorLevel.severe, "Error caught in onCharTyped!", t, ErrorCategory.uncaught);
+            public void processInput(double deltaTime){
+                super.processInput(deltaTime);
+                if(glfwGetKey(window, GLFW_KEY_C)==GLFW_PRESS&&isControlPressed()&&isShiftPressed()&&isAltPressed()){
+                    throw new RuntimeException("Manually triggered debug error");//TODO might not hard-crash anymore
                 }
             }
             @Override
-            public synchronized void onFileDropped(String[] files){
-                try{
-                    super.onFileDropped(files);
-                }catch(Throwable t){
-                    Sys.error(ErrorLevel.severe, "Error caught in onFileDropped!", t, ErrorCategory.uncaught);
-                }
-            }
-            @Override
-            public synchronized void onMouseButton(int button, int action, int mods){
-                try{
-                    super.onMouseButton(button, action, mods);
-                }catch(Throwable t){
-                    Sys.error(ErrorLevel.severe, "Error caught in onMouseButton!", t, ErrorCategory.uncaught);
-                }
-            }
-            @Override
-            public synchronized void onMouseMoved(double xpos, double ypos){
-                try{
-                    super.onMouseMoved(xpos, ypos);
-                }catch(Throwable t){
-                    Sys.error(ErrorLevel.severe, "Error caught in onMouseMoved!", t, ErrorCategory.uncaught);
-                }
-            }
-            @Override
-            public synchronized void onMouseScrolled(double xoffset, double yoffset){
-                try{
-                    super.onMouseScrolled(xoffset, yoffset);
-                }catch(Throwable t){
-                    Sys.error(ErrorLevel.severe, "Error caught in onMouseScrolled!", t, ErrorCategory.uncaught);
-                }
-            }
-            @Override
-            public synchronized void onWindowFocused(boolean focused){
-                try{
-                    super.onWindowFocused(focused);
-                }catch(Throwable t){
-                    Sys.error(ErrorLevel.severe, "Error caught in onWindowFocused!", t, ErrorCategory.uncaught);
-                }
-            }
-            @Override
-            public synchronized void onKeyEvent(int key, int scancode, int event, int modifiers){
-                try{
-                    super.onKeyEvent(key, scancode, event, modifiers);
-                    if(event==GLFW.GLFW_PRESS&&key==GLFW.GLFW_KEY_C&&Core.isControlPressed()&&Core.isShiftPressed()&&Core.isAltPressed()){
-                        throw new RuntimeException("Manually triggered debug error");
-                    }
-                }catch(Throwable t){
-                    Sys.error(ErrorLevel.severe, "Error caught in onKeyEvent!", t, ErrorCategory.uncaught);
-                }
-            }
-            @Override
-            public <V extends Menu> V open(Menu menu){
-                if(!(menu instanceof MenuTransition)){
-                    if(rand.nextDouble()<.0001){
-                        to = MathUtil.max(0,MathUtil.min(1,rand.nextGaussian()/3));
-                        x = rand.nextDouble()*helper.displayWidth();
-                        y = rand.nextDouble()*helper.displayHeight();
-                    }
-                    else to = 0;
-                }else to = 0;
-                return super.open(menu);
-            }
-            @Override
-            public synchronized void render(int millisSinceLastTick){
-                helper.make2D();
+            public void render2d(double deltaTime){
                 Renderer renderer = new Renderer();
-                o = o*.999+to*.001;
+                o = o*.999f+to*.001f;
                 int min = 1;
                 int max = 4;
                 for(int i = min; i<=max; i++){
-                    GL11.glColor4d(1, 1, 1, ((-1/(max-min))*(i-min)+1)*o);
-                    renderer.drawRegularPolygon(x-10, y, i, 10, 0, 0);
-                    renderer.drawRegularPolygon(x+10, y, i, 10, 0, 0);
+                    renderer.setColor(1, 1, 1, ((-1/(max-min))*(i-min)+1)*o);
+                    renderer.drawRegularPolygon(x-10, y, i, 10, 0);
+                    renderer.drawRegularPolygon(x+10, y, i, 10, 0);
                 }
-                super.render(millisSinceLastTick);
+                super.render2d(deltaTime);
+            }
+            @Override
+            public int getWidth(){
+                return screenWidth;
+            }
+            @Override
+            public int getHeight(){
+                return screenHeight;
             }
         };
         gui.open(new MenuInit(gui));
         System.out.println("Render initialization complete!");
-    }
-    public static void tickInit(){}
-    public static void finalInit() throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException{
-        if(Main.headless)GLFW.glfwHideWindow(helper.getWindow());
-        System.out.println("Activating GUI");
-        helper.assignGUI(gui);
-    }
-    public static void tick(boolean isLastTick){
-        if(!isLastTick){
-            if(helper.isKeyDown(GLFW.GLFW_KEY_LEFT))xRot-=2;
-            if(helper.isKeyDown(GLFW.GLFW_KEY_RIGHT))xRot+=2;
-            if(helper.isKeyDown(GLFW.GLFW_KEY_UP))yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-2));
-            if(helper.isKeyDown(GLFW.GLFW_KEY_DOWN))yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+2));
-            gui.tick();
-        }else{
-            File f = new File("settings.dat").getAbsoluteFile();
-            Config settings = Config.newConfig(f);
-            settings.set("theme", theme.name);
-            Config modules = Config.newConfig();
-            for(Module m : Core.modules){
-                modules.set(m.name, m.isActive());
-            }
-            settings.set("modules", modules);
-            settings.set("tutorialShown", tutorialShown);
-            settings.set("invertUndoRedo", invertUndoRedo);
-            settings.set("autoBuildCasing", autoBuildCasing);
-            ConfigList pins = new ConfigList();
-            for(String s : pinnedStrs)pins.add(s);
-            settings.set("pins", pins);
-            settings.save();
-            if(Main.isBot){
-                Bot.stop();
-                System.exit(0);//TODO Shouldn't have to do this! :(
-            }
-        }
-    }
-    public static void render(int millisSinceLastTick){
+        
+        Shader shader = new Shader("vert.shader", "frag.shader");
+        
+        stbi_set_flip_vertically_on_load(true);
         Renderer renderer = new Renderer();
-        if(theme.shouldContantlyUpdateBackground())helper.setBackground(theme.getMenuBackgroundColor());
-        if(delCircle&&sourceCircle!=null){
-            Core.deleteTexture(sourceCircle);
-            Core.deleteTexture(outlineSquare);
-            sourceCircle = outlineSquare = null;
-            delCircle = false;
+        Matrix4f orthoProjection = new Matrix4f().setOrtho(0, screenWidth, screenHeight, 0, 0.1f, 10f);//new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
+        Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
+        while(!glfwWindowShouldClose(window)){
+            Color color = theme.getMenuBackgroundColor();
+            glClearColor(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            double dt = 0;
+            double time = glfwGetTime();
+            if(lastFrame>-1){
+                dt = time-lastFrame;
+            }
+            lastFrame = time;
+            processInput(dt);
+            renderer.setShader(shader);
+            Matrix4f modelMatrix = new Matrix4f().setTranslation(0, 0, 0).setRotationXYZ(0, 0, 0);
+            Matrix4f viewMatrix = new Matrix4f().setTranslation(0, 0, -10f);
+            renderer.model(modelMatrix);
+            renderer.view(viewMatrix);
+            renderer.projection(perspectiveProjection);
+            is3D = true;
+            render3d(renderer, dt);
+            //DRAW GUI
+            glDisable(GL_CULL_FACE);
+            renderer.projection(orthoProjection);
+            is3D = false;
+            render2d(renderer, dt);
+            glEnable(GL_CULL_FACE);
+            renderer.clearTranslationsAndBounds();
+            
+            FPStracker.add(System.currentTimeMillis());
+            while(FPStracker.get(0)<System.currentTimeMillis()-5_000){
+                FPStracker.remove(0);
+            }
+            
+            glfwSwapBuffers(window);
+            glfwPollEvents();
         }
-        if(sourceCircle==null){
-            sourceCircle = Core.makeImage(circleSize, circleSize, (buff) -> {
-                renderer.setColor(Color.WHITE);
-                renderer.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d));
-            });
+        
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        
+        File f = new File("settings.dat").getAbsoluteFile();
+        Config settings = Config.newConfig(f);
+        settings.set("theme", theme.name);
+        Config modules = Config.newConfig();
+        for(Module m : Core.modules){
+            modules.set(m.name, m.isActive());
         }
-        if(outlineSquare==null){
-            outlineSquare = Core.makeImage(32, 32, (buff) -> {
-                renderer.setColor(Color.WHITE);
-                double inset = buff.width/32d;
-                renderer.fillRect(inset, inset, buff.width-inset, inset+buff.width/16);
-                renderer.fillRect(inset, buff.width-inset-buff.width/16, buff.width-inset, buff.width-inset);
-                renderer.fillRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16);
-                renderer.fillRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16);
-            });
+        settings.set("modules", modules);
+        settings.set("tutorialShown", tutorialShown);
+        settings.set("invertUndoRedo", invertUndoRedo);
+        settings.set("autoBuildCasing", autoBuildCasing);
+        ConfigList pins = new ConfigList();
+        for(String s : pinnedStrs)pins.add(s);
+        settings.set("pins", pins);
+        settings.save();
+        if(debugMode)glCallback.free();
+        if(Main.isBot){
+            Bot.stop();
+            System.exit(0);//TODO Shouldn't have to do this! :(
         }
+    }
+    public static void processInput(double deltaTime){
+        if(glfwGetKey(window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
+        if(glfwGetKey(window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
+        if(glfwGetKey(window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
+        if(glfwGetKey(window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
+        gui.processInput(deltaTime);
+    }
+    public static void render3d(Renderer renderer, double deltaTime){
         renderer.setWhite();
-        if(gui.menu instanceof MenuMain){
-            GL11.glPushMatrix();
-            GL11.glTranslated(.4, 0, -1.5);
-            GL11.glRotated(yRot, 1, 0, 0);
-            GL11.glRotated(xRot, 0, 1, 0);
-            Multiblock mb = ((MenuMain)gui.menu).getSelectedMultiblock();
-            if(mb!=null){
-                BoundingBox bbox = mb.getBoundingBox();
-                double size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
-                size/=mb.get3DPreviewScale();
-                GL11.glScaled(1/size, 1/size, 1/size);
-                GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
-                mb.draw3D();
-            }
-            GL11.glPopMatrix();
-        }
-        if(gui.menu instanceof MenuEdit){
-            MenuEdit editor = (MenuEdit)gui.menu;
-            if(editor.toggle3D.isToggledOn){
-                GL11.glMatrixMode(GL11.GL_PROJECTION);
-                GL11.glPushMatrix();
-                GL11.glLoadIdentity();
-                GL11.glOrtho(0, gui.helper.displayWidth()*gui.helper.guiScale, 0, gui.helper.displayHeight()*gui.helper.guiScale, 1f, 10000F);
-                GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                GL11.glPushMatrix();
-                GL11.glTranslated(editor.toggle3D.x+editor.toggle3D.width/2, gui.helper.displayHeight()-(editor.toggle3D.y-editor.toggle3D.width/2), -1000);
-//                GL11.glTranslated((double)gui.helper.displayWidth()/gui.helper.displayHeight()-.25, 0, -1);
-                GL11.glScaled(.625, .625, .625);
-                GL11.glScaled(editor.toggle3D.width, editor.toggle3D.width, editor.toggle3D.width);
-                GL11.glRotated(yRot, 1, 0, 0);
-                GL11.glRotated(xRot, 0, 1, 0);
-                Multiblock mb = editor.getMultiblock();
-                if(mb!=null){
-                    BoundingBox bbox = mb.getBoundingBox();
-                    double size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
-                    size/=mb.get3DPreviewScale();
-                    GL11.glScaled(1/size, 1/size, 1/size);
-                    GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
-                    editor.draw3D();
-                }
-                GL11.glPopMatrix();
-                GL11.glMatrixMode(GL11.GL_PROJECTION);
-                GL11.glPopMatrix();
-                GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            }
-        }
-        if(gui.menu instanceof MenuCredits){
-            ((MenuCredits)gui.menu).render3D(millisSinceLastTick);
-        }
-        Renderer2D.clearBoundStack();
-        if(is3D&&enableCullFace) GL11.glDisable(GL11.GL_CULL_FACE);
-        gui.render(millisSinceLastTick);
-        if(is3D&&enableCullFace) GL11.glEnable(GL11.GL_CULL_FACE);
-        FPStracker.add(System.currentTimeMillis());
-        while(FPStracker.get(0)<System.currentTimeMillis()-5_000){
-            FPStracker.remove(0);
-        }
+//        if(gui.menu instanceof MenuMain){
+//            GL11.glPushMatrix();
+//            GL11.glTranslated(.4, 0, -1.5);
+//            GL11.glRotated(yRot, 1, 0, 0);
+//            GL11.glRotated(xRot, 0, 1, 0);
+//            Multiblock mb = ((MenuMain)gui.menu).getSelectedMultiblock();
+//            if(mb!=null){
+//                BoundingBox bbox = mb.getBoundingBox();
+//                double size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
+//                size/=mb.get3DPreviewScale();
+//                GL11.glScaled(1/size, 1/size, 1/size);
+//                GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
+//                mb.draw3D();
+//            }
+//            GL11.glPopMatrix();
+//        }
+//        if(gui.menu instanceof MenuEdit){
+//            MenuEdit editor = (MenuEdit)gui.menu;
+//            if(editor.toggle3D.isToggledOn){
+//                GL11.glMatrixMode(GL11.GL_PROJECTION);
+//                GL11.glPushMatrix();
+//                GL11.glLoadIdentity();
+//                GL11.glOrtho(0, gui.getWidth()*gui.helper.guiScale, 0, gui.getHeight()*gui.helper.guiScale, 1f, 10000F);
+//                GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//                GL11.glPushMatrix();
+//                GL11.glTranslated(editor.toggle3D.x+editor.toggle3D.width/2, gui.getHeight()-(editor.toggle3D.y-editor.toggle3D.width/2), -1000);
+////                GL11.glTranslated((double)gui.getWidth()/gui.getHeight()-.25, 0, -1);
+//                GL11.glScaled(.625, .625, .625);
+//                GL11.glScaled(editor.toggle3D.width, editor.toggle3D.width, editor.toggle3D.width);
+//                GL11.glRotated(yRot, 1, 0, 0);
+//                GL11.glRotated(xRot, 0, 1, 0);
+//                Multiblock mb = editor.getMultiblock();
+//                if(mb!=null){
+//                    BoundingBox bbox = mb.getBoundingBox();
+//                    double size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
+//                    size/=mb.get3DPreviewScale();
+//                    GL11.glScaled(1/size, 1/size, 1/size);
+//                    GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
+//                    editor.draw3D();
+//                }
+//                GL11.glPopMatrix();
+//                GL11.glMatrixMode(GL11.GL_PROJECTION);
+//                GL11.glPopMatrix();
+//                GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//            }
+//        }
+//        if(gui.menu instanceof MenuCredits){
+//            ((MenuCredits)gui.menu).render3D(millisSinceLastTick);
+//        }
+        gui.render3d(deltaTime);
+    }
+    public static void render2d(Renderer renderer, double deltaTime){
+        renderer.setWhite();
+//        if(delCircle&&sourceCircle!=null){
+//            Core.deleteTexture(sourceCircle);
+//            Core.deleteTexture(outlineSquare);
+//            sourceCircle = outlineSquare = null;
+//            delCircle = false;
+//        }
+//        if(sourceCircle==null){
+//            sourceCircle = Core.makeImage(circleSize, circleSize, (buff) -> {
+//                renderer.setColor(Color.WHITE);
+//                renderer.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d));
+//            });
+//        }
+//        if(outlineSquare==null){
+//            outlineSquare = Core.makeImage(32, 32, (buff) -> {
+//                renderer.setColor(Color.WHITE);
+//                double inset = buff.width/32d;
+//                renderer.fillRect(inset, inset, buff.width-inset, inset+buff.width/16);
+//                renderer.fillRect(inset, buff.width-inset-buff.width/16, buff.width-inset, buff.width-inset);
+//                renderer.fillRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16);
+//                renderer.fillRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16);
+//            });
+//        }
+        gui.render2d(deltaTime);
     }
     public static long getFPS(){
         return FPStracker.size()/5;
@@ -446,7 +405,7 @@ public class Core{
     public static int getTexture(Image image){
         if(image==null)return -1;
         if(!imgs.containsKey(image)){
-            imgs.put(image, ImageStash.instance.allocateAndSetupTexture(image));
+            imgs.put(image, loadTexture(image.getWidth(), image.getHeight(), image.getGLData()));
         }
         return imgs.get(image);
     }
@@ -458,42 +417,77 @@ public class Core{
         theme = t;
         str+=t.name.charAt(0);
         if(str.length()>5)str = str.substring(1);
-        helper.setBackground(theme.getMenuBackgroundColor());
     }
     public static boolean isAltPressed(){
-        return helper.isKeyDown(GLFW.GLFW_KEY_LEFT_ALT)||helper.isKeyDown(GLFW.GLFW_KEY_RIGHT_ALT);
+        return glfwGetKey(window, GLFW_KEY_LEFT_ALT)==GLFW_PRESS||glfwGetKey(window, GLFW_KEY_RIGHT_ALT)==GLFW_PRESS;
     }
     public static boolean isControlPressed(){
-        return helper.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)||helper.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL);
+        return glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)==GLFW_PRESS||glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL)==GLFW_PRESS;
     }
     public static boolean isShiftPressed(){
-        return helper.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)||helper.isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT);
+        return glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)==GLFW_PRESS||glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)==GLFW_PRESS;
     }
     public static Image makeImage(int width, int height, BufferRenderer r){
-        boolean cull = GL11.glIsEnabled(GL11.GL_CULL_FACE);
-        boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
-        if(cull)GL11.glDisable(GL11.GL_CULL_FACE);
-        if(depth)GL11.glDisable(GL11.GL_DEPTH_TEST);
-        ByteBuffer bufferer = ImageStash.createDirectByteBuffer(width*height*4);
-        Framebuffer buff = new Framebuffer(helper, null, width, height);
-        buff.bindRenderTarget2D();
-        r.render(buff);
-        bufferer.clear();
-        GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bufferer);
-        buff.releaseRenderTarget();
-        ImageStash.instance.deleteBuffer(ImageStash.instance.getBuffer(buff.name));
-        ImageStash.instance.deleteTexture(buff.getTexture());
+        boolean cull = glIsEnabled(GL_CULL_FACE);
+        boolean depth = glIsEnabled(GL_DEPTH_TEST);
+        if(cull)glDisable(GL_CULL_FACE);
+        if(depth)glDisable(GL_DEPTH_TEST);
+        ByteBuffer imageBuffer = BufferUtils.createByteBuffer(width*height*4);
+        
+        int framebuffer = glGenFramebuffers();
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        
+        int textureColorBuffer = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (ByteBuffer)null);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+        
+        int rbo = glGenRenderbuffers();
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if(status!=GL_FRAMEBUFFER_COMPLETE)throw new RuntimeException("Could not create FBO: "+status);
+        
+        glViewport(0, 0, width, height);
+        glClearColor(0f, 0f, 0f, 0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        
+        Renderer renderer = new Renderer();
+        renderer.projection(new Matrix4f().setOrtho(0, width, height, 0, 0.1f, 10f));
+        
+        r.render(renderer, width, height);
+        
+        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, imageBuffer);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
+        glViewport(0, 0, screenWidth, screenHeight);
+        
+        if(is3D)renderer.projection(new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100));
+        else renderer.projection(new Matrix4f().setOrtho(0, screenWidth, screenHeight, 0, 0.1f, 10f));
+        
+        glDeleteFramebuffers(framebuffer);
+        glDeleteBuffers(rbo);
+        glDeleteTextures(textureColorBuffer);
+        
         int[] imgRGBData = new int[width*height];
         byte[] imgData = new byte[width*height*4];
-        bufferer.rewind();
-        bufferer.get(imgData);
+        imageBuffer.rewind();
+        imageBuffer.get(imgData);
         Image img = new Image(width, height);
         for(int i=0;i<imgRGBData.length;i++){
             imgRGBData[i]=(f(imgData[i*4])<<16)+(f(imgData[i*4+1])<<8)+(f(imgData[i*4+2]))+(f(imgData[i*4+3])<<24);//DO NOT Use RED, GREEN, or BLUE channel (here BLUE) for alpha data
         }
         img.setRGB(0, 0, width, height, imgRGBData, 0, width);
-        if(cull)GL11.glEnable(GL11.GL_CULL_FACE);
-        if(depth)GL11.glEnable(GL11.GL_DEPTH_TEST);
+        if(cull)glEnable(GL_CULL_FACE);
+        if(depth)glEnable(GL_DEPTH_TEST);
         return img;
     }
     public static void refreshModules(){
@@ -597,12 +591,10 @@ public class Core{
                     rt.exec("xdg-open "+link);
                     return true;
                 default:
-                    Sys.error(ErrorLevel.minor, "Failed to open webpage: Unkown OS\n"+link, null, ErrorCategory.InternetIO);
-                    return false;
+                    throw new RuntimeException("Failed to open webpage: Unkown OS\n"+link);
             }
         }catch(IOException ex){
-            Sys.error(ErrorLevel.minor, "Failed to open webpage\n"+link, ex, ErrorCategory.InternetIO);
-            return false;
+            throw new RuntimeException("Failed to open webpage\n"+link, ex);
         }
     }
     public static String getCrashReportData(){
@@ -624,13 +616,13 @@ public class Core{
         return s;
     }
     public static void setWindowTitle(String title){
-        GLFW.glfwSetWindowTitle(helper.getWindow(), title);
+        glfwSetWindowTitle(window, title);
     }
     public static void resetWindowTitle(){
-        GLFW.glfwSetWindowTitle(helper.getWindow(), Main.applicationName+" "+VersionManager.currentVersion);
+        glfwSetWindowTitle(window, Main.applicationName+" "+VersionManager.currentVersion);
     }
     public static interface BufferRenderer{
-        void render(Framebuffer buff);
+        void render(Renderer renderer, int width, int height);
     }
     private static int f(byte imgData){
         return (imgData+256)&255;
@@ -704,11 +696,11 @@ public class Core{
             System.err.println("Autosave Failed!");
         }
         Main.generateCrashReport("Manually closed on error", null);
-        helper.running = false;
+        glfwSetWindowShouldClose(window, true);
     }
-    public static int getThemeIndex(MenuComponent comp){
-        if(comp.parent instanceof MenuComponentMinimaList)return comp.parent.components.indexOf(comp);
-        if(comp.parent instanceof MenuComponentMulticolumnMinimaList)return comp.parent.components.indexOf(comp);
+    public static int getThemeIndex(Component comp){
+        if(comp.parent instanceof SingleColumnList)return comp.parent.components.indexOf(comp);
+        if(comp.parent instanceof MulticolumnList)return comp.parent.components.indexOf(comp);
         return 0;
     }
     public static int getThemeIndex(VRMenuComponent comp){
@@ -736,5 +728,74 @@ public class Core{
             System.err.println("Couldn't read file: "+path);
             return null;
         }
+    }
+    public static ByteBuffer loadData(String path){
+        return loadData(getInputStream(path));
+    }
+    public static ByteBuffer loadData(InputStream input){
+        try(ByteArrayOutputStream output = new ByteArrayOutputStream()){
+            int b;
+            while((b = input.read())!=-1){
+                output.write(b);
+            }
+            output.close();
+            byte[] data = output.toByteArray();
+            ByteBuffer buffer = BufferUtils.createByteBuffer(data.length);
+            buffer.put(data);
+            buffer.flip();
+            return buffer;
+        }catch(IOException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+    private static HashMap<String, Integer> texturesCache = new HashMap<>();
+    public static int loadTexture(String path){
+        if(texturesCache.containsKey(path))return texturesCache.get(path);
+        //read image
+        ByteBuffer imageData = null;
+        IntBuffer width = BufferUtils.createIntBuffer(1);
+        IntBuffer height = BufferUtils.createIntBuffer(1);
+        try(InputStream input = getInputStream(path)){
+            imageData = stbi_load_from_memory(loadData(input), width, height, BufferUtils.createIntBuffer(1), 4);
+        }catch(IOException ex){
+            Logger.getLogger(Core.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(imageData==null)throw new RuntimeException("Failed to load image: "+stbi_failure_reason());
+        //finish read image
+        int texture = loadTexture(width.get(0), height.get(0), imageData);
+        stbi_image_free(imageData);
+        texturesCache.put(path, texture);
+        return texture;
+    }
+    public static int loadTexture(int width, int height, ByteBuffer imageData){
+        int texture = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texture);
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        return texture;
+    }
+    public static void warning(String message, Throwable error){
+        System.err.println("Warning:");
+        logger.log(Level.WARNING, message, error);
+        if(Main.isBot)return;
+        gui.menu = new MenuWarningMessage(gui, gui.menu, message, error);
+    }
+    public static void error(String message, Throwable error){
+        System.err.println("Severe Error");
+        logger.log(Level.SEVERE, message, error);
+        if(Main.isBot)return;
+        gui.menu = new MenuError(gui, gui.menu, message, error);
+    }
+    public static void criticalError(String message, Throwable error){
+        System.err.println("Critical Error");
+        logger.log(Level.SEVERE, message, error);
+        if(Main.isBot)return;
+        gui.menu = new MenuCriticalError(gui, message, error);
     }
 }

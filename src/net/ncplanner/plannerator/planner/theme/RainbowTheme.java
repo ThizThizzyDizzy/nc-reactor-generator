@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.theme;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ncplanner.plannerator.planner.theme.legacy.SolidColorTheme;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class RainbowTheme extends ChangingColorTheme{
     private float hue;
     private final float saturation;

@@ -30,21 +30,21 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.menu.MenuEdit;
-import net.ncplanner.plannerator.planner.menu.MenuResizeFusion;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
-import net.ncplanner.plannerator.planner.menu.component.editor.MenuComponentEditorGrid;
-import net.ncplanner.plannerator.planner.menu.component.generator.MenuComponentFusionToggleBlockRecipe;
+import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
+import net.ncplanner.plannerator.planner.gui.menu.MenuResizeFusion;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
+import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuComponentFusionToggleBlockRecipe;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuResizeFusion;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.image.Color;
-import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
-import simplelibrary.opengl.gui.components.MenuComponent;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigNumberList;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 public class OverhaulFusionReactor extends Multiblock<Block> {
     public CoolantRecipe coolantRecipe;
     public int innerRadius;
@@ -110,7 +110,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                 return isLocationValid(block, x, y, z);
             }
             @Override
-            public void createComponents(MenuEdit editor, ArrayList<MenuComponent> comps, int cellSize){
+            public void createComponents(MenuEdit editor, ArrayList<Component> comps, int cellSize){
                 for(int y = 0; y<height; y++){
                     comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulFusionReactor.this, this, 0, 0, width-1, width-1, Axis.Y, y));
                 }
@@ -388,7 +388,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
     }
     private HashMap<BlockRecipe, MenuComponentFusionToggleBlockRecipe> blockRecipeToggles;
     @Override
-    public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
+    public void addGeneratorSettings(SingleColumnList multiblockSettings){
         if(blockRecipeToggles==null)blockRecipeToggles = new HashMap<>();
         blockRecipeToggles.clear();
         for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block block : getConfiguration().overhaul.fusion.allBlocks){

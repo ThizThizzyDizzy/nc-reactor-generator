@@ -6,7 +6,7 @@ import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryExce
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import simplelibrary.config2.Config;
+import net.ncplanner.plannerator.config2.Config;
 public class NCPFFormatWriter extends FormatWriter{
     @Override
     public FileFormat getFileFormat(){

@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.editor.tool;
 import java.util.ArrayList;
 import java.util.Iterator;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
@@ -10,7 +10,7 @@ import net.ncplanner.plannerator.multiblock.editor.action.CopyAction;
 import net.ncplanner.plannerator.multiblock.editor.action.MoveAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.graphics.image.Image;
 public class MoveTool extends EditorTool{
     public MoveTool(Editor editor, int id){
         super(editor, id);
@@ -18,19 +18,19 @@ public class MoveTool extends EditorTool{
     private int[] leftDragStart;
     private int[] leftDragEnd;
     @Override
-    public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
+    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        double w = width/16;
-        double h = height/16;
+        float w = width/16;
+        float h = height/16;
         renderer.fillRect(x+width/2-w, y+height/4, x+width/2+w, y+height*3/4);
         renderer.fillRect(x+width/4, y+height/2-h, x+width*3/4, y+height/2+h);
-        renderer.fillPolygon(new double[]{x+width/4+w,x+width/2,x+width*3/4-w}, new double[]{y+height/4,y+h,y+height/4});
-        renderer.fillPolygon(new double[]{x+width/4+w,x+width/2,x+width*3/4-w}, new double[]{y+height*3/4,y+height-h,y+height*3/4});
-        renderer.fillPolygon(new double[]{x+width/4,x+w,x+width/4}, new double[]{y+height/4+w,y+height/2,y+height*3/4-h});
-        renderer.fillPolygon(new double[]{x+width*3/4,x+width-w,x+width*3/4}, new double[]{y+height/4+h,y+height/2,y+height*3/4-h});
+        renderer.fillPolygon(new float[]{x+width/4+w,x+width/2,x+width*3/4-w}, new float[]{y+height/4,y+h,y+height/4});
+        renderer.fillPolygon(new float[]{x+width/4+w,x+width/2,x+width*3/4-w}, new float[]{y+height*3/4,y+height-h,y+height*3/4});
+        renderer.fillPolygon(new float[]{x+width/4,x+w,x+width/4}, new float[]{y+height/4+w,y+height/2,y+height*3/4-h});
+        renderer.fillPolygon(new float[]{x+width*3/4,x+width-w,x+width*3/4}, new float[]{y+height/4+h,y+height/2,y+height*3/4-h});
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
+    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
             if(!editor.isControlPressed(id)){
@@ -80,15 +80,15 @@ public class MoveTool extends EditorTool{
         renderer.setWhite();
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         if(leftDragStart!=null&&leftDragEnd!=null){
-            double border = blockSize/64;
+            float border = blockSize/64;
             if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
                     for(int[] i : editor.getSelection(id)){
                         if(editor.getMultiblock().getBlock(i[0], i[1], i[2])==null)continue;//already air
-                        renderer.drawCube(x+i[0]*blockSize-border/2, y+i[1]*blockSize-border/2, z+i[2]*blockSize-border/2, x+(i[0]+1)*blockSize+border/2, y+(i[1]+1)*blockSize+border/2, z+(i[2]+1)*blockSize+border/2, 0);
+                        renderer.drawCube(x+i[0]*blockSize-border/2, y+i[1]*blockSize-border/2, z+i[2]*blockSize-border/2, x+(i[0]+1)*blockSize+border/2, y+(i[1]+1)*blockSize+border/2, z+(i[2]+1)*blockSize+border/2, null);
                     }
                 }
             }
@@ -106,7 +106,7 @@ public class MoveTool extends EditorTool{
                     if(b==null&&editor.getMultiblock().getBlock(bx, by, bz)==null)continue;//already air, don't need to higlight air again
                     if(b!=null)renderer.setWhite(.5f);
                     else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
-                    renderer.drawCube(x+bx*blockSize-border, y+by*blockSize-border, z+bz*blockSize-border, x+(bx+1)*blockSize+border, y+(by+1)*blockSize+border, z+(bz+1)*blockSize+border, b==null?0:Core.getTexture(b.getTexture()));
+                    renderer.drawCube(x+bx*blockSize-border, y+by*blockSize-border, z+bz*blockSize-border, x+(bx+1)*blockSize+border, y+(by+1)*blockSize+border, z+(bz+1)*blockSize+border, b==null?null:b.getTexture());
                 }
             }
         }

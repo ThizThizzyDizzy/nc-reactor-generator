@@ -11,8 +11,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryUtil;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
 public class ImageIO{
     public static Image read(InputStream input) throws IOException{
         ByteArrayOutputStream output = new ByteArrayOutputStream();

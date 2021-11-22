@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.ActionResult;
@@ -25,18 +26,18 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.menu.MenuEdit;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
+import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
-import org.lwjgl.opengl.GL11;
-import simplelibrary.Stack;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.opengl.ImageStash;
-import simplelibrary.opengl.gui.GUI;
-import simplelibrary.opengl.gui.Menu;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigNumberList;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 public abstract class Multiblock<T extends Block>{
     public long lastChangeTime;
     public Stack<Action> history = new Stack<>();
@@ -233,16 +234,14 @@ public abstract class Multiblock<T extends Block>{
         ArrayList<T> blocks = getBlocks(true);
         Collections.sort(blocks, (T o1, T o2) -> o1.getName().compareTo(o2.getName()));
         Block last = null;
+        Renderer renderer = new Renderer();
         for(T block : blocks){
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
-                if(last!=null)GL11.glEnd();
-                ImageStash.instance.bindTexture(Core.getTexture(block.getBaseTexture()));
-                GL11.glBegin(GL11.GL_QUADS);
+                renderer.bindTexture(block.getBaseTexture());
             }
             drawCube(block, false);
             last = block;
         }
-        if(!blocks.isEmpty())GL11.glEnd();
     }
     public void draw3DInOrder(){
         ArrayList<T> blocks = getBlocks(true);
@@ -253,98 +252,61 @@ public abstract class Multiblock<T extends Block>{
             return d1-d2;
         });
         Block last = null;
+        Renderer renderer = new Renderer();
         for(T block : blocks){
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
-                if(last!=null)GL11.glEnd();
-                ImageStash.instance.bindTexture(Core.getTexture(block.getBaseTexture()));
-                GL11.glBegin(GL11.GL_QUADS);
+                renderer.bindTexture(block.getBaseTexture());
             }
             drawCube(block, true);
             last = block;
         }
-        if(!blocks.isEmpty())GL11.glEnd();
     }
-    protected double[] getCubeBounds(T block){
-        return new double[]{0,0,0,1,1,1};
+    protected float[] getCubeBounds(T block){
+        return new float[]{0,0,0,1,1,1};
     }
     protected void drawCube(T block, boolean inOrder){
+        Renderer renderer = new Renderer();
         int x = block.x;
         int y = block.y;
         int z = block.z;
         boolean invertedInOrder = inOrder;
         inOrder = false;
-        double[] bounds = getCubeBounds(block);
-        double x1 = x+bounds[0];
-        double y1 = y+bounds[1];
-        double z1 = z+bounds[2];
-        double x2 = x+bounds[3];
-        double y2 = y+bounds[4];
-        double z2 = z+bounds[5];
+        float[] bounds = getCubeBounds(block);
+        float x1 = x+bounds[0];
+        float y1 = y+bounds[1];
+        float z1 = z+bounds[2];
+        float x2 = x+bounds[3];
+        float y2 = y+bounds[4];
+        float z2 = z+bounds[5];
         //xy +z
         if(!inOrder&&(!contains(x,y,z+1)||block.shouldRenderFace(getBlock(x, y, z+1)))){
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x1, y1, z2);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y1, z2);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x2, y2, z2);
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y2, z2);
+            renderer.drawQuad(new Vector3f(x1, y1, z2), new Vector3f(x2, y1, z2), new Vector3f(x2, y2, z2), new Vector3f(x1, y2, z2),
+                    new Vector2f(0, 1), new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector3f(0, 0, 1));
         }
         //xy -z
         if(!invertedInOrder&&(!contains(x,y,z-1)||block.shouldRenderFace(getBlock(x,y,z-1)))){
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x1, y1, z1);
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y2, z1);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x2, y2, z1);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y1, z1);
+            renderer.drawQuad(new Vector3f(x1, y1, z1), new Vector3f(x1, y2, z1), new Vector3f(x2, y2, z1), new Vector3f(x2, y1, z1),
+                    new Vector2f(0, 1), new Vector2f(0, 0), new Vector2f(1, 0), new Vector2f(1, 1), new Vector3f(0, 0, -1));
         }
         //xz +y
         if(!inOrder&&(!contains(x,y+1,z)||block.shouldRenderFace(getBlock(x, y+1, z)))){
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y2, z1);
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x1, y2, z2);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y2, z2);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x2, y2, z1);
+            renderer.drawQuad(new Vector3f(x1, y2, z1), new Vector3f(x1, y2, z2), new Vector3f(x2, y2, z2), new Vector3f(x2, y2, z1),
+                    new Vector2f(0, 0), new Vector2f(0, 1), new Vector2f(1, 1), new Vector2f(1, 0), new Vector3f(0, 1, 0));
         }
         //xz -y
         if(!invertedInOrder&&(!contains(x,y-1,z)||block.shouldRenderFace(getBlock(x, y-1, z)))){
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x1, y1, z1);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y1, z1);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x2, y1, z2);
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y1, z2);
+            renderer.drawQuad(new Vector3f(x1, y1, z1), new Vector3f(x2, y1, z1), new Vector3f(x2, y1, z2), new Vector3f(x1, y1, z2),
+                    new Vector2f(0, 1), new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector3f(0, -1, 0));
         }
         //yz +x
         if(!inOrder&&(!contains(x+1,y,z)||block.shouldRenderFace(getBlock(x+1, y, z)))){
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x2, y1, z1);
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x2, y2, z1);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x2, y2, z2);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x2, y1, z2);
+            renderer.drawQuad(new Vector3f(x2, y1, z1), new Vector3f(x2, y2, z1), new Vector3f(x2, y2, z2), new Vector3f(x2, y1, z2),
+                    new Vector2f(0, 1), new Vector2f(0, 0), new Vector2f(1, 0), new Vector2f(1, 1), new Vector3f(1, 0, 0));
         }
         //yz -x
         if(!invertedInOrder&&(!contains(x-1,y,z)||block.shouldRenderFace(getBlock(x-1, y, z)))){
-            GL11.glTexCoord2d(0, 1);
-            GL11.glVertex3d(x1, y1, z1);
-            GL11.glTexCoord2d(1, 1);
-            GL11.glVertex3d(x1, y1, z2);
-            GL11.glTexCoord2d(1, 0);
-            GL11.glVertex3d(x1, y2, z2);
-            GL11.glTexCoord2d(0, 0);
-            GL11.glVertex3d(x1, y2, z1);
+            renderer.drawQuad(new Vector3f(x1, y1, z1), new Vector3f(x1, y1, z2), new Vector3f(x1, y2, z2), new Vector3f(x1, y2, z1),
+                    new Vector2f(0, 1), new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector3f(-1, 0, 0));
         }
     }
     public final void save(NCPFFile ncpf, Configuration configuration, OutputStream stream) throws MissingConfigurationEntryException{
@@ -486,7 +448,7 @@ public abstract class Multiblock<T extends Block>{
         }
         return group;
     }
-    public abstract void addGeneratorSettings(MenuComponentMinimaList multiblockSettings);
+    public abstract void addGeneratorSettings(SingleColumnList multiblockSettings);
     public ArrayList<Priority> getGenerationPriorities(){
         ArrayList<Priority> priorities = new ArrayList<>();
         getGenerationPriorities(priorities);

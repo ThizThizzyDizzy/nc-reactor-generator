@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.vr.menu;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
@@ -8,12 +8,12 @@ import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.VRMenu;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentButton;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentTextPanel;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
+import org.joml.Matrix4f;
 public class VRMenuResizeFusion extends VRMenu{
-    public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
-    private VRMenuComponentTextPanel textPanel = add(new VRMenuComponentTextPanel(.25, 1, 1.2, .5, .25, .05, 0, 180, 0, "Size"));
+    public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25f, 1.75f, -1, .5f, .125f, .1f, 0, 0, 0, "Done", true, false));
+    private VRMenuComponentTextPanel textPanel = add(new VRMenuComponentTextPanel(.25f, 1, 1.2f, .5f, .25f, .05f, 0, 180, 0, "Size"));
     private final OverhaulFusionReactor multiblock;
     public VRMenuResizeFusion(VRGUI gui, VRMenu parent, OverhaulFusionReactor multiblock){
         super(gui, parent);
@@ -22,55 +22,53 @@ public class VRMenuResizeFusion extends VRMenu{
             gui.open(new VRMenuEdit(gui, multiblock).alreadyOpen());
         });
         this.multiblock = multiblock;
-        add(new VRMenuComponentPlusButton(-.25, 1.25, -.875, .125, .125, .125, true, () -> {
+        add(new VRMenuComponentPlusButton(-.25f, 1.25f, -.875f, .125f, .125f, .125f, true, () -> {
             multiblock.increaseInnerRadius();
-            onGUIOpened();
+            onOpened();
         }).setTooltip("Increase Inner Radius"));
-        add(new VRMenuComponentPlusButton(-.125, 1.25, -.875, .125, .125, .125, true, () -> {
+        add(new VRMenuComponentPlusButton(-.125f, 1.25f, -.875f, .125f, .125f, .125f, true, () -> {
             multiblock.increaseCoreSize();
-            onGUIOpened();
+            onOpened();
         }).setTooltip("Increase Core Size"));
-        add(new VRMenuComponentPlusButton(0, 1.25, -.875, .125, .125, .125, true, () -> {
+        add(new VRMenuComponentPlusButton(0, 1.25f, -.875f, .125f, .125f, .125f, true, () -> {
             multiblock.increaseToroidWidth();
-            onGUIOpened();
+            onOpened();
         }).setTooltip("Increase Toroid Width"));
-        add(new VRMenuComponentPlusButton(.125, 1.25, -.875, .125, .125, .125, true, () -> {
+        add(new VRMenuComponentPlusButton(.125f, 1.25f, -.875f, .125f, .125f, .125f, true, () -> {
             multiblock.increaseLiningThickness();
-            onGUIOpened();
+            onOpened();
         }).setTooltip("Increase Lining Thickness"));
-        add(new VRMenuComponentMinusButton(-.25, 1.125, -.875, .125, .125, .125, true, () -> {
+        add(new VRMenuComponentMinusButton(-.25f, 1.125f, -.875f, .125f, .125f, .125f, true, () -> {
             multiblock.decreaseInnerRadius();
-            onGUIOpened();
+            onOpened();
         }).setTooltip("Decrease Inner Radius"));
-        add(new VRMenuComponentMinusButton(-.125, 1.125, -.875, .125, .125, .125, true, () -> {
+        add(new VRMenuComponentMinusButton(-.125f, 1.125f, -.875f, .125f, .125f, .125f, true, () -> {
             multiblock.decreaseCoreSize();
-            onGUIOpened();
+            onOpened();
         }).setTooltip("Decrase Core Size"));
-        add(new VRMenuComponentMinusButton(0, 1.125, -.875, .125, .125, .125, true, () -> {
+        add(new VRMenuComponentMinusButton(0, 1.125f, -.875f, .125f, .125f, .125f, true, () -> {
             multiblock.decreaseToroidWidth();
-            onGUIOpened();
+            onOpened();
         }).setTooltip("Decrease Toroid Width"));
-        add(new VRMenuComponentMinusButton(.125, 1.125, -.875, .125, .125, .125, true, () -> {
+        add(new VRMenuComponentMinusButton(.125f, 1.125f, -.875f, .125f, .125f, .125f, true, () -> {
             multiblock.decreaseLiningThickness();
-            onGUIOpened();
+            onOpened();
         }).setTooltip("Decrease Lining Thickness"));
     }
     @Override
-    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        GL11.glPushMatrix();
-        GL11.glTranslated(-.5, .5, -.5);
+    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
         BoundingBox bbox = multiblock.getBoundingBox();
-        double size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
-        GL11.glScaled(1/size, 1/size, 1/size);
+        float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
+        renderer.setModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
         multiblock.draw3D();
         renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
         renderer.drawCubeOutline(-1/16f, -1/16f, -1/16f, bbox.getWidth()+1/16f, bbox.getHeight()+1/16f, bbox.getDepth()+1/16f, 1/16f);//TODO perhaps individual block grids?
-        GL11.glPopMatrix();
+        renderer.resetModelMatrix();
         textPanel.text = new FormattedText("["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]\n"+bbox.getWidth()+"x"+bbox.getHeight()+"x"+bbox.getDepth());
-        super.render(renderer, tdpb);
+        super.render(renderer, tdpb, deltaTime);
     }
     private static class VRMenuComponentPlusButton extends VRMenuComponentButton{
-        public VRMenuComponentPlusButton(double x, double y, double z, double width, double height, double depth, boolean enabled, Runnable al){
+        public VRMenuComponentPlusButton(float x, float y, float z, float width, float height, float depth, boolean enabled, Runnable al){
             super(x, y, z, width, height, depth, 0, 0, 0, "", enabled, false);
             addActionListener(al);
         }
@@ -84,18 +82,17 @@ public class VRMenuResizeFusion extends VRMenu{
                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
             }
             renderer.setColor(col);
-            renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01);//1cm
-            GL11.glPushMatrix();
-            GL11.glTranslated(width/2, height/2, depth/2);//center
+            renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01f);//1cm
+            renderer.setModel(new Matrix4f().translate(width/2, height/2, depth/2));
             renderer.setColor(Core.theme.getAddButtonTextColor());
-            renderer.drawCube(-width/4, -.01, -.01, width/4, .01, .01, 0);
-            renderer.drawCube(-.01, -width/4, -.01, .01, width/4, .01, 0);
-            renderer.drawCube(-.01, -.01, -width/4, .01, .01, width/4, 0);
-            GL11.glPopMatrix();
+            renderer.drawCube(-width/4, -.01f, -.01f, width/4, .01f, .01f, null);
+            renderer.drawCube(-.01f, -width/4, -.01f, .01f, width/4, .01f, null);
+            renderer.drawCube(-.01f, -.01f, -width/4, .01f, .01f, width/4, null);
+            renderer.resetModelMatrix();
         }
     }
     private static class VRMenuComponentMinusButton extends VRMenuComponentButton{
-        public VRMenuComponentMinusButton(double x, double y, double z, double width, double height, double depth, boolean enabled, Runnable al){
+        public VRMenuComponentMinusButton(float x, float y, float z, float width, float height, float depth, boolean enabled, Runnable al){
             super(x, y, z, width, height, depth, 0, 0, 0, "", enabled, false);
             addActionListener(al);
         }
@@ -109,12 +106,11 @@ public class VRMenuResizeFusion extends VRMenu{
                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
             }
             renderer.setColor(col);
-            renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01);//1cm
-            GL11.glPushMatrix();
-            GL11.glTranslated(width/2, height/2, depth/2);//center
+            renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01f);//1cm
+            renderer.setModel(new Matrix4f().setTranslation(width/2, height/2, depth/2));
             renderer.setColor(Core.theme.getDeleteButtonTextColor());
-            renderer.drawCube(-width/4, -.01, -.01, width/4, .01, .01, 0);
-            GL11.glPopMatrix();
+            renderer.drawCube(-width/4, -.01f, -.01f, width/4, .01f, .01f, null);
+            renderer.resetModelMatrix();
         }
     }
 }

@@ -48,13 +48,13 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
-import net.ncplanner.plannerator.planner.menu.component.generator.MenuComponentMSRToggleBlockRecipe;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuComponentMSRToggleBlockRecipe;
 import net.ncplanner.plannerator.planner.module.Module;
-import simplelibrary.Queue;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigNumberList;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.planner.Queue;
 public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public ArrayList<Cluster> clusters = new ArrayList<>();
     private ArrayList<VesselGroup> vesselGroups = new ArrayList<>();
@@ -1517,7 +1517,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         return sfr;
     }
     @Override
-    public void addGeneratorSettings(MenuComponentMinimaList multiblockSettings){
+    public void addGeneratorSettings(SingleColumnList multiblockSettings){
         if(recipeToggles==null)recipeToggles = new HashMap<>();
         recipeToggles.clear();
         for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block block : getConfiguration().overhaul.fissionMSR.allBlocks){

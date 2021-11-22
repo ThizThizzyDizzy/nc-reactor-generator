@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.discord.play.smivilization;
 import java.util.ArrayList;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 public class HutBunch{
     public long owner;
     public static HutBunch load(Config cfg){

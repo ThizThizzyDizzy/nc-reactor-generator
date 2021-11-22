@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.editor.tool;
 import java.util.ArrayList;
 import java.util.Iterator;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.multiblock.editor.action.PasteAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.graphics.image.Image;
 public class PasteTool extends EditorTool{
     private int mouseX;
     private int mouseY;
@@ -18,15 +18,15 @@ public class PasteTool extends EditorTool{
         super(editor, id);
     }
     @Override
-    public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
+    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillRect(x+width*.35, y+height*.15, x+width*.8, y+height*.75);
+        renderer.fillRect(x+width*.35f, y+height*.15f, x+width*.8f, y+height*.75f);
         renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
-        renderer.fillRect(x+width*.4, y+height*.2, x+width*.75, y+height*.7);
+        renderer.fillRect(x+width*.4f, y+height*.2f, x+width*.75f, y+height*.7f);
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillRect(x+width*.2, y+height*.25, x+width*.65, y+height*.85);
+        renderer.fillRect(x+width*.2f, y+height*.25f, x+width*.65f, y+height*.85f);
         renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
-        renderer.fillRect(x+width*.25, y+height*.3, x+width*.6, y+height*.8);
+        renderer.fillRect(x+width*.25f, y+height*.3f, x+width*.6f, y+height*.8f);
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){}
@@ -50,7 +50,7 @@ public class PasteTool extends EditorTool{
         return true;
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
+    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         synchronized(editor.getClipboard(id)){
             for(ClipboardEntry entry : editor.getClipboard(id)){
@@ -74,7 +74,7 @@ public class PasteTool extends EditorTool{
         renderer.setWhite();
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         if(mouseX==-1||mouseY==-1||mouseZ==-1)return;
         synchronized(editor.getClipboard(id)){
             for(ClipboardEntry entry : editor.getClipboard(id)){
@@ -88,7 +88,7 @@ public class PasteTool extends EditorTool{
                 if(bz<bbox.z1||bz>bbox.z2)continue;
                 if(entry.block!=null)renderer.setWhite(.5f);
                 else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
-                renderer.drawCube(x+bx*blockSize, y+by*blockSize, z+bz*blockSize, x+(bx+1)*blockSize, y+(by+1)*blockSize, z+(bz+1)*blockSize, entry.block==null?0:Core.getTexture(entry.block.getTexture()));
+                renderer.drawCube(x+bx*blockSize, y+by*blockSize, z+bz*blockSize, x+(bx+1)*blockSize, y+(by+1)*blockSize, z+(bz+1)*blockSize, entry.block==null?null:entry.block.getTexture());
             }
         }
         renderer.setWhite();

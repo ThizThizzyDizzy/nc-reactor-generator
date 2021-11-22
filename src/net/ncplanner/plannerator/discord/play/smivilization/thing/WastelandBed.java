@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
 import java.util.UUID;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class WastelandBed extends HutThingColorable{
     public WastelandBed(UUID uuid, Hut hut){
         super(uuid, hut, "Wasteland Bed", "wasteland bed", 48, Color.WHITE);
@@ -16,7 +16,7 @@ public class WastelandBed extends HutThingColorable{
         return new WastelandBed(uuid, hut);
     }
     @Override
-    public void draw(Renderer renderer, double left, double top, double right, double bottom){
+    public void draw(Renderer renderer, float left, float top, float right, float bottom){
         renderer.setColor(Color.WHITE);
         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/wasteland bed/frame.png", left, top, right, bottom);
         renderer.setColor(getColor());

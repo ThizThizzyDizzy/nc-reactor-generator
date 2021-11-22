@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.discord.play.model;
 import java.util.ArrayList;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class Face{
     public final ArrayList<Integer> verticies;
     public final ArrayList<Integer> textureCoords;

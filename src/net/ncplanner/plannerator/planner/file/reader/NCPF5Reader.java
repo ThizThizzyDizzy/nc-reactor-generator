@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
-import simplelibrary.config2.Config;
+import net.ncplanner.plannerator.config2.Config;
 public class NCPF5Reader extends NCPF6Reader {
     @Override
     protected byte getTargetVersion() {

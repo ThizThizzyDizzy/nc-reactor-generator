@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.theme;
 import java.util.Objects;
 import java.util.Random;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Main;
-import net.ncplanner.plannerator.planner.menu.dialog.MenuSiezureTheme;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSiezureTheme;
 public class SiezureTheme extends ColorTheme{
     private Random rand = new Random();
     private Boolean siezureAllowed = null;

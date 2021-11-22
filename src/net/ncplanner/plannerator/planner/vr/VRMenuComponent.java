@@ -1,27 +1,26 @@
 package net.ncplanner.plannerator.planner.vr;
 import java.util.HashSet;
 import java.util.Set;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public abstract class VRMenuComponent extends VRMenu{
     public Color color = Color.WHITE;
     public Set<Integer> isDeviceOver = new HashSet<>();
-    public double width;
-    public double height;
-    public double depth;
-    public double x;
-    public double y;
-    public double z;
-    public double xRot;
-    public double yRot;
-    public double zRot;
+    public float width;
+    public float height;
+    public float depth;
+    public float x;
+    public float y;
+    public float z;
+    public float xRot;
+    public float yRot;
+    public float zRot;
     public String tooltip;
-    public VRMenuComponent(double x, double y, double z, double width, double height, double depth, double rx, double ry, double rz){
+    public VRMenuComponent(float x, float y, float z, float width, float height, float depth, float rx, float ry, float rz){
         super(null, null);
         this.x = x;
         this.y = y;
@@ -35,11 +34,11 @@ public abstract class VRMenuComponent extends VRMenu{
     }
     public void draw(Renderer renderer, TrackedDevicePose.Buffer tdpb){
         if(color!=Color.WHITE){
-            GL11.glColor3f(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
+            renderer.setColor(color);
         }
         renderComponent(renderer, tdpb);
         if(color!=Color.WHITE){
-            GL11.glColor3f(1, 1, 1);
+            renderer.setWhite();
         }
     }
     public void onAdded(){
@@ -54,19 +53,19 @@ public abstract class VRMenuComponent extends VRMenu{
         return this;
     }
     @Override
-    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        GL11.glPushMatrix();
-        GL11.glTranslated(x, y, z);
-        GL11.glRotated(yRot, 0, 1, 0);
-        GL11.glRotated(xRot, 1, 0, 0);
-        GL11.glRotated(zRot, 0, 0, 1);
+    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
+        renderer.model(new Matrix4f()
+                .translate(x, y, z)
+                .rotate((float)MathUtil.toRadians(yRot), 0, 1, 0)
+                .rotate((float)MathUtil.toRadians(xRot), 1, 0, 0)
+                .rotate((float)MathUtil.toRadians(zRot), 0, 0, 1));
         renderBackground(renderer);
         draw(renderer, tdpb);
         for(VRMenuComponent c : components){
-            c.render(renderer, tdpb);
+            c.render(renderer, tdpb, deltaTime);
         }
         renderForeground(renderer);
-        GL11.glPopMatrix();
+        renderer.resetModelMatrix();
     }
     public void onDeviceMoved(int device, Matrix4f matrix){
         Vector3f pos = matrix.getTranslation(new Vector3f());

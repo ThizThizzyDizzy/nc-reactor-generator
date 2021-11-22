@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.graphics.image.Image;
 public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T>>{
     private final ArrayList<Action<T>> suggestedActions;
     private final ArrayList<Priority<T>> priorities;

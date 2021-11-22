@@ -9,8 +9,8 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Vertex;
 import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.StringUtil;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 public abstract class AbstractPlacementRule<BlockType extends IBlockType, Template extends IBlockTemplate> extends RuleContainer<BlockType, Template> implements Searchable {
     public RuleType ruleType = RuleType.BETWEEN;
     public boolean isSpecificBlock = false;

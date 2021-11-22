@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.multiblock.generator.setting;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentLabel;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentToggleBox;
-import simplelibrary.opengl.gui.components.MenuComponent;
+import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.component.Label;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 public class SettingSymmetries implements Setting<ArrayList<Symmetry>>{
     private final String name;
     private final ArrayList<Symmetry> possibleSymmetries;
@@ -22,27 +22,27 @@ public class SettingSymmetries implements Setting<ArrayList<Symmetry>>{
         this.value = new ArrayList<>(value);//to prevent concurrent modification
     }
     @Override
-    public void buildComponents(MenuComponentMinimaList generatorSettings){
-        if(name!=null)generatorSettings.add(new MenuComponentLabel(0, 0, 0, 32, name, true));
-        MenuComponentMinimaList list = generatorSettings.add(new MenuComponentMinimaList(0, 0, 0, possibleSymmetries.size()*32, 0){
+    public void buildComponents(SingleColumnList generatorSettings){
+        if(name!=null)generatorSettings.add(new Label(0, 0, 0, 32, name, true));
+        SingleColumnList list = generatorSettings.add(new SingleColumnList(0, 0, 0, possibleSymmetries.size()*32, 0){
             @Override
-            public void render(int millisSinceLastTick){
-                for(simplelibrary.opengl.gui.components.MenuComponent c : components){
+            public void render2d(double deltaTime){
+                for(Component c : components){
                     c.width = width-(hasVertScrollbar()?vertScrollbarWidth:0);
                 }
-                super.render(millisSinceLastTick);
+                super.render2d(deltaTime);
             }
         }.disableSelection());
         list.components = refresh(list);
     }
-    private ArrayList<MenuComponent> refresh(MenuComponentMinimaList list){
+    private ArrayList<Component> refresh(SingleColumnList list){
         ArrayList<Symmetry> value = this.value;//to stop weird edge cases
-        ArrayList<MenuComponent> components = new ArrayList<>();
+        ArrayList<Component> components = new ArrayList<>();
         for(Symmetry s : value){
-            components.add(new MenuComponentToggleBox(0, 0, 0, 32, s.name, true){
+            components.add(new ToggleBox(0, 0, 0, 32, s.name, true){
                 @Override
-                public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-                    super.onMouseButton(x, y, button, pressed, mods);
+                public void onMouseButton(double x, double y, int button, int action, int mods){
+                    super.onMouseButton(x, y, button, action, mods);
                     if(!isToggledOn){
                         ArrayList<Symmetry> newValue = new ArrayList<>(SettingSymmetries.this.value);
                         newValue.remove(s);
@@ -54,10 +54,10 @@ public class SettingSymmetries implements Setting<ArrayList<Symmetry>>{
         }
         for(Symmetry s : possibleSymmetries){
             if(value.contains(s))continue;
-            components.add(new MenuComponentToggleBox(0, 0, 0, 32, s.name, false){
+            components.add(new ToggleBox(0, 0, 0, 32, s.name, false){
                 @Override
-                public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-                    super.onMouseButton(x, y, button, pressed, mods);
+                public void onMouseButton(double x, double y, int button, int action, int mods){
+                    super.onMouseButton(x, y, button, action, mods);
                     if(isToggledOn){
                         ArrayList<Symmetry> newValue = new ArrayList<>(SettingSymmetries.this.value);
                         newValue.add(s);

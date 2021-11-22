@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.discord.keyword;
 import java.util.Locale;
 import net.ncplanner.plannerator.discord.Keyword;
 import net.ncplanner.plannerator.planner.Core;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class KeywordFuel extends Keyword{
     public String fuel;
     public KeywordFuel(){

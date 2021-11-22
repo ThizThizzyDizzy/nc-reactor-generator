@@ -14,8 +14,8 @@ import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryExce
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 public class Configuration{
     public String name;
     public String overhaulVersion;
