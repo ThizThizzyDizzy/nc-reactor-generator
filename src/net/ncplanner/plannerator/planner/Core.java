@@ -261,7 +261,11 @@ public class Core{
                 dt = time-lastFrame;
             }
             lastFrame = time;
-            processInput(dt);
+            try{
+                processInput(dt);
+            }catch(Throwable t){
+                error("Caught exception during processInput", t);
+            }
             renderer.setShader(shader);
             Matrix4f modelMatrix = new Matrix4f().setTranslation(0, 0, 0).setRotationXYZ(0, 0, 0);
             Matrix4f viewMatrix = new Matrix4f().setTranslation(0, 0, -10f);
@@ -269,12 +273,20 @@ public class Core{
             renderer.view(viewMatrix);
             renderer.projection(perspectiveProjection);
             is3D = true;
-            render3d(renderer, dt);
+            try{
+                render3d(renderer, dt);
+            }catch(Throwable t){
+                error("Caught exception during render3d", t);
+            }
             //DRAW GUI
             glDisable(GL_CULL_FACE);
             renderer.projection(orthoProjection);
             is3D = false;
-            render2d(renderer, dt);
+            try{
+                render2d(renderer, dt);
+            }catch(Throwable t){
+                error("Caught exception during render2d", t);
+            }
             glEnable(GL_CULL_FACE);
             renderer.clearTranslationsAndBounds();
             

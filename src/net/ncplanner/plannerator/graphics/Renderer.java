@@ -20,9 +20,9 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 public class Renderer{
     private Font font = Core.theme.getDefaultFont();
-    private Shader shader;
+    private static Shader shader;
     private static Stack<Bound> boundStack = new Stack<>();
-    private static Matrix4fStack modelMatStack = new Matrix4fStack();
+    private static Matrix4fStack modelMatStack = new Matrix4fStack(64);
     public void setFont(Font font){
         this.font = font;
     }
@@ -821,7 +821,7 @@ public class Renderer{
         }
     }
     public void setShader(Shader shader){
-        this.shader = shader;
+        Renderer.shader = shader;
         glUseProgram(shader.shaderID);
     }
     Matrix4f createModelMatrix(float x, float y, float scaleX, float scaleY){
