@@ -2,6 +2,8 @@ package net.ncplanner.plannerator.multiblock.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
@@ -30,6 +32,7 @@ import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
@@ -37,9 +40,6 @@ import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryExce
 import net.ncplanner.plannerator.planner.file.NCPFFile;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.module.Module;
-import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.config2.ConfigNumberList;
-import net.ncplanner.plannerator.planner.Queue;
 public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     public int netHeat;
     private int power, heat, cooling, cells;

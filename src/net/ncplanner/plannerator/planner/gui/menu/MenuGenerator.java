@@ -7,8 +7,8 @@ import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuComponentGeneratorListBlock;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuGenerator extends Menu{

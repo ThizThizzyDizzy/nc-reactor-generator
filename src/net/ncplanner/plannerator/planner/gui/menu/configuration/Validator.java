@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration;
-import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.planner.Core;
 public abstract class Validator{
     private ValidatorMessage lastMessage;
     public abstract void stage(String stage);

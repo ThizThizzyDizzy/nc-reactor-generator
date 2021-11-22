@@ -1,6 +1,11 @@
 package net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Objects;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
+import net.ncplanner.plannerator.config2.ConfigNumberList;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
@@ -8,11 +13,6 @@ import net.ncplanner.plannerator.multiblock.configuration.RuleContainer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.config2.ConfigList;
-import net.ncplanner.plannerator.config2.ConfigNumberList;
-import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.graphics.image.Image;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
     public static Block cooler(String name, String displayName, int cooling, String texture, PlacementRule... rules){
         Block block = new Block(name);

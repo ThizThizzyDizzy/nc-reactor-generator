@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration.underhaul.fissionsfr;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
-import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
 public class MenuFuelConfiguration extends PartConfigurationMenu{
     public MenuFuelConfiguration(GUI gui, Menu parent, Configuration configuration, Fuel fuel){
         super(gui, parent, configuration, fuel.getDisplayName());

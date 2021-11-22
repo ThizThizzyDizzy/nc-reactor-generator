@@ -8,8 +8,8 @@ import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 public class MenuMultiblockMetadata extends Menu{
     MulticolumnList list = add(new MulticolumnList(0, 0, 0, 0, 0, 50, 50));
     Button done = add(new Button(0, 0, 0, 0, "Done", true, true).setTooltip("Finish editing metadata"));

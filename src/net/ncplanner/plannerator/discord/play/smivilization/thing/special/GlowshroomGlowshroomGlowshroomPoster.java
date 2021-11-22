@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing.special;
 import java.util.UUID;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingExclusive;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{

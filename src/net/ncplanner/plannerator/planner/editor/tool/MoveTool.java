@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.editor.tool;
 import java.util.ArrayList;
 import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
@@ -10,7 +11,6 @@ import net.ncplanner.plannerator.multiblock.editor.action.CopyAction;
 import net.ncplanner.plannerator.multiblock.editor.action.MoveAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import net.ncplanner.plannerator.graphics.image.Image;
 public class MoveTool extends EditorTool{
     public MoveTool(Editor editor, int id){
         super(editor, id);

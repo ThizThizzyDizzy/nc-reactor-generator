@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.planner.file.writer;
 import java.io.IOException;
 import java.io.OutputStream;
+import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.config2.Config;
 public class NCPFFormatWriter extends FormatWriter{
     @Override
     public FileFormat getFileFormat(){

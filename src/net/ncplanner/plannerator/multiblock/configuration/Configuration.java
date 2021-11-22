@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
@@ -14,8 +16,6 @@ import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryExce
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.config2.ConfigList;
 public class Configuration{
     public String name;
     public String overhaulVersion;

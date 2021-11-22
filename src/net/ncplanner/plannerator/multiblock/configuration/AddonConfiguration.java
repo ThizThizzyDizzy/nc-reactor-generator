@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.multiblock.configuration;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.config2.Config;
 public class AddonConfiguration extends Configuration{
     public static AddonConfiguration generate(Configuration parent, Configuration addon){
         AddonConfiguration add = new AddonConfiguration(addon.name, addon.overhaulVersion, addon.underhaulVersion);

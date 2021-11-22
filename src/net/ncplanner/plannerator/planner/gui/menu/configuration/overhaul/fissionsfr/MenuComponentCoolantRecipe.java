@@ -2,8 +2,8 @@ package net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissio
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 public class MenuComponentCoolantRecipe extends Component{
     public final CoolantRecipe coolantRecipe;
     public final Button edit = add(new Button(0, 0, 0, 0, "", true, true){

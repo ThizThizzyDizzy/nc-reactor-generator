@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.discord.keyword;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.discord.Keyword;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.graphics.image.Color;
 public class KeywordPriority extends Keyword{
     public KeywordPriority(){
         super("Priority");

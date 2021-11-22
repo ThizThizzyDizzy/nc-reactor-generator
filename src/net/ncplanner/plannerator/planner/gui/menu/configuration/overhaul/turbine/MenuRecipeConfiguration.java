@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.turbine;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe;
-import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
 public class MenuRecipeConfiguration extends PartConfigurationMenu{
     public MenuRecipeConfiguration(GUI gui, Menu parent, Configuration configuration, Recipe recipe){
         super(gui, parent, configuration, "Recipe");

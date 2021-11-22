@@ -1,14 +1,14 @@
 package net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Objects;
-import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
-import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
-import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
+import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Pinnable;
 public class BlockRecipe implements Pinnable, IBlockRecipe{
     public static BlockRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
         BlockRecipe recipe = new BlockRecipe(inputName, outputName);

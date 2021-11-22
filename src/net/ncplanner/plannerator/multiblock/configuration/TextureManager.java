@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.MathUtil;
-import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.graphics.image.Image;
 public class TextureManager{
     public static Image getImageRaw(String texture){
         try{

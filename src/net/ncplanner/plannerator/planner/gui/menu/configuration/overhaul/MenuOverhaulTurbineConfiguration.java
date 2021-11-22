@@ -3,14 +3,14 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MultiblockConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.turbine.MenuBlockConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.turbine.MenuComponentBlock;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.turbine.MenuComponentRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.turbine.MenuRecipeConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuOverhaulTurbineConfiguration extends MultiblockConfigurationMenu{
     public MenuOverhaulTurbineConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent, configuration, "Overhaul Turbine");

@@ -5,11 +5,11 @@ import net.ncplanner.plannerator.multiblock.configuration.AddonConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
-import net.ncplanner.plannerator.planner.gui.menu.component.Label;
-import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
+import net.ncplanner.plannerator.planner.gui.menu.component.Label;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 public class MenuValidateConfiguration extends ConfigurationMenu{
     private static final String namespaceChars = "0123456789abcdefghijklmnopqrstuvwxyz_-.";
     private static final String namespacePathChars = "0123456789abcdefghijklmnopqrstuvwxyz_-./";

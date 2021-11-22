@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.editor;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
@@ -7,7 +8,6 @@ import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.tool.EditorTool;
-import net.ncplanner.plannerator.graphics.image.Color;
 public interface Editor{
     public Multiblock getMultiblock();
     public void action(Action action, boolean allowUndo);

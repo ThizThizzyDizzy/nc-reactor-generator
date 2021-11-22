@@ -1,13 +1,13 @@
 package net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion;
 import java.util.ArrayList;
 import java.util.Objects;
-import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
-import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Pinnable;
 public class CoolantRecipe implements Pinnable{
     public String inputName;
     public String inputDisplayName;

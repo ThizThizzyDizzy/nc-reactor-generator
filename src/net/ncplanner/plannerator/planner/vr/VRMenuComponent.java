@@ -2,11 +2,11 @@ package net.ncplanner.plannerator.planner.vr;
 import java.util.HashSet;
 import java.util.Set;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.openvr.TrackedDevicePose;
-import net.ncplanner.plannerator.graphics.image.Color;
 public abstract class VRMenuComponent extends VRMenu{
     public Color color = Color.WHITE;
     public Set<Integer> isDeviceOver = new HashSet<>();

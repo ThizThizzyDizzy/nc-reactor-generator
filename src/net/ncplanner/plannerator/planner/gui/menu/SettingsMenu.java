@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
+import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
-import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 public abstract class SettingsMenu extends Menu{
     public SingleColumnList sidebar;
     public ArrayList<Component> sidebarBottom = new ArrayList<>();

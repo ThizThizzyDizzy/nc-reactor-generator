@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -52,7 +53,6 @@ import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_L
 import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_RightHand;
 import static org.lwjgl.openvr.VR.ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32;
 import org.lwjgl.openvr.VRSystem;
-import net.ncplanner.plannerator.graphics.image.Color;
 public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25f, 1.75f, -1, .5f, .125f, .1f, 0, 0, 0, "Done", true, false));
     public VRMenuComponentButton resize = add(new VRMenuComponentButton(1, 1.625f, -.5f, 1, .125f, .1f, 0, -90, 0, "Resize", true, false));

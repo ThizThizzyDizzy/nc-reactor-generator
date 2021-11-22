@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionsfr;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
-import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
 public class MenuCoolantRecipeConfiguration extends PartConfigurationMenu{
     public MenuCoolantRecipeConfiguration(GUI gui, Menu parent, Configuration configuration, CoolantRecipe coolantRecipe){
         super(gui, parent, configuration, "Coolant Recipe");

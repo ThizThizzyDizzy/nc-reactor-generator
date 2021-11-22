@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.api;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileReader;
@@ -9,7 +10,6 @@ import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.InputStreamProvider;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.graphics.image.Image;
 public class HeadlessAPI{
     /**
      * Sets the global configuration. This is used when loading from hellrage formats. See multiblock.configuration.Configuration.configurations for a list of loaded configurations

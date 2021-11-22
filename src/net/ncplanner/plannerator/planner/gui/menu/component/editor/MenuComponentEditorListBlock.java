@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuComponentEditorListBlock extends Component implements Pinnable{
     private final MenuEdit editor;

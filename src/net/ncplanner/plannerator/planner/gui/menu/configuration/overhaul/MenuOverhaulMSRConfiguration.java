@@ -2,6 +2,8 @@ package net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MultiblockConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionmsr.MenuAddonBlockConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionmsr.MenuBlockConfiguration;
@@ -9,8 +11,6 @@ import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fission
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionmsr.MenuComponentBlock;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionmsr.MenuComponentPossibleAddonBlock;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuOverhaulMSRConfiguration extends MultiblockConfigurationMenu{
     public MenuOverhaulMSRConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent, configuration, "Overhaul MSR");

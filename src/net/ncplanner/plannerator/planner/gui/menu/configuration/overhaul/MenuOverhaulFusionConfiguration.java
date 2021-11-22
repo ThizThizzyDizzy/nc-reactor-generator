@@ -4,6 +4,8 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MultiblockConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fusion.MenuAddonBlockConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fusion.MenuBlockConfiguration;
@@ -15,8 +17,6 @@ import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fusion.
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fusion.MenuCoolantRecipeConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fusion.MenuRecipeConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuOverhaulFusionConfiguration extends MultiblockConfigurationMenu{
     public MenuOverhaulFusionConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent, configuration, "Overhaul Fusion");

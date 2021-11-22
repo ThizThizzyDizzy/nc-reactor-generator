@@ -1,19 +1,18 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractBlockContainer;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
-import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.DropdownList;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Slider;
-import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MenuPlacementRuleConfiguration<BlockType extends IBlockType,

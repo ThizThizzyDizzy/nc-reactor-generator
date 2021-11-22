@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 public class MenuComponentTurbineRotorGraph extends Component{
     private final OverhaulTurbine turbine;
     private final int blockSize;

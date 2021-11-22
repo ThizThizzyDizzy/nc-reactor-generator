@@ -2,12 +2,12 @@ package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
-import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
-import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuComponentSuggestion extends Component implements Searchable{
     private final MenuEdit editor;

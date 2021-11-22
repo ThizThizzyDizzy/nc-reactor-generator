@@ -4,8 +4,8 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 public class MenuComponentBlockRecipe extends Component{
     private final Block block;
     public final BlockRecipe blockRecipe;

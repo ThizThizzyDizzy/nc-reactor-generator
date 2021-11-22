@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.gui.menu;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
@@ -10,16 +11,15 @@ import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryExce
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MenuConfiguration;
 import net.ncplanner.plannerator.planner.module.Module;
 import static org.lwjgl.glfw.GLFW.*;
-import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuSettings extends SettingsMenu{
     private final Label quickLoadLabel = add(new Label(0, 0, 0, 48, "Internal Configurations", true));
     private final SingleColumnList quickLoadList = add(new SingleColumnList(0, 0, 0, 0, 32));

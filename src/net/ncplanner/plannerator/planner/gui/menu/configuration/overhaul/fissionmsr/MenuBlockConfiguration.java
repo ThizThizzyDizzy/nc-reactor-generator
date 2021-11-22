@@ -5,11 +5,11 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Bl
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.PlacementRule;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MenuComponentPlacementRule;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MenuPlacementRuleConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuBlockConfiguration extends PartConfigurationMenu{
     private final Block block;
     public MenuBlockConfiguration(GUI gui, Menu parent, Configuration configuration, Block block){

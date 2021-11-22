@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.DropdownList;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.tutorial.MenuComponentTutorial;
 import net.ncplanner.plannerator.planner.gui.menu.component.tutorial.MenuComponentTutorialCategory;
 import net.ncplanner.plannerator.planner.gui.menu.component.tutorial.MenuComponentTutorialDisplay;

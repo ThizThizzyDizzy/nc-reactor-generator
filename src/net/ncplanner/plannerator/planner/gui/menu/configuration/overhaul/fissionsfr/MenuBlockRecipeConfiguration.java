@@ -2,9 +2,9 @@ package net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissio
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
-import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.configuration.PartConfigurationMenu;
 public class MenuBlockRecipeConfiguration extends PartConfigurationMenu{
     public MenuBlockRecipeConfiguration(GUI gui, Menu parent, Configuration configuration, Block block, BlockRecipe blockRecipe){
         super(gui, parent, configuration, "Block Recipe");

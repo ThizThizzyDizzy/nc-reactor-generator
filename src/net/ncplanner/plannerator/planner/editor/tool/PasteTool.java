@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.editor.tool;
 import java.util.ArrayList;
 import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
@@ -9,7 +10,6 @@ import net.ncplanner.plannerator.multiblock.editor.action.PasteAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import net.ncplanner.plannerator.graphics.image.Image;
 public class PasteTool extends EditorTool{
     private int mouseX;
     private int mouseY;

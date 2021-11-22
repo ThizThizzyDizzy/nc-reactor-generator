@@ -2,9 +2,9 @@ package net.ncplanner.plannerator.multiblock.generator.setting;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 public class SettingPriorities implements Setting<ArrayList<Priority>>{
     private final String name;
     private ArrayList<Priority> value = new ArrayList<>();

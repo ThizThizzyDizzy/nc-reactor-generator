@@ -1,5 +1,7 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block;
@@ -10,8 +12,6 @@ import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.ForgeConfig;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.config2.ConfigList;
 public class UnderhaulNCConfigReader implements FormatReader{
     @Override
     public boolean formatMatches(InputStream in){

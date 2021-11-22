@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.file.writer;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.discord.Bot;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -9,12 +10,11 @@ import net.ncplanner.plannerator.multiblock.PartCount;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import static net.ncplanner.plannerator.planner.file.FileWriter.botRunning;
 import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 public class PNGFormatWriter extends ImageFormatWriter{
     private final int textHeight = 20;

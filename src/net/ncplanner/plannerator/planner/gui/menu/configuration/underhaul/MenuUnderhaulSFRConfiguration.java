@@ -3,14 +3,14 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MultiblockConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.underhaul.fissionsfr.MenuBlockConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.underhaul.fissionsfr.MenuComponentBlock;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.underhaul.fissionsfr.MenuComponentFuel;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.underhaul.fissionsfr.MenuFuelConfiguration;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuUnderhaulSFRConfiguration extends MultiblockConfigurationMenu{
     public MenuUnderhaulSFRConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent, configuration, "Underhaul SFR");

@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.generator;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.planner.Core;
-import static org.lwjgl.glfw.GLFW.*;
 import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class MenuComponentToggleBlockRecipe extends Component{
     public boolean enabled = false;

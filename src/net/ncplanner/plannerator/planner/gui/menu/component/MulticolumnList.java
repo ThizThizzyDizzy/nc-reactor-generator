@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Component;
 public class MulticolumnList extends Scrollable{

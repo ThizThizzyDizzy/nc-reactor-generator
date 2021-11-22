@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
 import java.util.HashMap;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
-import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.config2.ConfigList;
 
 public class NCPF10Reader extends NCPF11Reader {
     @Override

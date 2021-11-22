@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
 import java.io.InputStream;
+import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.config2.Config;
 public class NCPF1Reader extends NCPF2Reader {
     @Override
     protected byte getTargetVersion() {

@@ -4,12 +4,12 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Scrollable;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentVisibleBlock;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
-import net.ncplanner.plannerator.planner.gui.Component;
 public class MenuResizeFusion extends Menu{
     private final OverhaulFusionReactor multiblock;
     private final Scrollable multibwauk = add(new Scrollable(0, 0, 0, 0, 32, 32));

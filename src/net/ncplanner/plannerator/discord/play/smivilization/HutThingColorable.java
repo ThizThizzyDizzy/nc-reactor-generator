@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.discord.play.smivilization;
 import java.util.UUID;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 public abstract class HutThingColorable extends HutThing{
     private Color color;

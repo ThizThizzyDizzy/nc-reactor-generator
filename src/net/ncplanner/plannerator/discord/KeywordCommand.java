@@ -12,10 +12,10 @@ import java.util.regex.Pattern;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.ImageIO;
 public abstract class KeywordCommand extends Command{
     private HashMap<String, Keyword> keywords = new HashMap<>();
     private ArrayList<String> keywordOrder = new ArrayList<>();

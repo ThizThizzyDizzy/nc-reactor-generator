@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.editor.tool;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import net.ncplanner.plannerator.graphics.image.Image;
 import org.joml.Matrix4f;
 public abstract class EditorTool{
     public final Editor editor;

@@ -4,8 +4,8 @@ import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 
 public class MenuComponentPlacementRule<BlockType extends IBlockType,
         Template extends IBlockTemplate,

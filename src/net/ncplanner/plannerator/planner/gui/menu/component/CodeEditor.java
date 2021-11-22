@@ -1,8 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
+import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.s_tack.Tokenizer;
 import net.ncplanner.plannerator.planner.s_tack.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.s_tack.token.CharValueToken;
@@ -17,8 +19,6 @@ import net.ncplanner.plannerator.planner.s_tack.token.Token;
 import net.ncplanner.plannerator.planner.s_tack.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.s_tack.token.operator.Operator;
 import static org.lwjgl.glfw.GLFW.*;
-import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.planner.gui.Component;
 public class CodeEditor extends Component{
     public ArrayList<String> text = new ArrayList<String>(){
         @Override

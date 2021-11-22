@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
 import java.util.UUID;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 public class TomPainting extends HutThing{

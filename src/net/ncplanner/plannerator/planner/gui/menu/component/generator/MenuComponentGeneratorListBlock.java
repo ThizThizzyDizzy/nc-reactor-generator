@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.generator;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import static org.lwjgl.glfw.GLFW.*;
-import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.planner.gui.Component;
 public class MenuComponentGeneratorListBlock extends Component{//TODO incomplete
     private final MenuGenerator generator;
     public final Block block;

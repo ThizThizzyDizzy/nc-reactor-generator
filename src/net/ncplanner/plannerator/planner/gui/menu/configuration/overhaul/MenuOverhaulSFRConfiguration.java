@@ -3,6 +3,8 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MultiblockConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionsfr.MenuAddonBlockConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionsfr.MenuBlockConfiguration;
@@ -12,8 +14,6 @@ import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fission
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionsfr.MenuComponentPossibleAddonBlock;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionsfr.MenuCoolantRecipeConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuOverhaulSFRConfiguration extends MultiblockConfigurationMenu{
     public MenuOverhaulSFRConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent, configuration, "Overhaul SFR");

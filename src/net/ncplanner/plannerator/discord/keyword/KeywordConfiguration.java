@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.discord.keyword;
 import net.ncplanner.plannerator.discord.Keyword;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.graphics.image.Color;
 public class KeywordConfiguration extends Keyword{
     public Configuration config;
     public KeywordConfiguration(){

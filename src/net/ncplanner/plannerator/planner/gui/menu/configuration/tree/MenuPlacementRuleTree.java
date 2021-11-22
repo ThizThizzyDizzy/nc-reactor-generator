@@ -10,12 +10,12 @@ import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
 import net.ncplanner.plannerator.multiblock.configuration.RuleContainer;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.ConfigurationMenu;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
-import net.ncplanner.plannerator.planner.gui.Component;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuPlacementRuleTree<Container extends RuleContainer<BlockType, Template>, BlockType extends IBlockType, Template extends IBlockTemplate> extends ConfigurationMenu{
     private ArrayList<ArrayList<TreeElement>> tiers = new ArrayList<>();

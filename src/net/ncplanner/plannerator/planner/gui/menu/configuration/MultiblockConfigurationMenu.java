@@ -5,13 +5,12 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.menu.component.Label;
-import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
-import static org.lwjgl.glfw.GLFW.*;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
+import net.ncplanner.plannerator.planner.gui.menu.component.Label;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 public class MultiblockConfigurationMenu extends ConfigurationMenu{
     private ArrayList<ArrayList<TextBox>> settings = new ArrayList<>();
     private HashMap<TextBox, Supplier<String>> open = new HashMap<>();

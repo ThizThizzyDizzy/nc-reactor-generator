@@ -2,8 +2,8 @@ package net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fusion
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 public class MenuComponentRecipe extends Component{
     public final Recipe recipe;
     public final Button edit = add(new Button(0, 0, 0, 0, "", true, true){

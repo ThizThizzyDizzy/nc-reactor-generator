@@ -2,8 +2,8 @@ package net.ncplanner.plannerator.discord.play.smivilization;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 public abstract class HutThing implements Comparable<HutThing>{
     private final String texture;
