@@ -83,6 +83,7 @@ public class Image{
                 data.put((byte)getAlpha(x, y));
             }
         }
+        data.rewind();
         return data;
     }
 }

@@ -14,7 +14,7 @@ public abstract class GUI{
     public void render3d(double deltaTime){
         menu.render3d(deltaTime);
     }
-    public void processInput(double deltaTime){
+    public void initInput(){
         glfwSetCharCallback(window, (window, codepoint) -> {
             onChar(codepoint);
         });

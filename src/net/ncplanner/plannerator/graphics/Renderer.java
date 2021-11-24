@@ -207,15 +207,17 @@ public class Renderer{
         }
     }
     public void drawText(float x, float y, String text, float height){
+        if(height<0)return;
         bindTexture(font.texture);
         for(int i = 0; i<text.length(); i++){
             char c = text.charAt(i);
             FontCharacter character = font.getCharacter(c);
-            model(createModelMatrix(x, y, height, height));
+            model(createModelMatrix(x, y+height, height, height));
             character.draw();
-            x+=character.dx;
-            y+=character.dy;
+            x+=character.dx/font.height*height;
+            y+=character.dy/font.height*height;
         }
+        resetModelMatrix();
     }
     public void drawCenteredText(float left, float top, float right, float bottom, String text){
         float width = font.getStringWidth(text, bottom-top);
@@ -379,15 +381,17 @@ public class Renderer{
         return drawFormattedTextWithWrap(left, top, right, bottom, text, snap);
     }
     private void drawItalicText(float x, float y, String text, float height){
+        if(height<0)return;
         bindTexture(font.texture);
         for(int i = 0; i<text.length(); i++){
             char c = text.charAt(i);
             FontCharacter character = font.getCharacter(c);
-            model(createModelMatrix(x, y, height, height));
+            model(createModelMatrix(x, y+height, height, height));
             character.drawItalic();
-            x+=character.dx;
-            y+=character.dy;
+            x+=character.dx/font.height*height;
+            y+=character.dy/font.height*height;
         }
+        resetModelMatrix();
     }
     public String drawTextWithWordWrap(float left, float top, float right, float bottom, String text){
         String[] words = text.split(" ");
@@ -828,7 +832,7 @@ public class Renderer{
         return new Matrix4f().setTranslation(x, y, 0).scaleXY(scaleX, scaleY);
     }
     public void model(Matrix4f matrix){
-        setExactModelMatrix(matrix.mul(modelMatStack));
+        setExactModelMatrix(modelMatStack.mul(matrix, matrix));
     }
     public void setModel(Matrix4f matrix){
         resetModelMatrix();
@@ -875,6 +879,7 @@ public class Renderer{
         resetModelMatrix();
     }
     public void redrawStencil(){
+        glClearColor(0f, 0f, 0f, 0f);
         glClear(GL_STENCIL_BUFFER_BIT);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
         glStencilFunc(GL_ALWAYS, 1, 0xff);
@@ -882,7 +887,7 @@ public class Renderer{
         for(int i = 0; i<boundStack.size(); i++){
             Bound bound = boundStack.get(i);
             setExactModelMatrix(bound.modelMatrix);
-            bound.draw();
+//            bound.draw();
         }
         glStencilFunc(GL_NOTEQUAL, 1, 0xff);
         glStencilMask(0x00);

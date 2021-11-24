@@ -48,7 +48,7 @@ public class Font{
     public float getStringWidth(String str, float height){
         float width = 0;
         for(char c : str.toCharArray()){
-            if(characters.containsKey(c))width+=characters.get(c).dx;
+            if(characters.containsKey(c))width+=characters.get(c).dx/this.height;
         }
         return width*height;
     }

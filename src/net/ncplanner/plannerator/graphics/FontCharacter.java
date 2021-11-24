@@ -26,10 +26,10 @@ public class FontCharacter{
         dy = ypos[0];
         
         float[] verticies = new float[]{
-            quad.x0()/font.height, quad.y0()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t1()/4,//0, 1, //top left
-            quad.x0()/font.height, quad.y1()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t0()/4,//0, 0, //bottom left
-            quad.x1()/font.height, quad.y0()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t1()/4,//1, 1, //top right
-            quad.x1()/font.height, quad.y1()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t0()/4//1, 0, //bottom right
+            quad.x0()/font.height, quad.y1()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t1()/4,//0, 1, //top left
+            quad.x0()/font.height, quad.y0()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t0()/4,//0, 0, //bottom left
+            quad.x1()/font.height, quad.y1()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t1()/4,//1, 1, //top right
+            quad.x1()/font.height, quad.y0()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t0()/4//1, 0, //bottom right
         };
         int[] indicies = new int[]{
             1, 0, 2,
@@ -71,10 +71,10 @@ public class FontCharacter{
         dy = ypos[0];
         
         float[] verticies = new float[]{
-            quad.x0()/font.height+tilt, quad.y0()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t1()/4,//0, 1, //top left
-            quad.x0()/font.height, quad.y1()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t0()/4,//0, 0, //bottom left
-            quad.x1()/font.height+tilt, quad.y0()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t1()/4,//1, 1, //top right
-            quad.x1()/font.height, quad.y1()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t0()/4//1, 0, //bottom right
+            quad.x0()/font.height+tilt, -quad.y0()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t1()/4,//0, 1, //top left
+            quad.x0()/font.height, -quad.y1()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t0()/4,//0, 0, //bottom left
+            quad.x1()/font.height+tilt, -quad.y0()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t1()/4,//1, 1, //top right
+            quad.x1()/font.height, -quad.y1()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t0()/4//1, 0, //bottom right
         };
         int[] indicies = new int[]{
             1, 0, 2,

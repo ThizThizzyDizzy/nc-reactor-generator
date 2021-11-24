@@ -54,6 +54,8 @@ import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentMultib
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentToolPanel;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import static org.lwjgl.glfw.GLFW.*;
@@ -182,6 +184,11 @@ public class Core{
 
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);//THIS IS VSYNC
+        int[] ww = new int[1];
+        int[] wh = new int[1];
+        glfwGetFramebufferSize(window, ww, wh);
+        screenWidth = ww[0];
+        screenHeight = wh[0];
         glfwSetFramebufferSizeCallback(window, (window, width, height) -> {
             screenWidth = width;
             screenHeight = height;
@@ -191,8 +198,6 @@ public class Core{
         
         System.out.println("Initializing render engine");
         glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_ALPHA_TEST);
         glEnable(GL_MULTISAMPLE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
@@ -213,13 +218,6 @@ public class Core{
         gui = new GUI(window){
             private boolean b;
             private float x,y,o,to;
-            @Override
-            public void processInput(double deltaTime){
-                super.processInput(deltaTime);
-                if(glfwGetKey(window, GLFW_KEY_C)==GLFW_PRESS&&isControlPressed()&&isShiftPressed()&&isAltPressed()){
-                    throw new RuntimeException("Manually triggered debug error");//TODO might not hard-crash anymore
-                }
-            }
             @Override
             public void render2d(double deltaTime){
                 Renderer renderer = new Renderer();
@@ -249,26 +247,24 @@ public class Core{
         
         stbi_set_flip_vertically_on_load(true);
         Renderer renderer = new Renderer();
-        Matrix4f orthoProjection = new Matrix4f().setOrtho(0, screenWidth, screenHeight, 0, 0.1f, 10f);//new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
-        Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
+        gui.initInput();
         while(!glfwWindowShouldClose(window)){
+            Matrix4f orthoProjection = new Matrix4f().setOrtho(0, screenWidth, screenHeight, 0, 0.1f, 10f);//new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
+            Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
             Color color = theme.getMenuBackgroundColor();
+            glClearColor(0, 0, 0, 0);
+            glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glClearColor(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT);
             double dt = 0;
             double time = glfwGetTime();
             if(lastFrame>-1){
                 dt = time-lastFrame;
             }
             lastFrame = time;
-            try{
-                processInput(dt);
-            }catch(Throwable t){
-                error("Caught exception during processInput", t);
-            }
             renderer.setShader(shader);
-            Matrix4f modelMatrix = new Matrix4f().setTranslation(0, 0, 0).setRotationXYZ(0, 0, 0);
-            Matrix4f viewMatrix = new Matrix4f().setTranslation(0, 0, -10f);
+            Matrix4f modelMatrix = new Matrix4f();//.setTranslation(0, 0, 0).setRotationXYZ(0, 0, 0);
+            Matrix4f viewMatrix = new Matrix4f().setTranslation(0, 0, -5);
             renderer.model(modelMatrix);
             renderer.view(viewMatrix);
             renderer.projection(perspectiveProjection);
@@ -280,6 +276,7 @@ public class Core{
             }
             //DRAW GUI
             glDisable(GL_CULL_FACE);
+            glDisable(GL_DEPTH_TEST);
             renderer.projection(orthoProjection);
             is3D = false;
             try{
@@ -288,6 +285,7 @@ public class Core{
                 error("Caught exception during render2d", t);
             }
             glEnable(GL_CULL_FACE);
+            glEnable(GL_DEPTH_TEST);
             renderer.clearTranslationsAndBounds();
             
             FPStracker.add(System.currentTimeMillis());
@@ -296,7 +294,11 @@ public class Core{
             }
             
             glfwSwapBuffers(window);
-            glfwPollEvents();
+            try{
+                glfwPollEvents();
+            }catch(Throwable t){
+                error("Caught exception processing input", t);
+            }
         }
         
         glfwDestroyWindow(window);
@@ -323,14 +325,11 @@ public class Core{
             System.exit(0);//TODO Shouldn't have to do this! :(
         }
     }
-    public static void processInput(double deltaTime){
+    public static void render3d(Renderer renderer, double deltaTime){
         if(glfwGetKey(window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
         if(glfwGetKey(window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
         if(glfwGetKey(window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
         if(glfwGetKey(window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
-        gui.processInput(deltaTime);
-    }
-    public static void render3d(Renderer renderer, double deltaTime){
         renderer.setWhite();
 //        if(gui.menu instanceof MenuMain){
 //            GL11.glPushMatrix();

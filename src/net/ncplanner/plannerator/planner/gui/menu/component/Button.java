@@ -72,13 +72,15 @@ public class Button extends Component{
     public void onMouseButton(double x, double y, int button, int action, int mods){
         super.onMouseButton(x, y, button, action, mods);
         if(!enabled)return;
-        if(action==GLFW_PRESS){
-            pressed = true;
-            if(ACT_ON_PRESS)runActions();
-        }
-        if(action==GLFW_RELEASE){
-            pressed = false;
-            if(isMouseFocused&&!ACT_ON_PRESS)runActions();
+        if(button==GLFW_MOUSE_BUTTON_LEFT){
+            if(action==GLFW_PRESS&&!pressed){
+                pressed = true;
+                if(ACT_ON_PRESS)runActions();
+            }
+            if(action==GLFW_RELEASE&&pressed){
+                pressed = false;
+                if(isMouseFocused&&!ACT_ON_PRESS)runActions();
+            }
         }
     }
     public void runActions(){

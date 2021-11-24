@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.multiblock.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import net.ncplanner.plannerator.graphics.image.Color;
@@ -10,24 +11,30 @@ import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.MathUtil;
 public class TextureManager{
+    private static final HashMap<String, Image> imageMap = new HashMap<>();
     public static Image getImageRaw(String texture){
+        if(imageMap.containsKey(texture))return imageMap.get(texture);
         try{
             if(new File("nbproject").exists()){
-                return ImageIO.read(new File("src/"+texture));
+                imageMap.put(texture, ImageIO.read(new File("src/"+texture)));
+                return imageMap.get(texture);
             }else{
                 JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
                 Enumeration enumEntries = jar.entries();
                 while(enumEntries.hasMoreElements()){
                     JarEntry file = (JarEntry)enumEntries.nextElement();
                     if(file.getName().equals(texture)){
-                        return ImageIO.read(jar.getInputStream(file));
+                        imageMap.put(texture, ImageIO.read(jar.getInputStream(file)));
+                        return imageMap.get(texture);
                     }
                 }
             }
+            imageMap.put(texture, new Image(1, 1));
             throw new IllegalArgumentException("Cannot find file: "+texture);
         }catch(IOException ex){
             System.err.println("Couldn't read file: "+texture);
-            return new Image(1, 1);
+            imageMap.put(texture, new Image(1, 1));
+            return imageMap.get(texture);
         }
     }
     public static Image getImage(String texture){

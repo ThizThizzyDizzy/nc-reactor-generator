@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
@@ -154,6 +155,7 @@ public class MenuMain extends Menu{
     private final int metadatingTime = 4;
     private Queue<PendingWrite> pendingWrites = new Queue<>();
     public OverhaulTurbine settingInputs = null;
+    private boolean refreshNeeded = true;
     public MenuMain(GUI gui){
         super(gui, null);
         if(Core.vr)add(vr);
@@ -292,6 +294,39 @@ public class MenuMain extends Menu{
     }
     @Override
     public void render2d(double deltaTime){
+        if(refreshNeeded){
+            refresh();
+            components.removeAll(multiblockButtons);
+            multiblockButtons.clear();
+            for(Multiblock m : Core.multiblockTypes){
+                String tex = m.getPreviewTexture();
+                Button button = add(new Button(0, 0, 0, 0, m.getDefinitionName(), true, true){
+                    @Override
+                    public void drawText(Renderer renderer, double deltaTime){
+                        if(tex!=null){
+                            String text = this.text;
+                            float textLength = renderer.getStringWidth(text, height);
+                            float scale = Math.min(1, (width-textInset*2)/textLength);
+                            float textHeight = (int)((height-textInset*2)*scale)-4;
+                            textHeight = Math.min(textHeight, height/8);
+                            renderer.drawCenteredText(x, y+height-height/16-textHeight/2, x+width, y+height-height/16+textHeight/2, text);
+                            renderer.setWhite();
+                            renderer.drawImage(TextureManager.getImage(tex), x+width/16, y, x+width-width/16, y+height-height/8);
+                        }
+                        else super.drawText(renderer, deltaTime);
+                    }
+                }.setTooltip(m.getDescriptionTooltip()));
+                button.addAction(() -> {
+                    Multiblock mb = m.newInstance();
+                    mb.init();
+                    Core.multiblocks.add(mb);
+                    adding = false;
+                    refresh();
+                });
+                multiblockButtons.add(button);
+            }
+            refreshNeeded = false;
+        }
         if(adding)addingScale = Math.min(addingScale+deltaTime*20, addingTime);
         else addingScale = Math.max(addingScale-deltaTime*20, 0);
         if(metadating)metadatingScale = Math.min(metadatingScale+deltaTime*20, metadatingTime);
@@ -400,36 +435,7 @@ public class MenuMain extends Menu{
     }
     @Override
     public void onOpened(){
-        refresh();
-        components.removeAll(multiblockButtons);
-        multiblockButtons.clear();
-        for(Multiblock m : Core.multiblockTypes){
-            String tex = m.getPreviewTexture();
-            Button button = add(new Button(0, 0, 0, 0, m.getDefinitionName(), true, true){
-                @Override
-                public void drawText(Renderer renderer, double deltaTime){
-                    if(tex!=null){
-                        String text = this.text;
-                        float textLength = renderer.getStringWidth(text, height);
-                        float scale = Math.min(1, (width-textInset*2)/textLength);
-                        float textHeight = (int)((height-textInset*2)*scale)-4;
-                        textHeight = Math.min(textHeight, height/8);
-                        renderer.drawCenteredText(x, y+height-height/16-textHeight/2, x+width, y+height-height/16+textHeight/2, text);
-                        renderer.setWhite();
-                        renderer.drawImage(TextureManager.getImage(tex), x+width/16, y, x+width-width/16, y+height-height/8);
-                    }
-                    else super.drawText(renderer, deltaTime);
-                }
-            }.setTooltip(m.getDescriptionTooltip()));
-            button.addAction(() -> {
-                Multiblock mb = m.newInstance();
-                mb.init();
-                Core.multiblocks.add(mb);
-                adding = false;
-                refresh();
-            });
-            multiblockButtons.add(button);
-        }
+        refreshNeeded = true;
     }
     public void refresh(){
         multiblocks.components.clear();

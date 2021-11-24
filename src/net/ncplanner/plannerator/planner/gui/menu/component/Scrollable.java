@@ -21,8 +21,8 @@ public class Scrollable extends Component{
     public float vertHeight;
     public float vertCenter;
     public float horizCenter;
-    public float myX;
-    public float myY;
+    public double myX;
+    public double myY;
     public float scrollWheelMagnitude=1;
     public Scrollable(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth){
         this.horizScrollbarHeight = horizScrollbarHeight;
@@ -90,7 +90,7 @@ public class Scrollable extends Component{
                 else if(x<horizCenter-horizWidth/2) horizZooming = true;
                 else if(x>horizCenter+horizWidth/2) horizZooming = true;
                 else{
-                    horizClickOff = horizCenter-(float)x;
+                    horizClickOff = horizCenter-(float)x-horizScrollbarHeight;
                     horizPressed = true;
                 }
             }else if(vertScrollbarPresent&&x>=width-vertScrollbarWidth){
@@ -99,7 +99,7 @@ public class Scrollable extends Component{
                 else if(y<vertCenter-vertHeight/2) vertZooming = true;
                 else if(y>vertCenter+vertHeight/2) vertZooming = true;
                 else{
-                    vertClickOff = vertCenter-(float)y;
+                    vertClickOff = vertCenter-(float)y-vertScrollbarWidth;
                     vertPressed = true;
                 }
             }
@@ -116,19 +116,19 @@ public class Scrollable extends Component{
     }
     @Override
     public void onCursorMoved(double xpos, double ypos){
-        if(x<width-vertScrollbarWidth) vertZooming = false;
-        if(y<height-horizScrollbarHeight) horizZooming = false;
-        if(vertPressed) scrollVert(y-(horizScrollbarPresent?horizScrollbarHeight:0)+vertClickOff);
-        if(horizPressed) scrollHoriz(x-(vertScrollbarPresent?vertScrollbarWidth:0)+horizClickOff);
+        if(xpos<width-vertScrollbarWidth) vertZooming = false;
+        if(ypos<height-horizScrollbarHeight) horizZooming = false;
+        if(vertPressed) scrollVert(ypos-(horizScrollbarPresent?horizScrollbarHeight:0)+vertClickOff);
+        if(horizPressed) scrollHoriz(xpos-(vertScrollbarPresent?vertScrollbarWidth:0)+horizClickOff);
         boolean elsewhere = false;
-        if(vertScrollbarPresent&&x>=width-vertScrollbarWidth) elsewhere = true;
-        if(horizScrollbarPresent&&y>=height-horizScrollbarHeight) elsewhere = true;
-        myX = x;
-        myY = y;
+        if(vertScrollbarPresent&&xpos>=width-vertScrollbarWidth) elsewhere = true;
+        if(horizScrollbarPresent&&ypos>=height-horizScrollbarHeight) elsewhere = true;
+        myX = xpos;
+        myY = ypos;
         if(!horizPressed&&!horizZooming&&!vertPressed&&!vertZooming){
-            x+=scrollX;
-            y+=scrollY;
-            if(!elsewhere&&isMouseFocused)super.onCursorMoved(x, y);
+            xpos+=scrollX;
+            ypos+=scrollY;
+            if(!elsewhere&&isMouseFocused)super.onCursorMoved(xpos, ypos);
         }
     }
     @Override

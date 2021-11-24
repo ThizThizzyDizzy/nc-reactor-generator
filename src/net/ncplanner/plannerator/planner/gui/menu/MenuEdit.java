@@ -105,7 +105,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         @Override
         public void drawText(Renderer renderer, double deltaTime){
             float tallness = height*3/2;
-            renderer.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 0, 151, 10);
+            renderer.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 151, 10);
             renderer.drawRegularPolygon(x+width/4, y+height*.5625f, width/4, 3, -5);
         }
     }.setTooltip("Undo (Ctrl+"+(Core.invertUndoRedo?"Y":"Z")+")"));
@@ -113,7 +113,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         @Override
         public void drawText(Renderer renderer, double deltaTime){
             float tallness = height*3/2;
-            renderer.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 0, 150, 9);
+            renderer.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 150, 9);
             renderer.drawRegularPolygon(x+width*3/4, y+height*.5625f, width/4, 3, 5);
         }
     }.setTooltip("Redo (Ctrl+"+(Core.invertUndoRedo?"Z":"Y")+")"));

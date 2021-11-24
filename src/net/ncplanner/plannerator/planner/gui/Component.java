@@ -64,20 +64,30 @@ public class Component{
     public void onCursorMoved(double xpos, double ypos){
         boolean foundFocus = false;
         for(Component comp : components){
-            if(xpos>=comp.x&&ypos>=comp.y&&xpos<comp.x+comp.width&&ypos<comp.y+comp.height||focusedComponent==comp){
+            if(xpos>=comp.x&&ypos>=comp.y&&xpos<comp.x+comp.width&&ypos<comp.y+comp.height){
                 if(comp.focusable){
-                    mouseFocusedComponent = comp;
+                    foundFocus = true;
+                    if(mouseFocusedComponent!=comp){
+                        if(mouseFocusedComponent!=null){
+                            mouseFocusedComponent.isMouseFocused = false;
+                            mouseFocusedComponent.onCursorExited();
+                        }
+                        mouseFocusedComponent = comp;
+                        mouseFocusedComponent.isMouseFocused = true;
+                        mouseFocusedComponent.onCursorEntered();
+                    }
                     foundFocus = true;
                 }
-                comp.isMouseFocused = true;
-                comp.onCursorEntered();
-                comp.onCursorMoved(xpos-comp.x, ypos-comp.y);
-            }else{
-                comp.isMouseFocused = false;
-                comp.onCursorExited();
             }
         }
-        if(!foundFocus)mouseFocusedComponent = null;
+        if(!foundFocus){
+            if(mouseFocusedComponent!=null){
+                mouseFocusedComponent.isMouseFocused = false;
+                mouseFocusedComponent.onCursorExited();
+            }
+            mouseFocusedComponent = null;
+        }
+        if(mouseFocusedComponent!=null)mouseFocusedComponent.onCursorMoved(xpos-mouseFocusedComponent.x, ypos-mouseFocusedComponent.y);
     }
     public void onCursorEntered(){}
     public void onCursorExited(){}
@@ -89,16 +99,21 @@ public class Component{
     }
     public void onMouseButton(double x, double y, int button, int action, int mods){
         if(mouseFocusedComponent!=null){
+            if(action==GLFW_RELEASE&&focusedComponent!=null){
+                focusedComponent.onMouseButton(x-focusedComponent.x, y-focusedComponent.y, button, action, mods);
+                return;
+            }//still get release event when mouse not over
             if(action==GLFW_PRESS){
-                if(focusedComponent!=null){
-                    focusedComponent.isFocused = false;
-                    focusedComponent.onFocusLost();
+                if(focusedComponent!=mouseFocusedComponent){
+                    if(focusedComponent!=null){
+                        focusedComponent.isFocused = false;
+                        focusedComponent.onFocusLost();
+                    }
+                    focusedComponent = mouseFocusedComponent;
+                    focusedComponent.isFocused = true;
+                    focusedComponent.onFocusGained();
                 }
-                focusedComponent = mouseFocusedComponent;
-                focusedComponent.isFocused = true;
-                focusedComponent.onFocusGained();
             }
-            if(action==GLFW_RELEASE&&focusedComponent!=null)focusedComponent.onMouseButton(x-focusedComponent.x, y-focusedComponent.y, button, action, mods);
             mouseFocusedComponent.onMouseButton(x-mouseFocusedComponent.x, y-mouseFocusedComponent.y, button, action, mods);
         }
     }
