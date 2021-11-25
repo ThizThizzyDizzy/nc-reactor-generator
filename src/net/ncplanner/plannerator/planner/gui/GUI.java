@@ -9,6 +9,8 @@ public abstract class GUI{
     public Menu menu;
     public double mouseX, mouseY;
     public void render2d(double deltaTime){
+        menu.width = getWidth();//TODO special onResize event for this
+        menu.height = getHeight();
         menu.render2d(deltaTime);
     }
     public void render3d(double deltaTime){
@@ -58,6 +60,8 @@ public abstract class GUI{
     public <T extends Menu> T open(T menu){
         if(this.menu!=null)this.menu.onClosed();
         this.menu = menu;
+        menu.width = getWidth();
+        menu.height = getHeight();
         if(menu!=null)menu.onOpened();
         return menu;
     }

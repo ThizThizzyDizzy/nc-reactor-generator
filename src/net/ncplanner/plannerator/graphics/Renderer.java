@@ -879,17 +879,21 @@ public class Renderer{
         resetModelMatrix();
     }
     public void redrawStencil(){
-        glClearColor(0f, 0f, 0f, 0f);
-        glClear(GL_STENCIL_BUFFER_BIT);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
         glStencilFunc(GL_ALWAYS, 1, 0xff);
         glStencilMask(0xff);
+        glClearColor(0f, 0f, 0f, 0f);
+        glClear(GL_STENCIL_BUFFER_BIT);
+        glColorMask(false, false, false, false);
+        glDepthMask(false);
         for(int i = 0; i<boundStack.size(); i++){
             Bound bound = boundStack.get(i);
             setExactModelMatrix(bound.modelMatrix);
-//            bound.draw();
+            bound.draw();
         }
         glStencilFunc(GL_NOTEQUAL, 1, 0xff);
+        glDepthMask(true);
+        glColorMask(true, true, true, true);
         glStencilMask(0x00);
         resetModelMatrix();
     }

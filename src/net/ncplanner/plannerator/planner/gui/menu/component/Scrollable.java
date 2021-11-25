@@ -90,7 +90,7 @@ public class Scrollable extends Component{
                 else if(x<horizCenter-horizWidth/2) horizZooming = true;
                 else if(x>horizCenter+horizWidth/2) horizZooming = true;
                 else{
-                    horizClickOff = horizCenter-(float)x-horizScrollbarHeight;
+                    horizClickOff = horizCenter-(float)x-horizScrollbarHeight+vertScrollbarWidth;
                     horizPressed = true;
                 }
             }else if(vertScrollbarPresent&&x>=width-vertScrollbarWidth){
@@ -99,7 +99,7 @@ public class Scrollable extends Component{
                 else if(y<vertCenter-vertHeight/2) vertZooming = true;
                 else if(y>vertCenter+vertHeight/2) vertZooming = true;
                 else{
-                    vertClickOff = vertCenter-(float)y-vertScrollbarWidth;
+                    vertClickOff = vertCenter-(float)y-vertScrollbarWidth+horizScrollbarHeight;
                     vertPressed = true;
                 }
             }

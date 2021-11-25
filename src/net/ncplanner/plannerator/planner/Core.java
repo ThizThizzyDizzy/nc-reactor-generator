@@ -253,7 +253,9 @@ public class Core{
             Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
             Color color = theme.getMenuBackgroundColor();
             glClearColor(0, 0, 0, 0);
+            glStencilMask(0xff);
             glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            glStencilMask(0x00);
             glClearColor(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
             glClear(GL_COLOR_BUFFER_BIT);
             double dt = 0;
@@ -272,7 +274,7 @@ public class Core{
             try{
                 render3d(renderer, dt);
             }catch(Throwable t){
-                error("Caught exception during render3d", t);
+                error("Caught exception rendering 3D background!", t);
             }
             //DRAW GUI
             glDisable(GL_CULL_FACE);
@@ -282,7 +284,7 @@ public class Core{
             try{
                 render2d(renderer, dt);
             }catch(Throwable t){
-                error("Caught exception during render2d", t);
+                error("Caught exception rendering GUI!", t);
             }
             glEnable(GL_CULL_FACE);
             glEnable(GL_DEPTH_TEST);
@@ -297,7 +299,7 @@ public class Core{
             try{
                 glfwPollEvents();
             }catch(Throwable t){
-                error("Caught exception processing input", t);
+                error("Caught exception processing input!", t);
             }
         }
         
@@ -468,7 +470,9 @@ public class Core{
         
         glViewport(0, 0, width, height);
         glClearColor(0f, 0f, 0f, 0f);
+        glStencilMask(0xff);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glStencilMask(0x00);
         
         Renderer renderer = new Renderer();
         renderer.projection(new Matrix4f().setOrtho(0, width, height, 0, 0.1f, 10f));
