@@ -19,9 +19,8 @@ public class MenuThemes extends Menu{
     }
     @Override
     public void onOpened(){
-        components.clear();
+        components.removeAll(themesLists);
         themesLists.clear();
-        add(done);
         for(ThemeCategory cat : Theme.themes){
             SingleColumnList list = add(new SingleColumnList(0, done.height, 0, 0, 32));
             themesLists.add(list);

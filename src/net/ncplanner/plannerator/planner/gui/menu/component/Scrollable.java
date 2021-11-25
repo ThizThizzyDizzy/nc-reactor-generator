@@ -25,6 +25,7 @@ public class Scrollable extends Component{
     public double myY;
     public float scrollWheelMagnitude=1;
     public Scrollable(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth){
+        super(x, y, width, height);
         this.horizScrollbarHeight = horizScrollbarHeight;
         this.vertScrollbarWidth = vertScrollbarWidth;
         scrollMagnitude = Math.min(width, height)/50;

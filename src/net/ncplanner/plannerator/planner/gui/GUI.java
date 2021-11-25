@@ -60,9 +60,11 @@ public abstract class GUI{
     public <T extends Menu> T open(T menu){
         if(this.menu!=null)this.menu.onClosed();
         this.menu = menu;
-        menu.width = getWidth();
-        menu.height = getHeight();
-        if(menu!=null)menu.onOpened();
+        if(menu!=null){
+            menu.width = getWidth();
+            menu.height = getHeight();
+            menu.onOpened();
+        }
         return menu;
     }
     public abstract int getWidth();
