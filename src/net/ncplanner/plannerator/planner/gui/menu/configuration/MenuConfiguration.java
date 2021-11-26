@@ -253,7 +253,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     }
                 }
                 threadHasStopped = threadShouldStop = false;
-                synchronized(addonsList){
+                synchronized(gui){
                     addonsList.components.clear();
                     for(Configuration c : configuration.addons){
                         addonsList.add(new MenuComponentAddon(c, () -> {
@@ -281,7 +281,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                         threadHasStopped = true;
                         return;
                     }
-                    synchronized(addonsList){
+                    synchronized(gui){
                         addonsList.add(new MenuComponentInternalAddon(c, got, () -> {
                             try{
                                 Core.configuration.addAndConvertAddon((((MenuComponentInternalAddon)c).addon.get()));
@@ -393,9 +393,7 @@ public class MenuConfiguration extends ConfigurationMenu{
         deleteOverhaulMSR.setTooltip((configuration.overhaul==null||configuration.overhaul.fissionMSR==null?"Create":"Delete")+" the Overhaul MSR configuration");
         deleteOverhaulTurbine.setTooltip((configuration.overhaul==null||configuration.overhaul.turbine==null?"Create":"Delete")+" the Overhaul Turbine configuration");
         deleteOverhaulFusion.setTooltip((configuration.overhaul==null||configuration.overhaul.fusion==null?"Create":"Delete")+" the Overhaul Fusion Reactor configuration");
-        synchronized(addonsList){
-            super.render2d(deltaTime);
-        }
+        super.render2d(deltaTime);
     }
     @Override
     public void onFilesDropped(String[] files){

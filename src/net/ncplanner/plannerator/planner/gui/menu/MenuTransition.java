@@ -20,6 +20,8 @@ public class MenuTransition extends Menu{
     }
     @Override
     public void onOpened(){
+        to.width = width;
+        to.height = height;
         to.onOpened();
     }
     @Override
