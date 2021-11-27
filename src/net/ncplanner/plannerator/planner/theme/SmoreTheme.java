@@ -577,7 +577,9 @@ public class SmoreTheme extends ColorTheme{
         renderer.setFont(getDefaultFont());
         for(int i = 0; i<4; i++){
             renderer.setColor(getComponentTextColor(i));
-//            renderer.drawCenteredTextWithBounds(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, x, y+height*i/4d, x+width, y+height*(i+1)/4d, text);
+            renderer.bound(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
+            renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+            renderer.unBound();
         }
     }
     private ColorTheme pickTheme(int index){
