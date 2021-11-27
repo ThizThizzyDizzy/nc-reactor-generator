@@ -239,6 +239,8 @@ public abstract class Theme{
     public abstract Color getClusterInvalidColor();
     public abstract Color getTooltipInvalidTextColor();
     public abstract Color getTooltipTextColor();
+    public abstract Color getTooltipBackgroundColor();
+    public abstract Color getTooltipBorderColor();
     public abstract Color getEditorToolTextColor(int index);
     public abstract Color getEditorToolBackgroundColor(int index);
     public abstract Color getSelectionColor();

@@ -180,6 +180,14 @@ public abstract class LegacyTheme extends ColorTheme{
         return getTextColor();
     }
     @Override
+    public Color getTooltipBackgroundColor(){
+        return getEditorListBorderColor();
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        return getTextColor();
+    }
+    @Override
     public Color getEditorToolTextColor(int index){
         return getTextColor();
     }

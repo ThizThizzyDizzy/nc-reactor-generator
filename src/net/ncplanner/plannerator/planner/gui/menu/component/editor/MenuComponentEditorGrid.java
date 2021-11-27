@@ -420,13 +420,13 @@ public class MenuComponentEditorGrid extends Component{
         }
     }
     @Override
-    public double getTooltipOffsetX(){
+    public float getTooltipOffsetX(){
         synchronized(synchronizer){
             return mouseover!=null?mouseover[0]*blockSize:0;
         }
     }
     @Override
-    public double getTooltipOffsetY(){
+    public float getTooltipOffsetY(){
         synchronized(synchronizer){
             return mouseover!=null?(mouseover[1]+1)*blockSize:height;
         }

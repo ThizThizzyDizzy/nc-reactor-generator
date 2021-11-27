@@ -54,11 +54,11 @@ public class MenuComponentEditorListBlock extends Component implements Pinnable{
         return block.getListTooltip();
     }
     @Override
-    public double getTooltipOffsetX(){
+    public float getTooltipOffsetX(){
         return 0;
     }
     @Override
-    public double getTooltipOffsetY(){
+    public float getTooltipOffsetY(){
         return height;
     }
     @Override

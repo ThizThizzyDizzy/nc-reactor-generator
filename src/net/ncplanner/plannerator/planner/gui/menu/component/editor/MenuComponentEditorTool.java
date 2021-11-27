@@ -49,11 +49,11 @@ public class MenuComponentEditorTool extends Component{
         return tool.getTooltip();
     }
     @Override
-    public double getTooltipOffsetX(){
+    public float getTooltipOffsetX(){
         return 0;
     }
     @Override
-    public double getTooltipOffsetY(){
+    public float getTooltipOffsetY(){
         return height;
     }
 }

@@ -241,6 +241,16 @@ public class SiezureTheme extends ColorTheme{
         return rand();
     }
     @Override
+    public Color getTooltipBackgroundColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getTooltipBackgroundColor();
+        return rand();
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getTooltipBorderColor();
+        return rand();
+    }
+    @Override
     public Color getEditorToolTextColor(int index){
         if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getEditorToolTextColor(index);
         return rand();

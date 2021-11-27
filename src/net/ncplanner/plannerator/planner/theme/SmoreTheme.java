@@ -178,6 +178,14 @@ public class SmoreTheme extends ColorTheme{
         return chocolate.getTooltipTextColor();
     }
     @Override
+    public Color getTooltipBackgroundColor(){
+        return marshmallow.getTooltipBackgroundColor();
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        return cracker.getTooltipBorderColor();
+    }
+    @Override
     public Color getEditorToolTextColor(int index){
         return pickTheme(index).getEditorToolTextColor(index);
     }

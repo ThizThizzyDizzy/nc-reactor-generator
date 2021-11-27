@@ -178,6 +178,14 @@ public class ChangingColorTheme extends ColorTheme{
         return current.getTooltipTextColor();
     }
     @Override
+    public Color getTooltipBackgroundColor(){
+        return current.getTooltipBackgroundColor();
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        return current.getTooltipBorderColor();
+    }
+    @Override
     public Color getEditorToolTextColor(int index){
         return current.getEditorToolTextColor(index);
     }

@@ -155,13 +155,20 @@ public class Component{
         this.tooltip = tooltip;
         return this;
     }
-    public double getTooltipOffsetX(){
+    public float getTooltipOffsetX(){
         return 0;
     }
-    public double getTooltipOffsetY(){
+    public float getTooltipOffsetY(){
         return height;
     }
     public void setFocusable(boolean focusable){
         this.focusable = focusable;
+    }
+    public ArrayList<Component> getAllComponents(){
+        ArrayList<Component> comps = new ArrayList<>(components);
+        for(Component c : components){
+            comps.addAll(c.getAllComponents());
+        }
+        return comps;
     }
 }
