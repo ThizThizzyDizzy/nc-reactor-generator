@@ -1336,7 +1336,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         int index = 1;
         for(int x = 0; x<image.getWidth(); x++){
             for(int y = 0; y<image.getHeight(); y++){
-                image.setRGB(x, y, (int)texture.get(index));
+                image.setRGB(x, image.getHeight()-y-1, (int)texture.get(index));//flip Y axis because GL
                 index++;
             }
         }

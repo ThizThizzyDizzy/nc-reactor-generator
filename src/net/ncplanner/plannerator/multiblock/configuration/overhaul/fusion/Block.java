@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
-import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
@@ -12,6 +11,7 @@ import net.ncplanner.plannerator.multiblock.configuration.RuleContainer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
+import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
     public String name;
     public String displayName;
@@ -102,16 +102,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
             }
             config.set("heatsink", heatsinkCfg);
         }
-        if(!partial&&texture!=null){
-            ConfigNumberList tex = new ConfigNumberList();
-            tex.add(texture.getWidth());
-            for(int x = 0; x<texture.getWidth(); x++){
-                for(int y = 0; y<texture.getHeight(); y++){
-                    tex.add(texture.getRGB(x, y));
-                }
-            }
-            config.set("texture", tex);
-        }
+        if(!partial)NCPFWriter.saveTexture(config, texture);
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
             for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : rules){

@@ -16,7 +16,7 @@ import static net.ncplanner.plannerator.planner.file.FileWriter.botRunning;
 import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
 import org.joml.Matrix4f;
-public class PNGFormatWriter extends ImageFormatWriter{
+public class PNGWriter extends ImageFormatWriter{
     private final int textHeight = 20;
     private final int borderSize = 16;
     @Override

@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
-import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
@@ -14,6 +13,7 @@ import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.StringUtil;
+import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
     public static Block controller(String name, String displayName, String texture){
         Block block = new Block(name);
@@ -291,16 +291,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                     if(!recipes.isEmpty())shieldCfg.set("hasBaseStats", true);
                     shieldCfg.set("heat", shieldHeat);
                     shieldCfg.set("efficiency", shieldEfficiency);
-                    if(!partial&&shieldClosedTexture!=null){
-                        ConfigNumberList tex = new ConfigNumberList();
-                        tex.add(shieldClosedTexture.getWidth());
-                        for(int x = 0; x<shieldClosedTexture.getWidth(); x++){
-                            for(int y = 0; y<shieldClosedTexture.getHeight(); y++){
-                                tex.add(shieldClosedTexture.getRGB(x, y));
-                            }
-                        }
-                        shieldCfg.set("closedTexture", tex);
-                    }
+                    if(!partial)NCPFWriter.saveTexture(shieldCfg, "closedTexture", shieldClosedTexture);
                 }
                 config.set("shield", shieldCfg);
             }
@@ -317,44 +308,15 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                 sourceCfg.set("efficiency", sourceEfficiency);
                 config.set("source", sourceCfg);
             }
-            if(!partial){
-                if(texture!=null){
-                    ConfigNumberList tex = new ConfigNumberList();
-                    tex.add(texture.getWidth());
-                    for(int x = 0; x<texture.getWidth(); x++){
-                        for(int y = 0; y<texture.getHeight(); y++){
-                            tex.add(texture.getRGB(x, y));
-                        }
-                    }
-                    config.set("texture", tex);
-                }
-            }
+            if(!partial)NCPFWriter.saveTexture(config, texture);
             if(!recipes.isEmpty()){
                 Config portCfg = Config.newConfig();
                 portCfg.set("name", port.name);
                 if(!partial){
                     if(port.displayName!=null)portCfg.set("inputDisplayName", port.displayName);
-                    if(port.texture!=null){
-                        ConfigNumberList tex = new ConfigNumberList();
-                        tex.add(port.texture.getWidth());
-                        for(int x = 0; x<port.texture.getWidth(); x++){
-                            for(int y = 0; y<port.texture.getHeight(); y++){
-                                tex.add(port.texture.getRGB(x, y));
-                            }
-                        }
-                        portCfg.set("inputTexture", tex);
-                    }
+                    NCPFWriter.saveTexture(portCfg, "inputTexture", port.texture);
                     if(port.portOutputDisplayName!=null)portCfg.set("outputDisplayName", port.portOutputDisplayName);
-                    if(port.portOutputTexture!=null){
-                        ConfigNumberList tex = new ConfigNumberList();
-                        tex.add(port.portOutputTexture.getWidth());
-                        for(int x = 0; x<port.portOutputTexture.getWidth(); x++){
-                            for(int y = 0; y<port.portOutputTexture.getHeight(); y++){
-                                tex.add(port.portOutputTexture.getRGB(x, y));
-                            }
-                        }
-                        portCfg.set("outputTexture", tex);
-                    }
+                    NCPFWriter.saveTexture(portCfg, "outputTexture", port.portOutputTexture);
                 }
                 config.set("port", portCfg);
             }

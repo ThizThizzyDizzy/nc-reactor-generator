@@ -12,7 +12,7 @@ import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-public class HellrageFormatWriter extends FormatWriter{
+public class HellrageWriter extends FormatWriter{
     @Override
     public FileFormat getFileFormat(){
         return FileFormat.HELLRAGE_REACTOR;
