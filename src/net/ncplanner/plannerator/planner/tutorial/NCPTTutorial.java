@@ -345,19 +345,7 @@ public class NCPTTutorial extends Tutorial{
                             renderer.setColor(Core.theme.getSecondaryComponentMouseoverColor(0), resonatingBrightness);
                             renderer.fillRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5);
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            //<editor-fold defaultstate="collapsed" desc="Pencil icon">
-                            renderer.fillTri(colRight-scale*3+scale*2*.25f, offsets[column]+scale*3+scale*2*.75f,
-                                    colRight-scale*3+scale*2*.375f, offsets[column]+scale*3+scale*2*.75f,
-                                    colRight-scale*3+scale*2*.25f, offsets[column]+scale*3+scale*2*.625f);
-                            renderer.fillQuad(colRight-scale*3+scale*2*.4f, offsets[column]+scale*3+scale*2*.725f,
-                                    colRight-scale*3+scale*2*.275f, offsets[column]+scale*3+scale*2*.6f,
-                                    colRight-scale*3+scale*2*.5f, offsets[column]+scale*3+scale*2*.375f,
-                                    colRight-scale*3+scale*2*.625f, offsets[column]+scale*3+scale*2*.5f);
-                            renderer.fillQuad(colRight-scale*3+scale*2*.525f, offsets[column]+scale*3+scale*2*.35f,
-                                    colRight-scale*3+scale*2*.65f, offsets[column]+scale*3+scale*2*.475f,
-                                    colRight-scale*3+scale*2*.75f, offsets[column]+scale*3+scale*2*.375f,
-                                    colRight-scale*3+scale*2*.625f, offsets[column]+scale*3+scale*2*.25f);
-                            //</editor-fold>
+                            renderer.drawElement("pencil", colRight-scale*3, offsets[column]+scale*3, scale*2, scale*2);
                             renderer.drawCenteredText(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, "Multiblocks");
                             renderer.drawCenteredText(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, "+");
                             renderer.drawText(colLeft, offsets[column]+scale*3, colRight, offsets[column]+scale*4, "Overhaul SFR");
@@ -378,19 +366,7 @@ public class NCPTTutorial extends Tutorial{
                             renderer.setColor(Core.theme.getSecondaryComponentColor(0));
                             renderer.fillRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5);
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            //<editor-fold defaultstate="collapsed" desc="Pencil icon">
-                            renderer.fillTri(colRight-scale*3+scale*2*.25f, offsets[column]+scale*3+scale*2*.75f,
-                                    colRight-scale*3+scale*2*.375f, offsets[column]+scale*3+scale*2*.75f,
-                                    colRight-scale*3+scale*2*.25f, offsets[column]+scale*3+scale*2*.625f);
-                            renderer.fillQuad(colRight-scale*3+scale*2*.4f, offsets[column]+scale*3+scale*2*.725f,
-                                    colRight-scale*3+scale*2*.275f, offsets[column]+scale*3+scale*2*.6f,
-                                    colRight-scale*3+scale*2*.5f, offsets[column]+scale*3+scale*2*.375f,
-                                    colRight-scale*3+scale*2*.625f, offsets[column]+scale*3+scale*2*.5f);
-                            renderer.fillQuad(colRight-scale*3+scale*2*.525f, offsets[column]+scale*3+scale*2*.35f,
-                                    colRight-scale*3+scale*2*.65f, offsets[column]+scale*3+scale*2*.475f,
-                                    colRight-scale*3+scale*2*.75f, offsets[column]+scale*3+scale*2*.375f,
-                                    colRight-scale*3+scale*2*.625f, offsets[column]+scale*3+scale*2*.25f);
-                            //</editor-fold>
+                            renderer.drawElement("pencil", colRight-scale*3, offsets[column]+scale*3, scale*2, scale*2);
                             renderer.drawCenteredText(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, "Multiblocks");
                             renderer.drawCenteredText(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, "+");
                             renderer.drawText(colLeft, offsets[column]+scale*3, colRight, offsets[column]+scale*4, "Overhaul SFR");

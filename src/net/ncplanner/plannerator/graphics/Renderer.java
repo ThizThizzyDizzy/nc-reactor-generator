@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.graphics;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.image.Color;
@@ -23,6 +24,81 @@ public class Renderer{
     private static Shader shader;
     private static Stack<Bound> boundStack = new Stack<>();
     private static Matrix4fStack modelMatStack = new Matrix4fStack(64);
+    private static final HashMap<String, Element> elements = new HashMap<>();
+    static{
+        elements.put("pencil", new Element(){
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+
+                float[] verticies = new float[]{
+                    .25f,  .75f, 0, 0, 0, 1, 0, 0, //pencil tip tip
+                    .375f, .75f, 0, 0, 0, 1, 0, 0, //pencil tip right
+                    .25f, .625f, 0, 0, 0, 1, 0, 0, //pencil tip top
+                    .4f,  .725f, 0, 0, 0, 1, 0, 0, //pencil shaft bottom
+                    .275f,  .6f, 0, 0, 0, 1, 0, 0, //pencil shaft left
+                    .5f,  .375f, 0, 0, 0, 1, 0, 0, //pencil shaft top
+                    .625f,  .5f, 0, 0, 0, 1, 0, 0, //pencil shaft right
+                    .525f, .35f, 0, 0, 0, 1, 0, 0, //pencil eraser left
+                    .65f, .475f, 0, 0, 0, 1, 0, 0, //pencil eraser bottom
+                    .75f, .375f, 0, 0, 0, 1, 0, 0, //pencil eraser right
+                    .625f, .25f, 0, 0, 0, 1, 0, 0  //pencil eraser top
+                    
+                };
+                int[] indicies = new int[]{
+                    0, 1, 2, //pencil tip
+                    5, 4, 3, //pencil shaft left
+                    3, 6, 5, //pencil shaft right
+                    10, 7, 8,//pencil eraser left
+                    8, 9, 10 //pencil eraser right
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                bindTexture(0);
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 15, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+    }
+    public static void initElements(){
+        for(Element e : elements.values())e.init();
+    }
+    public static void cleanupElements(){
+        for(Element e : elements.values())e.cleanup();
+    }
     public void setFont(Font font){
         this.font = font;
     }
@@ -853,7 +929,7 @@ public class Renderer{
     public void bindTexture(Image tex){
         bindTexture(Core.getTexture(tex));
     }
-    public void bindTexture(int tex){
+    public static void bindTexture(int tex){
         glBindTexture(GL_TEXTURE_2D, tex);
         if(tex==0)shader.setUniform4f("noTex", 1f, 1f, 1f, 0f);
         else shader.setUniform4f("noTex", 0f, 0f, 0f, 0f);
@@ -939,6 +1015,15 @@ public class Renderer{
         boundStack.clear();
         redrawStencil();
     }
+    public void drawElement(String name, float x, float y, float width, float height){
+        model(new Matrix4f().setTranslation(x, y, 1).scale(width, height, 0));
+        drawElement(name);
+        resetModelMatrix();
+    }
+    private void drawElement(String name){
+        if(!elements.containsKey(name))throw new IllegalArgumentException("Cannot draw element: "+name+" does not exist!");
+        elements.get(name).draw();
+    }
     private static abstract class Bound{
         private final Matrix4f modelMatrix;
         public Bound(Matrix4f modelMatrix){
@@ -996,5 +1081,10 @@ public class Renderer{
         }
         resetModelMatrix();
         setWhite();
+    }
+    public static interface Element{
+        public void init();
+        public void draw();
+        public void cleanup();
     }
 }

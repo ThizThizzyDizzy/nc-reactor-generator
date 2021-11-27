@@ -208,6 +208,8 @@ public class Core{
         FONT_40 = Font.loadFont("high_resolution");
         FONT_10 = Font.loadFont("small");
         FONT_MONO_20 = Font.loadFont("monospaced");
+        System.out.println("Initializing elements");
+        Renderer.initElements();
         System.out.println("Initializing GUI");
         gui = new GUI(window){
             private boolean b;
@@ -296,6 +298,7 @@ public class Core{
                 error("Caught exception processing input!", t);
             }
         }
+        Renderer.cleanupElements();
         
         glfwDestroyWindow(window);
         glfwTerminate();

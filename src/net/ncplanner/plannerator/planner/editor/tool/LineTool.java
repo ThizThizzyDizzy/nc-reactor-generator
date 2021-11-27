@@ -17,7 +17,7 @@ public class LineTool extends EditorTool{
     @Override
     public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillQuad(x+width*.125f, y+height*.75f, x+width*.25f, y+height*.875f, x+width*.875f, y+height*.25f, x+width*.75f, y+height*.125f);
+        renderer.fillQuad(x+width*.25f, y+height*.875f, x+width*.125f, y+height*.75f, x+width*.875f, y+height*.25f, x+width*.75f, y+height*.125f);
     }
     @Override
     public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){

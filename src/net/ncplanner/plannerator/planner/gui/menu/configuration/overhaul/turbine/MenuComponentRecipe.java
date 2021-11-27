@@ -12,17 +12,7 @@ public class MenuComponentRecipe extends Component{
             super.drawForeground(deltaTime);
             Renderer renderer = new Renderer();
             renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-            renderer.fillTri(x+width*.25f, y+height*.75f,
-                    x+width*.375f, y+height*.75f,
-                    x+width*.25f, y+height*.625f);
-            renderer.fillQuad(x+width*.4f, y+height*.725f,
-                    x+width*.275f, y+height*.6f,
-                    x+width*.5f, y+height*.375f,
-                    x+width*.625f, y+height*.5f);
-            renderer.fillQuad(x+width*.525f, y+height*.35f,
-                    x+width*.65f, y+height*.475f,
-                    x+width*.75f, y+height*.375f,
-                    x+width*.625f, y+height*.25f);
+            renderer.drawElement("pencil", x, y, width, height);
         }
     }.setTooltip("Modify recipe"));
     public final Button delete = add(new Button(0, 0, 0, 0, "", true, true){
