@@ -23,7 +23,7 @@ public class Component{
     }
     public void render2d(double deltaTime){
         Renderer renderer = new Renderer();
-        renderer.bound(x, y, x+width, y+height);
+//        renderer.bound(x, y, x+width, y+height);
         drawBackground(deltaTime);
         draw(deltaTime);
         renderer.translate(x, y);
@@ -32,7 +32,7 @@ public class Component{
         }
         renderer.unTranslate();
         drawForeground(deltaTime);
-        renderer.unBound();
+//        renderer.unBound();
     }
     public void drawBackground(double deltaTime){}
     public void draw(double deltaTime){}
