@@ -98,6 +98,7 @@ public class Component{
         if(focusedComponent!=null)focusedComponent.onKeyEvent(key, scancode, action, mods);
     }
     public void onMouseButton(double x, double y, int button, int action, int mods){
+        if(action==GLFW_PRESS)onCursorMoved(x, y);//workaround solution for mouseButton not doing mouse focus scanning itself; ensures mouse focus is accurate before press event
         if(mouseFocusedComponent!=null){
             if(action==GLFW_RELEASE&&focusedComponent!=null){
                 focusedComponent.onMouseButton(x-focusedComponent.x, y-focusedComponent.y, button, action, mods);

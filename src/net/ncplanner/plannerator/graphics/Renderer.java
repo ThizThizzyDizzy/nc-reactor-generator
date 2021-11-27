@@ -92,6 +92,67 @@ public class Renderer{
                 glDeleteVertexArrays(vao);
             }
         });
+        elements.put("delete", new Element() {
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+
+                float[] verticies = new float[]{
+                    .1f, .8f, 0, 0, 0, 1, 0, 0, // / left   0
+                    .2f, .9f, 0, 0, 0, 1, 0, 0, // / bottom 1
+                    .8f, .1f, 0, 0, 0, 1, 0, 0, // / top    2
+                    .9f, .2f, 0, 0, 0, 1, 0, 0, // / right  3
+                    .1f, .2f, 0, 0, 0, 1, 0, 0, // \ left   4
+                    .2f, .1f, 0, 0, 0, 1, 0, 0, // \ top    5
+                    .9f, .8f, 0, 0, 0, 1, 0, 0, // \ right  6
+                    .8f, .9f, 0, 0, 0, 1, 0, 0, // \ bottom 7
+                };
+                int[] indicies = new int[]{
+                    2, 0, 1,
+                    1, 3, 2,
+                    5, 4, 7,
+                    7, 6, 5
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                bindTexture(0);
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
     }
     public static void initElements(){
         for(Element e : elements.values())e.init();

@@ -21,14 +21,7 @@ public class MenuComponentCoolantRecipe extends Component{
             super.drawForeground(deltaTime);
             Renderer renderer = new Renderer();
             renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-            renderer.fillQuad(x+width*.1f, y+height*.8f,
-                    x+width*.2f, y+height*.9f,
-                    x+width*.9f, y+height*.2f,
-                    x+width*.8f, y+height*.1f);
-            renderer.fillQuad(x+width*.1f, y+height*.2f,
-                    x+width*.2f, y+height*.1f,
-                    x+width*.9f, y+height*.8f,
-                    x+width*.8f, y+height*.9f);
+            renderer.drawElement("delete", x, y, width, height);
         }
     }.setTooltip("Delete coolant recipe"));
     public MenuComponentCoolantRecipe(CoolantRecipe coolantRecipe, Runnable onEditPressed, Runnable onDeletePressed){
