@@ -1012,7 +1012,8 @@ public class Renderer{
     }
     public void translate(float x, float y, float sx, float sy){
         modelMatStack.pushMatrix();
-        modelMatStack.mul(createModelMatrix(x, y, sx, sy));
+        createModelMatrix(x, y, sx, sy).mul(modelMatStack, modelMatStack);
+//        modelMatStack.mul(createModelMatrix(x, y, sx, sy));
         resetModelMatrix();
     }
     public void redrawStencil(){

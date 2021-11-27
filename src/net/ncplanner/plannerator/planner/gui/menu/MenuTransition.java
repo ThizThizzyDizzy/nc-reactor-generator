@@ -29,7 +29,7 @@ public class MenuTransition extends Menu{
         timer+=deltaTime*20;
         float ratio = Math.max(0, Math.min(1, timer/time));
         transition.render(from, to, ratio, deltaTime);
-        if(time==timer){
+        if(timer>=time){
             transition.finalCheck(from, to);
             gui.open(to);
         }
