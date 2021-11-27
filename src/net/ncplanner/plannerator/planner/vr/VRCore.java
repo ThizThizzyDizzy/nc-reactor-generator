@@ -1,19 +1,11 @@
 package net.ncplanner.plannerator.planner.vr;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
@@ -434,26 +426,6 @@ public class VRCore{
             }
         }
 //</editor-fold>
-    }
-    public static InputStream getInputStream(String path){
-        try{
-            if(new File("nbproject").exists()){
-                return new FileInputStream(new File("src/"+path.replace("/", "/")));
-            }else{
-                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
-                Enumeration enumEntries = jar.entries();
-                while(enumEntries.hasMoreElements()){
-                    JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals(path.replace("/", "/"))){
-                        return jar.getInputStream(file);
-                    }
-                }
-            }
-            throw new IllegalArgumentException("Cannot find file: "+path);
-        }catch(IOException ex){
-            System.err.println("Couldn't read file: "+path);
-            return null;
-        }
     }
     private static final HashMap<Integer, Integer> fboRBO = new HashMap<>();
     private static final HashMap<Integer, Integer> fboTextures = new HashMap<>();

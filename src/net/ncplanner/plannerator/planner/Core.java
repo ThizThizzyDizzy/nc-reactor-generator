@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.planner;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,12 +9,9 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.function.Consumer;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.ncplanner.plannerator.config2.Config;
@@ -54,8 +50,6 @@ import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentMultib
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentToolPanel;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import static org.lwjgl.glfw.GLFW.*;
@@ -725,24 +719,8 @@ public class Core{
         return 0;
     }
     public static InputStream getInputStream(String path){
-        try{
-            if(new File("nbproject").exists()){
-                return new FileInputStream(new File("src/"+path.replace("/", "/")));
-            }else{
-                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
-                Enumeration enumEntries = jar.entries();
-                while(enumEntries.hasMoreElements()){
-                    JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals(path.replace("/", "/"))){
-                        return jar.getInputStream(file);
-                    }
-                }
-            }
-            throw new IllegalArgumentException("Cannot find file: "+path);
-        }catch(IOException ex){
-            System.err.println("Couldn't read file: "+path);
-            return null;
-        }
+        if(!path.startsWith("/"))path = "/"+path;
+        return Core.class.getResourceAsStream(path);
     }
     public static ByteBuffer loadData(String path){
         return loadData(getInputStream(path));

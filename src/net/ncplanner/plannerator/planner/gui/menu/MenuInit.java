@@ -45,6 +45,7 @@ import net.ncplanner.plannerator.planner.file.reader.UnderhaulNCConfigReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUpdate;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.module.Module;
@@ -119,86 +120,95 @@ public class MenuInit extends Menu{
         Task tct = init.addSubtask("Adjusting MSR block textures...");
         Task tci = init.addSubtask("Imposing Configuration...");
         new Thread(() -> {
-            System.out.println("Started Initialization Thread");
-            Core.resetMetadata();
-            System.out.println("Reset Metadata");
-            t2.finish();
-            for(String s : readerNames){
-                FileReader.formats.add(readers.get(s).get());
-                readerTasks.get(s).finish();
-            }
-            System.out.println("Loaded File Formats");
-            Configuration.initNuclearcraftConfiguration();
-            System.out.println("Loaded NC Config");
-            tc1.finish();
-            Core.modules.add(new UnderhaulModule());
-            tm1.finish();
-            Core.modules.add(new OverhaulModule());
-            tm2.finish();
-            Core.modules.add(new FusionTestModule());
-            tm3.finish();
-            Core.modules.add(new RainbowFactorModule());
-            tm4.finish();
-            Core.modules.add(new PrimeFuelModule());
-            tm5.finish();
-            System.out.println("Added Modules");
-            File f = new File("settings.dat").getAbsoluteFile();
-            if(f.exists()){
-                Config settings = Config.newConfig(f);
-                settings.load();
-                System.out.println("Loading theme");
-                Object o = settings.get("theme");
-                if(o instanceof String){
-                    Core.setTheme(Theme.getByName((String)o));
-                }else Core.setTheme(Theme.getByLegacyID((int)o));
-                try{
-                    Config modules = settings.get("modules", Config.newConfig());
-                    HashMap<Module, Boolean> moduleStates = new HashMap<>();
-                    for(String key : modules.properties()){
-                        for(Module m : Core.modules){
-                            if(m.name.equals(key))moduleStates.put(m, modules.getBoolean(key));
-                        }
-                    }
-                    for(Module m : Core.modules){
-                        if(!moduleStates.containsKey(m))continue;
-                        if(m.isActive()){
-                            if(!moduleStates.get(m))m.deactivate();
-                        }else{
-                            if(moduleStates.get(m))m.activate();
-                        }
-                    }
-                }catch(Exception ex){}
-                Core.tutorialShown = settings.get("tutorialShown", false);
-                Core.invertUndoRedo = settings.get("invertUndoRedo", false);
-                Core.autoBuildCasing = settings.get("autoBuildCasing", true);
-                ConfigList lst = settings.getConfigList("pins", new ConfigList());
-                for(int i = 0; i<lst.size(); i++){
-                    Core.pinnedStrs.add(lst.getString(i));
+            try{
+                System.out.println("Started Initialization Thread");
+                Core.resetMetadata();
+                System.out.println("Reset Metadata");
+                t2.finish();
+                for(String s : readerNames){
+                    FileReader.formats.add(readers.get(s).get());
+                    readerTasks.get(s).finish();
                 }
-            }
-            System.out.println("Loaded Settings");
-            ts.finish();
-            Core.refreshModules();
-            System.out.println("Refreshed Modules");
-            tmr.finish();
-            for(Configuration configuration : Configuration.configurations){
-                if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
-                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-                        if(b.heater&&!b.getDisplayName().contains("Standard")){
-                            try{
-                                b.setInternalTexture(TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", "")));
-                            }catch(Exception ex){
-                                Core.warning("Failed to load internal texture for MSR Block: "+b.name, ex);
+                System.out.println("Loaded File Formats");
+                attemptInit(Configuration::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
+                tc1.finish();
+                Core.modules.add(new UnderhaulModule());
+                tm1.finish();
+                Core.modules.add(new OverhaulModule());
+                tm2.finish();
+                Core.modules.add(new FusionTestModule());
+                tm3.finish();
+                Core.modules.add(new RainbowFactorModule());
+                tm4.finish();
+                Core.modules.add(new PrimeFuelModule());
+                tm5.finish();
+                System.out.println("Added Modules");
+                File f = new File("settings.dat").getAbsoluteFile();
+                if(f.exists()){
+                    Config settings = Config.newConfig(f);
+                    settings.load();
+                    System.out.println("Loading theme");
+                    Object o = settings.get("theme");
+                    if(o instanceof String){
+                        Core.setTheme(Theme.getByName((String)o));
+                    }else Core.setTheme(Theme.getByLegacyID((int)o));
+                    try{
+                        Config modules = settings.get("modules", Config.newConfig());
+                        HashMap<Module, Boolean> moduleStates = new HashMap<>();
+                        for(String key : modules.properties()){
+                            for(Module m : Core.modules){
+                                if(m.name.equals(key))moduleStates.put(m, modules.getBoolean(key));
+                            }
+                        }
+                        for(Module m : Core.modules){
+                            if(!moduleStates.containsKey(m))continue;
+                            if(m.isActive()){
+                                if(!moduleStates.get(m))m.deactivate();
+                            }else{
+                                if(moduleStates.get(m))m.activate();
+                            }
+                        }
+                    }catch(Exception ex){}
+                    Core.tutorialShown = settings.get("tutorialShown", false);
+                    Core.invertUndoRedo = settings.get("invertUndoRedo", false);
+                    Core.autoBuildCasing = settings.get("autoBuildCasing", true);
+                    ConfigList lst = settings.getConfigList("pins", new ConfigList());
+                    for(int i = 0; i<lst.size(); i++){
+                        Core.pinnedStrs.add(lst.getString(i));
+                    }
+                }
+                System.out.println("Loaded Settings");
+                ts.finish();
+                Core.refreshModules();
+                System.out.println("Refreshed Modules");
+                tmr.finish();
+                for(Configuration configuration : Configuration.configurations){
+                    if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
+                        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
+                            if(b.heater&&!b.getDisplayName().contains("Standard")){
+                                try{
+                                    b.setInternalTexture(TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", "")));
+                                }catch(Exception ex){
+                                    Core.warning("Failed to load internal texture for MSR Block: "+b.name, ex);
+                                }
                             }
                         }
                     }
                 }
+                System.out.println("Set MSR Textures");
+                tct.finish();
+                Configuration.configurations.get(0).impose(Core.configuration);
+                System.out.println("Imposed Configuration");
+                tci.finish();
+            }catch(Throwable t){
+                Core.criticalError("Initialization Failed!", t);
             }
-            System.out.println("Set MSR Textures");
-            tct.finish();
-            Configuration.configurations.get(0).impose(Core.configuration);
-            System.out.println("Imposed Configuration");
-            tci.finish();
+            Menu dialog = null;
+            Menu baseDialog = null;
+            if(gui.menu instanceof MenuDialog){
+                dialog = baseDialog = gui.menu;
+                while(baseDialog.parent instanceof MenuDialog)baseDialog = baseDialog.parent;
+            }
             if(Main.isBot)gui.open(new MenuDiscord(gui));
             else{
                 if(!Core.tutorialShown&&!Main.headless){
@@ -206,6 +216,10 @@ public class MenuInit extends Menu{
                     Core.tutorialShown = true;
                 }
                 gui.open(new MenuMain(gui));
+            }
+            if(baseDialog!=null){
+                baseDialog.parent = gui.menu;
+                gui.menu = dialog;
             }
             System.out.println("Checking for updates...");
             Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Generator");
@@ -220,5 +234,14 @@ public class MenuInit extends Menu{
         progressBar.width = gui.getWidth();
         progressBar.height = gui.getHeight();
         super.render2d(deltaTime);
+    }
+    private void attemptInit(Runnable initFunc, String success, String errorMessage, boolean critical){
+        try{
+            initFunc.run();
+            System.out.println(success);
+        }catch(Throwable t){
+            if(critical)Core.criticalError(errorMessage, t);
+            else Core.error(errorMessage, t);
+        }
     }
 }
