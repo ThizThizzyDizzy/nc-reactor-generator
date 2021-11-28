@@ -5,7 +5,6 @@ import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
-import net.ncplanner.plannerator.planner.Core;
 public class TomPainting extends HutThing{
     public TomPainting(UUID uuid, Hut hut){
         super(uuid, hut, "tomdodd4598 Painting", "tompainting", 4598);
@@ -16,7 +15,7 @@ public class TomPainting extends HutThing{
     }
     @Override
     public void render(Renderer renderer, float imgScale){
-        renderer.bindTexture(Core.getTexture(TextureManager.getImageRaw(getTexture())));
+        renderer.bindTexture(TextureManager.getImageRaw(getTexture()));
         switch(wall){
             case LEFT:
                 quad(renderer,

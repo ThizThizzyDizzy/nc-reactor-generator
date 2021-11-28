@@ -6,7 +6,6 @@ import net.ncplanner.plannerator.discord.play.smivilization.HutThingExclusive;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
-import net.ncplanner.plannerator.planner.Core;
 public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
     int frameType = 2;
     public GlowshroomGlowshroomGlowshroomPoster(UUID uuid, Hut hut){
@@ -19,7 +18,7 @@ public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
     @Override
     public void render(Renderer renderer, float imgScale){
         renderer.setWhite();
-        renderer.bindTexture(Core.getTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/background")));
+        renderer.bindTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/background"));
         switch(wall){
             case LEFT:
                 quad(renderer, 
@@ -45,7 +44,7 @@ public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
             default:
                 throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");
         }
-        renderer.bindTexture(Core.getTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/frame "+frameType)));
+        renderer.bindTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/frame "+frameType));
         switch(wall){
             case LEFT:
                 quad(renderer,

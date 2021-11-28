@@ -31,6 +31,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
@@ -74,6 +75,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderFuel;
 import net.ncplanner.plannerator.planner.module.Module;
+import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private final ArrayList<EditorTool> editorTools = new ArrayList<>();
@@ -182,6 +184,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public int CELL_SIZE = (int) (16*scale);
     private int LAYER_GAP = CELL_SIZE/2;
     private long lastChange = 0;
+    public float maxYRot = 80f;
+    public float xRot = 30;
+    public float yRot = 30;
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         if(Core.recoveryMode){
@@ -337,6 +342,34 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public void onClosed(){
         if(multiblock.calculationPaused)multiblock.recalculate();
         super.onClosed();
+    }
+    @Override
+    public void render3d(double deltaTime){
+        super.render3d(deltaTime);
+        if(toggle3D.isToggledOn){
+            Multiblock mb = getMultiblock();
+            if(mb!=null){
+                if(glfwGetKey(Core.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
+                if(glfwGetKey(Core.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
+                if(glfwGetKey(Core.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
+                if(glfwGetKey(Core.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
+                Renderer renderer = new Renderer();
+                renderer.projection(new Matrix4f().setOrtho(0, gui.getWidth(), 0, gui.getHeight(), 1f, 10000f));
+                BoundingBox bbox = mb.getBoundingBox();
+                float size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
+                size/=mb.get3DPreviewScale();
+                renderer.model(new Matrix4f().setTranslation(toggle3D.x+toggle3D.width/2, gui.getHeight()-(toggle3D.y-toggle3D.width/2), -1000)
+                        .scale(.625f, .625f, .625f)
+                        .scale(toggle3D.width, toggle3D.width, toggle3D.width)
+                        .rotate((float)MathUtil.toRadians(yRot), 1, 0, 0)
+                        .rotate((float)MathUtil.toRadians(xRot), 0, 1, 0)
+                        .scale(1/size, 1/size, 1/size)
+                        .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
+                draw3D();
+                renderer.resetModelMatrix();
+                renderer.projection(new Matrix4f().setPerspective(45, gui.getWidth()/gui.getHeight(), 0.1f, 100));
+            }
+        }
     }
     @Override
     public synchronized void render2d(double deltaTime){

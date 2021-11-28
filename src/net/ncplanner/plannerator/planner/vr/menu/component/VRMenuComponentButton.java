@@ -53,7 +53,7 @@ public class VRMenuComponentButton extends VRMenuComponent{
             }
         }
         renderer.setColor(col);
-        renderer.bindTexture(0);
+        renderer.unbindTexture();
         renderer.drawCube(0, 0, 0, width, height, depth, null);
         renderer.setColor(textColor.get());
         drawText();

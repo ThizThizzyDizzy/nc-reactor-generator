@@ -70,9 +70,6 @@ public class Core{
     public static GUI gui;
     public static ArrayList<Long> FPStracker = new ArrayList<>();
     public static boolean debugMode = false;
-    public static final float maxYRot = 80f;
-    public static float xRot = 30;
-    public static float yRot = 30;
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
@@ -325,86 +322,33 @@ public class Core{
         }
     }
     public static void render3d(Renderer renderer, double deltaTime){
-        if(glfwGetKey(window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
-        if(glfwGetKey(window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
-        if(glfwGetKey(window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
-        if(glfwGetKey(window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
         renderer.setWhite();
-//        if(gui.menu instanceof MenuMain){
-//            GL11.glPushMatrix();
-//            GL11.glTranslated(.4, 0, -1.5);
-//            GL11.glRotated(yRot, 1, 0, 0);
-//            GL11.glRotated(xRot, 0, 1, 0);
-//            Multiblock mb = ((MenuMain)gui.menu).getSelectedMultiblock();
-//            if(mb!=null){
-//                BoundingBox bbox = mb.getBoundingBox();
-//                double size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
-//                size/=mb.get3DPreviewScale();
-//                GL11.glScaled(1/size, 1/size, 1/size);
-//                GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
-//                mb.draw3D();
-//            }
-//            GL11.glPopMatrix();
-//        }
-//        if(gui.menu instanceof MenuEdit){
-//            MenuEdit editor = (MenuEdit)gui.menu;
-//            if(editor.toggle3D.isToggledOn){
-//                GL11.glMatrixMode(GL11.GL_PROJECTION);
-//                GL11.glPushMatrix();
-//                GL11.glLoadIdentity();
-//                GL11.glOrtho(0, gui.getWidth()*gui.helper.guiScale, 0, gui.getHeight()*gui.helper.guiScale, 1f, 10000F);
-//                GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//                GL11.glPushMatrix();
-//                GL11.glTranslated(editor.toggle3D.x+editor.toggle3D.width/2, gui.getHeight()-(editor.toggle3D.y-editor.toggle3D.width/2), -1000);
-////                GL11.glTranslated((double)gui.getWidth()/gui.getHeight()-.25, 0, -1);
-//                GL11.glScaled(.625, .625, .625);
-//                GL11.glScaled(editor.toggle3D.width, editor.toggle3D.width, editor.toggle3D.width);
-//                GL11.glRotated(yRot, 1, 0, 0);
-//                GL11.glRotated(xRot, 0, 1, 0);
-//                Multiblock mb = editor.getMultiblock();
-//                if(mb!=null){
-//                    BoundingBox bbox = mb.getBoundingBox();
-//                    double size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
-//                    size/=mb.get3DPreviewScale();
-//                    GL11.glScaled(1/size, 1/size, 1/size);
-//                    GL11.glTranslated(-bbox.getWidth()/2d, -bbox.getHeight()/2d, -bbox.getDepth()/2d);
-//                    editor.draw3D();
-//                }
-//                GL11.glPopMatrix();
-//                GL11.glMatrixMode(GL11.GL_PROJECTION);
-//                GL11.glPopMatrix();
-//                GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//            }
-//        }
-//        if(gui.menu instanceof MenuCredits){
-//            ((MenuCredits)gui.menu).render3D(millisSinceLastTick);
-//        }
         gui.render3d(deltaTime);
     }
     public static void render2d(Renderer renderer, double deltaTime){
         renderer.setWhite();
-//        if(delCircle&&sourceCircle!=null){
-//            Core.deleteTexture(sourceCircle);
-//            Core.deleteTexture(outlineSquare);
-//            sourceCircle = outlineSquare = null;
-//            delCircle = false;
-//        }
-//        if(sourceCircle==null){
-//            sourceCircle = Core.makeImage(circleSize, circleSize, (buff) -> {
-//                renderer.setColor(Color.WHITE);
-//                renderer.drawCircle(buff.width/2, buff.height/2, buff.width*(4/16d), buff.width*(6/16d));
-//            });
-//        }
-//        if(outlineSquare==null){
-//            outlineSquare = Core.makeImage(32, 32, (buff) -> {
-//                renderer.setColor(Color.WHITE);
-//                double inset = buff.width/32d;
-//                renderer.fillRect(inset, inset, buff.width-inset, inset+buff.width/16);
-//                renderer.fillRect(inset, buff.width-inset-buff.width/16, buff.width-inset, buff.width-inset);
-//                renderer.fillRect(inset, inset+buff.width/16, inset+buff.width/16, buff.width-inset-buff.width/16);
-//                renderer.fillRect(buff.width-inset-buff.width/16, inset+buff.width/16, buff.width-inset, buff.width-inset-buff.width/16);
-//            });
-//        }
+        if(delCircle&&sourceCircle!=null){
+            Core.deleteTexture(sourceCircle);
+            Core.deleteTexture(outlineSquare);
+            sourceCircle = outlineSquare = null;
+            delCircle = false;
+        }
+        if(sourceCircle==null){
+            sourceCircle = Core.makeImage(circleSize, circleSize, (bufferRenderer, bufferWidth, bufferHeight) -> {
+                bufferRenderer.setColor(Color.WHITE);
+                bufferRenderer.drawCircle(bufferWidth/2, bufferHeight/2, bufferWidth*(4/16f), bufferWidth*(6/16f));
+            });
+        }
+        if(outlineSquare==null){
+            outlineSquare = Core.makeImage(32, 32, (bufferRenderer, bufferWidth, bufferHeight) -> {
+                bufferRenderer.setColor(Color.WHITE);
+                float inset = bufferWidth/32f;
+                bufferRenderer.fillRect(inset, inset, bufferWidth-inset, inset+bufferWidth/16);
+                bufferRenderer.fillRect(inset, bufferWidth-inset-bufferWidth/16, bufferWidth-inset, bufferWidth-inset);
+                bufferRenderer.fillRect(inset, inset+bufferWidth/16, inset+bufferWidth/16, bufferWidth-inset-bufferWidth/16);
+                bufferRenderer.fillRect(bufferWidth-inset-bufferWidth/16, inset+bufferWidth/16, bufferWidth-inset, bufferWidth-inset-bufferWidth/16);
+            });
+        }
         gui.render2d(deltaTime);
     }
     public static long getFPS(){

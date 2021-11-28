@@ -179,7 +179,7 @@ public class Renderer{
             bottom = b;
             top = t;
         }
-        bindTexture(0);
+        unbindTexture();
         drawScreenRect(left, top, right, bottom, 1, 0, 0, 1, 1);
     }
     public void drawScreenRect(float x1, float y1, float x2, float y2, float z, float s0, float t0, float s1, float t1){
@@ -559,7 +559,7 @@ public class Renderer{
     }
     public void drawCircle(float x, float y, float innerRadius, float outerRadius){
         int resolution = (int)(2*MathUtil.pi()*outerRadius);
-        bindTexture(0);
+        unbindTexture();
         float angle = 0;
         for(int i = 0; i<resolution; i++){
             float x1 = (float)(x+MathUtil.cos(MathUtil.toRadians(angle-90))*innerRadius);
@@ -579,7 +579,7 @@ public class Renderer{
         if(quality<3){
             throw new IllegalArgumentException("A polygon must have at least 3 sides!");
         }
-        bindTexture(0);
+        unbindTexture();
         for(int i = 0; i<quality; i++){
             float x2 = (float)(x+MathUtil.cos(MathUtil.toRadians(angle-90))*radius);
             float y2 = (float)(y+MathUtil.sin(MathUtil.toRadians(angle-90))*radius);
@@ -606,7 +606,7 @@ public class Renderer{
         while(right<0)right+=quality;
         while(left>quality)left-=quality;
         while(right>quality)right-=quality;
-        bindTexture(0);
+        unbindTexture();
         float angle = 0;
         ArrayList<float[]> points = new ArrayList<>();
         for(int i = 0; i<quality; i++){
@@ -943,7 +943,7 @@ public class Renderer{
         }
     }
     public void fillPolygon(float[] xPoints, float[] yPoints){
-        bindTexture(0);
+        unbindTexture();
         int points = xPoints.length;
         if(points>4){
             float x0 = xPoints[0];
@@ -990,7 +990,10 @@ public class Renderer{
     public void bindTexture(Image tex){
         bindTexture(Core.getTexture(tex));
     }
-    public static void bindTexture(int tex){
+    public void unbindTexture(){
+        bindTexture(0);
+    }
+    private static void bindTexture(int tex){
         glBindTexture(GL_TEXTURE_2D, tex);
         if(tex==0)shader.setUniform4f("noTex", 1f, 1f, 1f, 0f);
         else shader.setUniform4f("noTex", 0f, 0f, 0f, 0f);

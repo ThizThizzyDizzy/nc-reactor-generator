@@ -178,7 +178,7 @@ public abstract class Block implements Pinnable{
         float innerRadius = width/4;
         float outerRadius = width/8*3;
         int resolution = (int)(Math.max(12,2*Math.PI*outerRadius*100));
-        renderer.bindTexture(0);
+        renderer.unbindTexture();
         float angle = 0;
         float thickness = width/32;
         for(int i = 0; i<resolution; i++){

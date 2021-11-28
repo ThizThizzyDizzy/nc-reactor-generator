@@ -35,7 +35,7 @@ public class MenuComponentTurbineRotorGraph extends Component{
                         min = (float)Math.min(min,d);
                     }
                     renderer.translate(x, y);
-                    renderer.bindTexture(0);
+                    renderer.unbindTexture();
                     renderer.setColor(0, 0, 0, 1);
                     renderer.fillRect(0, 0, width, height);
                     float tint = .75f;

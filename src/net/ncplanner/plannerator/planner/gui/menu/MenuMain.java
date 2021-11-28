@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
@@ -11,6 +11,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
@@ -28,6 +29,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblock;
 import net.ncplanner.plannerator.planner.vr.VRCore;
+import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuMain extends Menu{
     private SingleColumnList multiblocks = add(new SingleColumnList(0, 0, 0, 0, 50));
@@ -156,6 +158,9 @@ public class MenuMain extends Menu{
     private Queue<PendingWrite> pendingWrites = new Queue<>();
     public OverhaulTurbine settingInputs = null;
     private boolean refreshNeeded = true;
+    private float maxYRot = 80f;
+    private float xRot = 30;
+    private float yRot = 30;
     public MenuMain(GUI gui){
         super(gui, null);
         if(Core.vr)add(vr);
@@ -291,6 +296,28 @@ public class MenuMain extends Menu{
         renderer.fillRect(0, gui.getHeight()/16, gui.getWidth()/3, gui.getHeight()/8);
         renderer.setColor(Core.theme.getComponentTextColor(0));
         renderer.drawCenteredText(0, gui.getHeight()/16, gui.getWidth()/3-gui.getHeight()/16, gui.getHeight()/8, "Multiblocks");
+    }
+    @Override
+    public void render3d(double deltaTime){
+        super.render3d(deltaTime);
+        if(glfwGetKey(Core.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
+        if(glfwGetKey(Core.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
+        if(glfwGetKey(Core.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
+        if(glfwGetKey(Core.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
+        Renderer renderer = new Renderer();
+        Multiblock mb = ((MenuMain)gui.menu).getSelectedMultiblock();
+        if(mb!=null){
+            BoundingBox bbox = mb.getBoundingBox();
+            float size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
+            size/=mb.get3DPreviewScale();
+            renderer.setModel(new Matrix4f().setTranslation(.4f, 0, -1.5f)
+                    .rotate((float)MathUtil.toRadians(yRot), 1, 0, 0)
+                    .rotate((float)MathUtil.toRadians(xRot), 0, 1, 0)
+                    .scale(1/size, 1/size, 1/size)
+                    .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
+            mb.draw3D();
+            renderer.resetModelMatrix();
+        }
     }
     @Override
     public void render2d(double deltaTime){

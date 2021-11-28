@@ -64,7 +64,7 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         yRot = MathUtil.getValueBetweenTwoValues(0, yRot, 1, tRy, snappingFactor);
         if(isDeviceOver.isEmpty())renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
         else renderer.setColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
-        renderer.bindTexture(0);
+        renderer.unbindTexture();
         BoundingBox bbox = multiblock.getBoundingBox();
         float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
         renderer.setModel(new Matrix4f()

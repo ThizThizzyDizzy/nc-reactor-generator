@@ -58,7 +58,7 @@ public class VRCore{
             public void render3d(double deltaTime){
                 super.render3d(deltaTime);
                 Renderer renderer = new Renderer();
-                renderer.bindTexture(0);
+                renderer.unbindTexture();
                 renderer.setWhite();
                 if(leftEyeBuffer==-1){
                     leftEyeBuffer = createFramebuffer(vrWidth, vrHeight);
