@@ -270,14 +270,14 @@ public class MenuComponentEditorGrid extends Component{
         }
     }
     @Override
-    public void onCursorMoved(double xpos, double ypos){
-        super.onCursorMoved(xpos, ypos);
+    public void onCursorMoved(double x, double y){
+        super.onCursorMoved(x, y);
         synchronized(synchronizer){
             mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
         }
-        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS)mouseDragged(xpos, ypos, 0);
-        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS)mouseDragged(xpos, ypos, 1);
-        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_MIDDLE)==GLFW_PRESS)mouseDragged(xpos, ypos, 2);
+        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS)mouseDragged(x, y, 0);
+        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS)mouseDragged(x, y, 1);
+        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_MIDDLE)==GLFW_PRESS)mouseDragged(x, y, 2);
         if(Double.isNaN(x)||Double.isNaN(y)){
             return;
         }
