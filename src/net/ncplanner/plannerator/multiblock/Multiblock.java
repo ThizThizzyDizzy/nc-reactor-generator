@@ -280,33 +280,81 @@ public abstract class Multiblock<T extends Block>{
         float z2 = z+bounds[5];
         //xy +z
         if(!inOrder&&(!contains(x,y,z+1)||block.shouldRenderFace(getBlock(x, y, z+1)))){
-            renderer.drawQuad(new Vector3f(x1, y1, z2), new Vector3f(x2, y1, z2), new Vector3f(x2, y2, z2), new Vector3f(x1, y2, z2),
-                    new Vector2f(0, 1), new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector3f(0, 0, 1));
+            renderer.drawQuad(
+                    new Vector3f(x1, y1, z2),
+                    new Vector3f(x2, y1, z2),
+                    new Vector3f(x2, y2, z2),
+                    new Vector3f(x1, y2, z2),
+                    new Vector2f(0, 1),
+                    new Vector2f(1, 1),
+                    new Vector2f(1, 0),
+                    new Vector2f(0, 0),
+                    new Vector3f(0, 0, 1));
         }
         //xy -z
         if(!invertedInOrder&&(!contains(x,y,z-1)||block.shouldRenderFace(getBlock(x,y,z-1)))){
-            renderer.drawQuad(new Vector3f(x1, y1, z1), new Vector3f(x1, y2, z1), new Vector3f(x2, y2, z1), new Vector3f(x2, y1, z1),
-                    new Vector2f(0, 1), new Vector2f(0, 0), new Vector2f(1, 0), new Vector2f(1, 1), new Vector3f(0, 0, -1));
+            renderer.drawQuad(
+                    new Vector3f(x1, y1, z1),
+                    new Vector3f(x1, y2, z1),
+                    new Vector3f(x2, y2, z1),
+                    new Vector3f(x2, y1, z1),
+                    new Vector2f(0, 1),
+                    new Vector2f(0, 0),
+                    new Vector2f(1, 0),
+                    new Vector2f(1, 1),
+                    new Vector3f(0, 0, -1));
         }
         //xz +y
         if(!inOrder&&(!contains(x,y+1,z)||block.shouldRenderFace(getBlock(x, y+1, z)))){
-            renderer.drawQuad(new Vector3f(x1, y2, z1), new Vector3f(x1, y2, z2), new Vector3f(x2, y2, z2), new Vector3f(x2, y2, z1),
-                    new Vector2f(0, 0), new Vector2f(0, 1), new Vector2f(1, 1), new Vector2f(1, 0), new Vector3f(0, 1, 0));
+            renderer.drawQuad(
+                    new Vector3f(x1, y2, z1),
+                    new Vector3f(x1, y2, z2),
+                    new Vector3f(x2, y2, z2),
+                    new Vector3f(x2, y2, z1),
+                    new Vector2f(0, 0),
+                    new Vector2f(0, 1),
+                    new Vector2f(1, 1),
+                    new Vector2f(1, 0),
+                    new Vector3f(0, 1, 0));
         }
         //xz -y
         if(!invertedInOrder&&(!contains(x,y-1,z)||block.shouldRenderFace(getBlock(x, y-1, z)))){
-            renderer.drawQuad(new Vector3f(x1, y1, z1), new Vector3f(x2, y1, z1), new Vector3f(x2, y1, z2), new Vector3f(x1, y1, z2),
-                    new Vector2f(0, 1), new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector3f(0, -1, 0));
+            renderer.drawQuad(
+                    new Vector3f(x1, y1, z1),
+                    new Vector3f(x2, y1, z1),
+                    new Vector3f(x2, y1, z2),
+                    new Vector3f(x1, y1, z2),
+                    new Vector2f(0, 1),
+                    new Vector2f(1, 1),
+                    new Vector2f(1, 0),
+                    new Vector2f(0, 0),
+                    new Vector3f(0, -1, 0));
         }
         //yz +x
         if(!inOrder&&(!contains(x+1,y,z)||block.shouldRenderFace(getBlock(x+1, y, z)))){
-            renderer.drawQuad(new Vector3f(x2, y1, z1), new Vector3f(x2, y2, z1), new Vector3f(x2, y2, z2), new Vector3f(x2, y1, z2),
-                    new Vector2f(0, 1), new Vector2f(0, 0), new Vector2f(1, 0), new Vector2f(1, 1), new Vector3f(1, 0, 0));
+            renderer.drawQuad(
+                    new Vector3f(x2, y1, z1),
+                    new Vector3f(x2, y2, z1),
+                    new Vector3f(x2, y2, z2),
+                    new Vector3f(x2, y1, z2),
+                    new Vector2f(0, 1),
+                    new Vector2f(0, 0),
+                    new Vector2f(1, 0),
+                    new Vector2f(1, 1),
+                    new Vector3f(1, 0, 0));
         }
         //yz -x
         if(!invertedInOrder&&(!contains(x-1,y,z)||block.shouldRenderFace(getBlock(x-1, y, z)))){
-            renderer.drawQuad(new Vector3f(x1, y1, z1), new Vector3f(x1, y1, z2), new Vector3f(x1, y2, z2), new Vector3f(x1, y2, z1),
-                    new Vector2f(0, 1), new Vector2f(1, 1), new Vector2f(1, 0), new Vector2f(0, 0), new Vector3f(-1, 0, 0));
+            renderer.drawQuad(
+                    new Vector3f(x1, y1, z1),
+                    new Vector3f(x1, y1, z2),
+                    new Vector3f(x1, y2, z2),
+                    new Vector3f(x1, y2, z1),
+                    new Vector2f(0, 1),
+                    new Vector2f(1, 1),
+                    new Vector2f(1, 0),
+                    new Vector2f(0, 0),
+                    new Vector3f(-1, 0, 0));
         }
     }
     public final void save(NCPFFile ncpf, Configuration configuration, OutputStream stream) throws MissingConfigurationEntryException{

@@ -64,7 +64,7 @@ public class VRCore{
                     leftEyeBuffer = createFramebuffer(vrWidth, vrHeight);
                 }
                 if(rightEyeBuffer==-1){
-                    leftEyeBuffer = createFramebuffer(vrWidth, vrHeight);
+                    rightEyeBuffer = createFramebuffer(vrWidth, vrHeight);
                 }
                 Color background = Core.theme.getMenuBackgroundColor();
                 TrackedDevicePose.Buffer tdpb = TrackedDevicePose.create(k_unMaxTrackedDeviceCount);
