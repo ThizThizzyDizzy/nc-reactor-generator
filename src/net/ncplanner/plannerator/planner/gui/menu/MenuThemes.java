@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ThemeButton;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import net.ncplanner.plannerator.planner.theme.ThemeCategory;
 public class MenuThemes extends Menu{
-    public Button done = add(new Button(0, 0, 0, 64, "Done", true, true));
+    public Button done = add(new Button(0, 0, 0, 64, "Done", true));
     public ArrayList<SingleColumnList> themesLists = new ArrayList<>();
     public MenuThemes(GUI gui, Menu parent){
         super(gui, parent);

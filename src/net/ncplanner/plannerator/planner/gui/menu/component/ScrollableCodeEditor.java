@@ -22,7 +22,7 @@ public class ScrollableCodeEditor extends Scrollable{
     public void render2d(double deltaTime){
         Renderer renderer = new Renderer();
         ArrayList<FormattedText> lines = editor.textDisplay.splitLines();
-        int xOff = (lines.size()+"").length()*editor.textWidth;
+        float xOff = (lines.size()+"").length()*editor.textWidth;
         renderer.setColor(Core.theme.getCodeLineMarkerColor());
         renderer.fillRect(x, y, x+xOff+editor.border*3/2, y+height);
         super.render2d(deltaTime);

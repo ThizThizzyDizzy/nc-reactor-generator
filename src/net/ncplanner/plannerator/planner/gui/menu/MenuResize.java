@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 public class MenuResize extends Menu{
     private final CuboidalMultiblock<Block> multiblock;
     private final Scrollable multibwauk = add(new Scrollable(0, 0, 0, 0, 32, 32));
-    private final Button done = add(new Button(0, 0, 0, 0, "Done", true, true).setTooltip("Finish resizing and return to the editor screen"));
+    private final Button done = add(new Button(0, 0, 0, 0, "Done", true).setTooltip("Finish resizing and return to the editor screen"));
     private int CELL_SIZE = 48;
     public MenuResize(GUI gui, Menu parent, CuboidalMultiblock multiblock){
         super(gui, parent);
@@ -28,8 +28,8 @@ public class MenuResize extends Menu{
         multibwauk.components.clear();
         for(int y = 0; y<multiblock.getInternalHeight(); y++){
             final int layer = y;
-            Button insertLayer = multibwauk.add(new Button(0, CELL_SIZE/2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*(multiblock.getInternalWidth()+4), CELL_SIZE, "+", multiblock.getInternalHeight()<multiblock.getMaxY(), true)).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Insert a blank layer");
-            Button del = multibwauk.add(new Button(0, CELL_SIZE*2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*2, CELL_SIZE*2, "-", multiblock.getInternalHeight()>multiblock.getMinY(), true){
+            Button insertLayer = multibwauk.add(new Button(0, CELL_SIZE/2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*(multiblock.getInternalWidth()+4), CELL_SIZE, "+", multiblock.getInternalHeight()<multiblock.getMaxY())).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Insert a blank layer");
+            Button del = multibwauk.add(new Button(0, CELL_SIZE*2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*2, CELL_SIZE*2, "-", multiblock.getInternalHeight()>multiblock.getMinY()){
                 @Override
                 public void draw(double deltaTime){
                     super.draw(deltaTime);
@@ -38,7 +38,7 @@ public class MenuResize extends Menu{
                     }
                 }
             }).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete this layer");
-            Button top = multibwauk.add(new Button(CELL_SIZE*2, CELL_SIZE*2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*multiblock.getInternalWidth(), CELL_SIZE, "+", multiblock.getInternalDepth()<multiblock.getMaxZ(), true){
+            Button top = multibwauk.add(new Button(CELL_SIZE*2, CELL_SIZE*2+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE*multiblock.getInternalWidth(), CELL_SIZE, "+", multiblock.getInternalDepth()<multiblock.getMaxZ()){
                 @Override
                 public void draw(double deltaTime){
                     super.draw(deltaTime);
@@ -49,7 +49,7 @@ public class MenuResize extends Menu{
                     }
                 }
             }).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Add a blank row");//add top
-            Button bottom = multibwauk.add(new Button(CELL_SIZE*2, (y+1)*(multiblock.getInternalDepth()+5)*CELL_SIZE-CELL_SIZE, CELL_SIZE*multiblock.getInternalWidth(), CELL_SIZE, "+", multiblock.getInternalDepth()<multiblock.getMaxZ(), true){
+            Button bottom = multibwauk.add(new Button(CELL_SIZE*2, (y+1)*(multiblock.getInternalDepth()+5)*CELL_SIZE-CELL_SIZE, CELL_SIZE*multiblock.getInternalWidth(), CELL_SIZE, "+", multiblock.getInternalDepth()<multiblock.getMaxZ()){
                 @Override
                 public void draw(double deltaTime){
                     super.draw(deltaTime);
@@ -60,7 +60,7 @@ public class MenuResize extends Menu{
                     }
                 }
             }).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Add a blank row");//add bottom
-            Button left = multibwauk.add(new Button(0, CELL_SIZE*3+y*(multiblock.getInternalDepth()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getInternalDepth(), "+", multiblock.getInternalWidth()<multiblock.getMaxX(), true){
+            Button left = multibwauk.add(new Button(0, CELL_SIZE*3+y*(multiblock.getInternalDepth()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getInternalDepth(), "+", multiblock.getInternalWidth()<multiblock.getMaxX()){
                 @Override
                 public void draw(double deltaTime){
                     super.draw(deltaTime);
@@ -71,7 +71,7 @@ public class MenuResize extends Menu{
                     }
                 }
             }).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Add a blank column");//add left
-            Button right = multibwauk.add(new Button(multiblock.getInternalWidth()*CELL_SIZE+CELL_SIZE*2, CELL_SIZE*3+y*(multiblock.getInternalDepth()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getInternalDepth(), "+", multiblock.getInternalWidth()<multiblock.getMaxX(), true){
+            Button right = multibwauk.add(new Button(multiblock.getInternalWidth()*CELL_SIZE+CELL_SIZE*2, CELL_SIZE*3+y*(multiblock.getInternalDepth()+5)*CELL_SIZE+CELL_SIZE, CELL_SIZE, CELL_SIZE*multiblock.getInternalDepth(), "+", multiblock.getInternalWidth()<multiblock.getMaxX()){
                 @Override
                 public void draw(double deltaTime){
                     super.draw(deltaTime);
@@ -103,7 +103,7 @@ public class MenuResize extends Menu{
             });
             for(int z = 0; z<multiblock.getInternalDepth(); z++){
                 final int row = z;
-                Button delRow = multibwauk.add(new Button(CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getInternalDepth()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, "-", multiblock.getInternalDepth()>multiblock.getMinZ(), true){
+                Button delRow = multibwauk.add(new Button(CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getInternalDepth()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, "-", multiblock.getInternalDepth()>multiblock.getMinZ()){
                     @Override
                     public void draw(double deltaTime){
                         super.draw(deltaTime);
@@ -120,7 +120,7 @@ public class MenuResize extends Menu{
                 for(int x = 0; x<multiblock.getInternalWidth(); x++){
                     final int column = x;
                     if(z==0){
-                        Button delColumn = multibwauk.add(new Button((x+2)*CELL_SIZE, CELL_SIZE*3+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE, CELL_SIZE, "-", multiblock.getInternalWidth()>multiblock.getMinX(), true){
+                        Button delColumn = multibwauk.add(new Button((x+2)*CELL_SIZE, CELL_SIZE*3+y*(multiblock.getInternalDepth()+5)*CELL_SIZE, CELL_SIZE, CELL_SIZE, "-", multiblock.getInternalWidth()>multiblock.getMinX()){
                             @Override
                             public void draw(double deltaTime){
                                 super.draw(deltaTime);
@@ -139,7 +139,7 @@ public class MenuResize extends Menu{
                 }
             }
         }
-        Button layerTop = multibwauk.add(new Button(0, CELL_SIZE+CELL_SIZE*(multiblock.getInternalHeight()*(multiblock.getInternalDepth()+5)), CELL_SIZE*(multiblock.getInternalWidth()+4), CELL_SIZE, "+", multiblock.getInternalHeight()<multiblock.getMaxY(), true)).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Insert a blank layer");
+        Button layerTop = multibwauk.add(new Button(0, CELL_SIZE+CELL_SIZE*(multiblock.getInternalHeight()*(multiblock.getInternalDepth()+5)), CELL_SIZE*(multiblock.getInternalWidth()+4), CELL_SIZE, "+", multiblock.getInternalHeight()<multiblock.getMaxY())).setTextColor(Core.theme::getAddButtonTextColor).setTooltip("Insert a blank layer");
         layerTop.addAction(() -> {
             expand(0,1,0);
         });

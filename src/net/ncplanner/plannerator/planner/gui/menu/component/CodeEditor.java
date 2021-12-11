@@ -50,8 +50,8 @@ public class CodeEditor extends Component{
     public int cursorX, cursorY;
     public FormattedText textDisplay = new FormattedText();
     public final int textHeight;
-    public final int textWidth;
-    public final int border;
+    public final float textWidth;
+    public final float border;
     public boolean pendingDisplayUpdate = true;
     private Thread displayUpdateThread = null;
     private double cursorTimer;
@@ -63,7 +63,7 @@ public class CodeEditor extends Component{
     public CodeEditor(String text, int textHeight){
         super(0, 0, 0, 0);
         this.textHeight = textHeight;
-        this.textWidth = textHeight/2;
+        textWidth = Core.theme.getCodeFont().getStringWidth("i", textHeight);
         this.border = textWidth;
         for(String s : text.split("\n", -1))this.text.add(s);
         if(this.text.isEmpty())this.text.add("");//Not sure if splitting an empty string results in an empty string
@@ -158,7 +158,7 @@ public class CodeEditor extends Component{
         Renderer renderer = new Renderer();
         renderer.setFont(Core.theme.getCodeFont());
         ArrayList<FormattedText> lines = textDisplay.splitLines();
-        int xOff = (lines.size()+"").length()*textWidth;
+        float xOff = (lines.size()+"").length()*textWidth;
         for(int i = 0; i<lines.size(); i++){
             FormattedText line = lines.get(i);
             renderer.drawFormattedText(x+xOff+border*2, y+border+i*textHeight, x+width-border, y+border+(i+1)*textHeight, line, -1);
@@ -177,7 +177,7 @@ public class CodeEditor extends Component{
     @Override
     public void onMouseButton(double x, double y, int button, int action, int mods){
         ArrayList<FormattedText> lines = textDisplay.splitLines();
-        int xOff = (lines.size()+"").length()*textWidth;
+        float xOff = (lines.size()+"").length()*textWidth;
         x-=xOff;
         y-=border;
         x-=border*2;

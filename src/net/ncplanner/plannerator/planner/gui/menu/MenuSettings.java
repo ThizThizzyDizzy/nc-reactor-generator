@@ -24,9 +24,9 @@ public class MenuSettings extends SettingsMenu{
     private final Label quickLoadLabel = add(new Label(0, 0, 0, 48, "Internal Configurations", true));
     private final SingleColumnList quickLoadList = add(new SingleColumnList(0, 0, 0, 0, 32));
     private final Label currentConfigLabel = add(new Label(0, 0, 0, 48, "Current Configuration", true));
-    private final Button load = add(new Button(0, 0, 0, 48, "Load", true, true).setTooltip("Load configuration from a file, replacing the current configuration\nAny existing multiblocks will be converted to the new configuration\nYou can load the following files:\nnuclearcraft.cfg in the game files\nany .ncpf configuration file"));
-    private final Button save = add(new Button(0, 0, 0, 48, "Save", true, true).setTooltip("Save the configuration to a .ncpf file"));
-    private final Button modify = add(new Button(0, 0, 0, 48, "Modify", true, true).setTooltip("Modify the current configuration"));
+    private final Button load = add(new Button(0, 0, 0, 48, "Load", true).setTooltip("Load configuration from a file, replacing the current configuration\nAny existing multiblocks will be converted to the new configuration\nYou can load the following files:\nnuclearcraft.cfg in the game files\nany .ncpf configuration file"));
+    private final Button save = add(new Button(0, 0, 0, 48, "Save", true).setTooltip("Save the configuration to a .ncpf file"));
+    private final Button modify = add(new Button(0, 0, 0, 48, "Modify", true).setTooltip("Modify the current configuration"));
     private final Button theme;
     private final Button modules;
     private final ToggleBox invertUndoRedo;
@@ -36,18 +36,18 @@ public class MenuSettings extends SettingsMenu{
         addToSidebar(new Label(0, 0, 0, 48, "Settings", true));
         addToSidebar(invertUndoRedo = new ToggleBox(0, 0, 0, 48, "Invert Undo/Redo", false));
         addToSidebar(autoBuildCasing = new ToggleBox(0, 0, 0, 48, "Auto-build Casings", false));
-        addToSidebar(modules = new Button(0, 0, 0, 48, "Modules", true, true));
+        addToSidebar(modules = new Button(0, 0, 0, 48, "Modules", true));
         modules.addAction(() -> {
             gui.open(new MenuModules(gui, this));
         });
         Button tutorials;
-        addToSidebar(tutorials = new Button(0, 0, 0, 48, "Tutorials", true, true));
+        addToSidebar(tutorials = new Button(0, 0, 0, 48, "Tutorials", true));
         tutorials.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuTutorial(gui, this), MenuTransition.SplitTransitionX.slideIn(300f/gui.getWidth()), 4));
         });
-        theme = addToSidebar(new Button(0, 0, 0, 48, "Change Theme", true, true));
+        theme = addToSidebar(new Button(0, 0, 0, 48, "Change Theme", true));
         for(Configuration config : Configuration.configurations){
-            Button b = new Button(0, 0, 0, 48, "Load "+config.toString(), true, true).setTooltip("Replace the current configuration with "+config.toString()+"\nAll multiblocks will be converted to the new configuration");
+            Button b = new Button(0, 0, 0, 48, "Load "+config.toString(), true).setTooltip("Replace the current configuration with "+config.toString()+"\nAll multiblocks will be converted to the new configuration");
             b.addAction(() -> {
                 config.impose(Core.configuration);
                 for(Multiblock multi : Core.multiblocks){

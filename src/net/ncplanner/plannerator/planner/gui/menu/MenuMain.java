@@ -33,12 +33,12 @@ import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuMain extends Menu{
     private SingleColumnList multiblocks = add(new SingleColumnList(0, 0, 0, 0, 50));
-    private Button addMultiblock = add(new Button(0, 0, 0, 0, "+", true, true).setTooltip("Add a new multiblock"));
-    private Button importFile = add(new Button(0, 0, 0, 0, "Import", false, true).setTooltip("Import all multiblocks from a saved file"));
+    private Button addMultiblock = add(new Button(0, 0, 0, 0, "+", true).setTooltip("Add a new multiblock"));
+    private Button importFile = add(new Button(0, 0, 0, 0, "Import", false).setTooltip("Import all multiblocks from a saved file"));
     private Button exportMain;
     private DropdownList exportMultiblock = add(new DropdownList(0, 0, 0, 0){
         {
-            add(exportMain = new Button(0, 0, 0, 0, "Export", false, true).setTooltip("Export the selected multiblock to a file"));
+            add(exportMain = new Button(0, 0, 0, 0, "Export", false).setTooltip("Export the selected multiblock to a file"));
         }
         @Override
         public void onMouseButton(double x, double y, int button, int action, int mods){
@@ -61,10 +61,10 @@ public class MenuMain extends Menu{
             renderer.drawGear(x+width/2, y+height/2, width*.1f, 8, width*.3f, width*.1f, 360/16f);
         }
     }.setTooltip("Settings"));
-    private Button delete = add(new Button(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true, true).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
+    private Button delete = add(new Button(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
     private Button credits = add(new Button(0, 0, 192, 48, "Credits", true, true));
-    private Button convertOverhaulMSFR = add(new Button(0, 0, 0, 0, "Convert SFR <> MSR", true, true).setTextColor(Core.theme::getConvertButtonTextColor));
-    private Button setInputs = add(new Button(0, 0, 0, 0, "Set Inputs", true, true).setTextColor(Core.theme::getInputsButtonTextColor).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
+    private Button convertOverhaulMSFR = add(new Button(0, 0, 0, 0, "Convert SFR <> MSR", true).setTextColor(Core.theme::getConvertButtonTextColor));
+    private Button setInputs = add(new Button(0, 0, 0, 0, "Set Inputs", true).setTextColor(Core.theme::getInputsButtonTextColor).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
     private boolean forceMetaUpdate = true;
     private Component metadataPanel = add(new Component(0, 0, 0, 0){
         MulticolumnList list = add(new MulticolumnList(0, 0, 0, 0, 0, 50, 50));

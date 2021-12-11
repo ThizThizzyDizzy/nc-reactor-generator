@@ -130,7 +130,7 @@ public class MenuComponentEditorGrid extends Component{
                 }
                 if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(bx, by, bz)==OverhaulFusionReactor.LocationCategory.PLASMA){
                     renderer.setWhite();
-                    renderer.drawImage(TextureManager.getImage("overhaul/fusion/plasma.png"), X, Y, X+blockSize, Y+blockSize);
+                    renderer.drawImage(TextureManager.getImage("overhaul/fusion/plasma"), X, Y, X+blockSize, Y+blockSize);
                 }
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){

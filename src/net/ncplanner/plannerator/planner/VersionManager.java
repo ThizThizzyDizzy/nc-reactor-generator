@@ -112,6 +112,7 @@ public class VersionManager{
         addVersion("3.4");
         addVersion("3.5");
         addVersion("3.5.1");
+        addVersion("4.0");
         currentVersion = versions.get(versions.size()-1);
     }
     /**

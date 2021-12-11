@@ -348,7 +348,15 @@ public class Renderer{
         bindTexture(font.texture);
         for(int i = 0; i<text.length(); i++){
             char c = text.charAt(i);
+            if(c=='\n'){
+                if(i==text.length()-1)continue;//last character of string, ignore
+                throw new IllegalArgumentException("Cannot draw newline character!");
+            }
             FontCharacter character = font.getCharacter(c);
+            if(character==null){
+                System.err.println("Unknown font character: "+c);
+                character = font.getCharacter('?');
+            }
             model(createModelMatrix(x, y+height, height, height));
             character.draw();
             x+=character.dx/font.height*height;

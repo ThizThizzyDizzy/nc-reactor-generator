@@ -102,8 +102,8 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public final Multiblock multiblock;
     public static final int partSize = 48;
     public static final int partsWide = 7;
-    private final Button back = add(new Button(0, 0, 0, 0, "Back", true, true).setTooltip("Stop editing this multiblock and return to the main menu"));
-    private final Button undo = add(new Button(0, 0, 0, 0, "Undo", false, true){
+    private final Button back = add(new Button(0, 0, 0, 0, "Back", true).setTooltip("Stop editing this multiblock and return to the main menu"));
+    private final Button undo = add(new Button(0, 0, 0, 0, "Undo", false){
         @Override
         public void drawText(Renderer renderer, double deltaTime){
             float tallness = height*3/2;
@@ -111,7 +111,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             renderer.drawRegularPolygon(x+width/4, y+height*.5625f, width/4, 3, -5);
         }
     }.setTooltip("Undo (Ctrl+"+(Core.invertUndoRedo?"Y":"Z")+")"));
-    private final Button redo = add(new Button(0, 0, 0, 0, "Redo", false, true){
+    private final Button redo = add(new Button(0, 0, 0, 0, "Redo", false){
         @Override
         public void drawText(Renderer renderer, double deltaTime){
             float tallness = height*3/2;

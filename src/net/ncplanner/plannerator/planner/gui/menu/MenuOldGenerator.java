@@ -20,8 +20,8 @@ import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuCompon
 import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuComponentToggleBlock;
 public class MenuOldGenerator extends Menu{
     private final Multiblock<Block> multiblock;
-    private final Button settings = add(new Button(0, 0, 0, 64, "Settings", false, true).setTooltip("Modify generator settings\nThis does not stop the generator\nSettings are not applied until you click Generate"));
-    private final Button output = add(new Button(0, 0, 0, 64, "Generate", true, true).setTooltip("Starts generating reactors or applies new settings"));
+    private final Button settings = add(new Button(0, 0, 0, 64, "Settings", false).setTooltip("Modify generator settings\nThis does not stop the generator\nSettings are not applied until you click Generate"));
+    private final Button output = add(new Button(0, 0, 0, 64, "Generate", true).setTooltip("Starts generating reactors or applies new settings"));
     private final MulticolumnList blocks = add(new MulticolumnList(0, 0, 0, 0, 64, 64, 32));
     private final SingleColumnList generators = add(new SingleColumnList(0, 0, 0, 0, 32));
     private final SingleColumnList generatorSettings = add(new SingleColumnList(0, 0, 0, 0, 32));
@@ -29,10 +29,10 @@ public class MenuOldGenerator extends Menu{
     private final Label blocksHeader = add(new Label(0, 0, 0, 0, "Blocks", true));
     private final Label generatorsHeader = add(new Label(0, 0, 0, 0, "Generators", true));
     private final Label settingsHeader = add(new Label(0, 0, 0, 0, "Settings", true));
-    private final Button done = add(new Button(0, 0, 0, 0, "Done", true, true).setTooltip("Stop generating reactors and return to the editor screen"));
+    private final Button done = add(new Button(0, 0, 0, 0, "Done", true).setTooltip("Stop generating reactors and return to the editor screen"));
     private final Label threadsLabel = add(new Label(0, 0, 0, 64, "No Threads", true));
-    private final Button addThread = add(new Button(0, 0, 0, 64, "Add Thread", true, true).setTooltip("Add another thread to the generator\nMore threads generally means faster generation, but may slow down your computer\nHaving excessive amounts of threads can also slow down generation"));
-    private final Button removeThread = add(new Button(0, 0, 0, 64, "Remove Thread", true, true).setTooltip("Remove a thread from the generator\nMore threads generally means faster generation, but may slow down your computer\nHaving excessive amounts of threads can also slow down generation"));
+    private final Button addThread = add(new Button(0, 0, 0, 64, "Add Thread", true).setTooltip("Add another thread to the generator\nMore threads generally means faster generation, but may slow down your computer\nHaving excessive amounts of threads can also slow down generation"));
+    private final Button removeThread = add(new Button(0, 0, 0, 64, "Remove Thread", true).setTooltip("Remove a thread from the generator\nMore threads generally means faster generation, but may slow down your computer\nHaving excessive amounts of threads can also slow down generation"));
     private final SingleColumnList multiblockLists = add(new SingleColumnList(0, 0, 0, 0, 64));
     private Tab tab = Tab.SETTINGS;
     private final ArrayList<MultiblockGenerator> multiblockGenerators;

@@ -5,7 +5,7 @@ import net.ncplanner.plannerator.planner.theme.Theme;
 public class ThemeButton extends Button{
     private final Theme theme;
     public ThemeButton(Theme theme){
-        super(0, 0, 0, 48, theme.name, true, true);
+        super(0, 0, 0, 48, theme.name, true);
         this.theme = theme;
         addAction(() -> {
             Core.setTheme(theme);
