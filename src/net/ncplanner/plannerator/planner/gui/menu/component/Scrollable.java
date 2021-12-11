@@ -131,6 +131,7 @@ public class Scrollable extends Component{
             ypos+=scrollY;
             if(!elsewhere&&isMouseFocused)super.onCursorMoved(xpos, ypos);
         }
+        if(elsewhere&&isMouseFocused)onCursorExited();
     }
     @Override
     public boolean onScroll(double dx, double dy){
