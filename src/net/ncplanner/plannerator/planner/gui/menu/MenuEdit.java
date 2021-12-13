@@ -510,16 +510,53 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     }
     public void setSelectedBlock(Block block){//and recipe too
         if(block==null)return;
-        partsSearch.text = "";
-        blockRecipe.searchBox.text = "";
-        underFuelOrCoolantRecipe.searchBox.text = "";
-        fusionRecipe.searchBox.text = "";
-        refreshPartsList();
+        boolean hasPart = false;
+        for(Component c : parts.components){
+            MenuComponentEditorListBlock comp = (MenuComponentEditorListBlock)c;
+            if(comp.block.isEqual(block)){
+                hasPart = true;
+                break;
+            }
+        }
+        if(!hasPart){
+            partsSearch.text = "";
+            refreshPartsList();
+        }
         for(int i = 0; i<parts.components.size(); i++){
             MenuComponentEditorListBlock comp = (MenuComponentEditorListBlock)parts.components.get(i);
             if(comp.block.isEqual(block))parts.setSelectedIndex(i);
         }
-        refreshBlockRecipes();
+        boolean hasRecipe = false;
+        for(int i = 0; i<blockRecipe.allComponents.size(); i++){
+            Component comp = blockRecipe.allComponents.get(i);
+            if(comp instanceof MenuComponentOverhaulSFRBlockRecipe){
+                MenuComponentOverhaulSFRBlockRecipe bcomp = (MenuComponentOverhaulSFRBlockRecipe)comp;
+                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block).recipe){
+                    hasRecipe = true;
+                    break;
+                }
+            }
+            if(comp instanceof MenuComponentOverhaulMSRBlockRecipe){
+                MenuComponentOverhaulMSRBlockRecipe bcomp = (MenuComponentOverhaulMSRBlockRecipe)comp;
+                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block).recipe){
+                    hasRecipe = true;
+                    break;
+                }
+            }
+            if(comp instanceof MenuComponentOverhaulFusionBlockRecipe){
+                MenuComponentOverhaulFusionBlockRecipe bcomp = (MenuComponentOverhaulFusionBlockRecipe)comp;
+                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block).recipe){
+                    hasRecipe = true;
+                    break;
+                }
+            }
+        }
+        if(!hasRecipe){
+            blockRecipe.searchBox.text = "";
+            underFuelOrCoolantRecipe.searchBox.text = "";
+            fusionRecipe.searchBox.text = "";
+            refreshBlockRecipes();
+        }
         for(int i = 0; i<blockRecipe.allComponents.size(); i++){
             Component comp = blockRecipe.allComponents.get(i);
             if(comp instanceof MenuComponentOverhaulSFRBlockRecipe){
