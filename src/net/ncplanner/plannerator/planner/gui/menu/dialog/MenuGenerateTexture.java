@@ -97,7 +97,7 @@ public class MenuGenerateTexture extends MenuDialog{
             }
         });
         addButton("Confirm", () -> {
-            Image image = TextureManager.getImage(texture);
+            Image image = TextureManager.getImage(texture).copy();
             for(int x = 0; x<image.getWidth(); x++){
                 for(int y = 0; y<image.getHeight(); y++){
                     int rgb = image.getRGB(x, y);
