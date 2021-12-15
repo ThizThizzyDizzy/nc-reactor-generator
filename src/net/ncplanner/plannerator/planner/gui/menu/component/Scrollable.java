@@ -203,18 +203,22 @@ public class Scrollable extends Component{
     }
     public void drawUpwardScrollbarButton(Renderer renderer, float x, float y, float width, float height){
         drawButton(renderer, x, y, width, height);
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         renderer.fillTri(x+width/2, y+height/4, x+width/4, y+3*height/4, x+3*width/4, y+3*height/4);
     }
     public void drawDownwardScrollbarButton(Renderer renderer, float x, float y, float width, float height){
         drawButton(renderer, x, y, width, height);
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         renderer.fillTri(x+width/4, y+height/4, x+3*width/4, y+height/4, x+width/2, y+3*height/4);
     }
     public void drawRightwardScrollbarButton(Renderer renderer, float x, float y, float width, float height){
         drawButton(renderer, x, y, width, height);
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         renderer.fillTri(x+width/4, y+height/4, x+width/4, y+3*height/4, x+3*width/4, y+height/2);
     }
     public void drawLeftwardScrollbarButton(Renderer renderer, float x, float y, float width, float height){
         drawButton(renderer, x, y, width, height);
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         renderer.fillTri(x+width/4, y+height/2, x+3*width/4, y+height/4, x+3*width/4, y+3*height/4);
     }
     public void drawVerticalScrollbarBackground(Renderer renderer, float x, float y, float width, float height){
