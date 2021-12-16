@@ -157,7 +157,7 @@ public class HellrageWriter extends FormatWriter{
                                 if(name.endsWith(" Nitride"))name = "[NI]"+StringUtil.superReplace(name, " Nitride", "");
                                 if(name.endsWith("-Zirconium Alloy"))name = "[ZA]"+StringUtil.superReplace(name, "-Zirconium Alloy", "");
                                 name+=";"+(block.isPrimed()?"True":"False")+";";
-                                if(block.isPrimed())name+=(block.recipe.fuelCellSelfPriming?"Self":block.source.template.getDisplayName());
+                                if(block.isPrimed())name+=(block.recipe.fuelCellSelfPriming?"Self":StringUtil.superRemove(block.source.template.getDisplayName(), " Neutron Source"));
                                 else name+="None";
                                 if(cells.containsKey(name)){
                                     cells.get(name).add(block);
