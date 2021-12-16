@@ -21,6 +21,7 @@ public class MenuComponentTurbineRotorGraph extends Component{
         if(turbine.rotorValid){
             renderer.setWhite();
             {
+                renderer.bound(x, y, x+width, y+height);
                 float width = turbine.getInternalDepth()*blockSize;
                 float height = blockSize*4;
                 if(turbine.rotorValid){
@@ -35,6 +36,7 @@ public class MenuComponentTurbineRotorGraph extends Component{
                         min = (float)Math.min(min,d);
                     }
                     renderer.translate(x, y);
+                    renderer.bound(0, 0, width, height);
                     renderer.unbindTexture();
                     renderer.setColor(0, 0, 0, 1);
                     renderer.fillRect(0, 0, width, height);
@@ -50,30 +52,32 @@ public class MenuComponentTurbineRotorGraph extends Component{
                             if(!Double.isFinite(lowerBound))lowerBound = min;
                             if(!Double.isFinite(prevUpperBound))prevUpperBound = max;
                             if(!Double.isFinite(upperBound))upperBound = max;
-                            renderer.fillQuad((i-1)*width/(turbine.idealExpansion.length-1), this.height-this.height*((prevUpperBound-min)/(max-min)),
-                                    (i)*width/(turbine.idealExpansion.length-1), this.height-this.height*((upperBound-min)/(max-min)),
-                                    (i)*width/(turbine.idealExpansion.length-1), this.height-this.height*((lowerBound-min)/(max-min)),
-                                    (i-1)*width/(turbine.idealExpansion.length-1), this.height-this.height*((prevLowerBound-min)/(max-min)));
+                            renderer.fillQuad((i-1)*width/(turbine.idealExpansion.length-1), height-height*((prevUpperBound-min)/(max-min)),
+                                    (i-1)*width/(turbine.idealExpansion.length-1), height-height*((prevLowerBound-min)/(max-min)),
+                                    (i)*width/(turbine.idealExpansion.length-1), height-height*((upperBound-min)/(max-min)),
+                                    (i)*width/(turbine.idealExpansion.length-1), height-height*((lowerBound-min)/(max-min)));
                         }
                     }
                     renderer.setColor(0, 0, 1, 1);
                     int thickness = 3;
                     for(int i = 1; i<turbine.idealExpansion.length; i++){
-                        renderer.fillQuad((i-1)*width/(turbine.idealExpansion.length-1), this.height-this.height*(((float)turbine.idealExpansion[i-1]-min)/(max-min)),
-                                (i)*width/(turbine.idealExpansion.length-1), this.height-this.height*(((float)turbine.idealExpansion[i]-min)/(max-min)),
-                                (i)*width/(turbine.idealExpansion.length-1), this.height+thickness-this.height*(((float)turbine.idealExpansion[i]-min)/(max-min)),
-                                (i-1)*width/(turbine.idealExpansion.length-1), this.height+thickness-this.height*(((float)turbine.idealExpansion[i-1]-min)/(max-min)));
+                        renderer.fillQuad((i-1)*width/(turbine.idealExpansion.length-1), height-height*(((float)turbine.idealExpansion[i-1]-min)/(max-min)),
+                                (i-1)*width/(turbine.idealExpansion.length-1), height+thickness-height*(((float)turbine.idealExpansion[i-1]-min)/(max-min)),
+                                (i)*width/(turbine.idealExpansion.length-1), height-height*(((float)turbine.idealExpansion[i]-min)/(max-min)),
+                                (i)*width/(turbine.idealExpansion.length-1), height+thickness-height*(((float)turbine.idealExpansion[i]-min)/(max-min)));
                     }
                     renderer.setColor(1, 1, 1, 1);
                     for(int i = 1; i<turbine.actualExpansion.length; i++){
-                        renderer.fillQuad((i-1)*width/(turbine.idealExpansion.length-1), this.height-this.height*(((float)turbine.actualExpansion[i-1]-min)/(max-min)),
-                                (i)*width/(turbine.idealExpansion.length-1), this.height-this.height*(((float)turbine.actualExpansion[i]-min)/(max-min)),
-                                (i)*width/(turbine.idealExpansion.length-1), this.height+thickness-this.height*(((float)turbine.actualExpansion[i]-min)/(max-min)),
-                                (i-1)*width/(turbine.idealExpansion.length-1), this.height+thickness-this.height*(((float)turbine.actualExpansion[i-1]-min)/(max-min)));
+                        renderer.fillQuad((i-1)*width/(turbine.idealExpansion.length-1), height-height*(((float)turbine.actualExpansion[i-1]-min)/(max-min)),
+                                (i-1)*width/(turbine.idealExpansion.length-1), height+thickness-height*(((float)turbine.actualExpansion[i-1]-min)/(max-min)),
+                                (i)*width/(turbine.idealExpansion.length-1), height-height*(((float)turbine.actualExpansion[i]-min)/(max-min)),
+                                (i)*width/(turbine.idealExpansion.length-1), height+thickness-height*(((float)turbine.actualExpansion[i]-min)/(max-min)));
                     }
+                    renderer.unBound();
                     renderer.unTranslate();
                     renderer.setWhite();
                 }
+                renderer.unBound();
             }
             float wideScale = 1;
             float len = renderer.getStringWidth("Actual Expansion", blockSize/2);
