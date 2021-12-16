@@ -702,78 +702,78 @@ public class Renderer{
         if(pz){
             drawQuad(
                     new Vector3f(x1, y1, z2),
+                    new Vector3f(x1, y2, z2),
                     new Vector3f(x2, y1, z2),
                     new Vector3f(x2, y2, z2),
-                    new Vector3f(x1, y2, z2),
                     new Vector2f(0, 1),
+                    new Vector2f(0, 0),
                     new Vector2f(1, 1),
                     new Vector2f(1, 0),
-                    new Vector2f(0, 0),
                     new Vector3f(0, 0, 1));
         }
         //xy -z
         if(nz){
             drawQuad(
                     new Vector3f(x1, y1, z1),
+                    new Vector3f(x2, y1, z1),
                     new Vector3f(x1, y2, z1),
                     new Vector3f(x2, y2, z1),
-                    new Vector3f(x2, y1, z1),
                     new Vector2f(0, 1),
+                    new Vector2f(1, 1),
                     new Vector2f(0, 0),
                     new Vector2f(1, 0),
-                    new Vector2f(1, 1),
                     new Vector3f(0, 0, -1));
         }
         //xz +y
         if(py){
             drawQuad(
                     new Vector3f(x1, y2, z1),
+                    new Vector3f(x2, y2, z1),
                     new Vector3f(x1, y2, z2),
                     new Vector3f(x2, y2, z2),
-                    new Vector3f(x2, y2, z1),
                     new Vector2f(0, 0),
+                    new Vector2f(1, 0),
                     new Vector2f(0, 1),
                     new Vector2f(1, 1),
-                    new Vector2f(1, 0),
                     new Vector3f(0, 1, 0));
         }
         //xz -y
         if(ny){
             drawQuad(
                     new Vector3f(x1, y1, z1),
+                    new Vector3f(x1, y1, z2),
                     new Vector3f(x2, y1, z1),
                     new Vector3f(x2, y1, z2),
-                    new Vector3f(x1, y1, z2),
                     new Vector2f(0, 1),
+                    new Vector2f(0, 0),
                     new Vector2f(1, 1),
                     new Vector2f(1, 0),
-                    new Vector2f(0, 0),
                     new Vector3f(0, -1, 0));
         }
         //yz +x
         if(px){
             drawQuad(
                     new Vector3f(x2, y1, z1),
+                    new Vector3f(x2, y1, z2),
                     new Vector3f(x2, y2, z1),
                     new Vector3f(x2, y2, z2),
-                    new Vector3f(x2, y1, z2),
                     new Vector2f(0, 1),
+                    new Vector2f(1, 1),
                     new Vector2f(0, 0),
                     new Vector2f(1, 0),
-                    new Vector2f(1, 1),
                     new Vector3f(1, 0, 0));
         }
         //yz -x
         if(nx){
             drawQuad(
                     new Vector3f(x1, y1, z1),
+                    new Vector3f(x1, y2, z1),
                     new Vector3f(x1, y1, z2),
                     new Vector3f(x1, y2, z2),
-                    new Vector3f(x1, y2, z1),
                     new Vector2f(0, 1),
+                    new Vector2f(0, 0),
                     new Vector2f(1, 1),
                     new Vector2f(1, 0),
-                    new Vector2f(0, 0),
                     new Vector3f(-1, 0, 0));
         }
     }
