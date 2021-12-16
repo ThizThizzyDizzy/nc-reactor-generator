@@ -366,7 +366,7 @@ public class MenuComponentEditorGrid extends Component{
                 editor.getSelectedTool(0).mousePressed(this, editorSpace, bx, by, bz, button);
             }
         }else{
-            editor.getSelectedTool(0).mouseReleased(this, editorSpace, bx, by, bz, button);
+            if(isMouseFocused)editor.getSelectedTool(0).mouseReleased(this, editorSpace, bx, by, bz, button);
         }
     }
     public void mouseDragged(double x, double y, int button){

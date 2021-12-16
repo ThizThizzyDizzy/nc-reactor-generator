@@ -107,7 +107,6 @@ public class Component{
         if(mouseFocusedComponent!=null){
             if(action==GLFW_RELEASE&&focusedComponent!=null){
                 focusedComponent.onMouseButton(x-focusedComponent.x, y-focusedComponent.y, button, action, mods);
-                return;
             }//still get release event when mouse not over
             if(action==GLFW_PRESS){
                 if(focusedComponent!=mouseFocusedComponent){
