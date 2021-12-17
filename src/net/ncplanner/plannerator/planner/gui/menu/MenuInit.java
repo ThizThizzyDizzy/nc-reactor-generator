@@ -222,7 +222,7 @@ public class MenuInit extends Menu{
                 gui.menu = dialog;
             }
             System.out.println("Checking for updates...");
-            Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Generator");
+            Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Plannerator");
             if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
                 gui.menu = new MenuUpdate(gui, gui.menu, updater);
             }

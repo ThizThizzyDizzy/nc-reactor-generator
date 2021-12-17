@@ -37,7 +37,7 @@ public class MenuCredits extends Menu{
     private static float backgroundElementScale = .375f;
     public MenuCredits(GUI gui){
         super(gui, null);
-        text("NuclearCraft Reactor Generator", 1.5);
+        text("NuclearCraft Reactor Plannerator", 1.5);
         text();
         text("Made by ThizThizzyDizzy");
         divider();

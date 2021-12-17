@@ -138,7 +138,7 @@ public class Core{
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
         if(Main.headless)glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         System.out.println("Creating window");
-        window = glfwCreateWindow(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1), Main.applicationName+" "+VersionManager.currentVersion, 0, 0);
+        window = glfwCreateWindow(1200/(Main.isBot?10:1), 700/(Main.isBot?10:1), "Nuclearcraft Reactor Plannerator "+VersionManager.currentVersion, 0, 0);
         if(window==0){
             glfwTerminate();
             throw new RuntimeException("Failed to create GLFW window!");
@@ -575,7 +575,7 @@ public class Core{
         glfwSetWindowTitle(window, title);
     }
     public static void resetWindowTitle(){
-        glfwSetWindowTitle(window, Main.applicationName+" "+VersionManager.currentVersion);
+        glfwSetWindowTitle(window, "Nuclearcraft Reactor Plannerator "+VersionManager.currentVersion);
     }
     public static interface BufferRenderer{
         void render(Renderer renderer, int width, int height);

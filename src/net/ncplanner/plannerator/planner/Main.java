@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 public class Main{
-    public static final String applicationName = "Nuclearcraft Reactor Generator";
     public static final String issueTrackerLink = "https://github.com/ThizThizzyDizzy/nc-reactor-generator/issues";
     private static final ArrayList<String[]> requiredLibraries = new ArrayList<>();
     //Download details
@@ -77,11 +76,11 @@ public class Main{
         }catch(Exception ex){
             boolean saved = false;
             try{
-//                Core.autosave();
+                Core.autosave();
                 saved = true;
             }catch(Exception e){}
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+")", ex);
-//            generateCrashReport("Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+") ", ex);
+            generateCrashReport("Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+") ", ex);
             System.exit(0);
         }
     }
