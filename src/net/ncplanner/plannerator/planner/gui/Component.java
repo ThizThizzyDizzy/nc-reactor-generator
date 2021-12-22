@@ -119,7 +119,7 @@ public class Component{
                     focusedComponent.onFocusGained();
                 }
             }
-            mouseFocusedComponent.onMouseButton(x-mouseFocusedComponent.x, y-mouseFocusedComponent.y, button, action, mods);
+            if(mouseFocusedComponent!=null)mouseFocusedComponent.onMouseButton(x-mouseFocusedComponent.x, y-mouseFocusedComponent.y, button, action, mods);
         }
     }
     public void onFocusGained(){}
