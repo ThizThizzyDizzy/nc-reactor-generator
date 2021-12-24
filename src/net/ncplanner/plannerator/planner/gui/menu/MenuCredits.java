@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import net.ncplanner.plannerator.graphics.Font;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
@@ -12,6 +13,7 @@ import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
+import net.ncplanner.plannerator.planner.theme.Theme;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuCredits extends Menu{
@@ -296,11 +298,17 @@ public class MenuCredits extends Menu{
         text();
         text("by Cn-285");
         divider();
+        text("Different theme font", 1.25);
+        gap(2);
+        text(Theme.DIFFERENT.getDefaultFont(), "Comic Mono", 1.125, "https://dtinth.github.io/comic-mono-font/");
+        text();
+        text(Theme.DIFFERENT.getDefaultFont(), "by dtinth", 1, "https://dtinth.github.io/comic-mono-font/");
+        divider();
         text("Libraries", 1.25);
         gap(2);
         text("LWJGL", 1.125);
-        text();
-        text("SimpleLibraryPlus", 1.125);
+        gap(2);
+        text("NCPF (Config2) format, GUI, and some more internal functionality based on SimpleLibraryPlus");
         text("(a fork of Simplelibrary by computerneek)");
         divider();
         text("Early Concept Art", 1.25);
@@ -362,7 +370,7 @@ public class MenuCredits extends Menu{
         divider();
         text("Thank you to tomdodd4598 for creating such an amazing mod", 1.25, "https://www.curseforge.com/minecraft/mc-mods/nuclearcraft-overhauled");
         divider();
-        text("Thank you to eveyone in the eVault for helping make this planner into what it is", 1.25);
+        text("Thank you to everyone in the eVault for helping make this planner into what it is", 1.25);
         divider();
         text();
         possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/glowshroom"), false));
@@ -414,6 +422,23 @@ public class MenuCredits extends Menu{
     }
     private void text(String text, double size, String link){
         add(new Label(0, 0, 0, (float)(size*defaultSize), text){
+            @Override
+            public void onMouseButton(double x, double y, int button, int action, int mods){
+                Renderer renderer = new Renderer();
+                double textWidth = renderer.getStringWidth(text, height);
+                if(x>width/2-textWidth/2&&x<width/2+textWidth/2&&button==0&&action==GLFW_PRESS)Core.openURL(link);
+                super.onMouseButton(x, y, button, action, mods);
+            }
+        }.noBackground());
+    }
+    private void text(Font font, String text, double size, String link){
+        add(new Label(0, 0, 0, (float)(size*defaultSize), text){
+            @Override
+            public void drawText(Renderer renderer){
+                renderer.setFont(font);
+                super.drawText(renderer);
+                renderer.setFont(Core.theme.getDefaultFont());
+            }
             @Override
             public void onMouseButton(double x, double y, int button, int action, int mods){
                 Renderer renderer = new Renderer();

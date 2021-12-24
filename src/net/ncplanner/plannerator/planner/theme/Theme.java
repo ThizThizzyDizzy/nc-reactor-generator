@@ -9,11 +9,12 @@ public abstract class Theme{
     public static ArrayList<ThemeCategory> themes = new ArrayList<>();
     public static final SolidColorTheme STANDARD, GOLD, CRACKER, CHOCOLATE, MARSHMALLOW;
     public static final Theme QUESTIONQUESTIONQUESTION;
+    public static final FontStandardTheme DIFFERENT;
     static{
         Random rand = new Random();
         newCategory("General");
         addTheme(STANDARD = new StandardTheme("Light", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f));
-        addTheme(new FontStandardTheme("Different", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f, "ComicMono"));
+        addTheme(DIFFERENT = new FontStandardTheme("Different", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f, "ComicMono"));
         addTheme(new StandardTheme("Light, but darker", new Color(50, 50, 50), new Color(.5f, .5f, .5f, 1f), .3125f, .75f));
         newCategory("Materials");
         addTheme(new SolidColorTheme("Water", new Color(64, 78, 203)));
