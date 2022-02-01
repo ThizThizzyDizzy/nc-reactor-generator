@@ -140,7 +140,7 @@ public class MenuPlacementRuleTree<Container extends RuleContainer<BlockType, Te
         }
     }
     @Override
-    public void render2d(double deltaTime){
+    public synchronized void render2d(double deltaTime){
         lbl.text = Math.round(getFullTreeLength())+(running?"...":"");
         super.render2d(deltaTime);
         list.width = gui.getWidth()-sidebar.width;
@@ -191,7 +191,7 @@ public class MenuPlacementRuleTree<Container extends RuleContainer<BlockType, Te
         arrange();
     }
     @Override
-    public void onMouseButton(double x, double y, int button, int action, int mods){
+    public synchronized void onMouseButton(double x, double y, int button, int action, int mods){
         super.onMouseButton(x, y, button, action, mods);
         if(button==GLFW_MOUSE_BUTTON_RIGHT&&action==GLFW_PRESS)highlighted = null;
     }
@@ -329,7 +329,7 @@ public class MenuPlacementRuleTree<Container extends RuleContainer<BlockType, Te
         return Math.sqrt(Math.pow(c1x-c2x, 2)+Math.pow(c1y-c2y, 2));
     }
     @Override
-    public void onCursorMoved(double xpos, double ypos){
+    public synchronized void onCursorMoved(double xpos, double ypos){
         super.onCursorMoved(xpos, ypos);
     }
 }
