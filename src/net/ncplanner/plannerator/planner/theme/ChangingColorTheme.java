@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.theme;
 import java.util.function.Supplier;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class ChangingColorTheme extends ColorTheme{
     protected ColorTheme current;
     private final Supplier<ColorTheme> theme;
@@ -176,6 +176,14 @@ public class ChangingColorTheme extends ColorTheme{
     @Override
     public Color getTooltipTextColor(){
         return current.getTooltipTextColor();
+    }
+    @Override
+    public Color getTooltipBackgroundColor(){
+        return current.getTooltipBackgroundColor();
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        return current.getTooltipBorderColor();
     }
     @Override
     public Color getEditorToolTextColor(int index){
@@ -538,11 +546,11 @@ public class ChangingColorTheme extends ColorTheme{
         return current.getVRMultitoolTextColor();
     }
     @Override
-    public void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
+    public void drawThemeButtonBackground(float x, float y, float width, float height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
         current.drawThemeButtonBackground(x, y, width, height, darker, enabled, pressed, mouseOver);
     }
     @Override
-    public void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text){
+    public void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text){
         current.drawThemeButtonText(x, y, width, height, textHeight, text);
     }
     @Override

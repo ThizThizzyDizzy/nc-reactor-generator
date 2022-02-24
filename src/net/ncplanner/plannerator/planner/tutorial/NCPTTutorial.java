@@ -1,15 +1,16 @@
 package net.ncplanner.plannerator.planner.tutorial;
 import java.util.ArrayList;
 import java.util.Random;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.editor.action.SetSelectionAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.menu.MenuEdit;
-import net.ncplanner.plannerator.planner.menu.component.editor.MenuComponentEditorGrid;
-import org.lwjgl.opengl.GL11;
-import simplelibrary.image.Image;
-import simplelibrary.opengl.ImageStash;
+import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
+import org.joml.Matrix4f;
+import static org.lwjgl.glfw.GLFW.*;
 public class NCPTTutorial extends Tutorial{
     private static final float scale = .025f;
     private final ArrayList<Component> components = new ArrayList<>();
@@ -22,16 +23,15 @@ public class NCPTTutorial extends Tutorial{
         super(name);
     }
     @Override
-    public double getHeight(){
+    public float getHeight(){
         innerMargin = outerMargin = 0;
         columns = 1;
         column = 0;
         offsets = new float[columns];
-        Renderer renderer = new Renderer();
         for(Component c : components)c.draw(null, 0, 0);
         float offset = 0;
         for(float f : offsets){
-            offset = Math.max(offset,f);
+            offset = MathUtil.max(offset,f);
         }
         return offset;
     }
@@ -111,7 +111,7 @@ public class NCPTTutorial extends Tutorial{
             public void draw(Renderer renderer, float resonatingBrightness, float frame){
                 float offset = 0;
                 for(float f : offsets){
-                    offset = Math.max(offset,f);
+                    offset = MathUtil.max(offset,f);
                 }
                 columns = count;
                 column = 0;
@@ -159,61 +159,58 @@ public class NCPTTutorial extends Tutorial{
                     case "editor":
                         if(editorImage==null){
                             MenuEdit editor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance());
-                            GL11.glPushMatrix();
-                            GL11.glScaled(0, 0, 0);
-                            editor.render(0);
-                            GL11.glPopMatrix();
-                            editor.onGUIOpened();
-                            editorImage = Core.makeImage(Core.helper.displayWidth(), Core.helper.displayHeight(), (buff) -> {
-                                GL11.glColor4d(1, 1, 1, 1);
-                                editor.render(0);
+                            editor.render2d(0);
+                            editor.onOpened();
+                            editorImage = Core.makeImage(Core.gui.getWidth(), Core.gui.getHeight(), (buffRenderer, buffWidth, buffHeight) -> {
+                                buffRenderer.setWhite();
+                                editor.render2d(0);
                             });
                         }
                         break;
                     case "editor/tool/pencil":
                         if(pencilEditor==null){
                             pencilEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
-                            pencilEditor.onGUIOpened();
+                            pencilEditor.onOpened();
                             pencilEditor.tools.setSelectedIndex(2);
                             pencil = (MenuComponentEditorGrid)pencilEditor.multibwauk.components.get(0);
-                            pencilEditor.render(0);
-                            pencilEditor.render(0);
+                            pencilEditor.render2d(0);
+                            pencilEditor.render2d(0);
                         }
                         break;
                     case "editor/tool/line":
                         if(lineEditor==null){
                             lineEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
-                            lineEditor.onGUIOpened();
+                            lineEditor.onOpened();
                             lineEditor.tools.setSelectedIndex(3);
                             line = (MenuComponentEditorGrid)lineEditor.multibwauk.components.get(0);
-                            lineEditor.render(0);
-                            lineEditor.render(0);
+                            lineEditor.render2d(0);
+                            lineEditor.render2d(0);
                         }
                         break;
                     case "editor/tool/box":
                         if(boxEditor==null){
                             boxEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
-                            boxEditor.onGUIOpened();
+                            boxEditor.onOpened();
                             boxEditor.tools.setSelectedIndex(4);
                             box = (MenuComponentEditorGrid)boxEditor.multibwauk.components.get(0);
-                            boxEditor.render(0);
-                            boxEditor.render(0);
+                            boxEditor.render2d(0);
+                            boxEditor.render2d(0);
                         }
                         break;
                     case "editor/tool/select":
                         if(selectEditor==null){
                             selectEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
-                            selectEditor.onGUIOpened();
+                            selectEditor.onOpened();
                             selectEditor.tools.setSelectedIndex(1);
                             select = (MenuComponentEditorGrid)selectEditor.multibwauk.components.get(0);
-                            selectEditor.render(0);
-                            selectEditor.render(0);
+                            selectEditor.render2d(0);
+                            selectEditor.render2d(0);
                         }
                         break;
                     case "editor/tool/move":
                         if(moveEditor==null){
                             moveEditor = new MenuEdit(Core.gui, null, Core.multiblockTypes.get(1).newInstance(null, 7, 1, 3));
-                            moveEditor.onGUIOpened();
+                            moveEditor.onOpened();
                             moveEditor.tools.setSelectedIndex(0);
                             moveEditor.parts.setSelectedIndex(1);
                             move = (MenuComponentEditorGrid)moveEditor.multibwauk.components.get(0);
@@ -229,8 +226,8 @@ public class NCPTTutorial extends Tutorial{
                             selection.add(new int[]{1, 0, 3});
                             selection.add(new int[]{2, 0, 3});
                             moveEditor.multiblock.action(new SetSelectionAction(moveEditor, 0, selection), true, false);
-                            moveEditor.render(0);
-                            moveEditor.render(0);
+                            moveEditor.render2d(0);
+                            moveEditor.render2d(0);
                         }
                         break;
                 }
@@ -262,17 +259,17 @@ public class NCPTTutorial extends Tutorial{
                     int t = tick%loopLength;//2.5 second loop
                     if(t<=squiggleLength){
                         double x = (6*t)/(float)squiggleLength+1.5f;
-                        double y = Math.cos((Math.PI*(x-3))/3)+5/2f;
+                        double y = MathUtil.cos((MathUtil.pi()*(x-3))/3)+5/2f;
                         double X = x*grid.blockSize;
                         double Y = y*grid.blockSize;
-                        grid.onMouseMove(X, Y);
+                        grid.onCursorMoved(X, Y);
                         if(t==0){
                             grid.editor.parts.setSelectedIndex(1);
-                            grid.onMouseButton(X, Y, 0, true, 0);
+                            grid.onMouseButton(X, Y, 0, GLFW_PRESS, 0);
                         }
                         else if(t==squiggleLength){
-                            grid.onMouseButton(X, Y, 0, false, 0);
-                            grid.onMouseMovedElsewhere(-1, -1);
+                            grid.onMouseButton(X, Y, 0, GLFW_RELEASE, 0);
+                            grid.onCursorExited();
                         }
                         else grid.mouseDragged(X, Y, 0);
                     }
@@ -309,43 +306,12 @@ public class NCPTTutorial extends Tutorial{
                         //<editor-fold defaultstate="collapsed" desc="menu/settings">
                         if(renderer!=null){
                             renderer.setColor(Core.theme.getComponentColor(0));
-                            renderer.fillRect(.9, offsets[column], .95, offsets[column]+scale*2);
+                            renderer.fillRect(.9f, offsets[column], .95f, offsets[column]+scale*2);
                             renderer.setColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
-                            renderer.fillRect(.9, offsets[column], .95, offsets[column]+scale*2);
+                            renderer.fillRect(.9f, offsets[column], .95f, offsets[column]+scale*2);
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            {
-                                ImageStash.instance.bindTexture(0);
-                                double siz = .05;
-                                double x = .9;
-                                double y = offsets[column];
-                                double holeRad = siz*.1;
-                                int teeth = 8;
-                                double averageRadius = siz*.3;
-                                double toothSize = siz*.1;
-                                double rot = 360/16d;
-                                int resolution = (int)(2*Math.PI*averageRadius*Core.helper.displayWidth()/3*2/teeth);//an extra *2 to account for wavy surface?
-                                GL11.glBegin(GL11.GL_QUADS);
-                                double angle = rot;
-                                double radius = averageRadius+toothSize/2;
-                                for(int i = 0; i<teeth*resolution; i++){
-                                    double inX = x+siz/2+Math.cos(Math.toRadians(angle-90))*holeRad;
-                                    double inY = y+siz/2+Math.sin(Math.toRadians(angle-90))*holeRad;
-                                    GL11.glVertex2d(inX, inY);
-                                    double outX = x+siz/2+Math.cos(Math.toRadians(angle-90))*radius;
-                                    double outY = y+siz/2+Math.sin(Math.toRadians(angle-90))*radius;
-                                    GL11.glVertex2d(outX,outY);
-                                    angle+=(360d/(teeth*resolution));
-                                    if(angle>=360)angle-=360;
-                                    radius = averageRadius+(toothSize/2)*Math.cos(Math.toRadians(teeth*(angle-rot)));
-                                    outX = x+siz/2+Math.cos(Math.toRadians(angle-90))*radius;
-                                    outY = y+siz/2+Math.sin(Math.toRadians(angle-90))*radius;
-                                    GL11.glVertex2d(outX,outY);
-                                    inX = x+siz/2+Math.cos(Math.toRadians(angle-90))*holeRad;
-                                    inY = y+siz/2+Math.sin(Math.toRadians(angle-90))*holeRad;
-                                    GL11.glVertex2d(inX, inY);
-                                }
-                                GL11.glEnd();
-                            }
+                            float siz = .05f;
+                            renderer.drawGear(.9f+siz/2, offsets[column]+siz/2, siz*.1f, 8, siz*.3f, siz*.1f, 360/16f);
                         }
                         if(addHeight)offsets[column]+=scale*2;
                         break;
@@ -379,24 +345,7 @@ public class NCPTTutorial extends Tutorial{
                             renderer.setColor(Core.theme.getSecondaryComponentMouseoverColor(0), resonatingBrightness);
                             renderer.fillRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5);
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            //<editor-fold defaultstate="collapsed" desc="Pencil icon">
-                            GL11.glBegin(GL11.GL_TRIANGLES);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.25, offsets[column]+scale*3+scale*2*.75);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.375, offsets[column]+scale*3+scale*2*.75);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.25, offsets[column]+scale*3+scale*2*.625);
-                            GL11.glEnd();
-                            GL11.glBegin(GL11.GL_QUADS);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.4, offsets[column]+scale*3+scale*2*.725);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.275, offsets[column]+scale*3+scale*2*.6);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.5, offsets[column]+scale*3+scale*2*.375);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.625, offsets[column]+scale*3+scale*2*.5);
-
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.525, offsets[column]+scale*3+scale*2*.35);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.65, offsets[column]+scale*3+scale*2*.475);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.75, offsets[column]+scale*3+scale*2*.375);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.625, offsets[column]+scale*3+scale*2*.25);
-                            GL11.glEnd();
-                            //</editor-fold>
+                            renderer.drawElement("pencil", colRight-scale*3, offsets[column]+scale*3, scale*2, scale*2);
                             renderer.drawCenteredText(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, "Multiblocks");
                             renderer.drawCenteredText(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, "+");
                             renderer.drawText(colLeft, offsets[column]+scale*3, colRight, offsets[column]+scale*4, "Overhaul SFR");
@@ -417,24 +366,7 @@ public class NCPTTutorial extends Tutorial{
                             renderer.setColor(Core.theme.getSecondaryComponentColor(0));
                             renderer.fillRect(colRight-scale*3, offsets[column]+scale*3, colRight-scale, offsets[column]+scale*5);
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            //<editor-fold defaultstate="collapsed" desc="Pencil icon">
-                            GL11.glBegin(GL11.GL_TRIANGLES);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.25, offsets[column]+scale*3+scale*2*.75);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.375, offsets[column]+scale*3+scale*2*.75);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.25, offsets[column]+scale*3+scale*2*.625);
-                            GL11.glEnd();
-                            GL11.glBegin(GL11.GL_QUADS);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.4, offsets[column]+scale*3+scale*2*.725);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.275, offsets[column]+scale*3+scale*2*.6);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.5, offsets[column]+scale*3+scale*2*.375);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.625, offsets[column]+scale*3+scale*2*.5);
-
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.525, offsets[column]+scale*3+scale*2*.35);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.65, offsets[column]+scale*3+scale*2*.475);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.75, offsets[column]+scale*3+scale*2*.375);
-                            GL11.glVertex2d(colRight-scale*3+scale*2*.625, offsets[column]+scale*3+scale*2*.25);
-                            GL11.glEnd();
-                            //</editor-fold>
+                            renderer.drawElement("pencil", colRight-scale*3, offsets[column]+scale*3, scale*2, scale*2);
                             renderer.drawCenteredText(colLeft, offsets[column], colRight-scale*2, offsets[column]+scale*2, "Multiblocks");
                             renderer.drawCenteredText(colRight-scale*2, offsets[column], colRight, offsets[column]+scale*2, "+");
                             renderer.drawText(colLeft, offsets[column]+scale*3, colRight, offsets[column]+scale*4, "Overhaul SFR");
@@ -472,39 +404,39 @@ public class NCPTTutorial extends Tutorial{
                         //<editor-fold defaultstate="collapsed" desc="resize">
                         if(renderer!=null){
                             renderer.setColor(Core.theme.getComponentColor(0));
-                            double s = scale*2;
+                            float s = scale*2;
                             renderer.fillRect(colLeft, offsets[column], colRight, offsets[column]+s);//top
-                            renderer.fillRect(colLeft, offsets[column]+s*1.5, colLeft+s*5, offsets[column]+s*3.5);//top inner
-                            renderer.fillRect(colLeft, offsets[column]+s*3.5, colLeft+s*2, offsets[column]+s*6.5);//left
-                            renderer.fillRect(colLeft+s*5, offsets[column]+s*3.5, colLeft+s*6, offsets[column]+s*6.5);//right
-                            renderer.fillRect(colLeft+s*2, offsets[column]+s*6.5, colLeft+s*5, offsets[column]+s*7.5);//bottom inner
+                            renderer.fillRect(colLeft, offsets[column]+s*1.5f, colLeft+s*5, offsets[column]+s*3.5f);//top inner
+                            renderer.fillRect(colLeft, offsets[column]+s*3.5f, colLeft+s*2, offsets[column]+s*6.5f);//left
+                            renderer.fillRect(colLeft+s*5, offsets[column]+s*3.5f, colLeft+s*6, offsets[column]+s*6.5f);//right
+                            renderer.fillRect(colLeft+s*2, offsets[column]+s*6.5f, colLeft+s*5, offsets[column]+s*7.5f);//bottom inner
                             renderer.fillRect(colLeft, offsets[column]+s*8, colRight, offsets[column]+s*9);//bottom
                             renderer.setColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
                             renderer.fillRect(colLeft, offsets[column], colRight, offsets[column]+s);//top
                             renderer.fillRect(colLeft, offsets[column]+s*8, colRight, offsets[column]+s*9);//bottom
                             renderer.setColor(Core.theme.getAddButtonTextColor());
                             renderer.drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+s, "+");//top
-                            renderer.drawCenteredText(colLeft+s*2, offsets[column]+s*1.5, colLeft+s*5, offsets[column]+s*2.5, "+");//top inner
-                            renderer.drawCenteredText(colLeft, offsets[column]+s*4.5, colLeft+s, offsets[column]+s*5.5, "+");//left
-                            renderer.drawCenteredText(colLeft+s*5, offsets[column]+s*4.5, colLeft+s*6, offsets[column]+s*5.5, "+");//right
-                            renderer.drawCenteredText(colLeft+s*2, offsets[column]+s*6.5, colLeft+s*5, offsets[column]+s*7.5, "+");//bottom inner
+                            renderer.drawCenteredText(colLeft+s*2, offsets[column]+s*1.5f, colLeft+s*5, offsets[column]+s*2.5f, "+");//top inner
+                            renderer.drawCenteredText(colLeft, offsets[column]+s*4.5f, colLeft+s, offsets[column]+s*5.5f, "+");//left
+                            renderer.drawCenteredText(colLeft+s*5, offsets[column]+s*4.5f, colLeft+s*6, offsets[column]+s*5.5f, "+");//right
+                            renderer.drawCenteredText(colLeft+s*2, offsets[column]+s*6.5f, colLeft+s*5, offsets[column]+s*7.5f, "+");//bottom inner
                             renderer.drawCenteredText(colLeft, offsets[column]+s*8, colRight, offsets[column]+s*9, "+");//bottom
                             renderer.setColor(Core.theme.getDeleteButtonTextColor());
-                            renderer.drawCenteredText(colLeft, offsets[column]+s*1.5, colLeft+s*2, offsets[column]+s*3.5, "-");//top inner
-                            renderer.drawCenteredText(colLeft+s*2, offsets[column]+s*2.5, colLeft+s*3, offsets[column]+s*3.5, "-");//top 1
-                            renderer.drawCenteredText(colLeft+s*3, offsets[column]+s*2.5, colLeft+s*4, offsets[column]+s*3.5, "-");//top 2
-                            renderer.drawCenteredText(colLeft+s*4, offsets[column]+s*2.5, colLeft+s*5, offsets[column]+s*3.5, "-");//top 3
-                            renderer.drawCenteredText(colLeft+s, offsets[column]+s*3.5, colLeft+s*2, offsets[column]+s*4.5, "-");//left 1
-                            renderer.drawCenteredText(colLeft+s, offsets[column]+s*4.5, colLeft+s*2, offsets[column]+s*5.5, "-");//left 2
-                            renderer.drawCenteredText(colLeft+s, offsets[column]+s*5.5, colLeft+s*2, offsets[column]+s*6.5, "-");//left 3
+                            renderer.drawCenteredText(colLeft, offsets[column]+s*1.5f, colLeft+s*2, offsets[column]+s*3.5f, "-");//top inner
+                            renderer.drawCenteredText(colLeft+s*2, offsets[column]+s*2.5f, colLeft+s*3, offsets[column]+s*3.5f, "-");//top 1
+                            renderer.drawCenteredText(colLeft+s*3, offsets[column]+s*2.5f, colLeft+s*4, offsets[column]+s*3.5f, "-");//top 2
+                            renderer.drawCenteredText(colLeft+s*4, offsets[column]+s*2.5f, colLeft+s*5, offsets[column]+s*3.5f, "-");//top 3
+                            renderer.drawCenteredText(colLeft+s, offsets[column]+s*3.5f, colLeft+s*2, offsets[column]+s*4.5f, "-");//left 1
+                            renderer.drawCenteredText(colLeft+s, offsets[column]+s*4.5f, colLeft+s*2, offsets[column]+s*5.5f, "-");//left 2
+                            renderer.drawCenteredText(colLeft+s, offsets[column]+s*5.5f, colLeft+s*2, offsets[column]+s*6.5f, "-");//left 3
                             renderer.setColor(Core.theme.getEditorBackgroundColor());
-                            renderer.fillRect(colLeft+s*2, offsets[column]+s*3.5, colLeft+s*5, offsets[column]+s*6.5);
+                            renderer.fillRect(colLeft+s*2, offsets[column]+s*3.5f, colLeft+s*5, offsets[column]+s*6.5f);
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            double border = s/32;
+                            float border = s/32;
                             for(int x = 0; x<3; x++){
                                 for(int y = 0; y<3; y++){
-                                    double X = colLeft+s*(2+x);
-                                    double Y = offsets[column]+s*(3.5+y);
+                                    float X = colLeft+s*(2+x);
+                                    float Y = offsets[column]+s*(3.5f+y);
                                     renderer.fillRect(X,Y,X+s,Y+border);
                                     renderer.fillRect(X,Y+s-border,X+s,Y+s);
                                     renderer.fillRect(X,Y+border,X+border,Y+s-border);
@@ -521,11 +453,11 @@ public class NCPTTutorial extends Tutorial{
                             renderer.setColor(Core.theme.getComponentColor(0));
                             renderer.fillRect(colLeft, offsets[column], colRight, offsets[column]+scale*2);
                             renderer.setColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
-                            renderer.fillRect(colLeft+.25, offsets[column], colRight-.25, offsets[column]+scale*2);
+                            renderer.fillRect(colLeft+.25f, offsets[column], colRight-.25f, offsets[column]+scale*2);
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            renderer.drawCenteredText(colLeft, offsets[column]+scale/2.5, colLeft+.25, offsets[column]+scale*2-scale/2.5, "Done");
-                            renderer.drawCenteredText(colLeft+.25, offsets[column]+scale/2.5, colRight-.25, offsets[column]+scale*2-scale/2.5, "Tutorial Build v1 | Edit Metadata");
-                            renderer.drawCenteredText(colRight-.25, offsets[column]+scale/2.5, colRight, offsets[column]+scale*2-scale/2.5, "Resize");
+                            renderer.drawCenteredText(colLeft, offsets[column]+scale/2.5f, colLeft+.25f, offsets[column]+scale*2-scale/2.5f, "Done");
+                            renderer.drawCenteredText(colLeft+.25f, offsets[column]+scale/2.5f, colRight-.25f, offsets[column]+scale*2-scale/2.5f, "Tutorial Build v1 | Edit Metadata");
+                            renderer.drawCenteredText(colRight-.25f, offsets[column]+scale/2.5f, colRight, offsets[column]+scale*2-scale/2.5f, "Resize");
                         }
                         if(addHeight)offsets[column]+=scale*2;
                         break;
@@ -539,11 +471,11 @@ public class NCPTTutorial extends Tutorial{
                             renderer.setColor(Core.theme.getTutorialTextColor());
                             renderer.drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+scale*2, "Metadata");
                             String[][] texts = {{"Name", "Tutorial Build v1"}, {"Author", "tomdodd4598"}};
-                            double w = (colRight-colLeft)/2;
-                            double c = (colLeft+colRight)/2;
+                            float w = (colRight-colLeft)/2;
+                            float c = (colLeft+colRight)/2;
                             for(int x = 0; x<2; x++){
                                 for(int y = 0; y<2; y++){
-                                    double inset = .005;
+                                    float inset = .005f;
                                     renderer.setColor(Core.theme.getTextBoxBorderColor());
                                     renderer.fillRect(colLeft+w*x, offsets[column]+scale*2+scale*2*y, c+w*x, offsets[column]+scale*4+scale*2*y);
                                     renderer.setColor(Core.theme.getTextBoxColor());
@@ -562,47 +494,15 @@ public class NCPTTutorial extends Tutorial{
                             renderer.setColor(Core.theme.getComponentColor(0));
                             renderer.fillRect(colLeft, offsets[column], colRight, offsets[column]+scale*2);
                             renderer.setColor(Core.theme.getComponentMouseoverColor(0), resonatingBrightness);
-                            renderer.fillRect(colLeft+scale*11.2, offsets[column], colRight-scale*2, offsets[column]+scale*2);
+                            renderer.fillRect(colLeft+scale*11.2f, offsets[column], colRight-scale*2, offsets[column]+scale*2);
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            renderer.drawCenteredText(colLeft, offsets[column]+.015, colLeft+scale*2.8, offsets[column]+scale*2-.015, "Import");
-                            renderer.drawCenteredText(colLeft+scale*2.8, offsets[column]+.015, colLeft+scale*2.8*2, offsets[column]+scale*2-.015, "Export");
-                            renderer.drawCenteredText(colLeft+scale*2.8*2, offsets[column]+.015, colLeft+scale*2.8*3, offsets[column]+scale*2-.015, "Save");
-                            renderer.drawCenteredText(colLeft+scale*2.8*3, offsets[column]+.015, colLeft+scale*2.8*4, offsets[column]+scale*2-.015, "Load");
-                            renderer.drawCenteredText(colLeft+scale*11.2, offsets[column]+.01, colRight-scale*2, offsets[column]+scale*2-.01, "Tutorial Collection | Edit Metadata");
-                            {
-                                renderer.setColor(Core.theme.getTutorialTextColor());
-                                ImageStash.instance.bindTexture(0);
-                                double siz = .05;
-                                double x = .9;
-                                double y = offsets[column];
-                                double holeRad = siz*.1;
-                                int teeth = 8;
-                                double averageRadius = siz*.3;
-                                double toothSize = siz*.1;
-                                double rot = 360/16d;
-                                int resolution = (int)(2*Math.PI*averageRadius*Core.helper.displayWidth()/3*2/teeth);//an extra *2 to account for wavy surface?
-                                GL11.glBegin(GL11.GL_QUADS);
-                                double angle = rot;
-                                double radius = averageRadius+toothSize/2;
-                                for(int i = 0; i<teeth*resolution; i++){
-                                    double inX = x+siz/2+Math.cos(Math.toRadians(angle-90))*holeRad;
-                                    double inY = y+siz/2+Math.sin(Math.toRadians(angle-90))*holeRad;
-                                    GL11.glVertex2d(inX, inY);
-                                    double outX = x+siz/2+Math.cos(Math.toRadians(angle-90))*radius;
-                                    double outY = y+siz/2+Math.sin(Math.toRadians(angle-90))*radius;
-                                    GL11.glVertex2d(outX,outY);
-                                    angle+=(360d/(teeth*resolution));
-                                    if(angle>=360)angle-=360;
-                                    radius = averageRadius+(toothSize/2)*Math.cos(Math.toRadians(teeth*(angle-rot)));
-                                    outX = x+siz/2+Math.cos(Math.toRadians(angle-90))*radius;
-                                    outY = y+siz/2+Math.sin(Math.toRadians(angle-90))*radius;
-                                    GL11.glVertex2d(outX,outY);
-                                    inX = x+siz/2+Math.cos(Math.toRadians(angle-90))*holeRad;
-                                    inY = y+siz/2+Math.sin(Math.toRadians(angle-90))*holeRad;
-                                    GL11.glVertex2d(inX, inY);
-                                }
-                                GL11.glEnd();
-                            }
+                            renderer.drawCenteredText(colLeft, offsets[column]+.015f, colLeft+scale*2.8f, offsets[column]+scale*2-.015f, "Import");
+                            renderer.drawCenteredText(colLeft+scale*2.8f, offsets[column]+.015f, colLeft+scale*2.8f*2, offsets[column]+scale*2-.015f, "Export");
+                            renderer.drawCenteredText(colLeft+scale*2.8f*2, offsets[column]+.015f, colLeft+scale*2.8f*3, offsets[column]+scale*2-.015f, "Save");
+                            renderer.drawCenteredText(colLeft+scale*2.8f*3, offsets[column]+.015f, colLeft+scale*2.8f*4, offsets[column]+scale*2-.015f, "Load");
+                            renderer.drawCenteredText(colLeft+scale*11.2f, offsets[column]+.01f, colRight-scale*2, offsets[column]+scale*2-.01f, "Tutorial Collection | Edit Metadata");
+                            float siz = .05f;
+                            renderer.drawGear(.9f+siz/2, offsets[column]+siz/2, siz*.1f, 8, siz*.3f, siz*.1f, 360/16f);
                         }
                         if(addHeight)offsets[column]+=scale*2;
                         break;
@@ -616,11 +516,11 @@ public class NCPTTutorial extends Tutorial{
                             renderer.setColor(Core.theme.getTutorialTextColor());
                             renderer.drawCenteredText(colLeft, offsets[column], colRight, offsets[column]+scale*2, "Metadata");
                             String[][] texts = {{"Name", "Tutorial Collection"}, {"Author", "tomdodd4598"}};
-                            double w = (colRight-colLeft)/2;
-                            double c = (colLeft+colRight)/2;
+                            float w = (colRight-colLeft)/2;
+                            float c = (colLeft+colRight)/2;
                             for(int x = 0; x<2; x++){
                                 for(int y = 0; y<2; y++){
-                                    double inset = .005;
+                                    float inset = .005f;
                                     renderer.setColor(Core.theme.getTextBoxBorderColor());
                                     renderer.fillRect(colLeft+w*x, offsets[column]+scale*2+scale*2*y, c+w*x, offsets[column]+scale*4+scale*2*y);
                                     renderer.setColor(Core.theme.getTextBoxColor());
@@ -638,12 +538,12 @@ public class NCPTTutorial extends Tutorial{
                         if(renderer!=null){
                             renderer.setColor(Core.theme.getComponentColor(0));
                             renderer.fillRect(colLeft, offsets[column], colRight, offsets[column]+scale*2);
-                            double w = (colRight-colLeft)/4;
+                            float w = (colRight-colLeft)/4;
                             renderer.setColor(Core.theme.getTutorialTextColor());
-                            renderer.drawCenteredText(colLeft, offsets[column]+.01, colLeft+w, offsets[column]+scale*2-.01, "Import");
-                            renderer.drawCenteredText(colLeft+w, offsets[column]+.01, colLeft+w*2, offsets[column]+scale*2-.01, "Export");
-                            renderer.drawCenteredText(colLeft+w*2, offsets[column]+.01, colLeft+w*3, offsets[column]+scale*2-.01, "Save");
-                            renderer.drawCenteredText(colLeft+w*3, offsets[column]+.01, colRight, offsets[column]+scale*2-.01, "Load");
+                            renderer.drawCenteredText(colLeft, offsets[column]+.01f, colLeft+w, offsets[column]+scale*2-.01f, "Import");
+                            renderer.drawCenteredText(colLeft+w, offsets[column]+.01f, colLeft+w*2, offsets[column]+scale*2-.01f, "Export");
+                            renderer.drawCenteredText(colLeft+w*2, offsets[column]+.01f, colLeft+w*3, offsets[column]+scale*2-.01f, "Save");
+                            renderer.drawCenteredText(colLeft+w*3, offsets[column]+.01f, colRight, offsets[column]+scale*2-.01f, "Load");
                         }
                         if(addHeight)offsets[column]+=scale*2;
                         break;
@@ -659,14 +559,12 @@ public class NCPTTutorial extends Tutorial{
     //</editor-fold>
                     case "editor/tool/pencil":
                         //<editor-fold defaultstate="collapsed" desc="editor/tool/pencil">
-                        double scal = (colRight-colLeft)/pencil.width;
+                        float scal = (colRight-colLeft)/pencil.width;
                         if(renderer!=null){
-                            GL11.glPushMatrix();
-                            GL11.glTranslated(colLeft, offsets[column], 0);
-                            double scale = (colRight-colLeft)/pencil.width;
-                            GL11.glScaled(scale, scale, 1);
-                            pencil.render(0);
-                            GL11.glPopMatrix();
+                            float scale = (colRight-colLeft)/pencil.width;
+                            renderer.model(new Matrix4f().translate(colLeft, offsets[column], 0).scale(scale, scale, 1));
+                            pencil.render2d(0);
+                            renderer.resetModelMatrix();
                         }
                         if(addHeight)offsets[column]+=scal*pencil.height;
                         break;
@@ -675,12 +573,10 @@ public class NCPTTutorial extends Tutorial{
                         //<editor-fold defaultstate="collapsed" desc="editor/tool/line">
                         scal = (colRight-colLeft)/line.width;
                         if(renderer!=null){
-                            GL11.glPushMatrix();
-                            GL11.glTranslated(colLeft, offsets[column], 0);
-                            double scale = (colRight-colLeft)/line.width;
-                            GL11.glScaled(scale, scale, 1);
-                            line.render(0);
-                            GL11.glPopMatrix();
+                            float scale = (colRight-colLeft)/line.width;
+                            renderer.model(new Matrix4f().translate(colLeft, offsets[column], 0).scale(scale, scale, 1));
+                            line.render2d(0);
+                            renderer.resetModelMatrix();
                         }
                         if(addHeight)offsets[column]+=scal*line.height;
                         break;
@@ -689,12 +585,9 @@ public class NCPTTutorial extends Tutorial{
                         //<editor-fold defaultstate="collapsed" desc="editor/tool/box">
                         scal = (colRight-colLeft)/box.width;
                         if(renderer!=null){
-                            GL11.glPushMatrix();
-                            GL11.glTranslated(colLeft, offsets[column], 0);
-                            double scale = (colRight-colLeft)/box.width;
-                            GL11.glScaled(scale, scale, 1);
-                            box.render(0);
-                            GL11.glPopMatrix();
+                            float scale = (colRight-colLeft)/box.width;
+                            renderer.model(new Matrix4f().translate(colLeft, offsets[column], 0).scale(scale, scale, 1));
+                            box.render2d(0);
                         }
                         if(addHeight)offsets[column]+=scal*box.height;
                         break;
@@ -703,12 +596,9 @@ public class NCPTTutorial extends Tutorial{
                         //<editor-fold defaultstate="collapsed" desc="editor/tool/select">
                         scal = (colRight-colLeft)/select.width;
                         if(renderer!=null){
-                            GL11.glPushMatrix();
-                            GL11.glTranslated(colLeft, offsets[column], 0);
-                            double scale = (colRight-colLeft)/select.width;
-                            GL11.glScaled(scale, scale, 1);
-                            select.render(0);
-                            GL11.glPopMatrix();
+                            float scale = (colRight-colLeft)/select.width;
+                            renderer.model(new Matrix4f().translate(colLeft, offsets[column], 0).scale(scale, scale, 1));
+                            select.render2d(0);
                         }
                         if(addHeight)offsets[column]+=scal*select.height;
                         break;
@@ -717,12 +607,9 @@ public class NCPTTutorial extends Tutorial{
                         //<editor-fold defaultstate="collapsed" desc="editor/tool/move">
                         scal = (colRight-colLeft)/move.width;
                         if(renderer!=null){
-                            GL11.glPushMatrix();
-                            GL11.glTranslated(colLeft, offsets[column], 0);
-                            double scale = (colRight-colLeft)/move.width;
-                            GL11.glScaled(scale, scale, 1);
-                            move.render(0);
-                            GL11.glPopMatrix();
+                            float scale = (colRight-colLeft)/move.width;
+                            renderer.model(new Matrix4f().translate(colLeft, offsets[column], 0).scale(scale, scale, 1));
+                            move.render2d(0);
                         }
                         if(addHeight)offsets[column]+=scal*move.height;
                         break;

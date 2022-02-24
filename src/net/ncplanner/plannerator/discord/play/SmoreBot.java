@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutBunch;
 import net.ncplanner.plannerator.discord.play.smivilization.HutType;
-import simplelibrary.config2.Config;
 public class SmoreBot{
     public static HashMap<Long, Long> glowshrooms = new HashMap<>();
     public static HashMap<Long, Long> smores = new HashMap<>();//MONEY

@@ -1,6 +1,9 @@
 package net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine;
 import java.util.ArrayList;
 import java.util.Objects;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
@@ -8,10 +11,7 @@ import net.ncplanner.plannerator.multiblock.configuration.RuleContainer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
-import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
     public static Block controller(String name, String displayName, String texture){
         Block block = new Block(name);
@@ -154,16 +154,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
             coilCfg.set("efficiency", coilEfficiency);
             config.set("coil", coilCfg);
         }
-        if(!partial&&texture!=null){
-            ConfigNumberList tex = new ConfigNumberList();
-            tex.add(texture.getWidth());
-            for(int x = 0; x<texture.getWidth(); x++){
-                for(int y = 0; y<texture.getHeight(); y++){
-                    tex.add(texture.getRGB(x, y));
-                }
-            }
-            config.set("texture", tex);
-        }
+        if(!partial)NCPFWriter.saveTexture(config, texture);
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
             for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : rules){

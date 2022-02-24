@@ -1,13 +1,13 @@
 package net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion;
 import java.util.ArrayList;
 import java.util.Objects;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
-import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 public class CoolantRecipe implements Pinnable{
     public String inputName;
     public String inputDisplayName;
@@ -37,32 +37,14 @@ public class CoolantRecipe implements Pinnable{
                 for(String s : inputLegacyNames)lst.add(s);
                 inputCfg.set("legacyNames", lst);
             }
-            if(inputTexture!=null){
-                ConfigNumberList tex = new ConfigNumberList();
-                tex.add(inputTexture.getWidth());
-                for(int x = 0; x<inputTexture.getWidth(); x++){
-                    for(int y = 0; y<inputTexture.getHeight(); y++){
-                        tex.add(inputTexture.getRGB(x, y));
-                    }
-                }
-                inputCfg.set("texture", tex);
-            }
+            NCPFWriter.saveTexture(inputCfg, inputTexture);
         }
         config.set("input", inputCfg);
         Config outputCfg = Config.newConfig();
         outputCfg.set("name", outputName);
         if(!partial){
             if(outputDisplayName!=null)outputCfg.set("displayName", outputDisplayName);
-            if(outputTexture!=null){
-                ConfigNumberList tex = new ConfigNumberList();
-                tex.add(outputTexture.getWidth());
-                for(int x = 0; x<outputTexture.getWidth(); x++){
-                    for(int y = 0; y<outputTexture.getHeight(); y++){
-                        tex.add(outputTexture.getRGB(x, y));
-                    }
-                }
-                outputCfg.set("texture", tex);
-            }
+            NCPFWriter.saveTexture(outputCfg, outputTexture);
         }
         config.set("output", outputCfg);
         config.set("heat", heat);

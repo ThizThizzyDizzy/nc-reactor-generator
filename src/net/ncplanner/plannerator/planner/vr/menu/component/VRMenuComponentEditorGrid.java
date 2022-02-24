@@ -1,10 +1,11 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
 import java.util.HashMap;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.MSRAllShieldsAction;
@@ -23,20 +24,18 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
-import simplelibrary.opengl.ImageStash;
 public class VRMenuComponentEditorGrid extends VRMenuComponent{
     private final VRMenuEdit editor;
     private final Multiblock multiblock;
     private static final int resonatingTime = 60;
     private static final float resonatingMin = .25f;
     private static final float resonatingMax = .75f;
-    private int resonatingTick = 0;
+    private float resonatingTick = 0;
     private float resonatingAlpha = 0;
-    private long lastTick = -1;
     private final HashMap<Integer, int[]> deviceover = new HashMap<>();
-    public final double blockSize;
+    public final float blockSize;
     private final EditorSpace editorSpace;
-    public VRMenuComponentEditorGrid(double x, double y, double z, double size, VRMenuEdit editor, Multiblock multiblock, EditorSpace editorSpace){
+    public VRMenuComponentEditorGrid(float x, float y, float z, float size, VRMenuEdit editor, Multiblock multiblock, EditorSpace editorSpace){
         super(x, y, z, 0, 0, 0, 0, 0, 0);
         BoundingBox bbox = multiblock.getBoundingBox();
         blockSize = size/Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
@@ -51,7 +50,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         this.editorSpace = editorSpace;
     }
     @Override
-    public void tick(){
+    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
         for(int i = 0; i<gui.buttonsWereDown.size(); i++){
             ArrayList<Integer> lst = gui.buttonsWereDown.get(i);
             EditorTool tool = editor.getSelectedTool(i);
@@ -60,16 +59,10 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 if(!lst.contains(VR.EVRButtonId_k_EButton_SteamVR_Touchpad))tool.mouseReset(editorSpace, 1);
             }
         }
-        resonatingTick++;
+        resonatingTick+=deltaTime*20;
         if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
-        lastTick = System.nanoTime();
-    }
-    @Override
-    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        long millisSinceLastTick = lastTick==-1?0:(System.nanoTime()-lastTick)/1_000_000;
-        float tick = resonatingTick+(Math.max(0, Math.min(1, millisSinceLastTick/50)));
-        resonatingAlpha = (float) (-Math.cos(2*Math.PI*tick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
-        super.render(renderer, tdpb);
+        resonatingAlpha = (float) (-Math.cos(2*Math.PI*resonatingTick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
+        super.render(renderer, tdpb, deltaTime);
     }
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
@@ -91,10 +84,10 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             int xx = x;
             int yy = y;
             int zz = z;
-            double X = x*blockSize;
-            double Y = y*blockSize;
-            double Z = z*blockSize;
-            double border = blockSize/16;
+            float X = x*blockSize;
+            float Y = y*blockSize;
+            float Z = z*blockSize;
+            float border = blockSize/16;
             if(block!=null){
                 block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, true, 1, multiblock, (t) -> {
                     if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
@@ -121,9 +114,9 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     if(s.selected&&s.result!=null){
                         Block b = s.result.getBlock(x, y, z);
                         renderer.setWhite(resonatingAlpha+.5f);
-                        double brdr = blockSize/64;
+                        float brdr = blockSize/64;
                         if(b==null){
-                            renderer.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, 0);
+                            renderer.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, null);
                         }else{
                             b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
                                 return true;
@@ -149,22 +142,22 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 if(id==VR.k_unTrackedDeviceIndex_Hmd)continue;//don't do mouseover for headset
                 int[] mouseover = deviceover.get(id);
                 if(mouseover!=null){
-                    double X = mouseover[0]*blockSize;
-                    double Y = mouseover[1]*blockSize;
-                    double Z = mouseover[2]*blockSize;
-                    double border = blockSize/16;
+                    float X = mouseover[0]*blockSize;
+                    float Y = mouseover[1]*blockSize;
+                    float Z = mouseover[2]*blockSize;
+                    float border = blockSize/16;
                     renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
                     renderer.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
                     renderer.setColor(Core.theme.getEditorMouseoverLineColor());
                     X+=blockSize/2;
                     Y+=blockSize/2;
                     Z+=blockSize/2;
-                    renderer.drawCube(0, Y-border/2, Z-border/2, X-blockSize/2, Y+border/2, Z+border/2, 0);//NX
-                    renderer.drawCube(X-border/2, 0, Z-border/2, X+border/2, Y-blockSize/2, Z+border/2, 0);//NY
-                    renderer.drawCube(X-border/2, Y-border/2, 0, X+border/2, Y+border/2, Z-blockSize/2, 0);//NZ
-                    renderer.drawCube(X+blockSize/2, Y-border/2, Z-border/2, width, Y+border/2, Z+border/2, 0);//PX
-                    renderer.drawCube(X-border/2, Y+blockSize/2, Z-border/2, X+border/2, height, Z+border/2, 0);//PY
-                    renderer.drawCube(X-border/2, Y-border/2, Z+blockSize/2, X+border/2, Y+border/2, depth, 0);//PZ
+                    renderer.drawCube(0, Y-border/2, Z-border/2, X-blockSize/2, Y+border/2, Z+border/2, null);//NX
+                    renderer.drawCube(X-border/2, 0, Z-border/2, X+border/2, Y-blockSize/2, Z+border/2, null);//NY
+                    renderer.drawCube(X-border/2, Y-border/2, 0, X+border/2, Y+border/2, Z-blockSize/2, null);//NZ
+                    renderer.drawCube(X+blockSize/2, Y-border/2, Z-border/2, width, Y+border/2, Z+border/2, null);//PX
+                    renderer.drawCube(X-border/2, Y+blockSize/2, Z-border/2, X+border/2, height, Z+border/2, null);//PY
+                    renderer.drawCube(X-border/2, Y-border/2, Z+blockSize/2, X+border/2, Y+border/2, depth, null);//PZ
                 }
             }
         }
@@ -173,10 +166,10 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             int xx = x;
             int yy = y;
             int zz = z;
-            double X = x*blockSize;
-            double Y = y*blockSize;
-            double Z = z*blockSize;
-            double border = blockSize/16;
+            float X = x*blockSize;
+            float Y = y*blockSize;
+            float Z = z*blockSize;
+            float border = blockSize/16;
             if(block!=null){
                 for(int id : editor.editorTools.keySet()){
                     boolean recipeMatches = false;
@@ -194,13 +187,13 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     }
                     if(recipeMatches){
                         renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), resonatingAlpha);
-                        renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0);
+                        renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null);
                     }
                 }
             }
             if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
                 renderer.setWhite();
-                renderer.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, ImageStash.instance.getTexture("/textures/overhaul/fusion/plasma.png"), (t) -> {
+                renderer.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, TextureManager.getImageRaw("/textures/overhaul/fusion/plasma.png"), (t) -> {
                     Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA;
                 });
@@ -225,7 +218,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             for(int id : editor.editorTools.keySet()){
                 if(isSelected(id, x, y, z)){
                     renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), .5f);
-                    renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, 0, (t) -> {
+                    renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null, (t) -> {
                         Block o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                         return !isSelected(id, xx+t.x, yy+t.y, zz+t.z)&&o==null;
                     });
@@ -233,16 +226,16 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             }
         });
         for(int i : editor.editorTools.keySet()){
-            editor.getSelectedTool(i).drawVRGhosts(renderer, editorSpace, 0, 0, 0, width, height, depth, blockSize, (editor.getSelectedBlock(i)==null?0:Core.getTexture(editor.getSelectedBlock(i).getTexture())));
+            editor.getSelectedTool(i).drawVRGhosts(renderer, editorSpace, 0, 0, 0, width, height, depth, blockSize, (editor.getSelectedBlock(i)==null?null:editor.getSelectedBlock(i).getTexture()));
         }
     }
     @Override
     public void onDeviceMoved(int device, Matrix4f matrix){
         super.onDeviceMoved(device, matrix);
         Vector3f pos = matrix.getTranslation(new Vector3f());
-        double x = pos.x;
-        double y = pos.y;
-        double z = pos.z;
+        float x = pos.x;
+        float y = pos.y;
+        float z = pos.z;
         synchronized(deviceover){
             deviceover.put(device, new int[]{(int)(x/blockSize),(int)(y/blockSize),(int)(z/blockSize)});
         }
@@ -306,9 +299,9 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         if(button==VR.EVRButtonId_k_EButton_SteamVR_Touchpad)mButton = 1;
         if(mButton==-1)return;
         Vector3f pos = matrix.getTranslation(new Vector3f());
-        double x = pos.x;
-        double y = pos.y;
-        double z = pos.z;
+        float x = pos.x;
+        float y = pos.y;
+        float z = pos.z;
         BoundingBox bbox = multiblock.getBoundingBox();
         int blockX = Math.max(bbox.x1, Math.min(bbox.x2, (int)(x/blockSize)));
         int blockY = Math.max(bbox.y1, Math.min(bbox.y2, (int)(y/blockSize)));

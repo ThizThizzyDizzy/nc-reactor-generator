@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
@@ -13,7 +13,7 @@ public class VRMenuComponentEditorListBlock extends VRMenuComponent implements P
     private final Block block;
     private final int id;
     private final int blockID;
-    public VRMenuComponentEditorListBlock(VRMenuEdit editor, int id, double x, double y, double z, double size, Block block, int blockID){
+    public VRMenuComponentEditorListBlock(VRMenuEdit editor, int id, float x, float y, float z, float size, Block block, int blockID){
         super(x, y, z, size, size, size, 0, 0, 0);
         this.editor = editor;
         this.block = block;
@@ -23,10 +23,10 @@ public class VRMenuComponentEditorListBlock extends VRMenuComponent implements P
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
         renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
-        renderer.drawCube(0, 0, 0, width, height, depth, Core.getTexture(block.getTexture()));
+        renderer.drawCube(0, 0, 0, width, height, depth, block.getTexture());
         renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
         if(editor.getSelectedBlock(id).isEqual(block)){
-            renderer.drawCubeOutline(-.0025, -.0025, -.0025, width+.0025, height+.0025, depth+.0025, .0025);//2.5mm
+            renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
         }
     }
     @Override

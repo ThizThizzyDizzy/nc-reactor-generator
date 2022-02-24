@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.multiblock.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.function.Function;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
@@ -13,7 +14,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import simplelibrary.image.Image;
 public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block> {
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -124,7 +124,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return tip;
     }
     @Override
-    public void renderOverlay(Renderer renderer, double x, double y, double width, double height, Multiblock multiblock){
+    public void renderOverlay(Renderer renderer, float x, float y, float width, float height, Multiblock multiblock){
         if(!isValid()){
             drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineInvalid());
         }
@@ -133,7 +133,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
     }
     @Override
-    public void renderOverlay(Renderer renderer, double x, double y, double z, double width, double height, double depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+    public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
         }

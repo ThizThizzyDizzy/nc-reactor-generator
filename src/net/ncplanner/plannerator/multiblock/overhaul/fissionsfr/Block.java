@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.Function;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
@@ -15,8 +17,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> {
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
@@ -322,7 +322,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return (isActive()||isInert())&&template.cluster;
     }
     @Override
-    public void renderOverlay(Renderer renderer, double x, double y, double width, double height, Multiblock multiblock){
+    public void renderOverlay(Renderer renderer, float x, float y, float width, float height, Multiblock multiblock){
         if(!isValid()){
             drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineInvalid());
         }
@@ -331,7 +331,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
         if(recipe!=null&&(template.parent==null?template.allRecipes:template.parent.allRecipes).size()>1){
             renderer.setWhite(template.parent==null?1:0.75f);
-            renderer.drawImage(recipe.inputDisplayTexture, x+width*.125, y+height*.125, x+width*.875, y+height*.875);
+            renderer.drawImage(recipe.inputDisplayTexture, x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
         }
         if(template.fuelCell&&(template.fuelCellHasBaseStats||recipe!=null)){
             boolean self = recipe==null?template.fuelCellSelfPriming:recipe.fuelCellSelfPriming;
@@ -353,7 +353,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
                 renderer.setColor(primaryColor, .125f);
                 renderer.fillRect(x, y, x+width, y+height);
                 renderer.setColor(primaryColor, .75f);
-                double border = width/8;
+                float border = width/8;
                 boolean top = cluster.contains(this.x, this.y, z-1);
                 boolean right = cluster.contains(this.x+1, this.y, z);
                 boolean bottom = cluster.contains(this.x, this.y, z+1);
@@ -392,7 +392,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
             }
             if(secondaryColor!=null){
                 renderer.setColor(secondaryColor, .75f);
-                double border = width/8;
+                float border = width/8;
                 boolean top = cluster.contains(this.x, this.y, z-1);
                 boolean right = cluster.contains(this.x+1, this.y, z);
                 boolean bottom = cluster.contains(this.x, this.y, z+1);
@@ -417,7 +417,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
     }
     @Override
-    public void renderOverlay(Renderer renderer, double x, double y, double z, double width, double height, double depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+    public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
         }
@@ -432,7 +432,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
         OverhaulSFR.Cluster cluster = this.cluster;
         if(cluster!=null){
-            double border = width/16;
+            float border = width/16;
             Color primaryColor = null;
             if(cluster.netHeat>0){
                 primaryColor = Core.theme.getClusterOverheatingColor();

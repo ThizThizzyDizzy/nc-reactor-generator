@@ -1,9 +1,8 @@
 package net.ncplanner.plannerator.planner.theme;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.menu.MenuMain;
-import simplelibrary.image.Color;
-import simplelibrary.opengl.Renderer2D;
+import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
 public class SmoreTheme extends ColorTheme{
     private final ColorTheme cracker;
     private final ColorTheme chocolate;
@@ -177,6 +176,14 @@ public class SmoreTheme extends ColorTheme{
     @Override
     public Color getTooltipTextColor(){
         return chocolate.getTooltipTextColor();
+    }
+    @Override
+    public Color getTooltipBackgroundColor(){
+        return marshmallow.getTooltipBackgroundColor();
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        return cracker.getTooltipBorderColor();
     }
     @Override
     public Color getEditorToolTextColor(int index){
@@ -539,7 +546,7 @@ public class SmoreTheme extends ColorTheme{
         return chocolate.getVRMultitoolTextColor();
     }
     @Override
-    public void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
+    public void drawThemeButtonBackground(float x, float y, float width, float height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
         Renderer renderer = new Renderer();
         for(int i = 0; i<4; i++){
             Color col;
@@ -561,15 +568,18 @@ public class SmoreTheme extends ColorTheme{
                 }
             }
             renderer.setColor(col);
-            renderer.fillRect(x, y+height*i/4d, x+width, y+height*(i+1)/4d);
+            renderer.fillRect(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
         }
     }
     @Override
-    public void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text){
+    public void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text){
         Renderer renderer = new Renderer();
+        renderer.setFont(getDefaultFont());
         for(int i = 0; i<4; i++){
             renderer.setColor(getComponentTextColor(i));
-            Renderer2D.drawCenteredTextWithBounds(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, x, y+height*i/4d, x+width, y+height*(i+1)/4d, text);
+            renderer.bound(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
+            renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+            renderer.unBound();
         }
     }
     private ColorTheme pickTheme(int index){

@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.discord.play.model;
 import java.util.ArrayList;
 import java.util.Random;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
+import org.joml.Vector3f;
 public class Model{
     public ArrayList<Face> faces = new ArrayList<>();
     public ArrayList<Line> lines = new ArrayList<>();

@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.generator.setting;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimalistTextBox;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 public class SettingDouble implements Setting<Double>{
     protected final String name;
     protected final Double min;
@@ -23,11 +23,11 @@ public class SettingDouble implements Setting<Double>{
         this.value = value;
     }
     @Override
-    public void buildComponents(MenuComponentMinimaList generatorSettings){
-        generatorSettings.add(new MenuComponentMinimalistTextBox(0, 0, 0, 48, value+"", true, name){
+    public void buildComponents(SingleColumnList generatorSettings){
+        generatorSettings.add(new TextBox(0, 0, 0, 48, value+"", true, name){
             @Override
-            public void keyEvent(int key, int scancode, boolean isPress, boolean isRepeat, int modifiers){
-                super.keyEvent(key, scancode, isPress, isRepeat, modifiers);
+            public void onKeyEvent(int key, int scancode, int action, int mods){
+                super.onKeyEvent(key, scancode, action, mods);
                 value = Double.parseDouble(text);
             }
             @Override

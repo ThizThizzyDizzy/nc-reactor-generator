@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractBlockContainer;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
@@ -13,8 +15,6 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfi
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
 public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
     public ArrayList<CoolantRecipe> allCoolantRecipes = new ArrayList<>();
     /**

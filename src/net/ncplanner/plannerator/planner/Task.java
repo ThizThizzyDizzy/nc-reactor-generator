@@ -47,4 +47,7 @@ public class Task{
         if(subtasks.isEmpty())return finished?1:progress;
         return getProgress()/subtasks.size();
     }
+    public synchronized float getProgressF(){
+        return (float)getProgressD();
+    }
 }

@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.generator.setting;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentMinimaList;
-import net.ncplanner.plannerator.planner.menu.component.MenuComponentToggleBox;
+import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 public class SettingBoolean implements Setting<Boolean>{
     private final String name;
     private final String tooltip;
@@ -22,11 +22,11 @@ public class SettingBoolean implements Setting<Boolean>{
         this.value = value;
     }
     @Override
-    public void buildComponents(MenuComponentMinimaList generatorSettings){
-        generatorSettings.add(new MenuComponentToggleBox(0, 0, 0, 32, name, value){
+    public void buildComponents(SingleColumnList generatorSettings){
+        generatorSettings.add(new ToggleBox(0, 0, 0, 32, name, value){
             @Override
-            public void onMouseButton(double x, double y, int button, boolean pressed, int mods){
-                super.onMouseButton(x, y, button, pressed, mods);
+            public void onMouseButton(double x, double y, int button, int action, int mods){
+                super.onMouseButton(x, y, button, action, mods);
                 value = isToggledOn;
             }
         }.setTooltip(tooltip));

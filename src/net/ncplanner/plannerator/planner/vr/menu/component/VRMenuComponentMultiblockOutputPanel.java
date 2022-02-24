@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.lwjgl.openvr.TrackedDevicePose;
 public class VRMenuComponentMultiblockOutputPanel extends VRMenuComponentTextPanel{
     private final VRMenuEdit editor;
-    public VRMenuComponentMultiblockOutputPanel(VRMenuEdit editor, double x, double y, double z, double width, double height, double depth, double rx, double ry, double rz){
+    public VRMenuComponentMultiblockOutputPanel(VRMenuEdit editor, float x, float y, float z, float width, float height, float depth, float rx, float ry, float rz){
         super(x, y, z, width, height, depth, rx, ry, rz, "");
         this.editor = editor;
         snap = -1;

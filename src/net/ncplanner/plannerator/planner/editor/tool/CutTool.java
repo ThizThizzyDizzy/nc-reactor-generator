@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.editor.tool;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import simplelibrary.image.Image;
 public class CutTool extends EditorTool{
     public CutTool(Editor editor, int id){
         super(editor, id);
@@ -12,15 +12,15 @@ public class CutTool extends EditorTool{
     private int[] dragStart;
     private int[] dragEnd;
     @Override
-    public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
+    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.drawCircle(x+width*.3, y+height*.3, width*.075, width*.125);
-        renderer.drawCircle(x+width*.3, y+height*.7, width*.075, width*.125);
-        renderer.fillPolygon(new double[]{x+width*.4,x+width*.35,x+width*.75,x+width*.85}, new double[]{y+height*.35,y+height*.4,y+height*.8,y+height*.8});
-        renderer.fillPolygon(new double[]{x+width*.4,x+width*.35,x+width*.75,x+width*.85}, new double[]{y+height*.65,y+height*.6,y+height*.2,y+height*.2});
+        renderer.drawCircle(x+width*.3f, y+height*.3f, width*.075f, width*.125f);
+        renderer.drawCircle(x+width*.3f, y+height*.7f, width*.075f, width*.125f);
+        renderer.fillQuad(x+width*.4f, y+height*.35f, x+width*.35f, y+height*.4f, x+width*.75f, y+height*.8f, x+width*.85f, y+height*.8f);
+        renderer.fillQuad(x+width*.4f, y+height*.65f, x+width*.35f, y+height*.6f, x+width*.75f, y+height*.2f, x+width*.85f, y+height*.2f);
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
+    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         if(dragEnd!=null&&dragStart!=null){
             float border = 1/8f;
             int minBX = Math.min(dragStart[0], dragEnd[0]);
@@ -50,7 +50,7 @@ public class CutTool extends EditorTool{
         renderer.setWhite();
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         //TODO VR: cut tool ghosts
     }
     @Override

@@ -1,12 +1,10 @@
 package net.ncplanner.plannerator.planner.vr;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.legacyobj.model.loader.OBJLoader;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.VR;
-import simplelibrary.opengl.ModelStash;
-import static simplelibrary.opengl.Renderer3D.*;
 public class Multitool{
     public static Matrix4f editOffsetmatrix = new Matrix4f();
     static{
@@ -30,64 +28,61 @@ public class Multitool{
     public Multitool(){}
     public void render(){
         Renderer renderer = new Renderer();
-        GL11.glPushMatrix();
-        GL11.glScalef(1/32f, 1/32f, 1/32f);
-        GL11.glRotated(-90, 0, 1, 0);
-        GL11.glRotated(125, 0, 0, 1);
-        GL11.glTranslated(-6, -6, 0);
+        Matrix4f model = new Matrix4f().scale(1/32f, 1/32f, 1/32f)
+                .rotate((float)MathUtil.toRadians(-90), 0, 1, 0)
+                .rotate((float)MathUtil.toRadians(125), 0, 0, 1)
+                .translate(-6, -6, 0);
+        renderer.model(model);
         targetDisplay = tooltip==null?0:1;
         display = MathUtil.getValueBetweenTwoValues(0, display, 1, targetDisplay, snappiness);
         leftGripper = MathUtil.getValueBetweenTwoValues(0, leftGripper, 1, targetLeftGripper, snappiness);
         rightGripper = MathUtil.getValueBetweenTwoValues(0, rightGripper, 1, targetRightGripper, snappiness);
         gaugeAngle = MathUtil.getValueBetweenTwoValues(0, gaugeAngle, 1, targetGaugeAngle, snappiness);
-        GL11.glColor3f(1, 1, 1);
-        drawModel(ModelStash.instance.getModel("/textures/multitool/handle.obj"));
-        GL11.glTranslated(-display, display, 0);
-        drawModel(ModelStash.instance.getModel("/textures/multitool/display.obj"));
-        GL11.glTranslated(display, -display, 0);
-        GL11.glTranslated(leftGripper, -leftGripper, 0);
-        drawModel(ModelStash.instance.getModel("/textures/multitool/left gripper.obj"));
-        GL11.glTranslated(-leftGripper, leftGripper, 0);
-        GL11.glTranslated(-rightGripper, rightGripper, 0);
-        drawModel(ModelStash.instance.getModel("/textures/multitool/right gripper.obj"));
-        GL11.glTranslated(rightGripper, -rightGripper, 0);
-        GL11.glTranslated(9.5, 5.5, 0);
-        GL11.glRotated(gaugeAngle, 0, 0, 1);
-        drawModel(ModelStash.instance.getModel("/textures/multitool/gauge pointer.obj"));
-        GL11.glRotated(-gaugeAngle, 0, 0, 1);
-        GL11.glTranslated(-9.5, -5.5, 0);
+        renderer.setWhite();
+        renderer.drawModel(OBJLoader.getModel("/textures/multitool/handle.obj"));
+        renderer.model(new Matrix4f(model).translate(-display, display, 0));
+        renderer.drawModel(OBJLoader.getModel("/textures/multitool/display.obj"));
+        renderer.model(new Matrix4f(model).translate(leftGripper, -leftGripper, 0));
+        renderer.drawModel(OBJLoader.getModel("/textures/multitool/left gripper.obj"));
+        renderer.model(new Matrix4f(model).translate(rightGripper, -rightGripper, 0));
+        renderer.drawModel(OBJLoader.getModel("/textures/multitool/right gripper.obj"));
+        renderer.model(new Matrix4f(model).translate(9.5f, 5.5f, 0).rotate((float)Math.toRadians(gaugeAngle), 0, 0, 1));
+        renderer.drawModel(OBJLoader.getModel("/textures/multitool/gauge pointer.obj"));
+        renderer.resetModelMatrix();
         if(tooltip!=null){
-            GL11.glPushMatrix();
-            GL11.glTranslated(4, 10, (.5-1/128f));
-            GL11.glRotated(-45, 0, 0, 1);
             renderer.setColor(Core.theme.getVRMultitoolTextColor());
             String[] txt = tooltip.split("\n");
-            double textHeight = 1/5f;
-            GL11.glScaled(1, -1, 1);
+            float textHeight = 1/5f;
+            if(this==VRCore.leftMultitool)renderer.model(new Matrix4f(model)
+                    .translate(4, 10, (.5f-1/128f))
+                    .rotate((float)MathUtil.toRadians(-45), 0, 0, 1)
+                    .scale(1, -1, 1)
+                    .rotate((float)Math.toRadians(180), 0, 1, 0)
+                    .translate(-(float)Math.sqrt(5), 0, 0));
+            else renderer.model(new Matrix4f(model)
+                    .translate(4, 10, (.5f-1/128f))
+                    .rotate((float)MathUtil.toRadians(-45), 0, 0, 1)
+                    .scale(1, -1, 1));
+            
             if(this==VRCore.leftMultitool){
-                GL11.glRotated(180, 0, 1, 0);
-                GL11.glTranslated(-Math.sqrt(5), 0, 0);
             }
             int i = 0;
             for(String s : txt){
                 do{
-                    s = renderer.drawTextWithWordWrap(0, textHeight*i, Math.sqrt(5), textHeight*(i+1), s);
+                    s = renderer.drawTextWithWordWrap(0, textHeight*i, (float)Math.sqrt(5), textHeight*(i+1), s);
                     i++;
                 }while(s!=null&&!s.isEmpty());
             }
-            GL11.glColor3f(1, 1, 1);
-            GL11.glPopMatrix();
+            renderer.setWhite();
         }
-        GL11.glColor4d(.75, 1, 1, .125);
-        GL11.glTranslated(0, 0, 1);
-        GL11.glScaled(1, -1, 1);
-        drawRect(7, 4, 12, 7, 0);
-        drawRect(8, 7, 11, 8, 0);
-        drawRect(8, 3, 11, 4, 0);
-        GL11.glScaled(1, -1, 1);
-        GL11.glTranslated(0, 0, .5);
+        renderer.resetModelMatrix();
+        renderer.setColor(.75f, 1, 1, .125f);
+        renderer.model(new Matrix4f(model).translate(0, 0, 1).scale(1, -1, 1));
+        renderer.fillRect(7, 4, 12, 7);
+        renderer.fillRect(8, 7, 11, 8);
+        renderer.fillRect(8, 3, 11, 4);
+        renderer.resetModelMatrix();
 //        drawModel(ModelStash.instance.getModel("/textures/multitool/gauge face.obj"));
-        GL11.glPopMatrix();
     }
     public void keyEvent(int button, boolean pressed){
         if(button==VR.EVRButtonId_k_EButton_IndexController_A)a = pressed;

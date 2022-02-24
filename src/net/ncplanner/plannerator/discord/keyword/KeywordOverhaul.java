@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.discord.keyword;
 import net.ncplanner.plannerator.discord.Keyword;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
-import simplelibrary.image.Color;
 public class KeywordOverhaul extends Keyword{
     public KeywordOverhaul(){
         super("Overhaul");

@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class SmoreRug extends HutThingColorable{
     public SmoreRug(UUID uuid, Hut hut){
         super(uuid, hut, "S'more Rug", "smore rug", 8, Color.WHITE);

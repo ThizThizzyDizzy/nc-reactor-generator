@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.planner.s_tack;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 import java.util.function.Consumer;
+import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.s_tack.object.StackObject;
 import net.ncplanner.plannerator.planner.s_tack.object.StackVariable;
 import net.ncplanner.plannerator.planner.s_tack.token.Token;
-import simplelibrary.Queue;
-import simplelibrary.Stack;
 public class Script{
     public final Stack<StackObject> stack;
     public final HashMap<String, StackVariable> variables;

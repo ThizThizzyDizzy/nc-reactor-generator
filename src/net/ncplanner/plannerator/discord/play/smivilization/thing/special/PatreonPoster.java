@@ -1,11 +1,10 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing.special;
 import java.util.UUID;
-import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingExclusive;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import org.lwjgl.opengl.GL11;
+import net.ncplanner.plannerator.graphics.Renderer;
 public class PatreonPoster extends HutThingExclusive{
     int frameType = 1;
     public PatreonPoster(UUID uuid, Hut hut){
@@ -17,10 +16,10 @@ public class PatreonPoster extends HutThingExclusive{
     }
     @Override
     public void render(Renderer renderer, float imgScale){
-        GL11.glColor4d(1, 1, 1, 1);
-        double[] lefttop = Hut.convertXYZtoXY512(x, y, z+getDimZ());
-        double right = Hut.convertXYZtoXY512(x+getDimX(), y, z+getDimZ())[0];
-        double bottom = (right-lefttop[0])/getRenderWidth()*getRenderHeight()+lefttop[1];
+        renderer.setWhite();
+        float[] lefttop = Hut.convertXYZtoXY512(x, y, z+getDimZ());
+        float right = Hut.convertXYZtoXY512(x+getDimX(), y, z+getDimZ())[0];
+        float bottom = (right-lefttop[0])/getRenderWidth()*getRenderHeight()+lefttop[1];
         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/special/patreon.png", lefttop[0], lefttop[1], right, bottom);
     }
     @Override

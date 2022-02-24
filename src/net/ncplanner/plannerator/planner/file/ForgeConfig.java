@@ -5,9 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import simplelibrary.Stack;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
+import java.util.Stack;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
 public class ForgeConfig{
     public static boolean debug = false;
     private static int ln;

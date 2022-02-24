@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.editor.tool;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import simplelibrary.image.Image;
 public class SelectionTool extends EditorTool{
     public SelectionTool(Editor editor, int id){
         super(editor, id);
@@ -14,7 +14,7 @@ public class SelectionTool extends EditorTool{
     private int[] rightDragStart;
     private int[] rightDragEnd;
     @Override
-    public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
+    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
         renderer.fillRect(x+width/10, y+height/10, x+width/3, y+height/6);
         renderer.fillRect(x+width/10, y+height/10, x+width/6, y+height/3);
@@ -26,7 +26,7 @@ public class SelectionTool extends EditorTool{
         renderer.fillRect(x+width-width/10, y+height-height/10, x+width-width/6, y+height-height/3);
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
+    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         if(leftDragEnd!=null&&leftDragStart!=null){
             float border = 1/8f;
             int minBX = Math.min(leftDragStart[0], leftDragEnd[0]);
@@ -92,9 +92,9 @@ public class SelectionTool extends EditorTool{
         renderer.setWhite();
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double w, int texture){
+    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float w, Image texture){
         if(leftDragEnd!=null&&leftDragStart!=null){
-            double border = w/16;
+            float border = w/16;
             int minX = Math.min(leftDragStart[0], leftDragEnd[0]);
             int minY = Math.min(leftDragStart[1], leftDragEnd[1]);
             int minZ = Math.min(leftDragStart[2], leftDragEnd[2]);
@@ -102,12 +102,12 @@ public class SelectionTool extends EditorTool{
             int maxY = Math.max(leftDragStart[1], leftDragEnd[1]);
             int maxZ = Math.max(leftDragStart[2], leftDragEnd[2]);
             renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), .5f);
-            renderer.drawCube(x+w*minX-border/4, y+w*minY-border/4, z+w*minZ-border/4, x+w*(maxX+1)+border/4, y+w*(maxY+1)+border/4, z+w*(maxZ+1)+border/4, 0);
+            renderer.drawCube(x+w*minX-border/4, y+w*minY-border/4, z+w*minZ-border/4, x+w*(maxX+1)+border/4, y+w*(maxY+1)+border/4, z+w*(maxZ+1)+border/4, null);
             renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id));
             renderer.drawCubeOutline(x+w*minX-border, y+w*minY-border, z+w*minZ-border, x+w*(maxX+1)+border, y+w*(maxY+1)+border, z+w*(maxZ+1)+border, border);
         }
         if(rightDragEnd!=null&&rightDragStart!=null){
-            double border = w/16;
+            float border = w/16;
             int minX = Math.min(rightDragStart[0], rightDragEnd[0]);
             int minY = Math.min(rightDragStart[1], rightDragEnd[1]);
             int minZ = Math.min(rightDragStart[2], rightDragEnd[2]);

@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class Couch extends HutThingColorable{
     public Couch(UUID uuid, Hut hut){
         super(uuid, hut, "Couch", "couch", 16, Color.RED);

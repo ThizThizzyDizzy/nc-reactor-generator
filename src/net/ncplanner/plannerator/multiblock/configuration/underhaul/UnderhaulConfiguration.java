@@ -1,13 +1,13 @@
 package net.ncplanner.plannerator.multiblock.configuration.underhaul;
 import java.util.ArrayList;
 import java.util.Objects;
+import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AddonConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import simplelibrary.config2.Config;
 public class UnderhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
     public Config save(Configuration parent, boolean partial){

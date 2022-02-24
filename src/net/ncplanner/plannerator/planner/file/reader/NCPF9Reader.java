@@ -1,5 +1,8 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
+import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
@@ -9,9 +12,6 @@ import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReacto
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
-import simplelibrary.config2.ConfigNumberList;
 public class NCPF9Reader extends NCPF10Reader {
     @Override
     protected byte getTargetVersion() {

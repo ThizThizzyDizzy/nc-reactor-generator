@@ -1,14 +1,14 @@
 package net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Objects;
+import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.config2.ConfigList;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import simplelibrary.config2.Config;
-import simplelibrary.config2.ConfigList;
-import simplelibrary.config2.ConfigNumberList;
-import simplelibrary.image.Image;
+import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 public class BlockRecipe implements Pinnable, IBlockRecipe{
     public static BlockRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
         BlockRecipe recipe = new BlockRecipe(inputName, outputName);
@@ -76,16 +76,7 @@ public class BlockRecipe implements Pinnable, IBlockRecipe{
                 for(String s : inputLegacyNames)lst.add(s);
                 inputCfg.set("legacyNames", lst);
             }
-            if(inputTexture!=null){
-                ConfigNumberList tex = new ConfigNumberList();
-                tex.add(inputTexture.getWidth());
-                for(int x = 0; x<inputTexture.getWidth(); x++){
-                    for(int y = 0; y<inputTexture.getHeight(); y++){
-                        tex.add(inputTexture.getRGB(x, y));
-                    }
-                }
-                inputCfg.set("texture", tex);
-            }
+            NCPFWriter.saveTexture(inputCfg, inputTexture);
         }
         if(inputRate!=0)inputCfg.set("rate", inputRate);
         config.set("input", inputCfg);
@@ -93,16 +84,7 @@ public class BlockRecipe implements Pinnable, IBlockRecipe{
         outputCfg.set("name", outputName);
         if(!partial){
             if(outputDisplayName!=null)outputCfg.set("displayName", outputDisplayName);
-            if(outputTexture!=null){
-                ConfigNumberList tex = new ConfigNumberList();
-                tex.add(outputTexture.getWidth());
-                for(int x = 0; x<outputTexture.getWidth(); x++){
-                    for(int y = 0; y<outputTexture.getHeight(); y++){
-                        tex.add(outputTexture.getRGB(x, y));
-                    }
-                }
-                outputCfg.set("texture", tex);
-            }
+            NCPFWriter.saveTexture(outputCfg, outputTexture);
         }
         if(outputRate!=0)outputCfg.set("rate", outputRate);
         config.set("output", outputCfg);

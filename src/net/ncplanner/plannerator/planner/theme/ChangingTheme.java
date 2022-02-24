@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.theme;
 import java.util.function.Supplier;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.Font;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class ChangingTheme extends Theme{
     protected Theme current;
     private final Supplier<Theme> theme;
@@ -14,7 +15,7 @@ public class ChangingTheme extends Theme{
         current = theme.get();
     }
     @Override
-    public void drawKeywordBackground(double x, double y, double width, double height, double pixelScale){
+    public void drawKeywordBackground(float x, float y, float width, float height, float pixelScale){
         current.drawKeywordBackground(x, y, width, height, pixelScale);
     }
     @Override
@@ -176,6 +177,14 @@ public class ChangingTheme extends Theme{
     @Override
     public Color getTooltipTextColor(){
         return current.getTooltipTextColor();
+    }
+    @Override
+    public Color getTooltipBackgroundColor(){
+        return current.getTooltipBackgroundColor();
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        return current.getTooltipBorderColor();
     }
     @Override
     public Color getEditorToolTextColor(int index){
@@ -538,11 +547,11 @@ public class ChangingTheme extends Theme{
         return current.getVRMultitoolTextColor();
     }
     @Override
-    public void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
+    public void drawThemeButtonBackground(float x, float y, float width, float height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
         current.drawThemeButtonBackground(x, y, width, height, darker, enabled, pressed, mouseOver);
     }
     @Override
-    public void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text){
+    public void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text){
         current.drawThemeButtonText(x, y, width, height, textHeight, text);
     }
     @Override
@@ -620,5 +629,21 @@ public class ChangingTheme extends Theme{
     @Override
     public Color getCodeLineMarkerTextColor(){
         return current.getCodeLineMarkerTextColor();
+    }
+    @Override
+    public Font getDefaultFont(){
+        return current.getDefaultFont();
+    }
+    @Override
+    public Font getTextViewFont(){
+        return current.getTextViewFont();
+    }
+    @Override
+    public Font getCodeFont(){
+        return current.getCodeFont();
+    }
+    @Override
+    public Font getDecalFont(){
+        return current.getDecalFont();
     }
 }

@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
 import java.util.UUID;
-import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
+import net.ncplanner.plannerator.graphics.Renderer;
 public class LightSwitch extends HutThing{
     private boolean on = true;
     public LightSwitch(UUID uuid, Hut hut){
@@ -15,7 +15,7 @@ public class LightSwitch extends HutThing{
         return new LightSwitch(uuid, hut);
     }
     @Override
-    public void draw(Renderer renderer, double left, double top, double right, double bottom){
+    public void draw(Renderer renderer, float left, float top, float right, float bottom){
         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch casing.png", left, top, right, bottom);
         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch "+(on?"on":"off")+".png", left, top, right, bottom);
     }

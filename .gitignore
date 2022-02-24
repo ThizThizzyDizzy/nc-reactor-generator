@@ -11,6 +11,8 @@
 /special.dat
 /*.ncpf
 /version.version
+/benchmark.ncpf
+/benchmark.json
 
 /build.xml
 /manifest.mf

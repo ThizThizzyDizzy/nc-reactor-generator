@@ -8,10 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import simplelibrary.Sys;
-import simplelibrary.error.ErrorCategory;
-import simplelibrary.error.ErrorLevel;
-import simplelibrary.texture.TexturePackManager;
+import net.ncplanner.plannerator.planner.Core;
+import org.joml.Vector3f;
 public class OBJLoader{
     public static HashMap<String, Model> loadedModels = new HashMap<>();
     public static Model loadModel(final String filepath) throws FileNotFoundException, IOException{
@@ -21,9 +19,9 @@ public class OBJLoader{
         }
         BufferedReader reader;
         if(filepath.startsWith("/")){
-            InputStream stream = TexturePackManager.instance.currentTexturePack.getResourceAsStream(filepath);
+            InputStream stream = Core.getInputStream(filepath);
             if(stream==null){
-                Sys.error(ErrorLevel.moderate, "Can't find model: "+filepath, null, ErrorCategory.fileIO);
+                Core.error("Can't find model: "+filepath, null);
                 loadedModels.put(filepath, null);
                 return new Model();
             }
@@ -96,7 +94,7 @@ public class OBJLoader{
                     System.err.println("Unknown OBJ command: "+line);
                 }
             }catch(Exception ex){
-                Sys.error(ErrorLevel.minor, "Error while parsing OBJ command: "+line, ex, ErrorCategory.fileIO);
+                Core.error("Error while parsing OBJ command: "+line, ex);
             }
         }
         if(loneVerticies.size()==1){

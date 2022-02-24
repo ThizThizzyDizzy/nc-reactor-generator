@@ -1,12 +1,11 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing.special;
 import java.util.UUID;
-import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingExclusive;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import org.lwjgl.opengl.GL11;
-import simplelibrary.opengl.ImageStash;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
     int frameType = 2;
     public GlowshroomGlowshroomGlowshroomPoster(UUID uuid, Hut hut){
@@ -18,64 +17,66 @@ public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
     }
     @Override
     public void render(Renderer renderer, float imgScale){
-        GL11.glColor4d(1, 1, 1, 1);
-        ImageStash.instance.bindTexture(ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/background.png"));
-        GL11.glBegin(GL11.GL_QUADS);
+        renderer.setWhite();
+        renderer.bindTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/background"));
         switch(wall){
             case LEFT:
-                vert(0,0,x,y+getDimY(),z+getDimZ());
-                vert(0,1,x,y+getDimY(),z);
-                vert(1,1,x,y,z);
-                vert(1,0,x,y,z+getDimZ());
+                quad(renderer, 
+                        0,0,x,y+getDimY(),z+getDimZ(),
+                        0,1,x,y+getDimY(),z,
+                        1,1,x,y,z,
+                        1,0,x,y,z+getDimZ());
                 break;
             case BACK:
-                vert(0, 0, x, y, z+getDimZ());
-                vert(0, 1, x, y, z);
-                vert(1, 1, x+getDimX(), y, z);
-                vert(1, 0, x+getDimX(), y, z+getDimZ());
+                quad(renderer, 
+                        0, 0, x, y, z+getDimZ(),
+                        0, 1, x, y, z,
+                        1, 1, x+getDimX(), y, z,
+                        1, 0, x+getDimX(), y, z+getDimZ());
                 break;
             case RIGHT:
-                vert(0,0,x,y,z+getDimZ());
-                vert(0,1,x,y,z);
-                vert(1,1,x,y+getDimY(),z);
-                vert(1,0,x,y+getDimY(),z+getDimZ());
+                quad(renderer,
+                        0,0,x,y,z+getDimZ(),
+                        0,1,x,y,z,
+                        1,1,x,y+getDimY(),z,
+                        1,0,x,y+getDimY(),z+getDimZ());
                 break;
             default:
-                GL11.glEnd();
                 throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");
         }
-        GL11.glEnd();
-        ImageStash.instance.bindTexture(ImageStash.instance.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/frame "+frameType+".png"));
-        GL11.glBegin(GL11.GL_QUADS);
+        renderer.bindTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/frame "+frameType));
         switch(wall){
             case LEFT:
-                vert(0,0,x,y+getDimY(),z+getDimZ());
-                vert(0,1,x,y+getDimY(),z);
-                vert(1,1,x,y,z);
-                vert(1,0,x,y,z+getDimZ());
+                quad(renderer,
+                        0,0,x,y+getDimY(),z+getDimZ(),
+                        0,1,x,y+getDimY(),z,
+                        1,1,x,y,z,
+                        1,0,x,y,z+getDimZ());
                 break;
             case BACK:
-                vert(0, 0, x, y, z+getDimZ());
-                vert(0, 1, x, y, z);
-                vert(1, 1, x+getDimX(), y, z);
-                vert(1, 0, x+getDimX(), y, z+getDimZ());
+                quad(renderer,
+                        0, 0, x, y, z+getDimZ(),
+                        0, 1, x, y, z,
+                        1, 1, x+getDimX(), y, z,
+                        1, 0, x+getDimX(), y, z+getDimZ());
                 break;
             case RIGHT:
-                vert(0,0,x,y,z+getDimZ());
-                vert(0,1,x,y,z);
-                vert(1,1,x,y+getDimY(),z);
-                vert(1,0,x,y+getDimY(),z+getDimZ());
+                quad(renderer,
+                        0,0,x,y,z+getDimZ(),
+                        0,1,x,y,z,
+                        1,1,x,y+getDimY(),z,
+                        1,0,x,y+getDimY(),z+getDimZ());
                 break;
             default:
-                GL11.glEnd();
                 throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");
         }
-        GL11.glEnd();
     }
-    private void vert(double texX, double texY, double x, double y, double z){
-        GL11.glTexCoord2d(texX, texY);
-        double[] pos = Hut.convertXYZtoXY512(x, y, z);
-        GL11.glVertex2d(pos[0], pos[1]);
+    private void quad(Renderer renderer, float s1, float t1, float x1, float y1, float z1, float s2, float t2, float x2, float y2, float z2, float s3, float t3, float x3, float y3, float z3, float s4, float t4, float x4, float y4, float z4){
+        float[] pos1 = Hut.convertXYZtoXY512(x1, y1, z1);
+        float[] pos2 = Hut.convertXYZtoXY512(x2, y2, z2);
+        float[] pos3 = Hut.convertXYZtoXY512(x3, y3, z3);
+        float[] pos4 = Hut.convertXYZtoXY512(x4, y4, z4);
+        renderer.drawScreenQuad(pos1[0], pos1[1], pos2[0], pos2[1], pos3[0], pos3[1], pos4[0], pos4[1], 1, s1, t1, s2, t2, s3, t3, s4, t4);
     }
     @Override
     public int[] getDimensions(){

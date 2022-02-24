@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Locale;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.planner.Core;

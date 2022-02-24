@@ -75,6 +75,18 @@ public class MathUtil{
     public static double log(double a){
         return Math.log(a);
     }
+    public static double abs(double a){
+        return Math.abs(a);
+    }
+    public static float abs(float a){
+        return Math.abs(a);
+    }
+    public static int abs(int a){
+        return Math.abs(a);
+    }
+    public static long abs(long a){
+        return Math.abs(a);
+    }
     public static int logBase(int base, int n){
         return (int)(log(n)/log(base));
     }
@@ -95,6 +107,9 @@ public class MathUtil{
         float percent = pos/posDiff;
         float valDiff = val2-val1;
         return percent*valDiff+val1;
+    }
+    public static boolean isPointWithinRect(double x, double y, double x0, double y0, double x1, double y1){
+        return x>=x0&&y>=y0&&x<x1&&y<y1;
     }
     public static double[] rotatePoint(double pointX, double pointY, double degrees, double originX, double originY){
         double rX = pointX-originX, rY = pointY-originY;//Find relative coordinates; easier to rotate around the origin (0, 0) than any other point.

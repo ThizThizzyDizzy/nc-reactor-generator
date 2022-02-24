@@ -13,7 +13,7 @@ public class UpdatingTutorial extends Tutorial{
         return TutorialFileReader.read(path).name;
     }
     @Override
-    public double getHeight(){
+    public float getHeight(){
         return tutorial.getHeight();
     }
     @Override

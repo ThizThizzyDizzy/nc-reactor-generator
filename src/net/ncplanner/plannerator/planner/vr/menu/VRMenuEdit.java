@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -46,17 +47,15 @@ import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentMultib
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentSpecialPanel;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentToolPanel;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_LeftHand;
 import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_RightHand;
 import static org.lwjgl.openvr.VR.ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32;
 import org.lwjgl.openvr.VRSystem;
-import simplelibrary.image.Color;
 public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
-    public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Done", true, false));
-    public VRMenuComponentButton resize = add(new VRMenuComponentButton(1, 1.625, -.5, 1, .125, .1, 0, -90, 0, "Resize", true, false));
+    public VRMenuComponentButton done = add(new VRMenuComponentButton(-.25f, 1.75f, -1, .5f, .125f, .1f, 0, 0, 0, "Done", true, false));
+    public VRMenuComponentButton resize = add(new VRMenuComponentButton(1, 1.625f, -.5f, 1, .125f, .1f, 0, -90, 0, "Resize", true, false));
     public final HashMap<Integer, ArrayList<EditorTool>> editorTools = new HashMap<>();
     private final Multiblock multiblock;
     public HashMap<Integer, ArrayList<ClipboardEntry>> clipboard = new HashMap<>();
@@ -69,20 +68,20 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     public HashMap<Integer, Integer> selectedFusionBlockRecipe = new HashMap<>();
     public HashMap<Integer, Integer> selectedSFRBlockRecipe = new HashMap<>();
     public HashMap<Integer, Integer> selectedMSRBlockRecipe = new HashMap<>();
-    private VRMenuComponentToolPanel leftToolPanel  = add(new VRMenuComponentToolPanel(this, -.625, 1, -1, .5, .5, .1, 0, 0, 0));
-    private VRMenuComponentToolPanel rightToolPanel  = add(new VRMenuComponentToolPanel(this, .125, 1, -1, .5, .5, .1, 0, 0, 0));
-    private VRMenuComponentSpecialPanel leftSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -1, .625, -.125, .5, 1, .1, 0, 90, 0));
-    private VRMenuComponentSpecialPanel rightSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -1, .625, .625, .5, 1, .1, 0, 90, 0));
-    private VRMenuComponentMultiblockSettingsPanel multiblockSettingsPanel  = add(new VRMenuComponentMultiblockSettingsPanel(this, 1, .625, -.5, 1, 1, .1, 0, -90, 0));
-    private VRMenuComponentMultiblockOutputPanel multiblockOutputPanel  = add(new VRMenuComponentMultiblockOutputPanel(this, .5, .25, 1.2, 1, 1.5, .05, 0, 180, 0));
+    private VRMenuComponentToolPanel leftToolPanel  = add(new VRMenuComponentToolPanel(this, -.625f, 1, -1, .5f, .5f, .1f, 0, 0, 0));
+    private VRMenuComponentToolPanel rightToolPanel  = add(new VRMenuComponentToolPanel(this, .125f, 1, -1, .5f, .5f, .1f, 0, 0, 0));
+    private VRMenuComponentSpecialPanel leftSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -1, .625f, -.125f, .5f, 1, .1f, 0, 90, 0));
+    private VRMenuComponentSpecialPanel rightSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -1, .625f, .625f, .5f, 1, .1f, 0, 90, 0));
+    private VRMenuComponentMultiblockSettingsPanel multiblockSettingsPanel  = add(new VRMenuComponentMultiblockSettingsPanel(this, 1, .625f, -.5f, 1, 1, .1f, 0, -90, 0));
+    private VRMenuComponentMultiblockOutputPanel multiblockOutputPanel  = add(new VRMenuComponentMultiblockOutputPanel(this, .5f, .25f, 1.2f, 1, 1.5f, .05f, 0, 180, 0));
     public VRMenuComponentEditorGrid grid;
     private boolean closing = false;//used for the closing menu animation
     private long lastTick = -1;
-    private int openProgress = 0;
+    private float openProgress = 0;
     private static final int openTime = 40;
     private static final int openDist = 100;//fly in from 100m away
     private static final float openSmooth = 5;//smooths out the incoming
-    private final double openTargetZ;
+    private final float openTargetZ;
     private long lastChange = 0;
     public ArrayList<Suggestion> suggestions = new ArrayList<>();
     private ArrayList<Suggestor> suggestors = new ArrayList<>();
@@ -102,33 +101,29 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         });
     }
     @Override
-    public void onGUIOpened(){
-        super.onGUIOpened();
+    public void onOpened(){
+        super.onOpened();
         multiblock.recalculate();
     }
     @Override
-    public void tick(){
-        super.tick();
+    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
         lastTick = System.nanoTime();
         if(lastChange!=multiblock.lastChangeTime){
             lastChange = multiblock.lastChangeTime;
             recalculateSuggestions();
         }
         if(closing){
-            openProgress--;
+            openProgress-=deltaTime*20;
             if(openProgress<=0)gui.open(new VRMenuMain(gui));
         }else if(openProgress<openTime){
             openProgress++;
         }
-    }
-    @Override
-    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb){
         long millisSinceLastTick = lastTick==-1?0:(System.nanoTime()-lastTick)/1_000_000;
         float partialTick = millisSinceLastTick/50f;
         float progress = closing?Math.max((openProgress-partialTick)/openTime,0):(Math.min((openProgress+partialTick)/openTime,1));
-        double dist = openDist-openDist*Math.pow(Math.sin(Math.PI*progress/2), 1/openSmooth);
+        float dist = (float)(openDist-openDist*Math.pow(Math.sin(Math.PI*progress/2), 1/openSmooth));
         grid.z = openTargetZ-dist;
-        super.render(renderer, tdpb);
+        super.render(renderer, tdpb, deltaTime);
         //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
         for(int i = 1; i<tdpb.limit(); i++){
             TrackedDevicePose pose = tdpb.get(i);
@@ -137,15 +132,13 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
                 int role = VRSystem.VRSystem_GetInt32TrackedDeviceProperty(i, ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32, pError);
                 if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand||role==ETrackedControllerRole_TrackedControllerRole_RightHand){
                     Matrix4f matrix = new Matrix4f(MathUtil.convertHmdMatrix(pose.mDeviceToAbsoluteTracking()));
-                    GL11.glPushMatrix();
-                    GL11.glMultMatrixf(matrix.get(new float[16]));
-                    GL11.glMultMatrixf(Multitool.editOffsetmatrix.get(new float[16]));
+                    renderer.setModel(matrix.mul(Multitool.editOffsetmatrix));
                     if(getSelectedBlock(i)!=null){
                         renderer.setWhite();
-                        double radius = grid.blockSize/4;
-                        renderer.drawCube(-radius, -radius, -radius, radius, radius, radius, Core.getTexture(getSelectedBlock(i).getTexture()));
+                        float radius = grid.blockSize/4;
+                        renderer.drawCube(-radius, -radius, -radius, radius, radius, radius, getSelectedBlock(i).getTexture());
                     }
-                    GL11.glPopMatrix();
+                    renderer.resetModelMatrix();
                 }
             }
         }
@@ -570,7 +563,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
                     Suggestion s = it.next();
                     if(s==suggestion)continue;//literally the same exact thing
                     if(s.equals(suggestion))it.remove();
-                    consolidateTask.progress = 1-(suggestions.size()/(double)total);
+                    consolidateTask.progress = 1-(suggestions.size()/(float)total);
                 }
             }
             consolidateTask.finish();

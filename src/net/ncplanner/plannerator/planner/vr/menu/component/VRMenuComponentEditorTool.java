@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.tool.EditorTool;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -9,7 +9,7 @@ import org.lwjgl.openvr.VR;
 public class VRMenuComponentEditorTool extends VRMenuComponent{
     private final EditorTool tool;
     private final VRMenuEdit editor;
-    public VRMenuComponentEditorTool(VRMenuEdit editor, double x, double y, double z, double size, EditorTool tool){
+    public VRMenuComponentEditorTool(VRMenuEdit editor, float x, float y, float z, float size, EditorTool tool){
         super(x, y, z, size, size, size, 0, 0, 0);
         this.tool = tool;
         this.editor = editor;
@@ -17,10 +17,10 @@ public class VRMenuComponentEditorTool extends VRMenuComponent{
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
         renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
-        renderer.drawCube(0, 0, 0, width, height, depth, 0);
+        renderer.drawCube(0, 0, 0, width, height, depth, null);
         renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
         if(editor.getSelectedTool(tool.id)==tool){
-            renderer.drawCubeOutline(.0025, .0025, .0025, width+.0025, height+.0025, depth+.0025, .0025);//2.5mm
+            renderer.drawCubeOutline(.0025f, .0025f, .0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
         }
         tool.render(0, 0, 0, width, height, depth, Core.getThemeIndex(this));
     }

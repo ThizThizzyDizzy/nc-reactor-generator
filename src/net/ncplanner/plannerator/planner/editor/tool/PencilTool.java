@@ -1,13 +1,13 @@
 package net.ncplanner.plannerator.planner.editor.tool;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
-import simplelibrary.image.Image;
 public class PencilTool extends EditorTool{
     public PencilTool(Editor editor, int id){
         super(editor, id);
@@ -19,11 +19,9 @@ public class PencilTool extends EditorTool{
     private ArrayList<int[]> leftSelectedBlocks = new ArrayList<>();
     private ArrayList<int[]> rightSelectedBlocks = new ArrayList<>();
     @Override
-    public void render(Renderer renderer, double x, double y, double width, double height, int themeIndex){
+    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillPolygon(new double[]{x+width*.25, x+width*.375, x+width*.25}, new double[]{y+height*.75, y+height*.75, y+height*.625});
-        renderer.fillPolygon(new double[]{x+width*.4, x+width*.275, x+width*.5, x+width*.625}, new double[]{y+height*.725, y+height*.6, y+height*.375, y+height*.5});
-        renderer.fillPolygon(new double[]{x+width*.525, x+width*.65, x+width*.75, x+width*.625}, new double[]{y+height*.35, y+height*.475, y+height*.375, y+height*.25});
+        renderer.drawElement("pencil", x, y, width, height);
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
@@ -131,7 +129,7 @@ public class PencilTool extends EditorTool{
         return true;
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, double x, double y, double width, double height, int blockSize, Image texture){
+    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         renderer.setWhite(.5f);
         synchronized(leftSelectedBlocks){
             for(int[] i : leftSelectedBlocks){
@@ -169,9 +167,9 @@ public class PencilTool extends EditorTool{
         renderer.setWhite();
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, double x, double y, double z, double width, double height, double depth, double blockSize, int texture){
+    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         renderer.setWhite(.5f);
-        double border = blockSize/64;
+        float border = blockSize/64;
         synchronized(leftSelectedBlocks){
             for(int[] i : leftSelectedBlocks){
                 renderer.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, texture);
@@ -181,7 +179,7 @@ public class PencilTool extends EditorTool{
         synchronized(rightSelectedBlocks){
             for(int[] i : rightSelectedBlocks){
                 if(editor.getMultiblock().getBlock(i[0], i[1], i[2])==null)continue;
-                renderer.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, 0);
+                renderer.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, null);
             }
         }
         renderer.setWhite();

@@ -23,11 +23,11 @@ import net.ncplanner.plannerator.multiblock.editor.ppe.ClearInvalid;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import simplelibrary.CircularStream;
 public class HeatsinkBattle extends Game{
     public Multiblock basis;
     public Multiblock current;

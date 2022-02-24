@@ -8,12 +8,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import simplelibrary.Sys;
-import simplelibrary.error.ErrorCategory;
-import simplelibrary.error.ErrorLevel;
-import simplelibrary.image.Color;
-import simplelibrary.opengl.ImageStash;
-import simplelibrary.texture.TexturePackManager;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.planner.Core;
 public class Material{
     public static HashMap<String, ArrayList<Material>> loadedMaterials = new HashMap<>();
     public final String name;
@@ -29,7 +26,7 @@ public class Material{
             if(image.isEmpty()){
                 return 0;
             }
-            return ImageStash.instance.getTexture(image);
+            return Core.getTexture(TextureManager.getImageRaw(name));
         }
         return texture;
     }
@@ -43,9 +40,9 @@ public class Material{
         BufferedReader reader;
         ArrayList<Material> materials = new ArrayList<>();
         if(modelpath.startsWith("/")){
-            InputStream stream = TexturePackManager.instance.currentTexturePack.getResourceAsStream(root+filename);
+            InputStream stream = Core.getInputStream(root+filename);
             if(stream==null){
-                Sys.error(ErrorLevel.moderate, "Can't find material: "+root+filename, null, ErrorCategory.fileIO);
+                Core.error("Can't find material: "+root+filename, null);
                 loadedMaterials.put(root+filename, null);
                 return null;
             }
@@ -83,7 +80,7 @@ public class Material{
                     System.err.println("Unknown MTL command: "+line);
                 }
             }catch(Exception ex){
-                Sys.error(ErrorLevel.minor, "Error while parsing MTL command: "+line, ex, ErrorCategory.fileIO);
+                Core.error("Error while parsing MTL command: "+line, ex);
             }
         }
         reader.close();

@@ -13,7 +13,7 @@ public class PlacementPoint{
         this.x = x;
         this.y = y;
         this.z = z;
-        double[] xy = Hut.convertXYZtoXY512(x, y, z);
+        float[] xy = Hut.convertXYZtoXY512(x, y, z);
         this.vx = (int)xy[0];
         this.vy = (int)xy[1];
     }
@@ -23,7 +23,7 @@ public class PlacementPoint{
         this.x = x;
         this.y = y;
         this.z = z;
-        double[] xy = Hut.convertXYZtoXY512(x, y, z);
+        float[] xy = Hut.convertXYZtoXY512(x, y, z);
         this.vx = (int)xy[0];
         this.vy = (int)xy[1];
     }

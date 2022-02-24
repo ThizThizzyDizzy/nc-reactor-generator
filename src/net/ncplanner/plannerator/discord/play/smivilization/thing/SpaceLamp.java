@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
 import java.util.UUID;
-import net.ncplanner.plannerator.Renderer;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
+import net.ncplanner.plannerator.graphics.Renderer;
 public class SpaceLamp extends HutThing{
     private boolean on = true;
     public SpaceLamp(UUID uuid, Hut hut){
@@ -14,7 +14,7 @@ public class SpaceLamp extends HutThing{
         return new SpaceLamp(uuid, hut);
     }
     @Override
-    public void draw(Renderer renderer, double left, double top, double right, double bottom){
+    public void draw(Renderer renderer, float left, float top, float right, float bottom){
         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/space lamp/lamp.png", left, top, right, bottom);
         if(on)renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/space lamp/lamp glow.png", left, top, right, bottom);
     }

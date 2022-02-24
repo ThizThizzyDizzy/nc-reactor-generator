@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.vr;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -20,12 +20,7 @@ public class VRMenu{
         component.onAdded();
         return component;
     }
-    public void tick(){
-        for(int i = components.size()-1; i>=0; i--){
-            if(i<components.size()) components.get(i).tick();
-        }
-    }
-    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb){
+    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
         VRCore.leftMultitool.tooltip = VRCore.rightMultitool.tooltip = null;
         for(VRMenuComponent c : getAllComponents()){
             String tooltip = c.getTooltip(VRCore.leftMultitool.device);
@@ -39,14 +34,14 @@ public class VRMenu{
         }
         renderBackground(renderer);
         for(VRMenuComponent component : components){
-            component.render(renderer, tdpb);
+            component.render(renderer, tdpb, deltaTime);
         }
         renderForeground(renderer);
     }
     public void renderBackground(Renderer renderer){}
     public void renderForeground(Renderer renderer){}
-    public void onGUIOpened(){}
-    public void onGUIClosed(){}
+    public void onOpened(){}
+    public void onClosed(){}
     public void keyEvent(int device, int button, boolean pressed){
         for(VRMenuComponent c : components){
             if(c.isDeviceOver.contains(device)){

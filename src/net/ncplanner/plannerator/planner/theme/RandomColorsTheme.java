@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.theme;
 import java.util.HashMap;
 import java.util.Random;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.graphics.image.Color;
 public class RandomColorsTheme extends ColorTheme{
     private Random rand = new Random();
     private Color keywordBackgroundColor;
@@ -45,6 +45,8 @@ public class RandomColorsTheme extends ColorTheme{
     private Color clusterInvalidColor;
     private Color tooltipInvalidTextColor;
     private Color tooltipTextColor;
+    private Color tooltipBackgroundColor;
+    private Color tooltipBorderColor;
     private Color editorToolTextColor;
     private Color editorToolBackgroundColor;
     private Color selectionColor;
@@ -348,6 +350,14 @@ public class RandomColorsTheme extends ColorTheme{
     @Override
     public Color getTooltipTextColor(){
         return tooltipTextColor = gen(tooltipTextColor);
+    }
+    @Override
+    public Color getTooltipBackgroundColor(){
+        return tooltipBackgroundColor = gen(tooltipBackgroundColor);
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        return tooltipBorderColor = gen(tooltipBorderColor);
     }
     @Override
     public Color getEditorToolTextColor(int index){

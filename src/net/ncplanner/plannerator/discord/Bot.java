@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.discord.keyword.KeywordBlind;
 import net.ncplanner.plannerator.discord.keyword.KeywordBlockRange;
 import net.ncplanner.plannerator.discord.keyword.KeywordConfiguration;
@@ -61,6 +63,8 @@ import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
 import net.ncplanner.plannerator.discord.play.smivilization.HutType;
 import net.ncplanner.plannerator.discord.play.smivilization.Placement;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -81,6 +85,7 @@ import net.ncplanner.plannerator.multiblock.generator.StandardGenerator;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Core.BufferRenderer;
 import net.ncplanner.plannerator.planner.Main;
@@ -88,14 +93,6 @@ import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
-import simplelibrary.CircularStream;
-import simplelibrary.Stack;
-import simplelibrary.Sys;
-import simplelibrary.config2.Config;
-import simplelibrary.error.ErrorCategory;
-import simplelibrary.error.ErrorLevel;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 public class Bot extends ListenerAdapter{
     public static boolean debug = false;
     private static ArrayList<String> prefixes = new ArrayList<>();
@@ -2463,7 +2460,7 @@ public class Bot extends ListenerAdapter{
             System.out.println("Bot started!");
             FileWriter.botRunning = true;
         }catch(LoginException ex){
-            Sys.error(ErrorLevel.critical, "Failed to log in!", ex, ErrorCategory.InternetIO);
+            Core.criticalError("Failed to log in!", ex);
         }
     }
     public static void stop(){

@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.theme;
 import java.util.Objects;
 import java.util.Random;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Main;
-import net.ncplanner.plannerator.planner.menu.dialog.MenuSiezureTheme;
-import simplelibrary.image.Color;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSiezureTheme;
 public class SiezureTheme extends ColorTheme{
     private Random rand = new Random();
     private Boolean siezureAllowed = null;
@@ -238,6 +238,16 @@ public class SiezureTheme extends ColorTheme{
     @Override
     public Color getTooltipTextColor(){
         if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getTooltipTextColor();
+        return rand();
+    }
+    @Override
+    public Color getTooltipBackgroundColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getTooltipBackgroundColor();
+        return rand();
+    }
+    @Override
+    public Color getTooltipBorderColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getTooltipBorderColor();
         return rand();
     }
     @Override

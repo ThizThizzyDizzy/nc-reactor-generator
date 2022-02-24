@@ -7,10 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import net.ncplanner.plannerator.planner.Main;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.InputStreamProvider;
 public class TutorialFileReader{
     public static final ArrayList<TutorialFormatReader> formats = new ArrayList<>();
@@ -130,27 +127,7 @@ public class TutorialFileReader{
     }
     public static Tutorial read(String path){
         return new UpdatingTutorial(() -> {
-            return getInputStream(path);
+            return Core.getInputStream(path);
         });
-    }
-    public static InputStream getInputStream(String path){
-        try{
-            if(new File("nbproject").exists()){
-                return new FileInputStream(new File("src/"+path.replace("/", "/")));
-            }else{
-                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
-                Enumeration enumEntries = jar.entries();
-                while(enumEntries.hasMoreElements()){
-                    JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals(path.replace("/", "/"))){
-                        return jar.getInputStream(file);
-                    }
-                }
-            }
-            throw new IllegalArgumentException("Cannot find file: "+path);
-        }catch(IOException ex){
-            System.err.println("Couldn't read file: "+path);
-            return null;
-        }
     }
 }

@@ -1,17 +1,20 @@
 package net.ncplanner.plannerator.planner.theme;
 import java.util.ArrayList;
 import java.util.Random;
+import net.ncplanner.plannerator.graphics.Font;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.theme.legacy.LegacyTheme;
 import net.ncplanner.plannerator.planner.theme.legacy.SolidColorTheme;
-import simplelibrary.image.Color;
 public abstract class Theme{
     public static ArrayList<ThemeCategory> themes = new ArrayList<>();
     public static final SolidColorTheme STANDARD, GOLD, CRACKER, CHOCOLATE, MARSHMALLOW;
     public static final Theme QUESTIONQUESTIONQUESTION;
+    public static final FontStandardTheme DIFFERENT;
     static{
         Random rand = new Random();
         newCategory("General");
         addTheme(STANDARD = new StandardTheme("Light", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f));
+        addTheme(DIFFERENT = new FontStandardTheme("Different", new Color(100, 100, 100), new Color(1f, 1f, 1f, 1f), .625f, .75f, "ComicMono"));
         addTheme(new StandardTheme("Light, but darker", new Color(50, 50, 50), new Color(.5f, .5f, .5f, 1f), .3125f, .75f));
         newCategory("Materials");
         addTheme(new SolidColorTheme("Water", new Color(64, 78, 203)));
@@ -196,7 +199,7 @@ public abstract class Theme{
     public void onSet(){}
     //pixelScale is the amount of a dimension that should be regarded as a "pixel"
     //always 1 for 2D GUIs, much smaller for VR
-    public abstract void drawKeywordBackground(double x, double y, double width, double height, double pixelScale);
+    public abstract void drawKeywordBackground(float x, float y, float width, float height, float pixelScale);
     public abstract Color getKeywordColorBlind();
     public abstract Color getKeywordColorUnderhaul();
     public abstract Color getKeywordColorSymmetry();
@@ -237,6 +240,8 @@ public abstract class Theme{
     public abstract Color getClusterInvalidColor();
     public abstract Color getTooltipInvalidTextColor();
     public abstract Color getTooltipTextColor();
+    public abstract Color getTooltipBackgroundColor();
+    public abstract Color getTooltipBorderColor();
     public abstract Color getEditorToolTextColor(int index);
     public abstract Color getEditorToolBackgroundColor(int index);
     public abstract Color getSelectionColor();
@@ -346,8 +351,12 @@ public abstract class Theme{
     public abstract Color getCodeActiveTextColor();
     public abstract Color getCodeLineMarkerColor();
     public abstract Color getCodeLineMarkerTextColor();
-    public abstract void drawThemeButtonBackground(double x, double y, double width, double height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver);
-    public abstract void drawThemeButtonText(double x, double y, double width, double height, double textHeight, String text);
+    public abstract Font getDefaultFont();
+    public abstract Font getTextViewFont();
+    public abstract Font getCodeFont();
+    public abstract Font getDecalFont();
+    public abstract void drawThemeButtonBackground(float x, float y, float width, float height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver);
+    public abstract void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text);
     public static Color average(Color c1, Color c2){
         return new Color((c1.getRed()+c2.getRed())/2, (c1.getGreen()+c2.getGreen())/2, (c1.getBlue()+c2.getBlue())/2, (c1.getAlpha()+c2.getAlpha())/2);
     }

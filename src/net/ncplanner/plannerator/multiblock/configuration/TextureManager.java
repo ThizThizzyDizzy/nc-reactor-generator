@@ -1,34 +1,26 @@
 package net.ncplanner.plannerator.multiblock.configuration;
-import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.HashMap;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ImageIO;
-import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.MathUtil;
-import simplelibrary.image.Color;
-import simplelibrary.image.Image;
 public class TextureManager{
-    public static Image getImage(String texture){
+    private static final HashMap<String, Image> imageMap = new HashMap<>();
+    public static Image getImageRaw(String texture){
+        if(imageMap.containsKey(texture))return imageMap.get(texture);
         try{
-            if(new File("nbproject").exists()){
-                return ImageIO.read(new File("src/textures/"+texture+".png"));
-            }else{
-                JarFile jar = new JarFile(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("%20", " ")));
-                Enumeration enumEntries = jar.entries();
-                while(enumEntries.hasMoreElements()){
-                    JarEntry file = (JarEntry)enumEntries.nextElement();
-                    if(file.getName().equals("textures/"+texture+".png")){
-                        return ImageIO.read(jar.getInputStream(file));
-                    }
-                }
-            }
-            throw new IllegalArgumentException("Cannot find file: "+texture);
+            imageMap.put(texture, ImageIO.read(Core.getInputStream(texture)));
+            return imageMap.get(texture);
         }catch(IOException ex){
             System.err.println("Couldn't read file: "+texture);
-            return new Image(1, 1);
+            imageMap.put(texture, new Image(1, 1));
+            return imageMap.get(texture);
         }
+    }
+    public static Image getImage(String texture){
+        return getImageRaw("textures/"+texture+".png");
     }
     public static boolean SEPARATE_BRIGHT_TEXTURES = true;
     public static final float IMG_FAC = .003925f;

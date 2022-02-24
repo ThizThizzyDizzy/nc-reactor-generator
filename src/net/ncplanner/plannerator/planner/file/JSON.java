@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import simplelibrary.Queue;
+import net.ncplanner.plannerator.planner.Queue;
 public class JSON{
     public static boolean debug = false;
     public static JSONObject parse(String str) throws IOException{

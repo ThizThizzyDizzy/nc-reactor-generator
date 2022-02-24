@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.planner.vr.menu;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.menu.MenuMain;
+import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.VRMenu;
 import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentButton;
@@ -11,19 +11,18 @@ import net.ncplanner.plannerator.planner.vr.menu.component.VRMenuComponentMultib
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 public class VRMenuMain extends VRMenu{
-    public VRMenuComponentButton exit = add(new VRMenuComponentButton(-.25, 1.75, -1, .5, .125, .1, 0, 0, 0, "Exit VR", true, false));
+    public VRMenuComponentButton exit = add(new VRMenuComponentButton(-.25f, 1.75f, -1, .5f, .125f, .1f, 0, 0, 0, "Exit VR", true, false));
     private ArrayList<VRMenuComponentMultiblock> multiblocks = new ArrayList<>();
     private ArrayList<VRMenuComponentButton> multiblockButtons = new ArrayList<>();
     private ArrayList<Multiblock> toAdd = new ArrayList<>();
     public Multiblock opening = null;
-    private long lastTick = -1;
-    private int openProgress = 0;
+    private float openProgress = 0;
     private static final int openTime = 10;
     public VRMenuMain(VRGUI gui){
         super(gui, null);
         for(int i = 0; i<Core.multiblockTypes.size(); i++){
             Multiblock m = Core.multiblockTypes.get(i);
-            VRMenuComponentButton button = new VRMenuComponentButton(-.375/2, 1.25-.1*i, -.75, .375, .075, .05, 0, 0, 0, m.getDefinitionName(), true, false);
+            VRMenuComponentButton button = new VRMenuComponentButton(-.375f/2, 1.25f-.1f*i, -.75f, .375f, .075f, .05f, 0, 0, 0, m.getDefinitionName(), true, false);
             button.setTooltip(m.getDescriptionTooltip());
             button.addActionListener(() -> {
                 Multiblock multi = m.newInstance();
@@ -37,34 +36,27 @@ public class VRMenuMain extends VRMenu{
         });
     }
     @Override
-    public void tick(){
-        super.tick();
+    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
         for(Multiblock m : toAdd){
             multiblocks.add(add(new VRMenuComponentMultiblock(this, m)));
         }
         toAdd.clear();
-        lastTick = System.nanoTime();
         if(opening!=null){
-            openProgress++;
+            openProgress+=deltaTime*20;
             if(openProgress>=openTime){
                 gui.open(new VRMenuEdit(gui, opening));
             }
         }
-    }
-    @Override
-    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        long millisSinceLastTick = lastTick==-1?0:(System.nanoTime()-lastTick)/1_000_000;
-        float partialTick = millisSinceLastTick/50f;
         if(opening!=null){
-            float progress = Math.min((openProgress+partialTick)/openTime,1);
+            float progress = Math.min(openProgress/openTime,1);
             for(VRMenuComponentMultiblock mb : multiblocks){
                 mb.scale = 1-progress;
             }
         }
-        super.render(renderer, tdpb);
+        super.render(renderer, tdpb, deltaTime);
     }
     @Override
-    public void onGUIOpened(){
+    public void onOpened(){
         refresh();
     }
     public void refresh(){
@@ -73,7 +65,7 @@ public class VRMenuMain extends VRMenu{
         for(Multiblock multi : Core.multiblocks){
             VRMenuComponentMultiblock vrc = new VRMenuComponentMultiblock(this, multi);
             vrc.boost = 140;
-            vrc.y = 1.25;
+            vrc.y = 1.25f;
             vrc.z = -1;
             multiblocks.add(add(vrc));
         }

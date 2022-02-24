@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.vr;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.Renderer;
+import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 import org.lwjgl.openvr.HmdMatrix34;
@@ -10,21 +10,18 @@ import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_L
 import static org.lwjgl.openvr.VR.ETrackedControllerRole_TrackedControllerRole_RightHand;
 import static org.lwjgl.openvr.VR.ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32;
 import org.lwjgl.openvr.VRSystem;
-import simplelibrary.Sys;
-import simplelibrary.error.ErrorCategory;
-import simplelibrary.error.ErrorLevel;
 public class VRGUI{
     public ArrayList<ArrayList<Integer>> buttonsWereDown = new ArrayList<>();
     public VRMenu menu;
     public <V extends VRMenu> V open(VRMenu menu){
         if(this.menu!=null){
-            this.menu.onGUIClosed();
+            this.menu.onClosed();
         }
         this.menu = menu;
-        if(menu!=null)menu.onGUIOpened();
+        if(menu!=null)menu.onOpened();
         return (V)menu;
     }
-    public synchronized void render(Renderer renderer, TrackedDevicePose.Buffer tdpb){
+    public synchronized void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
         for(int i = 0; i<tdpb.limit(); i++){
             TrackedDevicePose tdp = tdpb.get(i);
             if(tdp.bDeviceIsConnected()&&tdp.bPoseIsValid()){
@@ -33,7 +30,7 @@ public class VRGUI{
                 onDeviceMoved(i, new Matrix4f(MathUtil.convertHmdMatrix(m)).mul(Multitool.editOffsetmatrix));
             }
         }
-        if(menu!=null)menu.render(renderer, tdpb);
+        if(menu!=null)menu.render(renderer, tdpb, deltaTime);
     }
     public void onKeyEvent(int device, int button, boolean pressed){
         IntBuffer pError = IntBuffer.allocate(1);
@@ -45,15 +42,6 @@ public class VRGUI{
             if(menu!=null)menu.keyEvent(device, button, pressed);
             if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand)VRCore.leftMultitool.keyEvent(button, pressed);
             if(role==ETrackedControllerRole_TrackedControllerRole_RightHand)VRCore.rightMultitool.keyEvent(button, pressed);
-        }
-    }
-    public synchronized void tick(){
-        if(menu!=null){
-            try{
-                menu.tick();
-            }catch(Throwable throwable){
-                Sys.error(ErrorLevel.severe, "Could not tick VRGUI!", new RuntimeException(throwable), ErrorCategory.other);
-            }
         }
     }
     private void onDeviceMoved(int device, Matrix4f matrix){
