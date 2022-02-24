@@ -171,6 +171,7 @@ public class Core{
             }catch(IOException ex){}
         });
         console.setName("Console interface thread");
+        console.setDaemon(true);
         console.start();
 
         glfwMakeContextCurrent(window);

@@ -4,6 +4,7 @@ import net.ncplanner.plannerator.multiblock.configuration.AbstractBlockContainer
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.CompiledUnderhaulSFRConfiguration;
 public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType, Block> {
     public static PlacementRule atLeast(int min, BlockType block){
         PlacementRule rule = new PlacementRule();
@@ -137,6 +138,20 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
                     return b.isModerator();
                 case FUEL_CELL:
                     return b.isFuelCell();
+                default:
+                    throw new RuntimeException("Invalid enum type?");
+            }
+        }
+        public boolean blockMatches(int b, CompiledUnderhaulSFRConfiguration config){
+            switch(this){
+                case CASING:
+                    return b==-2;
+                case COOLER:
+                    return b>=0&&config.blockCooling[b]!=0;
+                case MODERATOR:
+                    return b>=0&&config.blockModerator[b];
+                case FUEL_CELL:
+                    return b>=0&&config.blockFuelCell[b];
                 default:
                     throw new RuntimeException("Invalid enum type?");
             }

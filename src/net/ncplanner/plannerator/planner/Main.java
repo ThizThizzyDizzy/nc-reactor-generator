@@ -35,6 +35,7 @@ public class Main{
     public static boolean isBot = false;
     public static boolean headless = false;
     public static String discordBotToken;
+    public static boolean benchmark = false;
     private static void addRequiredLibrary(String url, String filename){
         requiredLibraries.add(new String[]{url,filename});
     }
@@ -46,11 +47,14 @@ public class Main{
     }
     public static void main(String[] args){
         try{
-            for(int i = 0; i<args.length; i++){
+            FOR:for(int i = 0; i<args.length; i++){
                 switch(args[i]){
                     case "headless":
                         headless = true;
                         break;
+                    case "benchmark":
+                        benchmark = true;
+                        break FOR;
                     case "maybediscord":
                         System.out.println("Bot or Planner? (B|P)\n> ");
                         BufferedReader r = new BufferedReader(new InputStreamReader(System.in));

@@ -209,7 +209,8 @@ public class MenuInit extends Menu{
                 dialog = baseDialog = gui.menu;
                 while(baseDialog.parent instanceof MenuDialog)baseDialog = baseDialog.parent;
             }
-            if(Main.isBot)gui.open(new MenuDiscord(gui));
+            if(Main.benchmark)gui.open(new MenuBenchmark(gui));
+            else if(Main.isBot)gui.open(new MenuDiscord(gui));
             else{
                 if(!Core.tutorialShown&&!Main.headless){
                     gui.open(new MenuTutorial(gui, gui.menu));
