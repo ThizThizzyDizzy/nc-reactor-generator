@@ -4,26 +4,24 @@ import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Component;
-import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 public class MenuComponentTurbineRotorGraph extends Component{
     private final OverhaulTurbine turbine;
-    private final int blockSize;
-    private final MenuEdit editor;
-    public MenuComponentTurbineRotorGraph(int x, int y, int blockSize, MenuEdit editor, OverhaulTurbine turbine){
-        super(x, y, turbine.getInternalDepth()*blockSize, blockSize*6);
+    private final int footerHeight;
+    public MenuComponentTurbineRotorGraph(int x, int y, int width, int height, int footerHeight, OverhaulTurbine turbine){
+        super(x, y, width, height);
         this.turbine = turbine;
-        this.blockSize = blockSize;
-        this.editor = editor;
+        this.footerHeight = footerHeight;
     }
     @Override
     public void draw(double deltaTime){
+        if(turbine==null)return;
         Renderer renderer = new Renderer();
         if(turbine.rotorValid){
             renderer.setWhite();
             {
                 renderer.bound(x, y, x+width, y+height);
-                float width = turbine.getInternalDepth()*blockSize;
-                float height = blockSize*4;
+                float width = this.width;
+                float height = this.height-footerHeight*2;
                 if(turbine.rotorValid){
                     float max = 0;
                     float min = Float.MAX_VALUE;
@@ -80,30 +78,30 @@ public class MenuComponentTurbineRotorGraph extends Component{
                 renderer.unBound();
             }
             float wideScale = 1;
-            float len = renderer.getStringWidth("Actual Expansion", blockSize/2);
-            wideScale = MathUtil.min(wideScale, width/len);
-            renderer.drawText(x, y+blockSize*4.5f, x+width, y+blockSize*(4.5f+wideScale/2), "Actual Expansion");
+            float len = renderer.getStringWidth("Actual Expansion", footerHeight);
+            wideScale = MathUtil.min(wideScale, (width/2)/len);
+            renderer.drawCenteredText(x, y+height-footerHeight*2, x+width/2, y+height-footerHeight*2f+footerHeight*wideScale, "Actual Expansion");
             renderer.setColor(new Color(31,63,255));
-            renderer.drawText(x, y+blockSize*4, x+width, y+blockSize*(4+wideScale/2), "Ideal Expansion");
+            renderer.drawCenteredText(x+width/2, y+height-footerHeight*2, x+width, y+height-footerHeight*2+footerHeight*wideScale, "Ideal Expansion");
             float blockWidth = width/10;
             float tint = .75f;
             for(int i = 0; i<10; i++){
                 int I = 9-i;
                 String text = ">"+I*10+"%";
                 float scale = 1;
-                float slen = renderer.getStringWidth(text.length()==2?"0"+text:text, blockSize)+1;
+                float slen = renderer.getStringWidth(text.length()==2?"0"+text:text, footerHeight)+1;
                 scale = MathUtil.min(scale, blockWidth/slen);
                 if(scale<.25){
                     text = I*10+"%";
                     scale = 1;
-                    slen = renderer.getStringWidth(text.length()==2?"0"+text:text, blockSize)+1;
+                    slen = renderer.getStringWidth(text.length()==2?"0"+text:text, footerHeight)+1;
                     scale = MathUtil.min(scale, blockWidth/slen);
                 }
                 float eff = I/10f;
                 renderer.setColor(tint*MathUtil.max(0,MathUtil.min(1,-MathUtil.abs(3*eff-1.5f)+1.5f)), tint*MathUtil.max(0,MathUtil.min(1,3*eff-1)), 0, 1);
-                renderer.fillRect(x+i*blockWidth, y+blockSize*5, x+(i+1)*blockWidth, y+blockSize*6);
+                renderer.fillRect(x+i*blockWidth, y+height-footerHeight, x+(i+1)*blockWidth, y+height);
                 renderer.setWhite();
-                renderer.drawText(x+i*blockWidth, y+blockSize*5, x+(i+1)*blockWidth, y+blockSize*(5+scale), text);
+                renderer.drawText(x+i*blockWidth, y+height-footerHeight, x+(i+1)*blockWidth, y+height-footerHeight+footerHeight*scale, text);
             }
         }
     }

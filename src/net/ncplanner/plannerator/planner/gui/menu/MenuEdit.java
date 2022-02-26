@@ -73,6 +73,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentSuggestion;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentSuggestor;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRecipe;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRotorGraph;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderFuel;
 import net.ncplanner.plannerator.planner.module.Module;
 import org.joml.Matrix4f;
@@ -152,6 +153,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private final TextView textBox = add(new TextView(0, 0, 0, 0, 24, 24));
     private final Button editMetadata = add(new Button(0, 0, 0, 0, "", true).setTooltip("Modify the multiblock metadata"));
     public final SingleColumnList tools = add(new SingleColumnList(0, 0, 0, 0, partSize/2));
+    private final MenuComponentTurbineRotorGraph graph;
     private final Button generate = add(new Button(0, 0, 0, 0, "Generate", true, true).setTooltip("Generate or improve this multiblock"));
     private final Button recalc = add(new Button(0, 0, 0, 0, "Recalculate", true).setTooltip("Recalculate the entire multiblock\nCtrl-click to queue multiple actions without recalculating"));
     private final Button calcStep = add(new Button(0, 0, 0, 0, "Step", true).setTooltip("Perform one step of calculation"));
@@ -193,6 +195,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             autoRecalc = false;
         }
         this.multiblock = multiblock;
+        graph = add(new MenuComponentTurbineRotorGraph(0, 0, 0, 0, 32, (multiblock instanceof OverhaulTurbine)?(OverhaulTurbine)multiblock:null));
         multibwauk.scrollMagnitude = CELL_SIZE*scrollMagnitude;
         back.addAction(() -> {
             suggestionTask = null;
@@ -397,7 +400,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         partsSearch.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
         tools.width = partSize;
         partsSearch.x = parts.x = tools.width+partSize/4;
-        generate.x = editMetadata.x = textBox.width = multibwauk.x = parts.x+parts.width;
+        generate.x = editMetadata.x = textBox.width = graph.width = multibwauk.x = parts.x+parts.width;
         recalc.width = calcStep.width = textBox.width/2;
         toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = generate.height = tools.y = multibwauk.y = editMetadata.height = back.height = 48;
         partsSearch.height = partSize;
@@ -450,13 +453,13 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         suggestionList.y = Math.max(underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height, Math.max(blockRecipe.y+blockRecipe.height, fusionRecipe.y+fusionRecipe.height));
         suggestionList.height = gui.getHeight()-suggestionList.y-(generate.height+(toggle3D.isToggledOn?toggle3D.width:0));
         multibwauk.height = gui.getHeight()-multibwauk.y-generate.height;
-        progress.y = generate.y-generate.height*2;
         progress.width = textBox.width;
-        progress.height = generate.height*2;
+        progress.height = progress.getTaskHeight();//generate.height*2
+        progress.y = generate.y-progress.height;
         textBox.y = parts.y+parts.height;
-        textBox.height = gui.getHeight()-textBox.y-progress.height-generate.height;
-        if(multiblock instanceof OverhaulTurbine){
-        }
+        graph.height = (((multiblock instanceof OverhaulTurbine)&&((OverhaulTurbine)multiblock).rotorValid)?generate.height*3:0);
+        graph.y = progress.y-graph.height;
+        textBox.height = gui.getHeight()-textBox.y-progress.height-generate.height-graph.height;
         super.render2d(deltaTime);
     }
     @Override    

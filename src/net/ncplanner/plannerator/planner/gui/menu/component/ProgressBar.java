@@ -39,4 +39,13 @@ public abstract class ProgressBar extends Component{
         }
     }
     public abstract Task getTask();
+    public float getTaskHeight(){
+        float h = 0;
+        Task task = getTask();
+        while(task!=null){
+            h+=textHeight+progressBarHeight+textInset*3;
+            task = task.getCurrentSubtask();
+        }
+        return h;
+    }
 }

@@ -837,7 +837,6 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 for(int y = 0; y<=OverhaulTurbine.this.y+1; y++){
                     comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 0, 0, OverhaulTurbine.this.z+1, OverhaulTurbine.this.x+1, Axis.Y_INVERTED, y));
                 }
-                comps.add(new MenuComponentTurbineRotorGraph(0, 0, cellSize, editor, OverhaulTurbine.this));
             }
         });
     }
