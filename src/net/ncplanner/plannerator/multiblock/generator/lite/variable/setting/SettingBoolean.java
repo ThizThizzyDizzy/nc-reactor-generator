@@ -1,12 +1,11 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.variable.setting;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableNumber;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
-public class SettingFloat extends VariableNumber<Float> implements Setting<Float>{
+import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
+public class SettingBoolean implements Setting<Boolean>{
     private final String name;
-    private float value = 0;
-    public SettingFloat(String name, float value){
+    private boolean value;
+    public SettingBoolean(String name, boolean value){
         this.name = name;
         this.value = value;
     }
@@ -15,21 +14,21 @@ public class SettingFloat extends VariableNumber<Float> implements Setting<Float
         return name;
     }
     @Override
-    public Float get(){
+    public Boolean get(){
         return value;
     }
     @Override
-    public void set(Float value){
+    public void set(Boolean value){
         this.value = value;
     }
     @Override
     public void addSettings(SingleColumnList list, MenuGenerator menu){
-        list.add(new TextBox(0, 0, 0, 32, value+"", true, name, 10){
+        list.add(new ToggleBox(0, 0, 0, 28, name, value){
             {
                 onChange(() -> {
-                    set(Float.parseFloat(text));
+                    set(isToggledOn);
                 });
             }
-        }.setFloatFilter());
+        });
     }
 }

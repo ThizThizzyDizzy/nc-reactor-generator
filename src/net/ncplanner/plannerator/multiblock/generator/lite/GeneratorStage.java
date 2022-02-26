@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.mutator.StageTransiti
 public class GeneratorStage<T extends LiteMultiblock>{
     public long hits = 0;
     public ArrayList<GeneratorMutator<T>> steps = new ArrayList<>();
-    public ArrayList<StageTransition<T>> stageMutators = new ArrayList<>();
+    public ArrayList<StageTransition<T>> stageTransitions = new ArrayList<>();
     public void run(T multiblock, Random rand){
         hits++;
         STEP:for(GeneratorMutator<T> mutator : steps){

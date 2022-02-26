@@ -225,7 +225,7 @@ public class MenuInit extends Menu{
             System.out.println("Checking for updates...");
             Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Plannerator");
             if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
-                gui.menu = new MenuUpdate(gui, gui.menu, updater);
+                new MenuUpdate(gui, gui.menu, updater).open();
             }
             System.out.println("Update Check Complete.");
         }, "Initialization Thread").start();

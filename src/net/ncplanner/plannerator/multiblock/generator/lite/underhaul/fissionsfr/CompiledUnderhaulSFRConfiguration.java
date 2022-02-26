@@ -68,6 +68,7 @@ public class CompiledUnderhaulSFRConfiguration{
         rawFuels.add(fuel);
     }
     private void addBlock(Block block){
+        if(block.casing||block.controller)return;
         rawBlocks.add(block);
     }
     public void compile(){

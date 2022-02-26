@@ -25,6 +25,7 @@ import net.ncplanner.plannerator.multiblock.editor.ppe.SmartFillOverhaulFusion;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.AxialSymmetry;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -946,6 +947,10 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
     }
     @Override
     public String getPreviewTexture(){
+        return null;
+    }
+    @Override
+    public LiteMultiblock<OverhaulFusionReactor> compile(){
         return null;
     }
 }

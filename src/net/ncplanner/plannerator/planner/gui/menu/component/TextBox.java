@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
+import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -22,6 +23,7 @@ public class TextBox extends Component{
     public float textInset = -1;
     public boolean oscillator;
     public double oscillatorTimer = 0;
+    private ArrayList<Runnable> changeListeners = new ArrayList<>();
     public TextBox(float x, float y, float width, float height, String text, boolean editable){
         this(x, y, width, height, text, editable, null);
     }
@@ -133,6 +135,7 @@ public class TextBox extends Component{
             while(text.endsWith("0"))text = text.substring(0, text.length()-1);
             if(text.equals("."))text = "0";
         }
+        changeListeners.forEach(Runnable::run);
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){
@@ -194,6 +197,7 @@ public class TextBox extends Component{
             while(text.endsWith("0"))text = text.substring(0, text.length()-1);
             if(text.equals("."))text = "0";
         }
+        changeListeners.forEach(Runnable::run);
     }
     public TextBox setIntFilter(){
         return setIntFilter(null, null);
@@ -229,6 +233,10 @@ public class TextBox extends Component{
     @Override
     public TextBox setTooltip(String tooltip){
         this.tooltip = tooltip;
+        return this;
+    }
+    public TextBox onChange(Runnable r){
+        changeListeners.add(r);
         return this;
     }
 }

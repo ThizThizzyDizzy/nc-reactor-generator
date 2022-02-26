@@ -17,11 +17,11 @@ public class SiezureTheme extends ColorTheme{
         Thread t = new Thread(() -> {
             if(Core.gui==null)siezureAllowed = true;
             if(siezureAllowed==null){
-                Core.gui.menu = new MenuSiezureTheme(Core.gui, Core.gui.menu, () -> {
+                new MenuSiezureTheme(Core.gui, Core.gui.menu, () -> {
                     siezureAllowed = true;
                 }, () -> {
                     siezureAllowed = false;
-                });
+                }).open();
                 while(siezureAllowed==null){
                     try{
                         Thread.sleep(5);//too lazy to use object.wait

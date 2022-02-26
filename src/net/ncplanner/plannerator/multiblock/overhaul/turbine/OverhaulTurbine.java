@@ -26,6 +26,7 @@ import net.ncplanner.plannerator.multiblock.editor.ppe.PostProcessingEffect;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.CoilSymmetry;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -929,5 +930,9 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public void init(){
         super.init();
         setBearing(1);
+    }
+    @Override
+    public LiteMultiblock<OverhaulTurbine> compile(){
+        return null;
     }
 }

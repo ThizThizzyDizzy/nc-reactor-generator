@@ -198,7 +198,7 @@ public class MenuStackEditor extends Menu{
     public void onFilesDropped(String[] files){
         if(files.length!=1)return;
         if(unsavedChanges){
-            gui.menu = new MenuDialog(gui, this){
+            new MenuDialog(gui, this){
                 {
                     textBox.setText("Unsaved changes detected!\nSave changes?");
                     addButton("Save", () -> {
@@ -217,7 +217,7 @@ public class MenuStackEditor extends Menu{
                         close();
                     });
                 }
-            };
+            }.open();
         }
         for(String s : files){
             File f = new File(s);

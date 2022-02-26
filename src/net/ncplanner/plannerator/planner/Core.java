@@ -725,18 +725,18 @@ public class Core{
         System.err.println("Warning:");
         logger.log(Level.WARNING, message, error);
         if(Main.isBot)return;
-        gui.menu = new MenuWarningMessage(gui, gui.menu, message, error);
+        new MenuWarningMessage(gui, gui.menu, message, error).open();
     }
     public static void error(String message, Throwable error){
         System.err.println("Severe Error");
         logger.log(Level.SEVERE, message, error);
         if(Main.isBot)return;
-        gui.menu = new MenuError(gui, gui.menu, message, error);
+        new MenuError(gui, gui.menu, message, error).open();
     }
     public static void criticalError(String message, Throwable error){
         System.err.println("Critical Error");
         logger.log(Level.SEVERE, message, error);
         if(Main.isBot)return;
-        gui.menu = new MenuCriticalError(gui, message, error);
+        new MenuCriticalError(gui, message, error).open();
     }
 }

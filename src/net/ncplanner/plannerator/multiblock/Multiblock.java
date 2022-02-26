@@ -20,6 +20,7 @@ import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
 import net.ncplanner.plannerator.multiblock.editor.ppe.PostProcessingEffect;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -819,6 +820,7 @@ public abstract class Multiblock<T extends Block>{
         }
         return null;
     }
+    public abstract <T extends LiteMultiblock> T compile();
     private static class GraphLink{
         private final Block b1;
         private final Block b2;

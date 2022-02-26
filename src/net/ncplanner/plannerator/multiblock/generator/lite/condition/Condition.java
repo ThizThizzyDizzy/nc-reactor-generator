@@ -2,7 +2,8 @@ package net.ncplanner.plannerator.multiblock.generator.lite.condition;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Supplier;
-public abstract class Condition{
+import net.ncplanner.plannerator.multiblock.generator.lite.ThingWithSettings;
+public abstract class Condition implements ThingWithSettings{
     public static final ArrayList<Supplier<Condition>> conditions = new ArrayList<>();
     static{
         conditions.add(ConditionEqual::new);
@@ -16,5 +17,7 @@ public abstract class Condition{
         conditions.add(ConditionNot::new);
     }
     public long hits = 0;
+    public abstract String getTitle();
+    public abstract String getTooltip();
     public abstract boolean check(Random rand);
 }

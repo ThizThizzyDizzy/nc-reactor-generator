@@ -11,7 +11,7 @@ public class LiteGenerator<T extends LiteMultiblock>{
         hits++;
         GeneratorStage<T> currentStage = stages.get(stage);
         currentStage.run(multiblock, rand);
-        TRANSITION:for(StageTransition<T> transition : currentStage.stageMutators){
+        TRANSITION:for(StageTransition<T> transition : currentStage.stageTransitions){
             for(Condition condition : transition.conditions){
                 condition.hits++;
                 if(!condition.check(rand))continue TRANSITION;

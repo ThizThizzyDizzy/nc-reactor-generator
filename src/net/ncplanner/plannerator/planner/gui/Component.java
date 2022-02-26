@@ -5,11 +5,23 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Component{
     public GUI gui;
     public Component parent;
-    public ArrayList<Component> components = new ArrayList<>();
     public float x, y, width, height;
     public boolean isMouseFocused, isFocused;
     public Component focusedComponent;
     public Component mouseFocusedComponent;
+    public ArrayList<Component> components = new ArrayList<Component>(){
+        @Override
+        public void clear(){
+            super.clear();
+            focusedComponent = mouseFocusedComponent = null;
+        }
+        @Override
+        public boolean remove(Object o){
+            if(o==focusedComponent)focusedComponent = null;
+            if(o==mouseFocusedComponent)mouseFocusedComponent = null;
+            return super.remove(o);
+        }
+    };
     public String tooltip;
     public boolean focusable = true;
     public Component(){

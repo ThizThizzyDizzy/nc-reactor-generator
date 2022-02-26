@@ -41,6 +41,7 @@ import net.ncplanner.plannerator.multiblock.editor.ppe.SmartFillOverhaulSFR;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.AxialSymmetry;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
@@ -2148,5 +2149,9 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     @Override
     public String getPreviewTexture(){
         return "multiblocks/overhaul_sfr";
+    }
+    @Override
+    public LiteMultiblock<OverhaulSFR> compile(){
+        return null;
     }
 }

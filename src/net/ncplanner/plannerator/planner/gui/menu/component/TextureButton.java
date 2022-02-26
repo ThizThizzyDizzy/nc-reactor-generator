@@ -72,7 +72,7 @@ public class TextureButton extends Button{
     public void onMouseButton(double x, double y, int button, int action, int mods){
         super.onMouseButton(x, y, button, action, mods);
         if(action==GLFW_PRESS&&enabled&&button==GLFW_MOUSE_BUTTON_RIGHT&&!pressed){
-            gui.menu = new MenuGenerateTexture(gui, (Menu)parent, textureName, setTextureFunc);
+            new MenuGenerateTexture(gui, (Menu)parent, textureName, setTextureFunc).open();
         }
     }
 }

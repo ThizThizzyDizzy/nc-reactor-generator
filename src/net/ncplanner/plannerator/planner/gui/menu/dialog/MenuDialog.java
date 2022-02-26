@@ -49,6 +49,9 @@ public class MenuDialog extends Menu{
     public void close(){
         gui.menu = parent;
     }
+    public void open(){
+        gui.menu = this;
+    }
     public void addButton(String text, Runnable onClick){
         Button b = new Button(0, 0, 0, buttonHeight, text, true, true);
         b.addAction(onClick);
