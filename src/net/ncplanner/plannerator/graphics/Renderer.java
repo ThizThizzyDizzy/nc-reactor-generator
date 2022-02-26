@@ -697,7 +697,7 @@ public class Renderer{
         boolean ny = faceRenderFunc.apply(Direction.NY);
         boolean nz = faceRenderFunc.apply(Direction.NZ);
         if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
-        bindTexture(Core.getTexture(texture));
+        bindTexture(Math.max(0,Core.getTexture(texture)));
         //xy +z
         if(pz){
             drawQuad(
