@@ -829,11 +829,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             }
             @Override
             public void createComponents(MenuEdit editor, ArrayList<Component> comps, int cellSize){
-//                comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 1, 1, OverhaulTurbine.this.x, OverhaulTurbine.this.y, Axis.Z, 0));
-//                comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 1, 1, OverhaulTurbine.this.x, OverhaulTurbine.this.y, Axis.Z, OverhaulTurbine.this.z+1));
-                //include the casing on the coils ones for now, because I'm to lazy to make sure it actually works without it
-                comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 0, 0, OverhaulTurbine.this.x+1, OverhaulTurbine.this.y+1, Axis.Z, 0));
-                comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 0, 0, OverhaulTurbine.this.x+1, OverhaulTurbine.this.y+1, Axis.Z, OverhaulTurbine.this.z+1));
+                comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 1, 1, OverhaulTurbine.this.x, OverhaulTurbine.this.y, Axis.Z, 0));
+                comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 1, 1, OverhaulTurbine.this.x, OverhaulTurbine.this.y, Axis.Z, OverhaulTurbine.this.z+1));
                 for(int y = 0; y<=OverhaulTurbine.this.y+1; y++){
                     comps.add(new MenuComponentEditorGrid(0, 0, cellSize, editor, OverhaulTurbine.this, this, 0, 0, OverhaulTurbine.this.z+1, OverhaulTurbine.this.x+1, Axis.Y_INVERTED, y));
                 }
