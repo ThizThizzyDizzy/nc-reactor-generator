@@ -2729,7 +2729,7 @@ public class MenuValidateConfiguration extends ConfigurationMenu{
             if(rule.block!=null){
                 if(rule.block instanceof net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block){
                     net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block)rule.block;
-                    if(b.cooling==0)validator.warn(sectionName+" placement rule "+rule.ruleType.name+" contains a specific non-heatsink block!").solve(blockCfg, "Go to Block configuration");
+                    if(b.cooling==0)validator.warn(sectionName+" placement rule "+rule.ruleType.name+" contains a specific non-cooler block!").solve(blockCfg, "Go to Block configuration");
                 }
                 if(rule.block instanceof net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block){
                     net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block)rule.block;
