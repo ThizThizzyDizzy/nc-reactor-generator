@@ -22,6 +22,7 @@ public class MenuDialog extends Menu{
     public MenuDialog(GUI gui, Menu parent){
         super(gui, parent);
     }
+    float scrollBarWidth = 0;
     @Override
     public void render2d(double deltaTime){
         Renderer renderer = new Renderer();
@@ -29,8 +30,9 @@ public class MenuDialog extends Menu{
             if(parent!=null)parent.render2d(deltaTime);
         }catch(Exception ignored){}
         renderer.setColor(Core.theme.getDialogBorderColor());
-        float w = Math.max(gui.getWidth()*minWidth, Math.min(gui.getWidth()*maxWidth, content.width));
-        float h = Math.max(gui.getHeight()*minHeight, Math.min(gui.getHeight()*maxHeight, content.height));
+        scrollBarWidth = Math.max(scrollBarWidth, textPanel.vertScrollbarWidth*(textPanel.vertScrollbarPresent?1:0));
+        float w = Math.max(gui.getWidth()*minWidth, Math.min(gui.getWidth()*maxWidth, content.width+scrollBarWidth));
+        float h = Math.max(gui.getHeight()*minHeight, Math.min(gui.getHeight()*maxHeight, content.height+scrollBarWidth));
         renderer.fillRect(gui.getWidth()/2-w/2-border, gui.getHeight()/2-h/2-border, gui.getWidth()/2+w/2+border, gui.getHeight()/2+h/2+border+buttonHeight);
         renderer.setColor(Core.theme.getDialogBackgroundColor());
         renderer.fillRect(gui.getWidth()/2-w/2, gui.getHeight()/2-h/2, gui.getWidth()/2+w/2, gui.getHeight()/2+h/2);
@@ -48,9 +50,15 @@ public class MenuDialog extends Menu{
     }
     public void close(){
         gui.menu = parent;
+        closeListeners.forEach(Runnable::run);
     }
     public void open(){
         gui.menu = this;
+    }
+    private final ArrayList<Runnable> closeListeners = new ArrayList<>();
+    public MenuDialog onClose(Runnable action){
+        closeListeners.add(action);
+        return this;
     }
     public void addButton(String text, Runnable onClick){
         Button b = new Button(0, 0, 0, buttonHeight, text, true, true);

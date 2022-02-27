@@ -24,4 +24,25 @@ public class FileReader{
             }
         });
     }
+    public static NCPFHeader readHeader(InputStreamProvider provider){
+        for(FormatReader reader : formats){
+            if(reader instanceof HeaderFormatReader){
+                boolean matches = false;
+                try{
+                    if(reader.formatMatches(provider.getInputStream()))matches = true;
+                }catch(Throwable t){}
+                if(matches)return ((HeaderFormatReader)reader).readHeader(provider.getInputStream());
+            }
+        }
+        throw new IllegalArgumentException("Unknown file format!");
+    }
+    public static NCPFHeader readHeader(File file){
+        return readHeader(() -> {
+            try{
+                return new FileInputStream(file);
+            }catch(FileNotFoundException ex){
+                return null;
+            }
+        });
+    }
 }

@@ -86,6 +86,7 @@ public class Core{
     public static boolean invertUndoRedo;
     public static boolean autoBuildCasing = true;
     public static boolean recoveryMode = false;
+    public static String filename; //saved filename to default to when saving
     public static final ArrayList<String> pinnedStrs = new ArrayList<>();
     private static Random rand = new Random();
     public static String str = "";
