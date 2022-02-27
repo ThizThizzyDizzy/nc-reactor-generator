@@ -60,7 +60,7 @@ public class Button extends Component{
         String text = this.text;
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-textInset*2)/textLength);
-        int textHeight = (int)((height-textInset*2)*scale)-4;
+        int textHeight = (int)((height-textInset*2)*scale);
         renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override
