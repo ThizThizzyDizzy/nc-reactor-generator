@@ -30,7 +30,9 @@ import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblock;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImport;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.vr.VRCore;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -186,67 +188,29 @@ public class MenuMain extends Menu{
                 }
             }
             String nam = name;
-            new MenuDialog(gui, this){
-                {
-                    TextBox box = new TextBox(0, 0, 384, 64, nam, true, "Filename");
-                    setContent(box);
-                    addButton("Cancel", () -> {
-                        close();
-                    });
-                    addButton("Save Dialog", () -> {
-                        close();
-                        try{
-                            Core.createFileChooser(null, (file) -> {
-                                if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                                FileWriter.write(ncpf, file, FileWriter.NCPF);
-                            }, FileFormat.NCPF);
-                        }catch(IOException ex){
-                            Core.error("Failed to save file!", ex);
-                        }
-                    });
-                    addButton("Save", () -> {
-                        String filename = box.text;
-                        if(filename==null||filename.isEmpty()){
-                            Core.warning("Invalid filename: "+filename+".ncpf", null);
-                        }else{
-                            Core.filename = filename;
-                            File file = new File(filename+".ncpf");
-                            if(file.exists()){
-                                new MenuDialog(MenuMain.this.gui, this){
-                                    {
-                                        textBox.setText("File "+filename+".ncpf already exists!\nOverwrite?");
-                                        addButton("Cancel", () -> {
-                                            close();
-                                        });
-                                        addButton("Save", () -> {
-                                            close();
-                                            save(file, filename+".ncpf");
-                                        });
-                                    }
-                                }.open();
-                            }else save(file, filename+".ncpf");
-                        }
-                    });
+            new MenuInputDialog(gui, this, nam, "Filename").addButton("Cancel", true).addButton("Save Dialog", (dialog, str) -> {
+                try{
+                    Core.createFileChooser(null, (file) -> {
+                        if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
+                        FileWriter.write(ncpf, file, FileWriter.NCPF);
+                    }, FileFormat.NCPF);
+                }catch(IOException ex){
+                    Core.error("Failed to save file!", ex);
                 }
-                private void save(File file, String filename){
-                    FileWriter.write(ncpf, file, FileWriter.NCPF);
-                    new MenuDialog(MenuMain.this.gui, parent){
-                        {
-                            textBox.setText("Saved as "+filename);
-                            addButton("OK", () -> {
-                                close();
-                            });
-                        }
-                    }.open();
+            }, true).addButton("Save", (dialog, filename) -> {
+                if(filename==null||filename.isEmpty()){
+                    Core.warning("Invalid filename: "+filename+".ncpf", null);
+                }else{
+                    Core.filename = filename;
+                    File file = new File(filename+".ncpf");
+                    if(file.exists()){
+                        new MenuMessageDialog(gui, dialog, "File "+filename+".ncpf already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", (d) -> save(ncpf, file, filename+".ncpf"), true).open();
+                    }else save(ncpf, file, filename+".ncpf");
                 }
-            }.open();
+            }).open();
         });
-        loadFile.addAction(() -> {
-            new MenuLoad(gui, this).onClose(this::onOpened).open();
-        });
-        importFile.addAction(() -> {
-            new MenuImport(gui, this).onClose(this::onOpened).open();
-        });
+        loadFile.addAction(new MenuLoad(gui, this).onClose(this::onOpened)::open);
+        importFile.addAction(new MenuImport(gui, this).onClose(this::onOpened)::open);
         for(FormatWriter writer : FileWriter.formats){
             FileFormat format = writer.getFileFormat();
             exportMultiblock.add(new Button(0, 0, 0, 0, format.name, true, true).setTooltip(format.description)).addAction(() -> {
@@ -268,65 +232,30 @@ public class MenuMain extends Menu{
                     }
                 }
                 String nam = name;
-                new MenuDialog(gui, this){
-                    {
-                        TextBox box = new TextBox(0, 0, 384, 64, nam, true, "Filename");
-                        setContent(box);
-                        addButton("Cancel", () -> {
-                            close();
-                        });
-                        addButton("Save Dialog", () -> {
-                            close();
-                            try{
-                                Core.createFileChooser(null, (file) -> {
-                                    boolean hasExtension = false;
-                                    for(String ext : format.extensions){
-                                        if(file.getName().endsWith("."+ext))hasExtension = true;
-                                    }
-                                    if(!hasExtension)file = new File(file.getAbsolutePath()+"."+format.extensions[0]);
-                                    if(file==null)return;
-                                    pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
-                                }, format);
-                            }catch(IOException ex){
-                                Core.error("Failed to export multiblock!", ex);
+                new MenuInputDialog(gui, this, nam, "Filename").addButton("Cancel", true).addButton("Save Dialog", () -> {
+                    try{
+                        Core.createFileChooser(null, (file) -> {
+                            boolean hasExtension = false;
+                            for(String ext : format.extensions){
+                                if(file.getName().endsWith("."+ext))hasExtension = true;
                             }
-                        });
-                        addButton("Save", () -> {
-                            String filename = box.text;
-                            if(filename==null||filename.isEmpty()){
-                                Core.warning("Invalid filename: "+filename+"."+format.extensions[0], null);
-                            }else{
-                                Core.filename = filename;
-                                File file = new File(filename+"."+format.extensions[0]);
-                                if(file.exists()){
-                                    new MenuDialog(MenuMain.this.gui, this){
-                                        {
-                                            textBox.setText("File "+filename+"."+format.extensions[0]+" already exists!\nOverwrite?");
-                                            addButton("Cancel", () -> {
-                                                close();
-                                            });
-                                            addButton("Save", () -> {
-                                                close();
-                                                save(file, filename+"."+format.extensions[0]);
-                                            });
-                                        }
-                                    }.open();
-                                }else save(file, filename+"."+format.extensions[0]);
-                            }
-                        });
+                            if(!hasExtension)file = new File(file.getAbsolutePath()+"."+format.extensions[0]);
+                            if(file==null)return;
+                            pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
+                        }, format);
+                    }catch(IOException ex){
+                        Core.error("Failed to export multiblock!", ex);
                     }
-                    private void save(File file, String filename){
-                        FileWriter.write(ncpf, file, writer);
-                        new MenuDialog(MenuMain.this.gui, parent){
-                            {
-                                textBox.setText("Saved as "+filename);
-                                addButton("OK", () -> {
-                                    close();
-                                });
-                            }
-                        }.open();
+                }, true).addButton("Save", (dialog, filename) -> {
+                    if(filename==null||filename.isEmpty()){
+                        Core.warning("Invalid filename: "+filename+"."+format.extensions[0], null);
+                    }else{
+                        Core.filename = filename;
+                        File file = new File(filename+"."+format.extensions[0]);
+                        if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+format.extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> imprt(ncpf, writer, file, filename+"."+format.extensions[0]), true).open();
+                        else imprt(ncpf, writer, file, filename+"."+format.extensions[0]);
                     }
-                }.open();
+                }).open();
             });
         }
         addMultiblock.addAction(() -> {
@@ -382,6 +311,28 @@ public class MenuMain extends Menu{
         credits.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuCredits(gui), MenuTransition.SplitTransitionY.slideOut(0.5f), 10));
         });
+    }
+    private void save(NCPFFile ncpf, File file, String filename){
+        FileWriter.write(ncpf, file, FileWriter.NCPF);
+        new MenuDialog(MenuMain.this.gui, parent){
+            {
+                textBox.setText("Saved as "+filename);
+                addButton("OK", () -> {
+                    close();
+                });
+            }
+        }.open();
+    }
+    private void imprt(NCPFFile ncpf, FormatWriter writer, File file, String filename){
+        FileWriter.write(ncpf, file, writer);
+        new MenuDialog(MenuMain.this.gui, parent){
+            {
+                textBox.setText("Saved as "+filename);
+                addButton("OK", () -> {
+                    close();
+                });
+            }
+        }.open();
     }
     @Override
     public void drawBackground(double deltaTime){

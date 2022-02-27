@@ -60,10 +60,23 @@ public class MenuDialog extends Menu{
         closeListeners.add(action);
         return this;
     }
-    public void addButton(String text, Runnable onClick){
+    public MenuDialog addButton(String text, Runnable onClick){
+        return addButton(text, onClick, false);
+    }
+    public MenuDialog addButton(String text, Runnable onClick, boolean closeOnClick){
         Button b = new Button(0, 0, 0, buttonHeight, text, true, true);
-        b.addAction(onClick);
+        b.addAction(() -> {
+            if(closeOnClick)close();
+            if(onClick!=null)onClick.run();
+        });
         buttons.add(add(b));
+        return this;
+    }
+    public MenuDialog addButton(String text){
+        return addButton(text, null, false);
+    }
+    public MenuDialog addButton(String text, boolean closeOnClick){
+        return addButton(text, null, closeOnClick);
     }
     public <T extends Component> T setContent(T component){
         textPanel.components.remove(content);
