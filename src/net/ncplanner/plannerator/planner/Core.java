@@ -144,6 +144,7 @@ public class Core{
             glfwTerminate();
             throw new RuntimeException("Failed to create GLFW window!");
         }
+        System.out.println("Loading Icon");
         GLFWImage.Buffer iconBuffer = GLFWImage.create(1);
         GLFWImage icon = GLFWImage.create();
         ByteBuffer imageData = null;
@@ -157,6 +158,7 @@ public class Core{
         if(imageData==null)throw new RuntimeException("Failed to load image: "+stbi_failure_reason());
         icon.set(iconWidth.get(0), iconHeight.get(0), imageData);
         iconBuffer.put(icon);
+        iconBuffer.rewind();
         glfwSetWindowIcon(window, iconBuffer);
         System.out.println("Initializing Console interface");
         Thread console = new Thread(() -> {
