@@ -284,7 +284,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     synchronized(gui){
                         addonsList.add(new MenuComponentInternalAddon(c, got, () -> {
                             try{
-                                Core.configuration.addAndConvertAddon((((MenuComponentInternalAddon)c).addon.get()));
+                                Core.configuration.addAndConvertAddon(c.get());
                             }catch(Exception ex){
                                 Core.error("Failed to add and convert addon", ex);
                             }
@@ -556,10 +556,12 @@ public class MenuConfiguration extends ConfigurationMenu{
         HashMap<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block, String> turbineRules = new HashMap<>();
         ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> fissionSFRBlocks = new ArrayList<>();
         ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe> fissionSFRRecipes = new ArrayList<>();
+        ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe> fissionSFRCoolantRecipes = new ArrayList<>();
         HashMap<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block, String> fissionSFRRules = new HashMap<>();
         ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block> fissionMSRBlocks = new ArrayList<>();
         ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe> fissionMSRRecipes = new ArrayList<>();
         HashMap<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block, String> fissionMSRRules = new HashMap<>();
+        ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe> turbineRecipes = new ArrayList<>();
         HashMap<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe, String[]> fissionSFRLangKeys = new HashMap<>();
         HashMap<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe, String[]> fissionSFRSpecialTextureKeys = new HashMap<>();
         //<editor-fold defaultstate="collapsed" desc="ZS files">
@@ -579,6 +581,39 @@ public class MenuConfiguration extends ConfigurationMenu{
                     lineNum++;
                     try{
                         //<editor-fold defaultstate="collapsed" desc="parsing line">
+                        if(line.startsWith("FissionHeating.")){
+                            String turbine = line.substring("FissionHeating.".length());
+                            if(turbine.startsWith("addRecipe")){
+                                //<editor-fold defaultstate="collapsed" desc="addRecipe">
+                                if(configuration.overhaul.fissionSFR==null){
+                                    Core.error("Cannot add SFR coolant recipe without Overhaul SFR configuration!", null);
+                                    continue;
+                                }
+                                String[] args = turbine.substring(turbine.indexOf('(')+1, turbine.indexOf(')')).split(",");
+                                for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
+                                String input = args[0];
+                                String output = args[1];
+                                String inputName = input.substring(1, input.indexOf('>'));
+                                String outputName = output.substring(1, output.indexOf('>'));
+                                if(inputName.startsWith("liquid:"))inputName = inputName.substring("liquid:".length());
+                                if(outputName.startsWith("liquid:"))outputName = outputName.substring("liquid:".length());
+                                if(inputName.startsWith("fluid:"))inputName = inputName.substring("fluid:".length());
+                                if(outputName.startsWith("fluid:"))outputName = outputName.substring("fluid:".length());
+                                input = input.substring(input.indexOf('>')+1);
+                                output = output.substring(output.indexOf('>')+1);
+                                int inputCount = input.startsWith("*")?Integer.parseInt(input.substring(1)):0;
+                                int outputCount = output.startsWith("*")?Integer.parseInt(output.substring(1)):0;
+                                //heatPerInputMb
+                                int heat = Integer.parseInt(args[2]);
+                                float outputRatio = outputCount/(float)inputCount;
+                                heat*=inputCount;
+                                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(inputName, outputName, heat, outputRatio);
+                                configuration.overhaul.fissionSFR.allCoolantRecipes.add(recipe);
+                                configuration.overhaul.fissionSFR.allCoolantRecipes.add(recipe);
+                                fissionSFRCoolantRecipes.add(recipe);
+                                //</editor-fold>
+                            }
+                        }
                         if(line.startsWith("SolidFission.")){
                             String fission = line.substring("SolidFission.".length());
                             if(fission.startsWith("addRecipe")){
@@ -637,8 +672,8 @@ public class MenuConfiguration extends ConfigurationMenu{
                                 }
                                 String[] args = fission.substring(fission.indexOf('(')+1, fission.indexOf(')')).split(",");
                                 for(int i = 0; i<args.length; i++)args[i] = args[i].trim();
-                                String inputName = args[0].substring(1, args[0].length()-1);
-                                String outputName = args[1].substring(1, args[1].length()-1);
+                                String inputName = args[0].substring(1, args[0].length()-1).replace("liquid:", "").replace("fluid:", "");
+                                String outputName = args[1].substring(1, args[1].length()-1).replace("liquid:", "").replace("fluid:", "");
                                 float time = Float.parseFloat(args[2]);
                                 int heat = Integer.parseInt(args[3]);
                                 float efficiency = Float.parseFloat(args[4]);
@@ -776,6 +811,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                                 net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe recipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe(inputName, outputName, power, expansion);
                                 configuration.overhaul.turbine.allRecipes.add(recipe);
                                 configuration.overhaul.turbine.recipes.add(recipe);
+                                turbineRecipes.add(recipe);
                                 //</editor-fold>
                             }
                         }
@@ -1120,9 +1156,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                             }
                         }
                         for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block : turbineBlocks){
-                            if(block.name.equals(blockName)){
-                                block.displayName = displayName;
-                            }
+                            if(block.name.equals(blockName))block.displayName = displayName;
                         }
                     }
                     if(line.trim().startsWith("item.")){
@@ -1131,20 +1165,12 @@ public class MenuConfiguration extends ConfigurationMenu{
                         blockName = blockName.substring(0, blockName.length()-5);
                         String displayName = lin.split("\\=", 2)[1].replace(" Fuel Pellet", "");
                         for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : fissionSFRRecipes){
-                            if(recipe.inputName.equals(blockName)){
-                                recipe.inputDisplayName = displayName;
-                            }
-                            if(recipe.outputName.equals(blockName)){
-                                recipe.outputDisplayName = displayName;
-                            }
+                            if(recipe.inputName.equals(blockName))recipe.inputDisplayName = displayName;
+                            if(recipe.outputName.equals(blockName))recipe.outputDisplayName = displayName;
                         }
                         for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
-                            if(recipe.inputName.equals(blockName)){
-                                recipe.inputDisplayName = displayName;
-                            }
-                            if(recipe.outputName.equals(blockName)){
-                                recipe.outputDisplayName = displayName;
-                            }
+                            if(recipe.inputName.equals(blockName))recipe.inputDisplayName = displayName;
+                            if(recipe.outputName.equals(blockName))recipe.outputDisplayName = displayName;
                         }
                     }
                     if(line.trim().startsWith("fluid.")){
@@ -1153,31 +1179,27 @@ public class MenuConfiguration extends ConfigurationMenu{
                         String displayName = lin.split("\\=", 2)[1].replace("Molten FLiBe Salt Solution of ", "").replace(" Fuel", "");
                         for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block : fissionSFRBlocks){
                             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : block.allRecipes){
-                                if(recipe.inputName.equals(fluidName)){
-                                    recipe.inputDisplayName = displayName;
-                                }
-                                if(recipe.outputName.equals(fluidName)){
-                                    recipe.outputDisplayName = displayName;
-                                }
+                                if(recipe.inputName.equals(fluidName))recipe.inputDisplayName = displayName;
+                                if(recipe.outputName.equals(fluidName))recipe.outputDisplayName = displayName;
                             }
                         }
                         for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block block : fissionMSRBlocks){
                             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : block.allRecipes){
-                                if(recipe.inputName.equals(fluidName)){
-                                    recipe.inputDisplayName = displayName;
-                                }
-                                if(recipe.outputName.equals(fluidName)){
-                                    recipe.outputDisplayName = displayName;
-                                }
+                                if(recipe.inputName.equals(fluidName))recipe.inputDisplayName = displayName;
+                                if(recipe.outputName.equals(fluidName))recipe.outputDisplayName = displayName;
                             }
                         }
                         for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : fissionMSRRecipes){
-                            if(recipe.inputName.equals(fluidName)){
-                                recipe.inputDisplayName = displayName;
-                            }
-                            if(recipe.outputName.equals(fluidName)){
-                                recipe.outputDisplayName = displayName;
-                            }
+                            if(recipe.inputName.equals(fluidName))recipe.inputDisplayName = displayName;
+                            if(recipe.outputName.equals(fluidName))recipe.outputDisplayName = displayName;
+                        }
+                        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe : fissionSFRCoolantRecipes){
+                            if(recipe.inputName.equals(fluidName))recipe.inputDisplayName = displayName;
+                            if(recipe.outputName.equals(fluidName))recipe.outputDisplayName = displayName;
+                        }
+                        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe recipe : turbineRecipes){
+                            if(recipe.inputName.equals(fluidName))recipe.inputDisplayName = displayName;
+                            if(recipe.outputName.equals(fluidName))recipe.outputDisplayName = displayName;
                         }
                     }
                 }
