@@ -1,7 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fusion;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block;
+import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.PlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -93,6 +95,14 @@ public class MenuComponentBlock extends Component{
             }else strs.add("Reflector");
         }
         if(block.functional)strs.add("Functional");
+        if(!block.rules.isEmpty()){
+            String rules = "";
+            for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : block.rules){
+                if(!rules.isEmpty())rules+=" AND ";
+                rules+=rule.toString();
+            }
+            strs.add(rules);
+        }
         while(strs.size()<5)strs.add("");
         for(int i = 0; i<strs.size(); i++){
             String str = strs.get(i);

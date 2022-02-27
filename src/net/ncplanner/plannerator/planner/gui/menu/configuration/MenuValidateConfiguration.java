@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.multiblock.configuration.AddonConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -245,7 +246,7 @@ public class MenuValidateConfiguration extends ConfigurationMenu{
                         if(b.active!=null&&b.cooling==0)validator.error("Underhaul SFR block has active coolant, but is not a cooler: "+b.name).solve(() -> {
                             b.active = null;
                         }, "Set active coolant to null");
-                        validate(b.rules, "Underhaul SFR block", blockConfig);
+                        validate(b.rules, "Underhaul SFR block "+b.name, blockConfig);
                         //</editor-fold>
                     }
                     //</editor-fold>
@@ -433,7 +434,7 @@ public class MenuValidateConfiguration extends ConfigurationMenu{
                             };
                             //<editor-fold defaultstate="collapsed" desc="Name">
                             if(b.name==null){
-                                validator.error("Overhaul SFR block "+b.name+" name is null!").solve(blockConfig, "Go to Block configuration");
+                                validator.error("Overhaul SFR block name is null!").solve(blockConfig, "Go to Block configuration");
                             }else{
                                 String[] split = b.name.split("\\:");
                                 if(split.length<2||split.length>3){
@@ -897,6 +898,261 @@ public class MenuValidateConfiguration extends ConfigurationMenu{
                             //</editor-fold>
                         }
                         //</editor-fold>
+                        if(configuration.addon){
+                            //<editor-fold defaultstate="collapsed" desc="Addon Blocks">
+                            validator.stage("Checking Addon Blocks...");
+                            for(int i = 0; i<sfr.allBlocks.size(); i++){
+                                validator.stage("Checking Addon blocks... ("+(i+1)+"/"+sfr.allBlocks.size()+")");
+                                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b = sfr.allBlocks.get(i);
+                                Runnable blockConfig = () -> {
+                                    gui.open(new net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionsfr.MenuBlockConfiguration(gui, this, configuration, b));
+                                };
+                                //<editor-fold defaultstate="collapsed" desc="Name">
+                                if(b.name==null){
+                                    validator.error("Overhaul SFR addon block name is null!").solve(blockConfig, "Go to Block configuration");
+                                }else{
+                                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block match = null;
+                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b2 : Core.configuration.overhaul.fissionSFR.allBlocks){
+                                        if(b.name.equals(b2.name))match = b2;
+                                    }
+                                    if(match==null)validator.error("Overhaul SFR addon block "+b.name+" does not match any blocks in the parent configuration!").solve(blockConfig, "Go to Block configuration");
+                                    else{
+                                        if(match.fuelCell != b.fuelCell)validator.error("Overhaul SFR addon block "+b.name+" setting Fuel Cell does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.moderator != b.moderator)validator.error("Overhaul SFR addon block "+b.name+" setting Moderator does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.reflector != b.reflector)validator.error("Overhaul SFR addon block "+b.name+" setting Reflector does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.irradiator != b.irradiator)validator.error("Overhaul SFR addon block "+b.name+" setting Irradiator does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.heatsink != b.heatsink)validator.error("Overhaul SFR addon block "+b.name+" setting Heatsink does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.shield != b.shield)validator.error("Overhaul SFR addon block "+b.name+" setting Shield does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                    }
+                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b2 : sfr.allBlocks){
+                                        if(b==b2)continue;
+                                        if(b.name.equals(b2.name))validator.error("Overhaul SFR addon block "+b.name+" is duplicated!").hint("This configuration contains multiple of the same addon blocks.").solve(blockConfig, "Go to Block configuration");
+                                    }
+                                }
+                                //</editor-fold>
+                                //<editor-fold defaultstate="collapsed" desc="Block Recipes">
+                                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe br : b.recipes){
+                                    Runnable blockRecipeConfig = () -> {
+                                        gui.open(new net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionsfr.MenuBlockRecipeConfiguration(gui, this, configuration, b, br));
+                                    };
+                                    //<editor-fold defaultstate="collapsed" desc="Input Name">
+                                    if(br.inputName==null){
+                                        validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" input name is null!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                    }else{
+                                        String[] split = br.inputName.split("\\:");
+                                        if(split.length<2||split.length>3){
+                                            validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" input name is invalid! ("+br.inputName+")").hint("Item input name must be a namespaced ID! (namespace:inputname or namespace:inputname:metadata").solve(blockConfig, "Go to Block Recipe configuration");
+                                        }else{
+                                            for(char c : split[0].toCharArray()){
+                                                if(namespaceChars.indexOf(c)==-1){
+                                                    validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" namespace is invalid! ("+split[0]+")").hint("Namespaces can only contain characters 0-9, a-z, _, -, and .! This should be the namespace of the ingame block or item.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                }
+                                            }
+                                            for(char c : split[1].toCharArray()){
+                                                if(namespacePathChars.indexOf(c)==-1){
+                                                    validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" input name is invalid! ("+split[1]+")").hint("block recipe input names can only contain characters 0-9, a-z, _, -, ., and /! This should be the input name of the ingame block or item.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                }
+                                            }
+                                            if(split.length==3){
+                                                try{
+                                                    Integer.parseInt(split[2]);
+                                                }catch(Exception ex){
+                                                    validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" metadata is invalid! ("+split[2]+")").hint("Metadata must be an integer! If the ingame block recipe does not have metadata, use only namespace:input name.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                }
+                                            }
+                                        }
+                                        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe c2 : b.recipes){
+                                            if(br==c2)continue;
+                                            if(br.inputName.equals(c2.inputName))validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" input name is not unique! ("+br.inputName+")").hint("This block contains multiple block recipes with the same name.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }
+                                    }
+                                    //</editor-fold>
+                                    //<editor-fold defaultstate="collapsed" desc="Input Display name">
+                                    if(br.inputDisplayName==null||br.inputDisplayName.isEmpty()){
+                                        validator.warn("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has no display name!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                    }
+                                    //</editor-fold>
+                                    //<editor-fold defaultstate="collapsed" desc="Output Name">
+                                    if(br.outputName==null){
+                                        validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" output name is null!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                    }else{
+                                        String[] split = br.outputName.split("\\:");
+                                        if(split.length<2||split.length>3){
+                                            validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" output name is invalid! ("+br.outputName+")").hint("Item output name must be a namespaced ID! (namespace:outputname or namespace:outputname:metadata").solve(blockConfig, "Go to Block Recipe configuration");
+                                        }else{
+                                            for(char c : split[0].toCharArray()){
+                                                if(namespaceChars.indexOf(c)==-1){
+                                                    validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" namespace is invalid! ("+split[0]+")").hint("Namespaces can only contain characters 0-9, a-z, _, -, and .! This should be the namespace of the ingame block or item.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                }
+                                            }
+                                            for(char c : split[1].toCharArray()){
+                                                if(namespacePathChars.indexOf(c)==-1){
+                                                    validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" output name is invalid! ("+split[1]+")").hint("block recipe output names can only contain characters 0-9, a-z, _, -, ., and /! This should be the output name of the ingame block or item.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                }
+                                            }
+                                            if(split.length==3){
+                                                try{
+                                                    Integer.parseInt(split[2]);
+                                                }catch(Exception ex){
+                                                    validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" metadata is invalid! ("+split[2]+")").hint("Metadata must be an integer! If the ingame block recipe does not have metadata, use only namespace:output name.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                }
+                                            }
+                                        }
+                                    }
+                                    //</editor-fold>
+                                    //<editor-fold defaultstate="collapsed" desc="Output Display name">
+                                    if(br.outputDisplayName==null||br.outputDisplayName.isEmpty()){
+                                        validator.warn("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has no display name!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                    }
+                                    //</editor-fold>
+                                    //<editor-fold defaultstate="collapsed" desc="Legacy names">
+                                    for(Configuration cf : Configuration.configurations){
+                                        if(cf.overhaul!=null&&cf.overhaul.fissionSFR!=null){
+                                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b2 : cf.overhaul.fissionSFR.blocks){
+                                                if(!b.name.equals(b2.name))continue;
+                                                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe r2 : b2.recipes){
+                                                    if(br.inputName.equals(r2.inputName)){
+                                                        if(!br.inputLegacyNames.equals(r2.inputLegacyNames))validator.warn("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" legacy names do not match! ("+br.inputName+")").hint("Another block recipe was found in block "+b2.name+" of Configuration "+cf.name+" with different legacy names.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                    }else{
+                                                        for(String s : br.inputLegacyNames)if(r2.inputLegacyNames.contains(s))validator.warn("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" legacy names are not unique! ("+s+")").hint("Another block recipe was found in block "+b2.name+" of configuration "+cf.name+" with the same legacy name. These blocks could be confused when loading old files").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    for(AddonConfiguration cf : Configuration.internalAddonCache.values()){
+                                        if(cf.self.overhaul!=null&&cf.self.overhaul.fissionSFR!=null){
+                                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b2 : cf.self.overhaul.fissionSFR.blocks){
+                                                if(!b.name.equals(b2.name))continue;
+                                                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe r2 : b2.recipes){
+                                                    if(br.inputName.equals(r2.inputName)&&!br.inputLegacyNames.equals(r2.inputLegacyNames)){
+                                                        validator.warn("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" legacy names do not match! ("+br.inputName+")").hint("Another block recipe was found in block "+b2.name+" of Configuration "+cf.name+" with different legacy names.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    //</editor-fold>
+                                    if(br.inputTexture==null)validator.warn("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has no input texture!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                    if(br.outputTexture==null)validator.warn("Overhaul SFR addon block recipe "+br.outputName+" of block "+b.name+" has no output texture!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                    if(!b.fuelCell){
+                                        if(br.fuelCellEfficiency!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has fuel cell efficiency, but is not for a fuel cell!").solve(() -> {
+                                            br.fuelCellEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.fuelCellHeat!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has fuel cell heat, but is not for a fuel cell!").solve(() -> {
+                                            br.fuelCellHeat = 0;
+                                        }, "Set heat to 0");
+                                        if(br.fuelCellCriticality!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has fuel cell criticality, but is not for a fuel cell!").solve(() -> {
+                                            br.fuelCellCriticality = 0;
+                                        }, "Set criticality to 0");
+                                        if(br.fuelCellSelfPriming)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" is fuel cell self priming, but is not for a fuel cell!").solve(() -> {
+                                            br.fuelCellSelfPriming = false;
+                                        }, "Set self priming to false");
+                                    }else{
+                                        if(br.fuelCellEfficiency<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" fuel cell efficiency must not be negative!").solve(() -> {
+                                            br.fuelCellEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.fuelCellHeat<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" fuel cell heat must not be negative!").solve(() -> {
+                                            br.fuelCellHeat = 0;
+                                        }, "Set heat to 0");
+                                        if(br.fuelCellCriticality<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" fuel cell criticality must not be negative!").solve(() -> {
+                                            br.fuelCellCriticality = 0;
+                                        }, "Set criticality to 0");
+                                    }
+                                    if(!Float.isFinite(br.fuelCellEfficiency))validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" fuel cell efficiency is not finite!").solve(() -> {
+                                        br.fuelCellEfficiency = 0;
+                                    }, "Set efficiency to 0");
+                                    if(!b.irradiator){
+                                        if(br.irradiatorEfficiency!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has irradiator efficiency, but is not for an irradiator!").solve(() -> {
+                                            br.irradiatorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.irradiatorHeat!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has irradiator heat, but is not for an irradiator!").solve(() -> {
+                                            br.irradiatorHeat = 0;
+                                        }, "Set heat to 0");
+                                    }else{
+                                        if(br.irradiatorEfficiency<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" irradiator efficiency must not be negative!").solve(() -> {
+                                            br.irradiatorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.irradiatorHeat<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" irradiator heat must not be negative!").solve(() -> {
+                                            br.irradiatorHeat = 0;
+                                        }, "Set heat to 0");
+                                    }
+                                    if(!Float.isFinite(br.irradiatorEfficiency))validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" irradiator efficiency is not finite!").solve(() -> {
+                                        br.irradiatorEfficiency = 0;
+                                    }, "Set efficiency to 0");
+                                    if(!Float.isFinite(br.irradiatorHeat))validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" irradiator heat is not finite!").solve(() -> {
+                                        br.irradiatorHeat = 0;
+                                    }, "Set heat to 0");
+                                    if(!b.reflector){
+                                        if(br.reflectorEfficiency!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has reflector efficiency, but is not for a reflector!").solve(() -> {
+                                            br.reflectorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.reflectorReflectivity!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has reflector reflectivity, but is not for a reflector!").solve(() -> {
+                                            br.reflectorReflectivity = 0;
+                                        }, "Set reflectivity to 0");
+                                    }else{
+                                        if(br.reflectorEfficiency<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" reflector efficiency must not be negative!").solve(() -> {
+                                            br.reflectorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.reflectorReflectivity<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" reflector reflectivity must not be negative!").solve(() -> {
+                                            br.reflectorReflectivity = 0;
+                                        }, "Set reflectivity to 0");
+                                    }
+                                    if(!Float.isFinite(br.reflectorEfficiency))validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" reflector efficiency is not finite!").solve(() -> {
+                                        br.reflectorEfficiency = 0;
+                                    }, "Set efficiency to 0");
+                                    if(!Float.isFinite(br.reflectorReflectivity))validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" reflector reflectivity is not finite!").solve(() -> {
+                                        br.reflectorReflectivity = 0;
+                                    }, "Set reflectivity to 0");
+                                    if(!b.moderator){
+                                        if(br.moderatorEfficiency!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has moderator efficiency, but is not for a moderator!").solve(() -> {
+                                            br.moderatorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.moderatorFlux!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has moderator flux, but is not for a moderator!").solve(() -> {
+                                            br.moderatorFlux = 0;
+                                        }, "Set flux to 0");
+                                        if(br.moderatorActive)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" is moderator active, but is not for a moderator!").solve(() -> {
+                                            br.moderatorActive = false;
+                                        }, "Set active to false");
+                                    }else{
+                                        if(br.moderatorEfficiency<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" moderator efficiency must not be negative!").solve(() -> {
+                                            br.moderatorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.moderatorFlux<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" moderator flux must not be negative!").solve(() -> {
+                                            br.moderatorFlux = 0;
+                                        }, "Set flux to 0");
+                                    }
+                                    if(!Float.isFinite(br.moderatorEfficiency))validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" moderator efficiency is not finite!").solve(() -> {
+                                        br.moderatorEfficiency = 0;
+                                    }, "Set efficiency to 0");
+                                    if(!b.shield){
+                                        if(br.shieldEfficiency!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has shield efficiency, but is not for a shield!").solve(() -> {
+                                            br.shieldEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.shieldHeat!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has shield heat, but is not for a shield!").solve(() -> {
+                                            br.shieldHeat = 0;
+                                        }, "Set heat to 0");
+                                    }else{
+                                        if(br.shieldEfficiency<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" shield efficiency must not be negative!").solve(() -> {
+                                            br.shieldEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(br.shieldHeat<0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" shield heat must not be negative!").solve(() -> {
+                                            br.shieldHeat = 0;
+                                        }, "Set heat to 0");
+                                    }
+                                    if(!Float.isFinite(br.shieldEfficiency))validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" shield efficiency is not finite!").solve(() -> {
+                                        br.shieldEfficiency = 0;
+                                    }, "Set efficiency to 0");
+                                    if(!b.heatsink){
+                                        if(br.heatsinkCooling!=0)validator.error("Overhaul SFR addon block recipe "+br.inputName+" of block "+b.name+" has heat sink cooling, but is not for a heatsink!").solve(() -> {
+                                            br.heatsinkCooling = 0;
+                                        }, "Set cooling to 0");
+                                    }
+                                }
+                                //</editor-fold>
+                            }
+                            //</editor-fold>
+                        }
                         //<editor-fold defaultstate="collapsed" desc="Coolant Recipes">
                         validator.stage("Checking coolant recipes...");
                         for(int i = 0; i<sfr.coolantRecipes.size(); i++){
@@ -1703,6 +1959,452 @@ public class MenuValidateConfiguration extends ConfigurationMenu{
                             }
                         }
                         //</editor-fold>
+                        if(configuration.addon){
+                            //<editor-fold defaultstate="collapsed" desc="Addon Blocks">
+                            validator.stage("Checking Addon blocks...");
+                            for(int i = 0; i<msr.allBlocks.size(); i++){
+                                validator.stage("Checking Addon blocks... ("+(i+1)+"/"+msr.allBlocks.size()+")");
+                                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b = msr.allBlocks.get(i);
+                                Runnable blockConfig = () -> {
+                                    gui.open(new net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionmsr.MenuBlockConfiguration(gui, this, configuration, b));
+                                };
+                                //<editor-fold defaultstate="collapsed" desc="Name">
+                                if(b.name==null){
+                                    validator.error("Overhaul MSR addon block name is null!").solve(blockConfig, "Go to Block configuration");
+                                }else{
+                                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block match = null;
+                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b2 : Core.configuration.overhaul.fissionMSR.allBlocks){
+                                        if(b.name.equals(b2.name))match = b2;
+                                    }
+                                    if(match==null)validator.error("Overhaul MSR addon block "+b.name+" does not match any blocks in the parent configuration!").solve(blockConfig, "Go to Block configuration");
+                                    else{
+                                        if(match.fuelVessel != b.fuelVessel)validator.error("Overhaul MSR addon block "+b.name+" setting Fuel Vessel does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.moderator != b.moderator)validator.error("Overhaul MSR addon block "+b.name+" setting Moderator does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.reflector != b.reflector)validator.error("Overhaul MSR addon block "+b.name+" setting Reflector does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.irradiator != b.irradiator)validator.error("Overhaul MSR addon block "+b.name+" setting Irradiator does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.heater != b.heater)validator.error("Overhaul MSR addon block "+b.name+" setting Heater does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                        if(match.shield != b.shield)validator.error("Overhaul MSR addon block "+b.name+" setting Shield does not match that of the corresponding block in the parent configuration!").solve(blockConfig, "Go to Block Configuration");
+                                    }
+                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b2 : msr.allBlocks){
+                                        if(b==b2)continue;
+                                        if(b.name.equals(b2.name))validator.error("Overhaul MSR addon block "+b.name+" is duplicated!").hint("This configuration contains multiple of the same addon blocks.").solve(blockConfig, "Go to Block configuration");
+                                    }
+                                }
+                                //</editor-fold>
+                                if(b.irradiator){
+                                    //<editor-fold defaultstate="collapsed" desc="Block Recipes">
+                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe br : b.recipes){
+                                        Runnable blockRecipeConfig = () -> {
+                                            gui.open(new net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionmsr.MenuBlockRecipeConfiguration(gui, this, configuration, b, br));
+                                        };
+                                        //<editor-fold defaultstate="collapsed" desc="Input Name">
+                                        if(br.inputName==null){
+                                            validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" input name is null!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }else{
+                                            String[] split = br.inputName.split("\\:");
+                                            if(split.length<2||split.length>3){
+                                                validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" input name is invalid! ("+br.inputName+")").hint("Item input name must be a namespaced ID! (namespace:inputname or namespace:inputname:metadata").solve(blockConfig, "Go to Block Recipe configuration");
+                                            }else{
+                                                for(char c : split[0].toCharArray()){
+                                                    if(namespaceChars.indexOf(c)==-1){
+                                                        validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" namespace is invalid! ("+split[0]+")").hint("Namespaces can only contain characters 0-9, a-z, _, -, and .! This should be the namespace of the ingame block or item.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                    }
+                                                }
+                                                for(char c : split[1].toCharArray()){
+                                                    if(namespacePathChars.indexOf(c)==-1){
+                                                        validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" input name is invalid! ("+split[1]+")").hint("block recipe input names can only contain characters 0-9, a-z, _, -, ., and /! This should be the input name of the ingame block or item.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                    }
+                                                }
+                                                if(split.length==3){
+                                                    try{
+                                                        Integer.parseInt(split[2]);
+                                                    }catch(Exception ex){
+                                                        validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" metadata is invalid! ("+split[2]+")").hint("Metadata must be an integer! If the ingame block recipe does not have metadata, use only namespace:input name.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                    }
+                                                }
+                                            }
+                                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe c2 : b.recipes){
+                                                if(br==c2)continue;
+                                                if(br.inputName.equals(c2.inputName))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" input name is not unique! ("+br.inputName+")").hint("This block contains multiple block recipes with the same name.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                            }
+                                        }
+                                        //</editor-fold>
+                                        //<editor-fold defaultstate="collapsed" desc="Input Display name">
+                                        if(br.inputDisplayName==null||br.inputDisplayName.isEmpty()){
+                                            validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has no display name!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }
+                                        //</editor-fold>
+                                        //<editor-fold defaultstate="collapsed" desc="Output Name">
+                                        if(br.outputName==null){
+                                            validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" output name is null!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }else{
+                                            String[] split = br.outputName.split("\\:");
+                                            if(split.length<2||split.length>3){
+                                                validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" output name is invalid! ("+br.outputName+")").hint("Item output name must be a namespaced ID! (namespace:outputname or namespace:outputname:metadata").solve(blockConfig, "Go to Block Recipe configuration");
+                                            }else{
+                                                for(char c : split[0].toCharArray()){
+                                                    if(namespaceChars.indexOf(c)==-1){
+                                                        validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" namespace is invalid! ("+split[0]+")").hint("Namespaces can only contain characters 0-9, a-z, _, -, and .! This should be the namespace of the ingame block or item.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                    }
+                                                }
+                                                for(char c : split[1].toCharArray()){
+                                                    if(namespacePathChars.indexOf(c)==-1){
+                                                        validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" output name is invalid! ("+split[1]+")").hint("block recipe output names can only contain characters 0-9, a-z, _, -, ., and /! This should be the output name of the ingame block or item.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                    }
+                                                }
+                                                if(split.length==3){
+                                                    try{
+                                                        Integer.parseInt(split[2]);
+                                                    }catch(Exception ex){
+                                                        validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" metadata is invalid! ("+split[2]+")").hint("Metadata must be an integer! If the ingame block recipe does not have metadata, use only namespace:output name.").solve(blockConfig, "Go to Block Recipe configuration");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        //</editor-fold>
+                                        //<editor-fold defaultstate="collapsed" desc="Output Display name">
+                                        if(br.outputDisplayName==null||br.outputDisplayName.isEmpty()){
+                                            validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has no display name!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }
+                                        //</editor-fold>
+                                        //<editor-fold defaultstate="collapsed" desc="Legacy names">
+                                        for(Configuration cf : Configuration.configurations){
+                                            if(cf.overhaul!=null&&cf.overhaul.fissionMSR!=null){
+                                                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b2 : cf.overhaul.fissionMSR.blocks){
+                                                    if(!b.name.equals(b2.name))continue;
+                                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe r2 : b2.recipes){
+                                                        if(br.inputName.equals(r2.inputName)){
+                                                            if(!br.inputLegacyNames.equals(r2.inputLegacyNames))validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" legacy names do not match! ("+br.inputName+")").hint("Another block recipe was found in block "+b2.name+" of Configuration "+cf.name+" with different legacy names.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                        }else{
+                                                            for(String s : br.inputLegacyNames)if(r2.inputLegacyNames.contains(s))validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" legacy names are not unique! ("+s+")").hint("Another block recipe was found in block "+b2.name+" of configuration "+cf.name+" with the same legacy name. These blocks could be confused when loading old files").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        for(AddonConfiguration cf : Configuration.internalAddonCache.values()){
+                                            if(cf.self.overhaul!=null&&cf.self.overhaul.fissionMSR!=null){
+                                                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b2 : cf.self.overhaul.fissionMSR.blocks){
+                                                    if(!b.name.equals(b2.name))continue;
+                                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe r2 : b2.recipes){
+                                                        if(br.inputName.equals(r2.inputName)&&!br.inputLegacyNames.equals(r2.inputLegacyNames)){
+                                                            validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" legacy names do not match! ("+br.inputName+")").hint("Another block recipe was found in block "+b2.name+" of Configuration "+cf.name+" with different legacy names.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        //</editor-fold>
+                                        if(br.inputTexture==null)validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has no input texture!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        if(br.outputTexture==null)validator.warn("Overhaul MSR addon block recipe "+br.outputName+" of block "+b.name+" has no output texture!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        if(!b.fuelVessel){
+                                            if(br.fuelVesselEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has fuel vessel efficiency, but is not for a fuel vessel!").solve(() -> {
+                                                br.fuelVesselEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.fuelVesselHeat!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has fuel vessel heat, but is not for a fuel vessel!").solve(() -> {
+                                                br.fuelVesselHeat = 0;
+                                            }, "Set heat to 0");
+                                            if(br.fuelVesselCriticality!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has fuel vessel criticality, but is not for a fuel vessel!").solve(() -> {
+                                                br.fuelVesselCriticality = 0;
+                                            }, "Set criticality to 0");
+                                            if(br.fuelVesselSelfPriming)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" is fuel vessel self priming, but is not for a fuel vessel!").solve(() -> {
+                                                br.fuelVesselSelfPriming = false;
+                                            }, "Set self priming to false");
+                                        }else{
+                                            if(br.fuelVesselEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" fuel vessel efficiency must not be negative!").solve(() -> {
+                                                br.fuelVesselEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.fuelVesselHeat<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" fuel vessel heat must not be negative!").solve(() -> {
+                                                br.fuelVesselHeat = 0;
+                                            }, "Set heat to 0");
+                                            if(br.fuelVesselCriticality<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" fuel vessel criticality must not be negative!").solve(() -> {
+                                                br.fuelVesselCriticality = 0;
+                                            }, "Set criticality to 0");
+                                        }
+                                        if(!Float.isFinite(br.fuelVesselEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" fuel vessel efficiency is not finite!").solve(() -> {
+                                            br.fuelVesselEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!b.irradiator){
+                                            if(br.irradiatorEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has irradiator efficiency, but is not for an irradiator!").solve(() -> {
+                                                br.irradiatorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.irradiatorHeat!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has irradiator heat, but is not for an irradiator!").solve(() -> {
+                                                br.irradiatorHeat = 0;
+                                            }, "Set heat to 0");
+                                        }else{
+                                            if(br.irradiatorEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" irradiator efficiency must not be negative!").solve(() -> {
+                                                br.irradiatorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.irradiatorHeat<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" irradiator heat must not be negative!").solve(() -> {
+                                                br.irradiatorHeat = 0;
+                                            }, "Set heat to 0");
+                                        }
+                                        if(!Float.isFinite(br.irradiatorEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" irradiator efficiency is not finite!").solve(() -> {
+                                            br.irradiatorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!Float.isFinite(br.irradiatorHeat))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" irradiator heat is not finite!").solve(() -> {
+                                            br.irradiatorHeat = 0;
+                                        }, "Set heat to 0");
+                                        if(!b.reflector){
+                                            if(br.reflectorEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has reflector efficiency, but is not for a reflector!").solve(() -> {
+                                                br.reflectorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.reflectorReflectivity!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has reflector reflectivity, but is not for a reflector!").solve(() -> {
+                                                br.reflectorReflectivity = 0;
+                                            }, "Set reflectivity to 0");
+                                        }else{
+                                            if(br.reflectorEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" reflector efficiency must not be negative!").solve(() -> {
+                                                br.reflectorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.reflectorReflectivity<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" reflector reflectivity must not be negative!").solve(() -> {
+                                                br.reflectorReflectivity = 0;
+                                            }, "Set reflectivity to 0");
+                                        }
+                                        if(!Float.isFinite(br.reflectorEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" reflector efficiency is not finite!").solve(() -> {
+                                            br.reflectorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!Float.isFinite(br.reflectorReflectivity))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" reflector reflectivity is not finite!").solve(() -> {
+                                            br.reflectorReflectivity = 0;
+                                        }, "Set reflectivity to 0");
+                                        if(!b.moderator){
+                                            if(br.moderatorEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has moderator efficiency, but is not for a moderator!").solve(() -> {
+                                                br.moderatorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.moderatorFlux!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has moderator flux, but is not for a moderator!").solve(() -> {
+                                                br.moderatorFlux = 0;
+                                            }, "Set flux to 0");
+                                            if(br.moderatorActive)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" is moderator active, but is not for a moderator!").solve(() -> {
+                                                br.moderatorActive = false;
+                                            }, "Set active to false");
+                                        }else{
+                                            if(br.moderatorEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" moderator efficiency must not be negative!").solve(() -> {
+                                                br.moderatorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.moderatorFlux<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" moderator flux must not be negative!").solve(() -> {
+                                                br.moderatorFlux = 0;
+                                            }, "Set flux to 0");
+                                        }
+                                        if(!Float.isFinite(br.moderatorEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" moderator efficiency is not finite!").solve(() -> {
+                                            br.moderatorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!b.shield){
+                                            if(br.shieldEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has shield efficiency, but is not for a shield!").solve(() -> {
+                                                br.shieldEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.shieldHeat!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has shield heat, but is not for a shield!").solve(() -> {
+                                                br.shieldHeat = 0;
+                                            }, "Set heat to 0");
+                                        }else{
+                                            if(br.shieldEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" shield efficiency must not be negative!").solve(() -> {
+                                                br.shieldEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.shieldHeat<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" shield heat must not be negative!").solve(() -> {
+                                                br.shieldHeat = 0;
+                                            }, "Set heat to 0");
+                                        }
+                                        if(!Float.isFinite(br.shieldEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" shield efficiency is not finite!").solve(() -> {
+                                            br.shieldEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!b.heater){
+                                            if(br.heaterCooling!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has heater cooling, but is not for a heater!").solve(() -> {
+                                                br.heaterCooling = 0;
+                                            }, "Set cooling to 0");
+                                        }
+                                    }
+                                    //</editor-fold>
+                                }else{
+                                    //<editor-fold defaultstate="collapsed" desc="Block Recipes">
+                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe br : b.recipes){
+                                        Runnable blockRecipeConfig = () -> {
+                                            gui.open(new net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.fissionmsr.MenuBlockRecipeConfiguration(gui, this, configuration, b, br));
+                                        };
+                                        //<editor-fold defaultstate="collapsed" desc="Input Name">
+                                        if(br.inputName==null){
+                                            validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" input name is null!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }else{
+                                            if(br.inputName.contains(":"))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" input name is invalid! ("+br.inputName+")").hint("Fluid name must be the name of the fluid! (ex. water, not fluid:water or minecraft:water)").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                            for(char ch : br.inputName.toCharArray()){
+                                                if(namespaceChars.indexOf(ch)==-1){
+                                                    validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" input name is invalid! ("+br.inputName+")").hint("Fluid names can only contain characters 0-9, a-z, _, -, and .! This should be the namespace of the ingame fluid.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                }
+                                            }
+                                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe c2 : b.recipes){
+                                                if(br==c2)continue;
+                                                if(br.inputName.equals(c2.inputName))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" input name is not unique! ("+br.inputName+")").hint("This configuration contains multiple block recipes with the same name.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                            }
+                                        }
+                                        //</editor-fold>
+                                        //<editor-fold defaultstate="collapsed" desc="Input Display name">
+                                        if(br.inputDisplayName==null||br.inputDisplayName.isEmpty()){
+                                            validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has no display name!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }
+                                        //</editor-fold>
+                                        //<editor-fold defaultstate="collapsed" desc="Output Name">
+                                        if(br.outputName==null){
+                                            validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" output name is null!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }else{
+                                            if(br.outputName.contains(":"))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" output name is invalid! ("+br.outputName+")").hint("Fluid name must be the name of the fluid! (ex. water, not fluid:water or minecraft:water)").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                            for(char ch : br.outputName.toCharArray()){
+                                                if(namespaceChars.indexOf(ch)==-1){
+                                                    validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" output name is invalid! ("+br.outputName+")").hint("Fluid names can only contain characters 0-9, a-z, _, -, and .! This should be the namespace of the ingame fluid.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                }
+                                            }
+                                        }
+                                        //</editor-fold>
+                                        //<editor-fold defaultstate="collapsed" desc="Output Display name">
+                                        if(br.outputDisplayName==null||br.outputDisplayName.isEmpty()){
+                                            validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has no display name!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        }
+                                        //</editor-fold>
+                                        //<editor-fold defaultstate="collapsed" desc="Legacy names">
+                                        for(Configuration cf : Configuration.configurations){
+                                            if(cf.overhaul!=null&&cf.overhaul.fissionMSR!=null){
+                                                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b2 : cf.overhaul.fissionMSR.blocks){
+                                                    if(!b.name.equals(b2.name))continue;
+                                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe r2 : b2.recipes){
+                                                        if(br.inputName.equals(r2.inputName)){
+                                                            if(!br.inputLegacyNames.equals(r2.inputLegacyNames))validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" legacy names do not match!").hint("Another block was found in Configuration "+cf.name+" with different legacy names.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                        }else{
+                                                            for(String s : br.inputLegacyNames)if(r2.inputLegacyNames.contains(s))validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" legacy names are not unique! ("+s+")").hint("Another block was found in configuration "+cf.name+" with the same legacy name. These blocks could be confused when loading old files").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        for(AddonConfiguration cf : Configuration.internalAddonCache.values()){
+                                            if(cf.self.overhaul!=null&&cf.self.overhaul.fissionMSR!=null){
+                                                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b2 : cf.self.overhaul.fissionMSR.blocks){
+                                                    if(!b.name.equals(b2.name))continue;
+                                                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe r2 : b2.recipes){
+                                                        if(br.inputName.equals(r2.inputName)&&!br.inputLegacyNames.equals(r2.inputLegacyNames)){
+                                                            validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" legacy names do not match! ("+br.inputName+")").hint("Another block was found in Addon "+cf.name+" with different legacy names.").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        //</editor-fold>
+                                        if(br.inputTexture==null)validator.warn("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has no input texture!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        if(br.outputTexture==null)validator.warn("Overhaul MSR addon block recipe "+br.outputName+" of block "+b.name+" has no output texture!").solve(blockRecipeConfig, "Go to Block Recipe configuration");
+                                        if(!b.fuelVessel){
+                                            if(br.fuelVesselEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has fuel vessel efficiency, but is not for a fuel vessel!").solve(() -> {
+                                                br.fuelVesselEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.fuelVesselHeat!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has fuel vessel heat, but is not for a fuel vessel!").solve(() -> {
+                                                br.fuelVesselHeat = 0;
+                                            }, "Set heat to 0");
+                                            if(br.fuelVesselCriticality!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has fuel vessel criticality, but is not for a fuel vessel!").solve(() -> {
+                                                br.fuelVesselCriticality = 0;
+                                            }, "Set criticality to 0");
+                                            if(br.fuelVesselSelfPriming)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" is fuel vessel self priming, but is not for a fuel vessel!").solve(() -> {
+                                                br.fuelVesselSelfPriming = false;
+                                            }, "Set self priming to false");
+                                        }else{
+                                            if(br.fuelVesselEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" fuel vessel efficiency must not be negative!").solve(() -> {
+                                                br.fuelVesselEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.fuelVesselHeat<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" fuel vessel heat must not be negative!").solve(() -> {
+                                                br.fuelVesselHeat = 0;
+                                            }, "Set heat to 0");
+                                            if(br.fuelVesselCriticality<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" fuel vessel criticality must not be negative!").solve(() -> {
+                                                br.fuelVesselCriticality = 0;
+                                            }, "Set criticality to 0");
+                                        }
+                                        if(!Float.isFinite(br.fuelVesselEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" fuel vessel efficiency is not finite!").solve(() -> {
+                                            br.fuelVesselEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!b.irradiator){
+                                            if(br.irradiatorEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has irradiator efficiency, but is not for an irradiator!").solve(() -> {
+                                                br.irradiatorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.irradiatorHeat!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has irradiator heat, but is not for an irradiator!").solve(() -> {
+                                                br.irradiatorHeat = 0;
+                                            }, "Set heat to 0");
+                                        }else{
+                                            if(br.irradiatorEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" irradiator efficiency must not be negative!").solve(() -> {
+                                                br.irradiatorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.irradiatorHeat<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" irradiator heat must not be negative!").solve(() -> {
+                                                br.irradiatorHeat = 0;
+                                            }, "Set heat to 0");
+                                        }
+                                        if(!Float.isFinite(br.irradiatorEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" irradiator efficiency is not finite!").solve(() -> {
+                                            br.irradiatorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!Float.isFinite(br.irradiatorHeat))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" irradiator heat is not finite!").solve(() -> {
+                                            br.irradiatorHeat = 0;
+                                        }, "Set heat to 0");
+                                        if(!b.reflector){
+                                            if(br.reflectorEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has reflector efficiency, but is not for a reflector!").solve(() -> {
+                                                br.reflectorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.reflectorReflectivity!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has reflector reflectivity, but is not for a reflector!").solve(() -> {
+                                                br.reflectorReflectivity = 0;
+                                            }, "Set reflectivity to 0");
+                                        }else{
+                                            if(br.reflectorEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" reflector efficiency must not be negative!").solve(() -> {
+                                                br.reflectorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.reflectorReflectivity<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" reflector reflectivity must not be negative!").solve(() -> {
+                                                br.reflectorReflectivity = 0;
+                                            }, "Set reflectivity to 0");
+                                        }
+                                        if(!Float.isFinite(br.reflectorEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" reflector efficiency is not finite!").solve(() -> {
+                                            br.reflectorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!Float.isFinite(br.reflectorReflectivity))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" reflector reflectivity is not finite!").solve(() -> {
+                                            br.reflectorReflectivity = 0;
+                                        }, "Set reflectivity to 0");
+                                        if(!b.moderator){
+                                            if(br.moderatorEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has moderator efficiency, but is not for a moderator!").solve(() -> {
+                                                br.moderatorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.moderatorFlux!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has moderator flux, but is not for a moderator!").solve(() -> {
+                                                br.moderatorFlux = 0;
+                                            }, "Set flux to 0");
+                                            if(br.moderatorActive)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" is moderator active, but is not for a moderator!").solve(() -> {
+                                                br.moderatorActive = false;
+                                            }, "Set active to false");
+                                        }else{
+                                            if(br.moderatorEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" moderator efficiency must not be negative!").solve(() -> {
+                                                br.moderatorEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.moderatorFlux<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" moderator flux must not be negative!").solve(() -> {
+                                                br.moderatorFlux = 0;
+                                            }, "Set flux to 0");
+                                        }
+                                        if(!Float.isFinite(br.moderatorEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" moderator efficiency is not finite!").solve(() -> {
+                                            br.moderatorEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!b.shield){
+                                            if(br.shieldEfficiency!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has shield efficiency, but is not for a shield!").solve(() -> {
+                                                br.shieldEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.shieldHeat!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has shield heat, but is not for a shield!").solve(() -> {
+                                                br.shieldHeat = 0;
+                                            }, "Set heat to 0");
+                                        }else{
+                                            if(br.shieldEfficiency<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" shield efficiency must not be negative!").solve(() -> {
+                                                br.shieldEfficiency = 0;
+                                            }, "Set efficiency to 0");
+                                            if(br.shieldHeat<0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" shield heat must not be negative!").solve(() -> {
+                                                br.shieldHeat = 0;
+                                            }, "Set heat to 0");
+                                        }
+                                        if(!Float.isFinite(br.shieldEfficiency))validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" shield efficiency is not finite!").solve(() -> {
+                                            br.shieldEfficiency = 0;
+                                        }, "Set efficiency to 0");
+                                        if(!b.heater){
+                                            if(br.heaterCooling!=0)validator.error("Overhaul MSR addon block recipe "+br.inputName+" of block "+b.name+" has heater cooling, but is not for a heater!").solve(() -> {
+                                                br.heaterCooling = 0;
+                                            }, "Set cooling to 0");
+                                        }
+                                    }
+                                    //</editor-fold>
+                                }
+                            }
+                            //</editor-fold>
+                        }
                     }
                     if(overhaul.turbine!=null){
                         validator.stage("Checking overhaul Turbine configuration");
@@ -1921,7 +2623,7 @@ public class MenuValidateConfiguration extends ConfigurationMenu{
                                 b.coilEfficiency = 0;
                             }, "Set efficiency to 0");
                             //</editor-fold>
-                            validate(b.rules, "Overhaul Turbine block", blockConfig);
+                            validate(b.rules, "Overhaul Turbine block "+b.name, blockConfig);
                         }
                         //</editor-fold>
                         //<editor-fold defaultstate="collapsed" desc="Recipes">
