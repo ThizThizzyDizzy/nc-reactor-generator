@@ -20,7 +20,7 @@ public class TextBox extends Component{
     public float titlenessSpeed = 10;
     public boolean editable;
     public String text;
-    public float textInset = -1;
+    public float textInset = .1f;
     public boolean oscillator;
     public double oscillatorTimer = 0;
     private ArrayList<Runnable> changeListeners = new ArrayList<>();
@@ -55,9 +55,7 @@ public class TextBox extends Component{
     @Override
     public void draw(double deltaTime){
         Renderer renderer = new Renderer();
-        if(textInset<0){
-            textInset = height/10;
-        }
+        float textInset = this.textInset*height;
         renderer.setColor(Core.theme.getTextBoxBorderColor());
         renderer.fillRect(x, y, x+width, y+height);
         renderer.setColor(Core.theme.getTextBoxColor());
@@ -67,7 +65,7 @@ public class TextBox extends Component{
             if(title!=null){
                 renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset-titleInset, text+((oscillator&&isFocused)?"_":"")+suffix);
                 renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)), 0.75f);
-                renderer.drawText(x+textInset, MathUtil.getValueBetweenTwoValues(1, y+textInset, 0, y+height-textInset-titleInset, titleness), x+width-textInset, MathUtil.getValueBetweenTwoValues(1, y+height-textInset-titleInset, 0, y+height-textInset, titleness), title);
+                renderer.drawText(x+textInset, Math.max(y, MathUtil.getValueBetweenTwoValues(1, y+textInset, 0, y+height-textInset-titleInset, titleness)), x+width-textInset, MathUtil.getValueBetweenTwoValues(1, y+height-textInset-titleInset, 0, y+height-textInset, titleness), title);
 //                if(text.isEmpty())drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset-titleInset, title);
 //                else              drawText(x+textInset, y+height-textInset-titleInset, x+width-textInset, y+height-textInset, title);
                 renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
