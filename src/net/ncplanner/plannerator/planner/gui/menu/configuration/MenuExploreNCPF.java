@@ -4,9 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.function.Function;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
@@ -51,7 +51,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
             for(Config c : configs){
                 subtasks.add(task.addSubtask("Loading Config"));
             }
-            Stack<String> path = new Stack<>();
+            ArrayList<String> path = new ArrayList<>();
             for(int i = 0; i<configs.size(); i++){
                 task.name = "Loading file... ("+(i+1)+"/"+configs.size()+")";
                 Task task = subtasks.get(i);
@@ -59,7 +59,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                 Config c = configs.get(i);
                 add(new Label(str(c)).setInset(0).alignLeft(), getNCPFComponent(path, c));
                 addComponents(c, path, task);
-                path.pop();
+                path.remove(path.size()-1);
                 task.finish();
             }
             task.finish();
@@ -92,7 +92,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
         lay.add(c2);
         list.add(lay);
     }
-    private void addComponents(Config config, Stack<String> path, Task task){
+    private void addComponents(Config config, ArrayList<String> path, Task task){
         String pre = task.name;
         String[] properties = config.properties();
         for(int i = 0; i<properties.length; i++){
@@ -100,42 +100,42 @@ public class MenuExploreNCPF extends ConfigurationMenu{
             task.setProgress(i/(double)properties.length);
             String key = properties[i];
             String indent = indent(path);
-            path.push(key);
+            path.add(key);
             Object val = config.get(key);
             add(new Label(indent+key+": "+str(val)).setInset(0).alignLeft(), getNCPFComponent(path, val));
             if(val instanceof Config)addComponents((Config)val, path, task.addSubtask("Loading Config "+str(path)));
             if(val instanceof ConfigList)addComponents((ConfigList)val, path, task.addSubtask("Loading ConfigList "+str(path)));
 //            if(val instanceof ConfigNumberList)addComponents((ConfigNumberList)val, path, task.addSubtask("Loading ConfigNumberList "+str(path)));
-            path.pop();
+            path.remove(path.size()-1);
         }
         task.finish();
     }
-    private void addComponents(ConfigList list, Stack<String> path, Task task){
+    private void addComponents(ConfigList list, ArrayList<String> path, Task task){
         String pre = task.name;
         for(int i = 0; i<list.size(); i++){
             task.name = pre+" ("+(i+1)+"/"+list.size()+")";
             task.setProgress(i/(double)list.size());
             String indent = indent(path);
-            path.push("["+i+"]");
+            path.add("["+i+"]");
             Object val = list.get(i);
             add(new Label(indent+i+": "+str(val)).setInset(0).alignLeft(), getNCPFComponent(path, val));
             if(val instanceof Config)addComponents((Config)val, path, task.addSubtask("Loading Config"));
             if(val instanceof ConfigList)addComponents((ConfigList)val, path, task.addSubtask("Loading ConfigList"));
 //            if(val instanceof ConfigNumberList)addComponents((ConfigNumberList)val, path, task.addSubtask("Loading ConfigNumberList"));
-            path.pop();
+            path.remove(path.size()-1);
         }
         task.finish();
     }
-    private void addComponents(ConfigNumberList list, Stack<String> path, Task task){
+    private void addComponents(ConfigNumberList list, ArrayList<String> path, Task task){
         String pre = task.name;
         for(int i = 0; i<list.size(); i++){
             task.name = pre+" ("+(i+1)+"/"+list.size()+")";
             task.setProgress(i/(double)list.size());
             String indent = indent(path);
-            path.push("["+i+"]");
+            path.add("["+i+"]");
             long val = list.get(i);
             add(new Label(indent+i+": "+val).setInset(0).alignLeft(), getNCPFComponent(path, val));
-            path.pop();
+            path.remove(path.size()-1);
         }
         task.finish();
     }
@@ -170,23 +170,64 @@ public class MenuExploreNCPF extends ConfigurationMenu{
         while(s.length()<len)s = "0"+s;
         return s;
     }
-    private String indent(Stack<String> path){
+    private String indent(ArrayList<String> path){
         String str = "";
         for(String s : path){
             str+=" ";
         }
         return str;
     }
-    private Component getNCPFComponent(Stack<String> path, Object val){
+    private Component getNCPFComponent(ArrayList<String> path, Object val){
         String text = "";
+        int whichConfig = Integer.parseInt(path.get(0).substring(1, path.get(0).length()-1));
+        switch(whichConfig){
+            case 0:
+                if(path.size()==1)text = "Header";
+                else{
+                    switch(path.get(1)){
+                        case "version":
+                            text = "NCPF "+val;
+                            break;
+                        case "count":
+                            text = val+" Multiblocks";
+                            break;
+                    }
+                }
+                break;
+            case 1:
+                if(path.size()==1)text = "Configuration";
+                else{
+                    String s = str(path).split("\\.", 2)[1];
+                    System.out.println(s);
+                    switch(s){
+                        case "partial":
+                            if(Objects.equals(val, true))text = "Partial";
+                            break;
+                        case "addon":
+                            if(Objects.equals(val, true))text = "Addon";
+                            break;
+                        default:
+                            HashMap<String, String> map = new HashMap<>();
+                            map.put("underhaul.fissionSFR", "Underhaul SFR Configuration");
+                            map.put("overhaul.fissionSFR", "Overhaul SFR Configuration");
+                            map.put("overhaul.fissionMSR", "Overhaul MSR Configuration");
+                            map.put("overhaul.turbine", "Overhaul turbine Configuration");
+                            map.put("overhaul.fusion", "Overhaul Fusion TEST Configuration");
+                            text = map.getOrDefault(s, text);
+                    }
+                }
+                break;
+            default:
+                if(path.size()==1)text = "Multiblock "+(whichConfig-1);
+                break;
+        }
         if(path.size()==1){
             String s = path.get(0);
             int i = Integer.parseInt(s.substring(1, s.length()-1));
-            text = "Multiblock "+(i-1);
             if(i==0)text = "Header";
             if(i==1)text = "Configuration";
         }
-        return new Label(text).setInset(0).alignLeft();
+        return new Label(indent(path).substring(1)+text).setInset(0).alignLeft();
     }
     @Override
     public synchronized void onCharTyped(char c){
@@ -276,10 +317,10 @@ public class MenuExploreNCPF extends ConfigurationMenu{
     public synchronized void render3d(double deltaTime){
         super.render3d(deltaTime);
     }
-    private String str(Stack<String> path){
+    private String str(ArrayList<String> path){
         String str = "";
         for(String s : path){
-            if(!str.isEmpty())s+=".";
+            if(!str.isEmpty())str+=".";
             str+=s;
         }
         return str;
