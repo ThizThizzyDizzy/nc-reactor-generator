@@ -6,13 +6,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.function.Function;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
+import net.ncplanner.plannerator.planner.file.reader.NCPF11Reader;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -20,10 +22,12 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.SingleColumnGridLayout;
 public class MenuExploreNCPF extends ConfigurationMenu{
     private final SingleColumnList list;
     private final ProgressBar progress;
     private final ArrayList<Config> configs;
+    private boolean consolidate = false;
     public MenuExploreNCPF(GUI gui, Menu parent, Configuration configuration, File file) throws FileNotFoundException{
         this(gui, parent, configuration, new FileInputStream(file));
     }
@@ -81,6 +85,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
             Config header = Config.newConfig(stream);
             header.load();
             configs.add(header);
+            for(int i = 0; i<=header.getInt("count"); i++)configs.add(Config.newConfig(stream).load());
         }catch(Exception ex){
             Core.warning("Failed to load NCPF!", ex);
         }
@@ -102,26 +107,72 @@ public class MenuExploreNCPF extends ConfigurationMenu{
             String indent = indent(path);
             path.add(key);
             Object val = config.get(key);
+            int listIndex = list.components.size();
             add(new Label(indent+key+": "+str(val)).setInset(0).alignLeft(), getNCPFComponent(path, val));
+            boolean consolidate = this.consolidate;
+            this.consolidate = false;
             if(val instanceof Config)addComponents((Config)val, path, task.addSubtask("Loading Config "+str(path)));
             if(val instanceof ConfigList)addComponents((ConfigList)val, path, task.addSubtask("Loading ConfigList "+str(path)));
 //            if(val instanceof ConfigNumberList)addComponents((ConfigNumberList)val, path, task.addSubtask("Loading ConfigNumberList "+str(path)));
+            if(consolidate){
+                ArrayList<Component> comps = new ArrayList<>();
+                for(int j = listIndex+1; j<list.components.size();){
+                    comps.add(list.components.remove(j));
+                }
+                SingleColumnGridLayout gl = new SingleColumnGridLayout(20){
+                    @Override
+                    public void onFocusGained(){
+                        addAll(comps);
+                    }
+                    @Override
+                    public void onFocusLost(){
+                        for(int j = 1; j<components.size();){
+                            components.remove(j);
+                        }
+                    }
+                };
+                gl.add(list.components.remove(listIndex));
+                list.add(gl);
+            }
             path.remove(path.size()-1);
         }
         task.finish();
     }
-    private void addComponents(ConfigList list, ArrayList<String> path, Task task){
+    private void addComponents(ConfigList lst, ArrayList<String> path, Task task){
         String pre = task.name;
-        for(int i = 0; i<list.size(); i++){
-            task.name = pre+" ("+(i+1)+"/"+list.size()+")";
-            task.setProgress(i/(double)list.size());
+        for(int i = 0; i<lst.size(); i++){
+            task.name = pre+" ("+(i+1)+"/"+lst.size()+")";
+            task.setProgress(i/(double)lst.size());
             String indent = indent(path);
             path.add("["+i+"]");
-            Object val = list.get(i);
+            Object val = lst.get(i);
+            int listIndex = list.components.size();
             add(new Label(indent+i+": "+str(val)).setInset(0).alignLeft(), getNCPFComponent(path, val));
+            boolean consolidate = this.consolidate;
+            this.consolidate = false;
             if(val instanceof Config)addComponents((Config)val, path, task.addSubtask("Loading Config"));
             if(val instanceof ConfigList)addComponents((ConfigList)val, path, task.addSubtask("Loading ConfigList"));
 //            if(val instanceof ConfigNumberList)addComponents((ConfigNumberList)val, path, task.addSubtask("Loading ConfigNumberList"));
+            if(consolidate){
+                ArrayList<Component> comps = new ArrayList<>();
+                for(int j = listIndex+1; j<list.components.size();){
+                    comps.add(list.components.remove(j));
+                }
+                SingleColumnGridLayout gl = new SingleColumnGridLayout(20){
+                    @Override
+                    public void onFocusGained(){
+                        addAll(comps);
+                    }
+                    @Override
+                    public void onFocusLost(){
+                        for(int j = 1; j<components.size();){
+                            components.remove(j);
+                        }
+                    }
+                };
+                gl.add(list.components.remove(listIndex));
+                list.add(gl);
+            }
             path.remove(path.size()-1);
         }
         task.finish();
@@ -138,19 +189,20 @@ public class MenuExploreNCPF extends ConfigurationMenu{
             path.remove(path.size()-1);
         }
         task.finish();
+        consolidate = true;
     }
     private String str(Object o){
         if(o instanceof Config)return "Config (size="+((Config)o).properties().length+")";
-        if(o instanceof String)return "String \""+o+"\"";
-        if(o instanceof Integer)return "int "+(int)o+" ("+hex((int)o)+")";
-        if(o instanceof Boolean)return "boolean "+(boolean)o;
-        if(o instanceof Float)return "float "+(float)o;
-        if(o instanceof Long)return "long "+(long)o+" ("+hex((long)o)+")";
-        if(o instanceof Double)return "double "+(double)o;
+        if(o instanceof String)return "\""+o+"\"";
+        if(o instanceof Integer)return (int)o+" ("+hex((int)o)+")";
+        if(o instanceof Boolean)return ""+(boolean)o;
+        if(o instanceof Float)return (float)o+"f";
+        if(o instanceof Long)return (long)o+" ("+hex((long)o)+")";
+        if(o instanceof Double)return (double)o+"d";
         if(o instanceof ConfigList)return "ConfigList (size="+((ConfigList)o).size()+")";
         if(o instanceof ConfigNumberList)return "ConfigNumberList (size="+((ConfigNumberList)o).size()+")";
-        if(o instanceof Byte)return "byte "+(byte)o+" ("+hex((byte)o)+")";
-        if(o instanceof Short)return "short "+(short)o+" ("+hex((short)o)+")";
+        if(o instanceof Byte)return (byte)o+" ("+hex((byte)o)+")";
+        if(o instanceof Short)return (short)o+" ("+hex((short)o)+")";
         return "Unknown";
     }
     private String hex(byte b){
@@ -179,6 +231,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
     }
     private Component getNCPFComponent(ArrayList<String> path, Object val){
         String text = "";
+        ArrayList<Image> textures = new ArrayList<>();
         int whichConfig = Integer.parseInt(path.get(0).substring(1, path.get(0).length()-1));
         switch(whichConfig){
             case 0:
@@ -195,39 +248,290 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                 }
                 break;
             case 1:
-                if(path.size()==1)text = "Configuration";
+                if(path.size()==1){
+                    if(val instanceof Config){
+                        Config c = (Config)val;
+                        String name = "";
+                        Object n = c.get("name");
+                        if(n!=null)name = " "+n.toString();
+                        String vers = "";
+                        Object v = c.get("version");
+                        if(v!=null)vers = " "+v.toString();
+                        String uvers = "";
+                        Object uv = c.get("underhaulVersion");
+                        if(uv!=null)uvers = " | "+uv.toString();
+                        text = "Configuration:"+name+vers+uvers;
+                        consolidate = true;
+                    }else text = "Configuration";
+                }
                 else{
                     String s = str(path).split("\\.", 2)[1];
-                    System.out.println(s);
-                    switch(s){
-                        case "partial":
-                            if(Objects.equals(val, true))text = "Partial";
-                            break;
-                        case "addon":
-                            if(Objects.equals(val, true))text = "Addon";
-                            break;
-                        default:
-                            HashMap<String, String> map = new HashMap<>();
-                            map.put("underhaul.fissionSFR", "Underhaul SFR Configuration");
-                            map.put("overhaul.fissionSFR", "Overhaul SFR Configuration");
-                            map.put("overhaul.fissionMSR", "Overhaul MSR Configuration");
-                            map.put("overhaul.turbine", "Overhaul turbine Configuration");
-                            map.put("overhaul.fusion", "Overhaul Fusion TEST Configuration");
-                            text = map.getOrDefault(s, text);
+                    if(s.matches(".*\\.partial")&&Objects.equals(val, true))text = "Partial";
+                    if(s.matches(".*\\.addon")&&Objects.equals(val, true))text = "Addon";
+                    if(s.matches("underhaul\\.fissionSFR")){
+                        text = "Underhaul SFR Configuration";
+                        consolidate = true;
                     }
+                    if(s.matches("overhaul\\.fissionSFR")){
+                        text = "Overhaul SFR Configuration";
+                        consolidate = true;
+                    }
+                    if(s.matches("overhaul\\.fissionMSR")){
+                        text = "Overhaul MSR Configuration";
+                        consolidate = true;
+                    }
+                    if(s.matches("overhaul\\.turbine")){
+                        text = "Overhaul Turbine Configuration";
+                        consolidate = true;
+                    }
+                    if(s.matches("overhaul\\.fusion")){
+                        text = "Overhaul Fusion TEST Configuration";
+                        consolidate = true;
+                    }
+                    if(s.matches(".*\\.(display|legacy)?[Nn]ame")||s.equals("name"))text = val+"";
+                    if(s.matches(".*addons\\.\\[\\d+\\]")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            String name = "";
+                            Object n = c.get("name");
+                            if(n!=null)name = " "+n.toString();
+                            text = "Addon:"+name;
+                            consolidate = true;
+                        }else text = "Invalid Addon!";
+                    }
+                    if(s.matches(".*.*\\.\\w*[tT]exture")){
+                        if(val instanceof ConfigNumberList){
+                            text = ((ConfigNumberList)val).get(0)+"x"+((ConfigNumberList)val).get(0);
+                            textures.add(NCPF11Reader.loadNCPFTexture((ConfigNumberList)val));
+                        }else text = "Invalid type (Expected ConfigNumbeRList)";
+                    }
+                    if(s.matches(".*\\.blocks.\\[\\d+\\]")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            consolidate = true;
+                            String name = "";
+                            Object n = c.get("name");
+                            if(n!=null)name = " "+n.toString();
+                            n = c.get("displayName");
+                            if(n!=null)name = " "+n.toString();
+                            Image tex = null;
+                            Object t = c.get("texture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            text = "Block:"+name;
+                            if(tex!=null)textures.add(tex);
+                        }else text = "Invalid type for Block!";
+                    }
+                    if(s.matches(".*\\.blocks.*\\.port")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            consolidate = true;
+                            Image tex = null;
+                            Object t = c.get("inputTexture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            if(tex!=null)textures.add(tex);
+                            tex = null;
+                            t = c.get("outputTexture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            if(tex!=null)textures.add(tex);
+                            text = "Port";
+                        }else text = "Invalid type for Block!";
+                    }
+                    if(s.matches(".*underhaul\\.fissionSFR.*\\.fuels.\\[\\d+\\]")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            consolidate = true;
+                            String name = "";
+                            Object n = c.get("name");
+                            if(n!=null)name = " "+n.toString();
+                            n = c.get("displayName");
+                            if(n!=null)name = " "+n.toString();
+                            Image tex = null;
+                            Object t = c.get("texture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            text = "Fuel:"+name;
+                            if(tex!=null)textures.add(tex);
+                        }else text = "Invalid type for Fuel!";
+                    }
+                    if(s.matches(".*\\.blocks\\..*\\.recipes\\.\\[\\d+\\]")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            Config c2 = c;
+                            consolidate = true;
+                            String name = "";
+                            Object o = c.get("output");
+                            if(o instanceof Config)c2 = (Config)o;
+                            o = c.get("input");
+                            if(o instanceof Config)c = (Config)o;
+                            Object n = c.get("name");
+                            if(n!=null)name = " "+n.toString();
+                            n = c.get("displayName");
+                            if(n!=null)name = " "+n.toString();
+                            Image tex = null;
+                            Object t = c.get("texture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            Image tex2 = null;
+                            Object t2 = c2.get("texture");
+                            if(t2 instanceof ConfigNumberList){
+                                tex2 = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t2);
+                            }
+                            text = "Block Recipe:"+name;
+                            if(tex!=null)textures.add(tex);
+                            if(tex2!=null)textures.add(tex2);
+                        }else text = "Invalid type for Block Recipe!";
+                    }
+                    if(s.matches(".*\\.coolantRecipes\\.\\[\\d+\\]")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            Config c2 = c;
+                            consolidate = true;
+                            String name = "";
+                            Object o = c.get("output");
+                            if(o instanceof Config)c2 = (Config)o;
+                            o = c.get("input");
+                            if(o instanceof Config)c = (Config)o;
+                            Object n = c.get("name");
+                            if(n!=null)name = " "+n.toString();
+                            n = c.get("displayName");
+                            if(n!=null)name = " "+n.toString();
+                            Image tex = null;
+                            Object t = c.get("texture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            Image tex2 = null;
+                            Object t2 = c2.get("texture");
+                            if(t2 instanceof ConfigNumberList){
+                                tex2 = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t2);
+                            }
+                            text = "Coolant Recipe:"+name;
+                            if(tex!=null)textures.add(tex);
+                            if(tex2!=null)textures.add(tex2);
+                        }else text = "Invalid type for Coolant Recipe!";
+                    }
+                    if(s.matches(".*\\.turbine\\.recipes\\.\\[\\d+\\]")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            Config c2 = c;
+                            consolidate = true;
+                            String name = "";
+                            Object o = c.get("output");
+                            if(o instanceof Config)c2 = (Config)o;
+                            o = c.get("input");
+                            if(o instanceof Config)c = (Config)o;
+                            Object n = c.get("name");
+                            if(n!=null)name = " "+n.toString();
+                            n = c.get("displayName");
+                            if(n!=null)name = " "+n.toString();
+                            Image tex = null;
+                            Object t = c.get("texture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            Image tex2 = null;
+                            Object t2 = c2.get("texture");
+                            if(t2 instanceof ConfigNumberList){
+                                tex2 = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t2);
+                            }
+                            text = "Turbine Recipe:"+name;
+                            if(tex!=null)textures.add(tex);
+                            if(tex2!=null)textures.add(tex2);
+                        }else text = "Invalid type for Turbine Recipe!";
+                    }
+                    if(s.matches(".*\\.\\w*ecipes\\w*\\.\\[\\d+\\].input")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            consolidate = true;
+                            String name = "";
+                            Object n = c.get("name");
+                            if(n!=null)name = " "+n.toString();
+                            n = c.get("displayName");
+                            if(n!=null)name = " "+n.toString();
+                            Image tex = null;
+                            Object t = c.get("texture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            text = "Input:"+name;
+                            if(tex!=null)textures.add(tex);
+                        }else text = "Invalid type for Input!";
+                    }
+                    if(s.matches(".*\\.\\w*ecipes\\w*\\.\\[\\d+\\].output")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            consolidate = true;
+                            String name = "";
+                            Object n = c.get("name");
+                            if(n!=null)name = " "+n.toString();
+                            n = c.get("displayName");
+                            if(n!=null)name = " "+n.toString();
+                            Image tex = null;
+                            Object t = c.get("texture");
+                            if(t instanceof ConfigNumberList){
+                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                            }
+                            text = "Output:"+name;
+                            if(tex!=null)textures.add(tex);
+                        }else text = "Invalid type for Output!";
+                    }
+                    if(s.matches(".*\\.rules.\\[\\d+\\]")){
+                        if(val instanceof Config){
+                            Config c = (Config)val;
+                            String minmax = "";
+                            String type = "";
+                            String block = "";
+                            if(c.hasProperty("min")&&c.hasProperty("max")){
+                                minmax = " "+c.get("min")+" - "+c.get("max");
+                            }
+                            if(c.hasProperty("type")){
+                                Object typ = c.get("type");
+                                if(typ instanceof Number)type = " "+net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule.RuleType.values()[((Number)typ).intValue()].toString();
+                            }
+                            if(c.hasProperty("block")||c.hasProperty("blockType")){
+                                Object issb = c.get("isSpecificBlock");
+                                Object blok = c.get("block");
+                                if(blok==null)blok = c.get("blockType");
+                                if(issb instanceof Boolean){
+                                    if((Boolean)issb){
+
+                                    }else{
+                                        if(blok instanceof Number)block = " "+getBlockType(s, ((Number)blok).intValue()).toString();
+                                    }
+                                }
+                            }
+                            consolidate = true;
+                            text = "Placement Rule:"+type+minmax+block;
+                        }else text = "Invalid type for Placement Rule!";
+                    }
+                    if(s.matches(".*(rules.\\[\\d+])+\\.type")){
+                        if(val instanceof Number){
+                            text = net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule.RuleType.values()[((Number)val).intValue()].toString();
+                        }
+                    }
+                    if(s.matches(".*(rules.\\[\\d+])+\\.blockType")){
+                        if(val instanceof Number){
+                            text = getBlockType(s, ((Number)val).intValue()).toString();
+                        }
+                    }
+                    if(text.isEmpty())System.out.println(s);
                 }
                 break;
             default:
                 if(path.size()==1)text = "Multiblock "+(whichConfig-1);
                 break;
         }
-        if(path.size()==1){
-            String s = path.get(0);
-            int i = Integer.parseInt(s.substring(1, s.length()-1));
-            if(i==0)text = "Header";
-            if(i==1)text = "Configuration";
-        }
-        return new Label(indent(path).substring(1)+text).setInset(0).alignLeft();
+        Label l = new Label(indent(path).substring(1)+text).setInset(0).alignLeft();
+        textures.forEach(l::addImage);
+        return l;
     }
     @Override
     public synchronized void onCharTyped(char c){
@@ -324,5 +628,20 @@ public class MenuExploreNCPF extends ConfigurationMenu{
             str+=s;
         }
         return str;
+    }
+    private IBlockType getBlockType(String s, int type){
+        if(s.contains("underhaul.fissionSFR")){
+            return net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.values()[type];
+        }
+        if(s.contains("overhaul.fissionSFR")){
+            return net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.values()[type];
+        }
+        if(s.contains("overhaul.fissionMSR")){
+            return net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.values()[type];
+        }
+        if(s.contains("overhaul.turbine")){
+            return net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.values()[type];
+        }
+        return null;
     }
 }

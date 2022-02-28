@@ -1330,7 +1330,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
     }
 //</editor-fold>
 
-    protected Image loadNCPFTexture(ConfigNumberList texture){
+    public static Image loadNCPFTexture(ConfigNumberList texture){
         int size = (int) texture.get(0);
         Image image = new Image(size, size);
         int index = 1;
