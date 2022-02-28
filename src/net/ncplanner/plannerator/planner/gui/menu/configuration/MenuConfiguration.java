@@ -12,21 +12,17 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.AddonConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
-import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.Task;
@@ -48,7 +44,6 @@ import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.MenuOve
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.MenuOverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.underhaul.MenuUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
-import static org.lwjgl.glfw.GLFW.*;
 public class MenuConfiguration extends ConfigurationMenu{
     private final TextBox name;
     private final Label underhaulTitle, overhaulTitle;
@@ -230,11 +225,20 @@ public class MenuConfiguration extends ConfigurationMenu{
                     }catch(Exception ex){
                         Core.warning("Unable to load file!", ex);
                     }
-                }, true).addButton("This Configuration", () -> {
-                    NCPFFile ncpf = new NCPFFile();
-                    ncpf.configuration = configuration;
+                }, true).addButton("This "+(configuration.addon?"Addon":"Configuration"), () -> {
                     ArrayList<Config> configs = new ArrayList<>();
-                    FileWriter.NCPF.writeToConfigs(ncpf, configs);
+                    if(configuration.addon){
+                        onClosed();
+                        Config header = Config.newConfig();
+                        header.set("version", NCPFFile.SAVE_VERSION);
+                        header.set("count", 0);
+                        configs.add(header);
+                        configs.add(AddonConfiguration.generate(Core.configuration, configuration).save(null, Config.newConfig()));
+                    }else{
+                        NCPFFile ncpf = new NCPFFile();
+                        ncpf.configuration = configuration;
+                        FileWriter.NCPF.writeToConfigs(ncpf, configs);
+                    }
                     gui.open(new MenuExploreNCPF(gui, this, configuration, configs));
                 }, true).open();
             }
