@@ -67,34 +67,34 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         renderer.unbindTexture();
         BoundingBox bbox = multiblock.getBoundingBox();
         float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
-        renderer.setModel(new Matrix4f()
+        renderer.pushModel(new Matrix4f()
                 .translate(width/2, height/2, depth/2)
                 .scale(scale, scale, scale)
                 .translate(-width/2, -height/2, -depth/2)
                 .scale(width, height, depth)
                 .scale(1/size, 1/size, 1/size));
         multiblock.draw3D();
-        renderer.resetModelMatrix();
+        renderer.popModel();
     }
     @Override
     public void renderForeground(Renderer renderer){
         super.renderForeground(renderer);
-        renderer.setModel(new Matrix4f()
+        renderer.pushModel(new Matrix4f()
                 .translate(width/2, height/2, depth/2)
                 .scale(scale, scale, scale)
                 .translate(-width/2, -height/2, -depth/2));
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText();
-        renderer.resetModelMatrix();
+        renderer.popModel();
     }
     private void drawText(){
         Renderer renderer = new Renderer();
-        renderer.setModel(new Matrix4f()
+        renderer.pushModel(new Matrix4f()
                 .translate(0, height, depth/2)
                 .scale(1, -1, 1));
         renderer.drawCenteredText(-width, -.05f, width*2, -.03f, multiblock.getName());
         renderer.drawCenteredText(-width, -.03f, width*2, -.01f, multiblock.getDefinitionName());
-        renderer.resetModelMatrix();
+        renderer.popModel();
     }
     @Override
     public void keyEvent(int device, int button, boolean pressed){

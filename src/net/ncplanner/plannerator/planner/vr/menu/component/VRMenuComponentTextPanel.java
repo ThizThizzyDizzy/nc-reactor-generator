@@ -22,13 +22,13 @@ public class VRMenuComponentTextPanel extends VRMenuComponent{
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         ArrayList<FormattedText> txt = text.split("\n");
         float textHeight = Math.min(depth, (height-textInset*2)/txt.size());
-        renderer.setModel(new Matrix4f()
+        renderer.pushModel(new Matrix4f()
                 .translate(0, height, depth+textOffset)
                 .scale(1, -1, 1));
         for(int i = 0; i<txt.size(); i++){
             FormattedText s = txt.get(i);
             renderer.drawFormattedText(textInset, textInset+textHeight*i, width-textInset, textInset+textHeight*(i+1), s, snap);
         }
-        renderer.resetModelMatrix();
+        renderer.popModel();
     }
 }

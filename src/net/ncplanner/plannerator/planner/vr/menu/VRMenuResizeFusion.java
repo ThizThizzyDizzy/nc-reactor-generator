@@ -59,11 +59,11 @@ public class VRMenuResizeFusion extends VRMenu{
     public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
         BoundingBox bbox = multiblock.getBoundingBox();
         float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
-        renderer.setModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
+        renderer.pushModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
         multiblock.draw3D();
         renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
         renderer.drawCubeOutline(-1/16f, -1/16f, -1/16f, bbox.getWidth()+1/16f, bbox.getHeight()+1/16f, bbox.getDepth()+1/16f, 1/16f);//TODO perhaps individual block grids?
-        renderer.resetModelMatrix();
+        renderer.popModel();
         textPanel.text = new FormattedText("["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]\n"+bbox.getWidth()+"x"+bbox.getHeight()+"x"+bbox.getDepth());
         super.render(renderer, tdpb, deltaTime);
     }
@@ -83,12 +83,12 @@ public class VRMenuResizeFusion extends VRMenu{
             }
             renderer.setColor(col);
             renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01f);//1cm
-            renderer.setModel(new Matrix4f().translate(width/2, height/2, depth/2));
+            renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
             renderer.setColor(Core.theme.getAddButtonTextColor());
             renderer.drawCube(-width/4, -.01f, -.01f, width/4, .01f, .01f, null);
             renderer.drawCube(-.01f, -width/4, -.01f, .01f, width/4, .01f, null);
             renderer.drawCube(-.01f, -.01f, -width/4, .01f, .01f, width/4, null);
-            renderer.resetModelMatrix();
+            renderer.popModel();
         }
     }
     private static class VRMenuComponentMinusButton extends VRMenuComponentButton{
@@ -107,10 +107,10 @@ public class VRMenuResizeFusion extends VRMenu{
             }
             renderer.setColor(col);
             renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01f);//1cm
-            renderer.setModel(new Matrix4f().setTranslation(width/2, height/2, depth/2));
+            renderer.pushModel(new Matrix4f().setTranslation(width/2, height/2, depth/2));
             renderer.setColor(Core.theme.getDeleteButtonTextColor());
             renderer.drawCube(-width/4, -.01f, -.01f, width/4, .01f, .01f, null);
-            renderer.resetModelMatrix();
+            renderer.popModel();
         }
     }
 }

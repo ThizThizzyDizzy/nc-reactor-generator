@@ -132,13 +132,13 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
                 int role = VRSystem.VRSystem_GetInt32TrackedDeviceProperty(i, ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32, pError);
                 if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand||role==ETrackedControllerRole_TrackedControllerRole_RightHand){
                     Matrix4f matrix = new Matrix4f(MathUtil.convertHmdMatrix(pose.mDeviceToAbsoluteTracking()));
-                    renderer.setModel(matrix.mul(Multitool.editOffsetmatrix));
+                    renderer.pushModel(matrix.mul(Multitool.editOffsetmatrix));
                     if(getSelectedBlock(i)!=null){
                         renderer.setWhite();
                         float radius = grid.blockSize/4;
                         renderer.drawCube(-radius, -radius, -radius, radius, radius, radius, getSelectedBlock(i).getTexture());
                     }
-                    renderer.resetModelMatrix();
+                    renderer.popModel();
                 }
             }
         }

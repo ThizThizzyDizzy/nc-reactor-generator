@@ -40,9 +40,9 @@ public class VRMenuComponentFusionBlockRecipe extends VRMenuComponent{
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-textInset*2)/textLength);
         float textHeight = ((height-textInset*2)*scale)-.005f;
-        renderer.setModel(new Matrix4f().translate(0, height/2, depth+textOffset).scale(1, -1, 1));
+        renderer.pushModel(new Matrix4f().translate(0, height/2, depth+textOffset).scale(1, -1, 1));
         renderer.drawCenteredText(0, -textHeight/2, width, textHeight/2, text);
-        renderer.resetModelMatrix();
+        renderer.popModel();
     }
     @Override
     public void keyEvent(int device, int button, boolean pressed){

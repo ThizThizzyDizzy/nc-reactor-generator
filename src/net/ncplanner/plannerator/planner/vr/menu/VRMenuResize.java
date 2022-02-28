@@ -92,11 +92,11 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
             refreshNeeded = false;
         }
         float size = Math.max(multiblock.getInternalWidth(), Math.max(multiblock.getInternalHeight(), multiblock.getInternalDepth()));
-        renderer.setModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
+        renderer.pushModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
         multiblock.draw3D();
         renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
         renderer.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getInternalWidth()+1/16f, multiblock.getInternalHeight()+1/16f, multiblock.getInternalDepth()+1/16f, 1/16f);
-        renderer.resetModelMatrix();
+        renderer.popModel();
         textPanel.text = new FormattedText(multiblock.getDimensionsStr());
         super.render(renderer, tdpb, deltaTime);
     }
@@ -157,21 +157,21 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
             }
             renderer.setColor(col);
             renderer.drawCubeOutline(0, 0, 0, width, height, depth, .005f);//5mcm
-            renderer.setModel(new Matrix4f().translate(width/2, height/2, depth/2));
+            renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
             renderer.setColor(Core.theme.getAddButtonTextColor());
             renderer.drawCube(-width/4, -.005f, -.005f, width/4, .005f, .005f, null);
             renderer.drawCube(-.005f, -width/4, -.005f, .005f, width/4, .005f, null);
             renderer.drawCube(-.005f, -.005f, -width/4, .005f, .005f, width/4, null);
-            renderer.resetModelMatrix();
+            renderer.popModel();
         }
         @Override
         public void renderForeground(Renderer renderer){
             super.renderForeground(renderer);
             if(isDeviceOver.isEmpty())return;
             renderer.setColor(Core.theme.getAddButtonTextColor(), .5f);
-            renderer.setModel(new Matrix4f().scale(width, height, depth).translate(-X, -Y, -Z));
+            renderer.pushModel(new Matrix4f().scale(width, height, depth).translate(-X, -Y, -Z));
             highlight.accept(renderer);
-            renderer.resetModelMatrix();
+            renderer.popModel();
         }
     }
     private static class VRMenuComponentMinusButton extends VRMenuComponentButton{
@@ -200,20 +200,20 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
             }
             renderer.setColor(col);
             renderer.drawCubeOutline(0, 0, 0, width, height, depth, .005f);//5mm
-            renderer.setModel(new Matrix4f().translate(width/2, height/2, depth/2));
+            renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
             renderer.setColor(Core.theme.getDeleteButtonTextColor());
             if(isX)renderer.drawCube(-width/4, -.005f, -.005f, width/4, .005f, .005f, null);
             else renderer.drawCube(-.005f, -.005f, -width/4, .005f, .005f, width/4, null);
-            renderer.resetModelMatrix();
+            renderer.popModel();
         }
         @Override
         public void renderForeground(Renderer renderer){
             super.renderForeground(renderer);
             if(isDeviceOver.isEmpty())return;
             renderer.setColor(Core.theme.getDeleteButtonTextColor(), .5f);
-            renderer.setModel(new Matrix4f().scale(width, height, depth).translate(-X, -Y, -Z));
+            renderer.pushModel(new Matrix4f().scale(width, height, depth).translate(-X, -Y, -Z));
             highlight.accept(renderer);
-            renderer.resetModelMatrix();
+            renderer.popModel();
         }
     }
 }
