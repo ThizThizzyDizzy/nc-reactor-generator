@@ -24,12 +24,18 @@ public class Scrollable extends Component{
     public double myX;
     public double myY;
     public float scrollWheelMagnitude=1;
+    public boolean optimizeForLargeComponentCount = false;//might cause some rendering hiccups
     public Scrollable(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth){
         super(x, y, width, height);
         this.horizScrollbarHeight = horizScrollbarHeight;
         this.vertScrollbarWidth = vertScrollbarWidth;
         scrollMagnitude = Math.min(width, height)/50;
         scrollMagnitude = scrollWheelMagnitude = 32;
+    }
+    @Override
+    public <T extends Component> T add(T component){
+        if(components.size()>=1000)optimizeForLargeComponentCount = true;
+        return super.add(component);
     }
     @Override
     public void draw(double deltaTime){
@@ -71,6 +77,12 @@ public class Scrollable extends Component{
         renderer.bound(x, y, x+width-vertWidth, y+height-horizHeight);
         renderer.translate(x-scrollX, y-scrollY);
         for(Component c : components){
+            if(optimizeForLargeComponentCount){
+                if(c.x+c.width<x+scrollX)continue;
+                if(c.y+c.height<y+scrollY)continue;
+                if(c.x>x+scrollX+width)continue;
+                if(c.y>y+scrollY+height)continue;
+            }
             c.render2d(deltaTime);
         }
         renderer.unTranslate();

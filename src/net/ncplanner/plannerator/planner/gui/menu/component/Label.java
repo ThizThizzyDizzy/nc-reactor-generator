@@ -15,6 +15,10 @@ public class Label extends Component implements Searchable{
         return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
     };
     private boolean noBackground;
+    private boolean alignLeft;
+    public Label(String label){
+        this(0, 0, 0, 0, label);
+    }
     public Label(float x, float y, float width, float height, String label){
         this(x, y, width, height, label, false);
     }
@@ -25,6 +29,14 @@ public class Label extends Component implements Searchable{
     }
     public Label setTextColor(Supplier<Color> color){
         textColor = color;
+        return this;
+    }
+    public Label setInset(float inset){
+        textInset = inset;
+        return this;
+    }
+    public Label alignLeft(){
+        alignLeft = true;
         return this;
     }
     @Override
@@ -40,8 +52,9 @@ public class Label extends Component implements Searchable{
     public void drawText(Renderer renderer){
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-textInset*2)/textLength);
-        float textHeight = (int)((height-textInset*2)*scale)-4;
-        renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+        float textHeight = (int)((height-textInset*2)*scale);
+        if(alignLeft)renderer.drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+        else renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override
     public Label setTooltip(String tooltip){

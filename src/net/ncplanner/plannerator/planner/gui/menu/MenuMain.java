@@ -28,11 +28,11 @@ import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblock;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImport;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
 import net.ncplanner.plannerator.planner.vr.VRCore;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -314,25 +314,11 @@ public class MenuMain extends Menu{
     }
     private void save(NCPFFile ncpf, File file, String filename){
         FileWriter.write(ncpf, file, FileWriter.NCPF);
-        new MenuDialog(MenuMain.this.gui, parent){
-            {
-                textBox.setText("Saved as "+filename);
-                addButton("OK", () -> {
-                    close();
-                });
-            }
-        }.open();
+        new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
     }
     private void imprt(NCPFFile ncpf, FormatWriter writer, File file, String filename){
         FileWriter.write(ncpf, file, writer);
-        new MenuDialog(MenuMain.this.gui, parent){
-            {
-                textBox.setText("Saved as "+filename);
-                addButton("OK", () -> {
-                    close();
-                });
-            }
-        }.open();
+        new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
     }
     @Override
     public void drawBackground(double deltaTime){

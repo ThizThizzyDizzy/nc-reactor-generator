@@ -10,7 +10,8 @@ import net.ncplanner.plannerator.planner.file.writer.PNGWriter;
 public class FileWriter{
     public static final ArrayList<FormatWriter> formats = new ArrayList<>();
     public static boolean botRunning;
-    public static FormatWriter NCPF,HELLRAGE;
+    public static NCPFWriter NCPF;
+    public static HellrageWriter HELLRAGE;
     public static ImageFormatWriter PNG;
     static{
         formats.add(HELLRAGE = new HellrageWriter());

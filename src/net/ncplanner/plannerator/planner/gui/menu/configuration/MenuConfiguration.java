@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.gui.menu.configuration;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import net.ncplanner.plannerator.config2.Config;
@@ -23,11 +26,13 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
+import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
+import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -42,6 +47,7 @@ import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.MenuOve
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.MenuOverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.overhaul.MenuOverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.underhaul.MenuUnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuConfiguration extends ConfigurationMenu{
     private final TextBox name;
@@ -211,7 +217,28 @@ public class MenuConfiguration extends ConfigurationMenu{
             Core.openURL("https://docs.google.com/document/d/1dzU2arDrD7n9doRua8laxzRy9_RtX-cuv1sUJBB5aGY/edit?usp=sharing");
         });
         validate.addAction(() -> {
-            gui.open(new MenuValidateConfiguration(gui, this, configuration));
+            if(Core.isShiftPressed()){
+                new MenuMessageDialog(gui, this, "Explore which?").addButton("Cancel", true).addButton("Choose File", () -> {
+                    try{
+                        Core.createFileChooser((file)->{
+                            try{
+                                gui.open(new MenuExploreNCPF(gui, this, configuration, file));
+                            }catch(FileNotFoundException ex){
+                                Core.warning("Unable to load file!", ex);
+                            }
+                        }, FileFormat.NCPF);
+                    }catch(Exception ex){
+                        Core.warning("Unable to load file!", ex);
+                    }
+                }, true).addButton("This Configuration", () -> {
+                    NCPFFile ncpf = new NCPFFile();
+                    ncpf.configuration = configuration;
+                    ArrayList<Config> configs = new ArrayList<>();
+                    FileWriter.NCPF.writeToConfigs(ncpf, configs);
+                    gui.open(new MenuExploreNCPF(gui, this, configuration, configs));
+                }, true).open();
+            }
+            else gui.open(new MenuValidateConfiguration(gui, this, configuration));
         });
         underhaulSFR.addAction(() -> {
             gui.open(new MenuUnderhaulSFRConfiguration(gui, this, configuration));
@@ -310,6 +337,7 @@ public class MenuConfiguration extends ConfigurationMenu{
             refreshNeeded = false;
         }
         Renderer renderer = new Renderer();
+        validate.text = Core.isShiftPressed()?"Explore NCPF":("Validate "+(configuration.addon?"Addon":"Configuration"));
         scriptImportProgress.width = addonsLabel.width = addonsList.width = saveAddon.width = name.width = gui.getWidth()-name.x;
         scriptImportProgress.y = gui.getHeight()-scriptImportProgress.height;
         importAddon.width = createAddon.width = addonsLabel.width/2;

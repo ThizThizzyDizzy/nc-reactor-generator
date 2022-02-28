@@ -359,8 +359,12 @@ public abstract class Multiblock<T extends Block>{
         }
     }
     public final void save(NCPFFile ncpf, Configuration configuration, OutputStream stream) throws MissingConfigurationEntryException{
+        Config config = saveToConfig(ncpf, configuration);
+        if(config!=null)config.save(stream);
+    }
+    public final Config saveToConfig(NCPFFile ncpf, Configuration configuration) throws MissingConfigurationEntryException{
         int id = getMultiblockID();
-        if(id==-1)return;
+        if(id==-1)return null;
         Config config = Config.newConfig();
         config.set("id", id);
         Config meta = Config.newConfig();
@@ -377,7 +381,7 @@ public abstract class Multiblock<T extends Block>{
         config.set("dimensions", dimensions);
         forceRescan = true;
         save(ncpf, configuration, config);
-        config.save(stream);
+        return config;
     }
     protected void save(NCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{}
     /**

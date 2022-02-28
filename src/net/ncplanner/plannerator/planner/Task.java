@@ -5,6 +5,7 @@ public class Task{
     private ArrayList<Task> subtasks = new ArrayList<>();
     public double progress = 0;
     private boolean finished = false;
+    private boolean progressOverride = false;
     public Task(String name){
         this.name = name;
     }
@@ -44,10 +45,14 @@ public class Task{
         return prog;
     }
     public synchronized double getProgressD(){
-        if(subtasks.isEmpty())return finished?1:progress;
+        if(subtasks.isEmpty()||progressOverride)return finished?1:progress;
         return getProgress()/subtasks.size();
     }
     public synchronized float getProgressF(){
         return (float)getProgressD();
+    }
+    public void setProgress(double p){
+        progress = p;
+        progressOverride = true;
     }
 }

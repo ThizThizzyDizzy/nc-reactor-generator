@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.file.writer;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
@@ -41,6 +42,29 @@ public class NCPFWriter extends FormatWriter{
             stream.close();
         }catch(IOException ex){
             throw new RuntimeException(ex);
+        }
+    }
+    public void writeToConfigs(NCPFFile ncpf, ArrayList<Config> configs){
+        Config header = Config.newConfig();
+        header.set("version", NCPFFile.SAVE_VERSION);
+        header.set("count", ncpf.multiblocks.size());
+        Config meta = Config.newConfig();
+        for(String key : ncpf.metadata.keySet()){
+            String value = ncpf.metadata.get(key);
+            if(value.trim().isEmpty())continue;
+            meta.set(key,value);
+        }
+        if(meta.properties().length>0){
+            header.set("metadata", meta);
+        }
+        configs.add(header);
+        configs.add(ncpf.configuration.save(null, Config.newConfig()));
+        for(Multiblock m : ncpf.multiblocks){
+            try{
+                configs.add(m.saveToConfig(ncpf, ncpf.configuration));
+            }catch(MissingConfigurationEntryException ex){
+                throw new RuntimeException(ex);
+            }
         }
     }
     @Override

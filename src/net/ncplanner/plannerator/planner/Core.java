@@ -588,6 +588,9 @@ public class Core{
         return (imgData+256)&255;
     }
     public static File lastOpenFolder = new File("file").getAbsoluteFile().getParentFile();
+    /**
+     * OPEN
+     */
     public static void createFileChooser(Consumer<File> onAccepted, FileFormat format) throws IOException{
         PointerBuffer path = MemoryUtil.memAllocPointer(1);
         String filter = "";
@@ -610,6 +613,9 @@ public class Core{
             MemoryUtil.memFree(path);
         }
     }
+    /**
+     * SAVE
+     */
     public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, FileFormat format) throws IOException{
         PointerBuffer path = MemoryUtil.memAllocPointer(1);
         String filter = "";
