@@ -27,7 +27,7 @@ public class PNGWriter extends ImageFormatWriter{
     public Image write(NCPFFile ncpf){
         Renderer renderer = new Renderer();
         if(!ncpf.multiblocks.isEmpty()){
-            if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by PNG!");
+            if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multiple multiblocks are not supported by PNG!");
             final Multiblock multi = ncpf.multiblocks.get(0);
             multi.recalculate();
             int blSiz = 32;

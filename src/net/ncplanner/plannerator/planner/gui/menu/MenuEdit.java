@@ -10,6 +10,7 @@ import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.PartCount;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
@@ -54,6 +55,7 @@ import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.DropdownList;
+import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.Scrollable;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
@@ -75,6 +77,8 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRotorGraph;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderFuel;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.module.Module;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -154,6 +158,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private final Button editMetadata = add(new Button(0, 0, 0, 0, "", true).setTooltip("Modify the multiblock metadata"));
     public final SingleColumnList tools = add(new SingleColumnList(0, 0, 0, 0, partSize/2));
     private final MenuComponentTurbineRotorGraph graph;
+    private final Button partsList = add(new Button(0, 0, 0, 0, "Parts List", true, true).setTooltip("View a parts list for this multiblock"));
     private final Button generate = add(new Button(0, 0, 0, 0, "Generate", true, true).setTooltip("Generate or improve this multiblock"));
     private final Button recalc = add(new Button(0, 0, 0, 0, "Recalculate", true).setTooltip("Recalculate the entire multiblock\nCtrl-click to queue multiple actions without recalculating"));
     private final Button calcStep = add(new Button(0, 0, 0, 0, "Step", true).setTooltip("Perform one step of calculation"));
@@ -226,6 +231,20 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         });
         editMetadata.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
+        });
+        partsList.addAction(() -> {
+            new MenuDialog(gui, this){
+                {
+                    GridLayout gl = new GridLayout(48, 1);
+                    gl.width = 512;
+                    ArrayList<PartCount> parts = multiblock.getPartsList();
+                    parts.forEach((t) -> {
+                        gl.add(new Label(t.getImage(), t.count+"x "+t.name).alignLeft());
+                    });
+                    setContent(gl);
+                    addButton("Close", true);
+                }
+            }.open();
         });
         generate.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
@@ -400,9 +419,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         partsSearch.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
         tools.width = partSize;
         partsSearch.x = parts.x = tools.width+partSize/4;
-        generate.x = editMetadata.x = textBox.width = graph.width = multibwauk.x = parts.x+parts.width;
+        partsList.x = editMetadata.x = textBox.width = graph.width = multibwauk.x = parts.x+parts.width;
         recalc.width = calcStep.width = textBox.width/2;
-        toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = generate.height = tools.y = multibwauk.y = editMetadata.height = back.height = 48;
+        toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = partsList.height = generate.height = tools.y = multibwauk.y = editMetadata.height = back.height = 48;
         partsSearch.height = partSize;
         parts.y = tools.y+partSize;
         calcStep.x = recalc.width;
@@ -412,13 +431,14 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         redo.x = undo.x+undo.width;
         undo.enabled = !multiblock.history.isEmpty();
         redo.enabled = !multiblock.future.isEmpty();
-        toggle3D.y = recalc.y = calcStep.y = generate.y = gui.getHeight()-generate.height;
+        toggle3D.y = recalc.y = calcStep.y = partsList.y = generate.y = gui.getHeight()-generate.height;
         tools.height = Math.max(6, editorTools.size())*partSize;
         parts.height = Math.max(tools.height-partSize, Math.min((gui.getHeight()-parts.y-progress.height-recalc.height)/2, ((parts.components.size()+partsWide-1)/partsWide)*partSize));
         tools.height = parts.height+partSize;
         resize.width = 320;
         editMetadata.width = multibwauk.width = gui.getWidth()-parts.x-parts.width-resize.width;
-        generate.width = multibwauk.width-generate.height;
+        generate.width = partsList.width = (multibwauk.width-generate.height)/2;
+        generate.x = partsList.x+partsList.width;
         suggestorSettings.x = generate.x+generate.width;
         zoomIn.height = zoomOut.height = resize.height = back.height;
         zoomIn.width = zoomOut.width = resize.width/2;
