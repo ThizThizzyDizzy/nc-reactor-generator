@@ -590,7 +590,10 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     public void action(Action action, boolean allowUndo){
         if(multiblock.calculationPaused)multiblock.recalculate();
         multiblock.action(action, true, allowUndo);
-        if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock)((CuboidalMultiblock)multiblock).buildDefaultCasing();
+        if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+            ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+            multiblock.recalculate();
+        }
     }
     private void selectAll(int id){
         ArrayList<int[]> sel = new ArrayList<>();
