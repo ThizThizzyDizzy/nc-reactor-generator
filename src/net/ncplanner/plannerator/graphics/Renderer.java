@@ -979,6 +979,15 @@ public class Renderer{
     public void model(Matrix4f matrix){
         setExactModelMatrix(modelMatStack.mul(matrix, matrix));
     }
+    public void pushModel(Matrix4f matrix){
+        modelMatStack.pushMatrix();
+        modelMatStack.mul(matrix);
+        resetModelMatrix();
+    }
+    public void popModel(){
+        modelMatStack.popMatrix();
+        resetModelMatrix();
+    }
     public void setModel(Matrix4f matrix){
         resetModelMatrix();
         model(matrix);

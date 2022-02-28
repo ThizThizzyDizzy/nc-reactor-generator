@@ -405,6 +405,7 @@ public class VRCore{
         vrgui.render(renderer, tdpb, deltaTime);
         renderer.setWhite();
         //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
+        glDisable(GL_CULL_FACE);
         for(int i = 1; i<tdpb.limit(); i++){
             TrackedDevicePose pose = tdpb.get(i);
             if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
@@ -413,19 +414,20 @@ public class VRCore{
                 if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand||role==ETrackedControllerRole_TrackedControllerRole_RightHand){
                     Matrix4f matrix = new Matrix4f(MathUtil.convertHmdMatrix(pose.mDeviceToAbsoluteTracking()));
                     if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand){
-                        renderer.model(matrix.scale(-1, 1, 1));
+                        renderer.pushModel(matrix.scale(-1, 1, 1));
                         leftMultitool.device = i;
-                        leftMultitool.render();
+                        leftMultitool.render(renderer);
                     }
                     if(role==ETrackedControllerRole_TrackedControllerRole_RightHand){
-                        renderer.model(matrix);
+                        renderer.pushModel(matrix);
                         rightMultitool.device = i;
-                        rightMultitool.render();
+                        rightMultitool.render(renderer);
                     }
-                    renderer.resetModelMatrix();
+                    renderer.popModel();
                 }
             }
         }
+        glEnable(GL_CULL_FACE);
 //</editor-fold>
     }
     private static final HashMap<Integer, Integer> fboRBO = new HashMap<>();

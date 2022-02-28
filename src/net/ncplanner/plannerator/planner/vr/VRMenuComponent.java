@@ -54,7 +54,7 @@ public abstract class VRMenuComponent extends VRMenu{
     }
     @Override
     public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
-        renderer.model(new Matrix4f()
+        renderer.pushModel(new Matrix4f()
                 .translate(x, y, z)
                 .rotate((float)MathUtil.toRadians(yRot), 0, 1, 0)
                 .rotate((float)MathUtil.toRadians(xRot), 1, 0, 0)
@@ -65,7 +65,7 @@ public abstract class VRMenuComponent extends VRMenu{
             c.render(renderer, tdpb, deltaTime);
         }
         renderForeground(renderer);
-        renderer.resetModelMatrix();
+        renderer.popModel();
     }
     public void onDeviceMoved(int device, Matrix4f matrix){
         Vector3f pos = matrix.getTranslation(new Vector3f());

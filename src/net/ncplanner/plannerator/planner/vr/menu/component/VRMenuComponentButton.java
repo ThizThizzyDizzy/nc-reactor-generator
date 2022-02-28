@@ -56,10 +56,9 @@ public class VRMenuComponentButton extends VRMenuComponent{
         renderer.unbindTexture();
         renderer.drawCube(0, 0, 0, width, height, depth, null);
         renderer.setColor(textColor.get());
-        drawText();
+        drawText(renderer);
     }
-    public void drawText(){
-        Renderer renderer = new Renderer();
+    public void drawText(Renderer renderer){
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-textInset*2)/textLength);
         float textHeight = ((height-textInset*2)*scale)-.005f;
