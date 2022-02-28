@@ -302,7 +302,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                     if(s.matches(".*.*\\.\\w*[tT]exture")){
                         if(val instanceof ConfigNumberList){
                             text = ((ConfigNumberList)val).get(0)+"x"+((ConfigNumberList)val).get(0);
-                            textures.add(NCPF11Reader.loadNCPFTexture((ConfigNumberList)val));
+                            textures.add(loadNCPFTexture((ConfigNumberList)val));
                         }else text = "Invalid type (Expected ConfigNumbeRList)";
                     }
                     if(s.matches(".*\\.blocks.\\[\\d+\\]")){
@@ -317,7 +317,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                             Image tex = null;
                             Object t = c.get("texture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             text = "Block:"+name;
                             if(tex!=null)textures.add(tex);
@@ -330,13 +330,13 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                             Image tex = null;
                             Object t = c.get("inputTexture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             if(tex!=null)textures.add(tex);
                             tex = null;
                             t = c.get("outputTexture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             if(tex!=null)textures.add(tex);
                             text = "Port";
@@ -354,7 +354,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                             Image tex = null;
                             Object t = c.get("texture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             text = "Fuel:"+name;
                             if(tex!=null)textures.add(tex);
@@ -377,12 +377,12 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                             Image tex = null;
                             Object t = c.get("texture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             Image tex2 = null;
                             Object t2 = c2.get("texture");
                             if(t2 instanceof ConfigNumberList){
-                                tex2 = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t2);
+                                tex2 = loadNCPFTexture((ConfigNumberList)t2);
                             }
                             text = "Block Recipe:"+name;
                             if(tex!=null)textures.add(tex);
@@ -406,12 +406,12 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                             Image tex = null;
                             Object t = c.get("texture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             Image tex2 = null;
                             Object t2 = c2.get("texture");
                             if(t2 instanceof ConfigNumberList){
-                                tex2 = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t2);
+                                tex2 = loadNCPFTexture((ConfigNumberList)t2);
                             }
                             text = "Coolant Recipe:"+name;
                             if(tex!=null)textures.add(tex);
@@ -435,12 +435,12 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                             Image tex = null;
                             Object t = c.get("texture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             Image tex2 = null;
                             Object t2 = c2.get("texture");
                             if(t2 instanceof ConfigNumberList){
-                                tex2 = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t2);
+                                tex2 = loadNCPFTexture((ConfigNumberList)t2);
                             }
                             text = "Turbine Recipe:"+name;
                             if(tex!=null)textures.add(tex);
@@ -459,7 +459,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                             Image tex = null;
                             Object t = c.get("texture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             text = "Input:"+name;
                             if(tex!=null)textures.add(tex);
@@ -477,7 +477,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                             Image tex = null;
                             Object t = c.get("texture");
                             if(t instanceof ConfigNumberList){
-                                tex = NCPF11Reader.loadNCPFTexture((ConfigNumberList)t);
+                                tex = loadNCPFTexture((ConfigNumberList)t);
                             }
                             text = "Output:"+name;
                             if(tex!=null)textures.add(tex);
@@ -502,7 +502,11 @@ public class MenuExploreNCPF extends ConfigurationMenu{
                                 if(blok==null)blok = c.get("blockType");
                                 if(issb instanceof Boolean){
                                     if((Boolean)issb){
-
+                                        if(blok instanceof Number){
+                                            Block bl = getBlock(s, ((Number)blok).intValue());
+                                            textures.add(bl.texture);
+                                            block = " "+bl.name();
+                                        }
                                     }else{
                                         if(blok instanceof Number)block = " "+getBlockType(s, ((Number)blok).intValue()).toString();
                                     }
@@ -643,5 +647,94 @@ public class MenuExploreNCPF extends ConfigurationMenu{
             return net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.values()[type];
         }
         return null;
+    }
+    private Block getBlock(String s, int type){
+        return getBlocks(s).get(type);
+    }
+    private ArrayList<Block> getBlocks(String s){
+        ArrayList<Block> blocks = new ArrayList<>();
+        blocks.add(new Block(null, "air", "Air"));
+        if(s.contains("underhaul.fissionSFR")){
+            ConfigList blocksList = configs.get(1).getConfig("underhaul").getConfig("fissionSFR").getConfigList("blocks");
+            for(int i = 0; i<blocksList.size(); i++){
+                Config c = blocksList.getConfig(i);
+                blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getString("name"), c.getString("displayName")));
+            }
+        }
+        if(s.contains("overhaul.fissionSFR")){
+            ArrayList<String> skips = new ArrayList<>();
+            ConfigList blocksList = configs.get(1).getConfig("overhaul").getConfig("fissionSFR").getConfigList("blocks");
+            for(int i = 0; i<blocksList.size(); i++){
+                Config c = blocksList.getConfig(i);
+                skips.add(c.getString("name"));
+                blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getString("name"), c.getString("displayName")));
+                if(c.getConfigList("recipes", new ConfigList()).size()>0)blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getConfig("port", Config.newConfig()).getString("name"), c.getConfig("port", Config.newConfig()).getString("inputDisplayName")));
+            }
+            ConfigList addonsList = configs.get(1).getConfigList("addons", new ConfigList());
+            for(int i = 0; i<addonsList.size(); i++){
+                Config cc = addonsList.getConfig(i);
+                ConfigList blst = cc.getConfig("overhaul", Config.newConfig()).getConfig("fissionSFR", Config.newConfig()).getConfigList("blocks", new ConfigList());
+                for(int j = 0; j<blst.size(); j++){
+                    Config c = blst.getConfig(j);
+                    if(skips.contains(c.getString(name)))continue;
+                    blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getString("name"), c.getString("displayName")));
+                    if(c.getConfigList("recipes", new ConfigList()).size()>0)blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getConfig("port", Config.newConfig()).getString("name"), c.getConfig("port", Config.newConfig()).getString("inputDisplayName")));
+                }
+            }
+        }
+        if(s.contains("overhaul.fissionMSR")){
+            ArrayList<String> skips = new ArrayList<>();
+            ConfigList blocksList = configs.get(1).getConfig("overhaul", Config.newConfig()).getConfig("fissionMSR", Config.newConfig()).getConfigList("blocks", new ConfigList());
+            for(int i = 0; i<blocksList.size(); i++){
+                Config c = blocksList.getConfig(i);
+                skips.add(c.getString("name"));
+                blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getString("name"), c.getString("displayName")));
+                if(c.getConfigList("recipes", new ConfigList()).size()>0)blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getConfig("port", Config.newConfig()).getString("name"), c.getConfig("port", Config.newConfig()).getString("inputDisplayName")));
+            }
+            ConfigList addonsList = configs.get(1).getConfigList("addons", new ConfigList());
+            for(int i = 0; i<addonsList.size(); i++){
+                Config cc = addonsList.getConfig(i);
+                ConfigList blst = cc.getConfig("overhaul", Config.newConfig()).getConfig("fissionMSR", Config.newConfig()).getConfigList("blocks", new ConfigList());
+                for(int j = 0; j<blst.size(); j++){
+                    Config c = blst.getConfig(j);
+                    if(skips.contains(c.getString(name)))continue;
+                    blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getString("name"), c.getString("displayName")));
+                    if(c.getConfigList("recipes", new ConfigList()).size()>0)blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getConfig("port", Config.newConfig()).getString("name"), c.getConfig("port", Config.newConfig()).getString("inputDisplayName")));
+                }
+            }
+        }
+        if(s.contains("overhaul.turbine")){
+            ConfigList blocksList = configs.get(1).getConfig("overhaul").getConfig("turbine").getConfigList("blocks");
+            for(int i = 0; i<blocksList.size(); i++){
+                Config c = blocksList.getConfig(i);
+                blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getString("name"), c.getString("displayName")));
+            }
+            ConfigList addonsList = configs.get(1).getConfigList("addons", new ConfigList());
+            for(int i = 0; i<addonsList.size(); i++){
+                Config cc = addonsList.getConfig(i);
+                ConfigList blst = cc.getConfig("overhaul", Config.newConfig()).getConfig("turbine", Config.newConfig()).getConfigList("blocks", new ConfigList());
+                for(int j = 0; j<blst.size(); j++){
+                    Config c = blst.getConfig(j);
+                    blocks.add(new Block(loadNCPFTexture(c.getConfigNumberList("texture")), c.getString("name"), c.getString("displayName")));
+                }
+            }
+        }
+        return blocks;
+    }
+    private Image loadNCPFTexture(ConfigNumberList lst){
+        return lst==null?null:NCPF11Reader.loadNCPFTexture(lst);
+    }
+    private class Block{
+        private final Image texture;
+        private final String name;
+        private final String displayName;
+        public Block(Image texture, String name, String displayName){
+            this.texture = texture;
+            this.name = name;
+            this.displayName = displayName;
+        }
+        private String name(){
+            return displayName==null?name:displayName;
+        }
     }
 }
