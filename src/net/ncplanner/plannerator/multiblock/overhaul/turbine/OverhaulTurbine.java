@@ -40,7 +40,6 @@ import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRotorGraph;
 import net.ncplanner.plannerator.planner.module.Module;
 public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public Recipe recipe;

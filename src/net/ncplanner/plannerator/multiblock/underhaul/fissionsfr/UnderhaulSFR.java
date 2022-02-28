@@ -29,7 +29,6 @@ import net.ncplanner.plannerator.multiblock.editor.ppe.SmartFillUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.AxialSymmetry;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
-import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.CompiledUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
