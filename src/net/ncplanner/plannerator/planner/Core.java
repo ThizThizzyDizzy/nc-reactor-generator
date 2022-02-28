@@ -448,7 +448,7 @@ public class Core{
         img.setRGB(0, 0, width, height, imgRGBData, 0, width);
         if(cull)glEnable(GL_CULL_FACE);
         if(depth)glEnable(GL_DEPTH_TEST);
-        return img;
+        return img.flip();
     }
     public static void refreshModules(){
         multiblockTypes.clear();
