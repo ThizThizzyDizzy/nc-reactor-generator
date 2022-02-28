@@ -361,7 +361,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 BoundingBox bbox = mb.getBoundingBox();
                 float size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
                 size/=mb.get3DPreviewScale();
-                renderer.model(new Matrix4f().setTranslation(toggle3D.x+toggle3D.width/2, gui.getHeight()-(toggle3D.y-toggle3D.width/2), -1000)
+                renderer.pushModel(new Matrix4f().setTranslation(toggle3D.x+toggle3D.width/2, gui.getHeight()-(toggle3D.y-toggle3D.width/2), -1000)
                         .scale(.625f, .625f, .625f)
                         .scale(toggle3D.width, toggle3D.width, toggle3D.width)
                         .rotate((float)MathUtil.toRadians(yRot), 1, 0, 0)
@@ -369,7 +369,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                         .scale(1/size, 1/size, 1/size)
                         .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
                 draw3D();
-                renderer.resetModelMatrix();
+                renderer.popModel();
                 renderer.projection(new Matrix4f().setPerspective(45, gui.getWidth()/gui.getHeight(), 0.1f, 100));
             }
         }

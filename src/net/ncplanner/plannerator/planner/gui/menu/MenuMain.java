@@ -342,13 +342,13 @@ public class MenuMain extends Menu{
             BoundingBox bbox = mb.getBoundingBox();
             float size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
             size/=mb.get3DPreviewScale();
-            renderer.setModel(new Matrix4f().setTranslation(.4f, 0, -1.5f)
+            renderer.pushModel(new Matrix4f().setTranslation(.4f, 0, -1.5f)
                     .rotate((float)MathUtil.toRadians(yRot), 1, 0, 0)
                     .rotate((float)MathUtil.toRadians(xRot), 0, 1, 0)
                     .scale(1/size, 1/size, 1/size)
                     .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
             mb.draw3D();
-            renderer.resetModelMatrix();
+            renderer.popModel();
         }
     }
     @Override
