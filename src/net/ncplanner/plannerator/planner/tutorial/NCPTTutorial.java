@@ -164,7 +164,7 @@ public class NCPTTutorial extends Tutorial{
                             editorImage = Core.makeImage(Core.gui.getWidth(), Core.gui.getHeight(), (buffRenderer, buffWidth, buffHeight) -> {
                                 buffRenderer.setWhite();
                                 editor.render2d(0);
-                            });
+                            }).flip();
                         }
                         break;
                     case "editor/tool/pencil":
