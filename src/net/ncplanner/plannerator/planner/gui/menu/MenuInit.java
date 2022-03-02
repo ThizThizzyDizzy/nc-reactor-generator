@@ -172,6 +172,7 @@ public class MenuInit extends Menu{
                     Core.tutorialShown = settings.get("tutorialShown", false);
                     Core.invertUndoRedo = settings.get("invertUndoRedo", false);
                     Core.autoBuildCasing = settings.get("autoBuildCasing", true);
+                    Core.setVsync(settings.get("vsync", true));
                     ConfigList lst = settings.getConfigList("pins", new ConfigList());
                     for(int i = 0; i<lst.size(); i++){
                         Core.pinnedStrs.add(lst.getString(i));

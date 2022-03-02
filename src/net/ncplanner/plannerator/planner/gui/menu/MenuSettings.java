@@ -31,11 +31,13 @@ public class MenuSettings extends SettingsMenu{
     private final Button modules;
     private final ToggleBox invertUndoRedo;
     private final ToggleBox autoBuildCasing;
+    private final ToggleBox vsync;
     public MenuSettings(GUI gui, Menu parent){
         super(gui, parent);
         addToSidebar(new Label(0, 0, 0, 48, "Settings", true));
         addToSidebar(invertUndoRedo = new ToggleBox(0, 0, 0, 48, "Invert Undo/Redo", false));
         addToSidebar(autoBuildCasing = new ToggleBox(0, 0, 0, 48, "Auto-build Casings", false));
+        addToSidebar(vsync = new ToggleBox(0, 0, 0, 48, "V-Sync", true));
         addToSidebar(modules = new Button(0, 0, 0, 48, "Modules", true));
         modules.addAction(() -> {
             gui.open(new MenuModules(gui, this));
@@ -110,6 +112,7 @@ public class MenuSettings extends SettingsMenu{
     public void onOpened(){
         invertUndoRedo.isToggledOn = Core.invertUndoRedo;
         autoBuildCasing.isToggledOn = Core.autoBuildCasing;
+        vsync.isToggledOn = Core.vsync;
         currentConfigLabel.text = "Current Configuration: "+Core.configuration.toString();
         int active = 0;
         for(Module m : Core.modules)if(m.isActive())active++;
@@ -119,6 +122,7 @@ public class MenuSettings extends SettingsMenu{
     public void onClosed(){
         Core.invertUndoRedo = invertUndoRedo.isToggledOn;
         Core.autoBuildCasing = autoBuildCasing.isToggledOn;
+        Core.setVsync(vsync.isToggledOn);
         super.onClosed();
     }
     @Override

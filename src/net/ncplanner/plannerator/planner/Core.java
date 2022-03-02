@@ -85,6 +85,7 @@ public class Core{
     private static Callback glCallback;
     public static boolean invertUndoRedo;
     public static boolean autoBuildCasing = true;
+    public static boolean vsync = true;
     public static boolean recoveryMode = false;
     public static String filename; //saved filename to default to when saving
     public static final ArrayList<String> pinnedStrs = new ArrayList<>();
@@ -178,7 +179,7 @@ public class Core{
         console.start();
 
         glfwMakeContextCurrent(window);
-        glfwSwapInterval(1);//THIS IS VSYNC
+        glfwSwapInterval(vsync?1:0);
         int[] ww = new int[1];
         int[] wh = new int[1];
         glfwGetFramebufferSize(window, ww, wh);
@@ -315,6 +316,7 @@ public class Core{
         settings.set("tutorialShown", tutorialShown);
         settings.set("invertUndoRedo", invertUndoRedo);
         settings.set("autoBuildCasing", autoBuildCasing);
+        settings.set("vsync", vsync);
         ConfigList pins = new ConfigList();
         for(String s : pinnedStrs)pins.add(s);
         settings.set("pins", pins);
@@ -580,6 +582,10 @@ public class Core{
     }
     public static void resetWindowTitle(){
         glfwSetWindowTitle(window, "Nuclearcraft Reactor Plannerator "+VersionManager.currentVersion);
+    }
+    public static void setVsync(boolean vs){
+        if(vsync!=vs)glfwSwapInterval(vs?1:0);
+        vsync = vs;
     }
     public static interface BufferRenderer{
         void render(Renderer renderer, int width, int height);
