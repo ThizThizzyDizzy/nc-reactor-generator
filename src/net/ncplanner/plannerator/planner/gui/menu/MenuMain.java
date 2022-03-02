@@ -397,8 +397,8 @@ public class MenuMain extends Menu{
             for(float f = 0; f<gui.getWidth()+size; f+=size/2){
                 renderer.setColor(Core.theme.getRecoveryModeColor(colorIndex));
                 renderer.drawScreenQuad(
-                        f, gui.getHeight()-size,
                         f-size, gui.getHeight(),
+                        f, gui.getHeight()-size,
                         f-size/2, gui.getHeight(),
                         f+size/2, gui.getHeight()-size, 1, 0, 0, 0, 0, 0, 0, 0, 0);
                 colorIndex++;
