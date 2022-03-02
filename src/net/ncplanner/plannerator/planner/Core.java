@@ -87,6 +87,7 @@ public class Core{
     public static boolean autoBuildCasing = true;
     public static boolean vsync = true;
     public static boolean recoveryMode = false;
+    public static boolean editor3dView = false;
     public static String filename; //saved filename to default to when saving
     public static final ArrayList<String> pinnedStrs = new ArrayList<>();
     private static Random rand = new Random();
@@ -317,6 +318,7 @@ public class Core{
         settings.set("invertUndoRedo", invertUndoRedo);
         settings.set("autoBuildCasing", autoBuildCasing);
         settings.set("vsync", vsync);
+        settings.set("editor3dView", editor3dView);
         ConfigList pins = new ConfigList();
         for(String s : pinnedStrs)pins.add(s);
         settings.set("pins", pins);

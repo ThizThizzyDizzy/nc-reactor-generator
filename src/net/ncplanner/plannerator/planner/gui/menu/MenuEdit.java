@@ -318,6 +318,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private boolean recalculateOnOpen = true;
     @Override
     public synchronized void onOpened(){
+        toggle3D.isToggledOn = Core.editor3dView&&!Core.recoveryMode;
         Core.delCircle = true;
         Core.circleSize = CELL_SIZE;
         editMetadata.text = multiblock.getName().isEmpty()?"Edit Metadata":(multiblock.getName()+" | Edit Metadata");
@@ -362,6 +363,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     }
     @Override
     public void onClosed(){
+        if(!Core.recoveryMode)Core.editor3dView = toggle3D.isToggledOn;
         if(multiblock.calculationPaused)multiblock.recalculate();
         super.onClosed();
     }
