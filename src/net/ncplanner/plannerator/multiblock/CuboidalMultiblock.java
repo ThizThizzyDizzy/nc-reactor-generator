@@ -279,7 +279,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
-            if(bx==X+1)return;
+            if(bx==X+1)continue;
             if(bx>X+1)bx--;
             setBlock(bx, by, bz, block);
         };
@@ -299,7 +299,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
-            if(by==Y+1)return;
+            if(by==Y+1)continue;
             if(by>Y+1)by--;
             setBlock(bx, by, bz, block);
         };
@@ -319,7 +319,7 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
             int bx = pos.x;
             int by = pos.y;
             int bz = pos.z;
-            if(bz==Z+1)return;
+            if(bz==Z+1)continue;
             if(bz>Z+1)bz--;
             setBlock(bx, by, bz, block);
         };
