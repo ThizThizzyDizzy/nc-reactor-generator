@@ -45,6 +45,7 @@ public class MenuTutorial extends Menu{
     }
     public void onTutorialChanged(){
         tutorialDisplay.tutorial = selectedTutorial;
+        tutorialList.scrollY = 0;
     }
     @Override
     public void drawBackground(double deltaTime){
