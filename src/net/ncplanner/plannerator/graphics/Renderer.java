@@ -1019,10 +1019,12 @@ public class Renderer{
         boundStack.push(new Bound(modelMatStack.get(new Matrix4f())){
             @Override
             void draw(){
-                fillRect(0, 0, left, Core.gui.getHeight());
-                fillRect(left, 0, right, top);
+                int w = Core.gui.getWidth();
+                int h = Core.gui.getHeight();
+                fillRect(-w, -h, left, h);
+                fillRect(left, -h, right, top);
                 fillRect(left, bottom, right, Core.gui.getHeight());
-                fillRect(right, 0, Core.gui.getWidth(), Core.gui.getHeight());
+                fillRect(right, -h, Core.gui.getWidth(), Core.gui.getHeight());
             }
         });
         redrawStencil();
