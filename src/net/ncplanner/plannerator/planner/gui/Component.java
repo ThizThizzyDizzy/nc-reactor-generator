@@ -88,7 +88,6 @@ public class Component{
                         mouseFocusedComponent.isMouseFocused = true;
                         mouseFocusedComponent.onCursorEntered();
                     }
-                    foundFocus = true;
                 }
             }
         }

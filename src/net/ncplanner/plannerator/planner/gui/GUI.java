@@ -98,10 +98,12 @@ public abstract class GUI{
         menu.onKeyEvent(key, scancode, action, mods);
     }
     private synchronized void onMouseButton(int button, int action, int mods){
+        menu.onCursorMoved(mouseX, mouseY);
         menu.onMouseButton(mouseX, mouseY, button, action, mods);
     }
     private synchronized void onScroll(double xoffset, double yoffset){
         menu.onScroll(xoffset, yoffset);
+        menu.onCursorMoved(mouseX, mouseY);
     }
     private synchronized void onWindowClosed(){
         menu.onWindowClosed();
