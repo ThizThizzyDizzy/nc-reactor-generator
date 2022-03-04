@@ -115,7 +115,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                             }catch(IOException ex){
                                 Core.error("Failed to save addon", ex);
                             }
-                        }, FileFormat.NCPF);
+                        }, FileFormat.NCPF, "addon");
                     }catch(IOException ex){
                         Core.error("Failed to save addon!", ex);
                     }
@@ -140,7 +140,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     Core.createFileChooser((file) -> {
                         loadAddon(file);
                         onOpened();
-                    }, FileFormat.NCPF);
+                    }, FileFormat.NCPF, "addon");
                 }catch(IOException ex){
                     Core.error("Failed to import addon!", ex);
                 }
@@ -221,7 +221,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                             }catch(FileNotFoundException ex){
                                 Core.warning("Unable to load file!", ex);
                             }
-                        }, FileFormat.NCPF);
+                        }, FileFormat.NCPF, "explore");
                     }catch(Exception ex){
                         Core.warning("Unable to load file!", ex);
                     }

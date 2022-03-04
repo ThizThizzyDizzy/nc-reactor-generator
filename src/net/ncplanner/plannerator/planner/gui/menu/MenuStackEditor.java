@@ -176,7 +176,7 @@ public class MenuStackEditor extends Menu{
                     if(t.getName().contains("."))saveFile = t;
                     else saveFile = new File(t.getAbsolutePath()+".stack");
                     save(false);
-                }, FileFormat.STACK);
+                }, FileFormat.STACK, "stack");
             }catch(IOException ex){
                 throw new RuntimeException("Failed to save script!", ex);
             }

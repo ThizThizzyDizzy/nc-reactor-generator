@@ -80,7 +80,7 @@ public class MenuSettings extends SettingsMenu{
                         }
                     }
                     onOpened();
-                }, FileFormat.ALL_CONFIGURATION_FORMATS);
+                }, FileFormat.ALL_CONFIGURATION_FORMATS, "configuration");
             }catch(IOException ex){
                 Core.error("Failed to load configuration!", ex);
             }
@@ -99,7 +99,7 @@ public class MenuSettings extends SettingsMenu{
                     }catch(IOException ex){
                         Core.error("Failed to save configuration!", ex);
                     }
-                }, FileFormat.NCPF);
+                }, FileFormat.NCPF, "configuration");
             }catch(IOException ex){
                 Core.error("Failed to save configuration!", ex);
             }

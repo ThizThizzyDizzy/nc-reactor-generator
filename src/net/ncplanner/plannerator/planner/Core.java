@@ -595,21 +595,30 @@ public class Core{
     private static int f(byte imgData){
         return (imgData+256)&255;
     }
-    public static File lastOpenFolder = new File("file").getAbsoluteFile().getParentFile();
+    public static File defaultFolder = new File("file").getAbsoluteFile().getParentFile();
+    public static HashMap<String, File> lastFolders = new HashMap<>();
     /**
      * OPEN
      */
     public static void createFileChooser(Consumer<File> onAccepted, FileFormat format) throws IOException{
+        createFileChooser(onAccepted, format, "");
+    }
+    /**
+     * OPEN
+     */
+    public static void createFileChooser(Consumer<File> onAccepted, FileFormat format, String hint) throws IOException{
+        hint = "OPEN_"+hint;
         PointerBuffer path = MemoryUtil.memAllocPointer(1);
         String filter = "";
         for(String ext : format.extensions)filter+=","+ext;
         if(!filter.isEmpty())filter = filter.substring(1);
         try{
-            int result = NativeFileDialog.NFD_OpenDialog(filter, lastOpenFolder.getAbsolutePath(), path);
+            int result = NativeFileDialog.NFD_OpenDialog(filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath(), path);
             switch(result){
                 case NativeFileDialog.NFD_OKAY:
                     String str = path.getStringUTF8();
                     File file = new File(str);
+                    lastFolders.put(hint, file.getAbsoluteFile().getParentFile());
                     onAccepted.accept(file);
                     break;
                 case NativeFileDialog.NFD_CANCEL:
@@ -625,16 +634,24 @@ public class Core{
      * SAVE
      */
     public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, FileFormat format) throws IOException{
+        createFileChooser(selectedFile, onAccepted, format, "");
+    }
+    /**
+     * SAVE
+     */
+    public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, FileFormat format, String hint) throws IOException{
+        hint = "SAVE_"+hint;
         PointerBuffer path = MemoryUtil.memAllocPointer(1);
         String filter = "";
         for(String ext : format.extensions)filter+=","+ext;
         if(!filter.isEmpty())filter = filter.substring(1);
         try{
-            int result = NativeFileDialog.NFD_SaveDialog(filter, lastOpenFolder.getAbsolutePath(), path);
+            int result = NativeFileDialog.NFD_SaveDialog(filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath(), path);
             switch(result){
                 case NativeFileDialog.NFD_OKAY:
                     String str = path.getStringUTF8();
                     File file = new File(str);
+                    lastFolders.put(hint, file.getAbsoluteFile().getParentFile());
                     onAccepted.accept(file);
                     break;
                 case NativeFileDialog.NFD_CANCEL:

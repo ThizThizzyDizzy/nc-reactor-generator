@@ -34,7 +34,7 @@ public class TextureButton extends Button{
                     }catch(IOException ex){
                         Core.error("Failed to load texture "+file.getName()+"!", ex);
                     }
-                }, FileFormat.PNG);
+                }, FileFormat.PNG, "texture");
             }catch(IOException ex){
                 Core.error("Failed to load texture!", ex);
             }
