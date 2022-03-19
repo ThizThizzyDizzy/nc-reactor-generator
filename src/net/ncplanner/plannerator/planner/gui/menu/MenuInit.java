@@ -1,5 +1,8 @@
 package net.ncplanner.plannerator.planner.gui.menu;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -224,6 +227,23 @@ public class MenuInit extends Menu{
                 baseDialog.parent = gui.menu;
                 gui.menu = dialog;
             }
+            System.out.println("Downloading patrons list...");
+            File file = new File("patrons.txt");
+            file.delete();
+            Main.downloadFile(MenuCredits.patronsLink, file.getAbsoluteFile());
+            ArrayList<String> patrons = new ArrayList<>();
+            try(BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+                String line;
+                while((line = in.readLine())!=null){
+                    if(line.isEmpty())continue;
+                    patrons.add(line);
+                }
+            }catch(Exception ex){}
+            if(!patrons.isEmpty()){
+                MenuCredits.patrons.clear();
+                MenuCredits.patrons.addAll(patrons);
+            }
+            file.delete();
             System.out.println("Checking for updates...");
             Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Plannerator");
             if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){

@@ -21,7 +21,7 @@ public class MenuCredits extends Menu{
     private double lastMovement;
     private double pressEscToEndTimer = 0;
     private float pressEscToExitHeight = 30;
-    public static final int creditsSpeed = 2;
+    public static int creditsSpeed = 2;
     public float creditY = 0;
     public float initialYOff = creditsSpeed*20;
     public float yOff = initialYOff;
@@ -37,6 +37,14 @@ public class MenuCredits extends Menu{
     private float backgroundElemSpeedMult = 5;
     private float backgroundElemChance = 0.125f;
     private static float backgroundElementScale = .375f;
+    public static final ArrayList<String> patrons = new ArrayList<>();
+    public static final String patronsLink = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/patrons.txt";
+    static{
+        patrons.add("");
+        patrons.add("Thalzamar");
+        patrons.add("Mstk");
+        patrons.add("ZathrusWriter");
+    }
     public MenuCredits(GUI gui){
         super(gui, null);
         text("NuclearCraft Reactor Plannerator", 1.5);
@@ -363,10 +371,15 @@ public class MenuCredits extends Menu{
         gap(3);
         divider();
         text("Thank you to my patrons:", 1.25, "patreon.com/thizthizzydizzy");
-        text();
-        text("Thalzamar", 1.25);
-        text();
-        text("Mstk", 1.25);
+        if(patrons.get(0).isEmpty()){
+            text();
+            text("Unable to download patrons list! This list may be outdated.");
+        }
+        for(String s : patrons){
+            if(s.isEmpty())continue;
+            text();
+            text(s, 1.25);
+        }
         divider();
         text("Thank you to tomdodd4598 for creating such an amazing mod", 1.25, "https://www.curseforge.com/minecraft/mc-mods/nuclearcraft-overhauled");
         divider();
@@ -482,6 +495,9 @@ public class MenuCredits extends Menu{
     @Override
     public void render2d(double deltaTime){
         if(lastMovement>50)pressEscToEndTimer = 40;
+        creditsSpeed = 2;
+        if(Core.isControlPressed())creditsSpeed*=5;
+        if(Core.isShiftPressed())creditsSpeed*=5;
         lastMovement = 0;
         pressEscToEndTimer = Math.max(0, pressEscToEndTimer-deltaTime*20);
         yOff-=creditsSpeed*deltaTime*20;
@@ -526,13 +542,14 @@ public class MenuCredits extends Menu{
         lastY = y;
         super.onCursorMoved(x, y);
     }
-    public void render3D(double deltaTime){
+    @Override
+    public void render3d(double deltaTime){
         Renderer renderer = new Renderer();
         renderer.setColor(Core.theme.getCreditsImageColor());
         for(BackgroundElement element : backgroundElements){
-            renderer.model(new Matrix4f().translate(element.x/(gui.getHeight()/2), (float)(element.y+((creditsSpeed*backgroundElemSpeedMult/element.z)*deltaTime*20))/(gui.getHeight()/2), -element.z)
-                    .rotate(element.rot+(element.threeD?((creditsSpeed*backgroundElemRotSpeedMult)*(float)deltaTime*20):0), 0, 1, 0));
-            element.render2d(deltaTime);
+            renderer.setModel(new Matrix4f().translate(element.x/(gui.getHeight()/2), (float)(element.y+((creditsSpeed*backgroundElemSpeedMult/element.z)*deltaTime*20))/(gui.getHeight()/4), -element.z)
+                    .rotate((float)((element.rot+(element.threeD?((creditsSpeed*backgroundElemRotSpeedMult)*(float)deltaTime*20):0))*Math.PI/180), 0, 1, 0));
+            element.render(deltaTime);
         }
     }
     private static class BackgroundElement{
@@ -546,7 +563,7 @@ public class MenuCredits extends Menu{
         public BackgroundElement copy(){
             return new BackgroundElement(texture, threeD);
         }
-        private void render2d(double deltaTime){
+        private void render(double deltaTime){
             Renderer renderer = new Renderer();
             if(threeD)renderer.drawCube(-backgroundElementScale/2, -backgroundElementScale/2, -backgroundElementScale/2, backgroundElementScale/2, backgroundElementScale/2, backgroundElementScale/2, texture);
             else{
@@ -555,7 +572,7 @@ public class MenuCredits extends Menu{
                 float x2 = backgroundElementScale/2;
                 float y2 = backgroundElementScale/2;
                 renderer.bindTexture(texture);
-                renderer.drawScreenQuad(x1, y1, x2, y1, x2, y2, x1, y2, 1, 0, 1, 1, 1, 1, 0, 0, 0);
+                renderer.drawScreenQuad(x1, y1, x1, y2, x2, y1, x2, y2, 1, 0, 0, 0, 1, 1, 0, 1, 1);
             }
         }
     }

@@ -301,7 +301,7 @@ public class Main{
         theargs.remove(0);
         return theargs.toArray(new String[theargs.size()]);
     }
-    private static File downloadFile(String link, File destinationFile){
+    public static File downloadFile(String link, File destinationFile){
         current++;
         if(destinationFile.exists()||link==null){
             return destinationFile;
