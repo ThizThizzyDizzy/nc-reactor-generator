@@ -1,5 +1,7 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.condition;
+import java.util.ArrayList;
 import java.util.Random;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingCondition;
 public class ConditionNot extends Condition{
@@ -25,5 +27,11 @@ public class ConditionNot extends Condition{
     @Override
     public Setting getSetting(int i){
         return condition;
+    }
+    @Override
+    public void getAllVariables(ArrayList<Variable> vars, ArrayList<String> names, String prevPath){
+        super.getAllVariables(vars, names, prevPath);
+        Condition c = condition.get();
+        if(c!=null)c.getAllVariables(vars, names, prevPath+".condition{Condition ("+c.getTitle()+")}");
     }
 }

@@ -40,6 +40,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     public LiteUnderhaulSFR(CompiledUnderhaulSFRConfiguration configuration){
         this.configuration = configuration;
         blocks = new int[configuration.maxSize][configuration.maxSize][configuration.maxSize];
+        blockCount = new int[configuration.blockName.length];//only initialized this early for variables
         for(int x = 0; x<configuration.maxSize; x++){
             for(int y = 0; y<configuration.maxSize; y++){
                 for(int z = 0; z<configuration.maxSize; z++){

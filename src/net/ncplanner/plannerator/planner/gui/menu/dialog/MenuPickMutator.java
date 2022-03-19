@@ -22,6 +22,7 @@ public class MenuPickMutator<T extends LiteMultiblock> extends MenuDialog{
                 onConfirm.accept(mutator);
             }));
         }
+        setTitle("Choose a mutator");
         setContent(new ExpandingGridLayout(192, 64, 3).addAll(buttons));
         addButton("Cancel", () -> {
             close();

@@ -2,13 +2,13 @@ package net.ncplanner.plannerator.multiblock.generator.lite.mutator;
 import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
-public class PlainMutator<T extends LiteMultiblock> extends GeneratorMutator<T>{
-    public PlainMutator(Mutator<T> mutator){
+public class StandardMutator<T extends LiteMultiblock> extends GeneratorMutator<T>{
+    public StandardMutator(Mutator<T> mutator){
         super(mutator);
     }
     @Override
     public String getTitle(){
-        return "Mutator";
+        return "Standard Mutator";
     }
     @Override
     public String getTooltip(){

@@ -9,6 +9,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.ThingWithSettings;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.StageTransition;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -20,14 +21,14 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickCondition;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickGeneratorMutator;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickMutator;
 public class MenuGenerator<T extends LiteMultiblock> extends Menu{
-    private final T multiblock;
+    public final T multiblock;
     private final Button done = add(new Button(0, 0, 0, 48, "Done", true, true)).setTooltip("Finish generation and return to the editor");
     private final Button prevStage = add(new Button(0, 0, 48, 48, "<", true, true)).setTooltip("Previous stage");
     private final Button nextStage = add(new Button(0, 0, 48, 48, ">", true, true)).setTooltip("Next stage");
     private final Button addStage = add(new Button(0, 0, 0, 48, "Add Stage", true, true)).setTooltip("Add a generation stage");
     private final Button delStage = add(new Button(0, 0, 0, 48, "Delete Stage (Hold Shift)", false, true)).setTooltip("Delete this generation stage");
     private final SingleColumnList stageSettings = add(new SingleColumnList(0, 48, 0, 0, 24));
-    private LiteGenerator<T> generator;
+    public final LiteGenerator<T> generator;
     private float setScrollTo = -1;
     public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
         super(gui, editor);
@@ -166,6 +167,45 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         for(int i = 0; i<thing.getSettingCount(); i++){
             Setting setting = thing.getSetting(i);
             setting.addSettings(stageSettings, this);
+        }
+    }
+    public void getAllVariables(ArrayList<Variable> vars, ArrayList<String> names){
+        for(int i = 0; i<multiblock.getVariableCount(); i++){
+            Variable v = multiblock.getVariable(i);
+            vars.add(v);names.add("multiblock."+v.getName());
+        }
+        for(int i = 0; i<generator.getVariableCount(); i++){
+            Variable v = generator.getVariable(i);
+            vars.add(v);names.add("generator."+v.getName());
+        }
+        for(int stageIdx = 0; stageIdx<generator.stages.size(); stageIdx++){
+            GeneratorStage<T> stage = generator.stages.get(stageIdx);
+            for(int i = 0; i<stage.getVariableCount(); i++){
+                Variable v = stage.getVariable(i);
+                vars.add(v);names.add("generator.stages["+i+"]{Stage "+(stageIdx+1)+"}."+v.getName());
+            }
+            for(int stepIdx = 0; stepIdx<stage.steps.size(); stepIdx++){
+                GeneratorMutator<T> step = stage.steps.get(stepIdx);
+                for(int i = 0; i<step.getVariableCount(); i++){
+                    Variable v = step.getVariable(i);
+                    vars.add(v);names.add("generator.stages["+i+"]{Stage "+(stageIdx+1)+"}.steps["+stepIdx+"]{Step "+(stepIdx+1)+" ("+step.getTitle()+")}."+v.getName());
+                }
+                for(int i = 0; i<step.conditions.size(); i++){
+                    Condition condition = step.conditions.get(i);
+                    condition.getAllVariables(vars, names, "generator.stages["+i+"]{Stage "+(stageIdx+1)+"}.steps["+stepIdx+"]{Step "+(stepIdx+1)+" ("+step.getTitle()+")}.conditions["+i+"]{Condition "+(i+1)+" ("+step.conditions.get(i).getTitle()+")}");
+                }
+            }
+            for(int transitionIdx = 0; transitionIdx<stage.stageTransitions.size(); transitionIdx++){
+                StageTransition<T> transition = stage.stageTransitions.get(transitionIdx);
+                for(int i = 0; i<transition.getVariableCount(); i++){
+                    Variable v = transition.getVariable(i);
+                    vars.add(v);names.add("generator.stages["+i+"]{Stage "+(stageIdx+1)+"}.transitions["+(transitionIdx+1)+"]{Transition "+(transitionIdx+1)+"}."+v.getName());
+                }
+                for(int i = 0; i<transition.conditions.size(); i++){
+                    Condition condition = transition.conditions.get(i);
+                    condition.getAllVariables(vars, names, "generator.stages["+i+"]{Stage "+(stageIdx+1)+"}.transitions["+(transitionIdx+1)+"]{Transition "+(transitionIdx+1)+"}.conditions["+i+"]{Condition "+(i+1)+" ("+transition.conditions.get(i).getTitle()+")}");
+                }
+            }
         }
     }
 }
