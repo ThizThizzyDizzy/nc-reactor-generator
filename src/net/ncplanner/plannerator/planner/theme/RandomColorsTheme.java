@@ -156,6 +156,9 @@ public class RandomColorsTheme extends ColorTheme{
     public Color codeActiveTextColor;
     public Color codeLineMarkerColor;
     public Color codeLineMarkerTextColor;
+    public Color codeDebugHighlightTextColor;
+    public Color codeDebugBreakpointTextColor;
+    public Color codeDebugMethodStackTextColor;
     public RandomColorsTheme(String name){
         super(name);
     }
@@ -801,5 +804,17 @@ public class RandomColorsTheme extends ColorTheme{
     @Override
     public Color getCodeLineMarkerTextColor(){
         return codeLineMarkerTextColor = gen(codeLineMarkerTextColor);
+    }
+    @Override
+    public Color getCodeDebugHighlightTextColor(){
+        return codeDebugHighlightTextColor = gen(codeDebugHighlightTextColor);
+    }
+    @Override
+    public Color getCodeDebugBreakpointTextColor(){
+        return codeDebugBreakpointTextColor = gen(codeDebugBreakpointTextColor);
+    }
+    @Override
+    public Color getCodeDebugMethodStackTextColor(){
+        return codeDebugMethodStackTextColor = gen(codeDebugMethodStackTextColor);
     }
 }

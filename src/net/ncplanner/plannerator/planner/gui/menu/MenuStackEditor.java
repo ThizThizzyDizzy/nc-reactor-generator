@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Stack;
 import net.ncplanner.plannerator.graphics.Renderer;
@@ -24,6 +26,7 @@ import net.ncplanner.plannerator.planner.s_tack.Script;
 import net.ncplanner.plannerator.planner.s_tack.StackUnderflowError;
 import net.ncplanner.plannerator.planner.s_tack.object.StackObject;
 import net.ncplanner.plannerator.planner.s_tack.object.StackVariable;
+import net.ncplanner.plannerator.planner.s_tack.token.Token;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuStackEditor extends Menu{
     public Script script = null;
@@ -38,18 +41,19 @@ public class MenuStackEditor extends Menu{
             bottomWhitespaceLines++;
         }
     });
-    private boolean autostep = false, autostepren = false;
+    private boolean autostep = false;
     private File saveFile;
     private Runnable onSave;
     private boolean unsavedChanges = false;
     private double saved = 0;
+    public boolean debug;
     public MenuStackEditor(GUI gui, Menu parent){
         this(gui, parent, null, "");
     }
     private MenuStackEditor(GUI gui, Menu parent, File file, String scriptText){
         super(gui, parent);
         this.saveFile = file;
-        editor = add(new ScrollableCodeEditor(192, 64, 0, 0, 20, 20, scriptText));
+        editor = add(new ScrollableCodeEditor(192, 64, 0, 0, 20, 20, scriptText, this));
         editor.editor.onChange = ()->{
             unsavedChanges = true;
         };
@@ -57,17 +61,39 @@ public class MenuStackEditor extends Menu{
             gui.open(parent);
         });
         run.addAction(() -> {
-            if(script==null||script.isFinished())createScript();
-            if(Core.isShiftPressed()){
+            if(script==null||script.isFinished())createScript(Core.isShiftPressed());
+            if(Core.isControlPressed()){
                 autostep = true;
-            }else if(Core.isControlPressed()){
-                autostepren = true;
-            }else script.run();
+            }else{
+                ArrayList<Token> breakpoints = new ArrayList<>();
+                for(Token token : script.script){
+                    int startX = 0;
+                    int startY = 0;
+                    int pos = token.start;
+                    while(pos>0){
+                        startX++;
+                        if(startX>=editor.editor.text.get(startY).length()){
+                            startY++;
+                            startX = 0;
+                            pos--;
+                        }
+                        pos--;
+                    }
+                    int lineStartX = 0;
+                    for(char c : editor.editor.text.get(startY).toCharArray()){
+                        if(c==' ')lineStartX++;
+                        else break;
+                    }
+                    if(editor.editor.breakpoints.contains(startY)&&startX==lineStartX){
+                        breakpoints.add(token);
+                    }
+                }
+                script.run(debug?breakpoints:null);
+            }
         });
         step.addAction(() -> {
             autostep = false;
-            autostepren = false;
-            if(script==null||script.isFinished())createScript();
+            if(script==null||script.isFinished())createScript(true);
             script.step();
         });
     }
@@ -91,8 +117,9 @@ public class MenuStackEditor extends Menu{
         if(saved>0)saved = Math.max(0, saved-deltaTime*20);
         Renderer renderer = new Renderer();
         renderer.setWhite();
-        if(script!=null&&!script.isFinished()&&autostepren){
-            script.step();
+        run.text = Core.isShiftPressed()?"Debug":"Run";
+        if(script!=null&&!script.isFinished()){
+            run.text = debug?"Continue":"Running...";
         }
         run.x = done.width;
         step.x = gui.getWidth()-step.width;
@@ -112,7 +139,8 @@ public class MenuStackEditor extends Menu{
         renderer.drawText(editor.x+editor.width-textLength-editor.vertScrollbarWidth, editor.y-textHeight+(float)saved*textHeight/20, editor.x+editor.width, editor.y+(float)saved*textHeight/20, "Saved");
         renderer.unBound();
     }
-    private void createScript(){
+    private void createScript(boolean debug){
+        this.debug = debug;
         output.setText("");
         stackDisplay.components.clear();
         variablesDisplay.components.clear();
@@ -141,24 +169,26 @@ public class MenuStackEditor extends Menu{
             @Override
             public void step(){
                 super.step();
-//                variablesDisplay.components.clear();
-//                Script s = this;
-//                while(!s.subscripts.isEmpty()){
-//                    Object peek = s.subscripts.peek();
-//                    if(peek instanceof Script)s = (Script)peek;
-//                    else break;
-//                }
-//                HashMap<String, StackVariable> vars = s.variables;
-//                ArrayList<String> variableNames = new ArrayList<>(vars.keySet());
-//                Collections.sort(variableNames);
-//                for(String var : variableNames){
-//                    variablesDisplay.add(new Label(0, 0, 100, 20, var, variablesDisplay.components.size()%2==0){
-//                        @Override
-//                        public void drawText(){
-//                            drawCenteredText(x, y, x+width, y+height, vars.get(var).toString());
-//                        }
-//                    });
-//                }
+                if(debug){
+                    variablesDisplay.components.clear();
+                    Script s = this;
+                    while(!s.subscripts.isEmpty()){
+                        Object peek = s.subscripts.peek();
+                        if(peek instanceof Script)s = (Script)peek;
+                        else break;
+                    }
+                    HashMap<String, StackVariable> vars = s.variables;
+                    ArrayList<String> variableNames = new ArrayList< >(vars.keySet());
+                    Collections.sort(variableNames);
+                    for(String var : variableNames){
+                        variablesDisplay.add(new Label(0, 0, 100, 20, var, variablesDisplay.components.size()%2==0){
+                            @Override
+                            public void drawText(Renderer renderer){
+                                renderer.drawCenteredText(x, y, x+width, y+height, vars.get(var).toString());
+                            }
+                        });
+                    }
+                }
             }
         };
     }

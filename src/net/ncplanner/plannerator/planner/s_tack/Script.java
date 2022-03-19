@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.s_tack;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.function.Consumer;
@@ -31,8 +32,18 @@ public class Script{
         Tokenizer.cleanup(script);
         this.script = script;
     }
-    public void run(){
-        while(!isFinished())step();
+    public void run(Collection<Token> breakpoints){
+        while(!isFinished()){
+            step();
+            if(breakpoints!=null){
+                Script s = this;
+                while(!s.subscripts.isEmpty()&&(s.subscripts.peek() instanceof Script))s = (Script)s.subscripts.peek();
+                if(s.script.size()>s.pos){
+                    Token token = s.script.get(s.pos);
+                    if(breakpoints.contains(token))break;//stop running!
+                }
+            }
+        }
     }
     public void step(){
         if(!subscripts.isEmpty()){

@@ -6,6 +6,7 @@ public abstract class Token{
     public final String regex;
     public String text;
     private Pattern pattern;
+    public int start;//starting position index in the script itself; for debugging
     public Token(String regex){
         this(regex, false);
     }

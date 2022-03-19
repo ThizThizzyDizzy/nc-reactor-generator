@@ -1,10 +1,14 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.MenuStackEditor;
+import net.ncplanner.plannerator.planner.s_tack.Script;
 import net.ncplanner.plannerator.planner.s_tack.Tokenizer;
 import net.ncplanner.plannerator.planner.s_tack.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.s_tack.token.CharValueToken;
@@ -57,8 +61,11 @@ public class CodeEditor extends Component{
     private double cursorTimer;
     private boolean cursorVisible;
     public Runnable onChange;
-    public CodeEditor(String text){
+    private MenuStackEditor menu;
+    public HashSet<Integer> breakpoints = new HashSet<>();
+    public CodeEditor(String text, MenuStackEditor menu){
         this(text, 20);
+        this.menu = menu;
     }
     public CodeEditor(String text, int textHeight){
         super(0, 0, 0, 0);
@@ -163,6 +170,95 @@ public class CodeEditor extends Component{
             FormattedText line = lines.get(i);
             renderer.drawFormattedText(x+xOff+border*2, y+border+i*textHeight, x+width-border, y+border+(i+1)*textHeight, line, -1);
         }
+        renderer.setColor(Core.theme.getCodeDebugBreakpointTextColor(), 0.5f);
+        for(int i : breakpoints){
+            renderer.fillRect(x+xOff+border*2, y+border+i*textHeight, x+width-border, y+border+(i+1)*textHeight);
+        }
+        Script s = menu.script;
+        if(s!=null&&!s.isFinished()){
+            while(!s.subscripts.isEmpty()&&(s.subscripts.peek() instanceof Script)){
+                if(s.script.size()>=s.pos&&s.pos>0){
+                    Token token = s.script.get(s.pos-1);
+                    renderer.setColor(Core.theme.getCodeDebugMethodStackTextColor(), 0.5f);
+                    int startX = 0;
+                    int startY = 0;
+                    int pos = token.start;
+                    while(pos>0){
+                        startX++;
+                        if(startX>=text.get(startY).length()){
+                            startY++;
+                            startX = 0;
+                            pos--;
+                        }
+                        pos--;
+                    }
+                    int endX = startX;
+                    int endY = startY;
+                    pos = token.text.length();
+                    while(pos>0){
+                        endX++;
+                        if(endX>=text.get(endY).length()){
+                            endY++;
+                            endX = 0;
+                            pos--;
+                        }
+                        pos--;
+                    }
+                    for(int Y = startY; Y<=endY; Y++){
+                        float top = y+border+Y*textHeight;
+                        float bottom = y+border+(Y+1)*textHeight;
+                        float left = x+xOff+border*2;
+                        float right = x+xOff+border*2+text.get(Y).length()*textWidth;
+                        if(Y==endY)right = left+endX*textWidth;
+                        if(Y==startY)left += startX*textWidth;
+                        renderer.fillRect(left, top, right, bottom);
+                    }
+                }
+                s = (Script)s.subscripts.peek();
+            }
+            if(s.script.size()>s.pos&&s.subscripts.isEmpty()){
+                Token token = s.script.get(s.pos);
+                renderer.setColor(Core.theme.getCodeDebugHighlightTextColor(), 0.5f);
+                int startX = 0;
+                int startY = 0;
+                int pos = token.start;
+                while(pos>0){
+                    startX++;
+                    if(startX>=text.get(startY).length()){
+                        startY++;
+                        startX = 0;
+                        pos--;
+                    }
+                    pos--;
+                }
+                int endX = startX;
+                int endY = startY;
+                pos = token.text.length();
+                while(pos>0){
+                    endX++;
+                    if(endX>=text.get(endY).length()){
+                        endY++;
+                        endX = 0;
+                        pos--;
+                    }
+                    pos--;
+                }
+                for(int Y = startY; Y<=endY; Y++){
+                    float top = y+border+Y*textHeight;
+                    float bottom = y+border+(Y+1)*textHeight;
+                    float left = x+xOff+border*2;
+                    float right = x+xOff+border*2+text.get(Y).length()*textWidth;
+                    if(Y==endY)right = left+endX*textWidth;
+                    if(Y==startY)left += startX*textWidth;
+                    renderer.fillRect(left, top, right, bottom);
+                }
+                if(menu.debug){
+                    cursorX = startX;
+                    cursorY = startY;
+                    updateCursor();
+                }
+            }
+        }
         renderer.setColor(Core.theme.getCodeTextColor());
         if(isFocused&&cursorVisible)renderer.fillRect(x+xOff+cursorX*textWidth+border*2, y+border+cursorY*textHeight, x+xOff+cursorX*textWidth+border*2+2, y+border+(cursorY+1)*textHeight);
         renderer.setColor(Core.theme.getCodeLineMarkerColor());
@@ -184,6 +280,10 @@ public class CodeEditor extends Component{
         if(button==0&&action==GLFW_PRESS){
             cursorY = Math.min(text.size()-1, (int)(y/textHeight));
             cursorX = Math.min(text.get(cursorY).length(), (int)Math.round(x/textWidth));
+        }
+        if(x<-border*2){
+            if(breakpoints.contains(cursorY))breakpoints.remove(cursorY);
+            else breakpoints.add(cursorY);
         }
     }
     @Override
@@ -213,6 +313,7 @@ public class CodeEditor extends Component{
                     cursorX = text.get(cursorY-1).length();
                     text.set(cursorY-1, text.get(cursorY-1)+text.get(cursorY));
                     text.remove(cursorY);
+                    shiftBreakpoints(cursorY, -1);
                     cursorY--;
                 }else{
                     int numToDelete = 1;
@@ -237,6 +338,7 @@ public class CodeEditor extends Component{
                     if(cursorY==text.size()-1)return;
                     text.set(cursorY, text.get(cursorY)+text.get(cursorY+1));
                     text.remove(cursorY+1);
+                    shiftBreakpoints(cursorY, -1);
                 }else{
                     int numToDelete = 1;
                     String line = text.get(cursorY);
@@ -292,6 +394,7 @@ public class CodeEditor extends Component{
                 String newline = indent+line.substring(cursorX);
                 text.set(cursorY, line.substring(0, cursorX));
                 text.add(cursorY+1, newline);
+                shiftBreakpoints(cursorY, 1);
                 cursorY++;
                 cursorX = indent.length();
                 updateDisplay();
@@ -397,5 +500,14 @@ public class CodeEditor extends Component{
         cursorTimer = 0;
         cursorVisible = true;
         updateScroll();
+    }
+    private void shiftBreakpoints(int y, int off){
+        ArrayList<Integer> brkpnts = new ArrayList<>(breakpoints);
+        for(int i : brkpnts){
+            if(i>=y){
+                breakpoints.remove(i);
+                breakpoints.add(i+off);
+            }
+        }
     }
 }

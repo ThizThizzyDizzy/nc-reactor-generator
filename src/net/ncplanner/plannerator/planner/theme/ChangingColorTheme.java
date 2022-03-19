@@ -629,4 +629,16 @@ public class ChangingColorTheme extends ColorTheme{
     public Color getCodeLineMarkerTextColor(){
         return current.getCodeLineMarkerTextColor();
     }
+    @Override
+    public Color getCodeDebugHighlightTextColor(){
+        return current.getCodeDebugHighlightTextColor();
+    }
+    @Override
+    public Color getCodeDebugBreakpointTextColor(){
+        return current.getCodeDebugBreakpointTextColor();
+    }
+    @Override
+    public Color getCodeDebugMethodStackTextColor(){
+        return current.getCodeDebugMethodStackTextColor();
+    }
 }

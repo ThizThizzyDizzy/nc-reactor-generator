@@ -631,6 +631,18 @@ public class ChangingTheme extends Theme{
         return current.getCodeLineMarkerTextColor();
     }
     @Override
+    public Color getCodeDebugHighlightTextColor(){
+        return current.getCodeDebugHighlightTextColor();
+    }
+    @Override
+    public Color getCodeDebugBreakpointTextColor(){
+        return current.getCodeDebugBreakpointTextColor();
+    }
+    @Override
+    public Color getCodeDebugMethodStackTextColor(){
+        return current.getCodeDebugMethodStackTextColor();
+    }
+    @Override
     public Font getDefaultFont(){
         return current.getDefaultFont();
     }

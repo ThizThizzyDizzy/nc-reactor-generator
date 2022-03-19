@@ -351,6 +351,9 @@ public abstract class Theme{
     public abstract Color getCodeActiveTextColor();
     public abstract Color getCodeLineMarkerColor();
     public abstract Color getCodeLineMarkerTextColor();
+    public abstract Color getCodeDebugHighlightTextColor();
+    public abstract Color getCodeDebugBreakpointTextColor();
+    public abstract Color getCodeDebugMethodStackTextColor();
     public abstract Font getDefaultFont();
     public abstract Font getTextViewFont();
     public abstract Font getCodeFont();

@@ -669,6 +669,18 @@ public class SmoreTheme extends ColorTheme{
         return marshmallow.getCodeLineMarkerTextColor();
     }
     @Override
+    public Color getCodeDebugHighlightTextColor(){
+        return marshmallow.getCodeDebugHighlightTextColor();
+    }
+    @Override
+    public Color getCodeDebugBreakpointTextColor(){
+        return marshmallow.getCodeDebugBreakpointTextColor();
+    }
+    @Override
+    public Color getCodeDebugMethodStackTextColor(){
+        return marshmallow.getCodeDebugMethodStackTextColor();
+    }
+    @Override
     public void onSet(){
         try{
             java.lang.reflect.Field field = Core.class.getDeclaredField("str");

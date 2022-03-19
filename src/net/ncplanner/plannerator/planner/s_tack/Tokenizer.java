@@ -260,9 +260,12 @@ public class Tokenizer{
     }
     public static ArrayList<Token> tokenize(String script){
         ArrayList<Token> tokenized = new ArrayList<>();
+        int idx = 0;
         while(!script.isEmpty()){
             Token token = next(script);
+            token.start = idx;
             tokenized.add(token);
+            idx+=token.text.length();
             script = script.substring(token.text.length());
         }
         return tokenized;

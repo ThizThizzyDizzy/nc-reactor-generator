@@ -802,4 +802,19 @@ public class SiezureTheme extends ColorTheme{
         if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeLineMarkerTextColor();
         return rand();
     }
+    @Override
+    public Color getCodeDebugHighlightTextColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeDebugHighlightTextColor();
+        return rand();
+    }
+    @Override
+    public Color getCodeDebugBreakpointTextColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeDebugBreakpointTextColor();
+        return rand();
+    }
+    @Override
+    public Color getCodeDebugMethodStackTextColor(){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeDebugMethodStackTextColor();
+        return rand();
+    }
 }

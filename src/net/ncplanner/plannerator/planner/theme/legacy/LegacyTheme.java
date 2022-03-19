@@ -617,6 +617,18 @@ public abstract class LegacyTheme extends ColorTheme{
     public Color getCodeLineMarkerTextColor(){
         return getTextColor();
     }
+    @Override
+    public Color getCodeDebugHighlightTextColor(){
+        return getCodeIdentifierTextColor();
+    }
+    @Override
+    public Color getCodeDebugBreakpointTextColor(){
+        return getCodeInvalidTextColor();
+    }
+    @Override
+    public Color getCodeDebugMethodStackTextColor(){
+        return getCodeCommentTextColor();
+    }
     public abstract Color getBackgroundColor();
     public abstract Color getTextColor();
     public abstract Color getHeaderColor();

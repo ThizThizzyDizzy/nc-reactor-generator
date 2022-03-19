@@ -3,12 +3,14 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
+import net.ncplanner.plannerator.planner.gui.menu.MenuStackEditor;
 public class ScrollableCodeEditor extends Scrollable{
     boolean scrollUpdatePending = false;
     public final CodeEditor editor;
-    public ScrollableCodeEditor(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth, String text){
+    private final MenuStackEditor menu;
+    public ScrollableCodeEditor(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth, String text, MenuStackEditor menu){
         super(x, y, width, height, horizScrollbarHeight, vertScrollbarWidth);
-        editor = add(new CodeEditor(text){
+        editor = add(new CodeEditor(text, menu){
             {
                 scrollMagnitude = scrollWheelMagnitude = 20;
             }
@@ -17,6 +19,7 @@ public class ScrollableCodeEditor extends Scrollable{
                 scrollUpdatePending = true;
             }
         });
+        this.menu = menu;
     }
     @Override
     public void render2d(double deltaTime){
