@@ -14,9 +14,9 @@ public class PowerEqualsOperator extends AbstractEqualsOperator{
     @Override
     public StackObject eval(StackVariable var, StackObject arg){
         if(var.getBaseType()==StackObject.Type.INT&&arg.getBaseType()==StackObject.Type.INT){
-            return new StackInt((int)Math.pow(var.asInt().getValue(), arg.asInt().getValue()));
+            return new StackInt((long)Math.pow(var.asInt().getValue(), arg.asInt().getValue()));
         }else{
-            return new StackFloat((float)Math.pow(var.asNumber().getValue().floatValue(), arg.asNumber().getValue().floatValue()));
+            return new StackFloat(Math.pow(var.asNumber().getValue().doubleValue(), arg.asNumber().getValue().doubleValue()));
         }
     }
 }

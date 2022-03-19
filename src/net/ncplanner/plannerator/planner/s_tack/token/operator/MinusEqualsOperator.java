@@ -16,7 +16,7 @@ public class MinusEqualsOperator extends AbstractEqualsOperator{
         if(var.getBaseType()==StackObject.Type.INT&&arg.getBaseType()==StackObject.Type.INT){
             return new StackInt(var.asInt().getValue()-arg.asInt().getValue());
         }else{
-            return new StackFloat(var.asNumber().getValue().floatValue()-arg.asNumber().getValue().floatValue());
+            return new StackFloat(var.asNumber().getValue().doubleValue()-arg.asNumber().getValue().doubleValue());
         }
     }
 }

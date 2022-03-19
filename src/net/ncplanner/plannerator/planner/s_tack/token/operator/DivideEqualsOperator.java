@@ -14,8 +14,8 @@ public class DivideEqualsOperator extends AbstractEqualsOperator{
     @Override
     public StackObject eval(StackVariable var, StackObject arg){
         boolean shouldInt = var.getBaseType()==StackObject.Type.INT&&arg.getBaseType()==StackObject.Type.INT;
-        float val = var.asNumber().getValue().floatValue()/arg.asNumber().getValue().floatValue();
-        if(shouldInt&&(int)val==val)return new StackInt((int)val);
+        double val = var.asNumber().getValue().doubleValue()/arg.asNumber().getValue().doubleValue();
+        if(shouldInt&&(long)val==val)return new StackInt((long)val);
         return new StackFloat(val);
     }
 }

@@ -15,7 +15,7 @@ public class RangeKeyword extends Keyword{
     @Override
     public void run(Script script){
         StackObject obj = script.stack.pop();
-        int start,stop,step;
+        long start,stop,step;
         if(obj.getBaseType()==StackObject.Type.COLLECTION){
             StackObject[] args = obj.asCollection().getValue();
             if(args.length<1||args.length>3)throw new IllegalArgumentException("Wrong number of arguments! expected 1-3, found "+args.length);
@@ -37,7 +37,7 @@ public class RangeKeyword extends Keyword{
             throw new IllegalArgumentException("range is zero!");
         }
         ArrayList<StackObject> output = new ArrayList<>();
-        for(int i = start; stop>start?i<stop:(i>start); i+=step){
+        for(long i = start; stop>start?i<stop:(i>start); i+=step){
             output.add(new StackInt(i));
         }
         script.stack.push(new StackCollection(output));

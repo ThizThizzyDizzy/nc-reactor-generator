@@ -12,6 +12,6 @@ public class IDivideEqualsOperator extends AbstractEqualsOperator{
     }
     @Override
     public StackObject eval(StackVariable var, StackObject arg){
-        return new StackInt((int)(var.asNumber().getValue().floatValue()/arg.asNumber().getValue().floatValue()));
+        return new StackInt((long)(var.asNumber().getValue().doubleValue()/arg.asNumber().getValue().doubleValue()));
     }
 }

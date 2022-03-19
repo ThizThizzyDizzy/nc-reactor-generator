@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.s_tack.object;
 public class StackInt extends StackNumber{
-    public StackInt(int value){
+    public StackInt(long value){
         super(value);
     }
     @Override
@@ -8,11 +8,11 @@ public class StackInt extends StackNumber{
         return Type.INT;
     }
     @Override
-    public Integer getValue(){
-        return value.intValue();
+    public Long getValue(){
+        return value.longValue();
     }
     @Override
     public StackObject duplicate(){
-        return new StackInt(value.intValue());
+        return new StackInt(value.longValue());
     }
 }

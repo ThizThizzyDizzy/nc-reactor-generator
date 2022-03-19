@@ -13,8 +13,8 @@ public class DivideOperator extends Operator{
     @Override
     public StackObject evaluate(StackObject v1, StackObject v2){
         boolean shouldInt = v1.getBaseType()==StackObject.Type.INT&&v2.getBaseType()==StackObject.Type.INT;
-        float val = v1.asNumber().getValue().floatValue()/v2.asNumber().getValue().floatValue();
-        if(shouldInt&&(int)val==val)return new StackInt((int)val);
+        double val = v1.asNumber().getValue().doubleValue()/v2.asNumber().getValue().doubleValue();
+        if(shouldInt&&(long)val==val)return new StackInt((long)val);
         return new StackFloat(val);
     }
 }

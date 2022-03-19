@@ -11,6 +11,6 @@ public class IDivideOperator extends Operator{
     }
     @Override
     public StackObject evaluate(StackObject v1, StackObject v2){
-        return new StackInt((int)(v1.asNumber().getValue().floatValue()/v2.asNumber().getValue().floatValue()));
+        return new StackInt((long)(v1.asNumber().getValue().doubleValue()/v2.asNumber().getValue().doubleValue()));
     }
 }

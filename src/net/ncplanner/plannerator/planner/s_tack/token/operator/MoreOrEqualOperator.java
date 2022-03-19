@@ -11,6 +11,6 @@ public class MoreOrEqualOperator extends Operator{
     }
     @Override
     public StackObject evaluate(StackObject v1, StackObject v2){
-        return new StackBool(v1.asNumber().getValue().floatValue()>=v2.asNumber().getValue().floatValue());
+        return new StackBool(v1.asNumber().getValue().doubleValue()>=v2.asNumber().getValue().doubleValue());
     }
 }
