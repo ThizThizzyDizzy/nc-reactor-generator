@@ -316,7 +316,7 @@ public class CodeEditor extends Component{
                     }
                     cursorX-=numToGoLeft;
                 }
-                updateDisplay();
+                updateCursor();
                 break;
             case GLFW_KEY_RIGHT:
                 if(cursorX==text.get(cursorY).length()){
@@ -338,19 +338,19 @@ public class CodeEditor extends Component{
                     }
                     cursorX+=numToGoRight;
                 }
-                updateDisplay();
+                updateCursor();
                 break;
             case GLFW_KEY_UP:
                 if(cursorY==0)return;
                 cursorY--;
                 cursorX = Math.min(cursorX, text.get(cursorY).length());
-                updateDisplay();
+                updateCursor();
                 break;
             case GLFW_KEY_DOWN:
                 if(cursorY==text.size()-1)return;
                 cursorY++;
                 cursorX = Math.min(cursorX, text.get(cursorY).length());
-                updateDisplay();
+                updateCursor();
                 break;
             case GLFW_KEY_HOME:
                 if(Core.isControlPressed()){
@@ -365,12 +365,12 @@ public class CodeEditor extends Component{
                     if(cursorX<=indentation&&cursorX>0)cursorX = 0;
                     else cursorX = indentation;
                 }
-                updateDisplay();
+                updateCursor();
                 break;
             case GLFW_KEY_END:
                 if(Core.isControlPressed())cursorY = text.size()-1;
                 cursorX = text.get(cursorY).length();
-                updateDisplay();
+                updateCursor();
                 break;
         }
     }
@@ -392,5 +392,10 @@ public class CodeEditor extends Component{
     public void updateScroll(){}
     private void updateDisplay(){
         pendingDisplayUpdate = true;
+    }
+    private void updateCursor(){
+        cursorTimer = 0;
+        cursorVisible = true;
+        updateScroll();
     }
 }
