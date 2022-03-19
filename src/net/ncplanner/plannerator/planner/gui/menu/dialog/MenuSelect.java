@@ -7,8 +7,6 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SingleColumnGridLayout;
 public class MenuSelect<T> extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
-    private final ArrayList<T> options;
-    private final ArrayList<String> names;
     public MenuSelect(GUI gui, Menu parent, ArrayList<T> options, ArrayList<String> names, Consumer<T> onConfirm){
         super(gui, parent);
         minWidth = minHeight = 0;
@@ -20,11 +18,9 @@ public class MenuSelect<T> extends MenuDialog{
             }));
         }
         setContent(new SingleColumnGridLayout(32).addAll(buttons));
-        content.width = 512;
+        content.width = 640;
         addButton("Cancel", () -> {
             close();
         });
-        this.options = options;
-        this.names = names;
     }
 }

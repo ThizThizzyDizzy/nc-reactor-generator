@@ -247,7 +247,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             }.open();
         });
         generate.addAction(() -> {
-            gui.open(new MenuTransition(gui, this, new MenuGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
+            gui.open(new MenuTransition(gui, this, new MenuOldGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
         });
         recalc.addAction(() -> {
             if(autoRecalc){
