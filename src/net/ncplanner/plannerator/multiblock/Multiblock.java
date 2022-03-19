@@ -772,6 +772,10 @@ public abstract class Multiblock<T extends Block>{
      *initialize a new multiblock, filling it with default features
      */
     public void init(){}
+    public int getVolume(){
+        BoundingBox bbox = getBoundingBox();
+        return bbox.getWidth()*bbox.getHeight()*bbox.getDepth();
+    }
     private ArrayList<GraphLink> links = new ArrayList<>();
     private HashMap<Block, String> graphBlocks = new HashMap<>();
     private HashMap<String, String> labels = new HashMap<>();

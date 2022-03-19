@@ -162,6 +162,8 @@ public class MenuResize extends Menu{
         super.render2d(deltaTime);
         renderer.setColor(Core.theme.getResizeMenuTextColor());
         renderer.drawCenteredText(done.x, done.height, done.x+done.width, done.height+40, multiblock.getDimensionsStr());
+        renderer.drawCenteredText(done.x, done.height+40, done.x+done.width, done.height+80, "Volume: "+multiblock.getVolume());
+        renderer.drawCenteredText(done.x, done.height+80, done.x+done.width, done.height+120, "Internal: "+multiblock.getInternalVolume());
     }
     public void expand(int x, int y, int z){
         if(x>0)multiblock.expandRight(x);
