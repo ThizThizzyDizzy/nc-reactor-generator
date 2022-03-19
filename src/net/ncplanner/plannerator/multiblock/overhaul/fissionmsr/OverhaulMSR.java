@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.multiblock.overhaul.fissionmsr;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import net.ncplanner.plannerator.config2.Config;
@@ -2368,11 +2369,21 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         final Block theWindow = window==null?casing:window;
         final Block theController = controller;
         boolean[] hasPlacedTheController = new boolean[1];
+        HashSet<BlockRecipe> hasPlacedTheInputPort = new HashSet<>();
+        HashSet<BlockRecipe> hasPlacedTheOutputPort = new HashSet<>();
         for(Block block : getBlocks()){
             if(block.template.controller)hasPlacedTheController[0] = true;
+            if(block.template.parent!=null){
+                if(block.isToggled){
+                    if(outPorts.containsKey(block.recipe))hasPlacedTheOutputPort.add(block.recipe);
+                }else{
+                    if(inPorts.containsKey(block.recipe))hasPlacedTheInputPort.add(block.recipe);
+                }
+            }
         }
         forEachCasingFacePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null&&getBlock(x, y, z).template.parent!=null)setBlock(x, y, z, null);
+            Block b = getBlock(x, y, z);
+            if(b!=null&&b.template.parent!=null&&!inPorts.containsKey(b.recipe)&&!outPorts.containsKey(b.recipe))setBlock(x, y, z, null);
         });
         forEachCasingFacePosition((x, y, z) -> {
             if(getBlock(x, y, z)!=null){
@@ -2385,6 +2396,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             }
             for(Iterator<BlockRecipe> it = inPorts.keySet().iterator(); it.hasNext();){
                 BlockRecipe recipe = it.next();
+                if(hasPlacedTheInputPort.contains(recipe))continue;
                 net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block template = inPorts.get(recipe);
                 setBlock(x, y, z, new Block(getConfiguration(), 0, 0, 0, template));
                 getBlock(x, y, z).recipe = recipe;
@@ -2393,6 +2405,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             }
             for(Iterator<BlockRecipe> it = outPorts.keySet().iterator(); it.hasNext();){
                 BlockRecipe recipe = it.next();
+                if(hasPlacedTheOutputPort.contains(recipe))continue;
                 net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block template = outPorts.get(recipe);
                 setBlock(x, y, z, new Block(getConfiguration(), 0, 0, 0, template));
                 getBlock(x, y, z).recipe = recipe;
