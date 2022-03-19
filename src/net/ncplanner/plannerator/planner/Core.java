@@ -365,7 +365,7 @@ public class Core{
     private static final HashMap<Image, Integer> imgs = new HashMap<>();
     private static final HashMap<Image, Boolean> alphas = new HashMap<>();
     public static int getTexture(Image image){
-        if(image==null)return -1;
+        if(image==null)return 0;
         if(!imgs.containsKey(image)){
             imgs.put(image, loadTexture(image.getWidth(), image.getHeight(), image.getGLData()));
         }
