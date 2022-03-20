@@ -12,7 +12,7 @@ public class RepeatKeyword extends Keyword{
     @Override
     public void run(Script script){
         StackMethod func = script.pop().asMethod();
-        long repeats = script.pop().asInt().getValue();
+        int repeats = (int)(long)script.pop().asInt().getValue();
         script.repeatSubscript(func.getValue(), repeats);
     }
 }

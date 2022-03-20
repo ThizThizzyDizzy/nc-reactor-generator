@@ -8,6 +8,7 @@ import java.util.Stack;
 import java.util.function.Consumer;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.s_tack.object.StackFlow;
+import net.ncplanner.plannerator.planner.s_tack.object.StackNull;
 import net.ncplanner.plannerator.planner.s_tack.object.StackObject;
 import net.ncplanner.plannerator.planner.s_tack.object.StackString;
 import net.ncplanner.plannerator.planner.s_tack.object.StackVariable;
@@ -55,14 +56,14 @@ public class Script{
         }
     }
     public void step(){
+        Object subscript = subscripts.peek();
+        while(subscript instanceof Integer&&(int)subscript<-1){//clear foreach markers
+            subscripts.dequeue();
+            subscript = subscripts.peek();
+        }
         if(!subscripts.isEmpty()){
-            Object subscript = subscripts.peek();
-            while(subscript instanceof Long&&(long)subscript<-1){//clear foreach markers
-                subscripts.dequeue();
-                subscript = subscripts.peek();
-            }
-            if(subscript instanceof Long){
-                repeating = (long)subscripts.dequeue();
+            if(subscript instanceof Integer){
+                repeating = (int)subscripts.dequeue();
                 subscript = subscripts.peek();
             }
             if(subscript instanceof Runnable){
@@ -73,7 +74,7 @@ public class Script{
             Script s = (Script)subscript;
             s.step();
             if(repeating!=0){
-                if(peek().getType()==StackObject.Type.FLOW){
+                if(peekOrNull().getType()==StackObject.Type.FLOW){
                     switch(pop().asFlow().type){
                         case BREAK:
                             repeating = 0;
@@ -82,7 +83,7 @@ public class Script{
                             break;
                     }
                 }
-            }else if(peek().getType()==StackObject.Type.FLOW){
+            }else if(peekOrNull().getType()==StackObject.Type.FLOW){
                 switch(pop().asFlow().type){
                     case BREAK:
                         long lookingFor = -3;
@@ -164,6 +165,9 @@ public class Script{
             return  null;
         }
     }
+    public StackObject peekOrNull(){
+        return stack.isEmpty()?StackNull.INSTANCE:stack.peek();
+    }
     public StackObject peek(){
         return stack.peek();
     }
@@ -200,7 +204,7 @@ public class Script{
     public void loopSubscript(Script script){
         repeatSubscript(script, -1);
     }
-    public void repeatSubscript(Script script, long repeats){
+    public void repeatSubscript(Script script, int repeats){
         subscripts.enqueue(repeats);
         subscript(script);
     }

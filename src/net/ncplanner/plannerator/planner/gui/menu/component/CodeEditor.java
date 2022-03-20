@@ -205,6 +205,7 @@ public class CodeEditor extends Component{
                         pos--;
                     }
                     for(int Y = startY; Y<=endY; Y++){
+                        if(text.size()<=Y)continue;
                         float top = y+border+Y*textHeight;
                         float bottom = y+border+(Y+1)*textHeight;
                         float left = x+xOff+border*2;
@@ -244,6 +245,7 @@ public class CodeEditor extends Component{
                     pos--;
                 }
                 for(int Y = startY; Y<=endY; Y++){
+                    if(text.size()<=Y)continue;
                     float top = y+border+Y*textHeight;
                     float bottom = y+border+(Y+1)*textHeight;
                     float left = x+xOff+border*2;

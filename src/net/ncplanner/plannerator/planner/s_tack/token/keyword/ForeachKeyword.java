@@ -15,7 +15,7 @@ public class ForeachKeyword extends Keyword{
     public void run(Script script){
         StackMethod method = script.pop().asMethod();
         StackCollection collection = script.pop().asCollection();
-        for(StackObject obj : (Iterable<StackObject>)collection.asCollection()){
+        for(StackObject obj : (Iterable<StackObject>)collection.asCollection().collection()){
             script.foreachMarker();
             script.subscript(()->{script.push(obj);});
             script.subscript(method.getValue());
