@@ -55,18 +55,24 @@ public class TextView extends Scrollable{
         super.render2d(deltaTime);
     }
     public void setText(String s){
-        text.clear();
+        ArrayList<FormattedText> newText = new ArrayList<>();
         String[] strs = s.split("\n");
-        for(String str : strs)text.add(new FormattedText(str));
+        for(String str : strs)newText.add(new FormattedText(str));
+        text = newText;
     }
     public void setText(FormattedText formattedText){
-        text.clear();
-        text.addAll(formattedText.split("\n"));
+        ArrayList<FormattedText> newText = new ArrayList<>();
+        newText.addAll(formattedText.split("\n"));
+        text = newText;
     }
     public void addText(String s){
-        text.addAll(new FormattedText(s).split("\n"));
+        ArrayList<FormattedText> newText = new ArrayList<>(text);
+        newText.addAll(new FormattedText(s).split("\n"));
+        text = newText;
     }
     public void addText(FormattedText formattedText){
-        text.addAll(formattedText.split("\n"));
+        ArrayList<FormattedText> newText = new ArrayList<>();
+        newText.addAll(formattedText.split("\n"));
+        text = newText;
     }
 }

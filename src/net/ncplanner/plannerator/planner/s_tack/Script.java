@@ -129,7 +129,7 @@ public class Script{
             token.run(this);
         }catch(Throwable t){
             print("--EXECUTION CRASHED--\n"+t.getClass().getName()+":\n"+t.getMessage());
-            pos = script.size();
+            halt();
             for(StackTraceElement ste : t.getStackTrace())print(ste.toString());
             return;
         }

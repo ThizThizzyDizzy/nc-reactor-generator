@@ -14,6 +14,7 @@ import java.util.Stack;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileFormat;
+import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -36,6 +37,7 @@ public class MenuStackEditor extends Menu{
     public SingleColumnList stackDisplay = add(new SingleColumnList(0, 64, 192, 0, 32));
     public SingleColumnList variablesDisplay = add(new SingleColumnList(0, 64, 192, 0, 32));
     public ScrollableCodeEditor editor;
+    public Thread scriptThread;
     public TextView output = add(new TextView(192, 0, 0, 192, 20, 20){
         {
             bottomWhitespaceLines++;
@@ -61,6 +63,10 @@ public class MenuStackEditor extends Menu{
             gui.open(parent);
         });
         run.addAction(() -> {
+            if(scriptThread!=null){
+                script.halt();
+                return;
+            }
             if(script==null||script.isFinished())createScript(Core.isShiftPressed());
             if(Core.isControlPressed()){
                 autostep = true;
@@ -88,10 +94,21 @@ public class MenuStackEditor extends Menu{
                         breakpoints.add(token);
                     }
                 }
-                script.run(debug?breakpoints:null);
+                scriptThread = new Thread(() -> {
+                    RuntimeException e = null;
+                    try{
+                        script.run(debug?breakpoints:null);
+                    }catch(Exception ex){
+                        e = new RuntimeException(ex);
+                    }
+                    scriptThread = null;
+                    if(e!=null)throw(e);
+                });
+                scriptThread.start();
             }
         });
         step.addAction(() -> {
+            if(scriptThread!=null)return;
             autostep = false;
             if(script==null||script.isFinished())createScript(true);
             script.step();
@@ -117,7 +134,7 @@ public class MenuStackEditor extends Menu{
         if(saved>0)saved = Math.max(0, saved-deltaTime*20);
         Renderer renderer = new Renderer();
         renderer.setWhite();
-        run.text = Core.isShiftPressed()?"Debug":"Run";
+        run.text = scriptThread==null?(Core.isShiftPressed()?"Debug":"Run"):"Halt";
         if(script!=null&&!script.isFinished()){
             run.text = debug?"Continue":"Running...";
         }
@@ -142,23 +159,27 @@ public class MenuStackEditor extends Menu{
     private void createScript(boolean debug){
         this.debug = debug;
         output.setText("");
-        stackDisplay.components.clear();
-        variablesDisplay.components.clear();
+        stackDisplay.components = new ArrayList<>();
+        variablesDisplay.components = new ArrayList<>();
         script = new Script(new Stack<StackObject>(){
             @Override
             public StackObject push(StackObject obj){
-                stackDisplay.add(new Label(0, 0, 100, 20, obj.toString(), stackDisplay.components.size()%2==0){
+                ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
+                components.add(new Label(0, 0, 100, 20, obj.toString(), components.size()%2==0){
                     @Override
                     public void drawText(Renderer renderer){
                         renderer.drawCenteredText(x, y, x+width, y+height, text);
                     }
                 });
+                stackDisplay.components = components;
                 return super.push(obj);
             }
             @Override
             public StackObject pop(){
                 if(isEmpty())throw new StackUnderflowError();
-                stackDisplay.components.remove(stackDisplay.components.get(stackDisplay.components.size()-1));
+                ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
+                components.remove(components.get(components.size()-1));
+                stackDisplay.components = components;
                 return super.pop();
             }
         }, new HashMap<String, StackVariable>(), editor.getText(), (str) -> {
@@ -170,7 +191,7 @@ public class MenuStackEditor extends Menu{
             public void step(){
                 super.step();
                 if(debug){
-                    variablesDisplay.components.clear();
+                    variablesDisplay.components = new ArrayList<>();
                     Script s = this;
                     while(!s.subscripts.isEmpty()){
                         Object peek = s.subscripts.peek();
@@ -181,12 +202,14 @@ public class MenuStackEditor extends Menu{
                     ArrayList<String> variableNames = new ArrayList< >(vars.keySet());
                     Collections.sort(variableNames);
                     for(String var : variableNames){
-                        variablesDisplay.add(new Label(0, 0, 100, 20, var, variablesDisplay.components.size()%2==0){
+                        ArrayList<Component> comps = new ArrayList<>(variablesDisplay.components);
+                        comps.add(new Label(0, 0, 100, 20, var, comps.size()%2==0){
                             @Override
                             public void drawText(Renderer renderer){
                                 renderer.drawCenteredText(x, y, x+width, y+height, vars.get(var).toString());
                             }
                         });
+                        variablesDisplay.components = comps;
                     }
                 }
             }
