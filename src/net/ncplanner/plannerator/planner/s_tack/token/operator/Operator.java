@@ -21,8 +21,8 @@ public abstract class Operator extends Token{
     public final void run(Script script){
         StackObject v2 = script.pop();
         StackObject v1 = script.pop();
-        StackObject ret = evaluate(v1, v2);
+        StackObject ret = evaluate(script, v1, v2);
         if(ret!=null)script.push(ret);
     }
-    public abstract StackObject evaluate(StackObject v1, StackObject v2);
+    public abstract StackObject evaluate(Script script, StackObject v1, StackObject v2);
 }

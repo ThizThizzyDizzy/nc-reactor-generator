@@ -14,7 +14,7 @@ public class IncrementToken extends Token{
     }
     @Override
     public void run(Script script){
-        StackVariable var = script.pop().asVariable();
+        StackVariable var = script.variables.get(script.pop().asLabel().getValue());
         if(var.getBaseType()==StackObject.Type.INT)var.setValue(new StackInt(var.asInt().getValue()+1));
         else if(var.getBaseType()==StackObject.Type.FLOAT)var.setValue(new StackFloat(var.asFloat().getValue()+1));
         else throw new IllegalArgumentException("Cannot increment "+var.getBaseType().toString()+"! (not a number!)");

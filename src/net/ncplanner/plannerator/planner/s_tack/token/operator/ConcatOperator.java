@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.s_tack.token.operator;
+import net.ncplanner.plannerator.planner.s_tack.Script;
 import net.ncplanner.plannerator.planner.s_tack.object.StackObject;
 import net.ncplanner.plannerator.planner.s_tack.object.StackString;
 public class ConcatOperator extends Operator{
@@ -10,7 +11,7 @@ public class ConcatOperator extends Operator{
         return new ConcatOperator();
     }
     @Override
-    public StackObject evaluate(StackObject v1, StackObject v2){
+    public StackObject evaluate(Script script, StackObject v1, StackObject v2){
         String s1 = "";
         switch(v1.getBaseType()){
             case BOOL:

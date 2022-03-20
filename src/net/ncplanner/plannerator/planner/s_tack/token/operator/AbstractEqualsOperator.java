@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.s_tack.token.operator;
+import net.ncplanner.plannerator.planner.s_tack.Script;
 import net.ncplanner.plannerator.planner.s_tack.object.StackObject;
 import net.ncplanner.plannerator.planner.s_tack.object.StackVariable;
 public abstract class AbstractEqualsOperator extends Operator{
@@ -6,8 +7,9 @@ public abstract class AbstractEqualsOperator extends Operator{
         super(operator);
     }
     @Override
-    public final StackObject evaluate(StackObject v1, StackObject v2){
-        v1.asVariable().setValue(eval(v1.asVariable(),v2));
+    public final StackObject evaluate(Script script, StackObject v1, StackObject v2){
+        StackVariable var = script.variables.get(v1.asLabel().getValue());
+        var.setValue(eval(var,v2));
         return null;
     }
     public abstract StackObject eval(StackVariable var, StackObject arg);

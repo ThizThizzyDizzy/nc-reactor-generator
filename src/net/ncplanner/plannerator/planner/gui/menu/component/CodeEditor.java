@@ -215,7 +215,12 @@ public class CodeEditor extends Component{
                         renderer.fillRect(left, top, right, bottom);
                     }
                 }
+                Script sc = s;
                 s = (Script)s.subscripts.peek();
+                if(s==null){
+                    s = sc;
+                    break;
+                }
             }
             if(s.script.size()>s.pos&&s.subscripts.isEmpty()){
                 Token token = s.script.get(s.pos);
