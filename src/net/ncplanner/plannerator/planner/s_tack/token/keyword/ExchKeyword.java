@@ -11,9 +11,9 @@ public class ExchKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        StackObject oldTop = script.stack.pop();
-        StackObject newTop = script.stack.pop();
-        script.stack.push(oldTop);
-        script.stack.push(newTop);
+        StackObject oldTop = script.pop();
+        StackObject newTop = script.pop();
+        script.push(oldTop);
+        script.push(newTop);
     }
 }

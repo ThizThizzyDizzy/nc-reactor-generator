@@ -10,6 +10,6 @@ public class PrintKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        script.print(script.stack.pop().getValue().toString());
+        script.print(script.pop().getValue().toString());
     }
 }

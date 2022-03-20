@@ -1,36 +1,59 @@
 package net.ncplanner.plannerator.planner.s_tack.object;
-import java.util.List;
-public class StackCollection extends StackObject{
-    private final StackObject[] value;
-    public StackCollection(StackObject[] value){
+import java.util.Collection;
+public abstract class StackCollection<T> extends StackObject{
+    final T value;
+    public StackCollection(T value){
         this.value = value;
-    }
-    public StackCollection(List<StackObject> value){
-        this(value.toArray(new StackObject[value.size()]));
     }
     @Override
     public Type getType(){
         return Type.COLLECTION;
     }
     @Override
-    public StackObject[] getValue(){
+    public T getValue(){
         return value;
     }
     @Override
     public String toString(){
-        String s = "[";
-        for(int i = 0; i<value.length; i++){
-            StackObject obj = value[i];
-            s+=" "+obj.toString();
-            if(i==10){
-                s+=" ...";
-                break;
-            }
-        }
-        return s+" ]";
+        return "collection";
     }
     @Override
-    public StackObject duplicate(){
-        return new StackCollection(value.clone());
+    public abstract StackObject duplicate();
+    public abstract Collection<StackObject> collection();
+    public abstract long size();
+    public abstract boolean isEmpty();
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asCollection();
+    }
+    public boolean addAll(Collection<StackObject> collection){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public boolean add(StackObject elem){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public void clear(){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public StackObject get(StackObject elem){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public boolean containsAll(Collection<StackObject> collection){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public boolean contains(StackObject elem){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public void putAll(StackObject elem){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public StackObject put(StackObject elem1, StackObject elem2){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public StackObject removeAll(Collection<StackObject> collection){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
+    }
+    public StackObject remove(StackObject elem){
+        throw new UnsupportedOperationException("Function not supported by this collection!");
     }
 }

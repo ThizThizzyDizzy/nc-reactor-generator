@@ -12,8 +12,8 @@ public class IfKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        StackMethod method = script.stack.pop().asMethod();
-        StackBool condition = script.stack.pop().asBool();
+        StackMethod method = script.pop().asMethod();
+        StackBool condition = script.pop().asBool();
         if(condition.getValue())script.subscript(method.getValue());
     }
 }

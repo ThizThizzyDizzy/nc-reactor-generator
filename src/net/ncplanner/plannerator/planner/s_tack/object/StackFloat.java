@@ -15,4 +15,8 @@ public class StackFloat extends StackNumber{
     public StackObject duplicate(){
         return new StackFloat(value.doubleValue());
     }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asFloat();
+    }
 }

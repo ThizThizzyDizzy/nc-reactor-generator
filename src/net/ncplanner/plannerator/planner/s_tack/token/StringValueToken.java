@@ -17,6 +17,6 @@ public class StringValueToken extends Token{
     }
     @Override
     public void run(Script script){
-        script.stack.push(new StackString(value));
+        script.push(new StackString(value));
     }
 }

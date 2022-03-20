@@ -13,11 +13,13 @@ public class ForeachKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        StackMethod method = script.stack.pop().asMethod();
-        StackCollection collection = script.stack.pop().asCollection();
-        for(StackObject obj : collection.getValue()){
-            script.subscript(()->{script.stack.push(obj);});
+        StackMethod method = script.pop().asMethod();
+        StackCollection collection = script.pop().asCollection();
+        for(StackObject obj : (Iterable<StackObject>)collection.asCollection()){
+            script.foreachMarker();
+            script.subscript(()->{script.push(obj);});
             script.subscript(method.getValue());
         }
+        script.foreachEndMarker();
     }
 }

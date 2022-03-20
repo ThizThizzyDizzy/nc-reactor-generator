@@ -27,6 +27,6 @@ public class LBraceToken extends Token{
             }
             subscript.add(token);
         }
-        script.stack.push(new StackMethod(new Script(script.stack, script.variables, subscript, script.out)));
+        script.push(new StackMethod(new Script(script.stack, script.variables, subscript, script.out)));
     }
 }

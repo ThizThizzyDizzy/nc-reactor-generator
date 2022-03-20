@@ -20,4 +20,8 @@ public class StackBool extends StackObject{
     public StackObject duplicate(){
         return new StackBool(value);
     }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asBool();
+    }
 }

@@ -12,4 +12,8 @@ public abstract class StackNumber extends StackObject{
     public String toString(){
         return value.toString();
     }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asNumber();
+    }
 }

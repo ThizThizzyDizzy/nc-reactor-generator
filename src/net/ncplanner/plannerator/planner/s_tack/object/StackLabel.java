@@ -20,4 +20,8 @@ public class StackLabel extends StackObject{
     public StackObject duplicate(){
         return new StackLabel(value);
     }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asLabel();
+    }
 }

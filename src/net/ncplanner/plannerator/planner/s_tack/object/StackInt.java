@@ -15,4 +15,8 @@ public class StackInt extends StackNumber{
     public StackObject duplicate(){
         return new StackInt(value.longValue());
     }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asInt();
+    }
 }

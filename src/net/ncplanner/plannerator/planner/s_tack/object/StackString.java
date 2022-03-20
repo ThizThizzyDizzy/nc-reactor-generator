@@ -20,4 +20,8 @@ public class StackString extends StackObject{
     public StackObject duplicate(){
         return new StackString(value);
     }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asString();
+    }
 }

@@ -75,4 +75,8 @@ public class StackVariable extends StackObject{
     public void setValue(StackObject newValue){
         value = newValue;
     }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asVariable();
+    }
 }

@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.s_tack.token.keyword;
 import net.ncplanner.plannerator.planner.s_tack.Script;
-import net.ncplanner.plannerator.planner.s_tack.object.StackString;
+import net.ncplanner.plannerator.planner.s_tack.object.StackType;
 public class TypeKeyword extends Keyword{
     public TypeKeyword(){
         super("type");
@@ -11,6 +11,6 @@ public class TypeKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        script.stack.push(new StackString(script.stack.pop().getBaseType().toString()));
+        script.push(new StackType(script.pop()));
     }
 }

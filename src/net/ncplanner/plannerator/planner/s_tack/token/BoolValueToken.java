@@ -12,10 +12,10 @@ public class BoolValueToken extends Token{
     }
     @Override
     public void load(){
-        value = Boolean.valueOf(text);
+        value = Boolean.parseBoolean(text);
     }
     @Override
     public void run(Script script){
-        script.stack.push(new StackBool(value));
+        script.push(new StackBool(value));
     }
 }

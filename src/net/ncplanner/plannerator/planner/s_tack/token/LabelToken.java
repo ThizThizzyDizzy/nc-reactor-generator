@@ -17,6 +17,6 @@ public class LabelToken extends Token{
     }
     @Override
     public void run(Script script){
-        script.stack.push(new StackLabel(label));
+        script.push(new StackLabel(label));
     }
 }

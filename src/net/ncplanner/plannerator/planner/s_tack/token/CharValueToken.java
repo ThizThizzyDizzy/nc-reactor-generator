@@ -17,6 +17,6 @@ public class CharValueToken extends Token{
     }
     @Override
     public void run(Script script){
-        script.stack.push(new StackChar(value));
+        script.push(new StackChar(value));
     }
 }

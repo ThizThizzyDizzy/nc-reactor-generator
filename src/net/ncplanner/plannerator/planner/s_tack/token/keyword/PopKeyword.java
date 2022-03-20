@@ -10,6 +10,6 @@ public class PopKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        script.stack.pop();
+        script.pop();
     }
 }

@@ -11,7 +11,7 @@ public class ExecKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        StackMethod method = script.stack.pop().asMethod();
+        StackMethod method = script.pop().asMethod();
         script.subscript(method.getValue());
     }
 }

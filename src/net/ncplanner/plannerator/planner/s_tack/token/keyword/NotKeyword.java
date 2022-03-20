@@ -11,6 +11,6 @@ public class NotKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        script.stack.push(new StackBool(!script.stack.pop().asBool().getValue()));
+        script.push(new StackBool(!script.pop().asBool().getValue()));
     }
 }

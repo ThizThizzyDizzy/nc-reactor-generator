@@ -1,13 +1,13 @@
 package net.ncplanner.plannerator.planner.s_tack.token.operator;
 import net.ncplanner.plannerator.planner.s_tack.object.StackInt;
 import net.ncplanner.plannerator.planner.s_tack.object.StackObject;
-public class ArithmeticLeftShiftOperator extends Operator{
-    public ArithmeticLeftShiftOperator(){
+public class LeftShiftOperator extends Operator{
+    public LeftShiftOperator(){
         super("<<");
     }
     @Override
     public Operator newInstance(){
-        return new ArithmeticLeftShiftOperator();
+        return new LeftShiftOperator();
     }
     @Override
     public StackObject evaluate(StackObject v1, StackObject v2){

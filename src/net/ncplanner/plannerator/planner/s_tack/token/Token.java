@@ -21,9 +21,7 @@ public abstract class Token{
         return token;
     }
     public void load(){}
-    public void run(Script script){
-        throw new UnsupportedOperationException("Missing token handling for token "+getClass().getName());
-    }
+    public abstract void run(Script script);
     public Pattern getStartPattern(){
         if(pattern!=null)return pattern;
         return pattern = Pattern.compile("^"+regex);

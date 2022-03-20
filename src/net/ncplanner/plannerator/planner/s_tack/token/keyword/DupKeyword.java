@@ -10,6 +10,6 @@ public class DupKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        script.stack.push(script.stack.peek().duplicate());
+        script.push(script.peek());
     }
 }

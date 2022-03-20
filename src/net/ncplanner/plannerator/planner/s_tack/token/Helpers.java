@@ -31,4 +31,10 @@ public class Helpers{
     
     public static final String line_comment = double_slash+not_eol+"*?"+eol;
     public static final String block_comment = slash_star+not_star+"*\\*(?>"+not_star_slash+not_star+"*\\*+)*/";
+	public static int mod(int a, int b){
+		return (a%b+b)%b;
+	}
+	public static double mod(double a, double b){
+		return (a%b+b)%b;
+	}
 }

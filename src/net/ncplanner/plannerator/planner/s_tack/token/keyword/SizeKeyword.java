@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.s_tack.token.keyword;
 import net.ncplanner.plannerator.planner.s_tack.Script;
 import net.ncplanner.plannerator.planner.s_tack.object.StackInt;
+import net.ncplanner.plannerator.planner.s_tack.object.StackObject;
 public class SizeKeyword extends Keyword{
     public SizeKeyword(){
         super("size");
@@ -11,6 +12,16 @@ public class SizeKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        script.stack.push(new StackInt(script.stack.pop().asCollection().getValue().length));
+        StackObject obj = script.pop();
+        switch(obj.getType()){
+            case BOOL:
+            case CHAR:
+            case FLOAT:
+            case INT:
+            case STRING:
+                script.push(new StackInt(1));
+                return;
+        }
+        script.push(new StackInt(script.pop().asCollection().size()));
     }
 }

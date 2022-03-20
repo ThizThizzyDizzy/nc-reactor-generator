@@ -21,4 +21,8 @@ public class StackMethod extends StackObject{
     public StackObject duplicate(){
         return new StackMethod(value);
     }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asMethod();
+    }
 }

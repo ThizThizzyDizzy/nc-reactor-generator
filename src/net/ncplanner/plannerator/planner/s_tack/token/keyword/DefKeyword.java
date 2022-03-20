@@ -13,8 +13,8 @@ public class DefKeyword extends Keyword{
     }
     @Override
     public void run(Script script){
-        StackObject value = script.stack.pop();
-        StackLabel key = script.stack.pop().asLabel();
+        StackObject value = script.pop();
+        StackLabel key = script.pop().asLabel();
         script.variables.put(key.getValue(), new StackVariable(key.getValue(), value.getBaseObject()));
     }
 }

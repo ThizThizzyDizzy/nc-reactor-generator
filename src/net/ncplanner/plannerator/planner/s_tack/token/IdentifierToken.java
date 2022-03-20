@@ -11,6 +11,6 @@ public class IdentifierToken extends Token{
     }
     @Override
     public void run(Script script){
-        script.stack.push(script.variables.get(text));
+        script.push(script.variables.get(text));
     }
 }
