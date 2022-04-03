@@ -23,11 +23,11 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ScrollableCodeEditor
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
-import net.ncplanner.plannerator.planner.s_tack.Script;
-import net.ncplanner.plannerator.planner.s_tack.StackUnderflowError;
-import net.ncplanner.plannerator.planner.s_tack.object.StackObject;
-import net.ncplanner.plannerator.planner.s_tack.object.StackVariable;
-import net.ncplanner.plannerator.planner.s_tack.token.Token;
+import net.ncplanner.plannerator.planner.dssl.Script;
+import net.ncplanner.plannerator.planner.dssl.StackUnderflowError;
+import net.ncplanner.plannerator.planner.dssl.object.StackObject;
+import net.ncplanner.plannerator.planner.dssl.object.StackVariable;
+import net.ncplanner.plannerator.planner.dssl.token.Token;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuStackEditor extends Menu{
     public Script script = null;

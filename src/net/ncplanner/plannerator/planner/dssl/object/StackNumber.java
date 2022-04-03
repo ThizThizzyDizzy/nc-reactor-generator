@@ -1,0 +1,19 @@
+package net.ncplanner.plannerator.planner.dssl.object;
+public abstract class StackNumber extends StackObject{
+    protected final Number value;
+    public StackNumber(Number value){
+        this.value = value;
+    }
+    @Override
+    public Number getValue(){
+        return value;
+    }
+    @Override
+    public String toString(){
+        return value.toString();
+    }
+    @Override
+    public StackObject cast(StackObject obj){
+        return obj.asNumber();
+    }
+}
