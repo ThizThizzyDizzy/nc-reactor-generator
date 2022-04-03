@@ -1,14 +1,12 @@
-package net.ncplanner.plannerator.multiblock.generator.lite.mutator;
+package net.ncplanner.plannerator.multiblock.generator.lite;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
-import net.ncplanner.plannerator.multiblock.generator.lite.ThingWithSettings;
-import net.ncplanner.plannerator.multiblock.generator.lite.ThingWithVariables;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableLong;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorSubtraction;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingInt;
-public class StageTransition<T extends LiteMultiblock> implements ThingWithSettings, ThingWithVariables{
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingVariable;
+public class Priority<T extends LiteMultiblock> implements ThingWithSettings, ThingWithVariables{
     public Variable[] vars = new Variable[]{new VariableLong("Hits"){
         @Override
         public long getValue(){
@@ -16,7 +14,7 @@ public class StageTransition<T extends LiteMultiblock> implements ThingWithSetti
         }
     }};
     public ArrayList<Condition> conditions = new ArrayList<>();
-    public SettingInt targetStage = new SettingInt("Target Stage", 0);
+    public SettingVariable<Float> operator = new SettingVariable<>("Value", new OperatorSubtraction());
     public long hits;
     @Override
     public int getVariableCount(){
@@ -32,6 +30,6 @@ public class StageTransition<T extends LiteMultiblock> implements ThingWithSetti
     }
     @Override
     public Setting getSetting(int i){
-        return targetStage;
+        return operator;
     }
 }

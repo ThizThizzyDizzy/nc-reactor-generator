@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstFloat;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstInt;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstRandom;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.Constant;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.Operator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorAddition;
@@ -93,6 +94,8 @@ public class SettingVariable<T> implements Setting<Variable<T>>{
         allNames.add("Integer");
         allConsts.add(new ConstFloat(0));
         allNames.add("Float");
+        allConsts.add(new ConstRandom());
+        allNames.add("Random");
         allConsts.add(new OperatorAddition());
         allNames.add("Addition");
         allConsts.add(new OperatorSubtraction());

@@ -391,7 +391,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                         .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
                 draw3D();
                 renderer.popModel();
-                renderer.projection(new Matrix4f().setPerspective(45, gui.getWidth()/gui.getHeight(), 0.1f, 100));
+                renderer.projection(new Matrix4f().setPerspective(45, gui.getWidth()/(float)gui.getHeight(), 0.1f, 100));
             }
         }
     }

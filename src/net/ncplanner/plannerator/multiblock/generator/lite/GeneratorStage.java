@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.mutator.StageTransition;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableLong;
 public class GeneratorStage<T extends LiteMultiblock> implements ThingWithVariables{
@@ -16,6 +15,7 @@ public class GeneratorStage<T extends LiteMultiblock> implements ThingWithVariab
     public long hits = 0;
     public ArrayList<GeneratorMutator<T>> steps = new ArrayList<>();
     public ArrayList<StageTransition<T>> stageTransitions = new ArrayList<>();
+    public ArrayList<Priority<T>> priorities = new ArrayList<>();
     public void run(T multiblock, Random rand){
         hits++;
         STEP:for(GeneratorMutator<T> mutator : steps){

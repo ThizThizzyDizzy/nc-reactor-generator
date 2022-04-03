@@ -386,7 +386,7 @@ public class VRCore{
                     VRFPStracker.remove(0);
                 }
                 glViewport(0, 0, Core.gui.getWidth(), Core.gui.getHeight());
-                renderer.projection(new Matrix4f().setPerspective(45, Core.gui.getWidth()/Core.gui.getHeight(), 0.1f, 100));
+                renderer.projection(new Matrix4f().setPerspective(45, Core.gui.getWidth()/(float)Core.gui.getHeight(), 0.1f, 100));
                 renderer.setWhite();
             }
             @Override

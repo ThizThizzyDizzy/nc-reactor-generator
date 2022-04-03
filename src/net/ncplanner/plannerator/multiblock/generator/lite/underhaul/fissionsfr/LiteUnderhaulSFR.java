@@ -1,7 +1,9 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
+import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomBlockMutator;
@@ -11,12 +13,13 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableFloa
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableInt;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     public final CompiledUnderhaulSFRConfiguration configuration;
     public int[][][] cellEfficiency;
     public int[][][] blockEfficiency;
-    public int[][][] blockActive;
+    public int[][][] blockValid;//not comprehensive, add blockEfficiency to be sure
     public final int[] dims;
     public final int[][][] blocks;
     
@@ -178,6 +181,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         //reset stats
         efficiency = heatMult = powerf = heatf = power = heat = netHeat = cooling = cells = 0;
         blockEfficiency = new int[dims[0]][dims[1]][dims[2]];//probably faster than clearing it manually
+        blockValid = new int[dims[0]][dims[1]][dims[2]];//probably faster than clearing it manually
         cellEfficiency = new int[dims[0]][dims[1]][dims[2]];
         countBlocks();
         calculateCells();
@@ -218,7 +222,12 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             if(x<0||y<0||z<0||x>=dims[0]||y>=dims[1]||z>=dims[2]||blocks[x][y][z]==-1){
                 return 0;//hit casing or air
             }
-            if(endTest[blocks[x][y][z]])return 1;
+            if(endTest[blocks[x][y][z]]){
+                for(int d = 0; d<=dist; d++){
+                    blockValid[x-dx*d][y-dy*d][z-dz*d]++;
+                }
+                return 1;
+            }
             else if(!pathTest[blocks[x][y][z]])return 0;
         }
         return 0;
@@ -329,17 +338,84 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     @Override
     public LiteUnderhaulSFR copy(){
         LiteUnderhaulSFR copy = new LiteUnderhaulSFR(configuration);
-        copy.fuel = fuel;
-        copy.dims[0] = dims[0];
-        copy.dims[1] = dims[1];
-        copy.dims[2] = dims[2];
+        copy.copyFrom(this);
+        return copy;
+    }
+    @Override
+    public void copyFrom(LiteMultiblock<UnderhaulSFR> other){
+        LiteUnderhaulSFR sfr = (LiteUnderhaulSFR)other;
+        fuel = sfr.fuel;
+        dims[0] = sfr.dims[0];;
+        dims[1] = sfr.dims[1];
+        dims[2] = sfr.dims[2];
         for(int x = 0; x<dims[0]; x++){
             for(int y = 0; y<dims[1]; y++){
-                for(int z = 0; z<dims[2]; z++){
-                    copy.blocks[x][y][z] = blocks[x][y][z];
-                }
+                System.arraycopy(sfr.blocks[x][y], 0, blocks[x][y], 0, dims[2]);
             }
         }
-        return copy;
+    }
+    @Override
+    public void copyVarsFrom(LiteMultiblock<UnderhaulSFR> other){
+        LiteUnderhaulSFR sfr = (LiteUnderhaulSFR)other;
+        netHeat = sfr.netHeat;
+        power = sfr.power;
+        heat = sfr.heat;
+        cooling = sfr.cooling;
+        cells = sfr.cells;
+        efficiency = sfr.efficiency;
+        heatMult = sfr.heatMult;
+        blockValid = new int[dims[0]][dims[1]][dims[2]];
+        blockEfficiency = new int[dims[0]][dims[1]][dims[2]];
+        for(int x = 0; x<dims[0]; x++){
+            for(int y = 0; y<dims[1]; y++){
+                System.arraycopy(sfr.blockValid[x][y], 0, blockValid[x][y], 0, dims[2]);
+                System.arraycopy(sfr.blockEfficiency[x][y], 0, blockEfficiency[x][y], 0, dims[2]);
+            }
+        }
+        System.arraycopy(sfr.blockCount, 0, blockCount, 0, blockCount.length);
+    }
+    @Override
+    public UnderhaulSFR export(Configuration config){
+        Fuel fuel = null;
+        for(Fuel f : config.underhaul.fissionSFR.allFuels){
+            if(f.name.equals(configuration.fuelName[this.fuel])){
+                fuel = f;
+                break;
+            }
+        }
+        calculate();
+        UnderhaulSFR sfr = new UnderhaulSFR(config, dims[0], dims[1], dims[2], fuel);
+        sfr.forEachInternalPosition((x, y, z) -> {
+            int block = blocks[x-1][y-1][z-1];
+            if(blockValid[x-1][y-1][z-1]+blockEfficiency[x-1][y-1][z-1]<=0)block = -1;
+            Block bl = null;
+            if(block>=0){
+                for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b : config.underhaul.fissionSFR.allBlocks){
+                    if(b.name.equals(configuration.blockName[block])){
+                        bl = new Block(config, x, y, z, b);
+                        break;
+                    }
+                }
+            }
+            sfr.setBlock(x, y, z, bl);
+        });
+        if(Core.autoBuildCasing)sfr.buildDefaultCasing();
+        return sfr;
+    }
+    @Override
+    public int getDimension(int id){
+        return dims[id];
+    }
+    @Override
+    public Image getBlockTexture(int x, int y, int z){
+        if(blockValid==null||blockEfficiency==null)return null;
+        if(blockValid[x][y][z]+blockEfficiency[x][y][z]<1)return null;
+        int block = blocks[x][y][z];
+        return block>=0?configuration.blockTexture[block]:null;
+    }
+    @Override
+    public float getCubeBounds(int x, int y, int z, int index){
+        if(index<3)return 0;
+        return 1;
     }
 }

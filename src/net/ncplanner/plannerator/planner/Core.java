@@ -434,7 +434,7 @@ public class Core{
         
         glViewport(0, 0, screenWidth, screenHeight);
         
-        if(is3D)renderer.projection(new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100));
+        if(is3D)renderer.projection(new Matrix4f().setPerspective(45, screenWidth/(float)screenHeight, 0.1f, 100));
         else renderer.projection(new Matrix4f().setOrtho(0, screenWidth, screenHeight, 0, 0.1f, 10f));
         
         glDeleteFramebuffers(framebuffer);

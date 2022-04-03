@@ -19,7 +19,7 @@ public class RandomQuantityMutator<T extends LiteMultiblock> extends GeneratorMu
     }
     @Override
     public void run(T multiblock, Random rand){
-        int tries = rand.nextInt(max.get()-min.get())+min.get();
+        int tries = rand.nextInt(max.get()-min.get()+1)+min.get();
         for(int i = 0; i<tries; i++){
             mutator.run(multiblock, rand);
         }
