@@ -199,7 +199,6 @@ public class CompiledUnderhaulSFRConfiguration{
                 coolerCalculationStepIndicies[i][j] = indicies.get(j);
             }
         }
-        System.out.println("Debug line");
     }
     public boolean matches(Configuration config){
         return config!=null

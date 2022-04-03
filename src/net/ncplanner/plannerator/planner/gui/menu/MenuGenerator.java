@@ -27,6 +27,7 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickCondition;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickGeneratorMutator;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickMutator;
@@ -42,6 +43,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     private final Button remThread = add(new Button(0, 0, 64, 48, "-", true, true)).setTooltip("Remove Thread");
     private final Button start = add(new Button(0, 0, 0, 48, "Start", true, true)).setTooltip("Start/Stop generation");
     private final Button delStage = add(new Button(0, 0, 0, 48, "Delete Stage (Hold Shift)", false, true)).setTooltip("Delete this generation stage");
+    private final TextView textView = add(new TextView(0, 48, 0, 0, 24, 24));
     private final SingleColumnList stageSettings = add(new SingleColumnList(0, 48, 0, 0, 24));
     public final LiteGenerator<T> generator;
     private float setScrollTo = -1;
@@ -199,7 +201,8 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         remThread.enabled = threads>1;
         start.text = (running?"Stop":"Start")+" "+threads+" Thread"+(threads==1?"":"s");
         delStage.enabled = generator.stages.size()>1&&Core.isShiftPressed();
-        stageSettings.width = delStage.width = done.width = gui.getWidth()/4;
+        textView.width = stageSettings.width = delStage.width = done.width = gui.getWidth()/4;
+        textView.height = gui.getHeight()-textView.y;
         stageSettings.x = delStage.x = prevStage.x = gui.getWidth()*3/4;
         nextStage.x = gui.getWidth()-nextStage.width;
         addStage.x = prevStage.x+prevStage.width;
@@ -347,6 +350,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             generator.run(mb, rand, multiblock, priorityMultiblock, (t) -> {
                 multiblock.copyFrom(t);
                 multiblock.copyVarsFrom(t);
+                textView.setText(multiblock.getTooltip());
             });
         });
     }
