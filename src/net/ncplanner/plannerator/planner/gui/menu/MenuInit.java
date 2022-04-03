@@ -221,7 +221,8 @@ public class MenuInit extends Menu{
                     gui.open(new MenuTutorial(gui, gui.menu));
                     Core.tutorialShown = true;
                 }
-                gui.open(new MenuMain(gui));
+//                gui.open(new MenuMain(gui));
+                gui.open(new MenuStackEditor(gui, new MenuMain(gui)));
             }
             if(baseDialog!=null){
                 baseDialog.parent = gui.menu;

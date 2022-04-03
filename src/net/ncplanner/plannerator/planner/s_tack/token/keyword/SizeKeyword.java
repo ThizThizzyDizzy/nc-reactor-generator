@@ -22,6 +22,6 @@ public class SizeKeyword extends Keyword{
                 script.push(new StackInt(1));
                 return;
         }
-        script.push(new StackInt(script.pop().asCollection().size()));
+        script.push(new StackInt(obj.asCollection().size()));
     }
 }

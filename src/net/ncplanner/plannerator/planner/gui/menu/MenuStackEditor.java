@@ -278,7 +278,7 @@ public class MenuStackEditor extends Menu{
                 String allTheText = "";
                 String line;
                 while((line = reader.readLine())!=null){
-                    allTheText+="\n"+line;
+                    allTheText+="\n"+line.replace("\t", " ");//TODO adjustable number of spaces
                 }
                 gui.open(new MenuStackEditor(gui, parent, f, allTheText.substring(1)));
             }catch(IOException ex){

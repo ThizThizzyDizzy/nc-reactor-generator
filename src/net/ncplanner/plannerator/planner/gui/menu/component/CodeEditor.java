@@ -185,24 +185,26 @@ public class CodeEditor extends Component{
                     int pos = token.start;
                     while(pos>0){
                         startX++;
-                        if(startX>=text.get(startY).length()){
+                        String txt = text.get(startY);
+                        if(startX>=txt.length()){
                             startY++;
                             startX = 0;
                             pos--;
                         }
-                        pos--;
+                        if(!txt.isEmpty())pos--;
                     }
                     int endX = startX;
                     int endY = startY;
                     pos = token.text.length();
                     while(pos>0){
                         endX++;
-                        if(endX>=text.get(endY).length()){
+                        String txt = text.get(endY);
+                        if(endX>=txt.length()){
                             endY++;
                             endX = 0;
                             pos--;
                         }
-                        pos--;
+                        if(!txt.isEmpty())pos--;
                     }
                     for(int Y = startY; Y<=endY; Y++){
                         if(text.size()<=Y)continue;
@@ -230,24 +232,26 @@ public class CodeEditor extends Component{
                 int pos = token.start;
                 while(pos>0){
                     startX++;
-                    if(startX>=text.get(startY).length()){
+                    String txt = text.get(startY);
+                    if(startX>=txt.length()){
                         startY++;
                         startX = 0;
                         pos--;
                     }
-                    pos--;
+                    if(!txt.isEmpty())pos--;
                 }
                 int endX = startX;
                 int endY = startY;
                 pos = token.text.length();
                 while(pos>0){
                     endX++;
-                    if(endX>=text.get(endY).length()){
+                    String txt = text.get(endY);
+                    if(endX>=txt.length()){
                         endY++;
                         endX = 0;
                         pos--;
                     }
-                    pos--;
+                    if(!txt.isEmpty())pos--;
                 }
                 for(int Y = startY; Y<=endY; Y++){
                     if(text.size()<=Y)continue;
@@ -259,9 +263,9 @@ public class CodeEditor extends Component{
                     if(Y==startY)left += startX*textWidth;
                     renderer.fillRect(left, top, right, bottom);
                 }
-                if(menu.debug){
-                    cursorX = startX;
-                    cursorY = startY;
+                if(menu.debug&&(startX!=lastDebugX||startY!=lastDebugY)){
+                    lastDebugX = cursorX = startX;
+                    lastDebugY = cursorY = startY;
                     updateCursor();
                 }
             }
@@ -277,6 +281,7 @@ public class CodeEditor extends Component{
         renderer.setWhite();
         renderer.resetFont();
     }
+    private int lastDebugX = -1, lastDebugY = -1;
     @Override
     public void onMouseButton(double x, double y, int button, int action, int mods){
         ArrayList<FormattedText> lines = textDisplay.splitLines();
