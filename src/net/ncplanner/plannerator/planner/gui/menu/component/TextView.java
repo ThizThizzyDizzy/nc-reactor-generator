@@ -56,7 +56,7 @@ public class TextView extends Scrollable{
     }
     public void setText(String s){
         ArrayList<FormattedText> newText = new ArrayList<>();
-        String[] strs = s.split("\n");
+        String[] strs = s.split("\n", -1);
         for(String str : strs)newText.add(new FormattedText(str));
         text = newText;
     }

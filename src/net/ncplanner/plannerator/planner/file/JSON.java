@@ -184,6 +184,21 @@ public class JSON{
                         }
                         if(!yay)throw new IOException("Failed to parse JSON file: Unknown entry - "+sub(json, 25)+"...");
                         put(key.replace("\\\"", "\""), false);
+                    }else if(json.peek()=='n'){
+                        boolean yay = false;
+                        json.dequeue();
+                        if(json.peek()=='u'){
+                            json.dequeue();
+                            if(json.peek()=='l'){
+                                json.dequeue();
+                                if(json.peek()=='l'){
+                                    json.dequeue();
+                                    yay = true;
+                                }
+                            }
+                        }
+                        if(!yay)throw new IOException("Failed to parse JSON file: Unknown entry - "+sub(json, 25)+"...");
+                        put(key.replace("\\\"", "\""), null);
                     }else{
                         throw new IOException("Failed to parse JSON file: Unknown entry - "+sub(json,25)+"...");
                     }
@@ -403,10 +418,74 @@ public class JSON{
                     if(!yay)throw new IOException("Failed to parse JSON file: Unknown entry - "+sub(json, 25)+"...");
                     add(false);
                     if(debug)System.out.println("Found new item: false");
+                }else if(json.peek()=='n'){
+                    boolean yay = false;
+                    json.dequeue();
+                    if(json.peek()=='u'){
+                        json.dequeue();
+                        if(json.peek()=='l'){
+                            json.dequeue();
+                            if(json.peek()=='l'){
+                                json.dequeue();
+                                yay = true;
+                            }
+                        }
+                    }
+                    if(!yay)throw new IOException("Failed to parse JSON file: Unknown entry - "+sub(json, 25)+"...");
+                    add(null);
+                    if(debug)System.out.println("Found new item: null");
                 }else{
                     throw new IOException("Failed to parse JSON file: Unknown entry - "+sub(json,25)+"...");
                 }
             }
+        }
+        public JSONObject getJSONObject(int i){
+            Object o = get(i);
+            if(o==null)return null;
+            if(o instanceof JSONObject)return (JSONObject)o;
+            return null;
+        }
+        public JSONArray getJSONArray(int i){
+            Object o = get(i);
+            if(o==null)return null;
+            if(o instanceof JSONArray)return (JSONArray)o;
+            return null;
+        }
+        public String getString(int i){
+            Object o = get(i);
+            if(o==null)return null;
+            if(o instanceof String)return (String)o;
+            return null;
+        }
+        public Boolean getBoolean(int i){
+            Object o = get(i);
+            if(o==null)return null;
+            if(o instanceof Boolean)return (Boolean)o;
+            return null;
+        }
+        public Double getDouble(int i){
+            Object o = get(i);
+            if(o==null)return null;
+            if(o instanceof Number)return ((Number)o).doubleValue();
+            return null;
+        }
+        public Float getFloat(int i){
+            Object o = get(i);
+            if(o==null)return null;
+            if(o instanceof Number)return ((Number)o).floatValue();
+            return null;
+        }
+        public Integer getInt(int i){
+            Object o = get(i);
+            if(o==null)return null;
+            if(o instanceof Number)return ((Number)o).intValue();
+            return null;
+        }
+        public Long getLong(int i){
+            Object o = get(i);
+            if(o==null)return null;
+            if(o instanceof Number)return ((Number)o).longValue();
+            return null;
         }
         private String write(){
             String json = "[";

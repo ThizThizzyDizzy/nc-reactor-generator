@@ -3,22 +3,28 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.dssl.Script;
 import net.ncplanner.plannerator.planner.dssl.StackUnderflowError;
 import net.ncplanner.plannerator.planner.dssl.object.StackObject;
 import net.ncplanner.plannerator.planner.dssl.object.StackVariable;
 import net.ncplanner.plannerator.planner.dssl.token.Token;
 import net.ncplanner.plannerator.planner.file.FileFormat;
+import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -28,6 +34,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ScrollableCodeEditor
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuStackEditor extends Menu{
     public Script script = null;
@@ -49,6 +56,7 @@ public class MenuStackEditor extends Menu{
     private boolean unsavedChanges = false;
     private double saved = 0;
     public boolean debug;
+    private boolean testing;
     public MenuStackEditor(GUI gui, Menu parent){
         this(gui, parent, null, "");
     }
@@ -68,9 +76,10 @@ public class MenuStackEditor extends Menu{
                 return;
             }
             if(script==null||script.isFinished())createScript(Core.isShiftPressed());
-            if(Core.isControlPressed()){
+            if(Core.isControlPressed()&&Core.isShiftPressed()){
                 autostep = true;
             }else{
+                autostep = false;
                 ArrayList<Token> breakpoints = new ArrayList<>();
                 for(Token token : script.script){
                     int startX = 0;
@@ -109,6 +118,76 @@ public class MenuStackEditor extends Menu{
             }
         });
         step.addAction(() -> {
+            if((Core.isShiftPressed()||Core.isControlPressed())){
+                if(script!=null&&!script.isFinished())script.halt();
+                else{
+                    if(!testing){
+                        testing = true;
+                        output.setText("Preparing for DSSL test\n");
+                        new Thread(() -> {
+                            JSON.JSONObject api = JSON.parse(Main.getRemoteInputStream("https://api.github.com/repos/tomdodd4598/Dodd-Simple-Stack-Language/releases/latest"));
+                            String name = api.getJSONArray("assets").getJSONObject(0).getString("name");
+                            File dssl = new File(name);
+                            if(!dssl.exists()){
+                                output.addText("Downloading "+name+"\n");
+                                Main.downloadFile(api.getJSONArray("assets").getJSONObject(0).getString("browser_download_url"), dssl);
+                            }
+                            output.addText("Preparing file...\n");
+                            File scrpt = new File("internal_test.dssl");
+                            if(scrpt.exists())scrpt.delete();
+                            try{
+                                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(scrpt)))) {
+                                    for(String s : editor.editor.text)writer.write(s+"\n");
+                                }
+                                output.setText("== BEGIN DSSL EXECUTION ==\n");
+                                Process p = Main.startJava(new String[0], new String[]{scrpt.getAbsolutePath()}, dssl);
+                                new Thread("Script output"){
+                                    public void run(){
+                                        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                                        try{
+                                            while(p.isAlive()){
+                                                int read = in.read();
+                                                if(read==-1){
+                                                    Thread.sleep(1);
+                                                    continue;
+                                                }
+                                                char c = (char)read;
+                                                output.addText(c+"");
+                                            }
+                                            output.addText("== END DSSL EXECUTION ==");
+                                            testing = false;
+                                            scrpt.delete();
+                                        }catch(IOException | InterruptedException ex){
+                                            throw new RuntimeException(ex);
+                                        }
+                                    }
+                                }.start();
+                                new Thread("Script error output"){
+                                    public void run(){
+                                        BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                                        try{
+                                            while(p.isAlive()){
+                                                int read = in.read();
+                                                if(read==-1){
+                                                    Thread.sleep(1);
+                                                    continue;
+                                                }
+                                                char c = (char)read;
+                                                output.addText(c+"");
+                                            }
+                                        }catch(IOException | InterruptedException ex){
+                                            throw new RuntimeException(ex);
+                                        }
+                                    }
+                                }.start();
+                            }catch(URISyntaxException | IOException ex){
+                                throw new RuntimeException(ex);
+                            }
+                        }).start();
+                    }
+                }
+                return;
+            }
             if(scriptThread!=null)return;
             autostep = false;
             if(script==null||script.isFinished())createScript(true);
@@ -135,10 +214,12 @@ public class MenuStackEditor extends Menu{
         if(saved>0)saved = Math.max(0, saved-deltaTime*20);
         Renderer renderer = new Renderer();
         renderer.setWhite();
-        run.text = scriptThread==null?(Core.isShiftPressed()?"Debug":"Run"):"Halt";
+        run.text = (Core.isShiftPressed()?"Debug"+(Core.isControlPressed()?" (Autostep)":""):"Run");
+        step.text = script!=null&&!script.isFinished()&&(Core.isShiftPressed()||Core.isControlPressed())?"Halt":((Core.isShiftPressed()||Core.isControlPressed())?"Test":"Step");
         if(script!=null&&!script.isFinished()){
             run.text = debug?"Continue":"Running...";
         }
+        if(scriptThread!=null)run.text = "Halt";
         run.x = done.width;
         step.x = gui.getWidth()-step.width;
         run.width = step.x-run.x;
@@ -165,22 +246,26 @@ public class MenuStackEditor extends Menu{
         script = new Script(new Stack<StackObject>(){
             @Override
             public StackObject push(StackObject obj){
-                ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
-                components.add(new Label(0, 0, 100, 20, obj.toString().replace("\n", "\\n"), components.size()%2==0){
-                    @Override
-                    public void drawText(Renderer renderer){
-                        renderer.drawCenteredText(x, y, x+width, y+height, text);
-                    }
-                });
-                stackDisplay.components = components;
+                if(debug){
+                    ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
+                    components.add(new Label(0, 0, 100, 20, obj.toString().replace("\n", "\\n"), components.size()%2==0){
+                        @Override
+                        public void drawText(Renderer renderer){
+                            renderer.drawCenteredText(x, y, x+width, y+height, text);
+                        }
+                    });
+                    stackDisplay.components = components;
+                }
                 return super.push(obj);
             }
             @Override
             public StackObject pop(){
                 if(isEmpty())throw new StackUnderflowError();
-                ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
-                components.remove(components.get(components.size()-1));
-                stackDisplay.components = components;
+                if(debug){
+                    ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
+                    components.remove(components.get(components.size()-1));
+                    stackDisplay.components = components;
+                }
                 return super.pop();
             }
         }, new HashMap<String, StackVariable>(), editor.getText(), (str) -> {

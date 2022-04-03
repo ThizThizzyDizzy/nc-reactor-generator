@@ -393,6 +393,28 @@ public class Main{
         }
         return is[0];
     }
+    public static InputStream getRemoteInputStream(String link){
+        try {
+            URL url = new URL(link);
+            URLConnection connection = url.openConnection();
+            connection.setDefaultUseCaches(false);
+            if ((connection instanceof HttpURLConnection)) {
+                ((HttpURLConnection)connection).setRequestMethod("HEAD");
+                int code = ((HttpURLConnection)connection).getResponseCode();
+                if (code / 100 == 3) {
+                    return null;
+                }
+            }
+            URLConnection urlconnection = url.openConnection();
+            if ((urlconnection instanceof HttpURLConnection)) {
+                urlconnection.setRequestProperty("Cache-Control", "no-cache");
+                urlconnection.connect();
+            }
+            return getRemoteInputStream(null, urlconnection);
+        }catch (Exception ex){
+            return null;
+        }
+    }
     /**
      * Restarts the program.  This method will return normally if the program was properly restarted or throw an exception if it could not be restarted.
      * @param vmArgs The VM arguments for the new instance
