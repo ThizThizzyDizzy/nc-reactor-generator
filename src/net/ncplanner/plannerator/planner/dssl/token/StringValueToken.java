@@ -13,7 +13,16 @@ public class StringValueToken extends Token{
     }
     @Override
     public void load(){
-        value = text.substring(1, text.length()-1);
+        String txt = text;
+        txt = txt.replace("\\t", "\t");
+        txt = txt.replace("\\b", "\b");
+        txt = txt.replace("\\n", "\n");
+        txt = txt.replace("\\r", "\r");
+        txt = txt.replace("\\f", "\f");
+        txt = txt.replace("\\'", "\'");
+        txt = txt.replace("\\\"", "\"");
+        txt = txt.replace("\\\\", "\\");
+        value = txt.substring(1, txt.length()-1);
     }
     @Override
     public void run(Script script){
