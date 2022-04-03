@@ -193,6 +193,13 @@ public class Script{
     public StackObject pop(){
         return stack.pop();
     }
+    public StackObject[] pop(int count){
+        StackObject[] objs = new StackObject[count];
+        for(int i = 0; i<count; i++){
+            objs[count-i-1] = pop();
+        }
+        return objs;
+    }
     public void push(StackObject obj){
         stack.push(obj);
     }
