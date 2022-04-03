@@ -166,7 +166,7 @@ public class MenuStackEditor extends Menu{
             @Override
             public StackObject push(StackObject obj){
                 ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
-                components.add(new Label(0, 0, 100, 20, obj.toString(), components.size()%2==0){
+                components.add(new Label(0, 0, 100, 20, obj.toString().replace("\n", "\\n"), components.size()%2==0){
                     @Override
                     public void drawText(Renderer renderer){
                         renderer.drawCenteredText(x, y, x+width, y+height, text);
@@ -208,7 +208,7 @@ public class MenuStackEditor extends Menu{
                 }
                 str = str.replaceFirst("\\$\\$LINE\\{\\d+\\}", startY+1+"");
             }
-            output.addText(str+"\n");
+            output.addText(str);
             output.drawBackground(0);
             output.scrollVert(output.height);
         }){
@@ -231,7 +231,7 @@ public class MenuStackEditor extends Menu{
                         comps.add(new Label(0, 0, 100, 20, var, comps.size()%2==0){
                             @Override
                             public void drawText(Renderer renderer){
-                                renderer.drawCenteredText(x, y, x+width, y+height, vars.get(var).toString());
+                                renderer.drawCenteredText(x, y, x+width, y+height, vars.get(var).toString().replace("\n", "\\n"));
                             }
                         });
                         variablesDisplay.components = comps;
