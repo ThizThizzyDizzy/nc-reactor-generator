@@ -209,9 +209,12 @@ public class Script{
         repeating = 0;
     }
     public void loopSubscript(Script script){
-        repeatSubscript(script, -1);
+        subscripts.enqueue(-1);
+        subscript(script);
     }
     public void repeatSubscript(Script script, int repeats){
+        if(repeats==0)return;
+        if(repeats<0)throw new IllegalArgumentException("Cannot repeat something a negative number of times!");
         subscripts.enqueue(repeats-1);
         subscript(script);
     }
