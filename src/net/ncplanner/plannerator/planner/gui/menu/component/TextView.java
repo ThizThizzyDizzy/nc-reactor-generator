@@ -76,7 +76,7 @@ public class TextView extends Scrollable{
         text = newText;
     }
     public void addText(FormattedText formattedText){
-        ArrayList<FormattedText> newText = new ArrayList<>();
+        ArrayList<FormattedText> newText = new ArrayList<>(text);
         newText.addAll(formattedText.split("\n"));
         text = newText;
     }

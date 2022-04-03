@@ -3,9 +3,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
@@ -13,10 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.dssl.Script;
 import net.ncplanner.plannerator.planner.dssl.StackUnderflowError;
@@ -34,7 +33,6 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ScrollableCodeEditor
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuStackEditor extends Menu{
     public Script script = null;
@@ -57,6 +55,7 @@ public class MenuStackEditor extends Menu{
     private double saved = 0;
     public boolean debug;
     private boolean testing;
+    private boolean firstRun = true;
     public MenuStackEditor(GUI gui, Menu parent){
         this(gui, parent, null, "");
     }
@@ -106,11 +105,13 @@ public class MenuStackEditor extends Menu{
                 }
                 scriptThread = new Thread(() -> {
                     RuntimeException e = null;
+                    long tim = System.nanoTime();
                     try{
                         script.run(debug?breakpoints:null);
                     }catch(Exception ex){
                         e = new RuntimeException(ex);
                     }
+                    if(!debug)output.addText(new FormattedText("\nTime: "+(System.nanoTime()-tim)/1000000+"ms", Core.theme.getCodeCommentTextColor()));
                     scriptThread = null;
                     if(e!=null)throw(e);
                 });
@@ -125,21 +126,33 @@ public class MenuStackEditor extends Menu{
                         testing = true;
                         output.setText("Preparing for DSSL test\n");
                         new Thread(() -> {
-                            JSON.JSONObject api = JSON.parse(Main.getRemoteInputStream("https://api.github.com/repos/tomdodd4598/Dodd-Simple-Stack-Language/releases/latest"));
-                            String name = api.getJSONArray("assets").getJSONObject(0).getString("name");
-                            File dssl = new File(name);
-                            if(!dssl.exists()){
-                                output.addText("Downloading "+name+"\n");
-                                Main.downloadFile(api.getJSONArray("assets").getJSONObject(0).getString("browser_download_url"), dssl);
-                            }
-                            output.addText("Preparing file...\n");
-                            File scrpt = new File("internal_test.dssl");
-                            if(scrpt.exists())scrpt.delete();
                             try{
+                                File dssl = new File("dssl.jar");
+                                if(!dssl.exists()||firstRun){
+                                    firstRun = false;
+                                    InputStream stream = Main.getRemoteInputStream("https://api.github.com/repos/tomdodd4598/Dodd-Simple-Stack-Language/releases/latest");
+                                    if(stream==null){
+                                        output.addText("Failed to get release data from github!\n");
+                                        if(!dssl.exists()){
+                                            output.addText("Please download the latest DSSL (Dodd Simple Stack Language), name it dssl.jar, and put it in the same fulder as this planner.");
+                                            return;
+                                        }
+                                    }else{
+                                        JSON.JSONObject api = JSON.parse(stream);
+                                        String name = api.getJSONArray("assets").getJSONObject(0).getString("name");
+                                        dssl.delete();
+                                        output.addText("Downloading "+name+"\n");
+                                        Main.downloadFile(api.getJSONArray("assets").getJSONObject(0).getString("browser_download_url"), dssl);
+                                    }
+                                }
+                                output.addText("Preparing file...\n");
+                                File scrpt = new File("internal_test.dssl");
+                                if(scrpt.exists())scrpt.delete();
                                 try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(scrpt)))) {
                                     for(String s : editor.editor.text)writer.write(s+"\n");
                                 }
                                 output.setText("== BEGIN DSSL EXECUTION ==\n");
+                                long tim = System.nanoTime();
                                 Process p = Main.startJava(new String[0], new String[]{scrpt.getAbsolutePath()}, dssl);
                                 new Thread("Script output"){
                                     public void run(){
@@ -154,7 +167,8 @@ public class MenuStackEditor extends Menu{
                                                 char c = (char)read;
                                                 output.addText(c+"");
                                             }
-                                            output.addText("== END DSSL EXECUTION ==");
+                                            output.addText("== END DSSL EXECUTION ==\n");
+                                            output.addText(new FormattedText("\nTime: "+(System.nanoTime()-tim)/1000000+"ms", Core.theme.getCodeCommentTextColor()));
                                             testing = false;
                                             scrpt.delete();
                                         }catch(IOException | InterruptedException ex){
@@ -180,7 +194,8 @@ public class MenuStackEditor extends Menu{
                                         }
                                     }
                                 }.start();
-                            }catch(URISyntaxException | IOException ex){
+                            }catch(Exception ex){
+                                testing = false;
                                 throw new RuntimeException(ex);
                             }
                         }).start();
