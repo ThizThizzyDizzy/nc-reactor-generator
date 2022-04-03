@@ -229,7 +229,7 @@ public class MenuInit extends Menu{
                 gui.menu = dialog;
             }
             System.out.println("Downloading patrons list...");
-            File file = new File("patrons.txt");
+            File file = new File("patrons-list.txt");
             file.delete();
             Main.downloadFile(MenuCredits.patronsLink, file.getAbsoluteFile());
             ArrayList<String> patrons = new ArrayList<>();
