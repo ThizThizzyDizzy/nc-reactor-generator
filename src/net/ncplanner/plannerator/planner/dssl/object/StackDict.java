@@ -80,7 +80,7 @@ public class StackDict extends StackCollection<HashMap<StackObject, StackObject>
     }
     @Override
     public StackObject get(StackObject elem){
-        return value.get(elem);
+        return value.get(elem.getBaseObject());
     }
     @Override
     public void putAll(StackObject elem){

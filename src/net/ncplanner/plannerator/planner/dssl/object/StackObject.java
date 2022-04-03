@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.dssl.object;
+import java.util.Objects;
 import net.ncplanner.plannerator.planner.dssl.Script;
 public abstract class StackObject{
     public abstract Type getType();
@@ -21,6 +22,11 @@ public abstract class StackObject{
     }
     public StackObject cast(StackObject obj){
         throw new IllegalArgumentException("Can't cast to that!");
+    }
+    @Override
+    public int hashCode(){
+        int hash = 7;
+        return hash;
     }
     public static enum Type{
         INT,FLOAT,CHAR,BOOL,STRING,FUNCTION,VAR,LABEL,COLLECTION,LBRACKET,RBRACKET,NULL,TYPE,FLOW;
@@ -79,5 +85,12 @@ public abstract class StackObject{
     }
     public StackFlow asFlow(){
         return (StackFlow)this;
+    }
+    @Override
+    public boolean equals(Object obj){
+        if(obj instanceof StackObject){
+            return getBaseType().equals(((StackObject)obj).getBaseType())&&Objects.equals(getBaseValue(), ((StackObject)obj).getBaseValue());
+        }
+        return false;
     }
 }
