@@ -249,7 +249,7 @@ public class Core{
         gui.initInput();
         while(!glfwWindowShouldClose(window)){
             Matrix4f orthoProjection = new Matrix4f().setOrtho(0, screenWidth, screenHeight, 0, 0.1f, 10f);//new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
-            Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, screenWidth/Math.max(1,screenHeight), 0.1f, 100);
+            Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, screenWidth/Math.max(1f,screenHeight), 0.1f, 100);
             Color color = theme.getMenuBackgroundColor();
             glClearColor(0, 0, 0, 0);
             glStencilMask(0xff);
