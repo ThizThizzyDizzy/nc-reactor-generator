@@ -212,7 +212,7 @@ public class Script{
         repeatSubscript(script, -1);
     }
     public void repeatSubscript(Script script, int repeats){
-        subscripts.enqueue(repeats);
+        subscripts.enqueue(repeats-1);
         subscript(script);
     }
     public void foreachMarker(){
