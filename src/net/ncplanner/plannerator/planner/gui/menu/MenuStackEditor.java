@@ -111,7 +111,7 @@ public class MenuStackEditor extends Menu{
                     }catch(Exception ex){
                         e = new RuntimeException(ex);
                     }
-                    if(!debug)output.addText(new FormattedText("\nTime: "+(System.nanoTime()-tim)/1000000+"ms", Core.theme.getCodeCommentTextColor()));
+                    if(!debug)output.addText(new FormattedText("Time: "+(System.nanoTime()-tim)/1000000+"ms", Core.theme.getCodeCommentTextColor()));
                     scriptThread = null;
                     if(e!=null)throw(e);
                 });
@@ -168,7 +168,7 @@ public class MenuStackEditor extends Menu{
                                                 output.addText(c+"");
                                             }
                                             output.addText("== END DSSL EXECUTION ==\n");
-                                            output.addText(new FormattedText("\nTime: "+(System.nanoTime()-tim)/1000000+"ms", Core.theme.getCodeCommentTextColor()));
+                                            output.addText(new FormattedText("Time: "+(System.nanoTime()-tim)/1000000+"ms", Core.theme.getCodeCommentTextColor()));
                                             testing = false;
                                             scrpt.delete();
                                         }catch(IOException | InterruptedException ex){
