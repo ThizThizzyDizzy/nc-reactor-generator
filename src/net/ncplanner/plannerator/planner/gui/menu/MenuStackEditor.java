@@ -13,6 +13,11 @@ import java.util.HashMap;
 import java.util.Stack;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.dssl.Script;
+import net.ncplanner.plannerator.planner.dssl.StackUnderflowError;
+import net.ncplanner.plannerator.planner.dssl.object.StackObject;
+import net.ncplanner.plannerator.planner.dssl.object.StackVariable;
+import net.ncplanner.plannerator.planner.dssl.token.Token;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -23,11 +28,6 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ScrollableCodeEditor
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
-import net.ncplanner.plannerator.planner.dssl.Script;
-import net.ncplanner.plannerator.planner.dssl.StackUnderflowError;
-import net.ncplanner.plannerator.planner.dssl.object.StackObject;
-import net.ncplanner.plannerator.planner.dssl.object.StackVariable;
-import net.ncplanner.plannerator.planner.dssl.token.Token;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuStackEditor extends Menu{
     public Script script = null;
@@ -78,12 +78,13 @@ public class MenuStackEditor extends Menu{
                     int pos = token.start;
                     while(pos>0){
                         startX++;
-                        if(startX>=editor.editor.text.get(startY).length()){
+                        String txt = editor.editor.text.get(startY);
+                        if(startX>=txt.length()){
                             startY++;
                             startX = 0;
                             pos--;
                         }
-                        pos--;
+                        if(!txt.isEmpty())pos--;
                     }
                     int lineStartX = 0;
                     for(char c : editor.editor.text.get(startY).toCharArray()){
