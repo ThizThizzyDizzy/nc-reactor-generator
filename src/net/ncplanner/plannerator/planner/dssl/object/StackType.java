@@ -24,4 +24,8 @@ public class StackType extends StackObject{
     public StackObject cast(StackObject obj){
         return obj.asType();
     }
+    @Override
+    public StackString asString(){
+        return new StackString(internal.getTypeString());
+    }
 }
