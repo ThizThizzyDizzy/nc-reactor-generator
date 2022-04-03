@@ -8,6 +8,8 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.Ope
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorAddition;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorDivision;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorFloor;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMaximum;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMinimum;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMultiplication;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorSubtraction;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
@@ -99,6 +101,10 @@ public class SettingVariable<T> implements Setting<Variable<T>>{
         allNames.add("Multiplication");
         allConsts.add(new OperatorDivision());
         allNames.add("Division");
+        allConsts.add(new OperatorMinimum());
+        allNames.add("Minimum");
+        allConsts.add(new OperatorMaximum());
+        allNames.add("Maximum");
         allConsts.add(new OperatorFloor());
         allNames.add("Floor");
         ArrayList<Variable<T>> constants = new ArrayList<>();
