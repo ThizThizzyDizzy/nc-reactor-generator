@@ -352,9 +352,9 @@ public class MenuStackEditor extends Menu{
             try{
                 Core.createFileChooser(saveFile, (t) -> {
                     if(t.getName().contains("."))saveFile = t;
-                    else saveFile = new File(t.getAbsolutePath()+".stack");
+                    else saveFile = new File(t.getAbsolutePath()+".dssl");
                     save(false);
-                }, FileFormat.STACK, "stack");
+                }, FileFormat.DSSL, "dssl");
             }catch(IOException ex){
                 throw new RuntimeException("Failed to save script!", ex);
             }

@@ -5,7 +5,7 @@ public enum FileFormat{
     NCPF("NCPF", "NuclearCraft Planner File", "ncpf"),
     ALL_PLANNER_FORMATS("NuclearCraft Planner File", "NuclearCraft Planner File", "ncpf", "json"),
     ALL_CONFIGURATION_FORMATS("NuclearCraft Configuration File", "NuclearCraft Configuration File", "ncpf", "cfg"),//TODO hellrage .json
-    STACK("S'tack", "S'tack Script File", "stack");
+    DSSL("S'tack", "Dodd Simple S'tack Language Script File", "dssl");
     public final String name;
     public final String description;
     public final String[] extensions;
