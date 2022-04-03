@@ -24,7 +24,7 @@ public class RangeKeyword extends Keyword{
             }
             ArrayList<StackObject> flipped = new ArrayList<>();
             while(!elems.isEmpty())flipped.add(elems.pop());
-            script.push(new StackRange(elems));
+            script.push(new StackRange(flipped));
         }else script.push(elem.asRange());
     }
 }
