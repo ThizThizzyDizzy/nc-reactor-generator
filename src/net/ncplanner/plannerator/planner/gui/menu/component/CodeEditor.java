@@ -1,13 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-import net.ncplanner.plannerator.planner.gui.Component;
-import net.ncplanner.plannerator.planner.gui.menu.MenuStackEditor;
 import net.ncplanner.plannerator.planner.dssl.Script;
 import net.ncplanner.plannerator.planner.dssl.Tokenizer;
 import net.ncplanner.plannerator.planner.dssl.token.BoolValueToken;
@@ -22,6 +19,8 @@ import net.ncplanner.plannerator.planner.dssl.token.StringValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.Token;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.dssl.token.operator.Operator;
+import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.menu.MenuStackEditor;
 import static org.lwjgl.glfw.GLFW.*;
 public class CodeEditor extends Component{
     public ArrayList<String> text = new ArrayList<String>(){

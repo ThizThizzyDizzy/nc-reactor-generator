@@ -128,7 +128,7 @@ public class Script{
         try{
             token.run(this);
         }catch(Throwable t){
-            print("--EXECUTION CRASHED--\n"+t.getClass().getName()+":\n"+t.getMessage());
+            print("--EXECUTION CRASHED-- P:"+pos+" C:"+token.start+" L:$$LINE{"+token.start+"}"+"\n"+t.getClass().getName()+":\n"+t.getMessage());
             halt();
             for(StackTraceElement ste : t.getStackTrace())print(ste.toString());
             return;

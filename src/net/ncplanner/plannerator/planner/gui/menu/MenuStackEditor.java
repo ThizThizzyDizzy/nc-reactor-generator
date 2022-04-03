@@ -184,6 +184,30 @@ public class MenuStackEditor extends Menu{
                 return super.pop();
             }
         }, new HashMap<String, StackVariable>(), editor.getText(), (str) -> {
+            while(str.contains("$$LINE")){
+                String s = str.substring(str.indexOf("$$LINE")+7);
+                String num = "";
+                for(int i = 0; i<s.length(); i++){
+                    char c = s.charAt(i);
+                    if(!Character.isDigit(c))break;
+                    num+=c;
+                }
+                int c = Integer.parseInt(num);
+                int startX = 0;
+                int startY = 0;
+                int pos = c;
+                while(pos>0){
+                    startX++;
+                    String txt = editor.editor.text.get(startY);
+                    if(startX>=txt.length()){
+                        startY++;
+                        startX = 0;
+                        pos--;
+                    }
+                    if(!txt.isEmpty())pos--;
+                }
+                str = str.replaceFirst("\\$\\$LINE\\{\\d+\\}", startY+1+"");
+            }
             output.addText(str+"\n");
             output.drawBackground(0);
             output.scrollVert(output.height);
