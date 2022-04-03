@@ -173,6 +173,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             }
         }while(somethingChanged>0&&configuration.hasRecursiveRules);
     }
+    @Override
     public void calculate(){
         //reset stats
         efficiency = heatMult = powerf = heatf = power = heat = netHeat = cooling = cells = 0;
@@ -214,8 +215,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             x+=dx;
             y+=dy;
             z+=dz;
-            if(x<0||y<0||z<0||x>=dims[0]||y>=dims[1]||z>=dims[2]){
-                return 0;//hit casing
+            if(x<0||y<0||z<0||x>=dims[0]||y>=dims[1]||z>=dims[2]||blocks[x][y][z]==-1){
+                return 0;//hit casing or air
             }
             if(endTest[blocks[x][y][z]])return 1;
             else if(!pathTest[blocks[x][y][z]])return 0;
@@ -324,5 +325,21 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         mutators.add(() -> {
             return new RandomFuelMutator(this);
         });
+    }
+    @Override
+    public LiteUnderhaulSFR copy(){
+        LiteUnderhaulSFR copy = new LiteUnderhaulSFR(configuration);
+        copy.fuel = fuel;
+        copy.dims[0] = dims[0];
+        copy.dims[1] = dims[1];
+        copy.dims[2] = dims[2];
+        for(int x = 0; x<dims[0]; x++){
+            for(int y = 0; y<dims[1]; y++){
+                for(int z = 0; z<dims[2]; z++){
+                    copy.blocks[x][y][z] = blocks[x][y][z];
+                }
+            }
+        }
+        return copy;
     }
 }

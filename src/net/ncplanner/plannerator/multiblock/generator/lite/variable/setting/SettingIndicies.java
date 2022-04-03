@@ -10,14 +10,19 @@ public class SettingIndicies implements Setting<int[]>{
     private int[] value;
     public final String[] names;
     private final Image[] images;
-    public SettingIndicies(String name, int[] value, String[] names, Image[] images){
+    private final String air;
+    public SettingIndicies(String name, int[] value, String[] names, Image[] images, String air){
         this.name = name;
-        this.value = value;
-        this.names = names;
-        this.images = images;
+        this.value = air==null?value:insert(0, shift(value));
+        this.names = insert(air, names);
+        this.images = air==null?images:insert(null, images);
+        this.air = air;
+    }
+    public SettingIndicies(String name, String[] names, Image[] images, String air){
+        this(name, gen(names), names, images, air);
     }
     public SettingIndicies(String name, String[] names, Image[] images){
-        this(name, gen(names), names, images);
+        this(name, names, images, null);
     }
     @Override
     public String getName(){
@@ -62,5 +67,34 @@ public class SettingIndicies implements Setting<int[]>{
             }.setImage(images[i]));
         }
         list.add(grid);
+    }
+    private String[] insert(String air, String[] array){
+        if(air==null)return array;
+        String[] newArr = new String[array.length+1];
+        newArr[0] = air;
+        for(int i = 0; i<array.length; i++){
+            newArr[i+1] = array[i];
+        }
+        return newArr;
+    }
+    private Image[] insert(Image air, Image[] array){
+        Image[] newArr = new Image[array.length+1];
+        newArr[0] = air;
+        for(int i = 0; i<array.length; i++){
+            newArr[i+1] = array[i];
+        }
+        return newArr;
+    }
+    private int[] shift(int[] array){
+        for(int i = 0; i<array.length; i++)array[i]++;
+        return array;
+    }
+    private int[] insert(int air, int[] array){
+        int[] newArr = new int[array.length+1];
+        newArr[0] = air;
+        for(int i = 0; i<array.length; i++){
+            newArr[i+1] = array[i];
+        }
+        return newArr;
     }
 }

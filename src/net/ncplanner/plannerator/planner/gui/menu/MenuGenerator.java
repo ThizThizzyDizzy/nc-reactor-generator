@@ -1,7 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
+import java.util.Random;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.GenerationThread;
 import net.ncplanner.plannerator.multiblock.generator.lite.GeneratorStage;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
@@ -26,10 +28,15 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     private final Button prevStage = add(new Button(0, 0, 48, 48, "<", true, true)).setTooltip("Previous stage");
     private final Button nextStage = add(new Button(0, 0, 48, 48, ">", true, true)).setTooltip("Next stage");
     private final Button addStage = add(new Button(0, 0, 0, 48, "Add Stage", true, true)).setTooltip("Add a generation stage");
+    private final Button addThread = add(new Button(0, 0, 64, 48, "+", true, true)).setTooltip("Add Thread");
+    private final Button remThread = add(new Button(0, 0, 64, 48, "-", true, true)).setTooltip("Remove Thread");
+    private final Button start = add(new Button(0, 0, 0, 48, "Start", true, true)).setTooltip("Start/Stop generation");
     private final Button delStage = add(new Button(0, 0, 0, 48, "Delete Stage (Hold Shift)", false, true)).setTooltip("Delete this generation stage");
     private final SingleColumnList stageSettings = add(new SingleColumnList(0, 48, 0, 0, 24));
     public final LiteGenerator<T> generator;
     private float setScrollTo = -1;
+    private int threads = 1;
+    private boolean running;
     public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
         super(gui, editor);
         this.multiblock = multiblock.compile();
@@ -37,6 +44,16 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         generator.stages.add(new GeneratorStage<>());
         done.addAction(() -> {
             gui.open(new MenuTransition(gui, this, editor, MenuTransition.SlideTransition.slideTo(0, 1), 5));
+        });
+        addThread.addAction(() -> {
+            threads++;
+        });
+        remThread.addAction(() -> {
+            threads--;
+        });
+        start.addAction(() -> {
+            running = !running;
+            if(running)start();
         });
         prevStage.addAction(() -> {
             if(generator.stage>0)generator.stage--;
@@ -125,6 +142,8 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             gui.open(parent);
             return;
         }
+        remThread.enabled = threads>1;
+        start.text = (running?"Stop":"Start")+" "+threads+" Thread"+(threads==1?"":"s");
         delStage.enabled = generator.stages.size()>1&&Core.isShiftPressed();
         stageSettings.width = delStage.width = done.width = gui.getWidth()/4;
         stageSettings.x = delStage.x = prevStage.x = gui.getWidth()*3/4;
@@ -133,6 +152,10 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         addStage.width = nextStage.x-addStage.x;
         delStage.y = gui.getHeight()-delStage.height;
         stageSettings.height = delStage.y-stageSettings.y;
+        remThread.x = done.width;
+        addThread.x = prevStage.x-addThread.width;
+        start.x = remThread.x+remThread.width;
+        start.width = addThread.x-start.x;
         super.render2d(deltaTime);
         if(setScrollTo>=0){
             stageSettings.scrollY = setScrollTo;
@@ -207,5 +230,46 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 }
             }
         }
+    }
+    private ArrayList<GenerationThread> generationThreads = new ArrayList<>();
+    private void start(){
+        Thread thread = new Thread(() -> {
+            while(running){
+                try{
+                    if(generationThreads.size()>threads){
+                        generationThreads.get(generationThreads.size()-1).running = false;
+                        generationThreads.remove(generationThreads.size()-1);
+                    }
+                    if(generationThreads.size()<threads){
+                        generationThreads.add(createGenerationThread());
+                    }
+                    Thread.sleep(1);
+                }catch(Exception ex){
+                    for(GenerationThread t : generationThreads)t.running = false;
+                    throw new RuntimeException(ex);
+                }
+            }
+            for(GenerationThread t : generationThreads)t.running = false;
+        }, "Generator Thread Manager");
+        thread.setDaemon(true);
+        thread.start();
+    }
+    private GenerationThread createGenerationThread(){
+        Random rand = new Random();
+        return new GenerationThread(() -> {
+            T mb = (T)multiblock.copy();
+            GeneratorStage<T> stage = generator.stages.get(generator.stage);
+            stage.run(mb, rand);
+            mb.calculate();
+            System.out.println(mb.getTooltip());
+            STEP:for(StageTransition<T> transition : stage.stageTransitions){
+                for(Condition c : transition.conditions){
+                    c.hits++;
+                    if(!c.check(rand))continue STEP;
+                }
+                transition.hits++;
+                generator.stage = transition.targetStage.get();
+            }
+        });
     }
 }

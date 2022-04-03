@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 public class RandomBlockMutator implements Mutator<LiteUnderhaulSFR>{
     public SettingIndicies indicies;
     public RandomBlockMutator(LiteUnderhaulSFR multiblock){
-        indicies = new SettingIndicies("Blocks", multiblock.configuration.blockDisplayName, multiblock.configuration.blockDisplayTexture);
+        indicies = new SettingIndicies("Blocks", multiblock.configuration.blockDisplayName, multiblock.configuration.blockDisplayTexture, "Air");
     }
     @Override
     public String getTitle(){
@@ -19,7 +19,7 @@ public class RandomBlockMutator implements Mutator<LiteUnderhaulSFR>{
     }
     @Override
     public void run(LiteUnderhaulSFR multiblock, Random rand){
-        multiblock.blocks[rand.nextInt(multiblock.dims[0])][rand.nextInt(multiblock.dims[1])][rand.nextInt(multiblock.dims[2])] = indicies.get()[rand.nextInt(indicies.get().length)];
+        multiblock.blocks[rand.nextInt(multiblock.dims[0])][rand.nextInt(multiblock.dims[1])][rand.nextInt(multiblock.dims[2])] = indicies.get()[rand.nextInt(indicies.get().length)]-1;
     }
     @Override
     public int getSettingCount(){
