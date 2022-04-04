@@ -4,13 +4,20 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
+import net.ncplanner.plannerator.multiblock.generator.lite.GeneratorStage;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomBlockMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomFuelMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableFloat;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableInt;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstInt;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMaximum;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMinimum;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorSubtraction;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
@@ -417,5 +424,42 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     public float getCubeBounds(int x, int y, int z, int index){
         if(index<3)return 0;
         return 1;
+    }
+    @Override
+    public LiteGenerator<LiteUnderhaulSFR> createGenerator(LiteMultiblock<UnderhaulSFR> priorityMultiblock){
+        LiteGenerator<LiteUnderhaulSFR> gen = new LiteGenerator<>();
+        GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
+        Priority<LiteUnderhaulSFR> valid = new Priority<>();
+        OperatorSubtraction validOp = new OperatorSubtraction();
+        OperatorMinimum min1 = new OperatorMinimum();
+        min1.v1.set(new ConstInt(1));
+        min1.v2.set(priorityMultiblock.getVariable(1));
+        validOp.v1.set(min1);
+        OperatorMinimum min2 = new OperatorMinimum();
+        min2.v1.set(new ConstInt(1));
+        min2.v2.set(getVariable(1));
+        validOp.v2.set(min2);
+        valid.operator.set(validOp);
+        stage.priorities.add(valid);
+        Priority<LiteUnderhaulSFR> stable = new Priority<>();
+        OperatorSubtraction stableOp = new OperatorSubtraction();
+        OperatorMaximum max1 = new OperatorMaximum();
+        max1.v1.set(new ConstInt(0));
+        max1.v2.set(getVariable(0));
+        stableOp.v1.set(max1);
+        OperatorMaximum max2 = new OperatorMaximum();
+        max2.v1.set(new ConstInt(0));
+        max2.v2.set(priorityMultiblock.getVariable(0));
+        stableOp.v2.set(max2);
+        stable.operator.set(stableOp);
+        stage.priorities.add(stable);
+        Priority<LiteUnderhaulSFR> efficiency = new Priority<>();
+        OperatorSubtraction efficiencyOp = new OperatorSubtraction();
+        efficiencyOp.v1.set(priorityMultiblock.getVariable(5));
+        efficiencyOp.v2.set(getVariable(5));
+        efficiency.operator.set(efficiencyOp);
+        stage.priorities.add(efficiency);
+        gen.stages.add(stage);
+        return gen;
     }
 }

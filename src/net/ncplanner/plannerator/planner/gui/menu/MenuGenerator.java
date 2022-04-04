@@ -55,7 +55,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         super(gui, editor);
         this.multiblock = multiblock.compile();
         priorityMultiblock = (T)this.multiblock.copy();
-        generator = new LiteGenerator<>();
+        generator = this.multiblock.createGenerator(priorityMultiblock);
         generator.stages.add(new GeneratorStage<>());
         done.addAction(() -> {
             running = false;

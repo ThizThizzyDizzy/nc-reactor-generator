@@ -30,7 +30,7 @@ public class SettingVariable<T> implements Setting<Variable<T>>{
         return name;
     }
     @Override
-    public void set(Variable<T> value){
+    public void set(Variable value){
         this.value = value;
     }
     @Override
