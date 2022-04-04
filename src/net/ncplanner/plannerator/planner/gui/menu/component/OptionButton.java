@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
+import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
@@ -15,6 +16,7 @@ public class OptionButton extends Component{
     public boolean isRightPressed;
     public float textInset = -1;
     public final boolean darker;
+    private ArrayList<Runnable> changeListeners = new ArrayList<>();
     public OptionButton(float x, float y, float width, float height, String label, boolean enabled, int startingOption, String... options){
         this(x, y, width, height, label, enabled, false, startingOption, options);
     }
@@ -95,6 +97,7 @@ public class OptionButton extends Component{
         while(currentIndex<0){
             currentIndex += options.length;
         }
+        changeListeners.forEach(Runnable::run);
     }
     public int getIndex(){
         return currentIndex;
@@ -121,6 +124,10 @@ public class OptionButton extends Component{
     @Override
     public OptionButton setTooltip(String tooltip){
         this.tooltip = tooltip;
+        return this;
+    }
+    public OptionButton onChange(Runnable r){
+        changeListeners.add(r);
         return this;
     }
 }
