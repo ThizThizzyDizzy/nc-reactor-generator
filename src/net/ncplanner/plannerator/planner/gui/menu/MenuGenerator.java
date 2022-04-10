@@ -48,6 +48,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     public final LiteGenerator<T> generator;
     private float setScrollTo = -1;
     private int threads = 1;
+    private int currentStage;
     private boolean running;
     private final Animation blank = new BlankAnimation();
     private Animation anim = blank;
@@ -56,7 +57,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         this.multiblock = multiblock.compile();
         priorityMultiblock = (T)this.multiblock.copy();
         generator = this.multiblock.createGenerator(priorityMultiblock);
-        generator.stages.add(new GeneratorStage<>());
+        if(generator.stages.isEmpty())generator.stages.add(new GeneratorStage<>());
         done.addAction(() -> {
             running = false;
             gui.open(new MenuTransition(gui, this, new MenuEdit(gui, editor.parent, this.multiblock.export(editor.multiblock.configuration)), MenuTransition.SlideTransition.slideTo(0, 1), 5));
@@ -72,38 +73,38 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             if(running)start();
         });
         prevStage.addAction(() -> {
-            if(generator.stage>0)generator.stage--;
+            if(currentStage>0)currentStage--;
             rebuildGUI();
         });
         nextStage.addAction(() -> {
-            if(generator.stage<generator.stages.size()-1)generator.stage++;
+            if(currentStage<generator.stages.size()-1)currentStage++;
             rebuildGUI();
         });
         addStage.addAction(() -> {
             generator.stages.add(new GeneratorStage<>());
-            generator.stage = generator.stages.size()-1;
+            currentStage = generator.stages.size()-1;
             rebuildGUI();
         });
         delStage.addAction(() -> {
             for(GeneratorStage<T> stage : generator.stages){
                 for(StageTransition<T> transition : stage.stageTransitions){
-                    if(transition.targetStage.get()>generator.stage)transition.targetStage.set(transition.targetStage.get()-1);
-                    if(transition.targetStage.get()==generator.stage)transition.targetStage.set(-1);
+                    if(transition.targetStage.get()>currentStage)transition.targetStage.set(transition.targetStage.get()-1);
+                    if(transition.targetStage.get()==currentStage)transition.targetStage.set(-1);
                 }
             }
-            generator.stages.remove(generator.stage);
-            if(generator.stage>generator.stages.size()-1)generator.stage--;
+            generator.stages.remove(currentStage);
+            if(currentStage>generator.stages.size()-1)currentStage--;
             rebuildGUI();
         });
         rebuildGUI();
     }
     public void rebuildGUI(){
-        prevStage.enabled = generator.stage>0;
-        nextStage.enabled = generator.stage<generator.stages.size()-1;
+        prevStage.enabled = currentStage>0;
+        nextStage.enabled = currentStage<generator.stages.size()-1;
         setScrollTo = stageSettings.scrollY;
         stageSettings.components.clear();
-        stageSettings.add(new Label(0, 0, 0, 40, "Stage "+(generator.stage+1)));
-        GeneratorStage<T> stage = generator.stages.get(generator.stage);
+        stageSettings.add(new Label(0, 0, 0, 40, "Stage "+(currentStage+1)));
+        GeneratorStage<T> stage = generator.stages.get(currentStage);
         stageSettings.add(new Label(0, 0, 0, 36, "Mutators", true));
         for(GeneratorMutator<T> mutator : stage.steps){
             stageSettings.add(new Label(0, 0, 0, 32, mutator.getTitle()){
@@ -214,6 +215,9 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         start.x = remThread.x+remThread.width;
         start.width = addThread.x-start.x;
         super.render2d(deltaTime);
+        Renderer renderer = new Renderer();
+        renderer.setColor(Core.theme.getComponentTextColor(0));//TODO make this a status bar label instead
+        renderer.drawText(textView.width, gui.getHeight()-20, stageSettings.x, gui.getHeight(), (running?"ACTIVE":"IDLE")+" | "+generator.getStatus());
         if(setScrollTo>=0){
             stageSettings.scrollY = setScrollTo;
             setScrollTo = -1;

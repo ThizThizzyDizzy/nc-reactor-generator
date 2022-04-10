@@ -45,9 +45,9 @@ public class CompiledUnderhaulSFRPlacementRule extends CompiledPlacementRule<Pla
             case AXIAL:
                 for(int axis = 0; axis<3; axis++){
                     int b1 = adjacents[axis];
-                    if(b1>=0)b1-=active[axis]*10;
+                    if(b1>=0&&active[axis]<1)continue;
                     int b2 = adjacents[axis+3];
-                    if(b2>=0)b2-=active[axis+3]*10;
+                    if(b2>=0&&active[axis+3]<1)continue;;
                     if (isAirMatch) {
                         if (b1 == -1 && b2 == -1) num++;
                     } else {
@@ -61,7 +61,7 @@ public class CompiledUnderhaulSFRPlacementRule extends CompiledPlacementRule<Pla
                 boolean[] dirs = new boolean[6];
                 for(int d = 0; d<adjacents.length; d++){
                     int b = adjacents[d];
-                    if(b>=0)b-=active[d]*10;
+                    if(b>=0&&active[d]<1)continue;;
                     if (isAirMatch) {
                         if (b == -1) dirs[d] = true;
                     } else {

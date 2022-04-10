@@ -10,13 +10,11 @@ public class SettingIndicies implements Setting<int[]>{
     private int[] value;
     public final String[] names;
     private final Image[] images;
-    private final String air;
     public SettingIndicies(String name, int[] value, String[] names, Image[] images, String air){
         this.name = name;
         this.value = air==null?value:insert(0, shift(value));
         this.names = insert(air, names);
         this.images = air==null?images:insert(null, images);
-        this.air = air;
     }
     public SettingIndicies(String name, String[] names, Image[] images, String air){
         this(name, gen(names), names, images, air);

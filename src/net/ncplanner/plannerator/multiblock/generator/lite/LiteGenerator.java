@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableInt;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableLong;
+import net.ncplanner.plannerator.planner.Queue;
 public class LiteGenerator<T extends LiteMultiblock> implements ThingWithVariables{
     public Variable[] vars = new Variable[]{new VariableLong("Hits"){
         @Override
@@ -17,12 +18,20 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithVariabl
         public int getValue(){
             return stage;
         }
+    }, new VariableLong("Last Update Nanos"){
+        @Override
+        public long getValue(){
+            return (System.nanoTime()-lastUpdate)/1_000_000;
+        }
     }};
     public ArrayList<GeneratorStage<T>> stages = new ArrayList<>();
     public int stage = 0;
     public long hits;
+    public long lastUpdate = 0;
+    public Queue<Long> timestamps = new Queue<>();
     public void run(T multiblock, Random rand, T original, T priorityMultiblock, Consumer<T> onUpgrade){
         hits++;
+        timestamps.enqueue(System.nanoTime());
         GeneratorStage<T> currentStage = stages.get(stage);
         currentStage.run(multiblock, rand);
         multiblock.calculate();
@@ -39,6 +48,7 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithVariabl
             }
             if(f>0){
                 onUpgrade.accept(multiblock);
+                lastUpdate = System.nanoTime();
                 break;
             }
             if(f<0)break;
@@ -60,5 +70,11 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithVariabl
     @Override
     public Variable getVariable(int i){
         return vars[i];
+    }
+    public String getStatus(){
+        while(!timestamps.isEmpty()&&timestamps.peek()<System.nanoTime()-10_000_000_000l){
+            timestamps.dequeue();
+        }
+        return "Stage "+(stage+1)+" | "+hits+" Iterations | "+timestamps.size()/10+" per second";
     }
 }
