@@ -92,3 +92,4 @@
 4.0=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v4.0/NC-Reactor-Plannerator-4.0.jar
 4.0.1=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v4.0.1/NC-Reactor-Plannerator-4.0.1.jar
 4.0.2=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v4.0.2/NC-Reactor-Plannerator-4.0.2.jar
+4.1=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v4.1/NC-Reactor-Plannerator-4.1.jar
