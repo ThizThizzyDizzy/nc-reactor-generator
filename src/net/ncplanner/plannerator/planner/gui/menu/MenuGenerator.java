@@ -59,12 +59,14 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     private Animation anim = blank;
     private boolean wasRunning;
     private HashMap<T, StoreAnimation> storeAnims = new HashMap<>();
+    private final int internalGens;
     public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
         super(gui, editor);
         this.multiblock = multiblock.compile();
         priorityMultiblock = (T)this.multiblock.copy();
         gens = this.multiblock.createGenerators(priorityMultiblock);
         generator = gens[0];
+        internalGens = gens.length;
         if(generator.stages.isEmpty())generator.stages.add(new GeneratorStage<>());
         done.addAction(() -> {
             running = false;
@@ -125,14 +127,16 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 LiteGenerator<T> gen = gens[i];
                 final int ii = i;
                 stageSettings.add(new Label(0, 0, 0, 36, ""){
-                    Button reset = add(new Button(0, 0, height*2.5f, height, "Reset", true, true).addAction(() -> {
+                    Button reset = add(new Button(0, 0, ii<internalGens?height*2.5f:0, height, "Reset", true, true).addAction(() -> {
                         boolean flag = generator==gens[ii];
                         gens[ii] = MenuGenerator.this.multiblock.createGenerators(priorityMultiblock)[ii];
                         if(flag)generator = gens[ii];
+                        currentStage = 0;
                         rebuildGUI();
                     }));
                     Button select = add(new Button(0, 0, height*2.5f, height, gen.name.get(), true, false).addAction(() -> {
                         generator = gens[ii];
+                        currentStage = 0;
                         rebuildGUI();
                     }));
                     @Override
@@ -142,6 +146,18 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                     }
                 });
             }
+            stageSettings.add(new Button(0, 0, 0, 32, "New Preset", true).addAction(() -> {
+                LiteGenerator<T>[] newGens = new LiteGenerator[gens.length+1];
+                for(int i = 0; i<gens.length; i++){
+                    newGens[i] = gens[i];
+                }
+                newGens[gens.length] = new LiteGenerator<>();
+                newGens[gens.length].stages.add(new GeneratorStage<>());
+                generator = newGens[gens.length];
+                currentStage = 0;
+                gens = newGens;
+                rebuildGUI();
+            }));
             stageSettings.add(new Label(0, 0, 0, 36, "Generator", true));
             addSettings(generator, 1);
             stageSettings.add(new Button(0, 0, 0, 32, "Customize", true).addAction(() -> {
