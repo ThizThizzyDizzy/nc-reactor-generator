@@ -27,6 +27,7 @@ public class KeywordFuel extends Keyword{
         fuel = fuel.replaceAll("[iI][cC]2[- ]", "IC2 ");
         if(fuel.equalsIgnoreCase("enriched uranium"))fuel = "IC2 "+fuel;
         if(fuel.equalsIgnoreCase("yellorium"))fuel = fuel+" Ingot";
+        if(fuel.matches("\\w+ \\d+"))fuel = fuel.replace(" ", "-");
         return true;
     }
     @Override
