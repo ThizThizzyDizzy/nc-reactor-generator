@@ -44,7 +44,7 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithSetting
     public LiteGenerator(String name){
         this.name.set(name);
     }
-    public void run(T multiblock, Random rand, T original, T priorityMultiblock, Consumer<T> onUpgrade, Consumer<T> onStore, Runnable onExit){
+    public void run(T multiblock, Random rand, T original, T priorityMultiblock, Consumer<T> onUpgrade, Consumer<T> onStore, Runnable onExit, Runnable onConsolidate){
         hits++;
         timestamps.enqueue(System.nanoTime());
         GeneratorStage<T> currentStage = stages.get(stage);
@@ -78,15 +78,14 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithSetting
                 }
                 transition.hits++;
                 lastUpdate = System.nanoTime();
-                int stag = transition.targetStage.get();
-                if(stag==-2){
+                if(transition.store.get()){
                     T stored = (T)original.copy();
                     stored.copyVarsFrom(original);
                     storedMultiblocks.enqueue(stored);
-                    reset();
                     onStore.accept(stored);
                 }
-                if(stag==-1){
+                if(transition.consolidate.get()){
+                    onConsolidate.run();
                     while(!storedMultiblocks.isEmpty()){
                         T mb = storedMultiblocks.dequeue();
                         if(mb==null)continue;
@@ -109,9 +108,10 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithSetting
                             if(f<0)break;
                         }
                     }
-                    onExit.run();
                 }
-                if(stag>=0)stage = stag;
+                if(transition.stop.get()){
+                    onExit.run();
+                }else stage = transition.targetStage.get();
                 break;
             }
         }

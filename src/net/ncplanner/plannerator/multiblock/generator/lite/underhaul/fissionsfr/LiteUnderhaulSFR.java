@@ -716,7 +716,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             }
             {
                 StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
-                transition.targetStage.set(-2);
+                transition.store.set(true);
                 ConditionGreaterEqual hits = new ConditionGreaterEqual();
                 hits.v1.set(stage.getVariable(0));
                 hits.v2.set(new ConstInt(10000));
@@ -737,7 +737,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             }
             {
                 StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
-                transition.targetStage.set(-1);
+                transition.consolidate.set(true);
+                transition.stop.set(true);
                 ConditionGreaterEqual hits = new ConditionGreaterEqual();
                 hits.v1.set(stage.getVariable(0));
                 hits.v2.set(new ConstInt(10000));
@@ -1051,7 +1052,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             }
             {
                 StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
-                transition.targetStage.set(-2);
+                transition.store.set(true);
                 ConditionGreaterEqual hits = new ConditionGreaterEqual();
                 hits.v1.set(stage.getVariable(0));
                 hits.v2.set(new ConstInt(10000));
@@ -1072,7 +1073,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             }
             {
                 StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
-                transition.targetStage.set(-1);
+                transition.consolidate.set(true);
+                transition.stop.set(true);
                 ConditionGreaterEqual hits = new ConditionGreaterEqual();
                 hits.v1.set(stage.getVariable(0));
                 hits.v2.set(new ConstInt(10000));

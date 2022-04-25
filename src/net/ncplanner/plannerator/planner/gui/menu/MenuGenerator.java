@@ -58,7 +58,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     private final Animation blank = new BlankAnimation();
     private Animation anim = blank;
     private boolean wasRunning;
-    private HashMap<T, Animation> storeAnims = new HashMap<>();
+    private HashMap<T, StoreAnimation> storeAnims = new HashMap<>();
     public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
         super(gui, editor);
         this.multiblock = multiblock.compile();
@@ -239,7 +239,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                         super.draw(deltaTime);
                     }
                 });
-                transition.targetStage.addSettings(stageSettings, this);
+                addSettings(transition);
                 addConditionSettings(transition.conditions);
             }
             stageSettings.add(new Button(0, 0, 0, 32, "Add Transition", true).addAction(() -> {
@@ -334,9 +334,9 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         synchronized(storeAnims){
             for(Iterator<T> it = storeAnims.keySet().iterator(); it.hasNext();){
                 T multiblock = it.next();
-                Animation anim = storeAnims.get(multiblock);
+                StoreAnimation anim = storeAnims.get(multiblock);
                 anim.pos+=deltaTime;
-                if(running&&anim.pos>anim.length)anim.pos = anim.length;
+                if(!anim.closing&&anim.pos>anim.length)anim.pos = anim.length;
                 if(anim.pos>anim.length*2)it.remove();
                 w = multiblock.getDimension(0);
                 h = multiblock.getDimension(1);
@@ -478,33 +478,47 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 textView.setText(multiblock.getTooltip());
             }, (t)->{
                 synchronized(storeAnims){
-                    storeAnims.put(t, new Animation(.75f){
-                        float xOff = rand.nextFloat()*4-2;
-                        float yOff = (rand.nextFloat()+1.5f)*(rand.nextBoolean()?1:-1);
-                        float zOff = rand.nextFloat()*4-2;
-                        @Override
-                        public double getCubeOffset(int x, int y, int z, int w, int h, int d, int axis){
-                            float percent = getPercent();
-                            if(percent>1){
-                                if(axis==0||axis==3)return (2-Math.min(2, percent))*mb.getDimension(0)*xOff;
-                                if(axis==1||axis==4)return (2-Math.min(2, percent))*mb.getDimension(1)*yOff;
-                                if(axis==2||axis==5)return (2-Math.min(2, percent))*mb.getDimension(2)*zOff;
-                            }
-                            if(axis==0||axis==3)return Math.min(1, percent)*mb.getDimension(0)*xOff;
-                            if(axis==1||axis==4)return Math.min(1, percent)*mb.getDimension(1)*yOff;
-                            if(axis==2||axis==5)return Math.min(1, percent)*mb.getDimension(2)*zOff;
-                            return 0;
-                        }
-                        @Override
-                        public double getYRotOffset(){
-                            return 0;
-                        }
-                    });
+                    storeAnims.put(t, new StoreAnimation(mb));
                 }
                 multiblock.clear();
             }, ()->{
                 running = false;
+            }, ()->{
+                synchronized(storeAnims){
+                    storeAnims.values().forEach((t) -> {
+                        t.closing = true;
+                    });
+                }
             });
         });
+    }
+    Random arand = new Random();
+    private class StoreAnimation extends Animation{
+        private final T mb;
+        private boolean closing;
+        public StoreAnimation(T mb){
+            super(.75f);
+            this.mb = mb;
+        }
+        float xOff = arand.nextFloat()*4-2;
+        float yOff = (arand.nextFloat()+1.5f)*(arand.nextBoolean()?1:-1);
+        float zOff = arand.nextFloat()*4-2;
+        @Override
+        public double getCubeOffset(int x, int y, int z, int w, int h, int d, int axis){
+            float percent = getPercent();
+            if(percent>1){
+                if(axis==0||axis==3)return (2-Math.min(2, percent))*mb.getDimension(0)*xOff;
+                if(axis==1||axis==4)return (2-Math.min(2, percent))*mb.getDimension(1)*yOff;
+                if(axis==2||axis==5)return (2-Math.min(2, percent))*mb.getDimension(2)*zOff;
+            }
+            if(axis==0||axis==3)return Math.min(1, percent)*mb.getDimension(0)*xOff;
+            if(axis==1||axis==4)return Math.min(1, percent)*mb.getDimension(1)*yOff;
+            if(axis==2||axis==5)return Math.min(1, percent)*mb.getDimension(2)*zOff;
+            return 0;
+        }
+        @Override
+        public double getYRotOffset(){
+            return 0;
+        }
     }
 }
