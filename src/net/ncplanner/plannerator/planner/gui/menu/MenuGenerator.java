@@ -7,6 +7,7 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.editor.action.GenerateAction;
 import net.ncplanner.plannerator.multiblock.generator.lite.GenerationThread;
 import net.ncplanner.plannerator.multiblock.generator.lite.GeneratorStage;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
@@ -70,7 +71,8 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         if(generator.stages.isEmpty())generator.stages.add(new GeneratorStage<>());
         done.addAction(() -> {
             running = false;
-            gui.open(new MenuTransition(gui, this, new MenuEdit(gui, editor.parent, this.multiblock.export(editor.multiblock.configuration)), MenuTransition.SlideTransition.slideTo(0, 1), 5));
+            editor.multiblock.action(new GenerateAction(this.multiblock.export(editor.multiblock.configuration)), true, false);
+            gui.open(new MenuTransition(gui, this, editor, MenuTransition.SlideTransition.slideTo(0, 1), 5));
         });
         addThread.addAction(() -> {
             threads++;
