@@ -37,4 +37,10 @@ public abstract class GeneratorMutator<T extends LiteMultiblock> implements Thin
     public Variable getVariable(int i){
         return vars[i];
     }
+    public void reset(){
+        hits = 0;
+        for(Condition condition : conditions){
+            condition.reset();
+        }
+    }
 }

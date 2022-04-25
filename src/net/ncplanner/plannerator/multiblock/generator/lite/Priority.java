@@ -32,4 +32,10 @@ public class Priority<T extends LiteMultiblock> implements ThingWithSettings, Th
     public Setting getSetting(int i){
         return operator;
     }
+    public void reset(){
+        hits = 0;
+        for(Condition condition : conditions){
+            condition.reset();
+        }
+    }
 }

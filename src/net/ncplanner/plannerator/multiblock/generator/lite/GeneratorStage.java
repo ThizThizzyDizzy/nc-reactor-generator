@@ -35,4 +35,16 @@ public class GeneratorStage<T extends LiteMultiblock> implements ThingWithVariab
     public Variable getVariable(int i){
         return vars[i];
     }
+    public void reset(){
+        hits = 0;
+        for(GeneratorMutator<T> step : steps){
+            step.reset();
+        }
+        for(StageTransition<T> transition : stageTransitions){
+            transition.reset();
+        }
+        for(Priority<T> priority : priorities){
+            priority.reset();
+        }
+    }
 }

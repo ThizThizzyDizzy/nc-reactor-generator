@@ -17,5 +17,6 @@ public interface LiteMultiblock<T extends Multiblock> extends ThingWithVariables
     public int getDimension(int id);
     public Image getBlockTexture(int x, int y, int z);
     public float getCubeBounds(int x, int y, int z, int index);
-    public LiteGenerator<? extends LiteMultiblock<T>> createGenerator(LiteMultiblock<T> priorityMultiblock);
+    public LiteGenerator<? extends LiteMultiblock<T>>[] createGenerators(LiteMultiblock<T> priorityMultiblock);
+    public void clear();
 }

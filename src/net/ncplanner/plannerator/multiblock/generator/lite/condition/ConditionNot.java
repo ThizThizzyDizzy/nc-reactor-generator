@@ -34,4 +34,9 @@ public class ConditionNot extends Condition{
         Condition c = condition.get();
         if(c!=null)c.getAllVariables(vars, names, prevPath+".condition{Condition ("+c.getTitle()+")}");
     }
+    @Override
+    public void reset(){
+        super.reset();
+        condition.get().reset();
+    }
 }

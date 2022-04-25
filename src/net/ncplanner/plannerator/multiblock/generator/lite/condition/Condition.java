@@ -43,4 +43,7 @@ public abstract class Condition implements ThingWithSettings, ThingWithVariables
             vars.add(v);names.add(prevPath+"."+v.getName());
         }
     }
+    public void reset(){
+        hits = 0;
+    }
 }

@@ -6,7 +6,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 public class ClearInvalidMutator implements Mutator<LiteUnderhaulSFR>{
     @Override
     public String getTitle(){
-        return "Random Block Mutator";
+        return "Clear Invalid Mutator";
     }
     @Override
     public String getTooltip(){

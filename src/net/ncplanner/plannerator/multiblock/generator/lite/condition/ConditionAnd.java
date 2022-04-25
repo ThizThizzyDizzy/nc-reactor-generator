@@ -39,4 +39,11 @@ public class ConditionAnd extends Condition{
             condition.getAllVariables(vars, names, prevPath+".conditions["+i+"]{Condition "+(i+1)+" ("+condition.getTitle()+")}");
         }
     }
+    @Override
+    public void reset(){
+        super.reset();
+        for(Condition condition : conditions.get()){
+            condition.reset();
+        }
+    }
 }

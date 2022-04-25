@@ -31,4 +31,10 @@ public class StageTransition<T extends LiteMultiblock> implements ThingWithSetti
     public Setting getSetting(int i){
         return targetStage;
     }
+    void reset(){
+        hits = 0;
+        for(Condition condition : conditions){
+            condition.reset();
+        }
+    }
 }

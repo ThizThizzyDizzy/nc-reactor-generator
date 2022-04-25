@@ -10,9 +10,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.StageTransition;
 import net.ncplanner.plannerator.multiblock.generator.lite.Symmetry;
-import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
-import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionAnd;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionGreaterEqual;
+import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionLess;
+import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionLessEqual;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.RandomQuantityMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.StandardMutator;
@@ -26,6 +26,8 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.Con
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMaximum;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMinimum;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorSubtraction;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingInt;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingPercent;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
@@ -349,6 +351,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         mutators.add(() -> {
             return new RandomFuelMutator(this);
         });
+        mutators.add(ClearInvalidMutator::new);
     }
     @Override
     public LiteUnderhaulSFR copy(){
@@ -436,8 +439,20 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         return 1;
     }
     @Override
-    public LiteGenerator<LiteUnderhaulSFR> createGenerator(LiteMultiblock<UnderhaulSFR> priorityMultiblock){
-        LiteGenerator<LiteUnderhaulSFR> gen = new LiteGenerator<>();
+    public LiteGenerator<LiteUnderhaulSFR>[] createGenerators(LiteMultiblock<UnderhaulSFR> priorityMultiblock){
+        ArrayList<LiteGenerator<LiteUnderhaulSFR>> gens = new ArrayList<>();
+        {
+        //<editor-fold defaultstate="collapsed" desc="Max Output">
+        LiteGenerator<LiteUnderhaulSFR> gen = new LiteGenerator<>("Maximize Output");
+        SettingInt reactorCount = new SettingInt("Reactor Count", 4);
+        gen.settings.add(reactorCount);
+        SettingPercent minEfficiency = new SettingPercent("Min Efficiency", 6);
+        gen.settings.add(minEfficiency);
+        SettingInt ctimeout = new SettingInt("Core Timeout (ms)", 500);
+        gen.settings.add(ctimeout);
+        SettingInt timeout = new SettingInt("Timeout (ms)", 2_000);
+        gen.settings.add(timeout);
+        //<editor-fold defaultstate="collapsed" desc="Stage 1 - build core">
         {
             GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
             {
@@ -453,6 +468,341 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 validOp.v2.set(min2);
                 valid.operator.set(validOp);
                 stage.priorities.add(valid);
+            }
+            {
+                Priority<LiteUnderhaulSFR> efficiencyFloor = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(minEfficiency);
+                min1.v2.set(priorityMultiblock.getVariable(5));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(minEfficiency);
+                min2.v2.set(getVariable(5));
+                validOp.v2.set(min2);
+                efficiencyFloor.operator.set(validOp);
+                stage.priorities.add(efficiencyFloor);
+            }
+            {
+                Priority<LiteUnderhaulSFR> output = new Priority<>();
+                OperatorSubtraction outputOp = new OperatorSubtraction();
+                outputOp.v1.set(priorityMultiblock.getVariable(1));
+                outputOp.v2.set(getVariable(1));
+                output.operator.set(outputOp);
+                stage.priorities.add(output);
+            }
+            {
+                Priority<LiteUnderhaulSFR> efficiency = new Priority<>();
+                OperatorSubtraction efficiencyOp = new OperatorSubtraction();
+                efficiencyOp.v1.set(priorityMultiblock.getVariable(5));
+                efficiencyOp.v2.set(getVariable(5));
+                efficiency.operator.set(efficiencyOp);
+                stage.priorities.add(efficiency);
+            }
+            {
+                RandomBlockMutator rbm = new RandomBlockMutator(this);
+                Symmetry symmetry = rbm.symmetry.get();
+                symmetry.mx.set(true);
+                symmetry.my.set(true);
+                symmetry.mz.set(true);
+                ArrayList<Integer> indicies = new ArrayList<>();
+                indicies.add(0);
+                for(int i = 0; i<configuration.blockName.length; i++){
+                    if(configuration.blockCooling[i]==0)indicies.add(i+1);
+                }
+                int[] indcs = new int[indicies.size()];
+                for(int i = 0; i<indicies.size(); i++){
+                    indcs[i] = indicies.get(i);
+                }
+                rbm.indicies.set(indcs);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/10));
+                stage.steps.add(mutator);
+            }
+            {
+                StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
+                transition.targetStage.set(1);
+                ConditionGreaterEqual hits = new ConditionGreaterEqual();
+                hits.v1.set(stage.getVariable(0));
+                hits.v2.set(new ConstInt(1000));
+                transition.conditions.add(hits);
+                ConditionGreaterEqual time = new ConditionGreaterEqual();
+                time.v1.set(gen.getVariable(2));
+                time.v2.set(ctimeout);
+                transition.conditions.add(time);
+                stage.stageTransitions.add(transition);
+            }
+            gen.stages.add(stage);
+        }
+//</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Stage 2 - Add heatsinks now">
+        {
+            GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
+            {
+                Priority<LiteUnderhaulSFR> valid = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(new ConstInt(1));
+                min1.v2.set(priorityMultiblock.getVariable(1));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(new ConstInt(1));
+                min2.v2.set(getVariable(1));
+                validOp.v2.set(min2);
+                valid.operator.set(validOp);
+                stage.priorities.add(valid);
+            }
+            {
+                Priority<LiteUnderhaulSFR> efficiencyFloor = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(minEfficiency);
+                min1.v2.set(priorityMultiblock.getVariable(5));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(minEfficiency);
+                min2.v2.set(getVariable(5));
+                validOp.v2.set(min2);
+                efficiencyFloor.operator.set(validOp);
+                stage.priorities.add(efficiencyFloor);
+            }
+            {
+                Priority<LiteUnderhaulSFR> output = new Priority<>();
+                OperatorSubtraction outputOp = new OperatorSubtraction();
+                outputOp.v1.set(priorityMultiblock.getVariable(1));
+                outputOp.v2.set(getVariable(1));
+                output.operator.set(outputOp);
+                stage.priorities.add(output);
+            }
+            {
+                Priority<LiteUnderhaulSFR> stable = new Priority<>();
+                OperatorSubtraction stableOp = new OperatorSubtraction();
+                OperatorMaximum max1 = new OperatorMaximum();
+                max1.v1.set(new ConstInt(0));
+                max1.v2.set(getVariable(0));
+                stableOp.v1.set(max1);
+                OperatorMaximum max2 = new OperatorMaximum();
+                max2.v1.set(new ConstInt(0));
+                max2.v2.set(priorityMultiblock.getVariable(0));
+                stableOp.v2.set(max2);
+                stable.operator.set(stableOp);
+                stage.priorities.add(stable);
+            }
+            {
+                Priority<LiteUnderhaulSFR> efficiency = new Priority<>();
+                OperatorSubtraction efficiencyOp = new OperatorSubtraction();
+                efficiencyOp.v1.set(priorityMultiblock.getVariable(5));
+                efficiencyOp.v2.set(getVariable(5));
+                efficiency.operator.set(efficiencyOp);
+                stage.priorities.add(efficiency);
+            }
+            {
+                RandomBlockMutator rbm = new RandomBlockMutator(this);
+                Symmetry symmetry = rbm.symmetry.get();
+                symmetry.mx.set(true);
+                symmetry.my.set(true);
+                symmetry.mz.set(true);
+                ArrayList<Integer> indicies = new ArrayList<>();
+                indicies.add(0);
+                for(int i = 0; i<configuration.blockName.length; i++){
+                    if(!configuration.blockName[i].contains("active"))indicies.add(i+1);
+                }
+                int[] indcs = new int[indicies.size()];
+                for(int i = 0; i<indicies.size(); i++){
+                    indcs[i] = indicies.get(i);
+                }
+                rbm.indicies.set(indcs);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
+                stage.steps.add(mutator);
+            }
+            {
+                StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
+                transition.targetStage.set(2);
+                ConditionGreaterEqual hits = new ConditionGreaterEqual();
+                hits.v1.set(stage.getVariable(0));
+                hits.v2.set(new ConstInt(1000));
+                transition.conditions.add(hits);
+                ConditionGreaterEqual time = new ConditionGreaterEqual();
+                time.v1.set(gen.getVariable(2));
+                time.v2.set(ctimeout);
+                transition.conditions.add(time);
+                stage.stageTransitions.add(transition);
+            }
+            gen.stages.add(stage);
+        }
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Stage 3 - Stabilize">
+        {
+            GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
+            {
+                Priority<LiteUnderhaulSFR> valid = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(new ConstInt(1));
+                min1.v2.set(priorityMultiblock.getVariable(1));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(new ConstInt(1));
+                min2.v2.set(getVariable(1));
+                validOp.v2.set(min2);
+                valid.operator.set(validOp);
+                stage.priorities.add(valid);
+            }
+            {
+                Priority<LiteUnderhaulSFR> stable = new Priority<>();
+                OperatorSubtraction stableOp = new OperatorSubtraction();
+                OperatorMaximum max1 = new OperatorMaximum();
+                max1.v1.set(new ConstInt(0));
+                max1.v2.set(getVariable(0));
+                stableOp.v1.set(max1);
+                OperatorMaximum max2 = new OperatorMaximum();
+                max2.v1.set(new ConstInt(0));
+                max2.v2.set(priorityMultiblock.getVariable(0));
+                stableOp.v2.set(max2);
+                stable.operator.set(stableOp);
+                stage.priorities.add(stable);
+            }
+            {
+                Priority<LiteUnderhaulSFR> efficiencyFloor = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(minEfficiency);
+                min1.v2.set(priorityMultiblock.getVariable(5));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(minEfficiency);
+                min2.v2.set(getVariable(5));
+                validOp.v2.set(min2);
+                efficiencyFloor.operator.set(validOp);
+                stage.priorities.add(efficiencyFloor);
+            }
+            {
+                Priority<LiteUnderhaulSFR> output = new Priority<>();
+                OperatorSubtraction outputOp = new OperatorSubtraction();
+                outputOp.v1.set(priorityMultiblock.getVariable(1));
+                outputOp.v2.set(getVariable(1));
+                output.operator.set(outputOp);
+                stage.priorities.add(output);
+            }
+            {
+                Priority<LiteUnderhaulSFR> efficiency = new Priority<>();
+                OperatorSubtraction efficiencyOp = new OperatorSubtraction();
+                efficiencyOp.v1.set(priorityMultiblock.getVariable(5));
+                efficiencyOp.v2.set(getVariable(5));
+                efficiency.operator.set(efficiencyOp);
+                stage.priorities.add(efficiency);
+            }
+            stage.steps.add(new StandardMutator<>(new ClearInvalidMutator()));
+            {
+                RandomBlockMutator rbm = new RandomBlockMutator(this);
+                Symmetry symmetry = rbm.symmetry.get();
+                symmetry.mx.set(true);
+                symmetry.my.set(true);
+                symmetry.mz.set(true);
+                ArrayList<Integer> indicies = new ArrayList<>();
+                indicies.add(0);
+                for(int i = 0; i<configuration.blockName.length; i++){
+                    if(!configuration.blockName[i].contains("active"))indicies.add(i+1);
+                }
+                int[] indcs = new int[indicies.size()];
+                for(int i = 0; i<indicies.size(); i++){
+                    indcs[i] = indicies.get(i);
+                }
+                rbm.indicies.set(indcs);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
+                stage.steps.add(mutator);
+            }
+            {
+                StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
+                transition.targetStage.set(-2);
+                ConditionGreaterEqual hits = new ConditionGreaterEqual();
+                hits.v1.set(stage.getVariable(0));
+                hits.v2.set(new ConstInt(10000));
+                transition.conditions.add(hits);
+                ConditionGreaterEqual time = new ConditionGreaterEqual();
+                time.v1.set(gen.getVariable(2));
+                time.v2.set(timeout);
+                transition.conditions.add(time);
+                ConditionLessEqual heat = new ConditionLessEqual();
+                heat.v1.set(getVariable(0));
+                heat.v2.set(new ConstInt(0));
+                transition.conditions.add(heat);
+                ConditionLess stored = new ConditionLess();
+                stored.v1.set(gen.getVariable(3));
+                stored.v2.set(reactorCount);
+                transition.conditions.add(stored);
+                stage.stageTransitions.add(transition);
+            }
+            {
+                StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
+                transition.targetStage.set(-1);
+                ConditionGreaterEqual hits = new ConditionGreaterEqual();
+                hits.v1.set(stage.getVariable(0));
+                hits.v2.set(new ConstInt(10000));
+                transition.conditions.add(hits);
+                ConditionGreaterEqual time = new ConditionGreaterEqual();
+                time.v1.set(gen.getVariable(2));
+                time.v2.set(timeout);
+                transition.conditions.add(time);
+                ConditionLessEqual heat = new ConditionLessEqual();
+                heat.v1.set(getVariable(0));
+                heat.v2.set(new ConstInt(0));
+                transition.conditions.add(heat);
+                ConditionGreaterEqual stored = new ConditionGreaterEqual();
+                stored.v1.set(gen.getVariable(3));
+                stored.v2.set(reactorCount);
+                transition.conditions.add(stored);
+                stage.stageTransitions.add(transition);
+            }
+            gen.stages.add(stage);
+        }
+        //</editor-fold>
+        gens.add(gen);
+        //</editor-fold>
+        }
+        {
+        //<editor-fold defaultstate="collapsed" desc="Max Efficiency">
+        LiteGenerator<LiteUnderhaulSFR> gen = new LiteGenerator<>("Maximize Efficiency");
+        SettingInt reactorCount = new SettingInt("Reactor Count", 4);
+        gen.settings.add(reactorCount);
+        SettingInt minOutput = new SettingInt("Min Output", 1);
+        gen.settings.add(minOutput);
+        SettingInt ctimeout = new SettingInt("Core Timeout (ms)", 500);
+        gen.settings.add(ctimeout);
+        SettingInt timeout = new SettingInt("Timeout (ms)", 2_000);
+        gen.settings.add(timeout);
+        //<editor-fold defaultstate="collapsed" desc="Stage 1 - build core">
+        {
+            GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
+            {
+                Priority<LiteUnderhaulSFR> valid = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(new ConstInt(1));
+                min1.v2.set(priorityMultiblock.getVariable(1));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(new ConstInt(1));
+                min2.v2.set(getVariable(1));
+                validOp.v2.set(min2);
+                valid.operator.set(validOp);
+                stage.priorities.add(valid);
+            }
+            {
+                Priority<LiteUnderhaulSFR> outputFloor = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(minOutput);
+                min1.v2.set(priorityMultiblock.getVariable(1));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(minOutput);
+                min2.v2.set(getVariable(1));
+                validOp.v2.set(min2);
+                outputFloor.operator.set(validOp);
+                stage.priorities.add(outputFloor);
             }
             {
                 Priority<LiteUnderhaulSFR> efficiency = new Priority<>();
@@ -493,22 +843,20 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             {
                 StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
                 transition.targetStage.set(1);
-                ConditionAnd and = new ConditionAnd();
-                ArrayList<Condition> conditions = new ArrayList<>();
                 ConditionGreaterEqual hits = new ConditionGreaterEqual();
                 hits.v1.set(stage.getVariable(0));
                 hits.v2.set(new ConstInt(1000));
-                conditions.add(hits);
+                transition.conditions.add(hits);
                 ConditionGreaterEqual time = new ConditionGreaterEqual();
                 time.v1.set(gen.getVariable(2));
-                time.v2.set(new ConstInt(2_500));
-                conditions.add(time);
-                and.conditions.set(conditions);
-                transition.conditions.add(and);
+                time.v2.set(ctimeout);
+                transition.conditions.add(time);
                 stage.stageTransitions.add(transition);
             }
             gen.stages.add(stage);
         }
+//</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Stage 2 - Add heatsinks now">
         {
             GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
             {
@@ -526,9 +874,21 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 stage.priorities.add(valid);
             }
             {
+                Priority<LiteUnderhaulSFR> outputFloor = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(minOutput);
+                min1.v2.set(priorityMultiblock.getVariable(1));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(minOutput);
+                min2.v2.set(getVariable(1));
+                validOp.v2.set(min2);
+                outputFloor.operator.set(validOp);
+                stage.priorities.add(outputFloor);
+            }
+            {
                 Priority<LiteUnderhaulSFR> efficiency = new Priority<>();
-                ConditionGreaterEqual condition = new ConditionGreaterEqual();
-                efficiency.conditions.add(condition);
                 OperatorSubtraction efficiencyOp = new OperatorSubtraction();
                 efficiencyOp.v1.set(priorityMultiblock.getVariable(5));
                 efficiencyOp.v2.set(getVariable(5));
@@ -548,14 +908,6 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 stableOp.v2.set(max2);
                 stable.operator.set(stableOp);
                 stage.priorities.add(stable);
-            }
-            {
-                Priority<LiteUnderhaulSFR> efficiency = new Priority<>();
-                OperatorSubtraction efficiencyOp = new OperatorSubtraction();
-                efficiencyOp.v1.set(priorityMultiblock.getVariable(5));
-                efficiencyOp.v2.set(getVariable(5));
-                efficiency.operator.set(efficiencyOp);
-                stage.priorities.add(efficiency);
             }
             {
                 Priority<LiteUnderhaulSFR> output = new Priority<>();
@@ -588,22 +940,20 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             {
                 StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
                 transition.targetStage.set(2);
-                ConditionAnd and = new ConditionAnd();
-                ArrayList<Condition> conditions = new ArrayList<>();
                 ConditionGreaterEqual hits = new ConditionGreaterEqual();
                 hits.v1.set(stage.getVariable(0));
                 hits.v2.set(new ConstInt(1000));
-                conditions.add(hits);
+                transition.conditions.add(hits);
                 ConditionGreaterEqual time = new ConditionGreaterEqual();
                 time.v1.set(gen.getVariable(2));
-                time.v2.set(new ConstInt(2_500));
-                conditions.add(time);
-                and.conditions.set(conditions);
-                transition.conditions.add(and);
+                time.v2.set(ctimeout);
+                transition.conditions.add(time);
                 stage.stageTransitions.add(transition);
             }
             gen.stages.add(stage);
         }
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Stage 3 - Stabilize">
         {
             GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
             {
@@ -633,6 +983,20 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 stableOp.v2.set(max2);
                 stable.operator.set(stableOp);
                 stage.priorities.add(stable);
+            }
+            {
+                Priority<LiteUnderhaulSFR> outputFloor = new Priority<>();
+                OperatorSubtraction validOp = new OperatorSubtraction();
+                OperatorMinimum min1 = new OperatorMinimum();
+                min1.v1.set(minOutput);
+                min1.v2.set(priorityMultiblock.getVariable(1));
+                validOp.v1.set(min1);
+                OperatorMinimum min2 = new OperatorMinimum();
+                min2.v1.set(minOutput);
+                min2.v2.set(getVariable(1));
+                validOp.v2.set(min2);
+                outputFloor.operator.set(validOp);
+                stage.priorities.add(outputFloor);
             }
             {
                 Priority<LiteUnderhaulSFR> efficiency = new Priority<>();
@@ -671,8 +1035,79 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
                 stage.steps.add(mutator);
             }
+            {
+                Priority<LiteUnderhaulSFR> stable = new Priority<>();
+                OperatorSubtraction stableOp = new OperatorSubtraction();
+                OperatorMaximum max1 = new OperatorMaximum();
+                max1.v1.set(new ConstInt(0));
+                max1.v2.set(getVariable(0));
+                stableOp.v1.set(max1);
+                OperatorMaximum max2 = new OperatorMaximum();
+                max2.v1.set(new ConstInt(0));
+                max2.v2.set(priorityMultiblock.getVariable(0));
+                stableOp.v2.set(max2);
+                stable.operator.set(stableOp);
+                stage.priorities.add(stable);
+            }
+            {
+                StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
+                transition.targetStage.set(-2);
+                ConditionGreaterEqual hits = new ConditionGreaterEqual();
+                hits.v1.set(stage.getVariable(0));
+                hits.v2.set(new ConstInt(10000));
+                transition.conditions.add(hits);
+                ConditionGreaterEqual time = new ConditionGreaterEqual();
+                time.v1.set(gen.getVariable(2));
+                time.v2.set(timeout);
+                transition.conditions.add(time);
+                ConditionLessEqual heat = new ConditionLessEqual();
+                heat.v1.set(getVariable(0));
+                heat.v2.set(new ConstInt(0));
+                transition.conditions.add(heat);
+                ConditionLess stored = new ConditionLess();
+                stored.v1.set(gen.getVariable(3));
+                stored.v2.set(reactorCount);
+                transition.conditions.add(stored);
+                stage.stageTransitions.add(transition);
+            }
+            {
+                StageTransition<LiteUnderhaulSFR> transition = new StageTransition<>();
+                transition.targetStage.set(-1);
+                ConditionGreaterEqual hits = new ConditionGreaterEqual();
+                hits.v1.set(stage.getVariable(0));
+                hits.v2.set(new ConstInt(10000));
+                transition.conditions.add(hits);
+                ConditionGreaterEqual time = new ConditionGreaterEqual();
+                time.v1.set(gen.getVariable(2));
+                time.v2.set(timeout);
+                transition.conditions.add(time);
+                ConditionLessEqual heat = new ConditionLessEqual();
+                heat.v1.set(getVariable(0));
+                heat.v2.set(new ConstInt(0));
+                transition.conditions.add(heat);
+                ConditionGreaterEqual stored = new ConditionGreaterEqual();
+                stored.v1.set(gen.getVariable(3));
+                stored.v2.set(reactorCount);
+                transition.conditions.add(stored);
+                stage.stageTransitions.add(transition);
+            }
             gen.stages.add(stage);
         }
-        return gen;
+        //</editor-fold>
+        gens.add(gen);
+        //</editor-fold>
+        }
+        return gens.toArray(new LiteGenerator[gens.size()]);
+    }
+    @Override
+    public void clear(){
+        for(int x = 0; x<configuration.maxSize; x++){
+            for(int y = 0; y<configuration.maxSize; y++){
+                for(int z = 0; z<configuration.maxSize; z++){
+                    blocks[x][y][z] = -1;
+                }
+            }
+        }
+        calculate();//fix vars
     }
 }
