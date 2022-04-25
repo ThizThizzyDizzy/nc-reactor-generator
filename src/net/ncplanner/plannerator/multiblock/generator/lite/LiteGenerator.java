@@ -111,7 +111,10 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithSetting
                 }
                 if(transition.stop.get()){
                     onExit.run();
-                }else stage = transition.targetStage.get();
+                }else{
+                    stage = transition.targetStage.get();
+                    stages.get(stage).hits = 0;
+                }
                 break;
             }
         }
