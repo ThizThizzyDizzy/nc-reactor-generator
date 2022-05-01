@@ -446,12 +446,14 @@ public class MenuMain extends Menu{
         }else{
             convertOverhaulMSFR.enabled = false;
             convertOverhaulMSFR.y = -convertOverhaulMSFR.height*100;
+            convertOverhaulMSFR.width = 0;
         }
         if(getSelectedMultiblock() instanceof OverhaulTurbine){
             setInputs.enabled = true;
         }else{
             setInputs.enabled = false;
             setInputs.y = -setInputs.height*100;
+            setInputs.width = 0;
         }
         credits.y = gui.getHeight()-credits.height;
         credits.x = gui.getWidth()-credits.width;
