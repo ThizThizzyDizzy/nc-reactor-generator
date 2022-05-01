@@ -154,12 +154,18 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 if(id==VR.k_unTrackedDeviceIndex_Hmd)continue;//don't do mouseover for headset
                 int[] mouseover = deviceover.get(id);
                 if(mouseover!=null){
+                    renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
+                    editor.getSymmetry().apply(mouseover[0], mouseover[1], mouseover[2], multiblock.getBoundingBox(), (bx, by, bz) -> {
+                        float X = bx*blockSize;
+                        float Y = by*blockSize;
+                        float Z = bz*blockSize;
+                        float border = blockSize/16;
+                        renderer.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
+                    });
                     float X = mouseover[0]*blockSize;
                     float Y = mouseover[1]*blockSize;
                     float Z = mouseover[2]*blockSize;
                     float border = blockSize/16;
-                    renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
-                    renderer.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
                     renderer.setColor(Core.theme.getEditorMouseoverLineColor());
                     X+=blockSize/2;
                     Y+=blockSize/2;

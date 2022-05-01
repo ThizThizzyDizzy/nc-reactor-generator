@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
@@ -72,6 +73,27 @@ public class MenuComponentEditorGrid extends Component{
         resonatingAlpha = (float) (-Math.cos(2*Math.PI*resonatingTick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
         super.render2d(deltaTime);
     }
+    private void forEachMouseover(BlockPosConsumer func){
+        int[] bmo = mouseover==null?null:toBlockCoords(mouseover[0], mouseover[1]);
+        if(mouseover==null){
+            for(Component comp : editor.multibwauk.components){
+                if(comp instanceof MenuComponentEditorGrid){
+                    MenuComponentEditorGrid grid = (MenuComponentEditorGrid)comp;
+                    if(grid==this)continue;
+                    if(grid.axis!=axis)continue;
+                    if(grid.x1!=x1)continue;
+                    if(grid.x2!=x2)continue;
+                    if(grid.y1!=y1)continue;
+                    if(grid.y2!=y2)continue;
+                    if(grid.mouseover==null)continue;
+                    bmo = grid.toBlockCoords(grid.mouseover[0], grid.mouseover[1]);
+                    break;
+                }
+            }
+        }
+        if(bmo==null)return;
+        editor.getSymmetry().apply(bmo[0], bmo[1], bmo[2], multiblock.getBoundingBox(), func);
+    }
     @Override
     public void draw(double deltaTime){
         Renderer renderer = new Renderer();
@@ -83,10 +105,12 @@ public class MenuComponentEditorGrid extends Component{
             blockSize = (int) Math.min(width/blocksWide, height/blocksHigh);
             renderer.setColor(Core.theme.getEditorBackgroundColor());
             renderer.fillRect(x,y,x+width,y+height);
-            if(mouseover!=null){
+            forEachMouseover((bx, by, bz) -> {
+                int[] coords = toMouseCoords(bx, by, bz);
+                if(coords==null)return;
                 renderer.setColor(Core.theme.getEditorBackgroundMouseoverColor());
-                renderer.fillRect(x+mouseover[0]*blockSize, y+mouseover[1]*blockSize, x+(mouseover[0]+1)*blockSize, y+(mouseover[1]+1)*blockSize);
-            }
+                renderer.fillRect(x+coords[0]*blockSize, y+coords[1]*blockSize, x+(coords[0]+1)*blockSize, y+(coords[1]+1)*blockSize);
+            });
         }
         renderer.setColor(Core.theme.getEditorGridColor());
         for(int x = 0; x<=blocksWide; x++){
@@ -226,9 +250,11 @@ public class MenuComponentEditorGrid extends Component{
         }
         editor.getSelectedTool(0).drawGhosts(renderer, editorSpace, x1, y1, x2, y2, blocksWide, blocksHigh, axis, layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?null:editor.getSelectedBlock(0).getTexture()));
         synchronized(synchronizer){
-            if(mouseover!=null){
-                float X = this.x+mouseover[0]*blockSize;
-                float Y = this.y+mouseover[1]*blockSize;
+            forEachMouseover((x, y, z) -> {
+                int[] coords = toMouseCoords(x, y, z);
+                if(coords==null)return;
+                float X = this.x+coords[0]*blockSize;
+                float Y = this.y+coords[1]*blockSize;
                 float border = blockSize/8;
                 renderer.setColor(Core.theme.getEditorMouseoverLightColor(), .6375f);
                 renderer.fillRect(X, Y, X+border, Y+border);
@@ -240,6 +266,11 @@ public class MenuComponentEditorGrid extends Component{
                 renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
                 renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
                 renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
+            });
+            if(mouseover!=null){
+                float X = this.x+mouseover[0]*blockSize;
+                float Y = this.y+mouseover[1]*blockSize;
+                float border = blockSize/8;
                 renderer.setColor(Core.theme.getEditorMouseoverLineColor(), 0.6375f);
                 renderer.fillRect(this.x, Y+blockSize/2-border/2, X, Y+blockSize/2+border/2);
                 renderer.fillRect(X+blockSize, Y+blockSize/2-border/2, this.x+this.width, Y+blockSize/2+border/2);
@@ -264,6 +295,24 @@ public class MenuComponentEditorGrid extends Component{
                 }
             }
         }
+    }
+    public int[] toBlockCoords(int sx, int sy){
+        int bx = sx*xAxis.x+sy*yAxis.x+layer*axis.x;
+        int by = sx*xAxis.y+sy*yAxis.y+layer*axis.y;
+        int bz = sx*xAxis.z+sy*yAxis.z+layer*axis.z;
+        return new int[]{bx,by,bz};
+    }
+    public int[] toMouseCoords(int bx, int by, int bz){
+        int sx = xAxis.x*bx+xAxis.y*by+xAxis.z*bz;
+        int sy = yAxis.x*bx+yAxis.y*by+yAxis.z*bz;
+        if(axis.x!=0&&bx!=layer)return null;
+        if(axis.y!=0&&by!=layer)return null;
+        if(axis.z!=0&&bz!=layer)return null;
+        if(sx<x1)return null;
+        if(sx>x2)return null;
+        if(sy<y1)return null;
+        if(sy>y2)return null;
+        return new int[]{sx,sy};
     }
     @Override
     public void onCursorMoved(double x, double y){

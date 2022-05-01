@@ -19,6 +19,9 @@ public class Symmetry{
         this.ry180 = ry180;
         this.rz180 = rz180;
     }
+    public void apply(int x, int y, int z, BoundingBox bbox, BlockPosConsumer consumer){
+        apply(x, y, z, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), consumer);
+    }
     public void apply(int x, int y, int z, int w, int h, int d, BlockPosConsumer consumer){
         HashSet<BlockPos> positions = new HashSet<>();
         positions.add(new BlockPos(x, y, z));

@@ -1386,15 +1386,19 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             if(comp instanceof MenuComponentEditorGrid){
                 MenuComponentEditorGrid grid = (MenuComponentEditorGrid)comp;
                 if(grid.mouseover==null)continue;
-                int bx = (grid.x1+grid.mouseover[0])*grid.xAxis.x+(grid.y1+grid.mouseover[1])*grid.yAxis.x+grid.layer*grid.axis.x;
-                int by = (grid.x1+grid.mouseover[0])*grid.xAxis.y+(grid.y1+grid.mouseover[1])*grid.yAxis.y+grid.layer*grid.axis.y;
-                int bz = (grid.x1+grid.mouseover[0])*grid.xAxis.z+(grid.y1+grid.mouseover[1])*grid.yAxis.z+grid.layer*grid.axis.z;
-                float X = bx*blockSize;
-                float Y = by*blockSize;
-                float Z = bz*blockSize;
-                float border = blockSize/16;
+                int[] coords = grid.toBlockCoords(grid.mouseover[0], grid.mouseover[1]);
                 renderer.setColor(Core.theme.get3DDeviceoverOutlineColor());
-                renderer.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
+                getSymmetry().apply(coords[0], coords[1], coords[2], bbox, (bx, by, bz) -> {
+                    float X = bx*blockSize;
+                    float Y = by*blockSize;
+                    float Z = bz*blockSize;
+                    float border = blockSize/16;
+                    renderer.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
+                });
+                float X = coords[0]*blockSize;
+                float Y = coords[1]*blockSize;
+                float Z = coords[2]*blockSize;
+                float border = blockSize/16;
                 renderer.setColor(Core.theme.getEditorMouseoverLineColor());
                 X+=blockSize/2;
                 Y+=blockSize/2;
