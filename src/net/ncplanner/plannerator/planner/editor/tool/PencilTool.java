@@ -56,7 +56,7 @@ public class PencilTool extends EditorTool{
                     set.add(i[0], i[1], i[2]);
                 }
             }
-            editor.setblocks(id, set);
+            if(!set.isEmpty())editor.setblocks(id, set);
         }
         if(button==1){
             SetblocksAction set = new SetblocksAction(null);
@@ -65,7 +65,7 @@ public class PencilTool extends EditorTool{
                     set.add(i[0], i[1], i[2]);
                 }
             }
-            editor.setblocks(id, set);
+            if(!set.isEmpty())editor.setblocks(id, set);
         }
         if(button==0){
             leftDragStart = null;
