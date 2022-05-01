@@ -1,9 +1,12 @@
 package net.ncplanner.plannerator.planner.editor.tool;
 import java.util.ArrayList;
+import java.util.HashSet;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.BoundingBox;
+import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Core;
@@ -56,6 +59,7 @@ public class PencilTool extends EditorTool{
                     set.add(i[0], i[1], i[2]);
                 }
             }
+            set.symmetrize(editor.getMultiblock(), editor.getSymmetry());
             if(!set.isEmpty())editor.setblocks(id, set);
         }
         if(button==1){
@@ -65,6 +69,7 @@ public class PencilTool extends EditorTool{
                     set.add(i[0], i[1], i[2]);
                 }
             }
+            set.symmetrize(editor.getMultiblock(), editor.getSymmetry());
             if(!set.isEmpty())editor.setblocks(id, set);
         }
         if(button==0){
@@ -132,7 +137,7 @@ public class PencilTool extends EditorTool{
     public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         renderer.setWhite(.5f);
         synchronized(leftSelectedBlocks){
-            for(int[] i : leftSelectedBlocks){
+            for(int[] i : symmetrize(leftSelectedBlocks, editor.getSymmetry())){
                 int bx = i[0];
                 int by = i[1];
                 int bz = i[2];
@@ -149,7 +154,7 @@ public class PencilTool extends EditorTool{
         }
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         synchronized(rightSelectedBlocks){
-            for(int[] i : rightSelectedBlocks){
+            for(int[] i : symmetrize(rightSelectedBlocks, editor.getSymmetry())){
                 int bx = i[0];
                 int by = i[1];
                 int bz = i[2];
@@ -171,13 +176,13 @@ public class PencilTool extends EditorTool{
         renderer.setWhite(.5f);
         float border = blockSize/64;
         synchronized(leftSelectedBlocks){
-            for(int[] i : leftSelectedBlocks){
+            for(int[] i : symmetrize(leftSelectedBlocks, editor.getSymmetry())){
                 renderer.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, texture);
             }
         }
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         synchronized(rightSelectedBlocks){
-            for(int[] i : rightSelectedBlocks){
+            for(int[] i : symmetrize(rightSelectedBlocks, editor.getSymmetry())){
                 if(editor.getMultiblock().getBlock(i[0], i[1], i[2])==null)continue;
                 renderer.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, null);
             }
@@ -193,5 +198,15 @@ public class PencilTool extends EditorTool{
     @Override
     public void mouseMovedElsewhere(Object obj, EditorSpace editorSpace){
         leftStart = rightStart = null;
+    }
+    private Iterable<int[]> symmetrize(ArrayList<int[]> leftSelectedBlocks, Symmetry symmetry){
+        HashSet<int[]> set = new HashSet<>();
+        BoundingBox bbox = editor.getMultiblock().getBoundingBox();
+        leftSelectedBlocks.forEach((t) -> {
+            symmetry.apply(t[0], t[1], t[2], bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), (x, y, z) -> {
+                set.add(new int[]{x,y,z});
+            });
+        });
+        return set;
     }
 }

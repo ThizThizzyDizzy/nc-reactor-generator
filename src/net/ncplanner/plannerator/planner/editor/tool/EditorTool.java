@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.Editor;
@@ -58,6 +59,16 @@ public abstract class EditorTool{
     public void raytrace(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step){
         raytrace(fromX, fromY, fromZ, toX, toY, toZ, step, true);
     }
+    public void raytrace(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step, boolean includeFirst, Symmetry symmetry, int width, int height, int depth){
+        raytrace(fromX, fromY, fromZ, toX, toY, toZ, (x, y, z) -> {
+            symmetry.apply(x, y, z, width, height, depth, (X, Y, Z) -> {
+                step.step(X, Y, Z);
+            });
+        }, includeFirst);
+    }
+    public void raytrace(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step, Symmetry symmetry, int width, int height, int depth){
+        raytrace(fromX, fromY, fromZ, toX, toY, toZ, step, true, symmetry, width, height, depth);
+    }
     public static interface TraceStep3{
         public void step(int x, int y, int z);
     }
@@ -84,5 +95,12 @@ public abstract class EditorTool{
                 }
             }
         }
+    }
+    public void foreach(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step, Symmetry symmetry, int width, int height, int depth){
+        foreach(fromX, fromY, fromZ, toX, toY, toZ, (x, y, z) -> {
+            symmetry.apply(x, y, z, width, height, depth, (X, Y, Z) -> {
+                step.step(X, Y, Z);
+            });
+        });
     }
 }

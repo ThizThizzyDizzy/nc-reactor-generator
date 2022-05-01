@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.multiblock.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.Symmetry;
 public abstract class Action<T extends Multiblock>{
     public ActionResult<T> apply(T multiblock, boolean allowUndo){
         ArrayList<Block> blocks = new ArrayList<>();

@@ -9,6 +9,7 @@ import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.ClearSelectionAction;
@@ -86,6 +87,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     public ArrayList<Suggestion> suggestions = new ArrayList<>();
     private ArrayList<Suggestor> suggestors = new ArrayList<>();
     private Task suggestionTask;
+    private Symmetry symmetry = new Symmetry();
     public VRMenuEdit(VRGUI gui, Multiblock multiblock){
         super(gui, null);
         this.multiblock = multiblock;
@@ -609,5 +611,9 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     public HashMap<String, Object> getDebugInfo(HashMap<String, Object> debugInfo){
         debugInfo.put("multiblock-type", multiblock.getDefinitionName());
         return debugInfo;
+    }
+    @Override
+    public Symmetry getSymmetry(){
+        return symmetry;
     }
 }

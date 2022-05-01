@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Task;
@@ -51,4 +52,5 @@ public interface Editor{
     public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe getSelectedOverhaulMSRBlockRecipe(int id);
     public ArrayList<Suggestion> getSuggestions();
     public Task getTask();
+    public Symmetry getSymmetry();
 }

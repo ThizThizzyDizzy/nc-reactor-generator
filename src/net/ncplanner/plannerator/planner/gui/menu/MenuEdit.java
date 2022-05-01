@@ -13,6 +13,7 @@ import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
+import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
@@ -81,6 +82,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderFuel;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSymmetrySettings;
 import net.ncplanner.plannerator.planner.module.Module;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -158,6 +160,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public final DropdownList blockRecipe = new DropdownList(0, 0, 0, 32, true);
     private final TextView textBox = add(new TextView(0, 0, 0, 0, 24, 24));
     private final Button editMetadata = add(new Button(0, 0, 0, 0, "", true).setTooltip("Modify the multiblock metadata"));
+    private final Button symmetrySettings = add(new Button(0, 0, 0, 0, "Symmetry", true));
     public final SingleColumnList tools = add(new SingleColumnList(0, 0, 0, 0, partSize/2));
     private final MenuComponentTurbineRotorGraph graph;
     private final Button partsList = add(new Button(0, 0, 0, 0, "Parts List", true, true).setTooltip("View a parts list for this multiblock"));
@@ -196,6 +199,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public float maxYRot = 80f;
     public float xRot = 30;
     public float yRot = 30;
+    public Symmetry symmetry = new Symmetry();
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         suggestionList.optimizeForLargeComponentCount = true;
@@ -234,6 +238,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         });
         editMetadata.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
+        });
+        symmetrySettings.addAction(() -> {
+            new MenuSymmetrySettings(gui, this, symmetry).open(); 
         });
         partsList.addAction(() -> {
             new MenuDialog(gui, this){
@@ -428,9 +435,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         partsSearch.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
         tools.width = partSize;
         partsSearch.x = parts.x = tools.width+partSize/4;
-        partsList.x = editMetadata.x = textBox.width = graph.width = multibwauk.x = parts.x+parts.width;
+        partsList.x = symmetrySettings.x = textBox.width = graph.width = multibwauk.x = parts.x+parts.width;
         recalc.width = calcStep.width = textBox.width/2;
-        toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = partsList.height = generate.height = tools.y = multibwauk.y = editMetadata.height = back.height = 48;
+        toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = partsList.height = generate.height = tools.y = multibwauk.y = symmetrySettings.height = editMetadata.height = back.height = 48;
         partsSearch.height = partSize;
         parts.y = tools.y+partSize;
         calcStep.x = recalc.width;
@@ -445,7 +452,10 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         parts.height = Math.max(tools.height-partSize, Math.min((gui.getHeight()-parts.y-progress.height-recalc.height)/2, ((parts.components.size()+partsWide-1)/partsWide)*partSize));
         tools.height = parts.height+partSize;
         resize.width = 320;
-        editMetadata.width = multibwauk.width = gui.getWidth()-parts.x-parts.width-resize.width;
+        multibwauk.width = gui.getWidth()-parts.x-parts.width-resize.width;
+        symmetrySettings.width = multibwauk.width/2;
+        editMetadata.width = multibwauk.width-symmetrySettings.width;
+        editMetadata.x = symmetrySettings.x+symmetrySettings.width;
         generate.width = partsList.width = (multibwauk.width-generate.height)/2;
         generate.x = partsList.x+partsList.width;
         suggestorSettings.x = generate.x+generate.width;
@@ -1449,5 +1459,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public HashMap<String, Object> getDebugInfo(HashMap<String, Object> debugInfo){
         debugInfo.put("multiblock-type", multiblock.getDefinitionName());
         return debugInfo;
+    }
+    @Override
+    public Symmetry getSymmetry(){
+        return symmetry;
     }
 }

@@ -8,6 +8,9 @@ public class Symmetry{
     public boolean rx180;
     public boolean ry180;
     public boolean rz180;
+    public Symmetry(){
+        this(false,false,false,false,false,false);
+    }
     public Symmetry(boolean mx, boolean my, boolean mz, boolean rx180, boolean ry180, boolean rz180){
         this.mx = mx;
         this.my = my;

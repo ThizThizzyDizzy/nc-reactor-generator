@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 public class SetblocksAction extends Action<Multiblock>{
     public final HashSet<int[]> locations = new HashSet<>();
@@ -49,5 +51,15 @@ public class SetblocksAction extends Action<Multiblock>{
             }
         }
         return false;
+    }
+    public void symmetrize(Multiblock multiblock, Symmetry symmetry){
+        ArrayList<int[]> newLocs = new ArrayList<>();
+        BoundingBox bbox = multiblock.getBoundingBox();
+        locations.forEach((t) -> {
+            symmetry.apply(t[0], t[1], t[2], bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), (x, y, z) -> {
+                newLocs.add(new int[]{x,y,z});
+            });
+        });
+        locations.addAll(newLocs);
     }
 }
