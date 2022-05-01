@@ -49,9 +49,14 @@ public class MenuComponentSuggestion extends Component implements Searchable{
         return suggestion.getDescription();
     }
     @Override
-    public void onCursorMoved(double xpos, double ypos){
-        suggestion.selected = isMouseFocused;
-        super.onCursorMoved(xpos, ypos);
+    public void onCursorEntered(){
+        suggestion.selected = true;
+        super.onCursorEntered();
+    }
+    @Override
+    public void onCursorExited(){
+        super.onCursorExited();
+        suggestion.selected = false;
     }
     @Override
     public void onMouseButton(double x, double y, int button, int action, int mods){

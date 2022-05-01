@@ -26,6 +26,419 @@ public class Renderer{
     private static Matrix4fStack modelMatStack = new Matrix4fStack(64);
     private static final HashMap<String, Element> elements = new HashMap<>();
     static{
+        elements.put("cube", new Element(){
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+                float[] verticies = new float[]{
+                    //+z
+                    0, 0, 1, 0, 0, 1, 0, 1,
+                    0, 1, 1, 0, 0, 1, 0, 0,
+                    1, 0, 1, 0, 0, 1, 1, 1,
+                    1, 1, 1, 0, 0, 1, 1, 0,
+                    //-z
+                    0, 0, 0, 0, 0, -1, 0, 1,
+                    1, 0, 0, 0, 0, -1, 1, 1,
+                    0, 1, 0, 0, 0, -1, 0, 0,
+                    1, 1, 0, 0, 0, -1, 1, 0,
+                    //+y
+                    0, 1, 0, 0, 1, 0, 0, 0,
+                    1, 1, 0, 0, 1, 0, 1, 0,
+                    0, 1, 1, 0, 1, 0, 0, 1,
+                    1, 1, 1, 0, 1, 0, 1, 1,
+                    //-y
+                    0, 0, 0, 0, -1, 0, 0, 1,
+                    0, 0, 1, 0, -1, 0, 0, 0,
+                    1, 0, 0, 0, -1, 0, 1, 1,
+                    1, 0, 1, 0, -1, 0, 1, 0,
+                    //+x
+                    1, 0, 0, 1, 0, 0, 0, 1,
+                    1, 0, 1, 1, 0, 0, 1, 1,
+                    1, 1, 0, 1, 0, 0, 0, 0,
+                    1, 1, 1, 1, 0, 0, 1, 0,
+                    //-x
+                    0, 0, 0, -1, 0, 0, 0, 1,
+                    0, 1, 0, -1, 0, 0, 0, 0,
+                    0, 0, 1, -1, 0, 0, 1, 1,
+                    0, 1, 1, -1, 0, 0, 1, 0
+                };
+                int[] indicies = new int[]{
+                    //+z
+                    1, 0, 2,
+                    3, 1, 2,
+                    //-z
+                    5, 4, 6,
+                    7, 5, 6,
+                    //+y
+                    9, 8, 10,
+                    11, 9, 10,
+                    //-y
+                    13, 12, 14,
+                    15, 13, 14,
+                    //+x
+                    17, 16, 18,
+                    19, 17, 18,
+                    //-x
+                    21, 20, 22,
+                    23, 21, 22
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+        elements.put("cube_pz", new Element(){
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+                float[] verticies = new float[]{
+                    0, 0, 1, 0, 0, 1, 0, 1,
+                    0, 1, 1, 0, 0, 1, 0, 0,
+                    1, 0, 1, 0, 0, 1, 1, 1,
+                    1, 1, 1, 0, 0, 1, 1, 0
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+        elements.put("cube_nz", new Element(){
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+                float[] verticies = new float[]{
+                    0, 0, 0, 0, 0, -1, 0, 1,
+                    1, 0, 0, 0, 0, -1, 1, 1,
+                    0, 1, 0, 0, 0, -1, 0, 0,
+                    1, 1, 0, 0, 0, -1, 1, 0
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+        elements.put("cube_py", new Element(){
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+                float[] verticies = new float[]{
+                    0, 1, 0, 0, 1, 0, 0, 0,
+                    1, 1, 0, 0, 1, 0, 1, 0,
+                    0, 1, 1, 0, 1, 0, 0, 1,
+                    1, 1, 1, 0, 1, 0, 1, 1
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+        elements.put("cube_ny", new Element(){
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+                float[] verticies = new float[]{
+                    0, 0, 0, 0, -1, 0, 0, 1,
+                    0, 0, 1, 0, -1, 0, 0, 0,
+                    1, 0, 0, 0, -1, 0, 1, 1,
+                    1, 0, 1, 0, -1, 0, 1, 0
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+        elements.put("cube_px", new Element(){
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+                float[] verticies = new float[]{
+                    1, 0, 0, 1, 0, 0, 0, 1,
+                    1, 0, 1, 1, 0, 0, 1, 1,
+                    1, 1, 0, 1, 0, 0, 0, 0,
+                    1, 1, 1, 1, 0, 0, 1, 0
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+        elements.put("cube_nx", new Element(){
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+                float[] verticies = new float[]{
+                    0, 0, 0, -1, 0, 0, 0, 1,
+                    0, 1, 0, -1, 0, 0, 0, 0,
+                    0, 0, 1, -1, 0, 0, 1, 1,
+                    0, 1, 1, -1, 0, 0, 1, 0
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
         elements.put("pencil", new Element(){
             public int vao, vbo, ebo;
             @Override
@@ -153,6 +566,60 @@ public class Renderer{
                 glDeleteVertexArrays(vao);
             }
         });
+        elements.put("rect", new Element() {
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+
+                float[] verticies = new float[]{
+                    0, 0, 0, 0, 0, 1, 0, 1,//top left
+                    0, 1, 0, 0, 0, 1, 0, 0,//bottom left
+                    1, 0, 0, 0, 0, 1, 1, 1,//top right
+                    1, 1, 0, 0, 0, 1, 1, 0//bottom right
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
     }
     public static void initElements(){
         for(Element e : elements.values())e.init();
@@ -180,7 +647,7 @@ public class Renderer{
             top = t;
         }
         unbindTexture();
-        drawScreenRect(left, top, right, bottom, 1, 0, 0, 1, 1);
+        drawElement("rect", left, top, right-left, bottom-top);
     }
     public void drawScreenRect(float x1, float y1, float x2, float y2, float z, float s0, float t0, float s1, float t1){
         drawScreenQuad(x1, y1, x1, y2, x2, y1, x2, y2, z, s0, t1, s0, t0, s1, t1, s1, t0);
@@ -340,7 +807,8 @@ public class Renderer{
         if(tex==0)fillRect(left, top, right, bottom);
         else{
             bindTexture(tex);
-            drawScreenRect(left, top, right, bottom, 1, 0, 0, 1, 1);
+            drawElement("rect", left, top, right-left, bottom-top);
+//            drawScreenRect(left, top, right, bottom, 1, 0, 0, 1, 1);
         }
     }
     public void drawText(float x, float y, String text, float height){
@@ -674,9 +1142,8 @@ public class Renderer{
      * @param texture the texture used to render the cube
      */
     public void drawCube(float x1, float y1, float z1, float x2, float y2, float z2, Image texture){
-        drawCube(x1, y1, z1, x2, y2, z2, texture, (t) -> {
-            return true;
-        });
+        bindTexture(Math.max(0,Core.getTexture(texture)));
+        drawElement("cube", x1, y1, z1, x2-x1, y2-y1, z2-z1);
     }
     /**
      * Draws a cube using one texture for all sides
@@ -698,84 +1165,12 @@ public class Renderer{
         boolean nz = faceRenderFunc.apply(Direction.NZ);
         if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
         bindTexture(Math.max(0,Core.getTexture(texture)));
-        //xy +z
-        if(pz){
-            drawQuad(
-                    new Vector3f(x1, y1, z2),
-                    new Vector3f(x1, y2, z2),
-                    new Vector3f(x2, y1, z2),
-                    new Vector3f(x2, y2, z2),
-                    new Vector2f(0, 1),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 1),
-                    new Vector2f(1, 0),
-                    new Vector3f(0, 0, 1));
-        }
-        //xy -z
-        if(nz){
-            drawQuad(
-                    new Vector3f(x1, y1, z1),
-                    new Vector3f(x2, y1, z1),
-                    new Vector3f(x1, y2, z1),
-                    new Vector3f(x2, y2, z1),
-                    new Vector2f(0, 1),
-                    new Vector2f(1, 1),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 0),
-                    new Vector3f(0, 0, -1));
-        }
-        //xz +y
-        if(py){
-            drawQuad(
-                    new Vector3f(x1, y2, z1),
-                    new Vector3f(x2, y2, z1),
-                    new Vector3f(x1, y2, z2),
-                    new Vector3f(x2, y2, z2),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 0),
-                    new Vector2f(0, 1),
-                    new Vector2f(1, 1),
-                    new Vector3f(0, 1, 0));
-        }
-        //xz -y
-        if(ny){
-            drawQuad(
-                    new Vector3f(x1, y1, z1),
-                    new Vector3f(x1, y1, z2),
-                    new Vector3f(x2, y1, z1),
-                    new Vector3f(x2, y1, z2),
-                    new Vector2f(0, 1),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 1),
-                    new Vector2f(1, 0),
-                    new Vector3f(0, -1, 0));
-        }
-        //yz +x
-        if(px){
-            drawQuad(
-                    new Vector3f(x2, y1, z1),
-                    new Vector3f(x2, y1, z2),
-                    new Vector3f(x2, y2, z1),
-                    new Vector3f(x2, y2, z2),
-                    new Vector2f(0, 1),
-                    new Vector2f(1, 1),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 0),
-                    new Vector3f(1, 0, 0));
-        }
-        //yz -x
-        if(nx){
-            drawQuad(
-                    new Vector3f(x1, y1, z1),
-                    new Vector3f(x1, y2, z1),
-                    new Vector3f(x1, y1, z2),
-                    new Vector3f(x1, y2, z2),
-                    new Vector2f(0, 1),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 1),
-                    new Vector2f(1, 0),
-                    new Vector3f(-1, 0, 0));
-        }
+        if(pz)drawElement("cube_pz", x1, y1, z1, x2-x1, y2-y1, z2-z1);
+        if(nz)drawElement("cube_nz", x1, y1, z1, x2-x1, y2-y1, z2-z1);
+        if(py)drawElement("cube_py", x1, y1, z1, x2-x1, y2-y1, z2-z1);
+        if(ny)drawElement("cube_ny", x1, y1, z1, x2-x1, y2-y1, z2-z1);
+        if(px)drawElement("cube_px", x1, y1, z1, x2-x1, y2-y1, z2-z1);
+        if(nx)drawElement("cube_nx", x1, y1, z1, x2-x1, y2-y1, z2-z1);
     }
     /**
      * Draws a solid-colored cube outline
@@ -1100,7 +1495,10 @@ public class Renderer{
         redrawStencil();
     }
     public void drawElement(String name, float x, float y, float width, float height){
-        model(new Matrix4f().setTranslation(x, y, 1).scale(width, height, 0));
+        drawElement(name, x, y, 1, width, height, 1);
+    }
+    public void drawElement(String name, float x, float y, float z, float width, float height, float depth){
+        model(new Matrix4f().setTranslation(x, y, z).scale(width, height, depth));
         drawElement(name);
         resetModelMatrix();
     }

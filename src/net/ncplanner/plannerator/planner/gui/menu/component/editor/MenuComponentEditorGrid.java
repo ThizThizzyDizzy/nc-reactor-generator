@@ -181,50 +181,46 @@ public class MenuComponentEditorGrid extends Component{
                         renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
                     }
                 }
-                //TODO there's a better way do do this, but this'll do for now
-                for(Suggestion s : editor.getSuggestions()){
-                    if(affects(s, x, y)){
-                        if(s.selected&&s.result!=null){
-                            Block b = s.result.getBlock(bx, by, bz);
-                            renderer.setWhite(resonatingAlpha+.5f);
-                            if(b==null){
-                                renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
-                            }else{
-                                b.render(renderer, X, Y, blockSize, blockSize, false, resonatingAlpha+.5f, s.result);
+                {
+                    boolean stl = false, st = false, str = false, sr = false, sbr = false, sb = false, sbl = false, sl = false, sg = false;
+                    for(Suggestion s : editor.getSuggestions()){
+                        if(affects(s, x, y)){
+                            if(s.selected&&s.result!=null){
+                                Block b = s.result.getBlock(bx, by, bz);
+                                renderer.setWhite(resonatingAlpha+.5f);
+                                if(b==null){
+                                    renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
+                                }else{
+                                    b.render(renderer, X, Y, blockSize, blockSize, false, resonatingAlpha+.5f, s.result);
+                                }
                             }
-                        }
-                        renderer.setColor(Core.theme.getSuggestionOutlineColor());
-                        float border = blockSize/40f;
-                        if(s.selected)border*=3;
-                        boolean top = affects(s, x, y-1);
-                        boolean right = affects(s, x+1, y);
-                        boolean bottom = affects(s, x, y+1);
-                        boolean left = affects(s, x-1, y);
-                        if(!top||!left||!affects(s, x-1, y-1)){//top left
-                            renderer.fillRect(X, Y, X+border, Y+border);
-                        }
-                        if(!top){//top
-                            renderer.fillRect(X+border, Y, X+blockSize-border, Y+border);
-                        }
-                        if(!top||!right||!affects(s, x+1, y-1)){//top right
-                            renderer.fillRect(X+blockSize-border, Y, X+blockSize, Y+border);
-                        }
-                        if(!right){//right
-                            renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
-                        }
-                        if(!bottom||!right||!affects(s, x+1, y+1)){//bottom right
-                            renderer.fillRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize);
-                        }
-                        if(!bottom){//bottom
-                            renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
-                        }
-                        if(!bottom||!left||!affects(s, x-1, y+1)){//bottom left
-                            renderer.fillRect(X, Y+blockSize-border, X+border, Y+blockSize);
-                        }
-                        if(!left){//left
-                            renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
+                            renderer.setColor(Core.theme.getSuggestionOutlineColor());
+                            if(s.selected)sg = true;
+                            boolean top = affects(s, x, y-1);
+                            boolean right = affects(s, x+1, y);
+                            boolean bottom = affects(s, x, y+1);
+                            boolean left = affects(s, x-1, y);
+                            stl |= (!top||!left||!affects(s, x-1, y-1));
+                            st |= (!top);
+                            str |= (!top||!right||!affects(s, x+1, y-1));
+                            sr |= (!right);
+                            sbr |= (!bottom||!right||!affects(s, x+1, y+1));
+                            sb |= (!bottom);
+                            sbl |= (!bottom||!left||!affects(s, x-1, y+1));
+                            sl |= (!left);
                         }
                     }
+                    renderer.setColor(Core.theme.getSuggestionOutlineColor());
+                    float border = blockSize/40f;
+                    if(sg)border*=3;
+                    if(stl)renderer.fillRect(X, Y, X+border, Y+border);
+                    if(st)renderer.fillRect(X+border, Y, X+blockSize-border, Y+border);
+                    if(str)renderer.fillRect(X+blockSize-border, Y, X+blockSize, Y+border);
+                    if(sr)renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
+                    if(sbr)renderer.fillRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize);
+                    if(sb)renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
+                    if(sbl)renderer.fillRect(X, Y+blockSize-border, X+border, Y+blockSize);
+                    if(sl)renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
                 }
             }
         }

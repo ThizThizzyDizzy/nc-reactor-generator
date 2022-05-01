@@ -78,10 +78,10 @@ public class Scrollable extends Component{
         renderer.translate(x-scrollX, y-scrollY);
         for(Component c : components){
             if(optimizeForLargeComponentCount){
-                if(c.x+c.width<x+scrollX)continue;
-                if(c.y+c.height<y+scrollY)continue;
-                if(c.x>x+scrollX+width)continue;
-                if(c.y>y+scrollY+height)continue;
+                if(c.x+c.width<scrollX)continue;
+                if(c.y+c.height<scrollY)continue;
+                if(c.x>scrollX+width)continue;
+                if(c.y>scrollY+height)continue;
             }
             c.render2d(deltaTime);
         }

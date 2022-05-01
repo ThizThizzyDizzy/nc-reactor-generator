@@ -1,9 +1,11 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
+import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
@@ -108,33 +110,43 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     });
                 }
             }
-            //TODO There's a better way to do this, but this'll do for now
-            for(Suggestion s : editor.getSuggestions()){
-                if(s.affects(x, y, z)){
-                    if(s.selected&&s.result!=null){
-                        Block b = s.result.getBlock(x, y, z);
-                        renderer.setWhite(resonatingAlpha+.5f);
-                        float brdr = blockSize/64;
-                        if(b==null){
-                            renderer.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, null);
-                        }else{
-                            b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
-                                return true;
-                            });
+            {
+                ArrayList<Function<Direction[], Boolean>> edgeFuncs = new ArrayList<>();
+                boolean selected = false;
+                for(Suggestion s : editor.getSuggestions()){
+                    if(s.affects(x, y, z)){
+                        if(s.selected&&s.result!=null){
+                            Block b = s.result.getBlock(x, y, z);
+                            renderer.setWhite(resonatingAlpha+.5f);
+                            float brdr = blockSize/64;
+                            if(b==null){
+                                renderer.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, null);
+                            }else{
+                                b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
+                                    return true;
+                                });
+                            }
                         }
+                        if(s.selected)selected = true;
+                        edgeFuncs.add((t) -> {
+                            boolean d1 = s.affects(xx+t[0].x, yy+t[0].y, zz+t[0].z);
+                            boolean d2 = s.affects(xx+t[1].x, yy+t[1].y, zz+t[1].z);
+                            boolean d3 = s.affects(xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                            if(d1&&d2&&!d3)return true;//both sides, but not the corner
+                            if(!d1&&!d2)return true;//neither side
+                            return false;
+                        });
                     }
-                    renderer.setColor(Core.theme.getSuggestionOutlineColor());
-                    border = blockSize/40f;
-                    if(s.selected)border*=3;
-                    renderer.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
-                        boolean d1 = s.affects(xx+t[0].x, yy+t[0].y, zz+t[0].z);
-                        boolean d2 = s.affects(xx+t[1].x, yy+t[1].y, zz+t[1].z);
-                        boolean d3 = s.affects(xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
-                        if(d1&&d2&&!d3)return true;//both sides, but not the corner
-                        if(!d1&&!d2)return true;//neither side
-                        return false;
-                    });
                 }
+                renderer.setColor(Core.theme.getSuggestionOutlineColor());
+                border = blockSize/40f;
+                if(selected)border*=3;
+                renderer.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+                    for(Function<Direction[], Boolean> func : edgeFuncs){
+                        if(func.apply(t))return true;
+                    }
+                    return false;
+                });
             }
         });
         synchronized(deviceover){
