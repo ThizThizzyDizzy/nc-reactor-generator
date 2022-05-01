@@ -15,4 +15,12 @@ public class BlockPos{
         }
         return false;
     }
+    @Override
+    public int hashCode(){
+        int hash = 7;
+        hash = 89*hash+this.x;
+        hash = 89*hash+this.y;
+        hash = 89*hash+this.z;
+        return hash;
+    }
 }

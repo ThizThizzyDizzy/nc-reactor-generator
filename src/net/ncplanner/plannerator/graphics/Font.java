@@ -10,10 +10,11 @@ public class Font{
     public int texture;
     public int ascent, descent, lineGap;
     public final STBTTBakedChar.Buffer charBuffer;
+    public final float yOff;
     public final float height;
     public final int bitmapSize;
     private HashMap<Character, FontCharacter> characters = new HashMap<>();
-    public Font(STBTTFontinfo info, int texture, STBTTBakedChar.Buffer charBuffer, float height, int bitmapSize){
+    public Font(STBTTFontinfo info, int texture, STBTTBakedChar.Buffer charBuffer, float yOff, float height, int bitmapSize){
         this.texture = texture;
         int[] ascent = new int[1];
         int[] descent = new int[1];
@@ -23,14 +24,19 @@ public class Font{
         this.descent = descent[0];
         this.lineGap = lineGap[0];
         this.charBuffer = charBuffer;
+        this.yOff = yOff;
         this.height = height;
         this.bitmapSize = bitmapSize;
         initCharacters();
     }
+    private static final int fontHeight = 512;
     public static Font loadFont(String name){
-        return loadFont(name, 1024, 8192);
+        return loadFont(name, 0);
     }
-    public static Font loadFont(String name, float height, int bitmapSize){
+    public static Font loadFont(String name, float yOff){
+        return loadFont(name, yOff, fontHeight, fontHeight*8);
+    }
+    public static Font loadFont(String name, float yOff, float height, int bitmapSize){
         ByteBuffer fontData = Core.loadData("/fonts/"+name+".ttf");
         ByteBuffer buffer = BufferUtils.createByteBuffer(bitmapSize*bitmapSize*4);//no idea what this is used for, but it's here
         STBTTBakedChar.Buffer charBuffer = STBTTBakedChar.create(255);
@@ -38,7 +44,7 @@ public class Font{
         int texture = Core.loadTexture(bitmapSize, bitmapSize, buffer);
         STBTTFontinfo info = STBTTFontinfo.create();
         if(!STBTruetype.stbtt_InitFont(info, fontData, 0))throw new RuntimeException("Failed to initialize font! ("+name+")");
-        return new Font(info, texture, charBuffer, height, bitmapSize);
+        return new Font(info, texture, charBuffer, yOff, height, bitmapSize);
     }
     public void initCharacters(){
         for(char c = ' '; c<='~'; c++){

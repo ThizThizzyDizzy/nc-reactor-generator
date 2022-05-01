@@ -7,6 +7,7 @@ public class FontCharacter{
     private final char c;
     public float dx, dy;//move writing point to here after this character
     private int vao, ivao;
+    private static float margin = 1/10000f;
     public FontCharacter(Font font, char c){
         this.font = font;
         this.c = c;
@@ -26,10 +27,10 @@ public class FontCharacter{
         dy = ypos[0];
         
         float[] verticies = new float[]{
-            quad.x0()/font.height, quad.y1()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t1()/4,//0, 1, //top left
-            quad.x0()/font.height, quad.y0()/font.height, 0,    0, 0, 0,    quad.s0()/4, quad.t0()/4,//0, 0, //bottom left
-            quad.x1()/font.height, quad.y1()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t1()/4,//1, 1, //top right
-            quad.x1()/font.height, quad.y0()/font.height, 0,    0, 0, 0,    quad.s1()/4, quad.t0()/4//1, 0, //bottom right
+            quad.x0()/font.height, quad.y1()/font.height+font.yOff, 0,    0, 0, 0,    quad.s0()/4+margin, quad.t1()/4-margin,//0, 1, //top left
+            quad.x0()/font.height, quad.y0()/font.height+font.yOff, 0,    0, 0, 0,    quad.s0()/4+margin, quad.t0()/4+margin,//0, 0, //bottom left
+            quad.x1()/font.height, quad.y1()/font.height+font.yOff, 0,    0, 0, 0,    quad.s1()/4-margin, quad.t1()/4-margin,//1, 1, //top right
+            quad.x1()/font.height, quad.y0()/font.height+font.yOff, 0,    0, 0, 0,    quad.s1()/4-margin, quad.t0()/4+margin//1, 0, //bottom right
         };
         int[] indicies = new int[]{
             1, 0, 2,
