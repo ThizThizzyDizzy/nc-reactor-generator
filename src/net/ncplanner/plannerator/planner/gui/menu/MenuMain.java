@@ -423,6 +423,8 @@ public class MenuMain extends Menu{
         convertOverhaulMSFR.height = setInputs.height = delete.height = addMultiblock.height;
         if(multiblocks.getSelectedIndex()==-1)delete.height = 0;
         multiblocks.height = gui.getHeight()-multiblocks.y-delete.height;
+        delete.y = gui.getHeight()-delete.height;
+        delete.height = addMultiblock.height;
         delete.width = multiblocks.width = gui.getWidth()/3;
         for(Component c : multiblocks.components){
             c.width = multiblocks.width-(multiblocks.hasVertScrollbar()?multiblocks.vertScrollbarWidth:0);
@@ -443,15 +445,14 @@ public class MenuMain extends Menu{
             convertOverhaulMSFR.setTooltip("Convert the currently selected multiblock to an Overhaul SFR\nWARNING: All fuels will be converted to their Oxide counterparts");
         }else{
             convertOverhaulMSFR.enabled = false;
-            convertOverhaulMSFR.y = -convertOverhaulMSFR.height;
+            convertOverhaulMSFR.y = -convertOverhaulMSFR.height*100;
         }
         if(getSelectedMultiblock() instanceof OverhaulTurbine){
             setInputs.enabled = true;
         }else{
             setInputs.enabled = false;
-            setInputs.y = -setInputs.height;
+            setInputs.y = -setInputs.height*100;
         }
-        delete.y = gui.getHeight()-delete.height;
         credits.y = gui.getHeight()-credits.height;
         credits.x = gui.getWidth()-credits.width;
         addMultiblock.enabled = !(adding||metadating);
