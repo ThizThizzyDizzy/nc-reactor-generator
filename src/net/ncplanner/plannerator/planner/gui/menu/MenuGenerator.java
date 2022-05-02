@@ -271,19 +271,21 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         Animation anim = blank;
         ArrayList<Animation> animations = new ArrayList<>();
         Random rand = new Random();
+        int size = Math.max(multiblock.getDimension(0), Math.max(multiblock.getDimension(1), multiblock.getDimension(2)));
         if(wasRunning&&!running){
             wasRunning = running;
-            return new SpinAnimation(4);
+            return new SpinAnimation(4*7f/size);
         }
         wasRunning = running;
         float duration = 0;
+        float scale = Math.max(1, size/7f);
         int[] axes = new int[rand.nextInt(4)+3];
         for(int i = 0; i<axes.length; i++){
             axes[i] = rand.nextInt(6);
             int axis3 = axes[i]>2?axes[i]-3:axes[i];
             duration+=multiblock.getDimension(axis3)/(2f*axes.length);
         }
-        animations.add(new LayerSplitAnimation(axes, duration, 1.3f));
+        animations.add(new LayerSplitAnimation(axes, duration, 1.3f*scale));
         if(running)anim = animations.get(rand.nextInt(animations.size()));
         if(pos>anim.length)return nextAnim(pos-anim.length);
         anim.pos = pos;
@@ -327,12 +329,12 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     public void render3d(double deltaTime){
         anim.pos+=deltaTime;
         if(anim.pos>anim.length)anim = nextAnim(anim.pos-anim.length);
-        rot+=deltaTime*20;
         Renderer renderer = new Renderer();
         int w = multiblock.getDimension(0);
         int h = multiblock.getDimension(1);
         int d = multiblock.getDimension(2);
         float size = Math.max(w, Math.max(h, d));
+        rot+=deltaTime*20*7/size;
         renderer.pushModel(new Matrix4f().rotate((float)MathUtil.toRadians(rot+anim.getYRotOffset()), 0, 1, 0).scale(2f/size, 2f/size, 2f/size).translate(-multiblock.getDimension(0)/2f, -multiblock.getDimension(1)/2f, -multiblock.getDimension(2)/2f));
         for(int x = 0; x<w; x++){
             for(int y = 0; y<h; y++){
@@ -515,7 +517,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         private final T mb;
         private boolean closing;
         public StoreAnimation(T mb){
-            super(.75f);
+            super(.75f*Math.max(mb.getDimension(0), Math.max(mb.getDimension(1), mb.getDimension(2)))/7f);
             this.mb = mb;
         }
         float xOff = arand.nextFloat()*4-2;
