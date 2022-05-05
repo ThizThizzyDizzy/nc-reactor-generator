@@ -19,7 +19,6 @@ public class MenuComponentTurbineRotorGraph extends Component{
         if(turbine.rotorValid){
             renderer.setWhite();
             {
-                renderer.bound(x, y, x+width, y+height);
                 float width = this.width;
                 float height = this.height-footerHeight*2;
                 if(turbine.rotorValid){
@@ -75,7 +74,6 @@ public class MenuComponentTurbineRotorGraph extends Component{
                     renderer.unTranslate();
                     renderer.setWhite();
                 }
-                renderer.unBound();
             }
             float wideScale = 1;
             float len = renderer.getStringWidth("Actual Expansion", footerHeight);
