@@ -54,7 +54,7 @@ public class PNGWriter extends ImageFormatWriter{
             final float tW = textWidth+borderSize;
             final float pW = partsWidth+borderSize;
             BoundingBox bbox = multi.getBoundingBox();
-            int width = (int) Math.max(textWidth+partsWidth+totalTextHeight,bbox.getWidth()*blockSize+borderSize);
+            int width = (int) Math.max(textWidth+partsWidth+(Core.imageExport3DView?totalTextHeight:0),bbox.getWidth()*blockSize+borderSize);
             int multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
             int rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
             int height = totalTextHeight+rowCount*(bbox.getDepth()*blockSize+borderSize)+borderSize/2;
@@ -76,26 +76,32 @@ public class PNGWriter extends ImageFormatWriter{
                 bufferRenderer.setColor(Core.theme.getImageExportTextColor());
                 for(int i = 0; i<parts.size(); i++){
                     PartCount c = parts.get(i);
-                    bufferRenderer.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
+                    if(Core.imageExport3DView)bufferRenderer.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
+                    else bufferRenderer.drawText(bufferWidth-pW+textHeight+borderSize/2, i*textHeight+borderSize/2, bufferWidth, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
                 }
                 bufferRenderer.setWhite();
                 for(int i = 0; i<parts.size(); i++){
                     PartCount c = parts.get(i);
                     Image image = c.getImage();
-                    if(image!=null)bufferRenderer.drawImage(image, tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2);
+                    if(image!=null){
+                        if(Core.imageExport3DView)bufferRenderer.drawImage(image, tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2);
+                        else bufferRenderer.drawImage(image, bufferWidth-pW, i*textHeight+borderSize/2, bufferWidth-pW+textHeight, (i+1)*textHeight+borderSize/2);
+                    }
                 }
-                float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
-                renderer.model(new Matrix4f()
-                        .setTranslation(bufferWidth-totalTextHeight/2, totalTextHeight/2, -1)
-                        .scale(1, 1, 0.0001f)
-                        .rotate((float)MathUtil.toRadians(45), 1, 0, 0)
-                        .rotate((float)MathUtil.toRadians(45), 0, 1, 0)
-                        .scale(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2)
-                        .scale(1/size, 1/size, 1/size)
-                        .rotate((float)MathUtil.toRadians(180), 1, 0, 0)
-                        .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
-                multi.draw3DInOrder();
-                renderer.resetModelMatrix();
+                if(Core.imageExport3DView){
+                    float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
+                    renderer.model(new Matrix4f()
+                            .setTranslation(bufferWidth-totalTextHeight/2, totalTextHeight/2, -1)
+                            .scale(1, 1, 0.0001f)
+                            .rotate((float)MathUtil.toRadians(45), 1, 0, 0)
+                            .rotate((float)MathUtil.toRadians(45), 0, 1, 0)
+                            .scale(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2)
+                            .scale(1/size, 1/size, 1/size)
+                            .rotate((float)MathUtil.toRadians(180), 1, 0, 0)
+                            .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
+                    multi.draw3DInOrder();
+                    renderer.resetModelMatrix();
+                }
                 for(int y = 0; y<bbox.getHeight(); y++){
                     int column = y%mpr;
                     int row = y/mpr;

@@ -12,4 +12,7 @@ public abstract class FormatWriter{
 //        return getName()+(ext.isEmpty()?"":(" ("+ext.substring(2)+")"));
 //    }
     public abstract boolean isMultiblockSupported(Multiblock multi);
+    public void openExportSettings(NCPFFile ncpf, Runnable onExport){
+        onExport.run();
+    }
 }

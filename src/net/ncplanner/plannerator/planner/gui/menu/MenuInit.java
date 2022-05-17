@@ -175,6 +175,7 @@ public class MenuInit extends Menu{
                     Core.tutorialShown = settings.get("tutorialShown", false);
                     Core.invertUndoRedo = settings.get("invertUndoRedo", false);
                     Core.autoBuildCasing = settings.get("autoBuildCasing", true);
+                    Core.imageExport3DView = settings.get("imageExport3DView", true);
                     Core.setVsync(settings.get("vsync", true));
                     Core.editor3dView = settings.get("editor3dView", false);
                     ConfigList lst = settings.getConfigList("pins", new ConfigList());

@@ -232,30 +232,33 @@ public class MenuMain extends Menu{
                     }
                 }
                 String nam = name;
-                new MenuInputDialog(gui, this, nam, "Filename").addButton("Cancel", true).addButton("Save Dialog", () -> {
-                    try{
-                        Core.createFileChooser(null, (file) -> {
-                            boolean hasExtension = false;
-                            for(String ext : format.extensions){
-                                if(file.getName().endsWith("."+ext))hasExtension = true;
-                            }
-                            if(!hasExtension)file = new File(file.getAbsolutePath()+"."+format.extensions[0]);
-                            if(file==null)return;
-                            pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
-                        }, format);
-                    }catch(IOException ex){
-                        Core.error("Failed to export multiblock!", ex);
-                    }
-                }, true).addButton("Save", (dialog, filename) -> {
-                    if(filename==null||filename.isEmpty()){
-                        Core.warning("Invalid filename: "+filename+"."+format.extensions[0], null);
-                    }else{
-                        Core.filename = filename;
-                        File file = new File(filename+"."+format.extensions[0]);
-                        if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+format.extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> imprt(ncpf, writer, file, filename+"."+format.extensions[0]), true).open();
-                        else imprt(ncpf, writer, file, filename+"."+format.extensions[0]);
-                    }
-                }).open();
+                Runnable r = () -> {
+                    new MenuInputDialog(gui, gui.menu, nam, "Filename").addButton("Cancel", true).addButton("Save Dialog", () -> {
+                        try{
+                            Core.createFileChooser(null, (file) -> {
+                                boolean hasExtension = false;
+                                for(String ext : format.extensions){
+                                    if(file.getName().endsWith("."+ext))hasExtension = true;
+                                }
+                                if(!hasExtension)file = new File(file.getAbsolutePath()+"."+format.extensions[0]);
+                                if(file==null)return;
+                                pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
+                            }, format);
+                        }catch(IOException ex){
+                            Core.error("Failed to export multiblock!", ex);
+                        }
+                    }, true).addButton("Save", (dialog, filename) -> {
+                        if(filename==null||filename.isEmpty()){
+                            Core.warning("Invalid filename: "+filename+"."+format.extensions[0], null);
+                        }else{
+                            Core.filename = filename;
+                            File file = new File(filename+"."+format.extensions[0]);
+                            if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+format.extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> imprt(ncpf, writer, file, filename+"."+format.extensions[0]), true).open();
+                            else imprt(ncpf, writer, file, filename+"."+format.extensions[0]);
+                        }
+                    }).open();
+                };
+                writer.openExportSettings(ncpf, r);
             });
         }
         addMultiblock.addAction(() -> {
