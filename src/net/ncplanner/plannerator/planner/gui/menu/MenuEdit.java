@@ -8,6 +8,7 @@ import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
@@ -759,19 +760,19 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     }
     @Override
     public void setblocks(int id, SetblocksAction set){
-        for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
-            int[] b = it.next();
-            if(hasSelection(id)&&!isSelected(id, b[0], b[1], b[2]))it.remove();
+        for(Iterator<BlockPos> it = set.locations.iterator(); it.hasNext();){
+            BlockPos b = it.next();
+            if(hasSelection(id)&&!isSelected(id, b.x, b.y, b.z))it.remove();
             else if(Core.isControlPressed()){
                 if(set.block==null){
-                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock(0)))it.remove();
+                    if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!multiblock.getBlock(b.x, b.y, b.z).matches(getSelectedBlock(0)))it.remove();
                 }else{
-                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!Core.isShiftPressed()){
+                    if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!Core.isShiftPressed()){
                         it.remove();
-                    }else if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).canBeQuickReplaced()){
+                    }else if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!multiblock.getBlock(b.x, b.y, b.z).canBeQuickReplaced()){
                         it.remove();
-                    }else if(multiblock.getBlock(b[0], b[1], b[2])==null||multiblock.getBlock(b[0], b[1], b[2])!=null&&Core.isShiftPressed()){
-                        if(!multiblock.isValid(set.block, b[0], b[1], b[2]))it.remove();
+                    }else if(multiblock.getBlock(b.x, b.y, b.z)==null||multiblock.getBlock(b.x, b.y, b.z)!=null&&Core.isShiftPressed()){
+                        if(!multiblock.isValid(set.block, b.x, b.y, b.z))it.remove();
                     }
                 }
             }

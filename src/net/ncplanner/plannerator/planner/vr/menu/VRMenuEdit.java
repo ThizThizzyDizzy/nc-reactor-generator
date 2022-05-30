@@ -7,6 +7,7 @@ import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Symmetry;
@@ -301,19 +302,19 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     }
     @Override
     public void setblocks(int id, SetblocksAction set){
-        for(Iterator<int[]> it = set.locations.iterator(); it.hasNext();){
-            int[] b = it.next();
-            if(hasSelection(id)&&!isSelected(id, b[0], b[1], b[2]))it.remove();
+        for(Iterator<BlockPos> it = set.locations.iterator(); it.hasNext();){
+            BlockPos b = it.next();
+            if(hasSelection(id)&&!isSelected(id, b.x, b.y, b.z))it.remove();
             else if(isControlPressed(id)){
                 if(set.block==null){
-                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).matches(getSelectedBlock(0)))it.remove();
+                    if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!multiblock.getBlock(b.x, b.y, b.z).matches(getSelectedBlock(0)))it.remove();
                 }else{
-                    if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!isShiftPressed(id)){
+                    if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!isShiftPressed(id)){
                         it.remove();
-                    }else if(multiblock.getBlock(b[0], b[1], b[2])!=null&&!multiblock.getBlock(b[0], b[1], b[2]).canBeQuickReplaced()){
+                    }else if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!multiblock.getBlock(b.x, b.y, b.z).canBeQuickReplaced()){
                         it.remove();
-                    }else if(multiblock.getBlock(b[0], b[1], b[2])==null||multiblock.getBlock(b[0], b[1], b[2])!=null&&isShiftPressed(id)){
-                        if(!multiblock.isValid(set.block, b[0], b[1], b[2]))it.remove();
+                    }else if(multiblock.getBlock(b.x, b.y, b.z)==null||multiblock.getBlock(b.x, b.y, b.z)!=null&&isShiftPressed(id)){
+                        if(!multiblock.isValid(set.block, b.x, b.y, b.z))it.remove();
                     }
                 }
             }

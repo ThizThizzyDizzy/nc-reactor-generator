@@ -199,10 +199,10 @@ public class PencilTool extends EditorTool{
     public void mouseMovedElsewhere(Object obj, EditorSpace editorSpace){
         leftStart = rightStart = null;
     }
-    private Iterable<int[]> symmetrize(ArrayList<int[]> leftSelectedBlocks, Symmetry symmetry){
+    private Iterable<int[]> symmetrize(ArrayList<int[]> blocks, Symmetry symmetry){
         HashSet<int[]> set = new HashSet<>();
         BoundingBox bbox = editor.getMultiblock().getBoundingBox();
-        leftSelectedBlocks.forEach((t) -> {
+        blocks.forEach((t) -> {
             symmetry.apply(t[0], t[1], t[2], bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), (x, y, z) -> {
                 set.add(new int[]{x,y,z});
             });
