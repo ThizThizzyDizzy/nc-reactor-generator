@@ -19,24 +19,24 @@ public class TomPainting extends HutThing{
         switch(wall){
             case LEFT:
                 quad(renderer,
-                        0,0,x,y+getDimY(),z+getDimZ(),
-                        0,1,x,y+getDimY(),z,
-                        1,1,x,y,z,
-                        1,0,x,y,z+getDimZ());
+                        0,0,x,y+getDimY(),z,
+                        0,1,x,y+getDimY(),z+getDimZ(),
+                        1,0,x,y,z,
+                        1,1,x,y,z+getDimZ());
                 break;
             case BACK:
                 quad(renderer,
-                        0, 0, x, y, z+getDimZ(),
-                        0, 1, x, y, z,
-                        1, 1, x+getDimX(), y, z,
-                        1, 0, x+getDimX(), y, z+getDimZ());
+                        0, 0, x, y, z,
+                        0, 1, x, y, z+getDimZ(),
+                        1, 0, x+getDimX(), y, z,
+                        1, 1, x+getDimX(), y, z+getDimZ());
                 break;
             case RIGHT:
                 quad(renderer,
-                        0,0,x,y,z+getDimZ(),
-                        0,1,x,y,z,
-                        1,1,x,y+getDimY(),z,
-                        1,0,x,y+getDimY(),z+getDimZ());
+                        0,0,x,y,z,
+                        0,1,x,y,z+getDimZ(),
+                        1,0,x,y+getDimY(),z,
+                        1,1,x,y+getDimY(),z+getDimZ());
                 break;
             default:
                 throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");
