@@ -160,6 +160,9 @@ public class HeatsinkBattle extends Game{
             scoresMap.put(players.get(i), (int)(scores.get(i)*(1+bonus)));
             namesMap.put(players.get(i), playernames.get(i));
         }
+        Collections.sort(players, (o1, o2) -> {
+            return scoresMap.get(o2)-scoresMap.get(o1);
+        });
         long winner = -1;
         long winnerScore = -1;
         for(int i = 0; i<players.size(); i++){
@@ -174,9 +177,6 @@ public class HeatsinkBattle extends Game{
                 }
             }
         }
-        Collections.sort(players, (o1, o2) -> {
-            return scoresMap.get(o2)-scoresMap.get(o1);
-        });
         if(smorePool>0){
             if(reason==StopReason.GAME_FINISHED&&winner!=-1){
                 User winnerUser = channel.getJDA().retrieveUserById(winner).complete();
