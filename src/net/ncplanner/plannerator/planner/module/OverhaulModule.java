@@ -1,16 +1,24 @@
 package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
+import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.AddonConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
+import net.ncplanner.plannerator.multiblock.editor.Decal;
+import net.ncplanner.plannerator.multiblock.editor.decal.CellFluxDecal;
+import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceDecal;
+import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceLineDecal;
+import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceTargetDecal;
+import net.ncplanner.plannerator.multiblock.editor.decal.OverhaulModeratorLineDecal;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
@@ -147,7 +155,7 @@ public class OverhaulModule extends Module{
             }).configuration);
         }, "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
     }
-    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Active Moderator", "Highlights active moderators with a green outline", true){
+    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Active Moderators", "Highlights active moderators with a green outline", true){
         @Override
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
             if(block.isModeratorActive()){
@@ -155,7 +163,7 @@ public class OverhaulModule extends Module{
             }
         }
     };
-    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> msrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block>("Active Moderator", "Highlights active moderators with a green outline", true){
+    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> msrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block>("Active Moderators", "Highlights active moderators with a green outline", true){
         @Override
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
             if(block.isModeratorActive()){
@@ -163,7 +171,7 @@ public class OverhaulModule extends Module{
             }
         }
     };
-    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.turbine.Block> validCoilOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.turbine.Block>("Valid Coil", "Highlights valid coils with a green outline", true){
+    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.turbine.Block> validCoilOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.turbine.Block>("Valid Coils", "Highlights valid coils with a green outline", true){
         @Override
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.turbine.Block block, Multiblock multiblock){
             if(block.isActive()&&block.isCoil()){
@@ -194,6 +202,7 @@ public class OverhaulModule extends Module{
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrPrimedCellOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Primed Cells", "Shows which cells are primed", true){
         @Override
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
+            if(mode==1)return;
             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
             if(b.template.fuelCell&&(b.template.fuelCellHasBaseStats||b.recipe!=null)){
                 boolean self = b.recipe==null?b.template.fuelCellSelfPriming:b.recipe.fuelCellSelfPriming;
@@ -203,10 +212,32 @@ public class OverhaulModule extends Module{
                 }
             }
         }
-    };
+        @Override
+        public void refresh(Multiblock multiblock){
+            decals.clear();
+            if(mode==0)return;
+            ((CuboidalMultiblock)multiblock).forEachInternalPosition((x, y, z) -> {
+                net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(x, y, z);
+                if(b!=null){
+                    net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block s = b.source;
+                    if(s!=null){
+                        Direction d = Direction.get(s.x,s.y,s.z,b.x,b.y,b.z);
+                        if(d==null)return;//wat
+                        int dist = Math.abs(s.x-b.x)+Math.abs(s.y-b.y)+Math.abs(s.z-b.z);
+                        decals.enqueue(new NeutronSourceTargetDecal(s.x, s.y, s.z, d));
+                        for(int i = 1; i<dist; i++){
+                            decals.enqueue(new NeutronSourceLineDecal(b.x-d.x*i, b.y-d.y*i, b.z-d.z*i, d));
+                        }
+                        decals.enqueue(new NeutronSourceDecal(b.x, b.y, b.z, d.getOpposite()));
+                    }
+                }
+            });
+        }
+    }.addMode("Circle", "Shows a marker on primed cells.").addMode("Decal", "Draws a line from neutron sources to the cells they are priming").addMode("Both", "Shows a marker on primed cells and a line to the neutron source priming them");
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> msrPrimedVesselOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block>("Primed Vessels", "Shows which cells are primed", true){
         @Override
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
+            if(mode==1)return;
             net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
             if(b.template.fuelVessel&&(b.template.fuelVesselHasBaseStats||b.recipe!=null)){
                 boolean self = b.recipe==null?b.template.fuelVesselSelfPriming:b.recipe.fuelVesselSelfPriming;
@@ -216,7 +247,27 @@ public class OverhaulModule extends Module{
                 }
             }
         }
-    };
+        @Override
+        public void refresh(Multiblock multiblock){
+            decals.clear();
+            if(mode==0)return;
+            ((CuboidalMultiblock)multiblock).forEachInternalPosition((x, y, z) -> {
+                net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(x, y, z);
+                if(b!=null){
+                    net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block s = b.source;
+                    if(s!=null){
+                        Direction d = Direction.get(s.x,s.y,s.z,b.x,b.y,b.z);
+                        int dist = Math.abs(s.x-b.x)+Math.abs(s.y-b.y)+Math.abs(s.z-b.z);
+                        decals.enqueue(new NeutronSourceTargetDecal(s.x, s.y, s.z, d));
+                        for(int i = 1; i<dist; i++){
+                            decals.enqueue(new NeutronSourceLineDecal(b.x-d.x*i, b.y-d.y*i, b.z-d.z*i, d));
+                        }
+                        decals.enqueue(new NeutronSourceDecal(b.x, b.y, b.z, d.getOpposite()));
+                    }
+                }
+            });
+        }
+    }.addMode("Circle", "Shows a marker on primed vessels.").addMode("Decal", "Draws a line from neutron sources to the vessels they are priming").addMode("Both", "Shows a marker on primed vessels and a line to the neutron source priming them");
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrClusterOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Clusters", "Outlines clusters in the reactor", true){
         @Override
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
@@ -379,6 +430,102 @@ public class OverhaulModule extends Module{
             }
         }
     };
+    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrFluxOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Neutron Flux Propogation", "Shows the neutron flux propogation through the reactor", false){
+        @Override
+        public void refresh(Multiblock<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> multiblock){
+            decals.clear();
+            OverhaulSFR sfr = (OverhaulSFR)multiblock;
+            switch(mode){
+                case 0:
+                    for(Decal d : sfr.initialFluxDecals)decals.enqueue(d);
+                    break;
+                case 1:
+                    for(Decal d : sfr.finalFluxDecals)decals.enqueue(d);
+                    break;
+                case 3:
+                    for(Decal d : sfr.shutdownFluxDecals)decals.enqueue(d);
+                    break;
+            }
+            ArrayList<Decal> cellFluxes = new ArrayList<>();
+            HashSet<Decal> badCellFluxes = new HashSet<>();
+            HashSet<Decal> zeroCellFluxes = new HashSet<>();
+            for(Decal d : decals){
+                if(d instanceof CellFluxDecal){
+                    if(((CellFluxDecal)d).flux==0){
+                        zeroCellFluxes.add(d);
+                        continue;
+                    }
+                    for(Decal d2 : cellFluxes){
+                        if(d2.x==d.x&&d2.y==d.y&&d2.z==d.z){
+                            badCellFluxes.add(d2);
+                        }
+                    }
+                    cellFluxes.add(d);
+                }
+            }
+            for(Decal d : zeroCellFluxes){
+                if(d instanceof CellFluxDecal){
+                    for(Decal d2 : cellFluxes){
+                        if(d2.x==d.x&&d2.y==d.y&&d2.z==d.z){
+                            badCellFluxes.add(d);
+                        }
+                    }
+                }
+            }
+            for(Iterator<Decal> it = decals.iterator(); it.hasNext();){
+                Decal next = it.next();
+                if(badCellFluxes.contains(next))it.remove();
+            }
+        }
+    }.addMode("Initial", "Shows the first flux propogation, before inactive cells are excluded").addMode("Final", "Shows the final flux propogation, after inactive cells are excluded and calculation is complete").addMode("Shutdown", "Shows the flux propogation after all neutron shields are closed");
+    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> msrFluxOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block>("Neutron Flux Propogation", "Shows the neutron flux propogation through the reactor", false){
+        @Override
+        public void refresh(Multiblock<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> multiblock){
+            decals.clear();
+            OverhaulMSR msr = (OverhaulMSR)multiblock;
+            switch(mode){
+                case 0:
+                    for(Decal d : msr.initialFluxDecals)decals.enqueue(d);
+                    break;
+                case 1:
+                    for(Decal d : msr.finalFluxDecals)decals.enqueue(d);
+                    break;
+                case 3:
+                    for(Decal d : msr.shutdownFluxDecals)decals.enqueue(d);
+                    break;
+            }
+            ArrayList<Decal> cellFluxes = new ArrayList<>();
+            HashSet<Decal> badCellFluxes = new HashSet<>();
+            HashSet<Decal> zeroCellFluxes = new HashSet<>();
+            for(Decal d : decals){
+                if(d instanceof CellFluxDecal){
+                    if(((CellFluxDecal)d).flux==0){
+                        zeroCellFluxes.add(d);
+                        continue;
+                    }
+                    for(Decal d2 : cellFluxes){
+                        if(d2.x==d.x&&d2.y==d.y&&d2.z==d.z){
+                            badCellFluxes.add(d2);
+                        }
+                    }
+                    cellFluxes.add(d);
+                }
+            }
+            for(Decal d : zeroCellFluxes){
+                if(d instanceof CellFluxDecal){
+                    for(Decal d2 : cellFluxes){
+                        if(d2.x==d.x&&d2.y==d.y&&d2.z==d.z){
+                            badCellFluxes.add(d);
+                        }
+                    }
+                }
+            }
+            for(Iterator<Decal> it = decals.iterator(); it.hasNext();){
+                Decal next = it.next();
+                if(badCellFluxes.contains(next))it.remove();
+            }
+        }
+    }.addMode("Initial", "Shows the first flux propogation, before inactive cells are excluded").addMode("Final", "Shows the final flux propogation, after inactive cells are excluded and calculation is complete").addMode("Shutdown", "Shows the flux propogation after all neutron shields are closed");    
     @Override
     public void getEditorOverlays(Multiblock multiblock, ArrayList overlays){
         if(multiblock instanceof OverhaulSFR){
@@ -386,12 +533,14 @@ public class OverhaulModule extends Module{
             overlays.add(sfrBlockRecipeOverlay);
             overlays.add(sfrPrimedCellOverlay);
             overlays.add(sfrClusterOverlay);
+            overlays.add(sfrFluxOverlay);
         }
         if(multiblock instanceof OverhaulMSR){
             overlays.add(msrActiveModeratorOverlay);
             overlays.add(msrBlockRecipeOverlay);
             overlays.add(msrPrimedVesselOverlay);
             overlays.add(msrClusterOverlay);
+            overlays.add(msrFluxOverlay);
         }
         if(multiblock instanceof OverhaulTurbine)overlays.add(validCoilOverlay);
     }

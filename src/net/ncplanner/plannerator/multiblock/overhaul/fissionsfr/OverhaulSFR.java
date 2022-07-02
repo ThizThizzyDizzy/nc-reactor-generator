@@ -19,6 +19,7 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Bl
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.PlacementRule;
 import net.ncplanner.plannerator.multiblock.editor.Action;
+import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.multiblock.editor.decal.AdjacentModeratorLineDecal;
@@ -115,6 +116,9 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     private Task partialShutdownCalcClusters;
     private Task partialShutdownCalcStats;
     private float offOutput;
+    public final Queue<Decal> initialFluxDecals = new Queue<>();
+    public final Queue<Decal> finalFluxDecals = new Queue<>();
+    public final Queue<Decal> shutdownFluxDecals = new Queue<>();
     public OverhaulSFR(){
         this(null);
     }
@@ -209,6 +213,9 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         switch(calcStep){
             //<editor-fold defaultstate="collapsed" desc="Base calculations">
             case 0://calculate casing
+                initialFluxDecals.clear();
+                finalFluxDecals.clear();
+                shutdownFluxDecals.clear();
                 numControllers = missingCasings = 0;
                 hasInputVent = hasOutputVent = false;
                 missingInputPorts.clear();
@@ -277,16 +284,16 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 calcStep++;
                 return true;
             case 2://propogate neutron flux
+                Queue<Decal> fluxDecals = new Queue<>();
                 for(int i = 0; i<blocks.size(); i++){
                     Block block = blocks.get(i);
-                    propogateNeutronFlux(block, false, addDecals);
+                    propogateNeutronFlux(block, false, fluxDecals);
                     propogateFlux.progress = i/(double)blocks.size();
                 }
-                if(addDecals){
-                    for(Block block : blocks){
-                        if(block.template.fuelCell)decals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
-                    }
+                for(Block block : blocks){
+                    if(block.template.fuelCell)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
                 }
+                if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 propogateFlux.finish();
                 calcStep++;
                 return true;
@@ -303,16 +310,16 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(wasActive)lastActive++;
                     block.wasActive = wasActive;
                 }
+                fluxDecals = new Queue<>();
                 for(int i = 0; i<blocks.size(); i++){
                     Block block = blocks.get(i);
-                    rePropogateNeutronFlux(block, false, addDecals);
+                    rePropogateNeutronFlux(block, false, fluxDecals);
                     rePropogateFlux.progress = i/(double)blocks.size();
                 }
-                if(addDecals){
-                    for(Block block : blocks){
-                        if(block.template.fuelCell)decals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
-                    }
+                for(Block block : blocks){
+                    if(block.template.fuelCell)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
                 }
+                if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 int nowActive = 0;
                 for(Block block : blocks){
                     if(block.isFuelCellActive())nowActive++;
@@ -515,16 +522,16 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 calcStep++;
                 return true;
             case 12://propogate neutron flux
+                fluxDecals = new Queue<>();
                 for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);
-                    propogateNeutronFlux(block, cellsWereActive.contains(block), addDecals);
+                    propogateNeutronFlux(block, cellsWereActive.contains(block), fluxDecals);
                     shutdownPropogateFlux.progress = i/(double)allBlocks.size();
                 }
-                if(addDecals){
-                    for(Block block : allBlocks){
-                        if(block.template.fuelCell)decals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
-                    }
+                for(Block block : allBlocks){
+                    if(block.template.fuelCell)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
                 }
+                if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 shutdownPropogateFlux.finish();
                 calcStep++;
                 return true;
@@ -541,16 +548,17 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(wasActive)lastActive++;
                     block.wasActive = wasActive;
                 }
+                fluxDecals = new Queue<>();
                 for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);
-                    rePropogateNeutronFlux(block, cellsWereActive.contains(block), addDecals);
+                    rePropogateNeutronFlux(block, cellsWereActive.contains(block), fluxDecals);
                     shutdownRePropogateFlux.progress = i/(double)allBlocks.size();
                 }
-                if(addDecals){
-                    for(Block block : allBlocks){
-                        if(block.template.fuelCell)decals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
-                    }
+                for(Block block : allBlocks){
+                    if(block.template.fuelCell)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
                 }
+                for(Decal d : fluxDecals)shutdownFluxDecals.enqueue(d);
+                if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 nowActive = 0;
                 for(Block block : allBlocks){
                     if(block.isFuelCellActive())nowActive++;
@@ -751,16 +759,17 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 calcStep++;
                 return true;
             case 22://propogate neutron flux
+                fluxDecals = new Queue<>();
                 for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);
-                    propogateNeutronFlux(block, cellsWereActive.contains(block), addDecals);
+                    propogateNeutronFlux(block, cellsWereActive.contains(block), fluxDecals);
                     partialShutdownPropogateFlux.progress = i/(double)allBlocks.size();
                 }
-                if(addDecals){
-                    for(Block block : allBlocks){
-                        if(block.template.fuelCell)decals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
-                    }
+                for(Block block : allBlocks){
+                    if(block.template.fuelCell)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
                 }
+                for(Decal d : fluxDecals)initialFluxDecals.enqueue(d);
+                if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 partialShutdownPropogateFlux.finish();
                 calcStep++;
                 return true;
@@ -777,16 +786,17 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(wasActive)lastActive++;
                     block.wasActive = wasActive;
                 }
+                fluxDecals = new Queue<>();
                 for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);
-                    rePropogateNeutronFlux(block, cellsWereActive.contains(block), addDecals);
+                    rePropogateNeutronFlux(block, cellsWereActive.contains(block), fluxDecals);
                     partialShutdownRePropogateFlux.progress = i/(double)allBlocks.size();
                 }
-                if(addDecals){
-                    for(Block block : allBlocks){
-                        if(block.template.fuelCell)decals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
-                    }
+                for(Block block : allBlocks){
+                    if(block.template.fuelCell)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,(block.recipe==null?block.template.fuelCellCriticality:block.recipe.fuelCellCriticality)));
                 }
+                for(Decal d : fluxDecals)finalFluxDecals.enqueue(d);
+                if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 nowActive = 0;
                 for(Block block : allBlocks){
                     if(block.isFuelCellActive())nowActive++;
@@ -945,7 +955,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 throw new IllegalStateException("Invalid calculation step: "+calcStep+"!");
         }
     }
-    public void propogateNeutronFlux(Block that, boolean force, boolean addDecals){
+    public void propogateNeutronFlux(Block that, boolean force, Queue<Decal> fluxDecals){
         if(!that.isFuelCell())return;
         if(!that.template.fuelCellHasBaseStats&&that.recipe==null)return;//no fuel
         if(!force&&!that.isPrimed()&&that.neutronFlux<(that.recipe==null?that.template.fuelCellCriticality:that.recipe.fuelCellCriticality))return;
@@ -972,15 +982,13 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     block.neutronFlux+=flux;
                     block.moderatorLines++;
                     if(flux>0)block.positionalEfficiency+=efficiency/length;
-                    if(addDecals){
-                        int f = 0;
-                        for(int j = 1; j<i; j++){
-                            f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
-                            decals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                        }
-                        decals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    int f = 0;
+                    for(int j = 1; j<i; j++){
+                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
-                    propogateNeutronFlux(block, false, addDecals);
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    propogateNeutronFlux(block, false, fluxDecals);
                     break;
                 }
                 if(block.isReflector()){
@@ -990,20 +998,18 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     that.neutronFlux+=flux*2*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity);
                     if(flux>0)that.positionalEfficiency+=efficiency/length*(block.recipe==null?block.template.reflectorEfficiency:block.recipe.reflectorEfficiency);
                     that.moderatorLines++;
-                    if(addDecals){
-                        int f = 0;
-                        for(int j = 1; j<i; j++){
-                            f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
-                            decals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                        }
-                        f = 0;
-                        for(int j = i-1; j>=1; j--){
-                            f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity);
-                            decals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity))+f, efficiency/length));
-                        }
-                        decals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                        decals.enqueue(new ReflectorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
+                    int f = 0;
+                    for(int j = 1; j<i; j++){
+                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
+                    f = 0;
+                    for(int j = i-1; j>=1; j--){
+                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity);
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity))+f, efficiency/length));
+                    }
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    fluxDecals.enqueue(new ReflectorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
                     break;
                 }
                 if(block.isIrradiator()){
@@ -1011,22 +1017,20 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(!block.template.reflectorHasBaseStats&&block.recipe==null)break;//empty irradiator
                     that.moderatorLines++;
                     if(flux>0)that.positionalEfficiency+=efficiency/length*(block.recipe==null?block.template.irradiatorEfficiency:block.recipe.irradiatorEfficiency);
-                    if(addDecals){
-                        int f = 0;
-                        for(int j = 1; j<i; j++){
-                            f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
-                            decals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                        }
-                        decals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                        decals.enqueue(new IrradiatorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
+                    int f = 0;
+                    for(int j = 1; j<i; j++){
+                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    fluxDecals.enqueue(new IrradiatorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
                     break;
                 }
                 break;
             }
         }
     }
-    public void rePropogateNeutronFlux(Block that, boolean force, boolean addDecals){
+    public void rePropogateNeutronFlux(Block that, boolean force, Queue<Decal> fluxDecals){
         if(!that.isFuelCell())return;
         if(!that.template.fuelCellHasBaseStats&&that.recipe==null)return;//no fuel
         if(!that.wasActive)return;
@@ -1054,15 +1058,13 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     block.neutronFlux+=flux;
                     block.moderatorLines++;
                     if(flux>0)block.positionalEfficiency+=efficiency/length;
-                    if(addDecals){
-                        int f = 0;
-                        for(int j = 1; j<i; j++){
-                            f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
-                            decals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                        }
-                        decals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    int f = 0;
+                    for(int j = 1; j<i; j++){
+                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
-                    rePropogateNeutronFlux(block, false, addDecals);
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    rePropogateNeutronFlux(block, false, fluxDecals);
                     break;
                 }
                 if(block.isReflector()){
@@ -1072,20 +1074,18 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     that.neutronFlux+=flux*2*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity);
                     if(flux>0)that.positionalEfficiency+=efficiency/length*(block.recipe==null?block.template.reflectorEfficiency:block.recipe.reflectorEfficiency);
                     that.moderatorLines++;
-                    if(addDecals){
-                        int f = 0;
-                        for(int j = 1; j<i; j++){
-                            f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
-                            decals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                        }
-                        f = 0;
-                        for(int j = i-1; j>=1; j--){
-                            f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity);
-                            decals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity))+f, efficiency/length));
-                        }
-                        decals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                        decals.enqueue(new ReflectorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
+                    int f = 0;
+                    for(int j = 1; j<i; j++){
+                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
+                    f = 0;
+                    for(int j = i-1; j>=1; j--){
+                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity);
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*(block.recipe==null?block.template.reflectorReflectivity:block.recipe.reflectorReflectivity))+f, efficiency/length));
+                    }
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    fluxDecals.enqueue(new ReflectorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
                     break;
                 }
                 if(block.isIrradiator()){
@@ -1093,15 +1093,13 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(!block.template.reflectorHasBaseStats&&block.recipe==null)break;//empty irradiator
                     that.moderatorLines++;
                     if(flux>0)that.positionalEfficiency+=efficiency/length*(block.recipe==null?block.template.irradiatorEfficiency:block.recipe.irradiatorEfficiency);
-                    if(addDecals){
-                        int f = 0;
-                        for(int j = 1; j<i; j++){
-                            f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
-                            decals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                        }
-                        decals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                        decals.enqueue(new IrradiatorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
+                    int f = 0;
+                    for(int j = 1; j<i; j++){
+                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderatorFlux;
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    fluxDecals.enqueue(new IrradiatorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
                     break;
                 }
                 break;
