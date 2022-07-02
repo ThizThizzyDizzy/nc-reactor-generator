@@ -620,6 +620,168 @@ public class Renderer{
                 glDeleteVertexArrays(vao);
             }
         });
+        elements.put("x-rect", new Element() {
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+
+                float[] verticies = new float[]{
+                    0, 0, 0, 0, 0, 1, 1, 1,//top left
+                    0, 1, 0, 0, 0, 1, 1, 0,//bottom left
+                    1, 0, 0, 0, 0, 1, 0, 1,//top right
+                    1, 1, 0, 0, 0, 1, 0, 0//bottom right
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+        elements.put("y-rect", new Element() {
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+
+                float[] verticies = new float[]{
+                    0, 0, 0, 0, 0, 1, 0, 0,//top left
+                    0, 1, 0, 0, 0, 1, 0, 1,//bottom left
+                    1, 0, 0, 0, 0, 1, 1, 0,//top right
+                    1, 1, 0, 0, 0, 1, 1, 1//bottom right
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
+        elements.put("xy-rect", new Element() {
+            public int vao, vbo, ebo;
+            @Override
+            public void init(){
+                vao = glGenVertexArrays();
+                vbo = glGenBuffers();
+                ebo = glGenBuffers();
+
+                float[] verticies = new float[]{
+                    0, 0, 0, 0, 0, 1, 1, 0,//top left
+                    0, 1, 0, 0, 0, 1, 1, 1,//bottom left
+                    1, 0, 0, 0, 0, 1, 0, 0,//top right
+                    1, 1, 0, 0, 0, 1, 0, 1//bottom right
+                };
+                int[] indicies = new int[]{
+                    1, 0, 2,
+                    3, 1, 2
+                };
+
+                glBindVertexArray(vao);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, verticies, GL_STREAM_DRAW);
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies, GL_STREAM_DRAW);
+
+                //pos
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 8*4, 0);
+
+                //norm
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, false, 8*4, 3*4);
+
+                //tex
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 2, GL_FLOAT, false, 8*4, 6*4);
+
+                glBindVertexArray(0);
+            }
+            @Override
+            public void draw(){
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            }
+            @Override
+            public void cleanup(){
+                glDeleteBuffers(ebo);
+                glDeleteBuffers(vbo);
+                glDeleteVertexArrays(vao);
+            }
+        });
     }
     public static void initElements(){
         for(Element e : elements.values())e.init();
@@ -792,22 +954,30 @@ public class Renderer{
         drawTexture(Core.getTexture(image), left, top, right, bottom);
     }
     public void drawTexture(int tex, float left, float top, float right, float bottom){
+        boolean flipX = false;
         if(right<left){
             float r = left;
             float l = right;
             right = r;
             left = l;
+            flipX = true;
         }
+        boolean flipY = false;
         if(bottom<top){
             float b = top;
             float t = bottom;
             bottom = b;
             top = t;
+            flipY = true;
         }
+        String prefix = "";
+        if(flipX)prefix+="x";
+        if(flipY)prefix+="y";
+        if(!prefix.isEmpty())prefix+="-";
         if(tex==0)fillRect(left, top, right, bottom);
         else{
             bindTexture(tex);
-            drawElement("rect", left, top, right-left, bottom-top);
+            drawElement(prefix+"rect", left, top, right-left, bottom-top);
 //            drawScreenRect(left, top, right, bottom, 1, 0, 0, 1, 1);
         }
     }
