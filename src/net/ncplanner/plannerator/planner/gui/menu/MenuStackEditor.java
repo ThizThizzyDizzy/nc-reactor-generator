@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Stack;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
@@ -261,9 +262,10 @@ public class MenuStackEditor extends Menu{
         script = new Script(new Stack<StackObject>(){
             @Override
             public StackObject push(StackObject obj){
+                if(obj==null)throw new IllegalArgumentException("Tried to push real null to the stack!");
                 if(debug){
                     ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
-                    components.add(new Label(0, 0, 100, 20, obj.toString().replace("\n", "\\n"), components.size()%2==0){
+                    components.add(new Label(0, 0, 100, 20, Objects.toString(obj).replace("\n", "\\n"), components.size()%2==0){
                         @Override
                         public void drawText(Renderer renderer){
                             renderer.drawCenteredText(x, y, x+width, y+height, text);

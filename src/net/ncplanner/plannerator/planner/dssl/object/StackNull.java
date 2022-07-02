@@ -7,6 +7,10 @@ public class StackNull extends StackObject{
         return Type.NULL;
     }
     @Override
+    public String toString(){
+        return "null";
+    }
+    @Override
     public Object getValue(){
         return null;
     }

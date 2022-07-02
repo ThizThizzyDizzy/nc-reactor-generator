@@ -1087,7 +1087,9 @@ public class Renderer{
     public FormattedText drawFormattedTextWithWrap(float left, float top, float right, float bottom, FormattedText text, int snap){
         if(font.getStringWidth(text.toString(), bottom-top)>right-left){
             String txt = text.text;
-            text.trimSlightlyWithoutElipses();
+            while(font.getStringWidth(text.toString(), bottom-top)>right-left&&text.toString().length()>0){
+                text.trimSlightlyWithoutElipses();
+            }
             FormattedText also = drawFormattedTextWithWrap(left, top, right, bottom, text, snap);
             txt = txt.substring(text.text.length());
             return new FormattedText(also!=null?also.text+txt:txt, text.color, text.bold, text.italic, text.underline, text.strikethrough);

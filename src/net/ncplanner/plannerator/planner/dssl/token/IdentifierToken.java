@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.dssl.token;
 import net.ncplanner.plannerator.planner.dssl.Script;
+import net.ncplanner.plannerator.planner.dssl.object.StackVariable;
 import static net.ncplanner.plannerator.planner.dssl.token.Helpers.*;
 public class IdentifierToken extends Token{
     public IdentifierToken(){
@@ -11,6 +12,8 @@ public class IdentifierToken extends Token{
     }
     @Override
     public void run(Script script){
-        script.push(script.variables.get(text));
+        StackVariable var = script.variables.get(text);
+        if(var==null)throw new NullPointerException("S'tack variable "+text+" does not exist!");
+        script.push(var);
     }
 }
