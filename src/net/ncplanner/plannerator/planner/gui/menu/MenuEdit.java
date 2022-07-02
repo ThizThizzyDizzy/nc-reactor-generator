@@ -248,7 +248,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             new MenuSymmetrySettings(gui, this, symmetry).open(); 
         });
         overlaySettings.addAction(() -> {
-            new MenuOverlaySettings(gui, this, overlays).open(); 
+            new MenuOverlaySettings(gui, this, overlays, multiblock).open(); 
         });
         partsList.addAction(() -> {
             new MenuDialog(gui, this){
@@ -285,8 +285,12 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 multiblock.recalculate();
                 autoRecalc = true;
             }
+            refreshOverlays();
         });
-        calcStep.addAction(multiblock::recalcStep);
+        calcStep.addAction(() -> {
+            multiblock.recalcStep();
+            refreshOverlays();
+        });
         refreshPartsList();
         if(multiblock instanceof UnderhaulSFR){
             add(underFuelOrCoolantRecipe);
@@ -1189,6 +1193,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             ((CuboidalMultiblock)multiblock).buildDefaultCasing();
             if(autoRecalc)multiblock.recalculate();
         }
+        refreshOverlays();
     }
     @Override
     public void onMouseButton(double x, double y, int button, int action, int mods){
@@ -1477,5 +1482,10 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     @Override
     public Symmetry getSymmetry(){
         return symmetry;
+    }
+    private void refreshOverlays(){
+        for(EditorOverlay overlay : overlays){
+            if(overlay.active)overlay.refresh(multiblock);
+        }
     }
 }

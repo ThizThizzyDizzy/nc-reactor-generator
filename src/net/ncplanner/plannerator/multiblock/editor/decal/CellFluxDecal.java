@@ -3,8 +3,8 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
 public class CellFluxDecal extends Decal{
-    private final int flux;
-    private final int criticality;
+    public final int flux;
+    public final int criticality;
     public CellFluxDecal(int x, int y, int z, int flux, int criticality){
         super(x, y, z);
         this.flux = flux;

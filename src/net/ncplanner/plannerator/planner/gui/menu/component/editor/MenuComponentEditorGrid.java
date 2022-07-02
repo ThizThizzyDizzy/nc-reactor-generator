@@ -18,6 +18,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
@@ -165,6 +166,15 @@ public class MenuComponentEditorGrid extends Component{
                 }
                 synchronized(multiblock.decals){
                     for(Object o : multiblock.decals){
+                        Decal decal = (Decal)o;
+                        if(decal.x==bx&&decal.y==by&&decal.z==bz){
+                            decal.render(renderer, X, Y, blockSize);
+                        }
+                    }
+                }
+                for(EditorOverlay overlay : editor.overlays){
+                    if(!overlay.active)continue;
+                    for(Object o : overlay.decals){
                         Decal decal = (Decal)o;
                         if(decal.x==bx&&decal.y==by&&decal.z==bz){
                             decal.render(renderer, X, Y, blockSize);

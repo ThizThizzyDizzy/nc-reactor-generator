@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -9,7 +10,7 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 public class MenuOverlaySettings extends MenuDialog{
-    public MenuOverlaySettings(GUI gui, Menu parent, ArrayList<EditorOverlay> overlays){
+    public MenuOverlaySettings(GUI gui, Menu parent, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
         super(gui, parent);
         setContent(new Component(0, 0, 600, 312){
             {
@@ -19,6 +20,7 @@ public class MenuOverlaySettings extends MenuDialog{
                         {
                             add(new ToggleBox(0, 0, width, 40, overlay.name, overlay.active).onChange((t) -> {
                                 overlay.active = t;
+                                if(overlay.active)overlay.refresh(multiblock);
                             }).setTooltip(overlay.description));
                             if(!overlay.modes.isEmpty()){
                                 float wid = width/overlay.modes.size();
@@ -26,6 +28,7 @@ public class MenuOverlaySettings extends MenuDialog{
                                     final int mode = i;
                                     buttons.add(add(new Button(i*wid, 40, wid, 40, (String)overlay.modes.get(i), overlay.mode!=i, true).setTooltip((String)overlay.modeTooltips.get(i)).addAction(() -> {
                                         overlay.mode = mode;
+                                        overlay.refresh(multiblock);
                                         for(int j = 0; j<buttons.size(); j++){
                                             buttons.get(j).enabled = j!=mode;
                                         }
