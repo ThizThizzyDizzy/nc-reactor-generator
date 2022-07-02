@@ -358,6 +358,8 @@ public abstract class Theme{
     public abstract Font getTextViewFont();
     public abstract Font getCodeFont();
     public abstract Font getDecalFont();
+    public abstract int getRainbowColorCount();
+    public abstract Color getRainbowColor(int index);
     public abstract void drawThemeButtonBackground(float x, float y, float width, float height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver);
     public abstract void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text);
     public static Color average(Color c1, Color c2){

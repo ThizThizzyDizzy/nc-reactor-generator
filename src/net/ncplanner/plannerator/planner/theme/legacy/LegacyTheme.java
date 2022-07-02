@@ -711,4 +711,36 @@ public abstract class LegacyTheme extends ColorTheme{
     public Font getDecalFont(){
         return Core.FONT_10;
     }
+    @Override
+    public Color getRainbowColor(int index){
+        switch(index){
+            case 0:
+                return getRGBA(1, 0, 0, 1);
+            case 1:
+                return getRGBA(1, .5f, 0, 1);
+            case 2:
+                return getRGBA(1, 1, 0, 1);
+            case 3:
+                return getRGBA(.5f, 1, 0, 1);
+            case 4:
+                return getRGBA(0, 1, 0, 1);
+            case 5:
+                return getRGBA(0, 1, .5f, 1);
+            case 6:
+                return getRGBA(0, 1, 1, 1);
+            case 7:
+                return getRGBA(0, .5f, 1, 1);
+            case 8:
+                return getRGBA(0, 0, 1, 1);
+            case 9:
+                return getRGBA(.5f, 0, 1, 1);
+            case 10:
+                return getRGBA(1, 0, 1, 1);
+        }
+        return null;
+    }
+    @Override
+    public int getRainbowColorCount(){
+        return 11;
+    }
 }

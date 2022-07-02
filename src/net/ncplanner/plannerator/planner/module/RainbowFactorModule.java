@@ -3,14 +3,20 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
+import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 public class RainbowFactorModule extends Module<Float>{
@@ -63,6 +69,18 @@ public class RainbowFactorModule extends Module<Float>{
             }
             return unique.size()/totalSinks;
         }
+        if(m instanceof OverhaulTurbine){
+            float totalCoils = 0;
+            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block b : m.getConfiguration().overhaul.turbine.allBlocks){
+                if(b.coil)totalCoils++;
+            }
+            Set<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> unique = new HashSet<>();
+            for(net.ncplanner.plannerator.multiblock.overhaul.turbine.Block b : ((OverhaulTurbine)m).getBlocks()){
+                if(!b.isActive())continue;
+                if(b.isCoil())unique.add(b.template);
+            }
+            return unique.size()/totalCoils;
+        }
         if(m instanceof OverhaulFusionReactor){
             float totalSinks = 0;
             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block b : m.getConfiguration().overhaul.fusion.allBlocks){
@@ -104,6 +122,14 @@ public class RainbowFactorModule extends Module<Float>{
             priorities.add(new Priority<OverhaulMSR>("Rainbow", false, true){
                 @Override
                 protected double doCompare(OverhaulMSR main, OverhaulMSR other){
+                    return (float)main.moduleData.get(that)-(float)other.moduleData.get(that);
+                }
+            });
+        }
+        if(multiblock instanceof OverhaulTurbine){
+            priorities.add(new Priority<OverhaulTurbine>("Rainbow", false, true){
+                @Override
+                protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
                     return (float)main.moduleData.get(that)-(float)other.moduleData.get(that);
                 }
             });
@@ -292,5 +318,48 @@ public class RainbowFactorModule extends Module<Float>{
                 }
             });
         }
+    }
+    private final EditorOverlay rainbowOverlay = new EditorOverlay("Rainbow factor", "Highlights blocks that are the only block of their type", true){
+        @Override
+        public void render(Renderer renderer, float x, float y, float width, float height, Block block, Multiblock multiblock){
+            boolean isRainbowable = false;
+            if(block instanceof net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block){
+                net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;
+                isRainbowable = b.template.cooling!=0&&b.template.active==null;
+            }
+            if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block){
+                net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
+                isRainbowable = b.template.isHeatsink();
+            }
+            if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block){
+                net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
+                isRainbowable = b.template.isHeater();
+            }
+            if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.turbine.Block){
+                net.ncplanner.plannerator.multiblock.overhaul.turbine.Block b = (net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)block;
+                isRainbowable = b.template.isCoil();
+            }
+            if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fusion.Block){
+                net.ncplanner.plannerator.multiblock.overhaul.fusion.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;
+                isRainbowable = b.template.isHeatsink();
+            }
+            if(isRainbowable&&multiblock.count(block)==1){
+                int count = Core.theme.getRainbowColorCount();
+                for(int i = 0; i<count; i++){
+                    renderer.setColor(Core.theme.getRainbowColor(i));
+                    float b = width/24;
+                    float p1 = i/(float)count;
+                    float p2 = (i+1)/(float)count;
+                    renderer.fillRect(x+b+width*p1, y, x+b+width*p2, y+b);
+                    renderer.fillRect(x, y+b+height*p1, x+b, y+b+height*p2);
+                    renderer.fillRect(x+b+width*(1-p2), y+width-b, x+b+width*(1-p1), y+width);
+                    renderer.fillRect(x+width-b, y+b+height*(1-p2), x+width, y+b+height*(1-p1));
+                }
+            }
+        }
+    };
+    @Override
+    public void getEditorOverlays(Multiblock multiblock, ArrayList<EditorOverlay> overlays){
+        overlays.add(rainbowOverlay);
     }
 }

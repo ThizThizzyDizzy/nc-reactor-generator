@@ -817,4 +817,13 @@ public class SiezureTheme extends ColorTheme{
         if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeDebugMethodStackTextColor();
         return rand();
     }
+    @Override
+    public int getRainbowColorCount(){
+        return 6;
+    }
+    @Override
+    public Color getRainbowColor(int index){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getRainbowColor(index);
+        return rand();
+    }
 }

@@ -692,4 +692,12 @@ public class SmoreTheme extends ColorTheme{
         }catch(NoSuchFieldException|SecurityException|IllegalArgumentException|IllegalAccessException ex){}
         super.onSet();
     }
+    @Override
+    public int getRainbowColorCount(){
+        return 4;
+    }
+    @Override
+    public Color getRainbowColor(int index){
+        return pickTheme(index).getComponentColor(0);
+    }
 }

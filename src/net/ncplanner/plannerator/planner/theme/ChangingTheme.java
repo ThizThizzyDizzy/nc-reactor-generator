@@ -658,4 +658,12 @@ public class ChangingTheme extends Theme{
     public Font getDecalFont(){
         return current.getDecalFont();
     }
+    @Override
+    public Color getRainbowColor(int index){
+        return current.getRainbowColor(index);
+    }
+    @Override
+    public int getRainbowColorCount(){
+        return current.getRainbowColorCount();
+    }
 }

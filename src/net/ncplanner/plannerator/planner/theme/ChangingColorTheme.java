@@ -641,4 +641,12 @@ public class ChangingColorTheme extends ColorTheme{
     public Color getCodeDebugMethodStackTextColor(){
         return current.getCodeDebugMethodStackTextColor();
     }
+    @Override
+    public int getRainbowColorCount(){
+        return current.getRainbowColorCount();
+    }
+    @Override
+    public Color getRainbowColor(int index){
+        return current.getRainbowColor(index);
+    }
 }

@@ -159,6 +159,7 @@ public class RandomColorsTheme extends ColorTheme{
     public Color codeDebugHighlightTextColor;
     public Color codeDebugBreakpointTextColor;
     public Color codeDebugMethodStackTextColor;
+    public Color[] rainbowColors = new Color[6];
     public RandomColorsTheme(String name){
         super(name);
     }
@@ -816,5 +817,13 @@ public class RandomColorsTheme extends ColorTheme{
     @Override
     public Color getCodeDebugMethodStackTextColor(){
         return codeDebugMethodStackTextColor = gen(codeDebugMethodStackTextColor);
+    }
+    @Override
+    public int getRainbowColorCount(){
+        return rainbowColors.length;
+    }
+    @Override
+    public Color getRainbowColor(int index){
+        return rainbowColors[index] = gen(rainbowColors[index]);
     }
 }
