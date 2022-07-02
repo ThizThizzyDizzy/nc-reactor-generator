@@ -575,12 +575,14 @@ public class SmoreTheme extends ColorTheme{
     public void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text){
         Renderer renderer = new Renderer();
         renderer.setFont(getDefaultFont());
-        for(int i = 0; i<4; i++){
-            renderer.setColor(getComponentTextColor(i));
-            renderer.bound(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
-            renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
-            renderer.unBound();
-        }
+        renderer.setColor(getComponentTextColor(0));
+        renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+//        for(int i = 0; i<4; i++){
+//            renderer.setColor(getComponentTextColor(i));
+//            renderer.bound(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
+//            renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+//            renderer.unBound();
+//        }
     }
     private ColorTheme pickTheme(int index){
         if(index%3==0)return cracker;
