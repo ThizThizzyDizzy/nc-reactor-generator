@@ -57,6 +57,13 @@ public class MenuDialog extends Menu{
         }
         super.render2d(deltaTime);
     }
+    @Override
+    public void render3d(double deltaTime){
+        try{
+            if(parent!=null)parent.render3d(deltaTime);
+        }catch(Exception ignored){}
+        super.render3d(deltaTime);
+    }
     public void close(){
         gui.menu = parent;
         closeListeners.forEach(Runnable::run);
