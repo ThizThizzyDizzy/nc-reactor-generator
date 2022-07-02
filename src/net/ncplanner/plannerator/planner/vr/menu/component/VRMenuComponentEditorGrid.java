@@ -18,6 +18,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.tool.EditorTool;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -37,6 +38,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     private final HashMap<Integer, int[]> deviceover = new HashMap<>();
     public final float blockSize;
     private final EditorSpace editorSpace;
+    private final ArrayList<EditorOverlay> overlays = new ArrayList<>();
     public VRMenuComponentEditorGrid(float x, float y, float z, float size, VRMenuEdit editor, Multiblock multiblock, EditorSpace editorSpace){
         super(x, y, z, 0, 0, 0, 0, 0, 0);
         BoundingBox bbox = multiblock.getBoundingBox();
@@ -91,7 +93,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             float Z = z*blockSize;
             float border = blockSize/16;
             if(block!=null){
-                block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, true, 1, multiblock, (t) -> {
+                block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, overlays, 1, multiblock, (t) -> {
                     if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
                     Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     return b==null;
@@ -122,7 +124,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                             if(b==null){
                                 renderer.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, null);
                             }else{
-                                b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
+                                b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha+.5f, s.result, (t) -> {
                                     return true;
                                 });
                             }
@@ -220,7 +222,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 if(editor.isControlPressed(id)){
                     if(block==null||(editor.isShiftPressed(id)&&block.canBeQuickReplaced())){
                         if(editorSpace.isSpaceValid(editor.getSelectedBlock(id), x, y, z)&&multiblock.isValid(editor.getSelectedBlock(id), x, y, z)){
-                            editor.getSelectedBlock(id).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, null, (t) -> {
+                            editor.getSelectedBlock(id).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha, null, (t) -> {
                                 return true;
                             });
                         }

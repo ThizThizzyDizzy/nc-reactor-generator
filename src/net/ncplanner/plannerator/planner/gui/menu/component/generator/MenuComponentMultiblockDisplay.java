@@ -23,7 +23,7 @@ public class MenuComponentMultiblockDisplay extends Component{
             multiblock.forEachPosition((x, y, z) -> {
                 Block block = multiblock.getBlock(x, y, z);
                 if(block!=null){
-                    block.render(renderer, this.x+x*CELL_SIZE, this.y+y*(bbox.getDepth()+1)*CELL_SIZE+z*CELL_SIZE, CELL_SIZE, CELL_SIZE, true, multiblock);
+                    block.render(renderer, this.x+x*CELL_SIZE, this.y+y*(bbox.getDepth()+1)*CELL_SIZE+z*CELL_SIZE, CELL_SIZE, CELL_SIZE, null, multiblock);//TODO overlays (or delete this whole thing, it's just for the old generator)
                 }
             });
         }

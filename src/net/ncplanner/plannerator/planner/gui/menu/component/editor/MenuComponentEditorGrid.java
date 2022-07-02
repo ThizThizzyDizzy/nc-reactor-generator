@@ -133,7 +133,7 @@ public class MenuComponentEditorGrid extends Component{
                 float X = this.x+x*blockSize;
                 float Y = this.y+y*blockSize;
                 if(block!=null){
-                    block.render(renderer, X, Y, blockSize, blockSize, true, multiblock);
+                    block.render(renderer, X, Y, blockSize, blockSize, editor.overlays, multiblock);
                     boolean recipeMatches = false;
                     if(multiblock instanceof OverhaulSFR){
                         net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block bl = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
@@ -159,7 +159,7 @@ public class MenuComponentEditorGrid extends Component{
                 if(Core.isControlPressed()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
                         if(editorSpace.isSpaceValid(editor.getSelectedBlock(0), bx, by, bz)&&multiblock.isValid(editor.getSelectedBlock(0), bx, by, bz)){
-                            editor.getSelectedBlock(0).render(renderer, X, Y, blockSize, blockSize, false, resonatingAlpha, multiblock);
+                            editor.getSelectedBlock(0).render(renderer, X, Y, blockSize, blockSize, null, resonatingAlpha, multiblock);
                         }
                     }
                 }
@@ -215,7 +215,7 @@ public class MenuComponentEditorGrid extends Component{
                                 if(b==null){
                                     renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
                                 }else{
-                                    b.render(renderer, X, Y, blockSize, blockSize, false, resonatingAlpha+.5f, s.result);
+                                    b.render(renderer, X, Y, blockSize, blockSize, null, resonatingAlpha+.5f, s.result);
                                 }
                             }
                             renderer.setColor(Core.theme.getSuggestionOutlineColor());

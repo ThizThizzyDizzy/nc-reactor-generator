@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.planner.Core;
@@ -71,6 +72,12 @@ public class ToggleBox extends Component{
     }
     public ToggleBox onChange(Runnable r){
         changeListeners.add(r);
+        return this;
+    }
+    public ToggleBox onChange(Consumer<Boolean> c){
+        changeListeners.add(() -> {
+            c.accept(isToggledOn);
+        });
         return this;
     }
 }

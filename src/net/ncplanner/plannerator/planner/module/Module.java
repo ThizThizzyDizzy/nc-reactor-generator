@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 public abstract class Module<T>{
     private boolean active;
@@ -44,6 +45,7 @@ public abstract class Module<T>{
     }
     public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){}
     public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}
+    public void getEditorOverlays(Multiblock multiblock, ArrayList<EditorOverlay> overlays){}
     public void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){}
     public void setActive(boolean active){
         if(active)activate();

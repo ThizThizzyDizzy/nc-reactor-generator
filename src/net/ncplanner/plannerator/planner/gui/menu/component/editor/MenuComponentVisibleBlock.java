@@ -33,6 +33,6 @@ public class MenuComponentVisibleBlock extends Component{
         renderer.fillRect(x+width-border/4, y+border/4, x+width, y+height-border/4);
         Block block = multiblock.getBlock(blockX, blockY, blockZ);
         if(block==null)return;
-        block.render(renderer, x, y, width, height, false, multiblock);
+        block.render(renderer, x, y, width, height, null, multiblock);
     }
 }

@@ -41,6 +41,7 @@ import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
 import net.ncplanner.plannerator.planner.editor.Editor;
+import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor.SuggestionAcceptor;
@@ -83,6 +84,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderFuel;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOverlaySettings;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSymmetrySettings;
 import net.ncplanner.plannerator.planner.module.Module;
 import org.joml.Matrix4f;
@@ -162,6 +164,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private final TextView textBox = add(new TextView(0, 0, 0, 0, 24, 24));
     private final Button editMetadata = add(new Button(0, 0, 0, 0, "", true).setTooltip("Modify the multiblock metadata"));
     private final Button symmetrySettings = add(new Button(0, 0, 0, 0, "Symmetry", true));
+    private final Button overlaySettings = add(new Button(0, 0, 0, 0, "Overlays", true));
     public final SingleColumnList tools = add(new SingleColumnList(0, 0, 0, 0, partSize/2));
     private final MenuComponentTurbineRotorGraph graph;
     private final Button partsList = add(new Button(0, 0, 0, 0, "Parts List", true, true).setTooltip("View a parts list for this multiblock"));
@@ -191,6 +194,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public final ArrayList<int[]> selection = new ArrayList<>();
     private ArrayList<Suggestion> suggestions = new ArrayList<>();
     private ArrayList<Suggestor> suggestors = new ArrayList<>();
+    public ArrayList<EditorOverlay> overlays = new ArrayList<>();
     private double scale = 4;
     private double minScale = 0.5;
     private double maxScale = 16;
@@ -242,6 +246,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         });
         symmetrySettings.addAction(() -> {
             new MenuSymmetrySettings(gui, this, symmetry).open(); 
+        });
+        overlaySettings.addAction(() -> {
+            new MenuOverlaySettings(gui, this, overlays).open(); 
         });
         partsList.addAction(() -> {
             new MenuDialog(gui, this){
@@ -324,6 +331,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         for(Module m : Core.modules){
             if(m.isActive()){
                 m.getSuggestors(multiblock, suggestors);
+                m.getEditorOverlays(multiblock, overlays);
             }
         }
         for(Suggestor suggestor : suggestors){
@@ -438,7 +446,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         partsSearch.x = parts.x = tools.width+partSize/4;
         partsList.x = symmetrySettings.x = textBox.width = graph.width = multibwauk.x = parts.x+parts.width;
         recalc.width = calcStep.width = textBox.width/2;
-        toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = partsList.height = generate.height = tools.y = multibwauk.y = symmetrySettings.height = editMetadata.height = back.height = 48;
+        toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = partsList.height = generate.height = tools.y = multibwauk.y = symmetrySettings.height = overlaySettings.height = editMetadata.height = back.height = 48;
         partsSearch.height = partSize;
         parts.y = tools.y+partSize;
         calcStep.x = recalc.width;
@@ -454,9 +462,10 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         tools.height = parts.height+partSize;
         resize.width = 320;
         multibwauk.width = gui.getWidth()-parts.x-parts.width-resize.width;
-        symmetrySettings.width = multibwauk.width/2;
-        editMetadata.width = multibwauk.width-symmetrySettings.width;
+        symmetrySettings.width = overlaySettings.width = multibwauk.width/3;
+        editMetadata.width = multibwauk.width-symmetrySettings.width*2;
         editMetadata.x = symmetrySettings.x+symmetrySettings.width;
+        overlaySettings.x = editMetadata.x+editMetadata.width;
         generate.width = partsList.width = (multibwauk.width-generate.height)/2;
         generate.x = partsList.x+partsList.width;
         suggestorSettings.x = generate.x+generate.width;
@@ -1327,7 +1336,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             float Z = z*blockSize;
             float border = blockSize/16;
             if(block!=null){
-                block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, true, 1, multiblock, (t) -> {
+                block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, overlays, 1, multiblock, (t) -> {
                     if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
                     Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     return block.shouldRenderFace(b);
@@ -1356,7 +1365,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                             if(b==null){
                                 renderer.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, null);
                             }else{
-                                b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha+.5f, s.result, (t) -> {
+                                b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha+.5f, s.result, (t) -> {
                                     return true;
                                 });
                             }
@@ -1434,7 +1443,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 if(block==null||(isShiftPressed(0)&&block.canBeQuickReplaced())){
                     for(EditorSpace space : ((Multiblock<Block>)multiblock).getEditorSpaces()){
                         if(space.isSpaceValid(getSelectedBlock(0), x, y, z)&&multiblock.isValid(getSelectedBlock(0), x, y, z)){
-                            getSelectedBlock(0).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, false, resonatingAlpha, multiblock, (t) -> {
+                            getSelectedBlock(0).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha, multiblock, (t) -> {
                                 return true;
                             });
                         }

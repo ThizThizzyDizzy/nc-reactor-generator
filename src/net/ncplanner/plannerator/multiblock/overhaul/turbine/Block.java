@@ -81,15 +81,6 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return tip;
     }
     @Override
-    public void renderOverlay(Renderer renderer, float x, float y, float width, float height, Multiblock multiblock){
-        if(!isValid()){
-            drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineInvalid());
-        }
-        if(isActive()&&isCoil()){
-            drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
-        }
-    }
-    @Override
     public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);

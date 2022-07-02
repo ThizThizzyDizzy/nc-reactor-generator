@@ -22,7 +22,7 @@ public class MenuComponentEditorListBlock extends Component implements Pinnable{
         Color col = isMouseFocused?Core.theme.getEditorListBackgroundMouseoverColor(Core.getThemeIndex(this)):Core.theme.getEditorListBackgroundColor(Core.getThemeIndex(this));
         renderer.setColor(col);
         renderer.fillRect(x, y, x+width, y+height);
-        block.render(new Renderer(), x, y, width, height, false, null);
+        block.render(new Renderer(), x, y, width, height, null, null);
         float border = height/8;
         if(isFocused){
             renderer.setColor(Core.theme.getEditorListLightSelectedColor(Core.getThemeIndex(this)), .85f);

@@ -50,6 +50,7 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUpdate;
+import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
@@ -113,6 +114,7 @@ public class MenuInit extends Menu{
         Task tc = init.addSubtask("Initializing Configurations...");
         Task tc1 = tc.addSubtask("Initializing Nuclearcraft Configuration");
         Task tm = init.addSubtask("Adding modules...");
+        Task tmc = tm.addSubtask("Adding Core Module");
         Task tm1 = tm.addSubtask("Adding Underhaul Module");
         Task tm2 = tm.addSubtask("Adding Overhaul Module");
         Task tm3 = tm.addSubtask("Adding Fusion Test Module");
@@ -135,6 +137,8 @@ public class MenuInit extends Menu{
                 System.out.println("Loaded File Formats");
                 attemptInit(Configuration::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
                 tc1.finish();
+                Core.modules.add(new CoreModule());
+                tmc.finish();
                 Core.modules.add(new UnderhaulModule());
                 tm1.finish();
                 Core.modules.add(new OverhaulModule());

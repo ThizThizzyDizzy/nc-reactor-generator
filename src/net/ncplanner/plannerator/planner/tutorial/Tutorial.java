@@ -6,19 +6,23 @@ public abstract class Tutorial{
     public boolean live = false;
     public static void init(){
         categories.clear();
-        addTutorials("Planner",
-                TutorialFileReader.read("tutorials/planner/introduction.ncpt"),
-                TutorialFileReader.read("tutorials/planner/basics.ncpt"),
-                TutorialFileReader.read("tutorials/planner/editing.ncpt"));
+        Tutorial.addTutorials("Planner",
+                TutorialFileReader.read("tutorials/planner/introduction.ncpt"));
         //TODO tutorial on modifying configs and whatnot
         //TODO tutorial on using the generator
     }
     public static void addTutorials(String categoryName, Tutorial... tutorials){
-        TutorialCategory category = new TutorialCategory(categoryName);
-        for(Tutorial t : tutorials){
-            category.add(t);
+        TutorialCategory cat = null;
+        for(TutorialCategory c : categories){
+            if(c.name.equals(categoryName))cat = c;
         }
-        categories.add(category);
+        if(cat==null){
+            cat = new TutorialCategory(categoryName);
+            categories.add(cat);
+        }
+        for(Tutorial t : tutorials){
+            cat.add(t);
+        }
     }
     public Tutorial(String name){
         this.name = name;

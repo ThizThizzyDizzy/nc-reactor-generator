@@ -11,6 +11,7 @@ import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.StringUtil;
+import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -66,10 +67,10 @@ public abstract class Block implements Pinnable{
     }
     public abstract String getTooltip(Multiblock multiblock);
     public abstract String getListTooltip();
-    public void render(Renderer renderer, float x, float y, float width, float height, boolean renderOverlay, Multiblock multiblock){
-        render(renderer, x, y, width, height, renderOverlay, 1, multiblock);
+    public void render(Renderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
+        render(renderer, x, y, width, height, overlays, 1, multiblock);
     }
-    public void render(Renderer renderer, float x, float y, float width, float height, boolean renderOverlay, float alpha, Multiblock multiblock){
+    public void render(Renderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock){
         if(getTexture()==null){
             renderer.setColor(new Color(255,0,255));
             renderer.fillRect(x, y, x+width, y+height);
@@ -80,9 +81,13 @@ public abstract class Block implements Pinnable{
             renderer.setWhite(alpha);
             renderer.drawImage(getTexture(), x, y, x+width, y+height);
         }
-        if(renderOverlay)renderOverlay(renderer,x,y,width,height, multiblock);
+        if(overlays!=null){
+            for(EditorOverlay overlay : overlays){
+                if(overlay.active)overlay.render(renderer, x, y, width, height, this, multiblock);
+            }
+        }
     }
-    public void render(Renderer renderer, float x, float y, float z, float width, float height, float depth, boolean renderOverlay, float alpha, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+    public void render(Renderer renderer, float x, float y, float z, float width, float height, float depth, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         float[] bounds = multiblock.getCubeBounds(this);
         bounds[0] *= width;
         bounds[1] *= height;
@@ -97,12 +102,17 @@ public abstract class Block implements Pinnable{
             renderer.setWhite(alpha);
             renderer.drawCube(x+bounds[0], y+bounds[1], z+bounds[2], x+bounds[3], y+bounds[4], z+bounds[5], getTexture(), faceRenderFunc);
         }
-        if(renderOverlay)renderOverlay(renderer, x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5],multiblock,faceRenderFunc);
+//        if(overlays!=null){
+//            for(EditorOverlay overlay : overlays){
+//                if(overlay.active)overlay.render(renderer, x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5], this, multiblock, faceRenderFunc);
+//            }
+//        }
+        if(overlays!=null)renderOverlay(renderer, x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5], multiblock,faceRenderFunc);
     }
-    public void renderGrayscale(Renderer renderer, float x, float y, float width, float height, boolean renderOverlay, Multiblock multiblock){
-        renderGrayscale(renderer, x, y, width, height, renderOverlay, 1, multiblock);
+    public void renderGrayscale(Renderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
+        renderGrayscale(renderer, x, y, width, height, overlays, 1, multiblock);
     }
-    public void renderGrayscale(Renderer renderer, float x, float y, float width, float height, boolean renderOverlay, float alpha, Multiblock multiblock){
+    public void renderGrayscale(Renderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock){
         if(getGrayscaleTexture()==null){
             renderer.setColor(new Color(191,191,191));
             renderer.fillRect(x, y, x+width, y+height);
@@ -113,9 +123,13 @@ public abstract class Block implements Pinnable{
             renderer.setWhite(alpha);
             renderer.drawImage(getGrayscaleTexture(), x, y, x+width, y+height);
         }
-        if(renderOverlay)renderOverlay(renderer,x,y,width,height, multiblock);
+        if(overlays!=null){
+            for(EditorOverlay overlay : overlays){
+                if(overlay.active)overlay.render(renderer, x, y, width, height, this, multiblock);
+            }
+        }
     }
-    public abstract void renderOverlay(Renderer renderer, float x, float y, float width, float height, Multiblock multiblock);
+    @Deprecated
     public abstract void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc);
     public void drawCircle(Renderer renderer, float x, float y, float width, float height, Color color){
         renderer.setColor(color);

@@ -74,8 +74,8 @@ public class MenuComponentToggleBlock extends Component{
     }
     public void drawText(){
         Renderer renderer = new Renderer();
-        if(enabled)block.render(renderer, x, y, width, height, false, null);
-        else block.renderGrayscale(renderer, x, y, width, height, false, null);
+        if(enabled)block.render(renderer, x, y, width, height, null, null);
+        else block.renderGrayscale(renderer, x, y, width, height, null, null);
     }
     public void drawText(Renderer renderer, String text){
         float textLength = renderer.getStringWidth(text, height);
