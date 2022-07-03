@@ -33,6 +33,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.vr.VRCore;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -84,6 +85,7 @@ public class MenuMain extends Menu{
                     if(key.text.trim().isEmpty()&&value.text.trim().isEmpty())continue;
                     Core.metadata.put(key.text, value.text);
                 }
+                Core.saved = false;
                 metadating = false;
                 refresh();
             });
@@ -171,43 +173,7 @@ public class MenuMain extends Menu{
         if(Core.vr)add(vr);
         addMultiblock.textInset = 0;
         saveFile.addAction(() -> {
-            NCPFFile ncpf = new NCPFFile();
-            ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
-            ncpf.multiblocks.addAll(Core.multiblocks);
-            ncpf.metadata.putAll(Core.metadata);
-            String name = Core.filename;
-            if(name==null) name = ncpf.metadata.get("name");
-            if(name==null||name.isEmpty()){
-                name = "unnamed";
-                File file = new File(name+".ncpf");
-                int i = 0;
-                while(file.exists()){
-                    name = "unnamed_"+i;
-                    file = new File(name+".ncpf");
-                    i++;
-                }
-            }
-            String nam = name;
-            new MenuInputDialog(gui, this, nam, "Filename").addButton("Cancel", true).addButton("Save Dialog", (dialog, str) -> {
-                try{
-                    Core.createFileChooser(null, (file) -> {
-                        if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                        FileWriter.write(ncpf, file, FileWriter.NCPF);
-                    }, FileFormat.NCPF);
-                }catch(IOException ex){
-                    Core.error("Failed to save file!", ex);
-                }
-            }, true).addButton("Save", (dialog, filename) -> {
-                if(filename==null||filename.isEmpty()){
-                    Core.warning("Invalid filename: "+filename+".ncpf", null);
-                }else{
-                    Core.filename = filename;
-                    File file = new File(filename+".ncpf");
-                    if(file.exists()){
-                        new MenuMessageDialog(gui, dialog, "File "+filename+".ncpf already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", (d) -> save(ncpf, file, filename+".ncpf"), true).open();
-                    }else save(ncpf, file, filename+".ncpf");
-                }
-            }).open();
+            new MenuSaveDialog(gui, this).open();
         });
         loadFile.addAction(new MenuLoad(gui, this).onClose(this::onOpened)::open);
         importFile.addAction(new MenuImport(gui, this).onClose(this::onOpened)::open);
@@ -279,6 +245,7 @@ public class MenuMain extends Menu{
                 }
             }
             Core.multiblocks.remove(multiblock);
+            Core.saved = false;
             onOpened();
         });
         convertOverhaulMSFR.addAction(() -> {
@@ -287,9 +254,11 @@ public class MenuMain extends Menu{
                 if(selected instanceof OverhaulSFR){
                     OverhaulMSR msr = ((OverhaulSFR) selected).convertToMSR();
                     Core.multiblocks.set(Core.multiblocks.indexOf(selected), msr);
+                    Core.saved = false;
                 }else if(selected instanceof OverhaulMSR){
                     OverhaulSFR sfr = ((OverhaulMSR) selected).convertToSFR();
                     Core.multiblocks.set(Core.multiblocks.indexOf(selected), sfr);
+                    Core.saved = false;
                 }
             }catch(MissingConfigurationEntryException ex){
                 throw new RuntimeException(ex);
@@ -314,10 +283,6 @@ public class MenuMain extends Menu{
         credits.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuCredits(gui), MenuTransition.SplitTransitionY.slideOut(0.5f), 10));
         });
-    }
-    private void save(NCPFFile ncpf, File file, String filename){
-        FileWriter.write(ncpf, file, FileWriter.NCPF);
-        new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
     }
     private void imprt(NCPFFile ncpf, FormatWriter writer, File file, String filename){
         FileWriter.write(ncpf, file, writer);
@@ -383,6 +348,7 @@ public class MenuMain extends Menu{
                     mb.init();
                     Core.multiblocks.add(mb);
                     adding = false;
+                    Core.saved = false;
                     refresh();
                 });
                 multiblockButtons.add(button);
@@ -507,6 +473,7 @@ public class MenuMain extends Menu{
         for(Multiblock multi : Core.multiblocks){
             MenuComponentMultiblock mcm = new MenuComponentMultiblock(this, multi);
             mcm.edit.addAction(() -> {
+                Core.saved = false;
                 gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, mcm.multiblock), MenuTransition.SplitTransitionX.slideIn((MenuEdit.partSize+MenuEdit.partSize/4f+MenuEdit.partsWide*MenuEdit.partSize)/gui.getWidth()), 5));
             });
             multiblocks.add(mcm);

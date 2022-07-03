@@ -41,6 +41,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuCriticalError;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUnsavedChanges;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.theme.Theme;
@@ -101,6 +102,8 @@ public class Core{
     public static Font FONT_MONO_20;
     private static boolean is3D = false;
     public static boolean imageExport3DView = true;
+    public static boolean saved = true;
+    public static boolean configSaved = true;
     public static void addModule(Module m){
         modules.add(m);
     }
@@ -248,7 +251,16 @@ public class Core{
         stbi_set_flip_vertically_on_load(true);
         Renderer renderer = new Renderer();
         gui.initInput();
-        while(!glfwWindowShouldClose(window)){
+        while(true){
+            boolean shouldClose = glfwWindowShouldClose(window);
+            if(shouldClose){
+                if(saved)break;
+                else{
+                    if(gui.menu instanceof MenuUnsavedChanges)break;//clicked close twice, might as well listen this time
+                    glfwSetWindowShouldClose(window, false);
+                    new MenuUnsavedChanges(gui, gui.menu).open();
+                }
+            }
             Matrix4f orthoProjection = new Matrix4f().setOrtho(0, screenWidth, screenHeight, 0, 0.1f, 10f);//new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
             Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, screenWidth/Math.max(1f,screenHeight), 0.1f, 100);
             Color color = theme.getMenuBackgroundColor();
