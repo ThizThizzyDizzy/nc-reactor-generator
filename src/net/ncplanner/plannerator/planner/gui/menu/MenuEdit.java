@@ -341,6 +341,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         for(Suggestor suggestor : suggestors){
             suggestorSettings.add(new MenuComponentSuggestor(this, suggestor));
         }
+        refreshOverlays();
     }
     private boolean recalculateOnOpen = true;
     @Override
@@ -1485,7 +1486,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     }
     private void refreshOverlays(){
         for(EditorOverlay overlay : overlays){
-            if(overlay.active)overlay.refresh(multiblock);
+            if(overlay.isActive())overlay.refresh(multiblock);
         }
     }
 }

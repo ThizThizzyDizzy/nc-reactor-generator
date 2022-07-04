@@ -82,6 +82,7 @@ public class Core{
     public static boolean delCircle = false;
     public static int circleSize = 64;
     public static final ArrayList<Module> modules = new ArrayList<>();
+    public static final HashMap<String, Integer> overlays = new HashMap<>();
     public static boolean vr = false;
     private static Callback glCallback;
     public static boolean invertUndoRedo;
@@ -327,6 +328,11 @@ public class Core{
             modules.set(m.name, m.isActive());
         }
         settings.set("modules", modules);
+        Config overlays = Config.newConfig();
+        for(String key : Core.overlays.keySet()){
+            overlays.set(key, Core.overlays.get(key));
+        }
+        settings.set("overlays", overlays);
         settings.set("tutorialShown", tutorialShown);
         settings.set("invertUndoRedo", invertUndoRedo);
         settings.set("autoBuildCasing", autoBuildCasing);

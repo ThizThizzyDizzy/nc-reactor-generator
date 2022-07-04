@@ -173,7 +173,7 @@ public class MenuComponentEditorGrid extends Component{
                     }
                 }
                 for(EditorOverlay overlay : editor.overlays){
-                    if(!overlay.active)continue;
+                    if(!overlay.isActive())continue;
                     for(Object o : overlay.decals){
                         Decal decal = (Decal)o;
                         if(decal.x==bx&&decal.y==by&&decal.z==bz){

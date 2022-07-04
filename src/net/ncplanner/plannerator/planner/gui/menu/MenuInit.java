@@ -113,6 +113,7 @@ public class MenuInit extends Menu{
         }
         Task tc = init.addSubtask("Initializing Configurations...");
         Task tc1 = tc.addSubtask("Initializing Nuclearcraft Configuration");
+        Task tps = init.addSubtask("Preloading settings...");
         Task tm = init.addSubtask("Adding modules...");
         Task tmc = tm.addSubtask("Adding Core Module");
         Task tm1 = tm.addSubtask("Adding Underhaul Module");
@@ -137,6 +138,18 @@ public class MenuInit extends Menu{
                 System.out.println("Loaded File Formats");
                 attemptInit(Configuration::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
                 tc1.finish();
+                
+                File f = new File("settings.dat").getAbsoluteFile();
+                if(f.exists()){
+                    Config settings = Config.newConfig(f);
+                    settings.load();
+                    Config overlays = settings.get("overlays", Config.newConfig());
+                    for(String key : overlays.properties()){
+                        Core.overlays.put(key, overlays.getInt(key));
+                    }
+                }
+                System.out.println("Preloaded Settings");
+                tps.finish();
                 Core.modules.add(new CoreModule());
                 tmc.finish();
                 Core.modules.add(new UnderhaulModule());
@@ -150,7 +163,6 @@ public class MenuInit extends Menu{
                 Core.modules.add(new PrimeFuelModule());
                 tm5.finish();
                 System.out.println("Added Modules");
-                File f = new File("settings.dat").getAbsoluteFile();
                 if(f.exists()){
                     Config settings = Config.newConfig(f);
                     settings.load();

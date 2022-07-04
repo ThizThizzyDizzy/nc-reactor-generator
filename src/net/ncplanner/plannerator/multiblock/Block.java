@@ -83,7 +83,7 @@ public abstract class Block implements Pinnable{
         }
         if(overlays!=null){
             for(EditorOverlay overlay : overlays){
-                if(overlay.active)overlay.render(renderer, x, y, width, height, this, multiblock);
+                if(overlay.isActive())overlay.render(renderer, x, y, width, height, this, multiblock);
             }
         }
     }
@@ -125,7 +125,7 @@ public abstract class Block implements Pinnable{
         }
         if(overlays!=null){
             for(EditorOverlay overlay : overlays){
-                if(overlay.active)overlay.render(renderer, x, y, width, height, this, multiblock);
+                if(overlay.isActive())overlay.render(renderer, x, y, width, height, this, multiblock);
             }
         }
     }

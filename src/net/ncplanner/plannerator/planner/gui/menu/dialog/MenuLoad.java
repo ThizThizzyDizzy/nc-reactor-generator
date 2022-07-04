@@ -28,6 +28,7 @@ public class MenuLoad extends MenuDialog{
                     NCPFFile ncpf = FileReader.read(file);
                     if(ncpf==null)return;
                     Core.multiblocks.clear();
+                    Core.saved = true;
                     Core.metadata.clear();
                     Core.metadata.putAll(ncpf.metadata);
                     if(ncpf.configuration==null||ncpf.configuration.isPartial()){
@@ -80,6 +81,7 @@ public class MenuLoad extends MenuDialog{
                             NCPFFile ncpf = FileReader.read(file);
                             if(ncpf==null)return;
                             Core.multiblocks.clear();
+                            Core.saved = true;
                             Core.metadata.clear();
                             Core.metadata.putAll(ncpf.metadata);
                             if(ncpf.configuration==null||ncpf.configuration.isPartial()){
