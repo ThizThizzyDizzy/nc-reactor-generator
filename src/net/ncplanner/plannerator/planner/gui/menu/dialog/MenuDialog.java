@@ -8,7 +8,6 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.Scrollable;
-import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextDisplay;
 public class MenuDialog extends Menu{
     private Scrollable textPanel = add(new Scrollable(0, 0, 0, 0, 16, 16));
@@ -70,6 +69,7 @@ public class MenuDialog extends Menu{
     }
     public void open(){
         gui.menu = this;
+        onOpened();
     }
     private final ArrayList<Runnable> closeListeners = new ArrayList<>();
     public MenuDialog onClose(Runnable action){

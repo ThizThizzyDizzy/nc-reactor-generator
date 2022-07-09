@@ -24,7 +24,7 @@ public class MenuSaveDialog extends MenuInputDialog{
                     if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
                     FileWriter.write(ncpf, file, FileWriter.NCPF);
                     Core.saved = true;
-                    onSaved.run();
+                    if(onSaved!=null)onSaved.run();
                 }, FileFormat.NCPF);
             }catch(IOException ex){
                 Core.error("Failed to save file!", ex);
@@ -39,11 +39,11 @@ public class MenuSaveDialog extends MenuInputDialog{
                 if(file.exists()){
                     new MenuMessageDialog(gui, dialog, "File "+filename+".ncpf already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", (d) -> {
                         save(ncpf, file, filename+".ncpf");
-                        onSaved.run();
+                        if(onSaved!=null)onSaved.run();
                     }, true).open();
                 }else{
                     save(ncpf, file, filename+".ncpf");
-                    onSaved.run();
+                    if(onSaved!=null)onSaved.run();
                 }
             }
         }).open();

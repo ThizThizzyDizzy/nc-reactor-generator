@@ -47,6 +47,10 @@ public class MenuLoad extends MenuDialog{
         });
         refresh();
     }
+    @Override
+    public void onOpened(){
+        refresh();
+    }
     private void refresh(){
         GridLayout layout = new GridLayout(36, 1);
         File root = new File("file").getAbsoluteFile().getParentFile();
