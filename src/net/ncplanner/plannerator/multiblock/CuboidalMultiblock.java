@@ -419,4 +419,16 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         super.init();
         buildDefaultCasing();
     }
+    @Override
+    public boolean shouldHideWithCasing(int x, int y, int z){
+        return x==0||y==0||z==0||x==getExternalWidth()-1||y==getExternalHeight()-1||z==getExternalDepth()-1;
+    }
+    @Override
+    public BoundingBox getBoundingBox(boolean includeCasing){
+        BoundingBox bbox = super.getBoundingBox(includeCasing);
+        if(!includeCasing){
+            bbox = new BoundingBox(bbox.x1+1, bbox.y1+1, bbox.z1+1, bbox.x2-1, bbox.y2-1, bbox.z2-1);
+        }
+        return bbox;
+    }
 }

@@ -11,6 +11,9 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 public class MenuOverlaySettings extends MenuDialog{
     public MenuOverlaySettings(GUI gui, Menu parent, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
+        this(gui, parent, overlays, multiblock, null);
+    }
+    public MenuOverlaySettings(GUI gui, Menu parent, ArrayList<EditorOverlay> overlays, Multiblock multiblock, Runnable onChange){
         super(gui, parent);
         setContent(new Component(0, 0, 600, 312){
             {
@@ -20,6 +23,7 @@ public class MenuOverlaySettings extends MenuDialog{
                         {
                             add(new ToggleBox(0, 0, width, 40, overlay.name, overlay.isActive()).onChange((t) -> {
                                 overlay.setActive((boolean)t);
+                                if(onChange!=null)onChange.run();
                                 if(overlay.isActive())overlay.refresh(multiblock);
                             }).setTooltip(overlay.description));
                             if(!overlay.modes.isEmpty()){
@@ -29,6 +33,7 @@ public class MenuOverlaySettings extends MenuDialog{
                                     buttons.add(add(new Button(i*wid, 40, wid, 40, (String)overlay.modes.get(i), overlay.getMode()!=i, true).setTooltip((String)overlay.modeTooltips.get(i)).addAction(() -> {
                                         overlay.setMode(mode);
                                         overlay.refresh(multiblock);
+                                        if(onChange!=null)onChange.run();
                                         for(int j = 0; j<buttons.size(); j++){
                                             buttons.get(j).enabled = j!=mode;
                                         }

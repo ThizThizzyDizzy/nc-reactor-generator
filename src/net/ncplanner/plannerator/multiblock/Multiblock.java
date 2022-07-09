@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -244,8 +245,14 @@ public abstract class Multiblock<T extends Block>{
             last = block;
         }
     }
-    public void draw3DInOrder(){
-        ArrayList<T> blocks = getBlocks(true);
+    public void draw3DInOrder(boolean includeCasing){
+        ArrayList<T> blocks = new ArrayList<>(getBlocks(true));
+        if(!includeCasing){
+            for(Iterator<T> it = blocks.iterator(); it.hasNext();){
+                T block = it.next();
+                if(shouldHideWithCasing(block.x, block.y, block.z))it.remove();
+            }
+        }
         Collections.sort(blocks, (T o1, T o2) -> {
             if(o1.y!=o2.y)return o1.y-o2.y;
             int d1 = o1.z-o1.x;
@@ -261,6 +268,9 @@ public abstract class Multiblock<T extends Block>{
             drawCube(block, true);
             last = block;
         }
+    }
+    public boolean shouldHideWithCasing(int x, int y, int z){
+        return false;
     }
     protected float[] getCubeBounds(T block){
         return new float[]{0,0,0,1,1,1};
@@ -731,6 +741,9 @@ public abstract class Multiblock<T extends Block>{
         }
     }
     public BoundingBox getBoundingBox(){
+        return getBoundingBox(true);
+    }
+    public BoundingBox getBoundingBox(boolean includeCasing){
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         int minZ = Integer.MAX_VALUE;

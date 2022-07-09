@@ -6,6 +6,7 @@ import java.util.List;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.FluidStack;
@@ -929,5 +930,17 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     @Override
     public LiteMultiblock<OverhaulTurbine> compile(){
         return null;
+    }
+    @Override
+    public boolean shouldHideWithCasing(int x, int y, int z){
+        return x==0||y==0||x==getExternalWidth()-1||y==getExternalHeight()-1;
+    }
+    @Override
+    public BoundingBox getBoundingBox(boolean includeCasing){
+        BoundingBox bbox = super.getBoundingBox(includeCasing);
+        if(!includeCasing){
+            bbox = new BoundingBox(bbox.x1+1, bbox.y1+1, bbox.z1, bbox.x2-1, bbox.y2-1, bbox.z2);
+        }
+        return bbox;
     }
 }

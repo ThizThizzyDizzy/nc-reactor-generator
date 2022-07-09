@@ -5,6 +5,10 @@ public class SingleColumnGridLayout extends Component{
     public SingleColumnGridLayout(float componentHeight){
         this.componentHeight = componentHeight;
     }
+    public SingleColumnGridLayout(float x, float y, float width, float componentHeight){
+        super(x, y, width, 0);
+        this.componentHeight = componentHeight;
+    }
     public SingleColumnGridLayout addAll(Iterable<? extends Component> components){
         components.forEach(this::add);
         return this;

@@ -953,4 +953,8 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
     public LiteMultiblock<OverhaulFusionReactor> compile(){
         return null;
     }
+    @Override
+    public boolean shouldHideWithCasing(int x, int y, int z){
+        return getLocationCategory(x, y, z)==LocationCategory.TOROID;
+    }
 }

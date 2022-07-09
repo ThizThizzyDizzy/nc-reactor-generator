@@ -7,10 +7,13 @@ import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
+import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.Queue;
+import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import static net.ncplanner.plannerator.planner.file.FileWriter.botRunning;
 import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
@@ -53,7 +56,7 @@ public class PNGWriter extends ImageFormatWriter{
             }
             final float tW = textWidth+borderSize;
             final float pW = partsWidth+borderSize;
-            BoundingBox bbox = multi.getBoundingBox();
+            BoundingBox bbox = multi.getBoundingBox(Core.imageExportCasing);
             int width = (int) Math.max(textWidth+partsWidth+(Core.imageExport3DView?totalTextHeight:0),bbox.getWidth()*blockSize+borderSize);
             int multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
             int rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
@@ -89,7 +92,8 @@ public class PNGWriter extends ImageFormatWriter{
                     }
                 }
                 if(Core.imageExport3DView){
-                    float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
+                    BoundingBox bbox3 = multi.getBoundingBox(Core.imageExportCasing3D);
+                    float size = Math.max(bbox3.getWidth(), Math.max(bbox3.getHeight(), bbox3.getDepth()));
                     renderer.model(new Matrix4f()
                             .setTranslation(bufferWidth-totalTextHeight/2, totalTextHeight/2, -1)
                             .scale(1, 1, 0.0001f)
@@ -98,8 +102,8 @@ public class PNGWriter extends ImageFormatWriter{
                             .scale(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2)
                             .scale(1/size, 1/size, 1/size)
                             .rotate((float)MathUtil.toRadians(180), 1, 0, 0)
-                            .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
-                    multi.draw3DInOrder();
+                            .translate(-bbox3.getWidth()/2f, -bbox3.getHeight()/2f, -bbox3.getDepth()/2f));
+                    multi.draw3DInOrder(Core.imageExportCasing3D);
                     renderer.resetModelMatrix();
                 }
                 for(int y = 0; y<bbox.getHeight(); y++){
@@ -109,10 +113,22 @@ public class PNGWriter extends ImageFormatWriter{
                     int layerHeight = bbox.getDepth()*blockSize+borderSize;
                     for(int x = 0; x<bbox.getWidth(); x++){
                         for(int z = 0; z<bbox.getDepth(); z++){
-                            Block b = multi.getBlock(x+bbox.x1, y+bbox.y1, z+bbox.z1);
-                            if(b!=null)b.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, null, multi);//TODO overlays
-                            if(multi instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multi).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                            int X = x+bbox.x1;
+                            int Y = y+bbox.y1;
+                            int Z = z+bbox.z1;
+                            if(!Core.imageExportCasing&&multi.shouldHideWithCasing(X,Y,Z))continue;
+                            Block b = multi.getBlock(X, Y, Z);
+                            if(b!=null)b.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, multi);
+                            if(multi instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multi).getLocationCategory(X, Y, Z)==OverhaulFusionReactor.LocationCategory.PLASMA){
                                 bufferRenderer.drawImage("/textures/overhaul/fusion/plasma.png", column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize);
+                            }
+                            for(EditorOverlay o : overlays){
+                                if(!o.isActive())continue;
+                                for(Decal d : (Queue<Decal>)o.decals){
+                                    if(d.x==X&&d.y==Y&&d.z==Z){
+                                        d.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize);
+                                    }
+                                }
                             }
                         }
                     }

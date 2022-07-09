@@ -103,6 +103,8 @@ public class Core{
     public static Font FONT_MONO_20;
     private static boolean is3D = false;
     public static boolean imageExport3DView = true;
+    public static boolean imageExportCasing = true;
+    public static boolean imageExportCasing3D = true;
     public static boolean saved = true;
     public static boolean configSaved = true;
     public static void addModule(Module m){
@@ -339,6 +341,8 @@ public class Core{
         settings.set("vsync", vsync);
         settings.set("editor3dView", editor3dView);
         settings.set("imageExport3DView", imageExport3DView);
+        settings.set("imageExportCasing", imageExportCasing);
+        settings.set("imageExportCasing3D", imageExportCasing3D);
         ConfigList pins = new ConfigList();
         for(String s : pinnedStrs)pins.add(s);
         settings.set("pins", pins);
