@@ -241,7 +241,7 @@ public abstract class Multiblock<T extends Block>{
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
                 renderer.bindTexture(block.getBaseTexture());
             }
-            drawCube(block, false);
+            drawCube(block, false, true);
             last = block;
         }
     }
@@ -265,7 +265,7 @@ public abstract class Multiblock<T extends Block>{
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
                 renderer.bindTexture(block.getBaseTexture());
             }
-            drawCube(block, true);
+            drawCube(block, true, includeCasing);
             last = block;
         }
     }
@@ -275,7 +275,7 @@ public abstract class Multiblock<T extends Block>{
     protected float[] getCubeBounds(T block){
         return new float[]{0,0,0,1,1,1};
     }
-    protected void drawCube(T block, boolean inOrder){
+    protected void drawCube(T block, boolean inOrder, boolean includeCasing){
         Renderer renderer = new Renderer();
         int x = block.x;
         int y = block.y;
@@ -290,7 +290,7 @@ public abstract class Multiblock<T extends Block>{
         float y2 = y+bounds[4];
         float z2 = z+bounds[5];
         //xy +z
-        if(!inOrder&&(!contains(x,y,z+1)||block.shouldRenderFace(getBlock(x, y, z+1)))){
+        if(!inOrder&&(!contains(x,y,z+1)||shouldHideWithCasing(x,y,z+1)||block.shouldRenderFace(getBlock(x, y, z+1)))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z2),
                     new Vector3f(x1, y2, z2),
@@ -303,7 +303,7 @@ public abstract class Multiblock<T extends Block>{
                     new Vector3f(0, 0, 1));
         }
         //xy -z
-        if(!invertedInOrder&&(!contains(x,y,z-1)||block.shouldRenderFace(getBlock(x,y,z-1)))){
+        if(!invertedInOrder&&(!contains(x,y,z-1)||shouldHideWithCasing(x,y,z-1)||block.shouldRenderFace(getBlock(x,y,z-1)))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z1),
                     new Vector3f(x2, y1, z1),
@@ -316,7 +316,7 @@ public abstract class Multiblock<T extends Block>{
                     new Vector3f(0, 0, -1));
         }
         //xz +y
-        if(!inOrder&&(!contains(x,y+1,z)||block.shouldRenderFace(getBlock(x, y+1, z)))){
+        if(!inOrder&&(!contains(x,y+1,z)||shouldHideWithCasing(x,y+1,z)||block.shouldRenderFace(getBlock(x, y+1, z)))){
             renderer.drawQuad(
                     new Vector3f(x1, y2, z1),
                     new Vector3f(x2, y2, z1),
@@ -329,7 +329,7 @@ public abstract class Multiblock<T extends Block>{
                     new Vector3f(0, 1, 0));
         }
         //xz -y
-        if(!invertedInOrder&&(!contains(x,y-1,z)||block.shouldRenderFace(getBlock(x, y-1, z)))){
+        if(!invertedInOrder&&(!contains(x,y-1,z)||shouldHideWithCasing(x,y-1,z)||block.shouldRenderFace(getBlock(x, y-1, z)))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z1),
                     new Vector3f(x1, y1, z2),
@@ -342,7 +342,7 @@ public abstract class Multiblock<T extends Block>{
                     new Vector3f(0, -1, 0));
         }
         //yz +x
-        if(!inOrder&&(!contains(x+1,y,z)||block.shouldRenderFace(getBlock(x+1, y, z)))){
+        if(!inOrder&&(!contains(x+1,y,z)||shouldHideWithCasing(x+1,y,z)||block.shouldRenderFace(getBlock(x+1, y, z)))){
             renderer.drawQuad(
                     new Vector3f(x2, y1, z1),
                     new Vector3f(x2, y1, z2),
@@ -355,7 +355,7 @@ public abstract class Multiblock<T extends Block>{
                     new Vector3f(1, 0, 0));
         }
         //yz -x
-        if(!invertedInOrder&&(!contains(x-1,y,z)||block.shouldRenderFace(getBlock(x-1, y, z)))){
+        if(!invertedInOrder&&(!contains(x-1,y,z)||shouldHideWithCasing(x-1,y,z)||block.shouldRenderFace(getBlock(x-1, y, z)))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z1),
                     new Vector3f(x1, y2, z1),

@@ -1260,17 +1260,25 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
             text.addText(getModuleTooltip()+"\n");
             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
                 if(!b.fuelCell)continue;
+                String txt = "";
                 for(BlockRecipe r : b.allRecipes){
                     int i = getRecipeCount(r);
-                    if(i>0)text.addText("\n"+r.getInputDisplayName()+": "+i);
+                    if(i>0){
+                        txt+="\n"+r.getInputDisplayName()+": "+i;
+                    }
                 }
+                if(!txt.isEmpty())text.addText(txt);
             }
             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : getConfiguration().overhaul.fissionSFR.allBlocks){
                 if(b.fuelCell)continue;
+                String txt = "";
                 for(BlockRecipe r : b.allRecipes){
                     int i = getRecipeCount(r);
-                    if(i>0)text.addText("\n"+r.getInputDisplayName()+": "+i);
+                    if(i>0){
+                        txt+="\n"+r.getInputDisplayName()+": "+i;
+                    }
                 }
+                if(!txt.isEmpty())text.addText(txt);
             }
             if(full){
                 HashMap<String, Integer> counts = new HashMap<>();
