@@ -1,9 +1,6 @@
 package net.ncplanner.plannerator.planner.dssl.token;
-import java.util.ArrayList;
 import net.ncplanner.plannerator.planner.dssl.Script;
-import net.ncplanner.plannerator.planner.dssl.object.StackCollection;
 import net.ncplanner.plannerator.planner.dssl.object.StackLBracket;
-import net.ncplanner.plannerator.planner.dssl.object.StackObject;
 public class LBracketToken extends Token{
     public LBracketToken(){
         super("\\[");

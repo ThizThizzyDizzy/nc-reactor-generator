@@ -4,11 +4,10 @@ import net.ncplanner.plannerator.graphics.image.Color;
 public class FormattedText{
     public String text;
     public FormattedText next;
-    public final boolean italic,underline;
+    public final boolean italic, bold;
+    public final Color underline, strikethrough;
     public Color color;
-    public final boolean bold;
-    public final boolean strikethrough;
-    public FormattedText(String text, Color color, boolean bold, boolean italic, boolean underline, boolean strikethrough){
+    public FormattedText(String text, Color color, boolean bold, boolean italic, Color underline, Color strikethrough){
         this.text = text;
         this.color = color;
         this.bold = bold;
@@ -17,7 +16,7 @@ public class FormattedText{
         this.strikethrough = strikethrough;
     }
     public FormattedText(String text, Color color){
-        this(text, color, false, false, false, false);
+        this(text, color, false, false, null, null);
     }
     public FormattedText(String text){
         this(text, null);
@@ -38,7 +37,7 @@ public class FormattedText{
         }
         return this;
     }
-    public FormattedText addText(String text, Color color, boolean bold, boolean italic, boolean underline, boolean strikethrough){
+    public FormattedText addText(String text, Color color, boolean bold, boolean italic, Color underline, Color strikethrough){
         if(next==null){
             next = new FormattedText(text, color, bold, italic, underline, strikethrough);
         }else{

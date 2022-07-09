@@ -1071,12 +1071,14 @@ public class Renderer{
                     }
                 }
             }
-            if(text.strikethrough){
+            if(text.strikethrough!=null){
+                setColor(text.strikethrough);
                 float topIndent = (bottom-top)*.6f;
                 float bottomIndent = (bottom-top)*.3f;
                 fillRect(left, top+topIndent, left+textWidth, bottom-bottomIndent);
             }
-            if(text.underline){
+            if(text.underline!=null){
+                setColor(text.underline);
                 float indent = (bottom-top)*.9f;
                 fillRect(left, top+indent, left+textWidth, bottom);
             }
@@ -1123,12 +1125,14 @@ public class Renderer{
                 }
             }
         }
-        if(text.strikethrough){
+        if(text.strikethrough!=null){
+            setColor(text.strikethrough);
             float topIndent = (bottom-top)*.6f;
             float bottomIndent = (bottom-top)*.3f;
             fillRect(left, top+topIndent, left+textWidth, bottom-bottomIndent);
         }
-        if(text.underline){
+        if(text.underline!=null){
+            setColor(text.underline);
             float indent = (bottom-top)*.9f;
             fillRect(left, top+indent, left+textWidth, bottom);
         }

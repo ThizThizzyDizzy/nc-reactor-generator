@@ -7,6 +7,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.dssl.Script;
 import net.ncplanner.plannerator.planner.dssl.Tokenizer;
+import net.ncplanner.plannerator.planner.dssl.token.BlankToken;
 import net.ncplanner.plannerator.planner.dssl.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.CharValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.CommentToken;
@@ -14,9 +15,13 @@ import net.ncplanner.plannerator.planner.dssl.token.FloatValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.IdentifierToken;
 import net.ncplanner.plannerator.planner.dssl.token.IntValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.InvalidToken;
+import net.ncplanner.plannerator.planner.dssl.token.LBraceToken;
 import net.ncplanner.plannerator.planner.dssl.token.LabelToken;
+import net.ncplanner.plannerator.planner.dssl.token.RBraceToken;
+import net.ncplanner.plannerator.planner.dssl.token.RBracketToken;
 import net.ncplanner.plannerator.planner.dssl.token.StringValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.Token;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.DefKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.dssl.token.operator.Operator;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -101,8 +106,12 @@ public class CodeEditor extends Component{
                     }
                     ArrayList<String> cachedLabels = new ArrayList<>();
                     textDisplay.clear();
-                    for(Token token : tokens){
+                    for(int i = 0; i<tokens.size(); i++){
+                        Token token = tokens.get(i);
                         Color col = Core.theme.getCodeTextColor();
+                        if(token instanceof DefKeyword){
+                            findDoc(tokens, i);//TODO actually use the found docs
+                        }
                         if(token instanceof Keyword){
                             col = Core.theme.getCodeKeywordTextColor();
                         }
@@ -130,6 +139,7 @@ public class CodeEditor extends Component{
                         if(token instanceof StringValueToken){
                             col = Core.theme.getCodeStringTextColor();
                         }
+                        boolean underline = false;
                         if(token instanceof IdentifierToken){
                             String nam = ((IdentifierToken)token).text;
                             if(!cachedLabels.contains(nam)){
@@ -143,11 +153,12 @@ public class CodeEditor extends Component{
                                 }
                             }
                             if(cachedLabels.contains(nam))col = Core.theme.getCodeIdentifierTextColor();
+                            else underline = true;
                         }
                         if(token instanceof InvalidToken){
                             col = Core.theme.getCodeInvalidTextColor();
                         }
-                        textDisplay.addText(token.text, col);
+                        textDisplay.addText(token.text, col, false, false, underline?Core.theme.getCodeInvalidTextColor():null, null);
                     }
                     displayUpdateThread = null;
                 });
@@ -520,5 +531,37 @@ public class CodeEditor extends Component{
                 breakpoints.add(i+off);
             }
         }
+    }
+    private String findDoc(ArrayList<Token> tokens, int index){
+        int braces = 0;
+        String foundLabel = null;
+        boolean foundBrace = false;
+        while(index>0){
+            Token t = tokens.get(--index);
+            if(t instanceof BlankToken);
+            else if(t instanceof CommentToken){
+                if(foundBrace&&foundLabel!=null){
+                    return foundLabel+t.text;
+                }
+            }
+            else if(t instanceof RBraceToken){
+                if(braces==0&&foundBrace)return null;
+                braces++;
+                foundBrace = true;
+            }else if(t instanceof LBraceToken){
+                braces--;
+                if(braces<0)return null;
+            }else if(t instanceof LabelToken){
+                if(braces==0){
+                    if(foundLabel!=null)return null;
+                    foundLabel = ((LabelToken)t).label;
+                }
+            }else{
+                if(braces==0){
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 }
