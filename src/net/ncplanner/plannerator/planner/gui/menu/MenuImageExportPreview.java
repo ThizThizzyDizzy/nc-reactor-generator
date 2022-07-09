@@ -19,7 +19,7 @@ public class MenuImageExportPreview extends Menu{
     private final SingleColumnGridLayout buttons = add(new SingleColumnGridLayout(0, 0, 300, 40));
     private final Button back = buttons.add(new Button(0, 0, 300, 40, "Back", true));
     private final ToggleBox includeCasing = buttons.add(new ToggleBox(0, 80, 300, 40, "Include Casing", Core.imageExportCasing, true));
-    private final ToggleBox preview3D = buttons.add(new ToggleBox(0, 40, 300, 40, "3D view", Core.imageExport3DView, true));
+    private final ToggleBox preview3D = buttons.add(new ToggleBox(0, 40, 300, 40, "Include 3D View", Core.imageExport3DView, true));
     private final ToggleBox includeCasing3D = buttons.add(new ToggleBox(0, 80, 300, 40, "Include Casing in 3D View", Core.imageExportCasing3D, true));
     private final Button overlays = buttons.add(new Button(0, 120, 300, 40, "Overlays", true, true));
     private final Button save = buttons.add(new Button(0, 160, 300, 40, "Save", true));
