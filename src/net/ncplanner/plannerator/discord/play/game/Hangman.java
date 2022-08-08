@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.discord.play.game;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
@@ -34,12 +33,8 @@ public class Hangman extends Game{
         super("Hangman");
         this.blind = blind;
         ArrayList<Multiblock> multis = new ArrayList<>();
-        HashMap<Multiblock, Configuration> configs = new HashMap<>();
         synchronized(Bot.storedMultiblocks){
             for(NCPFFile ncpf : Bot.storedMultiblocks){
-                for(Multiblock multi : ncpf.multiblocks){
-                    configs.put(multi, ncpf.configuration);
-                }
                 multis.addAll(ncpf.multiblocks);
             }
         }
@@ -57,8 +52,7 @@ public class Hangman extends Game{
             return;
         }
         basis = multis.get(new Random().nextInt(multis.size())).copy();
-        this.config = configs.get(basis);
-        basis.configuration = config;//why is this here...?
+        this.config = basis.configuration;
         basis.recalculate();
         new ClearInvalid().apply(basis, null);
         if(basis instanceof CuboidalMultiblock){
@@ -112,6 +106,17 @@ public class Hangman extends Game{
     }
     @Override
     public void onMessage(Message message){
+        if(message.getAuthor().getIdLong()==210445638532333569l&&message.getContentRaw().equals("hangman_dump")){
+            message.getChannel().sendMessage("Basis configuration: "+ots(basis.getConfiguration())+" "+basis.configuration.toString()+"\n"+
+                    "Current configuration: "+ots(current.getConfiguration())+" "+current.configuration.toString()+"\n"+
+                    "This configuration: "+ots(config)+" "+config.toString()).queue();
+            String dump = "";
+            ArrayList<Block> blocks = new ArrayList<>();
+            basis.getAvailableBlocks(blocks);
+            for(Block b : blocks)dump+="\n"+b.getName();
+            message.getChannel().sendMessage("Block Library: "+dump).queue();
+            return;
+        }
         String content = message.getContentDisplay().trim().replace(":", "");
         ArrayList<Block> blocks = new ArrayList<>();
         basis.getAvailableBlocks(blocks);
@@ -240,5 +245,8 @@ public class Hangman extends Game{
     @Override
     public boolean canAnyoneStop(){
         return true;
+    }
+    private String ots(Configuration config){
+        return config.getClass().getName()+"#"+config.hashCode();
     }
 }
