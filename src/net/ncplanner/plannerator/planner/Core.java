@@ -116,10 +116,14 @@ public class Core{
         metadata.put("Author", "");
     }
     public static void main(String[] args) throws NoSuchMethodException{
-        System.out.println("Checking for VR runtime");
-        if(VR.VR_IsRuntimeInstalled()&&VR.VR_IsHmdPresent()){
-            vr = true;
-            System.out.println("VR runtime found!");
+        if(Main.novr){
+            System.out.println("Skipping VR runtime");
+        }else{
+            System.out.println("Checking for VR runtime");
+            if(VR.VR_IsRuntimeInstalled()&&VR.VR_IsHmdPresent()){
+                vr = true;
+                System.out.println("VR runtime found!");
+            }
         }
         if(Main.isBot){
             System.out.println("Loading discord bot");

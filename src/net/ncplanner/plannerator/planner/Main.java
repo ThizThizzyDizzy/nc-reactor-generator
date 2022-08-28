@@ -34,6 +34,7 @@ public class Main{
     //other stuff
     public static boolean isBot = false;
     public static boolean headless = false;
+    public static boolean novr = false;
     public static String discordBotToken;
     public static boolean benchmark = false;
     private static void addRequiredLibrary(String url, String filename){
@@ -51,6 +52,9 @@ public class Main{
                 switch(args[i]){
                     case "headless":
                         headless = true;
+                        break;
+                    case "novr":
+                        novr = true;
                         break;
                     case "benchmark":
                         benchmark = true;
@@ -107,7 +111,7 @@ public class Main{
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-stb.jar", "lwjgl-3.2.3-stb.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl-3.2.3.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjglx-debug-1.0.0.jar", "lwjglx-debug-1.0.0.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openvr.jar", "lwjgl-3.2.3-openvr.jar");
+            if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openvr.jar", "lwjgl-3.2.3-openvr.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-nfd.jar", "lwjgl-3.2.3-nfd.jar");
             if(os==OS_UNKNOWN){
                 throw new IllegalArgumentException("Unknown OS: "+osName);
@@ -138,7 +142,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openal-natives-windows-x86.jar", "lwjgl-3.2.3-openal-natives-windows-x86.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-opengl-natives-windows-x86.jar", "lwjgl-3.2.3-opengl-natives-windows-x86.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-stb-natives-windows-x86.jar", "lwjgl-3.2.3-stb-natives-windows-x86.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openvr-natives-windows-x86.jar", "lwjgl-3.2.3-openvr-natives-windows-x86.jar");
+                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openvr-natives-windows-x86.jar", "lwjgl-3.2.3-openvr-natives-windows-x86.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-nfd-natives-windows-x86.jar", "lwjgl-3.2.3-nfd-natives-windows-x86.jar");
                                 break;
                             case ARCH_X64:
@@ -149,7 +153,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openal-natives-windows.jar", "lwjgl-3.2.3-openal-natives-windows.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-opengl-natives-windows.jar", "lwjgl-3.2.3-opengl-natives-windows.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-stb-natives-windows.jar", "lwjgl-3.2.3-stb-natives-windows.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openvr-natives-windows.jar", "lwjgl-3.2.3-openvr-natives-windows.jar");
+                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openvr-natives-windows.jar", "lwjgl-3.2.3-openvr-natives-windows.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-nfd-natives-windows.jar", "lwjgl-3.2.3-nfd-natives-windows.jar");
                                 break;
                         }
@@ -163,7 +167,7 @@ public class Main{
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openal-natives-macos.jar", "lwjgl-3.2.3-openal-natives-macos.jar");
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-opengl-natives-macos.jar", "lwjgl-3.2.3-opengl-natives-macos.jar");
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-stb-natives-macos.jar", "lwjgl-3.2.3-stb-natives-macos.jar");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openvr-natives-macos.jar", "lwjgl-3.2.3-openvr-natives-macos.jar");
+                    if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openvr-natives-macos.jar", "lwjgl-3.2.3-openvr-natives-macos.jar");
                     addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-nfd-natives-macos.jar", "lwjgl-3.2.3-nfd-natives-macos.jar");
                     break;
                 case OS_LINUX:
@@ -194,7 +198,7 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openal-natives-linux.jar", "lwjgl-3.2.3-openal-natives-linux.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-opengl-natives-linux.jar", "lwjgl-3.2.3-opengl-natives-linux.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-stb-natives-linux.jar", "lwjgl-3.2.3-stb-natives-linux.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openvr-natives-linux.jar", "lwjgl-3.2.3-openvr-natives-linux.jar");
+                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openvr-natives-linux.jar", "lwjgl-3.2.3-openvr-natives-linux.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-nfd-natives-linux.jar", "lwjgl-3.2.3-nfd-natives-linux.jar");
                                 break;
                             case ARCH_ARM32:
@@ -438,6 +442,7 @@ public class Main{
         params.add(filepath);
         params.add(mainClass.getName());
         params.addAll(Arrays.asList(applicationArgs));
+        System.out.println(params.toString());
         ProcessBuilder builder = new ProcessBuilder(params);
         return builder.start();
     }
