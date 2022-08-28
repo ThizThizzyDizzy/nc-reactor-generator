@@ -72,6 +72,10 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return template.displayTexture;
     }
     @Override
+    public String getBaseName(){
+        return template.name;
+    }
+    @Override
     public String getName(){
         if(isToggled&&template.coolantVent)return template.getCoolantVentOutputDisplayName();
         if(isToggled&&template.parent!=null)return template.getPortOutputDisplayName();

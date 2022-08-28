@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.file;
 public enum FileFormat{
     PNG("Image", "PNG Image (.png)", "png"),
     HELLRAGE_REACTOR("JSON", "Hellrage Reactor File (.json)", "json"),
+    BG_STRING("BG String", "Copy/Paste Building Gadget String (.txt)", "txt"),
     NCPF("NCPF", "NuclearCraft Planner File", "ncpf"),
     ALL_PLANNER_FORMATS("NuclearCraft Planner File", "NuclearCraft Planner File", "ncpf", "json"),
     ALL_CONFIGURATION_FORMATS("NuclearCraft Configuration File", "NuclearCraft Configuration File", "ncpf", "cfg"),//TODO hellrage .json
