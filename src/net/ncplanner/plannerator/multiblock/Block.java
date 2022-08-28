@@ -45,6 +45,7 @@ public abstract class Block implements Pinnable{
         }
         return grayscaleTexture = grayscale;
     }
+    public abstract String getBaseName();
     public abstract String getName();
     public abstract void clearData();
     public <T extends Block> Queue<T> getAdjacent(Multiblock<T> multiblock){

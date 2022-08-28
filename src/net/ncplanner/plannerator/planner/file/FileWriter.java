@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.planner.file.writer.BGStringWriter;
 import net.ncplanner.plannerator.planner.file.writer.HellrageWriter;
 import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 import net.ncplanner.plannerator.planner.file.writer.PNGWriter;
@@ -17,6 +18,7 @@ public class FileWriter{
         formats.add(HELLRAGE = new HellrageWriter());
         formats.add(NCPF = new NCPFWriter());
         formats.add(PNG = new PNGWriter());
+        formats.add(new BGStringWriter());
     }
     public static void write(NCPFFile ncpf, OutputStream stream, FormatWriter format){
         format.write(ncpf, stream);
