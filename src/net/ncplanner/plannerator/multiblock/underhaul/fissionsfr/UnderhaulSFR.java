@@ -267,6 +267,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                 + "Net Heat: "+netHeat+"H/t\n"
                 + "Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
                 + "Heat multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
+                + (cells>0?"Fuel burn time: "+fuel.time/cells+"\n":"")
                 + "Fuel cells: "+cells;
         mainTooltip+=getModuleTooltip();
         FormattedText finalTooltip = new FormattedText();

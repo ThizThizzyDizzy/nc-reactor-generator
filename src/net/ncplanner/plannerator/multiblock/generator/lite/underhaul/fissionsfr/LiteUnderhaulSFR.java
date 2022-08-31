@@ -277,6 +277,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 + "Net Heat: "+netHeat+"H/t\n"
                 + "Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
                 + "Heat multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
+                + (cells>0?"Fuel burn time: "+configuration.fuelTime[fuel]/cells+"\n":"")
                 + "Fuel cells: "+cells;
     }
     private void genVariables(){
