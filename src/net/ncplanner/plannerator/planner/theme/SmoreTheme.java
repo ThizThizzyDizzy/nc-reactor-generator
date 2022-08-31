@@ -439,7 +439,7 @@ public class SmoreTheme extends ColorTheme{
     }
     @Override
     public Color getDialogBackgroundColor(){
-        return cracker.getDialogBackgroundColor();
+        return chocolate.getDialogBackgroundColor();
     }
     @Override
     public Color getCreditsImageColor(){

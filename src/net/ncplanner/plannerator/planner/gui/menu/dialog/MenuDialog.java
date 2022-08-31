@@ -21,7 +21,7 @@ public class MenuDialog extends Menu{
     public int border = 8;
     public int buttonHeight = 64;
     public int titleHeight = 48;
-    private ArrayList<Button> buttons = new ArrayList<>();
+    public ArrayList<Button> buttons = new ArrayList<>();
     public MenuDialog(GUI gui, Menu parent){
         super(gui, parent);
     }

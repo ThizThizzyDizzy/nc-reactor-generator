@@ -40,6 +40,7 @@ import net.ncplanner.plannerator.planner.gui.menu.MenuInit;
 import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuCriticalError;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUnsavedChanges;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
@@ -720,6 +721,7 @@ public class Core{
     public static int getThemeIndex(Component comp){
         if(comp.parent instanceof SingleColumnList)return comp.parent.components.indexOf(comp);
         if(comp.parent instanceof MulticolumnList)return comp.parent.components.indexOf(comp);
+        if(comp.parent instanceof MenuDialog)return ((MenuDialog)comp.parent).buttons.indexOf(comp);
         return 0;
     }
     public static int getThemeIndex(VRMenuComponent comp){
