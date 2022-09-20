@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.gui;
+import net.ncplanner.plannerator.planner.gui.menu.MenuCalibrateCursor;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWDropCallback;
 public abstract class GUI{
@@ -27,7 +28,8 @@ public abstract class GUI{
             onCursorEnter(entered);
         });
         glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
-            onCursorPos(xpos, ypos);
+            if(xpos<0&&ypos<0)onCursorPos(xpos, ypos);
+            else onCursorPos(xpos*MenuCalibrateCursor.xMult+MenuCalibrateCursor.xOff, ypos*MenuCalibrateCursor.yMult+MenuCalibrateCursor.yOff);
         });
         glfwSetDropCallback(window, (window, count, names) -> {
             onDrop(count, names);

@@ -49,6 +49,7 @@ import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUpdate;
 import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
@@ -237,10 +238,12 @@ public class MenuInit extends Menu{
             else if(Main.isBot)gui.open(new MenuDiscord(gui));
             else{
                 if(!Core.tutorialShown&&!Main.headless){
-                    gui.open(new MenuTutorial(gui, gui.menu));
+                    gui.open(new MenuTutorial(gui, new MenuMain(gui)));
                     Core.tutorialShown = true;
+                }else gui.open(new MenuMain(gui));
+                if(Main.os==Main.OS_MACOS){
+                    gui.open(new MenuCalibrateCursor(gui, gui.menu));
                 }
-                gui.open(new MenuMain(gui));
             }
             if(baseDialog!=null){
                 baseDialog.parent = gui.menu;

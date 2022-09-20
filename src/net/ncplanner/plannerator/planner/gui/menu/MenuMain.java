@@ -533,6 +533,9 @@ public class MenuMain extends Menu{
         if(action==GLFW_PRESS&&key==GLFW_KEY_R&&Core.isControlPressed()&&Core.isShiftPressed()){
             Core.recoveryMode = !Core.recoveryMode;
         }
+        if(action==GLFW_PRESS&&key==GLFW_KEY_K&&Core.isControlPressed()&&Core.isShiftPressed()){
+            gui.open(new MenuCalibrateCursor(gui, this));
+        }
         super.onKeyEvent(key, scancode, action, mods);
     }
 }

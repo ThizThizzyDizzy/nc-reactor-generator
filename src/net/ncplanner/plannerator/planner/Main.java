@@ -26,11 +26,11 @@ public class Main{
     private static int total;
     private static int current;
     //OS details
-    private static final int OS_UNKNOWN = -1;
-    static final int OS_WINDOWS = 0;
-    static final int OS_MACOS = 1;
-    static final int OS_LINUX = 2;
-    static int os = OS_UNKNOWN;
+    public static final int OS_UNKNOWN = -1;
+    public static final int OS_WINDOWS = 0;
+    public static final int OS_MACOS = 1;
+    public static final int OS_LINUX = 2;
+    public static int os = OS_UNKNOWN;
     //other stuff
     public static boolean isBot = false;
     public static boolean headless = false;
