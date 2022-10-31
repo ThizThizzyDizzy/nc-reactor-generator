@@ -1,7 +1,11 @@
 package net.ncplanner.plannerator.planner.gui.menu;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -11,6 +15,8 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.FormattedText;
+import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
@@ -24,10 +30,13 @@ import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.DropdownList;
+import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblock;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImport;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
@@ -67,10 +76,124 @@ public class MenuMain extends Menu{
             renderer.drawGear(x+width/2, y+height/2, width*.1f, 8, width*.3f, width*.1f, 360/16f);
         }
     }.setTooltip("Settings"));
+    private Button buttonSidePanel = add(new Button(0, 0, 0, 0, "<", true));
     private Button delete = add(new Button(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
     private Button credits = add(new Button(0, 0, 192, 48, "Credits", true, true));
     private Button convertOverhaulMSFR = add(new Button(0, 0, 0, 0, "Convert SFR <> MSR", true).setTextColor(Core.theme::getConvertButtonTextColor));
     private Button setInputs = add(new Button(0, 0, 0, 0, "Set Inputs", true).setTextColor(Core.theme::getInputsButtonTextColor).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
+    private Component sidePanel = add(new Component(0, 0, 0, 0){
+        Button changelog = add(new Button(0, 0, 0, 0, "Changelog", true){
+            @Override
+            public void drawText(Renderer renderer, double deltaTime){
+                renderer.fillRect(x+width*.1f, y+height*.15f, x+width*.2f, y+height*.25f);
+                renderer.fillRect(x+width*.1f, y+height*.45f, x+width*.2f, y+height*.55f);
+                renderer.fillRect(x+width*.1f, y+height*.75f, x+width*.2f, y+height*.85f);
+                renderer.fillRect(x+width*.3f, y+height*.15f, x+width*.9f, y+height*.25f);
+                renderer.fillRect(x+width*.3f, y+height*.45f, x+width*.9f, y+height*.55f);
+                renderer.fillRect(x+width*.3f, y+height*.75f, x+width*.9f, y+height*.85f);
+            }
+        });
+        Button patreon = add(new Button(0, 0, 0, 0, "Supporters", true){
+            @Override
+            public void drawText(Renderer renderer, double deltaTime){
+                //draw heart
+                float margin = 0.1f;
+                float spacing = 0.05f;
+                float diagonalHeight = 0.5f-margin;
+                float circleSize = 0.5f-margin-spacing/2;
+                float k = (float)(Math.sqrt(2)/2);
+                float totalHeight = (float)(diagonalHeight+circleSize*k);//should be less than width, so just assume it is
+                float totalWidth = 1-margin*2;
+                float yOff = (totalWidth-totalHeight)/4;
+                //now actually draw the heart
+                float circleY = y+height*(1-(margin+diagonalHeight+circleSize/2*k)-yOff);
+                float diagTopY = y+height*(1-(margin+diagonalHeight)-yOff);
+                renderer.drawCircle(x+width*(0.5f-spacing/2-circleSize/2), circleY, 0, circleSize/2*width);
+                renderer.drawCircle(x+width*(0.5f+spacing/2+circleSize/2), circleY, 0, circleSize/2*width);
+                renderer.fillTri(x+width*(margin+circleSize/2*(1-k)), diagTopY, x+width/2, y+height*(1-margin-yOff), x+width*(1-(margin+circleSize/2*(1-k))), diagTopY);
+                //spacing infill
+                if(spacing>0){
+                    float cY = circleY-circleSize/2*k*height;
+                    float size = diagTopY-cY;
+                    float cx = x+width*(0.5f+spacing/2+circleSize/2*(1-k));
+                    renderer.fillTri(cx, cY, cx-size, cY+size, cx+size, cY+size);
+                    cx = x+width*(0.5f-spacing/2-circleSize/2*(1-k));
+                    renderer.fillTri(cx, cY, cx-size, cY+size, cx+size, cY+size);
+                }
+            }
+        });
+        Label header = add(new Label(0, 0, 0, 0, "", true));
+        TextView body = add(new TextView(0, 0, 0, 0, 0, 40){
+            @Override
+            public void onMouseButton(double x, double y, int button, int action, int mods){
+                super.onMouseButton(x, y, button, action, mods);
+                if(button==0&&action==GLFW_PRESS)clickity(tab);
+            }
+        });
+        ArrayList<Button> buttons = new ArrayList<>();
+        int tab = 0;
+        {
+            buttons.add(changelog);
+            buttons.add(patreon);
+            for(int i = 0; i<buttons.size(); i++){
+                int I = i;
+                Button b = buttons.get(i);
+                b.addAction(() -> {
+                    tab(I);
+                });
+            }
+        }
+        private void tab(int i){
+            tab = i;
+            header.text = buttons.get(i).text;
+            body.setText(getText(i));
+            body.snap = i-1;//Dear future thiz: This was a bad idea.
+        }
+        {
+            tab(0);
+        }
+        @Override
+        public void render2d(double deltaTime){
+            float size = gui.getHeight()/16;
+            for(int i = 0; i<buttons.size(); i++){
+                Button b = buttons.get(i);
+                b.enabled = !(adding||metadating||tab==i);
+                b.x = 0;
+                b.width = b.height = size;
+                b.y = i*size;
+            }
+            header.width = body.width = width-size;
+            body.height = height-size;
+            body.x = body.y = header.x = header.height = size;
+            if(!sidePanelOpen&&sidePanelScale<=0)return;
+            super.render2d(deltaTime);
+        }
+        private FormattedText getText(int i){
+            switch(i){
+                case 0:
+                    return new FormattedText(MenuMain.changelog);
+                case 1:
+                    FormattedText t = new FormattedText("\nThank you to my patrons:");
+                    t.addText(" ");
+                    for(String s : MenuCredits.patrons){
+                        t.addText(s);
+                    }
+                    t.addText("\nIf you would like to support my projects, consider supporting me on patreon or ko-fi:\npatreon.com/thizthizzydizzy\nko-fi.com/thizthizzydizzy\n\nJoin my discord server:\ndiscord.gg/dhcPSMt");
+                    return t;
+                default:
+                    return new FormattedText("Hey thiz, you forgot to add text for this tab");
+            }
+        }
+        private void clickity(int i){
+            if(i==1){
+                new MenuMessageDialog(gui, MenuMain.this, "Open a link? (Will open in default browser)")
+                        .addButton("Patreon", ()->{Core.openURL("https://patreon.com/thizthizzydizzy");}, true)
+                        .addButton("Ko-Fi", ()->{Core.openURL("https://ko-fi.com/thizthizzydizzy");}, true)
+                        .addButton("Discord", ()->{Core.openURL("https://discord.gg/dhcPSMt");}, true)
+                        .addButton("Cancel", true).open();
+            }
+        }
+    });
     private boolean forceMetaUpdate = true;
     private Component metadataPanel = add(new Component(0, 0, 0, 0){
         MulticolumnList list = add(new MulticolumnList(0, 0, 0, 0, 0, 50, 50));
@@ -104,7 +227,7 @@ public class MenuMain extends Menu{
                     list.add(new TextBox(0,0,0,0,value, true));
                 }
             }
-            if(!metadating)return;
+            if(!metadating&&metadatingScale<=0)return;
             ArrayList<Component> remove = new ArrayList<>();
             boolean add = list.components.isEmpty();
             for(int i = 0; i<list.components.size(); i+=2){
@@ -162,6 +285,9 @@ public class MenuMain extends Menu{
     private boolean metadating = false;
     private double metadatingScale = 0;
     private final int metadatingTime = 4;
+    private boolean sidePanelOpen = Main.justUpdated;
+    private double sidePanelScale = 0;
+    private final int sidePanelTime = 3;
     private Queue<PendingWrite> pendingWrites = new Queue<>();
     public OverhaulTurbine settingInputs = null;
     private boolean refreshNeeded = true;
@@ -237,6 +363,10 @@ public class MenuMain extends Menu{
         settings.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuSettings(gui, this), MenuTransition.SplitTransitionX.slideIn(384f/gui.getWidth()), 5));
         });
+        buttonSidePanel.addAction(()->{
+            sidePanelOpen = !sidePanelOpen;
+            buttonSidePanel.text = sidePanelOpen?">":"<";
+        });
         delete.addAction(() -> {
             Multiblock multiblock = Core.multiblocks.get(multiblocks.getSelectedIndex());
             for(Multiblock m : Core.multiblocks){
@@ -283,6 +413,17 @@ public class MenuMain extends Menu{
         credits.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuCredits(gui), MenuTransition.SplitTransitionY.slideOut(0.5f), 10));
         });
+    }
+    public static String changelog = "";
+    static{
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(Core.getInputStream("changelog.txt")))){
+            String line;
+            while((line = reader.readLine())!=null){
+                changelog+=line+"\n";
+            }
+        }catch(IOException ex){
+            changelog = ex.getClass().getName()+": "+ex.getMessage();
+        }
     }
     private void imprt(NCPFFile ncpf, FormatWriter writer, File file, String filename){
         FileWriter.write(ncpf, file, writer);
@@ -359,6 +500,8 @@ public class MenuMain extends Menu{
         else addingScale = Math.max(addingScale-deltaTime*20, 0);
         if(metadating)metadatingScale = Math.min(metadatingScale+deltaTime*20, metadatingTime);
         else metadatingScale = Math.max(metadatingScale-deltaTime*20, 0);
+        if(sidePanelOpen)sidePanelScale = Math.min(sidePanelScale+deltaTime*20, sidePanelTime);
+        else sidePanelScale = Math.max(sidePanelScale-deltaTime*20, 0);
         Renderer renderer = new Renderer();
         if(Core.recoveryMode){
             float size = gui.getHeight()/16f;
@@ -385,8 +528,8 @@ public class MenuMain extends Menu{
         saveFile.x = exportMultiblock.x+exportMultiblock.width;
         loadFile.x = saveFile.x+saveFile.width;
         editMetadata.width = gui.getWidth()*2/3-gui.getHeight()/16*(Core.vr?2:1);
-        importFile.height = exportMultiblock.preferredHeight = saveFile.height = loadFile.height = editMetadata.height = vr.width = vr.height = settings.width = settings.height = gui.getHeight()/16;
-        settings.x = gui.getWidth()-gui.getHeight()/16;
+        importFile.height = exportMultiblock.preferredHeight = saveFile.height = loadFile.height = editMetadata.height = vr.width = vr.height = settings.width = settings.height = buttonSidePanel.width = buttonSidePanel.height = buttonSidePanel.y = gui.getHeight()/16;
+        buttonSidePanel.x = settings.x = gui.getWidth()-gui.getHeight()/16;
         vr.x = settings.x-gui.getHeight()/16;
         multiblocks.y = gui.getHeight()/8;
         convertOverhaulMSFR.height = setInputs.height = delete.height = addMultiblock.height;
@@ -402,7 +545,7 @@ public class MenuMain extends Menu{
         addMultiblock.x = gui.getWidth()/3-gui.getHeight()/16;
         addMultiblock.y = gui.getHeight()/16;
         addMultiblock.width = addMultiblock.height = gui.getHeight()/16;
-        convertOverhaulMSFR.width = setInputs.width = editMetadata.width+settings.width;
+        convertOverhaulMSFR.width = setInputs.width = editMetadata.width+(Core.vr?vr.width:0);
         setInputs.y = convertOverhaulMSFR.y = addMultiblock.y;
         if(getSelectedMultiblock() instanceof OverhaulSFR){
             convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
@@ -429,6 +572,7 @@ public class MenuMain extends Menu{
         addMultiblock.enabled = !(adding||metadating);
         editMetadata.enabled = !(adding||metadating);
         settings.enabled = !(adding||metadating);
+        buttonSidePanel.enabled = !(adding||metadating);
         vr.enabled = !(adding||metadating);
         importFile.enabled = !(adding||metadating);
         exportMain.enabled = !(adding||metadating)&&multiblocks.getSelectedIndex()!=-1;
@@ -458,8 +602,13 @@ public class MenuMain extends Menu{
             button.x = midX-button.width/2;
             button.y = midY-button.height/2;
         }
+        sidePanel.y = buttonSidePanel.y+buttonSidePanel.height;
+        sidePanel.width = editMetadata.width/2;
+        sidePanel.height = credits.y-sidePanel.y;
         float metadataScale = (float)Math.min(1,Math.max(0,(metadating?(metadatingScale+(deltaTime*20)):(metadatingScale-(deltaTime*20)))/metadatingTime));
         metadataPanel.y = gui.getHeight()/2-metadataPanel.height/2-gui.getHeight()*(1-metadataScale);
+        float sidePaneScale = (float)Math.min(1,Math.max(0,(sidePanelOpen?(sidePanelScale+(deltaTime*20)):(sidePanelScale-(deltaTime*20)))/sidePanelTime));
+        sidePanel.x = gui.getWidth()-sidePanel.width*sidePaneScale;
         super.render2d(deltaTime);
         renderer.setColor(Core.theme.getRotateMultiblockTextColor(), .4f);
         if(getSelectedMultiblock()!=null)renderer.drawCenteredText(multiblocks.x+multiblocks.width, gui.getHeight()-45, credits.x, gui.getHeight()-5, "Use Arrow keys to rotate preview");

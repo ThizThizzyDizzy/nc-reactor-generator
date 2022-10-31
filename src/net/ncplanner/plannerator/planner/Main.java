@@ -37,6 +37,7 @@ public class Main{
     public static boolean novr = false;
     public static String discordBotToken;
     public static boolean benchmark = false;
+    public static boolean justUpdated = false;
     private static void addRequiredLibrary(String url, String filename){
         requiredLibraries.add(new String[]{url,filename});
     }
@@ -50,6 +51,9 @@ public class Main{
         try{
             FOR:for(int i = 0; i<args.length; i++){
                 switch(args[i]){
+                    case "justUpdated":
+                        justUpdated = true;
+                        break;
                     case "headless":
                         headless = true;
                         break;

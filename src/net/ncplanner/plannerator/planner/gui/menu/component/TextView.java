@@ -11,6 +11,7 @@ public class TextView extends Scrollable{
     public int textInset = textHeight/2;
     public boolean wordWrap = true;
     public int bottomWhitespaceLines = 0;
+    public int snap = -1;
     public TextView(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth){
         super(x, y, width, height, 0, vertScrollbarWidth);//TODO scrollbar height based on wordWrap
         view = add(new Component(0, 0, width, height){
@@ -24,9 +25,9 @@ public class TextView extends Scrollable{
                     FormattedText t = text.get(i);
                     do{
                         if(wordWrap){
-                            t = renderer.drawFormattedTextWithWordWrap(x+textInset, Y, x+width-textInset, Y+textHeight, t, -1);
+                            t = renderer.drawFormattedTextWithWordWrap(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
                         }else{
-                            renderer.drawFormattedText(x+textInset, Y, x+width-textInset, Y+textHeight, t, -1);
+                            renderer.drawFormattedText(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
                             t = null;
                         }
                         Y+=textHeight;

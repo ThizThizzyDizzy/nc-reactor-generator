@@ -1,0 +1,695 @@
+v4.5
++ Added info panel to the main menu
++ Added cursor calibration screen because macOS
+* Fixed tooltips and 3D preview highlighting the wrong block in turbine coil editor grids
+* ForgeConfigReader and OverhaulNCConfigReader will now accept some mismatched types
+* Fixed main menu metadata panel turning invisible when closing
+
+v4.4
++ Added export to BG String
++ Added fuel burn time to underhaul SFR tooltip
++ Added novr launch argument to skip openvr checks
+* Fixed hangman using wrong configuration
+* Dialogs now s'more better
+
+v4.3
++ Added overlays to editor and image export
++ Added neutron flux propagation overlay
++ Added unsaved changes popup upon closing plannerator
++ Added Quanta 0.7 configuration
++ Added hide casing options to image export
++ Added rainbow factor to turbines, not sure why it didn't have that already
++ Updated NuclearCraft and QMD configuration version numbers
+* Import/load dialogs should update more reliably now
+* Fixed slightly malformed configuration generation upon importing nuclearcraft.cfg (incomplete legacy names)
+* Removed a bunch of empty lines between overhaul SFR/MSR fuels in the reactor tooltips
+* Fixed freeze when rendering long word-wrapped text (particularly noticable in DSSL editor)
+* Fixed java null being added to DSSL stack on invalid identifier use
+* Fixed DSSL null displaying improperly
+* Fixed heatsink battle scoreboard being sorted improperly
+* Fixed images being unable to render flipped
+* Fixed 3D elements disappearing when a dialog is visible
+* Fixed some buttons still rendering text when hidden
+* Fixed broken hut poster rendering
+* Fixed S'more themes' button text not rendering
+
+v4.2.1
++ Added image export preview & settings
+* Fixed undo not working properly
+* Accidentally fixed the turbine expansion graph rendering
+* Lite generator animations now scale with the size of the multiblock
+
+v4.2
++ Added editor symmetry
+* Decreased font image size by 75%, this should help with startup ram usage
+* Massive optimizations to rendering (on the scale of 100-1000x)
+* Fixed pencil tool applying empty actions
+* Fixed bug with components in lists sometimes not rendering properly
+* Adjusted y offset of different theme font
+* "Fixed" some text flashing on the main menu for the first frame rendered
+* slightly adjusted margins of font characters
+
+v4.1.1
+* Fixed generated reactors not saving at all
+
+v4.1
++ Completely overhauled the Underhaul SFR generator
++ Significantly upgraded DSSL editor
+* Fixed 3D rendering being stretched horizontally
+
+v4.0.2
++ Added volume measurements to cuboidal multiblock resize menu
+* Fixed crash when minimizing the planner
+* Fixed copy/paste tool ghosts showing random blocks for air
+* Fixed credits menu background elements not rendering
+* Credits patrons list will now stay up to date
+* Ctrl/Shift can now be used to speed through the credits
+
+v4.0.1
++ Added VSync toggle, so you can now get that 1000FPS plannerator action
+* Fixed deleting a layer of a cuboidal multiblock yeeting all but a few blocks
+* Focused component now updates correctly on click and scroll events (you can now spam click buttons again)
+* Editor 3D view enabled state is now saved unless recovery mode is on
+* last save/load directories for different save/load types are now stored again
+* scroll now resets when switching tutorials
+* fixed lists rendering components out of bounds above them
+* Fixed rendering of recovery mode banner
+
+v4.0
++ Updated to OpenGL 3.3 (Core Profile)
++ Added internal save/load/import/export dialogs
++ Added a parts list button to the editor
++ Added a window icon
++ Added Different theme
++ Updated NCO Confectionery to v1.5
++ Updated Thorium Mixed Fuels version to v1.12 (no content change)
++ Updated NuclearCraft versions
++ Added NCPF explorer (Shift-click the validate button)
+* Renamed title bar and downloaded file names from Generator to Plannerator
+* Removed the edges from the turbine graph coil panels
+* Potentially fixed problematic resource loading (#71)
+* The planner will no longer hang if an error occurs during initialization (#71)
+* Update notifications no longer appear during initialization
+* Dialogs that appear during initialization will no longer disappear when initialization finishes
+* All downloaded libraries now include the version number in the file name (#68)
+* Fixed neutron source saving for hellrage JSON (#75)
+* Fixed all known ConcurrentModificationExceptions
+* Many UI and rendering fixes
+* Moved turbine expansion graph to the left panel
+* Editor calculation progress bar no longer pushes up the left panel content when it is not showing
+* Tooltips now use theme colors (#70)
+* Fixed button and label text rendering smaller than expected
+* Fixed a small miscalculation in the size of the image export
+* Fixed misspelling in image export error
+* Adjusted credits
+* Fixed threading issues in placement rule tree generator
+* Fixed texture generator making half-grayscale textures
+* Added placement rules to block overview in configuration block list
+* Fixed addon importer missing liquid/fluid namespaces in MSR fuels
+* Addon importer now recognizes and imports SFR coolant recipes
+* Fixed addon importer not loading fluid names for turbine and SFR coolant recipes
+* Fixed validator block name is null message showing null block name
+* Validator now validates addon block recipes added to existing blocks
+* Fixed validator block name not appearing for underhaul SFR and overhaul turbine placement rules
+* Fixed validator referring to coolers as heatsinks when a block requires a specific non-cooler block
+* and a whole bunch more bug fixes
+- Removed middle click placement rule target validation (obsolete; was replaced by validator)
+
+v3.5.1
+* Fixed crash when saving an addon that uses blocks from two different multiblocks of another addon
+* fixed crash when loading an addon that uses blocks from another addon
+* Fixed NCOUTO Turbine placement rules
+* Fixed MHS MSR placement rules
+* Fixed Spicy Heat Sinks placement rules
+* The validator will now warn if air is used in placement rules (or casings in turbines)
+* Fixed heatsink battle winner being chosen incorrectly
+* Fixed error when stopping a heatsink battle with no s'more pool before it started
+* Anyone can now stop a heatsink battle before it starts
+* Heatsink battle games will now automatically end after 10 minutes
+* Fixed heatsink battle not telling you if you can't stop a game
+* Increased heatsink battle threshold from 50 to 5000
+
+v3.5
++ Added initialization screen
++ Added placement rule tree generator (shift+click the add block button in the modify menu)
++ Added Configuration Validator
++ Group select will now select generic blocks too
++ You can now wager s'mores on a heatsink battle
+* Fixed turbine recipe configuration menu missing power/expansion settings
+* Errors in the event thread will no longer crash the planner
+* ConcurrentModificationExceptions should now occur much less often
+* Added some missing legacy names to AAPN configuration
+* Fixed some MHS, NCO Confectionery, ans Spicy Heat Sinks MSR placement rules
+* The bot will no longer load multiblocks with different configurations or with addons
+* Heatsink battle no longer allows active cooling
+* Heatsink battle now properly accepts emoji
+* Fixed Heatsink battle leaderboard
+* Fixed Heatsink Battle ranbow bonus
+
+v3.4
++ Added multiblock previews to the add multiblock buttons
++ Added AAPN 0.15-alpha
++ Updated NCOUTO to v1.6
++ Added Spicy Heat Sinks
++ Added heatsink battle to the bot
++ Hangman reactors now always have a casing
++ Hangman will now auto-guess casings, controller, vents, and conductors on game start
++ Hangman will now use guesses as a search term to help match block names
++ Guessing a block with recipes in hangman will now also guess its port (and vice-versa)
+* JSON parsing of non-JSON files now fails much faster
+* Fuel cell and vessel suggestors will now only use pinned fuels (if any are pinned)
+* Addons' block recipes for existing blocks are now saved when saving parent configurations
+* Loading addons will now give slightly more useful errors when missing part of a configuration
+* Fixed a couple tooltips and labels in the configuration menus
+* Fixed overhaul fusion test recipe configuration not working
+* Rebuilt generator settings
+* Placement rule parsers now accept "... heat sink" and "... heat heater" <- yes that's in an addon
+* Cleaned up a bunch of back-end stuff to make configuration menus easier to make
+* The generator will no longer spend an excessive amount of time converting and counting multiblocks of the wrong size
+* Fixed hut backgrounds being invisible
+* Fixed crash when s'meaderboards contain people not in the server
+* Empty keyword debug images are no longer sent
+* Hangman reactors will now properly recognize removed blocks
+* The bot now supports 1 game per channel (no threads yet; they're still in beta)
+
+v3.3.5
+* Fixed long reflector moderator lines being improperly validated
+
+v3.3.4
++ Updated NCO Confectionery to v1.4
+* Fixed active moderator flag being ignored
+* Pinned things no longer ignore the search box
+
+v3.3.3
++ Blocks and recipes can now be pinned with shift-click (also suggestors, maybe some other things too)
++ Added Addon Alloy Heat Sinks v1.0.0
++ Added fusion configuration menu
++ Added fusion-test blanket textures from Cn-285
+* Fixed crash when comparing placement rules whose blocks indirectly reference themselves
+* Fixed crash when calculating edge/vertex rules
+* Fixed placement rule configuration menus using the wrong multiblocks
+
+v3.3.2
++ Crash reports are now much more detailed
++ Pressing exit on an error message will now generate a crash report
+* Fixed crash involving axial/edge/vertex rules on overhaul turbine coils
+* Gave names to a few unnamed threads
+
+v3.3.1
++ Neutron source efficiency now appears in the block list tooltip
++ Shift-clicking to add neutron sources will now cycle in descending order of efficiency
+* Fixed crash when rendering a neutron source circle of >100% efficiency
+
+v3.3
++ NCPF updated to v11
++ Added edge rule for non-turbines
++ Added fluid texture generator
++ Added Moar Fuels Lite & Ultra Lite
++ Added Binary's Extra Stuff
++ Added Thorium Mixed Fuels
++ Added Inert Matrix Fuels
++ Updated NCOUTO to v1.5
++ Updated MHS to v1.4.1
++ Updated MF to v1.9.3
++ Updated MRF to v1.8.3
++ Updated NOR to v1.32
++ Improved script addon importer
++ Added experimental configuration-to-addon converter
++ ZS importer can now import turbine recipes
++ Importing script addons will now attempt to autofill textures from other addons
++ Added progress bar when importing script addons
++ Middle clicking in the modify configuration screen will now perform a debug scan of placement rules
+* Fixed crash when using VR editor
+* Fixed crash when rendering turbine suggestions on non-standard editor grids
+* Fixed hard crash when pasting outside the multiblock with the paste tool
+* Fixed placement rules in Moar Heat Sinks
+* Fixed heater rule in NCO Confectionery
+* Fixed overhaul MSR Silicon wafer irradiator recipe output in QMD
+* Placement rules now store block IDs as ints
+* Fixed turbine coils being active when not connected to the bearing
+* Significantly slowed the turbine graph memory leak (it's basically fixed unless you mess with the zoom for hours)
+* Fixed bug preventing turbine diameter from being reduced once set to maximum
+* Fixed overhaul placement axial rule names not using "At Least"
+* Fixed some issues in NC rule string parsing and ZS addon parsing
+* Addon names now update upon clicking save addon
+* Some UI improvements and a lot of code cleanup
+
+v3.2
++ Updated to NCO Confectionery 1.3
++ Added theme selection menu
++ Added "power" as alternative priority preset name for output
++ Added s'more themes
+* Fixed suggestor and generator threads lingering after the menus were closed
+* Fixed turbine resizing not allowing 1-long turbines
+* The editor mouseover lines are now orange
+* ZS importer now ignores battery registration
+
+v3.1
++ Added prime cells module
+* Completely removed AWT/Swing, replacing some parts with STB/NFD
+* Fixed crash when searching labels with no tooltip
+* Transition menu CME should no longer crash the planner
+* Fixed MSR clusters not building properly
+* Fixed 0-heat clusters not connected to the casing being marked invalid
+* Fixed invalid cluster color disparity between editor and tooltip
+
+v3.0.8
+* Fixed some addon recipes not saving correctly
+* Recovery mode now attempts to load using the built-in configuration if the file configuration fails
+
+v3.0.7
++ Updated NCO Confectionery to v1.2
+* Fixed addon blocks being saved incorrectly
+* Fixed crash when loading blocks with no recipe
+* Fixed converting SFR<>MSR deleting all but one block in the reactor
+* Fixed 'pi_schmeared_be_moderator' in Moar Reactor Functionality
+
+v3.0.6
++ Added recovery mode for recovering corrupted multiblocks (Ctrl+Shift+R on the main menu)
++ Addons are now shown in the image export
++ Added multiblock size to image export
+* Fixed addon save hierarchy
+* Fixed a massive lag spike when calculating an overhaul SFR/MSR with a lot of block recipes
+* Fixed crash when shift-clicking to add a neutron source in an invalid location
+* Fixed a crash when cluster or vessel group searching hits the edge of the multiblock
+* Fixed the paste tool ignoring EditorSpace placement restrictions
+* Overhaul MSR neutron shields no longer count as an active moderator (updated to newer NCO behavior)
+* Fixed search exclusions being too lenient (-port won't hide graphite moderators anymore)
+* Hellrage JSON deprecation notice now shows in a dialog, and only shows for overhaul multiblocks
+* "Hight Pressure Steam" back-compatibility is no longer hard-coded, and is now a legacy name
+
+v3.0.5
++ All searchable items can now be searched by tooltip
++ Added search exclusion via -excludedtext or -"excluded text"
++ You can now search by regex with a prefix of `regex:`
++ Ports are now excluded by default when auto-build casing is on
+* Fixed a bunch of errors when converting SFR<>MSR
+* Fixed errors when priming fuel vessels
+* Fixed occasional error when using the block search
+
+v3.0.4
+* Fixed a crash when converting SFR coolant vents to MSR
+* Recipe stats now show in block list tooltips if it has only one recipe
+* Dropdown lists now show the tooltip for the selected component
+* Fixed rainbow score
+
+v3.0.3
++ Added an option to disable auto-recalculation in the editor
+* Fixed MSR neutron flux not propogating properly
+* Fixed MSR fuel and heater recipes having 0 input/output rate
+* Fixed older MSR heaters having no recipes selected
+* Fixed a crash when rendering the 3d multiblock preview
+* Probably fixed a synchronization issue with dropdown lists
+* Probably Fixed #30
+* Fixed underhaul fuel text scaling improperly
+* Fixed MSR tooltip showing internal fluid names
+* nuclearcraft.cfg files are now parsed and loaded as a Forge Config
+* A few fusion-test bug fixes
+- Removed Underhaul SFR from Core-based generator
+
+v3.0.2
++ blocks can now be searched by their placement rules
++ Blocks can now be searched in the placement rule configuration screens
++ Updated to NCO Confectionery 1.1
++ Added neutron sources to the experimental ZS importer
+* Auto-build casing is now enabled by default
+* Fixed underhaul hellrage JSON export saving `ReactorCell` instead of `FuelCell`
+* Fixed a crash in VR
+* Fixed the hut patreon poster rendering
+- The bot no longer exports overhaul SFRs to hellrage JSON by default
+
+v3.0.1
++ Added an auto-build casing option in the settings
++ Fuel time now appears in the tooltips
+* Fixed a bunch of caching issues when resizing multiblocks
+
+v3.0
++ All multiblocks now include their casing
++ Added 12 addons
++ Blocks now include ingame names (nuclearcraft:etc)
++ Recipes, fuels, etc. how have textures
++ Overhaul SFR/MSR blocks recipes may now define any stats, rather than only fuel or irradiator stats
++ You can now step through multiblock calculation, with visualizations showing what is happening in each step
++ Added search box to parts list and recipe selectors in the editor
++ Middle click now selects the clicked block's recipe too
++ The planner will now attempt an autosave when it crashes
++ Added a highly experimental script addon importer (drag zs, png, and lang files into the modify addon menu)
++ Added lines to the editor cursor to highlight the current row and column
++ Added 3D preview to the editor
++ Added split transitions for the editor and configuration menus
++ Added credits
+* Rebuilt the settings and configuration menus
+* Overhaul SFR/MSR fuels are now block recipes
+* Overhaul SFR/MSR neutron sources are now blocks
+and probably some other stuff I'm forgetting
+
+v2.18.2
+* leu-235.com underhaul designs should now load properly
+* Possibly fixed a crash when disabling suggestors
+* The GUI shouldn't turn invisible anymore on render crashes
+* The planner no longer freezes on a crash when drag-importing files
+* Transferred multiblocks into modules
+* Moved non-default configurations into modules
+
+v2.18.1
++ Ctrl+Scroll wheel now zooms in and out in the multiblock editor
++ Shift+Scroll wheel now scrolls horizontally
+* The scroll wheel now scrolls twice as fast
+* Fixed text field number filters not working when adding characters
+* Fixed tooltips for buttons to create or delete sub-configurations.
+* Fixed MSR block input/output rate showing as input/output fluid in the configuration editor
+* Fixed bug that let you buy multiple huts of the same type.
+* The bot will now accept s'more puns
+
+v2.18
++ Added useful suggestors for all multiblock types
++ Added a progress bar for multiblock and suggestor calculation
++ Added tutorials for underhaul SFRs, as well as overhaul SFRs, MSRs, and Turbines
++ Multiblock tooltips are now colored based on the multiblock's stability
++ Added VR Multitool
++ Added hut themes to discord bot
+* Fixed neutron shields not gaining the correct amount of heat from moderator lines to reflectors
+* Fixed turbine blade ghosts not appearing
+* Fixed suggestor outlines and ghosts not showing on turbine editor grids
+* Tutorials are no longer hard-coded, and now use a custom .ncpt format (with no documentation, of course)
+* Suggestors now run on a separate thread
+* Various optimizations to multiblocks and suggestors
+* Made font characters %*'" a little nicer
+- removed random suggestors
+
+v2.17
++ Added VR support
++ Added heatsink/heater suggestors
++ Added undo/redo buttons to MenuEdit
++ Added tooltips to fuels/recipes/etc.
++ Added option to invert undo/redo hotkeys
++ Upgraded "Configuration mismatch detected!" error message
+
+v2.16.4
+Fixed neutron source circle rendering
+
+v2.16.3
+Fixed bug with block configurations not being updated properly causing a crash when converting to/from MSR
+Restructured the argument handling a bit
+
+v2.16.2
+Fixed v2.16.1 acting as v2.16
+
+v2.16.1
+Centralized module data
+The generator will now automatically stop if generation threads crash 10 times in 10 seconds
+Generators now ensure multiblocks have been calculated before comparing them (Fixed #26)
+Module configuration is now saved and loaded correctly
+Components in MenuModules now reflect the actual current state of modules when the menu is opened
+Fixed crash upon editing overhaul turbine with a module enabled
+Fixed a misspelling
+
+v2.16
+Added suggestors
+Added -find command
+Added Module system, moved rainbow factor to a module
+Bug fixes, including #21, #22, #23, #24, #25 
+Updated NCPF to version 9
+
+v2.15.6
+Fixed ConcurrentModificationException when using Ctrl-C
+Fixed irradiator recipe efficiency being ignored
+
+v2.15.5
+Updated to SimpleLibraryPlus 1.3
+Moved planner.FileFormat to planner.file.FileFormat
+Updated to JDA 4.2.0_168
+
+v2.15.4
+MSR Vessel groups are now much faster to calculate
+Hopefully fixed an issue with loading very large NCPFs
+
+v2.15.3
+
+v2.15.2
+Fixed some fusion things
+Upgraded some fission tooltips
+Upgraded fusion nonsense configuration
+Added plasma display to fusion
+probably something else too
+
+v2.15.1
+Fixed ConcurrentModificationException in pencil tool
+Fixed massive render lag spikes with clusters
+
+v2.15
+Added a nonseniscal testing version of Overhaul Fusion
+
+v2.14.1
+Updated vessel bunch logic for truncation
+
+v2.14
++ Added tutorial menu (shows on first startup)
++ Added Core-based (previously Challenger) generator
++ Added factorio-style copy/paste tools
++ A bunch of QOL fixes
+
+v2.13.3
+
+v2.13.2
+Fixed bugs with vessel bunch flux and recursive flux repropagation
+1-5 can now be used to select tools
+The parts list will now have a scrollbar if the screen's not tall enough
+
+v2.13.1
+Bot bugfixes
+added HeadlessAPI class
+added `headless` cmd argument to hide window
+
+v2.13
+added noAWT and noAWTDuringStartup options
+The planner now runs with -XstartOnFirstThread on mac
+Updated to SimpleLibraryPlus 1.0.1
+Added support for negative cooling values (WARNING: likely unstable)
+Changed overhaul SFR outputRatio from int to float
+Added more cluster warning outlines to overhaul SFR and MSR
+Fixed IC2 fuels in S'plodo-bot
+
+v2.12.8
+
+v2.12.7
+Fixed Hellrage irradiator export
+
+v2.12.6
+Updated nuclearcraft configuration
+nuclearcraft.cfg can now be loaded again
+Irradiators are now correctly marked as blocking LOS
+
+v2.12.5
+
+v2.12.4
+
+v2.12.3
+Removed the debug crash
+
+v2.12.2
+Many addon & configuration fixes
+addons can now be saved (but not loaded)
+Added irradiator recipe to SFR/MSR block tooltips
+
+v2.12.1
+
+v2.12
+Dropdown boxes
+
+v2.11.6
+Fixed addon loading looking for general data
+
+v2.11.5
+
+v2.11.4
+Various MSR Fixes
+
+v2.11.3
+Bug Fixes and Optimizations
+
+v2.11.2
+Fixed MSR textures not being modified correctly
+
+v2.11.1
+Fixed tooltips on scrollables
+Cleaned up the imports
+
+v2.11
+LWJGL 3, addons, and some other stuff too
+I don't remember what all I added
+I know there's some MSR vessel grouping in here
+
+v2.10.5
+Fixed a crash when selecting overhaul reactors with no overhaul configuration
+Fixed generator not working with no overhaul configuration
+Incremented Patch Number
+NCPF Version 4 files can now be read
+
+v2.10.4
+Added turbine expansion graph
+added turbine generator
+a few more turbine things
+
+v2.10.3
+Fixed hellrage conductor import/export
+
+v2.10.2
+This version is good for use for bots
+Added Advanced hut thing placement system
+Fixed overhaul SFR priority presets
+added SF4 as a possible alternative for default configuration
+added AAPN to the configuration keyword
+Fixed zero-diameter bearings in overhaul turbines
+You can now specify multiblock type in hangman
+Fixed vertex rule
+Incremented patch version
+Fixed underhaul image exports showing "null" if underhaul version wasn't specified
+Fixed hangman using global configuration
+
+v2.10.1
+Patched Turbines
+
+v2.10.0
+DO NOT USE THIS VERSION FOR A DISCORD BOT
+(All S'more huts will break!)
+Otherwise, you're good to use this version for discord bots :P
+Things I did:
+partial hut thing placementstuff
+turbines
+middle click
+underhaul config version
+vertex rule
+parts list
+Rainbow score
+and some other stuff too
+
+v2.9.4
+Fixed null on copy; huts
+
+v2.9.3
+Fixed planner image exporter
+
+v2.9.2
+Fixed vessels/cells being incorrectly marked active
+A bunch of bot stuff
+
+v2.9.1
+Bug Fixes
+
+v2.9.0
+Fixed something(?)
+
+v2.8.2
+Fixed generator symmetry not working
+Fixed generator always getting stuck (it only gets stuck sometimes now)
+Fuel now displays in Underhaul SFR image export
+Added Yellorium, IC2 Fuels, and E2E Uranium ingot to default configs
+Fixed generator symmetry again
+Fixed blocks being incorrectly marked invalid again
+"Remove invalid" is now enabled by default
+
+v2.8.1
+Fixed crash on SetblocksAction and MoveAction
+Fixed generator menu not closing
+
+v2.8.0
+Added Generator
+Also fixed active cooling values being doubled
+WARNING: generator is likely highly unstable
+
+v2.7.1
+Fixed selection color
+
+v2.7.0
+Y-Layers can now be inserted; added theme selector
+
+v2.6.0
+Shields can now be toggled; the delete button now does something
+
+v2.5.1
+Planner can now run offline (after initial run)
+
+v2.5.0
+Image export, move/copy, QOL, and bug fixes
+
+v2.4.1
+Bug Fixes
+
+v2.4.0
+Bug fixes, Optimizations, More editing tools
+
+v2.3.5
+Rebuilt partial multiblock constructor
+
+v2.3.4
+Fixed Hellrage Mixed fuel import
+
+v2.3.3
+Optimizations; probably added some bugs
+
+v2.3.2
+Textures and fluids modifiable; Heater textures clearer
+
+v2.3.1
+Hellrage MSR import fix
+
+v2.3.0
+MSRs and Selection tools
+
+v2.2.0
+Advanced editing tools
+
+v2.1.0
+Undo/Redo, QOL, and bug fixes
+
+v2.0
+LWJGL Overhaul
+
+v1.7
+Irradiators and new rules
+
+v1.6
+Multi-Fuel shutdownable reactors
+
+v1.5
+Added support for newer JSON format
+"Fill Air" option is now selected by default (and used by bot)
+Adjusted reactor drawing a bit
+Fixed bug when reading JSON with escaped characters
+Imported reactors now never have symmetry applied
+Added Yellorium, IC2 Fuels, and E2E Uranium Ingot
+
+v1.4.1
+Fixed overhaul helium placement
+
+v1.4.0
+Configuration and Scrolling
+Removed unnecessary files
+
+v1.3.0
+Removed extra files from repository
+
+v1.2.0
+Added S'plodo-Bot
+
+v1.1.3
+Fixed diagonal searching for LOS and hasAdjacent
+Added heatsink-moderator detection for MSRs (Output is incorrect though)
+
+v1.1.2
+
+Added "Lock Core" option to overhaul Model "Standard"
+Imported reactors now show in the output if the generator is not running
+Changed bzy-xyz model scoring system
+
+v1.1.1
+* Generation plan "Mono" now shows modification attempts
+* Split "Stability" overhaul priority into "Valid" and "Stable"
+* Fixed wrongly removing valid magnesium heatsinks
+
+v1.1.0
+Fixed upward line-of-sight detection looking diagonally
+
+v1.0.0
+Initial Release

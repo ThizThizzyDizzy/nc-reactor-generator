@@ -1211,6 +1211,10 @@ public class Renderer{
     }
     public void drawCircle(float x, float y, float innerRadius, float outerRadius){
         int resolution = (int)(2*MathUtil.pi()*outerRadius);
+        if(innerRadius==0){
+            drawRegularPolygon(x, y, outerRadius, Math.max(3, resolution), 0);
+            return;
+        }
         unbindTexture();
         float angle = 0;
         for(int i = 0; i<resolution; i++){
