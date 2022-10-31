@@ -123,7 +123,7 @@ public class MenuMain extends Menu{
             }
         });
         Label header = add(new Label(0, 0, 0, 0, "", true));
-        TextView body = add(new TextView(0, 0, 0, 0, 0, 40){
+        TextView body = add(new TextView(0, 0, 0, 0, 0, 10){
             @Override
             public void onMouseButton(double x, double y, int button, int action, int mods){
                 super.onMouseButton(x, y, button, action, mods);
@@ -178,7 +178,7 @@ public class MenuMain extends Menu{
                     for(String s : MenuCredits.patrons){
                         t.addText(s);
                     }
-                    t.addText("\nIf you would like to support my projects, consider supporting me on patreon or ko-fi:\npatreon.com/thizthizzydizzy\nko-fi.com/thizthizzydizzy\n\nJoin my discord server:\ndiscord.gg/dhcPSMt");
+                    t.addText("\nIf you enjoy this plannerator, consider supporting me on patreon or ko-fi:\npatreon.com/thizthizzydizzy\nko-fi.com/thizthizzydizzy\n\nJoin my discord server:\ndiscord.gg/dhcPSMt");
                     return t;
                 default:
                     return new FormattedText("Hey thiz, you forgot to add text for this tab");
