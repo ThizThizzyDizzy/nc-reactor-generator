@@ -307,14 +307,16 @@ public class MenuComponentEditorGrid extends Component{
         }
     }
     public int[] toBlockCoords(int sx, int sy){
+        sx+=x1;
+        sy+=y1;
         int bx = sx*xAxis.x+sy*yAxis.x+layer*axis.x;
         int by = sx*xAxis.y+sy*yAxis.y+layer*axis.y;
         int bz = sx*xAxis.z+sy*yAxis.z+layer*axis.z;
         return new int[]{bx,by,bz};
     }
     public int[] toMouseCoords(int bx, int by, int bz){
-        int sx = xAxis.x*bx+xAxis.y*by+xAxis.z*bz;
-        int sy = yAxis.x*bx+yAxis.y*by+yAxis.z*bz;
+        int sx = xAxis.x*bx+xAxis.y*by+xAxis.z*bz-x1;
+        int sy = yAxis.x*bx+yAxis.y*by+yAxis.z*bz-y1;
         if(axis.x!=0&&bx!=layer)return null;
         if(axis.y!=0&&by!=layer)return null;
         if(axis.z!=0&&bz!=layer)return null;
@@ -455,15 +457,13 @@ public class MenuComponentEditorGrid extends Component{
     public String getTooltip(){
         synchronized(synchronizer){
             if(mouseover==null)return null;
-            int bx = mouseover[0]*xAxis.x+mouseover[1]*yAxis.x+layer*axis.x;
-            int by = mouseover[0]*xAxis.y+mouseover[1]*yAxis.y+layer*axis.y;
-            int bz = mouseover[0]*xAxis.z+mouseover[1]*yAxis.z+layer*axis.z;
-            if(!multiblock.contains(bx, by, bz))return null;
-            Block block = multiblock.getBlock(bx,by,bz);
+            int[] b = toBlockCoords(mouseover[0], mouseover[1]);
+            if(!multiblock.contains(b[0], b[1], b[2]))return null;
+            Block block = multiblock.getBlock(b[0],b[1],b[2]);
             String tooltip = "";
             for(Object o : multiblock.decals){
                 Decal decal = (Decal)o;
-                if(decal.x==bx&&decal.y==by&&decal.z==bz){
+                if(decal.x==b[0]&&decal.y==b[1]&&decal.z==b[2]){
                     tooltip+=decal.getTooltip()+"\n";
                 }
             }
