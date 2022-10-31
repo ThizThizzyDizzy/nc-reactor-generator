@@ -609,7 +609,7 @@ public class OverhaulNCConfigReader implements FormatReader{
             if(fuelNames[i]==null)continue;
             int fuelIndex = i-i/5;
             String tex = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), " oxide", "_ox", "-", "_", " nitride", "_ni", "_zirconium alloy", "_za");
-            BlockRecipe fuel = BlockRecipe.fuel("nuclearcraft:fuel_"+baseName+":"+fuelIndex, fuelNames[i], "overhaul/fuel/"+tex, "nuclearcraft:depleted_fuel_"+baseName+":"+fuelIndex, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/"+tex, (float)efficiency.getDouble(i), heat.getInt(i), (int)(time.getInt(i)*timeMult), criticality.getInt(i), selfPriming.getBoolean(i));
+            BlockRecipe fuel = BlockRecipe.fuel("nuclearcraft:fuel_"+baseName+":"+fuelIndex, fuelNames[i], "overhaul/fuel/"+tex, "nuclearcraft:depleted_fuel_"+baseName+":"+fuelIndex, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/"+tex, efficiency.getAsFloat(i), heat.getAsInt(i), (int)(time.getAsInt(i)*timeMult), criticality.getAsInt(i), selfPriming.getBoolean(i));
             cell.allRecipes.add(fuel);cell.recipes.add(fuel);
         }
     }
@@ -624,7 +624,7 @@ public class OverhaulNCConfigReader implements FormatReader{
             String baseNam = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), "-", "_", " ", "_", "mf4","mix")+"_flibe";
             if(baseName.equals("mixed"))baseNam = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), "-", "_", " ", "_", "mf4","mix")+"_fluoride_flibe";
             String tex = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), "-", "_", " fluoride", "", "mf4","mix");
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe.fuel(baseNam, fuelNames[i], "overhaul/fuel/msr/"+tex, "depleted_"+baseNam, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/msr/"+tex, (float)efficiency.getDouble(i), heat.getInt(i), (int)(time.getInt(i)*timeMult), criticality.getInt(i), selfPriming.getBoolean(i));
+            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe.fuel(baseNam, fuelNames[i], "overhaul/fuel/msr/"+tex, "depleted_"+baseNam, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/msr/"+tex, efficiency.getAsFloat(i), heat.getAsInt(i), (int)(time.getAsInt(i)*timeMult), criticality.getAsInt(i), selfPriming.getBoolean(i));
             vessel.allRecipes.add(fuel);vessel.recipes.add(fuel);
         }
     }

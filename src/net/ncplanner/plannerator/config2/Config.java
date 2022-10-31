@@ -264,6 +264,27 @@ public class Config extends ConfigBase implements Cloneable{
     public short getShort(String key){
         return get(key);
     }
+    public Number getNumber(String key){
+        return get(key);
+    }
+    public int getAsInt(String key){
+        return getNumber(key).intValue();
+    }
+    public float getAsFloat(String key){
+        return getNumber(key).floatValue();
+    }
+    public long getAsLong(String key){
+        return getNumber(key).longValue();
+    }
+    public double getAsDouble(String key){
+        return getNumber(key).doubleValue();
+    }
+    public byte getAsByte(String key){
+        return getNumber(key).byteValue();
+    }
+    public short getAsShort(String key){
+        return getNumber(key).shortValue();
+    }
     public ConfigNumberList getConfigNumberList(String key){
         return get(key);
     }

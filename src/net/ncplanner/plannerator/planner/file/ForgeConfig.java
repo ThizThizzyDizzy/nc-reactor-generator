@@ -103,7 +103,11 @@ public class ForgeConfig{
                     if(line.contains("=")){
                         String[] split = line.substring(2).split("=");
                         if(split.length!=2)error("expected exactly 1 equals, found "+(split.length-1)+"!");
-                        config.set(split[0].trim(), Integer.parseInt(split[1].trim()));
+                        try{
+                            config.set(split[0].trim(), Integer.parseInt(split[1].trim()));
+                        }catch(NumberFormatException ex){
+                            config.set(split[0].trim(), ((Number)Double.parseDouble(split[1].trim())).intValue());
+                        }
                         continue;
                     }
                     error("Unknown int entry: "+line);

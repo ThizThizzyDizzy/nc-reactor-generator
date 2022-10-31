@@ -103,6 +103,27 @@ public class ConfigList extends ConfigBase{
     public short getShort(int index){
         return get(index);
     }
+    public Number getNumber(int index){
+        return get(index);
+    }
+    public int getAsInt(int index){
+        return getNumber(index).intValue();
+    }
+    public float getAsFloat(int index){
+        return getNumber(index).floatValue();
+    }
+    public long getAsLong(int index){
+        return getNumber(index).longValue();
+    }
+    public double getAsDouble(int index){
+        return getNumber(index).doubleValue();
+    }
+    public byte getAsByte(int index){
+        return getNumber(index).byteValue();
+    }
+    public short getAsShort(int index){
+        return getNumber(index).shortValue();
+    }
     public ConfigNumberList getConfigNumberList(int index){
         return get(index);
     }
