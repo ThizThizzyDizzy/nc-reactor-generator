@@ -12,6 +12,6 @@ public class IndexKeyword extends Keyword{
     public void run(Script script){
         int val = script.pop().asInt().getValue().intValue();
         if(val<0)throw new IllegalArgumentException("value must be non-negative!");
-        script.push(script.peekAt(val));
+        script.push(script.peekAt(script.stack.size()-val-1));
     }
 }
