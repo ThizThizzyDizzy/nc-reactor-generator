@@ -9,7 +9,7 @@ public abstract class AbstractEqualsOperator extends Operator{
     @Override
     public final StackObject evaluate(Script script, StackObject v1, StackObject v2){
         StackVariable var = script.variables.get(v1.asLabel().getValue());
-        var.setValue(eval(var,v2));
+        var.setValue(eval(var,v2).getBaseObject());
         return null;
     }
     public abstract StackObject eval(StackVariable var, StackObject arg);
