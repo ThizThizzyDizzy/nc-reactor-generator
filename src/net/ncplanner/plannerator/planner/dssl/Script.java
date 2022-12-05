@@ -40,7 +40,7 @@ public class Script{
         this.script = script;
     }
     public Script(Stack<StackObject> stack, HashMap<String, StackVariable> variables, StackString str, Consumer<String> out){
-        throw new UnsupportedOperationException("Not supported yet.");
+        this(stack, variables, str.getValue(), out);
     }
     public void run(Collection<Token> breakpoints){
         while(!isFinished()){
