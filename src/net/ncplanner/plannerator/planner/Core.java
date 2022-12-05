@@ -36,6 +36,7 @@ import net.ncplanner.plannerator.planner.file.NCPFFile;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.MenuCalibrateCursor;
 import net.ncplanner.plannerator.planner.gui.menu.MenuInit;
 import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
@@ -245,11 +246,11 @@ public class Core{
             }
             @Override
             public int getWidth(){
-                return screenWidth;
+                return (int) (screenWidth/MenuCalibrateCursor.xGUIScale);
             }
             @Override
             public int getHeight(){
-                return screenHeight;
+                return (int) (screenHeight/MenuCalibrateCursor.yGUIScale);
             }
         };
         gui.open(new MenuInit(gui));
@@ -270,8 +271,8 @@ public class Core{
                     new MenuUnsavedChanges(gui, gui.menu).open();
                 }
             }
-            Matrix4f orthoProjection = new Matrix4f().setOrtho(0, screenWidth, screenHeight, 0, 0.1f, 10f);//new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
-            Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, screenWidth/Math.max(1f,screenHeight), 0.1f, 100);
+            Matrix4f orthoProjection = new Matrix4f().setOrtho(0, (screenWidth/(float)MenuCalibrateCursor.xGUIScale), (screenHeight/(float)MenuCalibrateCursor.yGUIScale), 0, 0.1f, 10f);//new Matrix4f().setPerspective(45, screenWidth/screenHeight, 0.1f, 100);
+            Matrix4f perspectiveProjection = new Matrix4f().setPerspective(45, (screenWidth/(float)MenuCalibrateCursor.xGUIScale)/Math.max(1f,(screenHeight/(float)MenuCalibrateCursor.yGUIScale)), 0.1f, 100);
             Color color = theme.getMenuBackgroundColor();
             glClearColor(0, 0, 0, 0);
             glStencilMask(0xff);
@@ -350,6 +351,14 @@ public class Core{
         settings.set("imageExportCasing", imageExportCasing);
         settings.set("imageExportCasing3D", imageExportCasing3D);
         settings.set("dssl", dssl);
+        Config cursor = Config.newConfig();
+        cursor.set("xMult", MenuCalibrateCursor.xMult);
+        cursor.set("yMult", MenuCalibrateCursor.yMult);
+        cursor.set("xGUIScale", MenuCalibrateCursor.xGUIScale);
+        cursor.set("yGUIScale", MenuCalibrateCursor.yGUIScale);
+        cursor.set("xOff", MenuCalibrateCursor.xOff);
+        cursor.set("yOff", MenuCalibrateCursor.yOff);
+        settings.set("cursor", cursor);
         ConfigList pins = new ConfigList();
         for(String s : pinnedStrs)pins.add(s);
         settings.set("pins", pins);

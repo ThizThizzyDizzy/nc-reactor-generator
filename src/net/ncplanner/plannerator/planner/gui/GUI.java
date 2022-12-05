@@ -29,7 +29,7 @@ public abstract class GUI{
         });
         glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
             if(xpos<0&&ypos<0)onCursorPos(xpos, ypos);
-            else onCursorPos(xpos*MenuCalibrateCursor.xMult+MenuCalibrateCursor.xOff, ypos*MenuCalibrateCursor.yMult+MenuCalibrateCursor.yOff);
+            else onCursorPos(xpos*MenuCalibrateCursor.xMult/MenuCalibrateCursor.xGUIScale+MenuCalibrateCursor.xOff, ypos*MenuCalibrateCursor.yMult/MenuCalibrateCursor.yGUIScale+MenuCalibrateCursor.yOff);
         });
         glfwSetDropCallback(window, (window, count, names) -> {
             onDrop(count, names);

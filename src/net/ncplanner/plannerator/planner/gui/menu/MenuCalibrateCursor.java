@@ -3,12 +3,16 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import org.lwjgl.glfw.GLFW;
 public class MenuCalibrateCursor extends Menu{
     public static double xMult = 1;
     public static double yMult = 1;
+    public static double xGUIScale = 1;
+    public static double yGUIScale = 1;
     public static int xOff = 0;
     public static int yOff = 0;
+    public static boolean calibrationChanged = false;
     public MenuCalibrateCursor(GUI gui, Menu parent){
         super(gui, parent);
     }
@@ -16,6 +20,7 @@ public class MenuCalibrateCursor extends Menu{
     public void onKeyEvent(int key, int scancode, int action, int mods){
         if(action==GLFW.GLFW_PRESS&&key==GLFW.GLFW_KEY_ESCAPE){
             gui.open(parent);
+            onClose();
         }
         if(action==GLFW.GLFW_PRESS||action==GLFW.GLFW_REPEAT){
             if(key==GLFW.GLFW_KEY_W||key==GLFW.GLFW_KEY_UP){
@@ -35,6 +40,7 @@ public class MenuCalibrateCursor extends Menu{
                         yOff+=Core.isControlPressed()?1:10;
                         break;
                 }
+                calibrationChanged = true;
             }
             if(key==GLFW.GLFW_KEY_S||key==GLFW.GLFW_KEY_DOWN){
                 switch(selected){
@@ -53,11 +59,14 @@ public class MenuCalibrateCursor extends Menu{
                         yOff-=Core.isControlPressed()?1:10;
                         break;
                 }
+                calibrationChanged = true;
             }
             if(action==GLFW.GLFW_PRESS){
                 if(key==GLFW.GLFW_KEY_DELETE){
+                    if(Core.isShiftPressed())xGUIScale = yGUIScale = 1;
                     xMult = yMult = 1;
                     xOff = yOff = 0;
+                    calibrationChanged = true;
                 }
                 if(key==GLFW.GLFW_KEY_A||key==GLFW.GLFW_KEY_LEFT){
                     selected--;
@@ -82,6 +91,7 @@ public class MenuCalibrateCursor extends Menu{
         y = (y-yOff)/yMult;
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&action==GLFW.GLFW_PRESS){
             gui.open(parent);
+            onClose();
         }
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&action==GLFW.GLFW_PRESS){
             calibMouse[auto][0] = x;
@@ -104,6 +114,7 @@ public class MenuCalibrateCursor extends Menu{
         }
     }
     public void calibrate(){
+        calibrationChanged = true;
         xMult = Math.max(1/1024d,multiplify(calibMult(calibMouse[0][0], calibMouse[1][0], calibScreen[0][0], calibScreen[1][0])));
         yMult = Math.max(1/1024d,multiplify(calibMult(calibMouse[0][1], calibMouse[1][1], calibScreen[0][1], calibScreen[1][1])));
         xOff = offify(calibOff(calibMouse[0][0], calibMouse[1][0], calibScreen[0][0], calibScreen[1][0]));
@@ -153,9 +164,13 @@ public class MenuCalibrateCursor extends Menu{
         switch(auto){
             case 0:
                 renderer.fillRect(gui.getWidth()/4-16, gui.getHeight()/4-16, gui.getWidth()/4+16, gui.getHeight()/4+16);
+                renderer.setColor(Core.theme.getComponentTextColor(0));
+                renderer.drawElement("delete", gui.getWidth()/4-16, gui.getHeight()/4-16, 32, 32);
                 break;
             case 1:
                 renderer.fillRect(gui.getWidth()*3/4-16, gui.getHeight()*3/4-16, gui.getWidth()*3/4+16, gui.getHeight()*3/4+16);
+                renderer.setColor(Core.theme.getComponentTextColor(0));
+                renderer.drawElement("delete", gui.getWidth()*3/4-16, gui.getHeight()*3/4-16, 32, 32);
                 break;
         }
     }
@@ -171,6 +186,14 @@ public class MenuCalibrateCursor extends Menu{
                 return "< Y Offset: "+yOff+" ";
             default:
                 return "Something has gone horribly wrong!";
+        }
+    }
+    private void onClose() {
+        if(calibrationChanged&&xMult!=xGUIScale&&yMult!=yGUIScale){
+            new MenuMessageDialog(gui, gui.menu, "Calibration changed! Would you like to adjust GUI scale to match?").addButton("Yes", () -> {
+                xGUIScale = xMult;
+                yGUIScale = yMult;
+            }, true).addButton("No", true).open();
         }
     }
 }

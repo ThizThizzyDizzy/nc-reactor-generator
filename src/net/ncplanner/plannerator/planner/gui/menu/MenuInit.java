@@ -196,6 +196,13 @@ public class MenuInit extends Menu{
                     Core.imageExportCasing = settings.get("imageExportCasing", true);
                     Core.imageExportCasing3D = settings.get("imageExportCasing3D", true);
                     Core.dssl = settings.get("dssl", false);
+                    Config cursor = settings.get("cursor", Config.newConfig());
+                    MenuCalibrateCursor.xMult = cursor.get("xMult", 1d);
+                    MenuCalibrateCursor.yMult = cursor.get("yMult", 1d);
+                    MenuCalibrateCursor.xGUIScale = cursor.get("xGUIScale", 1d);
+                    MenuCalibrateCursor.yGUIScale = cursor.get("yGUIScale", 1d);
+                    MenuCalibrateCursor.xOff = cursor.get("xOff", 1);
+                    MenuCalibrateCursor.yOff = cursor.get("yOff", 1);
                     Core.setVsync(settings.get("vsync", true));
                     Core.editor3dView = settings.get("editor3dView", false);
                     ConfigList lst = settings.getConfigList("pins", new ConfigList());
