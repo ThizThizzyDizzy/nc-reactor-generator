@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.graphics.Font;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
@@ -12,6 +13,7 @@ public class TextView extends Scrollable{
     public boolean wordWrap = true;
     public int bottomWhitespaceLines = 0;
     public int snap = -1;
+    public Font font = null;
     public TextView(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth){
         super(x, y, width, height, 0, vertScrollbarWidth);//TODO scrollbar height based on wordWrap
         view = add(new Component(0, 0, width, height){
@@ -19,7 +21,7 @@ public class TextView extends Scrollable{
             public void draw(double deltaTime){
                 Renderer renderer = new Renderer();
                 renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-                renderer.setFont(Core.theme.getTextViewFont());
+                renderer.setFont(font!=null?font:Core.theme.getTextViewFont());
                 float Y = y+textInset;
                 for(int i = 0; i<text.size(); i++){
                     FormattedText t = text.get(i);

@@ -45,6 +45,7 @@ public class MenuStackEditor extends Menu{
     public Thread scriptThread;
     public TextView output = add(new TextView(192, 0, 0, 192, 20, 20){
         {
+            font = Core.FONT_MONO_20;
             bottomWhitespaceLines++;
         }
     });
