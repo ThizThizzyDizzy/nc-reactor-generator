@@ -12,4 +12,8 @@ public class PrintKeyword extends Keyword{
     public void run(Script script){
         script.print(script.pop().getValue().toString());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.KEYWORD;
+    }
 }

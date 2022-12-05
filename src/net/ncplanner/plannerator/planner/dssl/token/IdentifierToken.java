@@ -14,6 +14,6 @@ public class IdentifierToken extends Token{
     public void run(Script script){
         StackVariable var = script.variables.get(text);
         if(var==null)throw new NullPointerException("S'tack variable "+text+" does not exist!");
-        script.push(var);
+        script.push(var.getValue());
     }
 }

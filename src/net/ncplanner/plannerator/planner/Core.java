@@ -108,6 +108,7 @@ public class Core{
     public static boolean imageExportCasing3D = true;
     public static boolean saved = true;
     public static boolean configSaved = true;
+    public static boolean dssl = false;
     public static void addModule(Module m){
         modules.add(m);
     }
@@ -348,6 +349,7 @@ public class Core{
         settings.set("imageExport3DView", imageExport3DView);
         settings.set("imageExportCasing", imageExportCasing);
         settings.set("imageExportCasing3D", imageExportCasing3D);
+        settings.set("dssl", dssl);
         ConfigList pins = new ConfigList();
         for(String s : pinnedStrs)pins.add(s);
         settings.set("pins", pins);

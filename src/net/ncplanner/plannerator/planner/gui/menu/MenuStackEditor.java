@@ -212,6 +212,7 @@ public class MenuStackEditor extends Menu{
     @Override
     public void onOpened(){
         super.onOpened();
+        MenuMain.enables = true;
         focusedComponent = editor;
         editor.isFocused = true;
         Core.setWindowTitle("S'tack Editor");

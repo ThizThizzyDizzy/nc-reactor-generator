@@ -12,4 +12,8 @@ public class ClearKeyword extends Keyword{
     public void run(Script script){
         script.pop().asCollection().clear();
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

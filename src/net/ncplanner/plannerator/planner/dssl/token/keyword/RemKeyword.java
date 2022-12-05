@@ -14,4 +14,8 @@ public class RemKeyword extends Keyword{
         StackObject elem = script.pop();
         script.push(script.pop().asCollection().remove(elem));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

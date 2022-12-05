@@ -13,4 +13,8 @@ public class EmptyKeyword extends Keyword{
     public void run(Script script){
         script.push(new StackBool(script.pop().asCollection().isEmpty()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

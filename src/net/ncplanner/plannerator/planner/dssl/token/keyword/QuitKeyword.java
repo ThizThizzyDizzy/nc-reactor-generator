@@ -12,4 +12,8 @@ public class QuitKeyword extends Keyword{
     public void run(Script script){
         script.halt();
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

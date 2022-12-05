@@ -12,4 +12,8 @@ public class PopKeyword extends Keyword{
     public void run(Script script){
         script.pop();
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

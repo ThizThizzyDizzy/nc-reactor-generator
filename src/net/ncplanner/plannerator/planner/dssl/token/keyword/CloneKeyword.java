@@ -12,4 +12,8 @@ public class CloneKeyword extends Keyword{
     public void run(Script script){
         script.push(script.peek().duplicate());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

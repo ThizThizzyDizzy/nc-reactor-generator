@@ -16,4 +16,8 @@ public class IfKeyword extends Keyword{
         StackBool condition = script.pop().asBool();
         if(condition.getValue())script.subscript(method.getValue());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

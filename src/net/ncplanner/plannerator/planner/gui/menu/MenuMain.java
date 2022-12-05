@@ -264,6 +264,7 @@ public class MenuMain extends Menu{
             stack.width = stack.height*4*(enables?1:0);
             stack.y = done.y-stack.height;
             stack.enabled = enables;
+            Core.dssl |= enables;
         }
         @Override
         public void draw(double deltaTime){
@@ -669,6 +670,11 @@ public class MenuMain extends Menu{
     @Override
     public void onFilesDropped(String[] files){
         for(String fil : files){
+            if(fil.endsWith(".dssl")&&Core.dssl){
+                gui.open(new MenuStackEditor(gui, this));
+                gui.menu.onFilesDropped(files);
+                return;
+            }
             try{
                 importMultiblocks(new File(fil));
             }catch(Exception ex){

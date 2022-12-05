@@ -17,6 +17,10 @@ public class StackInt extends StackNumber{
     }
     @Override
     public StackObject cast(StackObject obj){
+        StackObject bas = obj.getBaseObject();
+        if(bas instanceof StackString){
+            return new StackInt(Integer.parseInt(((StackString)bas).getValue()));
+        }
         return obj.asInt();
     }
 }

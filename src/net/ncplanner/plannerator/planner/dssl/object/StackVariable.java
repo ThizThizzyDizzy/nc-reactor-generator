@@ -45,6 +45,34 @@ public class StackVariable extends StackObject{
         return value.asCollection();
     }
     @Override
+    public StackRange asRange(){
+        return value.asRange();
+    }
+    @Override
+    public StackList asList(){
+        return value.asList();
+    }
+    @Override
+    public StackTuple asTuple(){
+        return value.asTuple();
+    }
+    @Override
+    public StackSet asSet(){
+        return value.asSet();
+    }
+    @Override
+    public StackDict asDict(){
+        return value.asDict();
+    }
+    @Override
+    public StackType asType(){
+        return value.asType();
+    }
+    @Override
+    public StackFlow asFlow(){
+        return value.asFlow();
+    }
+    @Override
     public StackFloat asFloat(){
         return value.asFloat();
     }

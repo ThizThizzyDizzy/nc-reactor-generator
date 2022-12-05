@@ -16,4 +16,8 @@ public class RidKeyword extends Keyword{
             script.pop();
         }
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

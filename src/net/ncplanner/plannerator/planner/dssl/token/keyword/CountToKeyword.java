@@ -40,4 +40,8 @@ public class CountToKeyword extends Keyword{
         }
         throw new IllegalArgumentException("Label "+value+" does not exist on stack!");
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

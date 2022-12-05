@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import net.ncplanner.plannerator.graphics.Font;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword.KeywordFlavor;
 import net.ncplanner.plannerator.planner.theme.legacy.LegacyTheme;
 import net.ncplanner.plannerator.planner.theme.legacy.SolidColorTheme;
 public abstract class Theme{
@@ -337,7 +338,7 @@ public abstract class Theme{
     public abstract Color getValidatorErrorTextColor();
     public abstract Color getCodeBackgroundColor();
     public abstract Color getCodeTextColor();
-    public abstract Color getCodeKeywordTextColor();
+    public abstract Color getCodeKeywordTextColor(KeywordFlavor flavor);
     public abstract Color getCodeOperatorTextColor();
     public abstract Color getCodeBooleanTextColor();
     public abstract Color getCodeCharTextColor();
@@ -348,7 +349,6 @@ public abstract class Theme{
     public abstract Color getCodeStringTextColor();
     public abstract Color getCodeIdentifierTextColor();
     public abstract Color getCodeInvalidTextColor();
-    public abstract Color getCodeActiveTextColor();
     public abstract Color getCodeLineMarkerColor();
     public abstract Color getCodeLineMarkerTextColor();
     public abstract Color getCodeDebugHighlightTextColor();

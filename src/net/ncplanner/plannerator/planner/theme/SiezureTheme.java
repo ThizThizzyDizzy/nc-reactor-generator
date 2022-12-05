@@ -4,6 +4,7 @@ import java.util.Random;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Main;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSiezureTheme;
 public class SiezureTheme extends ColorTheme{
     private Random rand = new Random();
@@ -733,8 +734,8 @@ public class SiezureTheme extends ColorTheme{
         return rand();
     }
     @Override
-    public Color getCodeKeywordTextColor(){
-        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeKeywordTextColor();
+    public Color getCodeKeywordTextColor(Keyword.KeywordFlavor flavor){
+        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeKeywordTextColor(flavor);
         return rand();
     }
     @Override
@@ -785,11 +786,6 @@ public class SiezureTheme extends ColorTheme{
     @Override
     public Color getCodeInvalidTextColor(){
         if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeInvalidTextColor();
-        return rand();
-    }
-    @Override
-    public Color getCodeActiveTextColor(){
-        if(!Objects.equals(siezureAllowed, Boolean.TRUE))return Theme.STANDARD.getCodeActiveTextColor();
         return rand();
     }
     @Override

@@ -195,6 +195,7 @@ public class MenuInit extends Menu{
                     Core.imageExport3DView = settings.get("imageExport3DView", true);
                     Core.imageExportCasing = settings.get("imageExportCasing", true);
                     Core.imageExportCasing3D = settings.get("imageExportCasing3D", true);
+                    Core.dssl = settings.get("dssl", false);
                     Core.setVsync(settings.get("vsync", true));
                     Core.editor3dView = settings.get("editor3dView", false);
                     ConfigList lst = settings.getConfigList("pins", new ConfigList());

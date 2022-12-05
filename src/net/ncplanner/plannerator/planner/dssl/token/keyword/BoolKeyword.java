@@ -12,4 +12,8 @@ public class BoolKeyword extends Keyword{
     public void run(Script script){
         script.push(script.pop().asBool());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

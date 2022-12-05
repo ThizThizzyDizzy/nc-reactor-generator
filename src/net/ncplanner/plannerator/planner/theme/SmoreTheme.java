@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.theme;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
 public class SmoreTheme extends ColorTheme{
     private final ColorTheme cracker;
@@ -615,8 +616,8 @@ public class SmoreTheme extends ColorTheme{
         return marshmallow.getCodeTextColor();
     }
     @Override
-    public Color getCodeKeywordTextColor(){
-        return marshmallow.getCodeKeywordTextColor();
+    public Color getCodeKeywordTextColor(Keyword.KeywordFlavor flavor){
+        return marshmallow.getCodeKeywordTextColor(flavor);
     }
     @Override
     public Color getCodeOperatorTextColor(){
@@ -657,10 +658,6 @@ public class SmoreTheme extends ColorTheme{
     @Override
     public Color getCodeInvalidTextColor(){
         return marshmallow.getCodeInvalidTextColor();
-    }
-    @Override
-    public Color getCodeActiveTextColor(){
-        return marshmallow.getCodeActiveTextColor();
     }
     @Override
     public Color getCodeLineMarkerColor(){

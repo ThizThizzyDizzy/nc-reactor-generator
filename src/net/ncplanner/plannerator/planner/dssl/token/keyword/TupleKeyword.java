@@ -27,4 +27,8 @@ public class TupleKeyword extends Keyword{
             script.push(new StackTuple(flipped));
         }else script.push(elem.asTuple());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

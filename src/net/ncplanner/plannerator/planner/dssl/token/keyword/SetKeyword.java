@@ -27,4 +27,8 @@ public class SetKeyword extends Keyword{
             script.push(new StackSet(flipped));
         }else script.push(elem.asSet());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

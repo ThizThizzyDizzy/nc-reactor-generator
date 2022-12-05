@@ -14,4 +14,8 @@ public class IndexKeyword extends Keyword{
         if(val<0)throw new IllegalArgumentException("value must be non-negative!");
         script.push(script.peekAt(script.stack.size()-val-1));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

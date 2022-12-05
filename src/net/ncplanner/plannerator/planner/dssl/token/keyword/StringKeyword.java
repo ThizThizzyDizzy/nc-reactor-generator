@@ -12,4 +12,8 @@ public class StringKeyword extends Keyword{
     public void run(Script script){
         script.push(script.pop().asString());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

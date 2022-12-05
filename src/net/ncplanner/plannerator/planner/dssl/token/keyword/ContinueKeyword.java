@@ -13,4 +13,8 @@ public class ContinueKeyword extends Keyword{
     public void run(Script script){
         script.push(new StackFlow(StackFlow.Flow.CONTINUE));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

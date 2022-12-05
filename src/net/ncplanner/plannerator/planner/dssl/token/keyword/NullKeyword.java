@@ -13,4 +13,8 @@ public class NullKeyword extends Keyword{
     public void run(Script script){
         script.push(StackNull.INSTANCE);
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.KEYWORD;
+    }
 }

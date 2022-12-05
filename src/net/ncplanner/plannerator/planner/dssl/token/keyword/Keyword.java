@@ -8,4 +8,8 @@ public abstract class Keyword extends Token{
     public abstract Keyword newInstance();
     @Override
     public final void load(){}
+    public abstract KeywordFlavor getFlavor();
+    public static enum KeywordFlavor{
+        KEYWORD, COLLECTION, FLOW, TYPE, STACK;
+    }
 }

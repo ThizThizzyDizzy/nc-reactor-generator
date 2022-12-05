@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.dssl.Script;
 import net.ncplanner.plannerator.planner.dssl.Tokenizer;
 import net.ncplanner.plannerator.planner.dssl.token.BlankToken;
@@ -113,7 +114,7 @@ public class CodeEditor extends Component{
                             findDoc(tokens, i);//TODO actually use the found docs
                         }
                         if(token instanceof Keyword){
-                            col = Core.theme.getCodeKeywordTextColor();
+                            col = Core.theme.getCodeKeywordTextColor(((Keyword) token).getFlavor());
                         }
                         if(token instanceof Operator){
                             col = Core.theme.getCodeOperatorTextColor();
@@ -228,7 +229,8 @@ public class CodeEditor extends Component{
                     }
                 }
                 Script sc = s;
-                s = (Script)s.subscripts.peek();
+                Object o = s.subscripts.peek();
+                if(o instanceof Script)s = (Script)o;
                 if(s==null){
                     s = sc;
                     break;
@@ -356,25 +358,37 @@ public class CodeEditor extends Component{
                 updateDisplay();
                 break;
             case GLFW_KEY_DELETE:
-                if(cursorX==text.get(cursorY).length()){
-                    if(cursorY==text.size()-1)return;
-                    text.set(cursorY, text.get(cursorY)+text.get(cursorY+1));
-                    text.remove(cursorY+1);
+                if(Core.isShiftPressed()){
+                    if(text.size()==1)return;//don't delete the only line, duh
+                    cursorX = 0;
+                    if(cursorY==text.size()-1){
+                        cursorY--;
+                        text.remove(cursorY+1);
+                    }else{
+                        text.remove(cursorY);
+                    }
                     shiftBreakpoints(cursorY, -1);
                 }else{
-                    int numToDelete = 1;
-                    String line = text.get(cursorY);
-                    if(Core.isControlPressed()){
-                        char prev = line.charAt(cursorX);
-                        for(int i = 1; i<line.length()-cursorX; i++){
-                            char c = line.charAt(cursorX+i);
-                            if(canDel(prev, c)){
-                                numToDelete++;
-                            }else break;
-                            prev = c;
+                    if(cursorX==text.get(cursorY).length()){
+                        if(cursorY==text.size()-1)return;
+                        text.set(cursorY, text.get(cursorY)+text.get(cursorY+1));
+                        text.remove(cursorY+1);
+                        shiftBreakpoints(cursorY, -1);
+                    }else{
+                        int numToDelete = 1;
+                        String line = text.get(cursorY);
+                        if(Core.isControlPressed()){
+                            char prev = line.charAt(cursorX);
+                            for(int i = 1; i<line.length()-cursorX; i++){
+                                char c = line.charAt(cursorX+i);
+                                if(canDel(prev, c)){
+                                    numToDelete++;
+                                }else break;
+                                prev = c;
+                            }
                         }
+                        text.set(cursorY, line.substring(0, cursorX)+line.substring(cursorX+numToDelete));
                     }
-                    text.set(cursorY, line.substring(0, cursorX)+line.substring(cursorX+numToDelete));
                 }
                 updateDisplay();
                 break;
@@ -528,7 +542,7 @@ public class CodeEditor extends Component{
         for(int i : brkpnts){
             if(i>=y){
                 breakpoints.remove(i);
-                breakpoints.add(i+off);
+                breakpoints.add(MathUtil.max(0, i+off));
             }
         }
     }

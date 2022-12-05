@@ -13,4 +13,8 @@ public class CountKeyword extends Keyword{
     public void run(Script script){
         script.push(new StackInt(script.stack.size()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

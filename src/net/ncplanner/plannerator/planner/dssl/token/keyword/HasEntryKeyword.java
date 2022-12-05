@@ -18,4 +18,8 @@ public class HasEntryKeyword extends Keyword{
         HashMap<StackObject, StackObject> dict = script.pop().asDict().getValue();
         script.push(new StackBool(dict.containsKey(elem1.getBaseObject())&&dict.get(elem1.getBaseObject()).equals(elem2.getBaseObject())));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

@@ -15,4 +15,8 @@ public class PutKeyword extends Keyword{
         StackObject elem1 = script.pop();
         script.push(script.pop().asCollection().put(elem1, elem2));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

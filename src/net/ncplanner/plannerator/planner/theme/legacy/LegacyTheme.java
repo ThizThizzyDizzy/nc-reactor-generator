@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.theme.legacy;
 import net.ncplanner.plannerator.graphics.Font;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.theme.ColorTheme;
 public abstract class LegacyTheme extends ColorTheme{
     public double moderatorLineDecalColorPow = 3;
@@ -562,8 +563,19 @@ public abstract class LegacyTheme extends ColorTheme{
         return getTextColor();
     }
     @Override
-    public Color getCodeKeywordTextColor(){
-        return average(Color.BLUE, getBlue());
+    public Color getCodeKeywordTextColor(Keyword.KeywordFlavor flavor){
+        switch(flavor){
+            case COLLECTION:
+                return average(Color.YELLOW, getRGBA(Color.YELLOW));
+            case STACK:
+                return average(Color.CYAN, getRGBA(Color.CYAN));
+            case TYPE:
+                return average(Color.MAGENTA, getBlue());
+            case FLOW:
+            case KEYWORD:
+            default:
+                return average(Color.BLUE, getBlue());
+        }
     }
     @Override
     public Color getCodeOperatorTextColor(){
@@ -604,10 +616,6 @@ public abstract class LegacyTheme extends ColorTheme{
     @Override
     public Color getCodeInvalidTextColor(){
         return average(Color.RED, getRed());
-    }
-    @Override
-    public Color getCodeActiveTextColor(){
-        return average(Color.CYAN, getRGBA(0, 1, 1, 1));
     }
     @Override
     public Color getCodeLineMarkerColor(){

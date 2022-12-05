@@ -12,4 +12,8 @@ public class DupKeyword extends Keyword{
     public void run(Script script){
         script.push(script.peek());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

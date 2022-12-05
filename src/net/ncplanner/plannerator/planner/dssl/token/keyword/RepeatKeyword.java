@@ -15,4 +15,8 @@ public class RepeatKeyword extends Keyword{
         int repeats = (int)(long)script.pop().asInt().getValue();
         script.repeatSubscript(func.getValue(), repeats);
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

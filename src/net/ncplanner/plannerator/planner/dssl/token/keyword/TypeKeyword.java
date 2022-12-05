@@ -13,4 +13,8 @@ public class TypeKeyword extends Keyword{
     public void run(Script script){
         script.push(new StackType(script.pop()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

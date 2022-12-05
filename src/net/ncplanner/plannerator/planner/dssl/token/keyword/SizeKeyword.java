@@ -24,4 +24,8 @@ public class SizeKeyword extends Keyword{
         }
         script.push(new StackInt(obj.asCollection().size()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

@@ -13,4 +13,8 @@ public class HashKeyword extends Keyword{
     public void run(Script script){
         script.push(new StackInt(script.pop().hashCode()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.KEYWORD;
+    }
 }

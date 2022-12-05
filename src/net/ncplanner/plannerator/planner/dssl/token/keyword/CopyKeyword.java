@@ -15,4 +15,8 @@ public class CopyKeyword extends Keyword{
         if(val<0)throw new IllegalArgumentException("value must be non-negative!");
         for(StackObject obj : script.peek(val))script.push(obj);
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

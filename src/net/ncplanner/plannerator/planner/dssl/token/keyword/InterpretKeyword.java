@@ -14,4 +14,8 @@ public class InterpretKeyword extends Keyword{
         StackString str = script.pop().asString();
         script.subscript(new Script(script.stack, script.variables, str, script.out));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.KEYWORD;
+    }
 }

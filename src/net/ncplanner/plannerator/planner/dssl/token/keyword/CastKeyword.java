@@ -14,4 +14,8 @@ public class CastKeyword extends Keyword{
         StackObject elem = script.pop();
         script.push(elem.asType().internal.cast(script.pop()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

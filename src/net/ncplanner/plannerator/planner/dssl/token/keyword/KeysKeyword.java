@@ -13,4 +13,8 @@ public class KeysKeyword extends Keyword{
     public void run(Script script){
         script.push(new StackSet(script.pop().asDict().getValue().keySet()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

@@ -22,4 +22,8 @@ public class ForeachKeyword extends Keyword{
         }
         script.foreachEndMarker();
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

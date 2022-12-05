@@ -14,4 +14,8 @@ public class RemAllKeyword extends Keyword{
         StackObject elem = script.pop();
         script.push(script.pop().asCollection().removeAll(elem.asCollection().collection()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

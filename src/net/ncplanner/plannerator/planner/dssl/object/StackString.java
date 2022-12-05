@@ -1,4 +1,8 @@
 package net.ncplanner.plannerator.planner.dssl.object;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class StackString extends StackObject{
     private final String value;
     public StackString(String value){
@@ -22,6 +26,15 @@ public class StackString extends StackObject{
     }
     @Override
     public StackObject cast(StackObject obj){
+        if(obj instanceof StackNumber)return new StackString(obj.toString());
         return obj.asString();
     }
+    @Override
+    public StackTuple asTuple() {
+        char[] chars = value.toCharArray();
+        ArrayList<StackObject> chrs = new ArrayList<>();
+        for(char c : chars)chrs.add(new StackChar(c));
+        return new StackTuple(chrs);
+    }
+    
 }

@@ -15,4 +15,8 @@ public class HasKeyword extends Keyword{
         StackObject elem = script.pop();
         script.push(new StackBool(script.pop().asCollection().contains(elem)));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

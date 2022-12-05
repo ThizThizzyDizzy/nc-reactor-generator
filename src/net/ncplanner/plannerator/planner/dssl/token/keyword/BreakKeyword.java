@@ -13,4 +13,8 @@ public class BreakKeyword extends Keyword{
     public void run(Script script){
         script.push(new StackFlow(StackFlow.Flow.BREAK));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

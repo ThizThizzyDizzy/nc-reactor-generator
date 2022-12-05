@@ -16,4 +16,8 @@ public class ExchKeyword extends Keyword{
         script.push(oldTop);
         script.push(newTop);
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

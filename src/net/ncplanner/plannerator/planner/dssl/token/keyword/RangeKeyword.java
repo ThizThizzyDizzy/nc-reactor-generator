@@ -27,4 +27,8 @@ public class RangeKeyword extends Keyword{
             script.push(new StackRange(flipped));
         }else script.push(elem.asRange());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

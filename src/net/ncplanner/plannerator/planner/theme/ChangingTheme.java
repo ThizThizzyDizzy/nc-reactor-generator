@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.theme;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.Font;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 public class ChangingTheme extends Theme{
     protected Theme current;
     private final Supplier<Theme> theme;
@@ -575,8 +576,8 @@ public class ChangingTheme extends Theme{
         return current.getCodeTextColor();
     }
     @Override
-    public Color getCodeKeywordTextColor(){
-        return current.getCodeKeywordTextColor();
+    public Color getCodeKeywordTextColor(Keyword.KeywordFlavor flavor){
+        return current.getCodeKeywordTextColor(flavor);
     }
     @Override
     public Color getCodeOperatorTextColor(){
@@ -617,10 +618,6 @@ public class ChangingTheme extends Theme{
     @Override
     public Color getCodeInvalidTextColor(){
         return current.getCodeInvalidTextColor();
-    }
-    @Override
-    public Color getCodeActiveTextColor(){
-        return current.getCodeActiveTextColor();
     }
     @Override
     public Color getCodeLineMarkerColor(){

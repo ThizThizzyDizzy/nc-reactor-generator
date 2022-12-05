@@ -17,4 +17,8 @@ public class DefKeyword extends Keyword{
         StackLabel key = script.pop().asLabel();
         script.variables.put(key.getValue(), new StackVariable(key.getValue(), value.getBaseObject()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.KEYWORD;
+    }
 }

@@ -14,4 +14,8 @@ public class GetKeyword extends Keyword{
         StackObject elem = script.pop();
         script.push(script.pop().asCollection().get(elem));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

@@ -12,4 +12,8 @@ public class CharKeyword extends Keyword{
     public void run(Script script){
         script.push(script.pop().asChar());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

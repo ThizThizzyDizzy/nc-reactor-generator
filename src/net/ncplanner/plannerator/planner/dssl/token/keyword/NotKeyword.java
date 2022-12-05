@@ -13,4 +13,8 @@ public class NotKeyword extends Keyword{
     public void run(Script script){
         script.push(new StackBool(!script.pop().asBool().getValue()));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.KEYWORD;
+    }
 }

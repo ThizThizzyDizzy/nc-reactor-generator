@@ -18,4 +18,8 @@ public class ReadKeyword extends Keyword{
             throw new RuntimeException(ex);
         }
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.KEYWORD;
+    }
 }

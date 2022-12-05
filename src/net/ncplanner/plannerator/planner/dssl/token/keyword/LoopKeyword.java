@@ -14,4 +14,8 @@ public class LoopKeyword extends Keyword{
         StackMethod func = script.pop().asMethod();
         script.loopSubscript(func.getValue());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

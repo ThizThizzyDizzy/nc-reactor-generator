@@ -13,4 +13,8 @@ public class UnpackKeyword extends Keyword{
     public void run(Script script){
         for(StackObject o : (Iterable<StackObject>)script.pop().asCollection().collection())script.push(o);
     }
+    @Override
+    public KeywordFlavor getFlavor() {
+        return KeywordFlavor.COLLECTION;
+    }
 }

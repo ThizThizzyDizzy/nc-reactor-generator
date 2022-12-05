@@ -15,4 +15,8 @@ public class AddAllKeyword extends Keyword{
         StackObject elem = script.pop();
         script.push(new StackBool(script.pop().asCollection().addAll(elem.asCollection().collection())));
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.COLLECTION;
+    }
 }

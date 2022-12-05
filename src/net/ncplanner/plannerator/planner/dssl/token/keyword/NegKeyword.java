@@ -14,7 +14,11 @@ public class NegKeyword extends Keyword{
     @Override
     public void run(Script script){
         StackObject obj = script.pop();
-        if(obj.getBaseType()==StackObject.Type.INT)script.push(new StackInt(obj.asInt().getValue()));
-        script.push(new StackFloat(obj.asFloat().getValue()));
+        if(obj.getBaseType()==StackObject.Type.INT)script.push(new StackInt(-obj.asInt().getValue()));
+        script.push(new StackFloat(-obj.asFloat().getValue()));
+    }
+    @Override
+    public KeywordFlavor getFlavor() {
+        return KeywordFlavor.KEYWORD;
     }
 }

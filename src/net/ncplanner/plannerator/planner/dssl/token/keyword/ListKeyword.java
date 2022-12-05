@@ -27,4 +27,8 @@ public class ListKeyword extends Keyword{
             script.push(new StackList(flipped));
         }else script.push(elem.asList());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

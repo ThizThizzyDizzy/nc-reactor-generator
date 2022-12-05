@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.theme;
 import java.util.HashMap;
 import java.util.Random;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 public class RandomColorsTheme extends ColorTheme{
     private Random rand = new Random();
     private Color keywordBackgroundColor;
@@ -142,7 +143,7 @@ public class RandomColorsTheme extends ColorTheme{
     private Color validatorErrorTextColor;
     public Color codeBackgroundColor;
     public Color codeTextColor;
-    public Color codeKeywordTextColor;
+    public HashMap<Keyword.KeywordFlavor, Color> codeKeywordTextColor = new HashMap<>();
     public Color codeOperatorTextColor;
     public Color codeBooleanTextColor;
     public Color codeCharTextColor;
@@ -153,7 +154,6 @@ public class RandomColorsTheme extends ColorTheme{
     public Color codeStringTextColor;
     public Color codeIdentifierTextColor;
     public Color codeInvalidTextColor;
-    public Color codeActiveTextColor;
     public Color codeLineMarkerColor;
     public Color codeLineMarkerTextColor;
     public Color codeDebugHighlightTextColor;
@@ -751,8 +751,13 @@ public class RandomColorsTheme extends ColorTheme{
         return codeTextColor = gen(codeTextColor);
     }
     @Override
-    public Color getCodeKeywordTextColor(){
-        return codeKeywordTextColor = gen(codeKeywordTextColor);
+    public Color getCodeKeywordTextColor(Keyword.KeywordFlavor flavor){
+        Color c = codeKeywordTextColor.get(flavor);
+        if(c==null){
+            c = gen(c);
+            codeKeywordTextColor.put(flavor, c);
+        }
+        return c;
     }
     @Override
     public Color getCodeOperatorTextColor(){
@@ -793,10 +798,6 @@ public class RandomColorsTheme extends ColorTheme{
     @Override
     public Color getCodeInvalidTextColor(){
         return codeInvalidTextColor = gen(codeInvalidTextColor);
-    }
-    @Override
-    public Color getCodeActiveTextColor(){
-        return codeActiveTextColor = gen(codeActiveTextColor);
     }
     @Override
     public Color getCodeLineMarkerColor(){

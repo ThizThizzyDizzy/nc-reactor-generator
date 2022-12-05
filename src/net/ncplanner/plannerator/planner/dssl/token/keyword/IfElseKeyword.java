@@ -18,4 +18,8 @@ public class IfElseKeyword extends Keyword{
         if(condition.getValue())script.subscript(method.getValue());
         else script.subscript(elseMethod.getValue());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

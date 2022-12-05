@@ -23,4 +23,8 @@ public class RollKeyword extends Keyword{
             script.push(objs[Helpers.mod(i-roll, count)]);
         }
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.STACK;
+    }
 }

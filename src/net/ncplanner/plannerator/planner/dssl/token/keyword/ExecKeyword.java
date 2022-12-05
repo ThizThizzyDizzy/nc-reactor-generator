@@ -14,4 +14,8 @@ public class ExecKeyword extends Keyword{
         StackMethod method = script.pop().asMethod();
         script.subscript(method.getValue());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.FLOW;
+    }
 }

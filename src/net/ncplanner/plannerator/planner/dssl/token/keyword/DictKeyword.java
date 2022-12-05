@@ -27,4 +27,8 @@ public class DictKeyword extends Keyword{
             script.push(new StackDict(flipped));
         }else script.push(elem.asDict());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }

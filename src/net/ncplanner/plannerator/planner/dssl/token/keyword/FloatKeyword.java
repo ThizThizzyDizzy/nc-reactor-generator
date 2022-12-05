@@ -12,4 +12,8 @@ public class FloatKeyword extends Keyword{
     public void run(Script script){
         script.push(script.pop().asFloat());
     }
+    @Override
+    public KeywordFlavor getFlavor(){
+        return KeywordFlavor.TYPE;
+    }
 }
