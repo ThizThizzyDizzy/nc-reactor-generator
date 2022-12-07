@@ -80,7 +80,8 @@ public class StackDict extends StackCollection<HashMap<StackObject, StackObject>
     }
     @Override
     public StackObject get(StackObject elem){
-        return value.get(elem.getBaseObject());
+        StackObject o = value.get(elem.getBaseObject());
+        return o==null?StackNull.INSTANCE:o;
     }
     @Override
     public void putAll(StackObject elem){
@@ -90,7 +91,8 @@ public class StackDict extends StackCollection<HashMap<StackObject, StackObject>
     }
     @Override
     public StackObject put(StackObject elem1, StackObject elem2){
-        return value.put(elem1, elem2);
+        StackObject o = value.put(elem1, elem2);
+        return o==null?StackNull.INSTANCE:o;
     }
     @Override
     public StackObject removeAll(Collection<StackObject> collection){

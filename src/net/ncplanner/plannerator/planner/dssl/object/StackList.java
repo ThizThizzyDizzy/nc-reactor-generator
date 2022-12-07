@@ -76,7 +76,8 @@ public class StackList extends StackCollection<ArrayList<StackObject>>{
     }
     @Override
     public StackObject get(StackObject elem){
-        return value.get((int)(long)elem.asInt().getValue());
+        StackObject o = value.get((int)(long)elem.asInt().getValue());
+        return o==null?StackNull.INSTANCE:o;
     }
     @Override
     public boolean containsAll(Collection<StackObject> collection){
@@ -94,7 +95,8 @@ public class StackList extends StackCollection<ArrayList<StackObject>>{
     }
     @Override
     public StackObject put(StackObject elem1, StackObject elem2){
-        return value.set((int)(long)elem1.asInt().getValue(), elem2);
+        StackObject o = value.set((int)(long)elem1.asInt().getValue(), elem2);
+        return o==null?StackNull.INSTANCE:o;
     }
     @Override
     public StackObject removeAll(Collection<StackObject> collection){

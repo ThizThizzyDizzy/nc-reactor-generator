@@ -66,7 +66,8 @@ public class StackTuple extends StackCollection<List<StackObject>>{
     }
     @Override
     public StackObject get(StackObject elem){
-        return value.get((int)(long)elem.asInt().getValue());
+        StackObject o = value.get((int)(long)elem.asInt().getValue());
+        return o==null?StackNull.INSTANCE:o;
     }
     @Override
     public boolean containsAll(Collection<StackObject> collection){
