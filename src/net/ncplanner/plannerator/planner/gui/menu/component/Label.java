@@ -10,7 +10,7 @@ import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.gui.Component;
 public class Label extends Component implements Searchable{
     public String text;
-    public final boolean darker;
+    public boolean darker;
     public float textInset = 4;
     public Supplier<Color> textColor = () -> {
         return Core.theme.getComponentTextColor(Core.getThemeIndex(this));

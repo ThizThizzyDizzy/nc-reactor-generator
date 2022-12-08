@@ -43,6 +43,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dssl.MenuDsslEditor;
 import net.ncplanner.plannerator.planner.vr.VRCore;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -213,7 +214,7 @@ public class MenuMain extends Menu{
                 refresh();
             });
             stack.addAction(() -> {
-                if(enables)gui.open(new MenuStackEditor(gui, MenuMain.this));
+                if(enables)gui.open(new MenuDsslEditor(gui, MenuMain.this));
             });
         }
         @Override
@@ -671,7 +672,7 @@ public class MenuMain extends Menu{
     public void onFilesDropped(String[] files){
         for(String fil : files){
             if(fil.endsWith(".dssl")&&Core.dssl){
-                gui.open(new MenuStackEditor(gui, this));
+                gui.open(new MenuDsslEditor(gui, this));
                 gui.menu.onFilesDropped(files);
                 return;
             }

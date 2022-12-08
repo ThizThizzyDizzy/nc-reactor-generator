@@ -1,4 +1,4 @@
-package net.ncplanner.plannerator.planner.gui.menu;
+package net.ncplanner.plannerator.planner.gui.menu.dssl;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,102 +27,113 @@ import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
+import net.ncplanner.plannerator.planner.gui.menu.component.HorizontalList;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
-import net.ncplanner.plannerator.planner.gui.menu.component.ScrollableCodeEditor;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
-import static org.lwjgl.glfw.GLFW.*;
-@Deprecated //why is this even here? MenuDsslEditor replaced it, why am I keeping this around?
-public class MenuStackEditor extends Menu{
-    public Script script = null;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+public class MenuDsslEditor extends Menu{
     public Button done = add(new Button(0, 0, 192, 48, "Done", true, true));
-    public Button run = add(new Button(0, 0, 0, 48, "Run", true, true));
-    public Button step = add(new Button(0, 0, 192, 48, "Step", true, true));
-    public SingleColumnList stackDisplay = add(new SingleColumnList(0, 64, 192, 0, 32));
-    public SingleColumnList variablesDisplay = add(new SingleColumnList(0, 64, 192, 0, 32));
-    public ScrollableCodeEditor editor;
-    public Thread scriptThread;
-    public TextView output = add(new TextView(192, 0, 0, 192, 20, 20){
+    public Button run = add(new Button(0, 0, 0, 48, "Run", true, false));
+    public Button debug = add(new Button(0, 0, 192, 48, "Debug", true, true));
+    public Button step = add(new Button(0, 0, 128, 48, "Step", true, true));
+    public SingleColumnList stackDisplay = add(new SingleColumnList(0, 48, 384, 0, 32));
+    public SingleColumnList variablesDisplay = add(new SingleColumnList(0, 48, 384, 0, 32));
+    public HorizontalList tabsList = add(new HorizontalList(0, 48, 0, 32, 0));
+    public ArrayList<EditorTab> tabs = new ArrayList<>();
+    public TextView output = add(new TextView(0, 0, 0, 192, 20, 20){
         {
             font = Core.FONT_MONO_20;
             bottomWhitespaceLines++;
         }
     });
-    private boolean autostep = false;
-    private File saveFile;
-    private Runnable onSave;
-    private boolean unsavedChanges = false;
-    private double saved = 0;
-    public boolean debug;
+    public TextBox input = add(new TextBox(0, 0, 0, 32, "", true));
+    public ScrollableDsslEditor editor;
+    public Thread scriptThread;
     private boolean testing;
     private boolean firstRun = true;
-    public MenuStackEditor(GUI gui, Menu parent){
-        this(gui, parent, null, "");
-    }
-    private MenuStackEditor(GUI gui, Menu parent, File file, String scriptText){
+    private EditorTab currentTab;
+    public MenuDsslEditor(GUI gui, Menu parent) {
         super(gui, parent);
-        this.saveFile = file;
-        editor = add(new ScrollableCodeEditor(192, 64, 0, 0, 20, 20, scriptText, this));
-        editor.editor.onChange = ()->{
-            unsavedChanges = true;
-        };
         done.addAction(() -> {
             gui.open(parent);
         });
         run.addAction(() -> {
             if(scriptThread!=null){
-                script.halt();
+                editor.script.halt();
                 return;
             }
-            if(script==null||script.isFinished())createScript(Core.isShiftPressed());
-            if(Core.isControlPressed()&&Core.isShiftPressed()){
-                autostep = true;
-            }else{
-                autostep = false;
-                ArrayList<Token> breakpoints = new ArrayList<>();
-                for(Token token : script.script){
-                    int startX = 0;
-                    int startY = 0;
-                    int pos = token.start;
-                    while(pos>0){
-                        startX++;
-                        String txt = editor.editor.text.get(startY);
-                        if(startX>=txt.length()){
-                            startY++;
-                            startX = 0;
-                            pos--;
-                        }
-                        if(!txt.isEmpty())pos--;
-                    }
-                    int lineStartX = 0;
-                    for(char c : editor.editor.text.get(startY).toCharArray()){
-                        if(c==' ')lineStartX++;
-                        else break;
-                    }
-                    if(editor.editor.breakpoints.contains(startY)&&startX==lineStartX){
-                        breakpoints.add(token);
-                    }
-                }
-                scriptThread = new Thread(() -> {
-                    RuntimeException e = null;
-                    long tim = System.nanoTime();
-                    try{
-                        script.run(debug?breakpoints:null);
-                    }catch(Exception ex){
-                        e = new RuntimeException(ex);
-                    }
-                    if(!debug)output.addText(new FormattedText("Time: "+(System.nanoTime()-tim)/1000000+"ms", Core.theme.getCodeCommentTextColor()));
-                    scriptThread = null;
-                    if(e!=null)throw(e);
-                });
-                scriptThread.start();
+            if(editor.script==null||editor.script.isFinished()){
+                editor.debug = false;
+                createScript(false);
             }
+            scriptThread = new Thread(() -> {
+                RuntimeException e = null;
+                long tim = System.nanoTime();
+                try{
+                    editor.script.run(null);
+                }catch(Exception ex){
+                    e = new RuntimeException(ex);
+                }
+                output.addText(new FormattedText("Time: "+(System.nanoTime()-tim)/1000000+"ms", Core.theme.getCodeCommentTextColor()));
+                scriptThread = null;
+                if(e!=null)throw(e);
+            });
+            scriptThread.start();
+        });
+        debug.addAction(() -> {
+            if(scriptThread!=null){
+                editor.script.halt();
+                return;
+            }
+            if(editor.script==null||editor.script.isFinished()){
+                editor.debug = true;
+                createScript(true);
+            }
+            ArrayList<Token> breakpoints = new ArrayList<>();
+            for(Token token : editor.script.script){
+                int startX = 0;
+                int startY = 0;
+                int pos = token.start;
+                while(pos>0){
+                    startX++;
+                    String txt = editor.editor.text.get(startY);
+                    if(startX>=txt.length()){
+                        startY++;
+                        startX = 0;
+                        pos--;
+                    }
+                    if(!txt.isEmpty())pos--;
+                }
+                int lineStartX = 0;
+                for(char c : editor.editor.text.get(startY).toCharArray()){
+                    if(c==' ')lineStartX++;
+                    else break;
+                }
+                if(editor.editor.breakpoints.contains(startY)&&startX==lineStartX){
+                    breakpoints.add(token);
+                }
+            }
+            scriptThread = new Thread(() -> {
+                RuntimeException e = null;
+                long tim = System.nanoTime();
+                try{
+                    editor.script.run(breakpoints);
+                }catch(Exception ex){
+                    e = new RuntimeException(ex);
+                }
+                scriptThread = null;
+                if(e!=null)throw(e);
+            });
+            scriptThread.start();
         });
         step.addAction(() -> {
             if((Core.isShiftPressed()||Core.isControlPressed())){
-                if(script!=null&&!script.isFinished())script.halt();
+                if(editor.script!=null&&!editor.script.isFinished())editor.script.halt();
                 else{
                     if(!testing){
                         testing = true;
@@ -206,68 +217,25 @@ public class MenuStackEditor extends Menu{
                 return;
             }
             if(scriptThread!=null)return;
-            autostep = false;
-            if(script==null||script.isFinished())createScript(true);
-            script.step();
+            if(editor.script==null||editor.script.isFinished()){
+                createScript(true);
+                editor.debug = true;
+            }
+            editor.script.step();
         });
-    }
-    @Override
-    public void onOpened(){
-        super.onOpened();
-        MenuMain.enables = true;
-        focusedComponent = editor;
-        editor.isFocused = true;
-        Core.setWindowTitle("S'tack Editor");
-    }
-    @Override
-    public void onClosed(){
-        super.onClosed();
-        Core.resetWindowTitle();
-    }
-    @Override
-    public void render2d(double deltaTime){
-        if(script!=null&&!script.isFinished()&&autostep){
-            script.step();
-        }
-        if(saved>0)saved = Math.max(0, saved-deltaTime*20);
-        Renderer renderer = new Renderer();
-        renderer.setWhite();
-        run.text = (Core.isShiftPressed()?"Debug"+(Core.isControlPressed()?" (Autostep)":""):"Run");
-        step.text = script!=null&&!script.isFinished()&&(Core.isShiftPressed()||Core.isControlPressed())?"Halt":((Core.isShiftPressed()||Core.isControlPressed())?"Test":"Step");
-        if(script!=null&&!script.isFinished()){
-            run.text = debug?"Continue":"Running...";
-        }
-        if(scriptThread!=null)run.text = "Halt";
-        run.x = done.width;
-        step.x = gui.getWidth()-step.width;
-        run.width = step.x-run.x;
-        variablesDisplay.y = output.y;
-        variablesDisplay.height = output.height;
-        editor.x = output.x = stackDisplay.width;
-        editor.width = output.width = gui.getWidth()-editor.x;
-        output.y = gui.getHeight()-output.height;
-        editor.height = output.y-editor.y-10;
-        stackDisplay.height = editor.height;
-        super.render2d(deltaTime);
-        renderer.setColor(Core.theme.getComponentTextColor(0));
-        float textHeight = 40;
-        float textLength = renderer.getStringWidth("Saved", textHeight);
-        renderer.bound(editor.x, editor.y, editor.x+editor.width, editor.y+editor.height);
-        renderer.drawText(editor.x+editor.width-textLength-editor.vertScrollbarWidth, editor.y-textHeight+(float)saved*textHeight/20, editor.x+editor.width, editor.y+(float)saved*textHeight/20, "Saved");
-        renderer.unBound();
+        editor = add(new ScrollableDsslEditor(0, 48+32, 0, 0, 20, 20));
     }
     private void createScript(boolean debug){
-        this.debug = debug;
         output.setText("");
         stackDisplay.components = new ArrayList<>();
         variablesDisplay.components = new ArrayList<>();
-        script = new Script(new Stack<StackObject>(){
+        editor.script = new Script(new Stack<StackObject>(){
             @Override
             public StackObject push(StackObject obj){
                 if(obj==null)throw new IllegalArgumentException("Tried to push real null to the stack!");
                 if(debug){
                     ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
-                    components.add(new Label(0, 0, 100, 20, Objects.toString(obj).replace("\n", "\\n"), components.size()%2==0){
+                    components.add(new Label(0, 0, 100, 20, cap(100, Objects.toString(obj).replace("\n", "\\n")), components.size()%2==0){
                         @Override
                         public void drawText(Renderer renderer){
                             renderer.drawCenteredText(x, y, x+width, y+height, text);
@@ -335,7 +303,7 @@ public class MenuStackEditor extends Menu{
                         comps.add(new Label(0, 0, 100, 20, var, comps.size()%2==0){
                             @Override
                             public void drawText(Renderer renderer){
-                                renderer.drawCenteredText(x, y, x+width, y+height, vars.get(var).toString().replace("\n", "\\n"));
+                                renderer.drawCenteredText(x, y, x+width, y+height, cap(100, vars.get(var).toString().replace("\n", "\\n")));
                             }
                         });
                         variablesDisplay.components = comps;
@@ -343,6 +311,82 @@ public class MenuStackEditor extends Menu{
                 }
             }
         };
+    }
+    private String cap(int maxLen, String s) {
+        return s.substring(0, Math.min(maxLen,s.length()));
+    }
+    private double saved = 0;
+    @Override
+    public void render2d(double deltaTime) {
+        if(saved>0)saved = Math.max(0, saved-deltaTime*20);
+        run.text = "Run";
+        debug.text = "Debug";
+        step.text = editor.script!=null&&!editor.script.isFinished()&&(Core.isShiftPressed()||Core.isControlPressed())?"Halt":((Core.isShiftPressed()||Core.isControlPressed())?"Test":"Step");
+        if(editor.script!=null&&!editor.script.isFinished()){
+            run.text = editor.debug?"Finish":"Running...";
+            debug.text = editor.debug?"Continue":"Debug";
+        }
+        if(scriptThread!=null)run.text = "Halt";
+        step.x = gui.getWidth()-step.width;
+        debug.x = step.x-debug.width;
+        run.width = gui.getWidth()-done.width-debug.width-step.width;
+        run.x = debug.x-run.width;
+        editor.x = tabsList.x = input.x = output.x = stackDisplay.width = variablesDisplay.width = editor.debug?gui.getWidth()/4:0;
+        editor.width = tabsList.width = input.width = output.width = gui.getWidth()-tabsList.x;
+        output.height = editor.script==null?0:192;
+        input.height = 0;//TODO make taller when running and input is requested
+        editor.height = stackDisplay.height = output.y-editor.y;
+        input.y = gui.getHeight()-input.height;
+        variablesDisplay.y = output.y = input.y-output.height;
+        variablesDisplay.height = input.height+output.height;
+        super.render2d(deltaTime);
+        Renderer renderer = new Renderer();
+        renderer.setColor(Core.theme.getComponentTextColor(0));
+        float textHeight = 40;
+        float textLength = renderer.getStringWidth("Saved", textHeight);
+        renderer.bound(editor.x, editor.y, editor.x+editor.width, editor.y+editor.height);
+        renderer.drawText(editor.x+editor.width-textLength-editor.vertScrollbarWidth, editor.y-textHeight+(float)saved*textHeight/20, editor.x+editor.width, editor.y+(float)saved*textHeight/20, "Saved");
+        renderer.unBound();
+    }
+    @Override
+    public void onFilesDropped(String[] files){
+        for(String s : files){
+            File f = new File(s);
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)))){
+                String allTheText = "";
+                String line;
+                while((line = reader.readLine())!=null){
+                    allTheText+="\n"+line.replace("\t", "    ");//TODO adjustable number of spaces
+                }
+                EditorTab tab;
+                tabs.add(tab = new EditorTab(f, allTheText.substring(1)));
+                tabsList.add(new EditorTabComponent(tab).onClick(()->{
+                    resetScript();
+                    currentTab = tab;
+                    editor.setEditor(tab.editor);
+                }));
+            }catch(IOException ex){
+                Core.warning("Failed to load script!", ex);
+            }
+        }
+    }
+    private void resetScript() {
+        if(editor.script!=null)editor.script.halt();
+        editor.script = null;
+        editor.debug = false;
+    }
+    @Override
+    public void onOpened() {
+        super.onOpened();
+        MenuMain.enables = true;
+        focusedComponent = editor;
+        editor.isFocused = true;
+        Core.setWindowTitle("DSSL Editor");
+    }
+    @Override
+    public void onClosed() {
+        super.onClosed();
+        Core.resetWindowTitle();
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){
@@ -352,66 +396,26 @@ public class MenuStackEditor extends Menu{
         }
     }
     private void save(boolean as){
-        if(saveFile==null||as){
+        if(currentTab==null)return;
+        if(currentTab.file==null||as){
             try{
-                Core.createFileChooser(saveFile, (t) -> {
-                    if(t.getName().contains("."))saveFile = t;
-                    else saveFile = new File(t.getAbsolutePath()+".dssl");
+                Core.createFileChooser(currentTab.file, (t) -> {
+                    if(t.getName().contains("."))currentTab.file = t;
+                    else currentTab.file = new File(t.getAbsolutePath()+".dssl");
                     save(false);
+                    currentTab.name = currentTab.file.getName();
                 }, FileFormat.DSSL, "dssl");
             }catch(IOException ex){
                 throw new RuntimeException("Failed to save script!", ex);
             }
         }else{
-            try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveFile)))){
+            try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(currentTab.file)))){
                 for(int i = 0; i<editor.editor.text.size(); i++){
                     writer.write((i==0?"":"\n")+editor.editor.text.get(i));
                 }
-                unsavedChanges = false;
-                if(onSave!=null)onSave.run();
-                onSave = null;
                 saved = 40;
             }catch(IOException ex){
                 throw new RuntimeException("Failed to save script!", ex);
-            }
-        }
-    }
-    @Override
-    public void onFilesDropped(String[] files){
-        if(files.length!=1)return;
-        if(unsavedChanges){
-            new MenuDialog(gui, this){
-                {
-                    textBox.setText("Unsaved changes detected!\nSave changes?");
-                    addButton("Save", () -> {
-                        close();
-                        save(false);
-                        onSave = () -> {
-                            MenuStackEditor.this.onFilesDropped(files);
-                        };
-                    });
-                    addButton("Discard", () -> {
-                        close();
-                        unsavedChanges = false;
-                        MenuStackEditor.this.onFilesDropped(files);
-                    });
-                    addButton("Cancel", () -> {
-                        close();
-                    });
-                }
-            }.open();
-        }
-        for(String s : files){
-            File f = new File(s);
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)))){
-                String allTheText = "";
-                String line;
-                while((line = reader.readLine())!=null){
-                    allTheText+="\n"+line.replace("\t", " ");//TODO adjustable number of spaces
-                }
-                gui.open(new MenuStackEditor(gui, parent, f, allTheText.substring(1)));
-            }catch(IOException ex){
-                throw new RuntimeException("Failed to load script!", ex);
             }
         }
     }
