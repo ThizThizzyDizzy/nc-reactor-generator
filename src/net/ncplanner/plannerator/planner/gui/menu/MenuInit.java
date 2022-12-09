@@ -18,6 +18,7 @@ import net.ncplanner.plannerator.planner.Updater;
 import net.ncplanner.plannerator.planner.VersionManager;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FormatReader;
+import net.ncplanner.plannerator.planner.file.NCPFFile;
 import net.ncplanner.plannerator.planner.file.reader.NCPF10Reader;
 import net.ncplanner.plannerator.planner.file.reader.NCPF11Reader;
 import net.ncplanner.plannerator.planner.file.reader.NCPF1Reader;
@@ -49,7 +50,6 @@ import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUpdate;
 import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
@@ -196,6 +196,8 @@ public class MenuInit extends Menu{
                     Core.imageExportCasing = settings.get("imageExportCasing", true);
                     Core.imageExportCasing3D = settings.get("imageExportCasing3D", true);
                     Core.dssl = settings.get("dssl", false);
+                    Core.rememberConfig = settings.get("rememberConfig", false);
+                    Core.lastLoadedConfig = settings.get("lastLoadedConfig", "default");
                     Config cursor = settings.get("cursor", Config.newConfig());
                     MenuCalibrateCursor.xMult = cursor.get("xMult", 1d);
                     MenuCalibrateCursor.yMult = cursor.get("yMult", 1d);
@@ -232,6 +234,74 @@ public class MenuInit extends Menu{
                 tct.finish();
                 Configuration.configurations.get(0).impose(Core.configuration);
                 System.out.println("Imposed Configuration");
+                if(Core.rememberConfig){
+                    boolean bad = false;
+                    String message = "Unknown location!";
+                    if(Core.lastLoadedConfig==null)bad = true;//should never be null, but just to make sure
+                    else{
+                        String[] split = Core.lastLoadedConfig.split("/");
+                        switch(split[0]){
+                            case "modules":
+                                if(split.length!=3){
+                                    bad = true;
+                                    message = "Invalid module path!";
+                                    break;
+                                }
+                                Module module = null;
+                                for(Module m : Core.modules){
+                                    if(m.name.equals(split[1]))module = m;
+                                }
+                                if(module==null){
+                                    bad = true;
+                                    message = "Unknown module "+split[1]+"!";
+                                    break;
+                                }
+                                Configuration config = null;
+                                for(Object o : module.ownConfigs){
+                                    Configuration c = (Configuration)o;
+                                    if(c.name.equals(split[2]))config = c;
+                                }
+                                if(config==null){
+                                    bad = true;
+                                    message = "Unknown configuration "+split[2]+" of module "+split[1]+"!";
+                                    break;
+                                }
+                                config.impose(Core.configuration);
+                                break;
+                            case "external":
+                                if(split.length<2){
+                                    bad = true;
+                                    break;
+                                }
+                                String path = Core.lastLoadedConfig.substring(split[0].length()+1);
+                                File file = new File(path);
+                                if(!file.exists()){
+                                    bad = true;
+                                    message = "Could not find external configuration!";
+                                    break;
+                                }
+                                NCPFFile ncpf = FileReader.read(file);
+                                if(ncpf.configuration.addon){
+                                    bad = true;
+                                    message = ncpf.configuration.getShortName()+" is an addon configuration!";
+                                    break;
+                                }
+                                if(ncpf.configuration.isPartial()){
+                                    bad = true;
+                                    message = ncpf.configuration.getShortName()+" is a partial configuration!";
+                                    break;
+                                }
+                                ncpf.configuration.impose(Core.configuration);
+                                break;
+                            case "default": //just do nothing, already done
+                                break;
+                            default:
+                                bad = true;
+                                break;
+                        }
+                    }
+                    if(bad)Core.warning("Failed to load last configuration: "+message+" ("+Core.lastLoadedConfig+")!", null);
+                }
                 tci.finish();
             }catch(Throwable t){
                 Core.criticalError("Initialization Failed!", t);

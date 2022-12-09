@@ -1,6 +1,8 @@
 package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
+import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
@@ -8,6 +10,7 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 public abstract class Module<T>{
     private boolean active;
     public final String name;
+    public ArrayList<Configuration> ownConfigs = new ArrayList<>();//used for loading configs on startup
     public Module(String name){
         this(name, false);
     }
@@ -42,6 +45,11 @@ public abstract class Module<T>{
     }
     public String getTooltip(Multiblock m, T o){
         return null;
+    }
+    public void addConfiguration(Configuration c){
+        Configuration.configurations.add(c);
+        c.path = "modules/"+name+"/"+c.name;
+        ownConfigs.add(c);
     }
     public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){}
     public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}

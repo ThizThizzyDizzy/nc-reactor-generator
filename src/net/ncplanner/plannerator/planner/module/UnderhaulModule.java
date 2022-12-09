@@ -32,10 +32,10 @@ public class UnderhaulModule extends Module{
     }
     @Override
     public void addConfigurations(){
-        Configuration.configurations.add(FileReader.read(() -> {
+        addConfiguration(FileReader.read(() -> {
             return Core.getInputStream("configurations/po3.ncpf");
         }).configuration.addAlternative("PO3"));
-        Configuration.configurations.add(FileReader.read(() -> {
+        addConfiguration(FileReader.read(() -> {
             return Core.getInputStream("configurations/e2e.ncpf");
         }).configuration.addAlternative("E2E"));
     }

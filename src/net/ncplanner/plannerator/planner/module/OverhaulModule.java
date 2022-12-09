@@ -49,10 +49,10 @@ public class OverhaulModule extends Module{
     }
     @Override
     public void addConfigurations(){
-        Configuration.configurations.add(FileReader.read(() -> {
+        addConfiguration(FileReader.read(() -> {
             return Core.getInputStream("configurations/aapn.ncpf");
         }).configuration.addAlternative("AAPN"));
-        Configuration.configurations.add(FileReader.read(() -> {
+        addConfiguration(FileReader.read(() -> {
             return Core.getInputStream("configurations/quanta.ncpf");
         }).configuration);
         Configuration.addInternalAddon(() -> {

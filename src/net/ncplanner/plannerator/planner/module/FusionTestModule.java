@@ -28,7 +28,7 @@ public class FusionTestModule extends Module{
     public void addConfigurations(){
         Configuration.configurations.add(FileReader.read(() -> {
             return Core.getInputStream("configurations/fusion_test.ncpf");
-        }).configuration.addAlternative("Fusion"));
+        }).configuration.addAlternative("Fusion"));//not using addConfiguration, because you shouldn't auto-load into fusion test
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block> augmentedBlanketOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block>("Augmente4d Breeding Blanket", "Highlights augmented breeding blankets with a green outline", true){
         @Override

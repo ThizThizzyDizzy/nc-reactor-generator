@@ -37,6 +37,7 @@ public class Configuration{
             return Core.getInputStream("configurations/nuclearcraft.ncpf");
         }).configuration.addAlternative("").addAlternative("SF4");
         configurations.add(NUCLEARCRAFT);
+        NUCLEARCRAFT.path = "default";
     }
     public static void clearConfigurations(){
         configurations.clear();
@@ -46,6 +47,7 @@ public class Configuration{
         internalAddonCache.clear();
     }
     public ArrayList<String> alternatives = new ArrayList<>();
+    public String path;
     public Configuration(String name, String version, String underhaulVersion){
         this.name = name;
         this.overhaulVersion = version;

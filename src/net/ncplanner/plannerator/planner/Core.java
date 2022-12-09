@@ -108,8 +108,9 @@ public class Core{
     public static boolean imageExportCasing = true;
     public static boolean imageExportCasing3D = true;
     public static boolean saved = true;
-    public static boolean configSaved = true;
     public static boolean dssl = false;
+    public static boolean rememberConfig;
+    public static String lastLoadedConfig = null;
     public static void addModule(Module m){
         modules.add(m);
     }
@@ -351,6 +352,8 @@ public class Core{
         settings.set("imageExportCasing", imageExportCasing);
         settings.set("imageExportCasing3D", imageExportCasing3D);
         settings.set("dssl", dssl);
+        settings.set("rememberConfig", rememberConfig);
+        settings.set("lastLoadedConfig", lastLoadedConfig);
         Config cursor = Config.newConfig();
         cursor.set("xMult", MenuCalibrateCursor.xMult);
         cursor.set("yMult", MenuCalibrateCursor.yMult);
