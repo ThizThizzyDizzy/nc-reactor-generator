@@ -359,7 +359,7 @@ public class MenuDsslEditor extends Menu{
                     allTheText+="\n"+line.replace("\t", "    ");//TODO adjustable number of spaces
                 }
                 EditorTab tab;
-                tabs.add(tab = new EditorTab(f, allTheText.substring(1)));
+                tabs.add(tab = new EditorTab(f, allTheText.substring(Math.min(1, allTheText.length()))));
                 tabsList.add(new EditorTabComponent(tab).onClick(()->{
                     resetScript();
                     currentTab = tab;

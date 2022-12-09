@@ -22,6 +22,9 @@ public class Script{
     public Queue<Object> subscripts = new Queue<>();
     public BufferedReader in;
     private long repeating;
+    public Script(String script){
+        this(Tokenizer.tokenize(script), (s)->{});
+    }
     public Script(String script, Consumer<String> out){
         this(Tokenizer.tokenize(script), out);
     }

@@ -49,6 +49,7 @@ import net.ncplanner.plannerator.planner.dssl.token.keyword.HasValueKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.HashKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.IfElseKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.IfKeyword;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.ImportKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.IndexKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.IntKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.InterpretKeyword;
@@ -249,6 +250,8 @@ public class Tokenizer{
         tokens.add(new NotKeyword());
         tokens.add(new NegKeyword());
         tokens.add(new InvKeyword());
+        
+        tokens.add(new ImportKeyword());
         
         tokens.add(new IntValueToken());//int_value
         tokens.add(new BoolValueToken());//bool_value
