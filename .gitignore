@@ -6,6 +6,7 @@
 
 /errors
 /crash-reports
+/configurations
 /settings.dat
 /smorebank.dat
 /special.dat
@@ -14,10 +15,10 @@
 /version.version
 /benchmark.ncpf
 /benchmark.json
+/dssl.jar
+/patrons-list.txt
 
 /build.xml
 /manifest.mf
 /dist/
-/dssl.jar
-/patrons-list.txt
 /build/
