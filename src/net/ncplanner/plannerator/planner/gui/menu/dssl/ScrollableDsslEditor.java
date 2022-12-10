@@ -1,6 +1,8 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
 import net.ncplanner.plannerator.planner.gui.menu.component.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
@@ -10,12 +12,14 @@ public class ScrollableDsslEditor extends Scrollable{
     public DsslEditor editor;
     public boolean debug;
     public Script script;
+    public HashMap<String, HashSet<String>> libraries;
     public ScrollableDsslEditor(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth){
         super(x, y, width, height, horizScrollbarHeight, vertScrollbarWidth);
         scrollMagnitude = scrollWheelMagnitude = 20;
     }
     public void setEditor(DsslEditor editor){
         editor.activeScript = script = null;
+        editor.libraries = libraries;
         if(this.editor!=null)components.remove(this.editor);
         this.editor = add(editor);
         editor.onScrollUpdate(() -> {scrollUpdatePending = true;});

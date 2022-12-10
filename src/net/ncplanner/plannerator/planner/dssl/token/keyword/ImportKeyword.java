@@ -24,7 +24,7 @@ public class ImportKeyword extends Keyword{
             while((line = reader.readLine())!=null){
                 allTheText+="\n"+line.replace("\t", "    ");//TODO adjustable number of spaces
             }
-            Script s = new Script(script.stack, script.variables, allTheText, script.out);
+            Script s = new Script(allTheText);
             s.run(null);
             script.variables.putAll(s.variables);
         }catch(IOException ex){

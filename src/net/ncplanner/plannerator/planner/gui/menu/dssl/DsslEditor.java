@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
@@ -19,10 +20,10 @@ import net.ncplanner.plannerator.planner.dssl.token.InvalidToken;
 import net.ncplanner.plannerator.planner.dssl.token.LBraceToken;
 import net.ncplanner.plannerator.planner.dssl.token.LabelToken;
 import net.ncplanner.plannerator.planner.dssl.token.RBraceToken;
-import net.ncplanner.plannerator.planner.dssl.token.RBracketToken;
 import net.ncplanner.plannerator.planner.dssl.token.StringValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.Token;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.DefKeyword;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.ImportKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.dssl.token.operator.Operator;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -69,6 +70,7 @@ public class DsslEditor extends Component{
     public Runnable onChange;
     public HashSet<Integer> breakpoints = new HashSet<>();
     public boolean debug;
+    public HashMap<String, HashSet<String>> libraries;
     public DsslEditor(String text){
         this(text, 20);
     }
@@ -105,11 +107,17 @@ public class DsslEditor extends Component{
                         displayUpdateThread = null;
                         return;
                     }
-                    ArrayList<String> cachedLabels = new ArrayList<>();
+                    HashSet<String> cachedLabels = new HashSet<>();
                     textDisplay.clear();
                     for(int i = 0; i<tokens.size(); i++){
                         Token token = tokens.get(i);
                         Color col = Core.theme.getCodeTextColor();
+                        if(token instanceof ImportKeyword&&i>1){
+                            Token t = tokens.get(i-2);
+                            if(t instanceof StringValueToken){
+                                cachedLabels.addAll(libraries.getOrDefault(((StringValueToken) t).value, new HashSet<>()));
+                            }
+                        }
                         if(token instanceof DefKeyword){
                             findDoc(tokens, i);//TODO actually use the found docs
                         }

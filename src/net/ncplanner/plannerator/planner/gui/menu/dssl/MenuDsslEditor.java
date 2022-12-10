@@ -11,12 +11,14 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Stack;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.Main;
+import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.dssl.Script;
 import net.ncplanner.plannerator.planner.dssl.StackUnderflowError;
 import net.ncplanner.plannerator.planner.dssl.object.StackObject;
@@ -57,6 +59,10 @@ public class MenuDsslEditor extends Menu{
     private boolean testing;
     private boolean firstRun = true;
     private EditorTab currentTab;
+    private Task loadLibraries;
+    private File[] loadingLibs;
+    private boolean reloadNeeded = false;
+    private final HashMap<String, HashSet<String>> libraries = new HashMap<>();
     public MenuDsslEditor(GUI gui, Menu parent) {
         super(gui, parent);
         done.addAction(() -> {
@@ -224,6 +230,8 @@ public class MenuDsslEditor extends Menu{
             editor.script.step();
         });
         editor = add(new ScrollableDsslEditor(0, 48+32, 0, 0, 20, 20));
+        editor.libraries = libraries;
+        reloadLibraries();
     }
     private void createScript(boolean debug){
         output.setText("");
@@ -318,6 +326,7 @@ public class MenuDsslEditor extends Menu{
     private double saved = 0;
     @Override
     public void render2d(double deltaTime) {
+        if(reloadNeeded)reloadLibraries();
         if(saved>0)saved = Math.max(0, saved-deltaTime*20);
         run.text = "Run";
         debug.text = "Debug";
@@ -414,9 +423,47 @@ public class MenuDsslEditor extends Menu{
                     writer.write((i==0?"":"\n")+editor.editor.text.get(i));
                 }
                 saved = 40;
+                reloadLibraries();
             }catch(IOException ex){
                 throw new RuntimeException("Failed to save script!", ex);
             }
         }
+    }
+    private void reloadLibraries(){
+        if(loadingLibs!=null){
+            reloadNeeded = true;
+            return;
+        }
+        reloadNeeded = false;
+        loadLibraries = new Task("Loading Libraries...");
+        File libs = new File("dssl");
+        if(libs.exists()&&libs.isDirectory()){
+            loadingLibs = libs.listFiles();
+        }
+        libraries.clear();
+        Thread t = new Thread(() -> {
+            int i = 0;
+            for(File f : loadingLibs){
+                loadLibraries.progress = i/(float)loadingLibs.length;
+                i++;
+                try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)))){
+                    String allTheText = "";
+                    String line;
+                    while((line = reader.readLine())!=null){
+                        allTheText+="\n"+line.replace("\t", "    ");//TODO adjustable number of spaces
+                    }
+                    Script s = new Script(allTheText);
+                    s.run(null);
+                    libraries.put(f.getName(), new HashSet<>(s.variables.keySet()));
+                }catch(IOException ex){
+                    throw new RuntimeException(ex);
+                }
+            }
+            loadLibraries.finish();
+            loadingLibs = null;
+            loadLibraries = null;
+        }, "DSSL Editor Library Loader");
+        t.setDaemon(true);
+        t.start();
     }
 }
