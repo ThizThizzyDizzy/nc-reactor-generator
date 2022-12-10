@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 public class MenuComponentPossibleAddonBlock extends Component{
     public final Block block;
-    public final Button add = add(new Button(0, 0, 0, 0, "+", true, true).setTooltip("Add block (for block recipes)"));
+    public final Button add = add(new Button("+", true, true).setTooltip("Add block (for block recipes)"));
     public MenuComponentPossibleAddonBlock(Block block, Runnable onAddPressed){
         super(0, 0, 0, 50);
         this.block = block;

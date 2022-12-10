@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 public class MenuComponentAddon extends Component{
     public final Configuration addon;
     float textInset = 4;
-    public final Button edit = add(new Button(0, 0, 0, 0, "", true, true){
+    public final Button edit = add(new Button("", true, true){
         @Override
         public void drawForeground(double deltaTime){
             super.drawForeground(deltaTime);
@@ -20,7 +20,7 @@ public class MenuComponentAddon extends Component{
     public MenuComponentAddon(Configuration addon, Runnable editAction, Runnable removeAction){
         super(0, 0, 0, 48);
         this.addon = addon;
-        remove = add(new Button(0, 0, 0, 0, "Remove", true, true).setTooltip("Remove or Delete Addon"));
+        remove = add(new Button("Remove", true, true).setTooltip("Remove or Delete Addon"));
         edit.addAction(editAction);
         remove.addAction(removeAction);
     }

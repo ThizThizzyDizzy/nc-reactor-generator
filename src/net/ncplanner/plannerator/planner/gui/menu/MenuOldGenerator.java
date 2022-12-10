@@ -29,7 +29,7 @@ public class MenuOldGenerator extends Menu{
     private final Label blocksHeader = add(new Label(0, 0, 0, 0, "Blocks", true));
     private final Label generatorsHeader = add(new Label(0, 0, 0, 0, "Generators", true));
     private final Label settingsHeader = add(new Label(0, 0, 0, 0, "Settings", true));
-    private final Button done = add(new Button(0, 0, 0, 0, "Done", true).setTooltip("Stop generating reactors and return to the editor screen"));
+    private final Button done = add(new Button("Done", true).setTooltip("Stop generating reactors and return to the editor screen"));
     private final Label threadsLabel = add(new Label(0, 0, 0, 64, "No Threads", true));
     private final Button addThread = add(new Button(0, 0, 0, 64, "Add Thread", true).setTooltip("Add another thread to the generator\nMore threads generally means faster generation, but may slow down your computer\nHaving excessive amounts of threads can also slow down generation"));
     private final Button removeThread = add(new Button(0, 0, 0, 64, "Remove Thread", true).setTooltip("Remove a thread from the generator\nMore threads generally means faster generation, but may slow down your computer\nHaving excessive amounts of threads can also slow down generation"));

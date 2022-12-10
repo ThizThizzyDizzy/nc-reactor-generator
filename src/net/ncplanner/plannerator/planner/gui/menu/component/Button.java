@@ -16,6 +16,12 @@ public class Button extends Component{
         return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
     };
     private ArrayList<Runnable> actions = new ArrayList<>();
+    public Button(String text, boolean enabled){
+        this(text, enabled, false);
+    }
+    public Button(String text, boolean enabled, boolean darker){
+        this(0, 0, 0, 0, text, enabled, darker);
+    }
     public Button(float x, float y, float width, float height, String text, boolean enabled){
         this(x, y, width, height, text, enabled, false);
     }

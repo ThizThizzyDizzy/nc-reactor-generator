@@ -49,12 +49,12 @@ import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuMain extends Menu{
     private SingleColumnList multiblocks = add(new SingleColumnList(0, 0, 0, 0, 50));
-    private Button addMultiblock = add(new Button(0, 0, 0, 0, "+", true).setTooltip("Add a new multiblock"));
-    private Button importFile = add(new Button(0, 0, 0, 0, "Import", false).setTooltip("Import all multiblocks from a saved file"));
+    private Button addMultiblock = add(new Button("+", true).setTooltip("Add a new multiblock"));
+    private Button importFile = add(new Button("Import", false).setTooltip("Import all multiblocks from a saved file"));
     private Button exportMain;
     private DropdownList exportMultiblock = add(new DropdownList(0, 0, 0, 0){
         {
-            add(exportMain = new Button(0, 0, 0, 0, "Export", false).setTooltip("Export the selected multiblock to a file"));
+            add(exportMain = new Button("Export", false).setTooltip("Export the selected multiblock to a file"));
         }
         @Override
         public void onMouseButton(double x, double y, int button, int action, int mods){
@@ -67,23 +67,23 @@ public class MenuMain extends Menu{
             super.render2d(deltaTime);
         }
     });
-    private Button saveFile = add(new Button(0, 0, 0, 0, "Save", false).setTooltip("Save all multiblocks to a file"));
-    private Button loadFile = add(new Button(0, 0, 0, 0, "Load", false).setTooltip("Load a file, replacing all current multiblocks"));
-    private Button editMetadata = add(new Button(0, 0, 0, 0, "", true).setTooltip("Edit metadata"));
-    private Button vr = new Button(0, 0, 0, 0, "VR", true).setTooltip("Enter VR");
-    private Button settings = add(new Button(0, 0, 0, 0, "", true){
+    private Button saveFile = add(new Button("Save", false).setTooltip("Save all multiblocks to a file"));
+    private Button loadFile = add(new Button("Load", false).setTooltip("Load a file, replacing all current multiblocks"));
+    private Button editMetadata = add(new Button("", true).setTooltip("Edit metadata"));
+    private Button vr = new Button("VR", true).setTooltip("Enter VR");
+    private Button settings = add(new Button("", true){
         @Override
         public void drawText(Renderer renderer, double deltaTime){
             renderer.drawGear(x+width/2, y+height/2, width*.1f, 8, width*.3f, width*.1f, 360/16f);
         }
     }.setTooltip("Settings"));
-    private Button buttonSidePanel = add(new Button(0, 0, 0, 0, "<", true));
-    private Button delete = add(new Button(0, 0, 0, 0, "Delete Multiblock (Hold Shift)", true).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
+    private Button buttonSidePanel = add(new Button("<", true));
+    private Button delete = add(new Button("Delete Multiblock (Hold Shift)", true).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
     private Button credits = add(new Button(0, 0, 192, 48, "Credits", true, true));
-    private Button convertOverhaulMSFR = add(new Button(0, 0, 0, 0, "Convert SFR <> MSR", true).setTextColor(Core.theme::getConvertButtonTextColor));
-    private Button setInputs = add(new Button(0, 0, 0, 0, "Set Inputs", true).setTextColor(Core.theme::getInputsButtonTextColor).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
+    private Button convertOverhaulMSFR = add(new Button("Convert SFR <> MSR", true).setTextColor(Core.theme::getConvertButtonTextColor));
+    private Button setInputs = add(new Button("Set Inputs", true).setTextColor(Core.theme::getInputsButtonTextColor).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
     private Component sidePanel = add(new Component(0, 0, 0, 0){
-        Button changelog = add(new Button(0, 0, 0, 0, "Changelog", true){
+        Button changelog = add(new Button("Changelog", true){
             @Override
             public void drawText(Renderer renderer, double deltaTime){
                 renderer.fillRect(x+width*.1f, y+height*.15f, x+width*.2f, y+height*.25f);
@@ -94,7 +94,7 @@ public class MenuMain extends Menu{
                 renderer.fillRect(x+width*.3f, y+height*.75f, x+width*.9f, y+height*.85f);
             }
         });
-        Button patreon = add(new Button(0, 0, 0, 0, "Supporters", true){
+        Button patreon = add(new Button("Supporters", true){
             @Override
             public void drawText(Renderer renderer, double deltaTime){
                 //draw heart
@@ -198,8 +198,8 @@ public class MenuMain extends Menu{
     private boolean forceMetaUpdate = true;
     private Component metadataPanel = add(new Component(0, 0, 0, 0){
         MulticolumnList list = add(new MulticolumnList(0, 0, 0, 0, 0, 50, 50));
-        Button done = add(new Button(0, 0, 0, 0, "Done", true).setTooltip("Finish editing metadata"));
-        Button stack = add(new Button(0, 0, 0, 0, "S'tack", true, true).setTooltip("What's this doing here?"));
+        Button done = add(new Button("Done", true).setTooltip("Finish editing metadata"));
+        Button stack = add(new Button("S'tack", true, true).setTooltip("What's this doing here?"));
         {
             done.addAction(() -> {
                 Core.resetMetadata();
@@ -279,7 +279,7 @@ public class MenuMain extends Menu{
         }
     });
     private ArrayList<Button> multiblockButtons = new ArrayList<>();
-    private Button multiblockCancel = add(new Button(0, 0, 0, 0, "Cancel", true, true));
+    private Button multiblockCancel = add(new Button("Cancel", true, true));
     public static boolean enables = false;
     private boolean adding = false;
     private double addingScale = 0;
@@ -307,8 +307,10 @@ public class MenuMain extends Menu{
         importFile.addAction(new MenuImport(gui, this).onClose(this::onOpened)::open);
         for(FormatWriter writer : FileWriter.formats){
             FileFormat format = writer.getFileFormat();
-            exportMultiblock.add(new Button(0, 0, 0, 0, format.name, true, true).setTooltip(format.description)).addAction(() -> {
+            exportMultiblock.add(new Button(format.name, true, true).setTooltip(format.description)).addAction(() -> {
                 exportMultiblock.isDown = false;
+                exportMultiblock.isFocused = false;
+                focusedComponent = null;
                 NCPFFile ncpf = new NCPFFile();
                 Multiblock multi = getSelectedMultiblock();
                 ncpf.multiblocks.add(multi);
@@ -470,7 +472,7 @@ public class MenuMain extends Menu{
             multiblockButtons.clear();
             for(Multiblock m : Core.multiblockTypes){
                 String tex = m.getPreviewTexture();
-                Button button = add(new Button(0, 0, 0, 0, m.getDefinitionName(), true, true){
+                Button button = add(new Button(m.getDefinitionName(), true, true){
                     @Override
                     public void drawText(Renderer renderer, double deltaTime){
                         if(tex!=null){

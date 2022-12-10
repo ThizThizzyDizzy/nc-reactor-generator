@@ -12,7 +12,7 @@ public class MenuComponentPlacementRule<BlockType extends IBlockType,
         PlacementRule extends AbstractPlacementRule<BlockType, Template>> extends Component{
 
     public final PlacementRule rule;
-    public final Button edit = add(new Button(0, 0, 0, 0, "", true, true){
+    public final Button edit = add(new Button("", true, true){
         @Override
         public void drawForeground(double deltaTime){
             super.drawForeground(deltaTime);
@@ -21,7 +21,7 @@ public class MenuComponentPlacementRule<BlockType extends IBlockType,
             renderer.drawElement("pencil", x, y, width, height);
         }
     }.setTooltip("Modify placement rule"));
-    public final Button delete = add(new Button(0, 0, 0, 0, "", true, true){
+    public final Button delete = add(new Button("", true, true){
         @Override
         public void drawForeground(double deltaTime){
             super.drawForeground(deltaTime);

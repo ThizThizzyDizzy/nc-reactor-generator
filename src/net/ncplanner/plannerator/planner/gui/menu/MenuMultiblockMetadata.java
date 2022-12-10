@@ -12,7 +12,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 public class MenuMultiblockMetadata extends Menu{
     MulticolumnList list = add(new MulticolumnList(0, 0, 0, 0, 0, 50, 50));
-    Button done = add(new Button(0, 0, 0, 0, "Done", true, true).setTooltip("Finish editing metadata"));
+    Button done = add(new Button("Done", true, true).setTooltip("Finish editing metadata"));
     private final Multiblock multiblock;
     public MenuMultiblockMetadata(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);

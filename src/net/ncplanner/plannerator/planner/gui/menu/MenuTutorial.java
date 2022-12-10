@@ -12,7 +12,7 @@ import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.tutorial.TutorialCategory;
 public class MenuTutorial extends Menu{
     public SingleColumnList tutorialList = add(new SingleColumnList(0, 0, 0, 0, 32));
-    public Button done = add(new Button(0, 0, 0, 0, "Done", true));
+    public Button done = add(new Button("Done", true));
     public Label title = add(new Label(0, 0, 0, 0, "Tutorials", true));
     public Label categoryLabel = add(new Label(0, 0, 0, 0, "Category", true));
     public DropdownList categoryBox = add(new DropdownList(0, 0, 0, 48));

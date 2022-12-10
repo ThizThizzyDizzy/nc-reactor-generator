@@ -12,6 +12,7 @@ public class DropdownList extends Component{
     public final SingleColumnList list;
     public boolean isDown = false;
     public ArrayList<Component> allComponents = new ArrayList<>();
+    private boolean showButton = true;
     public DropdownList(float x, float y, float width, float height){
         this(x, y, width, height, false);
     }
@@ -74,6 +75,10 @@ public class DropdownList extends Component{
             }
         };
     }
+    public DropdownList hideButton(){
+        showButton = false;
+        return this;
+    }
     @Override
     public void onMouseButton(double x, double y, int button, int action, int mods){
         if(button==0&&action==GLFW_PRESS&&!isDown){
@@ -127,14 +132,14 @@ public class DropdownList extends Component{
             Renderer renderer = new Renderer();
             if(!list.components.isEmpty()&&list.getSelectedIndex()!=-1){
                 Component c = list.components.get(list.getSelectedIndex());
-                c.width = width-getVertScrollbarWidth();
+                c.width = width-(showButton?getVertScrollbarWidth():0);
                 c.height = height;
                 c.x = x;
                 c.y = y;
                 c.isMouseFocused = isMouseFocused;
                 c.draw(deltaTime);
             }
-            list.drawDownwardScrollbarButton(renderer, x+width-getVertScrollbarWidth(), y, getVertScrollbarWidth(), height);
+            if(showButton)list.drawDownwardScrollbarButton(renderer, x+width-getVertScrollbarWidth(), y, getVertScrollbarWidth(), height);
         }
     }
     public void setSelectedIndex(int indexOf){

@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 public class MenuResize extends Menu{
     private final CuboidalMultiblock<Block> multiblock;
     private final Scrollable multibwauk = add(new Scrollable(0, 0, 0, 0, 32, 32));
-    private final Button done = add(new Button(0, 0, 0, 0, "Done", true).setTooltip("Finish resizing and return to the editor screen"));
+    private final Button done = add(new Button("Done", true).setTooltip("Finish resizing and return to the editor screen"));
     private int CELL_SIZE = 48;
     public MenuResize(GUI gui, Menu parent, CuboidalMultiblock multiblock){
         super(gui, parent);

@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 public class MenuComponentBlock extends Component{
     public final Block block;
-    public final Button edit = add(new Button(0, 0, 0, 0, "", true, true){
+    public final Button edit = add(new Button("", true, true){
         @Override
         public void drawForeground(double deltaTime){
             super.drawForeground(deltaTime);
@@ -18,7 +18,7 @@ public class MenuComponentBlock extends Component{
             renderer.drawElement("pencil", x, y, width, height);
         }
     }.setTooltip("Modify block"));
-    public final Button delete = add(new Button(0, 0, 0, 0, "", true, true){
+    public final Button delete = add(new Button("", true, true){
         @Override
         public void drawForeground(double deltaTime){
             super.drawForeground(deltaTime);

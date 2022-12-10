@@ -16,7 +16,7 @@ public class MenuPickGeneratorMutator<T extends LiteMultiblock> extends MenuDial
         minWidth = minHeight = 0;
         for(Function<Mutator, GeneratorMutator> func : GeneratorMutator.mutators){
             GeneratorMutator<T> genMutator = func.apply(mutator);
-            buttons.add(new Button(0, 0, 0, 0, genMutator.getTitle(), true).setTooltip(genMutator.getTooltip()).addAction(() -> {
+            buttons.add(new Button(genMutator.getTitle(), true).setTooltip(genMutator.getTooltip()).addAction(() -> {
                 close();
                 onConfirm.accept(genMutator);
             }));

@@ -14,7 +14,7 @@ public class MenuPickCondition extends MenuDialog{
         minWidth = minHeight = 0;
         for(Supplier<Condition> supplier : Condition.conditions){
             Condition condition = supplier.get();
-            buttons.add(new Button(0, 0, 0, 0, condition.getTitle(), true).setTooltip(condition.getTooltip()).addAction(() -> {
+            buttons.add(new Button(condition.getTitle(), true).setTooltip(condition.getTooltip()).addAction(() -> {
                 close();
                 onConfirm.accept(condition);
             }));

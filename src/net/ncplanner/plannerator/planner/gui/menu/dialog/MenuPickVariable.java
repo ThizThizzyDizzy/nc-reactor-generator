@@ -28,7 +28,7 @@ public class MenuPickVariable<T extends LiteMultiblock> extends MenuDialog{
         });
     }
     public void addVar(String text, Function<String, Setting> func){
-        buttons.add(new Button(0, 0, 0, 0, text, true).addAction(() -> {
+        buttons.add(new Button(text, true).addAction(() -> {
             new MenuInputDialog(gui, parent, "", "Choose Variable Name").addButton("Cancel", true).addButton("Done", (name) -> {
                 onConfirm.accept(func.apply(name));
             }, true).open();

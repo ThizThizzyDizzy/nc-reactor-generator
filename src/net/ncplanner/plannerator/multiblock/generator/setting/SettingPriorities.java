@@ -47,7 +47,7 @@ public class SettingPriorities implements Setting<ArrayList<Priority>>{
 //            @Override
 //            public void render(){}
 //        });
-//        moveCoreUp = priorityButtonHolder.add(new Button(0, 0, 0, 0, "Move Up", true, true).setTooltip("Move the selected priority up so it is more important"));
+//        moveCoreUp = priorityButtonHolder.add(new Button("Move Up", true, true).setTooltip("Move the selected priority up so it is more important"));
 //        moveCoreUp.addAction(() -> {
 //            int index = corePrioritiesList.getSelectedIndex();
 //            if(index==-1||index==0)return;
@@ -55,7 +55,7 @@ public class SettingPriorities implements Setting<ArrayList<Priority>>{
 ////            refreshPriorities();
 //            corePrioritiesList.setSelectedIndex(index-1);
 //        });
-//        moveCoreDown = priorityButtonHolder.add(new Button(0, 0, 0, 0, "Move Down", true, true).setTooltip("Move the selected priority down so it is less important"));
+//        moveCoreDown = priorityButtonHolder.add(new Button("Move Down", true, true).setTooltip("Move the selected priority down so it is less important"));
 //        moveCoreDown.addAction(() -> {
 //            int index = corePrioritiesList.getSelectedIndex();
 //            if(index==-1||index==corePrioritiesList.components.size()-1)return;

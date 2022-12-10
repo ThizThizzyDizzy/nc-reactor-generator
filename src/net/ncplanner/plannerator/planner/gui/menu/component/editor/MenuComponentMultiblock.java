@@ -12,7 +12,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class MenuComponentMultiblock extends Component{
     private final MenuMain main;
     public final Multiblock multiblock;
-    public final Button edit = add(new Button(0, 0, 0, 0, "", true, true){
+    public final Button edit = add(new Button("", true, true){
         @Override
         public void drawForeground(double deltaTime){
             super.drawForeground(deltaTime);

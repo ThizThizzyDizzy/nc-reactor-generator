@@ -6,7 +6,7 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuDiscord extends Menu{
-    Button exit = add(new Button(0, 0, 0, 0, "Exit", true, true));
+    Button exit = add(new Button("Exit", true, true));
     public MenuDiscord(GUI gui){
         super(gui, null);
         exit.addAction(() -> {

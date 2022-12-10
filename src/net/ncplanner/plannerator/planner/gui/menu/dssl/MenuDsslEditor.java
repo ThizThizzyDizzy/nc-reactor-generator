@@ -31,15 +31,32 @@ import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
+import net.ncplanner.plannerator.planner.gui.menu.component.DropdownList;
 import net.ncplanner.plannerator.planner.gui.menu.component.HorizontalList;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
+import static org.lwjgl.glfw.GLFW.*;
 public class MenuDsslEditor extends Menu{
-    public Button done = add(new Button(0, 0, 192, 48, "Done", true, true));
+    public Button fileMain;
+    public DropdownList file = new DropdownList(0, 0, 192, 48){
+        {
+            add(fileMain = new Button(0, 0, 192, 48, "File", true, true));
+        }
+        @Override
+        public void onMouseButton(double x, double y, int button, int action, int mods) {
+            if(!fileMain.enabled)return;
+            super.onMouseButton(x, y, button, action, mods);
+        }
+        @Override
+        public void render2d(double deltaTime){
+            setSelectedIndex(0);
+            super.render2d(deltaTime);
+        }
+    }.hideButton();
     public Button run = add(new Button(0, 0, 0, 48, "Run", true, false));
     public Button debug = add(new Button(0, 0, 192, 48, "Debug", true, true));
     public Button step = add(new Button(0, 0, 128, 48, "Step", true, true));
@@ -65,9 +82,33 @@ public class MenuDsslEditor extends Menu{
     private final HashMap<String, HashSet<String>> libraries = new HashMap<>();
     public MenuDsslEditor(GUI gui, Menu parent) {
         super(gui, parent);
-        done.addAction(() -> {
+        file.add(new Button("New", true, false).addAction(() -> {
+            file.isDown = false;
+            file.isFocused = false;
+            MenuDsslEditor.this.focusedComponent = null;
+            createNew();
+        }));
+        file.add(new Button("Open", true, false).addAction(() -> {
+            file.isDown = false;
+            file.isFocused = false;
+            MenuDsslEditor.this.focusedComponent = null;
+            open();
+        }));
+        file.add(new Button("Save", true, false).addAction(() -> {
+            file.isDown = false;
+            file.isFocused = false;
+            MenuDsslEditor.this.focusedComponent = null;
+            save(false);
+        }));
+        file.add(new Button("Save as...", true, false).addAction(() -> {
+            file.isDown = false;
+            file.isFocused = false;
+            MenuDsslEditor.this.focusedComponent = null;
+            save(true);
+        }));
+        file.add(new Button("Exit", true, false).addAction(() -> {
             gui.open(parent);
-        });
+        }));
         run.addAction(() -> {
             if(scriptThread!=null){
                 editor.script.halt();
@@ -231,6 +272,7 @@ public class MenuDsslEditor extends Menu{
         });
         editor = add(new ScrollableDsslEditor(0, 48+32, 0, 0, 20, 20));
         editor.libraries = libraries;
+        add(file);//on top of everything
         reloadLibraries();
     }
     private void createScript(boolean debug){
@@ -323,11 +365,11 @@ public class MenuDsslEditor extends Menu{
     private String cap(int maxLen, String s) {
         return s.substring(0, Math.min(maxLen,s.length()));
     }
-    private double saved = 0;
+    private float saved = 0;
     @Override
     public void render2d(double deltaTime) {
         if(reloadNeeded)reloadLibraries();
-        if(saved>0)saved = Math.max(0, saved-deltaTime*20);
+        if(saved>0)saved = Math.max(0, saved-(float)deltaTime*20);
         run.text = "Run";
         debug.text = "Debug";
         step.text = editor.script!=null&&!editor.script.isFinished()&&(Core.isShiftPressed()||Core.isControlPressed())?"Halt":((Core.isShiftPressed()||Core.isControlPressed())?"Test":"Step");
@@ -338,7 +380,7 @@ public class MenuDsslEditor extends Menu{
         if(scriptThread!=null)run.text = "Halt";
         step.x = gui.getWidth()-step.width;
         debug.x = step.x-debug.width;
-        run.width = gui.getWidth()-done.width-debug.width-step.width;
+        run.width = gui.getWidth()-file.width-debug.width-step.width;
         run.x = debug.x-run.width;
         editor.x = tabsList.x = input.x = output.x = stackDisplay.width = variablesDisplay.width = editor.debug?gui.getWidth()/4:0;
         editor.width = tabsList.width = input.width = output.width = gui.getWidth()-tabsList.x;
@@ -354,29 +396,15 @@ public class MenuDsslEditor extends Menu{
         float textHeight = 40;
         float textLength = renderer.getStringWidth("Saved", textHeight);
         renderer.bound(editor.x, editor.y, editor.x+editor.width, editor.y+editor.height);
-        renderer.drawText(editor.x+editor.width-textLength-editor.vertScrollbarWidth, editor.y-textHeight+(float)saved*textHeight/20, editor.x+editor.width, editor.y+(float)saved*textHeight/20, "Saved");
+        float saved = Math.min(this.saved, 20);
+        renderer.drawText(editor.x+editor.width-textLength-editor.vertScrollbarWidth, editor.y-textHeight+saved*textHeight/20, editor.x+editor.width, editor.y+saved*textHeight/20, "Saved");
         renderer.unBound();
     }
     @Override
     public void onFilesDropped(String[] files){
         for(String s : files){
             File f = new File(s);
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)))){
-                String allTheText = "";
-                String line;
-                while((line = reader.readLine())!=null){
-                    allTheText+="\n"+line.replace("\t", "    ");//TODO adjustable number of spaces
-                }
-                EditorTab tab;
-                tabs.add(tab = new EditorTab(f, allTheText.substring(Math.min(1, allTheText.length()))));
-                tabsList.add(new EditorTabComponent(tab).onClick(()->{
-                    resetScript();
-                    currentTab = tab;
-                    editor.setEditor(tab.editor);
-                }));
-            }catch(IOException ex){
-                Core.warning("Failed to load script!", ex);
-            }
+            loadFile(f);
         }
     }
     private void resetScript() {
@@ -403,8 +431,20 @@ public class MenuDsslEditor extends Menu{
         if(key==GLFW_KEY_S&&action==GLFW_PRESS&&Core.isControlPressed()){
             save(Core.isShiftPressed());
         }
+        if(key==GLFW_KEY_W&&action==GLFW_PRESS&&Core.isControlPressed()){
+            close(currentTab);
+        }
+        if(key==GLFW_KEY_N&&action==GLFW_PRESS&&Core.isControlPressed()){
+            createNew();
+        }
+        if(key==GLFW_KEY_O&&action==GLFW_PRESS&&Core.isControlPressed()){
+            open();
+        }
     }
     private void save(boolean as){
+        save(as, null);
+    }
+    private void save(boolean as, Runnable onSaved){
         if(currentTab==null)return;
         if(currentTab.file==null||as){
             try{
@@ -422,7 +462,9 @@ public class MenuDsslEditor extends Menu{
                 for(int i = 0; i<editor.editor.text.size(); i++){
                     writer.write((i==0?"":"\n")+editor.editor.text.get(i));
                 }
+                currentTab.unsavedChanges = false;
                 saved = 40;
+                if(onSaved!=null)onSaved.run();
                 reloadLibraries();
             }catch(IOException ex){
                 throw new RuntimeException("Failed to save script!", ex);
@@ -446,18 +488,7 @@ public class MenuDsslEditor extends Menu{
             for(File f : loadingLibs){
                 loadLibraries.progress = i/(float)loadingLibs.length;
                 i++;
-                try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)))){
-                    String allTheText = "";
-                    String line;
-                    while((line = reader.readLine())!=null){
-                        allTheText+="\n"+line.replace("\t", "    ");//TODO adjustable number of spaces
-                    }
-                    Script s = new Script(allTheText);
-                    s.run(null);
-                    libraries.put(f.getName(), new HashSet<>(s.variables.keySet()));
-                }catch(IOException ex){
-                    throw new RuntimeException(ex);
-                }
+                loadFile(f, true);
             }
             loadLibraries.finish();
             loadingLibs = null;
@@ -465,5 +496,76 @@ public class MenuDsslEditor extends Menu{
         }, "DSSL Editor Library Loader");
         t.setDaemon(true);
         t.start();
+    }
+    private void close(EditorTab tab) {
+        if(tab.unsavedChanges){
+            new MenuMessageDialog(gui, this, "Unsaved changes detected!\nSave changes?").addButton("save", () -> {
+                save(false, () -> {
+                    close(tab);
+                });
+            }, true).addButton("Discard", () -> {
+                tab.unsavedChanges = false;
+                close(tab);
+            }, true).addButton("Cancel", true).open();
+            return;
+        }
+        int idx = tabs.indexOf(tab);
+        tabs.remove(tab);
+        tabsList.components.remove(idx);
+        currentTab = tabs.isEmpty()?null:tabs.get(idx = Math.min(idx, tabs.size()-1));
+        if(editor.editor==tab.editor){
+            editor.setEditor(currentTab==null?null:currentTab.editor);
+            tabsList.setSelectedIndex(idx);
+        }
+    }
+    private void loadFile(File file){
+        loadFile(file, false);
+    }
+    private void loadFile(File file, boolean library) {
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+            String allTheText = "";
+            String line;
+            while((line = reader.readLine())!=null){
+                allTheText+="\n"+line.replace("\t", "    ");//TODO adjustable number of spaces
+            }
+            if(library){
+                Script s = new Script(allTheText);
+                s.run(null);
+                libraries.put(file.getName(), new HashSet<>(s.variables.keySet()));
+            }else{
+                EditorTab tab;
+                tabs.add(tab = new EditorTab(file, allTheText.substring(Math.min(1, allTheText.length()))));
+                tabsList.add(new EditorTabComponent(tab).onClick(()->{
+                    resetScript();
+                    currentTab = tab;
+                    editor.setEditor(tab.editor);
+                }));
+                currentTab = tab;
+                editor.setEditor(tab.editor);
+                tabsList.setSelectedIndex(tabs.size()-1);
+            }
+        }catch(IOException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+    private void createNew(){
+        EditorTab tab;
+        tabs.add(tab = new EditorTab("Untitled", ""));
+        tabsList.add(new EditorTabComponent(tab).onClick(()->{
+            resetScript();
+            currentTab = tab;
+            editor.setEditor(tab.editor);
+        }));
+        currentTab = tab;
+        editor.setEditor(tab.editor);
+    }
+    private void open(){
+        try{
+            Core.createFileChooser((file) -> {
+                loadFile(file);
+            }, FileFormat.DSSL, "dssl");
+        }catch(IOException ex){
+            Core.error("Failed to load configuration!", ex);
+        }
     }
 }

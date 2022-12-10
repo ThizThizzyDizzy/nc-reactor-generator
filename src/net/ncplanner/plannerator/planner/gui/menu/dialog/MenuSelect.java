@@ -12,7 +12,7 @@ public class MenuSelect<T> extends MenuDialog{
         minWidth = minHeight = 0;
         for(int i = 0; i<options.size(); i++){
             T t = options.get(i);
-            buttons.add(new Button(0, 0, 0, 0, names.get(i), true).addAction(() -> {
+            buttons.add(new Button(names.get(i), true).addAction(() -> {
                 close();
                 onConfirm.accept(t);
             }));

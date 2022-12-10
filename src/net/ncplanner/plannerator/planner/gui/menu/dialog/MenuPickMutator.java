@@ -17,7 +17,7 @@ public class MenuPickMutator<T extends LiteMultiblock> extends MenuDialog{
         multiblock.getMutators(lst);
         for(Supplier<Mutator<T>> supplier : lst){
             Mutator<T> mutator = supplier.get();
-            buttons.add(new Button(0, 0, 0, 0, mutator.getTitle(), true).setTooltip(mutator.getTooltip()).addAction(() -> {
+            buttons.add(new Button(mutator.getTitle(), true).setTooltip(mutator.getTooltip()).addAction(() -> {
                 close();
                 onConfirm.accept(mutator);
             }));

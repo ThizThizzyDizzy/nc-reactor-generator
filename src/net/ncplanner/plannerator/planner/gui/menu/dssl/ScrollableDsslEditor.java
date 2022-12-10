@@ -18,12 +18,13 @@ public class ScrollableDsslEditor extends Scrollable{
         scrollMagnitude = scrollWheelMagnitude = 20;
     }
     public void setEditor(DsslEditor editor){
+        if(this.editor!=null)components.remove(this.editor);
+        scrollUpdatePending = true;
+        if(editor==null)return;
         editor.activeScript = script = null;
         editor.libraries = libraries;
-        if(this.editor!=null)components.remove(this.editor);
         this.editor = add(editor);
         editor.onScrollUpdate(() -> {scrollUpdatePending = true;});
-        scrollUpdatePending = true;
     }
     @Override
     public void render2d(double deltaTime){

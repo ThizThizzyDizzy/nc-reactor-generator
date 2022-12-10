@@ -6,12 +6,12 @@ public class EditorTabComponent extends Label{
     public final EditorTab tab;
     public Runnable onClick = null;
     public EditorTabComponent(EditorTab tab){
-        super(0, 0, 128, 32, tab.name);
+        super(0, 0, 128, 32, tab.getName());
         this.tab = tab;
     }
     @Override
     public void render2d(double deltaTime) {
-        text = tab.name;
+        text = tab.getName();
         darker = isFocused;
         Renderer r = new Renderer();
         width = r.getStringWidth(text, height-textInset*2)+textInset*2;

@@ -13,15 +13,15 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 public class MenuResizeFusion extends Menu{
     private final OverhaulFusionReactor multiblock;
     private final Scrollable multibwauk = add(new Scrollable(0, 0, 0, 0, 32, 32));
-    private final Button done = add(new Button(0, 0, 0, 0, "Done", true).setTooltip("Finish resizing and return to the editor screen"));
-    private final Button increaseInnerRadius = add(new Button(0, 0, 0, 0, "+", true).setTooltip("increase the reactor's Inner Radius").setTextColor(Core.theme::getAddButtonTextColor));
-    private final Button decreaseInnerRadius = add(new Button(0, 0, 0, 0, "-", true).setTooltip("decrease the reactor's Inner Radius").setTextColor(Core.theme::getDeleteButtonTextColor));
-    private final Button increaseCoreSize = add(new Button(0, 0, 0, 0, "+", true).setTooltip("increase the reactor's Core Size").setTextColor(Core.theme::getAddButtonTextColor));
-    private final Button decreaseCoreSize = add(new Button(0, 0, 0, 0, "-", true).setTooltip("decrease the reactor's Core Size").setTextColor(Core.theme::getDeleteButtonTextColor));
-    private final Button increaseToroidWidth = add(new Button(0, 0, 0, 0, "+", true).setTooltip("increase the reactor's Toroid Width").setTextColor(Core.theme::getAddButtonTextColor));
-    private final Button decreaseToroidWidth = add(new Button(0, 0, 0, 0, "-", true).setTooltip("decrease the reactor's Toroid Width").setTextColor(Core.theme::getDeleteButtonTextColor));
-    private final Button increaseLiningThickness = add(new Button(0, 0, 0, 0, "+", true).setTooltip("increase the reactor's Lining Thickness").setTextColor(Core.theme::getAddButtonTextColor));
-    private final Button decreaseLiningThickness = add(new Button(0, 0, 0, 0, "-", true).setTooltip("decrease the reactor's Lining Thickness").setTextColor(Core.theme::getDeleteButtonTextColor));
+    private final Button done = add(new Button("Done", true).setTooltip("Finish resizing and return to the editor screen"));
+    private final Button increaseInnerRadius = add(new Button("+", true).setTooltip("increase the reactor's Inner Radius").setTextColor(Core.theme::getAddButtonTextColor));
+    private final Button decreaseInnerRadius = add(new Button("-", true).setTooltip("decrease the reactor's Inner Radius").setTextColor(Core.theme::getDeleteButtonTextColor));
+    private final Button increaseCoreSize = add(new Button("+", true).setTooltip("increase the reactor's Core Size").setTextColor(Core.theme::getAddButtonTextColor));
+    private final Button decreaseCoreSize = add(new Button("-", true).setTooltip("decrease the reactor's Core Size").setTextColor(Core.theme::getDeleteButtonTextColor));
+    private final Button increaseToroidWidth = add(new Button("+", true).setTooltip("increase the reactor's Toroid Width").setTextColor(Core.theme::getAddButtonTextColor));
+    private final Button decreaseToroidWidth = add(new Button("-", true).setTooltip("decrease the reactor's Toroid Width").setTextColor(Core.theme::getDeleteButtonTextColor));
+    private final Button increaseLiningThickness = add(new Button("+", true).setTooltip("increase the reactor's Lining Thickness").setTextColor(Core.theme::getAddButtonTextColor));
+    private final Button decreaseLiningThickness = add(new Button("-", true).setTooltip("decrease the reactor's Lining Thickness").setTextColor(Core.theme::getDeleteButtonTextColor));
     private boolean refreshNeeded;
     private int CELL_SIZE = 16;
     public MenuResizeFusion(GUI gui, Menu parent, OverhaulFusionReactor multiblock){

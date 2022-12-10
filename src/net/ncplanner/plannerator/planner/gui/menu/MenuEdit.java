@@ -114,8 +114,8 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public final Multiblock multiblock;
     public static final int partSize = 48;
     public static final int partsWide = 7;
-    private final Button back = add(new Button(0, 0, 0, 0, "Back", true).setTooltip("Stop editing this multiblock and return to the main menu"));
-    private final Button undo = add(new Button(0, 0, 0, 0, "Undo", false){
+    private final Button back = add(new Button("Back", true).setTooltip("Stop editing this multiblock and return to the main menu"));
+    private final Button undo = add(new Button("Undo", false){
         @Override
         public void drawText(Renderer renderer, double deltaTime){
             float tallness = height*3/2;
@@ -123,7 +123,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             renderer.drawRegularPolygon(x+width/4, y+height*.5625f, width/4, 3, -5);
         }
     }.setTooltip("Undo (Ctrl+"+(Core.invertUndoRedo?"Y":"Z")+")"));
-    private final Button redo = add(new Button(0, 0, 0, 0, "Redo", false){
+    private final Button redo = add(new Button("Redo", false){
         @Override
         public void drawText(Renderer renderer, double deltaTime){
             float tallness = height*3/2;
@@ -155,22 +155,22 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         }
     });
     public final Scrollable multibwauk = add(new Scrollable(0, 0, 0, 0, 32, 32));
-    private final Button zoomOut = add(new Button(0, 0, 0, 0, "Zoom out", true));
-    private final Button zoomIn = add(new Button(0, 0, 0, 0, "Zoom in", true));
-    private final Button resize = add(new Button(0, 0, 0, 0, "Resize", true).setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)"));
+    private final Button zoomOut = add(new Button("Zoom out", true));
+    private final Button zoomIn = add(new Button("Zoom in", true));
+    private final Button resize = add(new Button("Resize", true).setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)"));
     public final DropdownList underFuelOrCoolantRecipe = new DropdownList(0, 0, 0, 32, true);
     public final DropdownList fusionRecipe = new DropdownList(0, 0, 0, 32, true);
     public final DropdownList blockRecipe = new DropdownList(0, 0, 0, 32, true);
     private final TextView textBox = add(new TextView(0, 0, 0, 0, 24, 24));
-    private final Button editMetadata = add(new Button(0, 0, 0, 0, "", true).setTooltip("Modify the multiblock metadata"));
-    private final Button symmetrySettings = add(new Button(0, 0, 0, 0, "Symmetry", true));
-    private final Button overlaySettings = add(new Button(0, 0, 0, 0, "Overlays", true));
+    private final Button editMetadata = add(new Button("", true).setTooltip("Modify the multiblock metadata"));
+    private final Button symmetrySettings = add(new Button("Symmetry", true));
+    private final Button overlaySettings = add(new Button("Overlays", true));
     public final SingleColumnList tools = add(new SingleColumnList(0, 0, 0, 0, partSize/2));
     private final MenuComponentTurbineRotorGraph graph;
-    private final Button partsList = add(new Button(0, 0, 0, 0, "Parts List", true, true).setTooltip("View a parts list for this multiblock"));
-    private final Button generate = add(new Button(0, 0, 0, 0, "Generate", true, true).setTooltip("Generate or improve this multiblock"));
-    private final Button recalc = add(new Button(0, 0, 0, 0, "Recalculate", true).setTooltip("Recalculate the entire multiblock\nCtrl-click to queue multiple actions without recalculating"));
-    private final Button calcStep = add(new Button(0, 0, 0, 0, "Step", true).setTooltip("Perform one step of calculation"));
+    private final Button partsList = add(new Button("Parts List", true, true).setTooltip("View a parts list for this multiblock"));
+    private final Button generate = add(new Button("Generate", true, true).setTooltip("Generate or improve this multiblock"));
+    private final Button recalc = add(new Button("Recalculate", true).setTooltip("Recalculate the entire multiblock\nCtrl-click to queue multiple actions without recalculating"));
+    private final Button calcStep = add(new Button("Step", true).setTooltip("Perform one step of calculation"));
     public final ToggleBox toggle3D = add(new ToggleBox(0, 0, 0, 0, "3D View", false).setTooltip("Toggle 3D multiblock view\n(Rotate with arrow keys)"));
     private final MenuComponentMultiblockProgressBar progress = add(new MenuComponentMultiblockProgressBar(this, 0, 0, 0, 0));;
     private final SingleColumnList suggestionList = add(new SingleColumnList(0, 0, 0, 0, partSize/2));

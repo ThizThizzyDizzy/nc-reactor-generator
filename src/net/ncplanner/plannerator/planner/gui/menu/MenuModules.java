@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.module.Module;
 public class MenuModules extends Menu{
     private final SingleColumnList list = add(new SingleColumnList(0, 0, 0, 0, 50));
-    private final Button done = add(new Button(0, 0, 0, 0, "Done", true, true));
+    private final Button done = add(new Button("Done", true, true));
     public MenuModules(GUI gui, Menu parent){
         super(gui, parent);
         done.addAction(() -> {

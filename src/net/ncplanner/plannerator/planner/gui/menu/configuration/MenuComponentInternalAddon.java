@@ -14,7 +14,7 @@ public class MenuComponentInternalAddon extends Component{
         super(0, 0, 0, 48);
         this.addon = addon;
         this.actualAddon = actualAddon;
-        add = add(new Button(0, 0, 0, 0, "Add", true, true).setTooltip("Load this addon"));
+        add = add(new Button("Add", true, true).setTooltip("Load this addon"));
         add.addAction(addAction);
     }
     @Override
