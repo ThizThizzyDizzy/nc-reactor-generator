@@ -673,7 +673,7 @@ public class MenuMain extends Menu{
     @Override
     public void onFilesDropped(String[] files){
         for(String fil : files){
-            if(fil.endsWith(".dssl")&&Core.dssl){
+            if((fil.endsWith(".dssl")||fil.endsWith(".essl"))&&Core.dssl){
                 gui.open(new MenuDsslEditor(gui, this));
                 gui.menu.onFilesDropped(files);
                 return;
