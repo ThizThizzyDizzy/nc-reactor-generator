@@ -23,6 +23,7 @@ public class EditorTab{
         editor.onChange = () -> {
             unsavedChanges = true;
         };
+        if(file!=null&&file.getName().endsWith("essl"))editor.essl = true;
     }
     public String getName(){
         return name+(unsavedChanges?"*":"");

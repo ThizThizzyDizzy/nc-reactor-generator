@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.dssl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
+import net.ncplanner.plannerator.planner.dssl.token.ArrayOrFieldAccessToken;
 import net.ncplanner.plannerator.planner.dssl.token.BlankToken;
 import net.ncplanner.plannerator.planner.dssl.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.CharValueToken;
@@ -119,6 +120,8 @@ public class Tokenizer{
     public static final ArrayList<Token> tokens = new ArrayList<>();
     static{
         tokens.add(new BlankToken());
+        tokens.add(new IDivideOperator());
+        tokens.add(new IDivideEqualsOperator());
         tokens.add(new CommentToken());//comment
         
         tokens.add(new LBraceToken());//l_brace
@@ -219,7 +222,6 @@ public class Tokenizer{
         tokens.add(new DivideEqualsOperator());
         tokens.add(new RemainderEqualsOperator());
         tokens.add(new PowerEqualsOperator());
-        tokens.add(new IDivideEqualsOperator());
         tokens.add(new ModuloEqualsOperator());
         
         tokens.add(new EqualToOperator());
@@ -244,7 +246,6 @@ public class Tokenizer{
         tokens.add(new DivideOperator());
         tokens.add(new RemainderOperator());
         tokens.add(new PowerOperator());
-        tokens.add(new IDivideOperator());
         tokens.add(new ModuloOperator());
         
         tokens.add(new NotKeyword());
@@ -261,6 +262,8 @@ public class Tokenizer{
         
         tokens.add(new LabelToken());//label
         tokens.add(new IdentifierToken());//indentifier
+        
+        tokens.add(new ArrayOrFieldAccessToken());
         
         tokens.add(new InvalidToken());//everything invalid
     }

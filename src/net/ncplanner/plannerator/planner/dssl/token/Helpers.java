@@ -31,10 +31,18 @@ public class Helpers{
     
     public static final String line_comment = double_slash+not_eol+"*?"+eol;
     public static final String block_comment = slash_star+not_star+"*\\*(?>"+not_star_slash+not_star+"*\\*+)*/";
-	public static int mod(int a, int b){
-		return (a%b+b)%b;
-	}
-	public static double mod(double a, double b){
-		return (a%b+b)%b;
-	}
+    
+    public static final String exprPart = "("+name+"|"+digit+"+)";
+    public static final String exprArrayAccess = name+"(\\["+exprPart+"\\])+";
+    public static final String exprArrayOrFieldAccess = name+"(\\["+exprPart+"\\]|\\."+name+")+";
+    public static final String exprNameArrayAccess = name+"(\\["+exprPart+"\\])*";
+    public static final String exprSection = "("+exprPart+"|"+exprArrayAccess+")";
+    public static final String exprFunc = exprNameArrayAccess+"(\\+\\+|\\-\\-|\\(("+exprSection+"(,"+exprSection+")*"+")?\\))?";
+    
+    public static int mod(int a, int b){
+            return (a%b+b)%b;
+    }
+    public static double mod(double a, double b){
+            return (a%b+b)%b;
+    }
 }

@@ -17,6 +17,10 @@ public class StackFloat extends StackNumber{
     }
     @Override
     public StackObject cast(StackObject obj){
+        StackObject bas = obj.getBaseObject();
+        if(bas instanceof StackString){
+            return new StackFloat(Double.parseDouble(((StackString)bas).getValue()));
+        }
         return obj.asFloat();
     }
 }

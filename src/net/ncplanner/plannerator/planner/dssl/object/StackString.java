@@ -26,6 +26,7 @@ public class StackString extends StackObject{
     }
     @Override
     public StackObject cast(StackObject obj){
+        if(obj instanceof StackChar)return new StackString(obj.toString());
         if(obj instanceof StackNumber)return new StackString(obj.toString());
         return obj.asString();
     }

@@ -450,7 +450,7 @@ public class MenuDsslEditor extends Menu{
             try{
                 Core.createFileChooser(currentTab.file, (t) -> {
                     if(t.getName().contains("."))currentTab.file = t;
-                    else currentTab.file = new File(t.getAbsolutePath()+".dssl");
+                    else currentTab.file = new File(t.getAbsolutePath()+(currentTab.editor.essl?".essl":".dssl"));
                     save(false);
                     currentTab.name = currentTab.file.getName();
                 }, FileFormat.DSSL, "dssl");

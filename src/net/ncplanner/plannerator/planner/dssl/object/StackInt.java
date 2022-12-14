@@ -19,7 +19,10 @@ public class StackInt extends StackNumber{
     public StackObject cast(StackObject obj){
         StackObject bas = obj.getBaseObject();
         if(bas instanceof StackString){
-            return new StackInt(Integer.parseInt(((StackString)bas).getValue()));
+            return new StackInt(Long.parseLong(((StackString)bas).getValue()));
+        }
+        if(bas instanceof StackChar){
+            return new StackInt((int)((StackChar)bas).getValue());
         }
         return obj.asInt();
     }

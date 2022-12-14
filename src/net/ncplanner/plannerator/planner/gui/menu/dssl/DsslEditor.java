@@ -9,10 +9,13 @@ import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.dssl.Script;
 import net.ncplanner.plannerator.planner.dssl.Tokenizer;
+import net.ncplanner.plannerator.planner.dssl.object.StackString;
+import net.ncplanner.plannerator.planner.dssl.token.ArrayOrFieldAccessToken;
 import net.ncplanner.plannerator.planner.dssl.token.BlankToken;
 import net.ncplanner.plannerator.planner.dssl.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.CharValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.CommentToken;
+import net.ncplanner.plannerator.planner.dssl.token.ESSLToken;
 import net.ncplanner.plannerator.planner.dssl.token.FloatValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.IdentifierToken;
 import net.ncplanner.plannerator.planner.dssl.token.IntValueToken;
@@ -71,6 +74,7 @@ public class DsslEditor extends Component{
     public HashSet<Integer> breakpoints = new HashSet<>();
     public boolean debug;
     public HashMap<String, HashSet<String>> libraries;
+    public boolean essl = false;
     public DsslEditor(String text){
         this(text, 20);
     }
@@ -151,21 +155,41 @@ public class DsslEditor extends Component{
                         boolean underline = false;
                         if(token instanceof IdentifierToken){
                             String nam = ((IdentifierToken)token).text;
-                            if(!cachedLabels.contains(nam)){
-                                for(Token t : tokens){
-                                    if(t instanceof LabelToken){
-                                        if(nam.equals(((LabelToken)t).label)){
-                                            cachedLabels.add(nam);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+                            ensureCache(cachedLabels, nam, tokens);
                             if(cachedLabels.contains(nam))col = Core.theme.getCodeIdentifierTextColor();
                             else underline = true;
                         }
                         if(token instanceof InvalidToken){
                             col = Core.theme.getCodeInvalidTextColor();
+                        }
+                        if(token instanceof ESSLToken){
+                            if(!essl)underline = true;
+                            else{
+                                //special ESSL tokens
+                                if(token instanceof ArrayOrFieldAccessToken){
+                                    ArrayOrFieldAccessToken t = (ArrayOrFieldAccessToken) token;
+                                    //IDENTIFIER
+                                    ensureCache(cachedLabels, t.identifier, tokens);
+                                    if(cachedLabels.contains(t.identifier))col = Core.theme.getCodeIdentifierTextColor();
+                                    else underline = true;
+                                    textDisplay.addText(t.identifier, col, false, false, underline?Core.theme.getCodeInvalidTextColor():null, null);
+                                    for(Object o : t.accesses){
+                                        textDisplay.addText((o instanceof StackString)?".":"[", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
+                                        if(o instanceof Long){
+                                            textDisplay.addText(o.toString(), Core.theme.getCodeIntTextColor(), false, false, null, null);
+                                        }else if(o instanceof String){
+                                            String s = (String)o;
+                                            ensureCache(cachedLabels, s, tokens);
+                                            if(cachedLabels.contains(s))textDisplay.addText(s, Core.theme.getCodeIdentifierTextColor(), false, false, null, null);
+                                            else textDisplay.addText(s, Core.theme.getCodeTextColor(), false, false, Core.theme.getCodeInvalidTextColor(), null);
+                                        }else if(o instanceof StackString){
+                                            textDisplay.addText(((StackString) o).getValue(), Core.theme.getCodeStringTextColor(), false, false, null, null);
+                                        }
+                                        if(!(o instanceof StackString))textDisplay.addText("]", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
+                                    }
+                                }
+                                continue;
+                            }
                         }
                         textDisplay.addText(token.text, col, false, false, underline?Core.theme.getCodeInvalidTextColor():null, null);
                     }
@@ -592,5 +616,17 @@ public class DsslEditor extends Component{
             }
         }
         return null;
+    }
+    private void ensureCache(HashSet<String> cachedLabels, String nam, ArrayList<Token> tokens) {
+        if(!cachedLabels.contains(nam)){
+            for(Token t : tokens){
+                if(t instanceof LabelToken){
+                    if(nam.equals(((LabelToken)t).label)){
+                        cachedLabels.add(nam);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
