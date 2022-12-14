@@ -221,15 +221,19 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         undo.addAction(() -> {
             multiblock.undo(autoRecalc);
             if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
-                ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                if(autoRecalc)multiblock.recalculate();
+                if(autoRecalc){
+                    ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+                    multiblock.recalculate();
+                }
             }
         });
         redo.addAction(() -> {
             multiblock.redo(autoRecalc);
             if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
-                ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                if(autoRecalc)multiblock.recalculate();
+                if(autoRecalc){
+                    ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+                    multiblock.recalculate();
+                }
             }
         });
         resize.addAction(() -> {
@@ -728,16 +732,16 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 }
                 if(key==(Core.invertUndoRedo?GLFW_KEY_Y:GLFW_KEY_Z)){
                     multiblock.undo(autoRecalc);
-                    if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+                    if(autoRecalc&&Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
                         ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                        if(autoRecalc)multiblock.recalculate();
+                        multiblock.recalculate();
                     }
                 }
                 if(key==(Core.invertUndoRedo?GLFW_KEY_Z:GLFW_KEY_Y)){
                     multiblock.redo(autoRecalc);
-                    if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+                    if(autoRecalc&&Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
                         ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                        if(autoRecalc)multiblock.recalculate();
+                        multiblock.recalculate();
                     }
                 }
                 MenuComponentEditorGrid grid = null;
@@ -1190,9 +1194,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public void action(Action action, boolean allowUndo){
         if(multiblock.calculationPaused)multiblock.recalculate();
         multiblock.action(action, autoRecalc, allowUndo);
-        if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+        if(autoRecalc&&Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
             ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-            if(autoRecalc)multiblock.recalculate();
+            multiblock.recalculate();
         }
         refreshOverlays();
     }
