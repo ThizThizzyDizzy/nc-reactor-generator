@@ -1306,7 +1306,7 @@ public class Bot extends ListenerAdapter{
                     return;
                 }
                 String[] noms = {" Nom nom nom.", " Tasty!", " Yum!"};
-                channel.sendMessage("You eat "+eat+" smore"+(eat==1?"":"s")+"."+noms[new Random().nextInt(noms.length)]).queue();
+                channel.sendMessage("You eat "+eat+" s'more"+(eat==1?"":"s")+"."+noms[new Random().nextInt(noms.length)]).queue();
                 SmoreBot.eatSmores(user, eat);
             }
         });
@@ -1434,7 +1434,7 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new Command("smoreboard", "leaderboard"){
             @Override
             public String getHelpText(){
-                return "Displays the top 5 s'more stockpilers";
+                return "Displays the top 5 s'more s'tockpilers";
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
@@ -1452,19 +1452,19 @@ public class Bot extends ListenerAdapter{
                 for(int i = 0; i<Math.min(5, smorepilers.size()); i++){
                     mess+=nick(guild.retrieveMemberById(smorepilers.get(i)).complete())+": "+SmoreBot.getSmoreCountS(smorepilers.get(i))+"\n";
                 }
-                channel.sendMessage(builder.addField("Top S'more Stockpilers", mess, false).build()).queue();
+                channel.sendMessage(builder.addField("Top S'more S'tockpilers", mess, false).build()).queue();
             }
         });
         playCommands.add(new SecretCommand("snoreboard"){
             @Override
             public String getHelpText(){
-                return "Displays the bottom 5 s'more stockpilers";
+                return "Displays the bottom 5 s'more s'tockpilers";
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 ArrayList<Long> smorepilers = new ArrayList<>(SmoreBot.smores.keySet());
                 Collections.sort(smorepilers, (Long o1, Long o2) -> (int)(SmoreBot.smores.get(o1)-SmoreBot.smores.get(o2)));
-                EmbedBuilder builder = createEmbed("Snoreboard");
+                EmbedBuilder builder = createEmbed("S'noreboard");
                 for(Iterator<Long> it = smorepilers.iterator(); it.hasNext();){
                     try{
                         guild.retrieveMemberById(it.next()).complete();
@@ -2156,7 +2156,7 @@ public class Bot extends ListenerAdapter{
                 if(amt<0){
                     return;
                 }
-                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" eated smore"+(amt==1?"":"s")+".").queue();
+                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" eated s'more"+(amt==1?"":"s")+".").queue();
                 SmoreBot.eaten.put(targetUser.getIdLong(), amt);
             }
         });
@@ -2203,7 +2203,7 @@ public class Bot extends ListenerAdapter{
                 }catch(Exception ex){
                     return;
                 }
-                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" smore"+(amt==1?"":"s")+".").queue();
+                channel.sendMessage("set "+nick(guild.retrieveMember(targetUser).complete())+" to "+amt+" s'more"+(amt==1?"":"s")+".").queue();
                 SmoreBot.smores.put(targetUser.getIdLong(), amt);
             }
         });
