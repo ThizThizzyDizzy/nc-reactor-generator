@@ -143,7 +143,7 @@ public class TextBox extends Component{
             if(key==GLFW_KEY_BACKSPACE&&!text.isEmpty())text = text.substring(0, text.length()-1);//TODO allow cursor moving
         }
         if(filter==INT){
-            if(text.trim().isEmpty())text = "0";
+            if(text.trim().isEmpty()||text.trim().equals("-"))text = "0";
             if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
             if(text.startsWith("--"))text = text.substring(2);
             try{
@@ -159,7 +159,7 @@ public class TextBox extends Component{
             }
         }
         if(filter==FLOAT){
-            if(text.trim().isEmpty())text = "0";
+            if(text.trim().isEmpty()||text.trim().equals("-"))text = "0";
             if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
             if(text.startsWith("--"))text = text.substring(2);
             try{
@@ -190,10 +190,13 @@ public class TextBox extends Component{
                 text = lastText;
             }
         }
-        while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
-        if(text.startsWith(".")){
-            while(text.endsWith("0"))text = text.substring(0, text.length()-1);
-            if(text.equals("."))text = "0";
+        if(filter!=NONE){
+            while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
+            while(text.startsWith("-0")&&!text.startsWith("-0.")&&text.length()>2)text = "-"+text.substring(2);
+            if(text.startsWith(".")){
+                while(text.endsWith("0"))text = text.substring(0, text.length()-1);
+                if(text.equals("."))text = "0";
+            }
         }
         changeListeners.forEach(Runnable::run);
     }
