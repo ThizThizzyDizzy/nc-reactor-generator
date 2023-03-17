@@ -62,7 +62,7 @@ public class SettingIndicies implements Setting<int[]>{
                         set(newVal);
                     });
                 }
-            }.setImage(images[i]));
+            }.setImage(images[i])).allowSliding();
         }
         list.add(grid);
     }

@@ -115,7 +115,7 @@ public class CompiledUnderhaulSFRConfiguration{
             blockName[i] = block.name;
             blockDisplayName[i] = block.displayName;
             blockLegacyNames[i] = block.legacyNames.toArray(new String[block.legacyNames.size()]);
-            blockCooling[i] = block.cooling*(block.active!=null?activeCoolerRate/20:1);
+            blockCooling[i] = block.active!=null?block.cooling*activeCoolerRate/20:block.cooling;
             blockFuelCell[i] = block.fuelCell;
             blockModerator[i] = block.moderator;
             blockCasing[i] = block.casing;

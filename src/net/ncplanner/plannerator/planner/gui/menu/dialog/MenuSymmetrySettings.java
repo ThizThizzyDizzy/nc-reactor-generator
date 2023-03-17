@@ -17,42 +17,42 @@ public class MenuSymmetrySettings extends MenuDialog{
                         super.onMouseButton(x, y, button, action, mods);
                         symmetry.mx = isToggledOn;
                     }
-                });
+                }).allowSliding();
                 add(new ToggleBox(0, 84, 300, 64, "Y Mirror", symmetry.my){
                     @Override
                     public void onMouseButton(double x, double y, int button, int action, int mods){
                         super.onMouseButton(x, y, button, action, mods);
                         symmetry.my = isToggledOn;
                     }
-                });
+                }).allowSliding();
                 add(new ToggleBox(0, 148, 300, 64, "Z Mirror", symmetry.mz){
                     @Override
                     public void onMouseButton(double x, double y, int button, int action, int mods){
                         super.onMouseButton(x, y, button, action, mods);
                         symmetry.mz = isToggledOn;
                     }
-                });
+                }).allowSliding();
                 add(new ToggleBox(300, 20, 300, 64, "180 X Rotational", symmetry.rx180){
                     @Override
                     public void onMouseButton(double x, double y, int button, int action, int mods){
                         super.onMouseButton(x, y, button, action, mods);
                         symmetry.rx180 = isToggledOn;
                     }
-                });
+                }).allowSliding();
                 add(new ToggleBox(300, 84, 300, 64, "180 Y Rotational", symmetry.ry180){
                     @Override
                     public void onMouseButton(double x, double y, int button, int action, int mods){
                         super.onMouseButton(x, y, button, action, mods);
                         symmetry.ry180 = isToggledOn;
                     }
-                });
+                }).allowSliding();
                 add(new ToggleBox(300, 148, 300, 64, "180 Z Rotational", symmetry.rz180){
                     @Override
                     public void onMouseButton(double x, double y, int button, int action, int mods){
                         super.onMouseButton(x, y, button, action, mods);
                         symmetry.rz180 = isToggledOn;
                     }
-                });
+                }).allowSliding();
             }
             @Override
             public void draw(double deltaTime){

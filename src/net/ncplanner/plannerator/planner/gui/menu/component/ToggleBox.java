@@ -15,6 +15,8 @@ public class ToggleBox extends Component{
     public boolean enabled = true;
     private ArrayList<Runnable> changeListeners = new ArrayList<>();
     private Image image = null;
+    private static Boolean sliding = null;
+    private boolean allowSliding = false;
     public ToggleBox(float x, float y, float width, float height, String label){
         this(x, y, width, height, label, false);
     }
@@ -29,6 +31,13 @@ public class ToggleBox extends Component{
     }
     public ToggleBox setImage(Image image){
         this.image = image;
+        return this;
+    }
+    public ToggleBox allowSliding(){
+        return allowSliding(true);
+    }
+    public ToggleBox allowSliding(boolean allow){
+        allowSliding = allow;
         return this;
     }
     @Override
@@ -67,6 +76,16 @@ public class ToggleBox extends Component{
         super.onMouseButton(x, y, button, action, mods);
         if(button==GLFW_MOUSE_BUTTON_LEFT&&action==GLFW_PRESS&&enabled){
             isToggledOn = !isToggledOn;
+            if(allowSliding)sliding = isToggledOn;
+            changeListeners.forEach(Runnable::run);
+        }
+        if(button==GLFW_MOUSE_BUTTON_LEFT&&action==GLFW_RELEASE)sliding = null;
+    }
+    @Override
+    public void onCursorEntered(){
+        super.onCursorEntered();
+        if(sliding!=null&&allowSliding&&glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
+            isToggledOn = sliding;
             changeListeners.forEach(Runnable::run);
         }
     }

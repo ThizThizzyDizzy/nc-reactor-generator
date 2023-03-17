@@ -3,12 +3,12 @@ import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingBoolean;
 public class Symmetry implements ThingWithSettings{
-    public SettingBoolean mx = new SettingBoolean("X Mirror Symmetry", false);
-    public SettingBoolean my = new SettingBoolean("Y Mirror Symmetry", false);
-    public SettingBoolean mz = new SettingBoolean("Z Mirror Symmetry", false);
-    public SettingBoolean rx180 = new SettingBoolean("X 180 Degree Rotational Symmetry", false);
-    public SettingBoolean ry180 = new SettingBoolean("Y 180 Degree Rotational Symmetry", false);
-    public SettingBoolean rz180 = new SettingBoolean("Z 180 Degree Rotational Symmetry", false);
+    public SettingBoolean mx = new SettingBoolean("X Mirror Symmetry", false).allowSliding();
+    public SettingBoolean my = new SettingBoolean("Y Mirror Symmetry", false).allowSliding();
+    public SettingBoolean mz = new SettingBoolean("Z Mirror Symmetry", false).allowSliding();
+    public SettingBoolean rx180 = new SettingBoolean("X 180 Degree Rotational Symmetry", false).allowSliding();
+    public SettingBoolean ry180 = new SettingBoolean("Y 180 Degree Rotational Symmetry", false).allowSliding();
+    public SettingBoolean rz180 = new SettingBoolean("Z 180 Degree Rotational Symmetry", false).allowSliding();
     Setting[] settings = new Setting[]{mx,my,mz,rx180,ry180,rz180};
     @Override
     public int getSettingCount(){

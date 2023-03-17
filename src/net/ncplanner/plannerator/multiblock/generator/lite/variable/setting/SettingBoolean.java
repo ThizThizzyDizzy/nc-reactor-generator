@@ -7,6 +7,7 @@ public class SettingBoolean implements Setting<Boolean>{
     private final String name;
     private boolean value;
     private final String otherName;
+    private boolean allowSliding = false;
     public SettingBoolean(String name, boolean value){
         this(name, value, null);
     }
@@ -14,6 +15,10 @@ public class SettingBoolean implements Setting<Boolean>{
         this.name = name;
         this.value = value;
         this.otherName = otherName;
+    }
+    public SettingBoolean allowSliding(){
+        allowSliding = true;
+        return this;
     }
     @Override
     public String getName(){
@@ -44,7 +49,7 @@ public class SettingBoolean implements Setting<Boolean>{
                         set(isToggledOn);
                     });
                 }
-            });
+            }).allowSliding(allowSliding);
         }
     }
 }
