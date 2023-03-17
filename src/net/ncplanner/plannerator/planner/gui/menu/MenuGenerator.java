@@ -119,6 +119,8 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             rebuildGUI();
         });
         rebuildGUI();
+        this.multiblock.calculate();
+        textView.setText(this.multiblock.getTooltip());
     }
     public void rebuildGUI(){
         setScrollTo = stageSettings.scrollY;

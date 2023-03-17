@@ -47,7 +47,7 @@ public class CompiledUnderhaulSFRPlacementRule extends CompiledPlacementRule<Pla
                     int b1 = adjacents[axis];
                     if(b1>=0&&active[axis]<1)continue;
                     int b2 = adjacents[axis+3];
-                    if(b2>=0&&active[axis+3]<1)continue;;
+                    if(b2>=0&&active[axis+3]<1)continue;
                     if (isAirMatch) {
                         if (b1 == -1 && b2 == -1) num++;
                     } else {

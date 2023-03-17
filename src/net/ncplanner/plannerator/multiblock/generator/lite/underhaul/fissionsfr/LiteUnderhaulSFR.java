@@ -151,27 +151,45 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                                     if(x>0){
                                         adjacents[0] = blocks[x-1][y][z];
                                         active[0] = blockEfficiency[x-1][y][z];
-                                    }else active[0] = 0;
+                                    }else{
+                                        adjacents[0] = -2;
+                                        active[0] = 0;
+                                    }
                                     if(y>0){
                                         adjacents[1] = blocks[x][y-1][z];
                                         active[1] = blockEfficiency[x][y-1][z];
-                                    }else active[1] = 0;
+                                    }else{
+                                        adjacents[1] = -2;
+                                        active[1] = 0;
+                                    }
                                     if(z>0){
                                         adjacents[2] = blocks[x][y][z-1];
                                         active[2] = blockEfficiency[x][y][z-1];
-                                    }else active[2] = 0;
+                                    }else{
+                                        adjacents[2] = -2;
+                                        active[2] = 0;
+                                    }
                                     if(x<dims[0]-1){
                                         adjacents[3] = blocks[x+1][y][z];
                                         active[3] = blockEfficiency[x+1][y][z];
-                                    }else active[3] = 0;
+                                    }else{
+                                        adjacents[3] = -2;
+                                        active[3] = 0;
+                                    }
                                     if(y<dims[1]-1){
                                         adjacents[4] = blocks[x][y+1][z];
                                         active[4] = blockEfficiency[x][y+1][z];
-                                    }else active[4] = 0;
+                                    }else{
+                                        adjacents[4] = -2;
+                                        active[4] = 0;
+                                    }
                                     if(z<dims[2]-1){
                                         adjacents[5] = blocks[x][y][z+1];
                                         active[5] = blockEfficiency[x][y][z+1];
-                                    }else active[5] = 0;
+                                    }else{
+                                        adjacents[5] = -2;
+                                        active[5] = 0;
+                                    }
                                     int was = blockEfficiency[x][y][z];
                                     blockEfficiency[x][y][z] = 1;
                                     for(CompiledUnderhaulSFRPlacementRule rule : configuration.blockPlacementRules[c]){
