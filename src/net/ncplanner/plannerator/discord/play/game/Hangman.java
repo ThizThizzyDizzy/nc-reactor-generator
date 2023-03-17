@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.discord.play.game;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
@@ -15,6 +16,9 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
 import net.ncplanner.plannerator.multiblock.editor.ppe.ClearInvalid;
+import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.file.FileWriter;
@@ -29,6 +33,7 @@ public class Hangman extends Game{
     private final int maxGuesses;
     private boolean usesActive = false;
     private final boolean blind;
+    public HashSet<Block> silent = new HashSet<>();
     public Hangman(boolean blind, ArrayList<Multiblock> allowedMultiblocks){
         super("Hangman");
         this.blind = blind;
@@ -43,7 +48,11 @@ public class Hangman extends Game{
             boolean isAllowed = false;
             for(Multiblock m : allowedMultiblocks){
                 if(m.getDefinitionName().equals(next.getDefinitionName()))isAllowed = true;
+                m.recalculate();
             }
+            if(next instanceof UnderhaulSFR&&((UnderhaulSFR)next).netHeat>0)isAllowed = false;
+            if(next instanceof OverhaulSFR&&((OverhaulSFR)next).netHeat>0)isAllowed = false;
+            if(next instanceof OverhaulMSR&&((OverhaulMSR)next).netHeat>0)isAllowed = false;
             if(!isAllowed)it.remove();
         }
         if(multis.isEmpty()){
@@ -81,6 +90,13 @@ public class Hangman extends Game{
                 if(next.getName().toLowerCase(Locale.ROOT).contains("active")){
                     it.remove();
                 }
+            }
+        }
+        for(Iterator<Block> it = available.iterator(); it.hasNext();){
+            Block b = it.next();
+            if(b.getName().toLowerCase(Locale.ROOT).contains("port")||b.getName().contains("Casing")||b.getName().contains("Glass")||b.getName().contains("Controller")||b.getName().contains("Vent")||b.getName().contains("Conductor")){
+                silent.add(b);
+                it.remove();
             }
         }
         int total = available.size();
@@ -189,7 +205,7 @@ public class Hangman extends Game{
             }
         }
         if(!valid){
-            badGuesses++;
+            if(!this.silent.contains(b))badGuesses++;
             if(badGuesses>=maxGuesses){
                 ArrayList<Block> missed = new ArrayList<>();
                 FOR:for(Block bl : blocks){
