@@ -126,17 +126,21 @@ public class MenuSettings extends SettingsMenu{
         load.addAction(() -> {
             try{
                 Core.createFileChooser((file) -> {
-                    NCPFFile ncpf = FileReader.read(file);
-                    if(ncpf==null)return;
-                    Configuration.impose(ncpf.configuration, Core.configuration);
-                    for(Multiblock multi : Core.multiblocks){
-                        try{
-                            multi.convertTo(Core.configuration);
-                        }catch(MissingConfigurationEntryException ex){
-                            throw new RuntimeException(ex);
+                    Thread t = new Thread(() -> {
+                        NCPFFile ncpf = FileReader.read(file);
+                        if(ncpf==null)return;
+                        Configuration.impose(ncpf.configuration, Core.configuration);
+                        for(Multiblock multi : Core.multiblocks){
+                            try{
+                                multi.convertTo(Core.configuration);
+                            }catch(MissingConfigurationEntryException ex){
+                                throw new RuntimeException(ex);
+                            }
                         }
-                    }
-                    onOpened();
+                        onOpened();
+                    }, "File Loading Thread");
+                    t.setDaemon(true);
+                    t.start();
                 }, FileFormat.ALL_CONFIGURATION_FORMATS, "configuration");
             }catch(IOException ex){
                 Core.error("Failed to load configuration!", ex);

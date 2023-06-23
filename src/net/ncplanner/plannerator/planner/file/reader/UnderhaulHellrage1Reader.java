@@ -7,6 +7,7 @@ import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class UnderhaulHellrage1Reader implements FormatReader{
     @Override
     public boolean formatMatches(InputStream in){
@@ -18,27 +19,19 @@ public class UnderhaulHellrage1Reader implements FormatReader{
         return major==1&&minor==2&&build>=5&&build<=22;
     }
     @Override
-    public synchronized NCPFFile read(InputStream in){
+    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
         JSON.JSONObject hellrage = JSON.parse(in);
         String dimS = hellrage.getString("InteriorDimensions");
         String[] dims = StringUtil.split(dimS, ",");
         JSON.JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");
         String fuelName = usedFuel.getString("Name");
-        Fuel fuel = null;
-        for(Fuel fool : Core.configuration.underhaul.fissionSFR.allFuels){
-            for(String nam : fool.getLegacyNames())if(nam.equalsIgnoreCase(fuelName))fuel = fool;
-        }
-        if(fuel==null)throw new IllegalArgumentException("Unknown fuel: "+fuelName);
+        Fuel fuel = recovery.recoverUnderhaulSFRFuel(fuelName, usedFuel.getFloat("BaseHeat"), usedFuel.getFloat("BasePower"));
         UnderhaulSFR sfr = new UnderhaulSFR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]), fuel);
         JSON.JSONArray compressedReactor = hellrage.getJSONArray("CompressedReactor");
         for(Object o : compressedReactor){
             JSON.JSONObject ob = (JSON.JSONObject) o;
             for(String name : ob.keySet()){
-                net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block block = null;
-                for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block blok : Core.configuration.underhaul.fissionSFR.allBlocks){
-                    for(String nam : blok.getLegacyNames())if(StringUtil.superRemove(StringUtil.toLowerCase(nam), "cooler", " ").equalsIgnoreCase(StringUtil.superRemove(name, " ")))block = blok;
-                }
-                if(block==null)throw new IllegalArgumentException("Unknown block: "+name);
+                net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block block = recovery.recoverUnderhaulSFRBlock(name);
                 JSON.JSONArray blocks = ob.getJSONArray(name);
                 for(Object blok : blocks){
                     String blokLoc = (String) blok;

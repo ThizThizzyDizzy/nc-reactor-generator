@@ -5,10 +5,11 @@ import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.multiblock.configuration.ThingWithLegacyNames;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
-public class Fuel implements Pinnable{
+public class Fuel implements Pinnable, ThingWithLegacyNames{
     public static Fuel fuel(String name, String displayName, float power, float heat, int time, String texture){
         Fuel fuel = new Fuel(name, power, heat, time);
         fuel.displayName = displayName;
@@ -68,6 +69,7 @@ public class Fuel implements Pinnable{
         }
         return super.equals(obj);
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(legacyNames);
         allNames.add(name);
@@ -116,5 +118,9 @@ public class Fuel implements Pinnable{
     }
     public void setTime(int time){
         this.time = time;
+    }
+    @Override
+    public String toString(){
+        return getDisplayName();
     }
 }

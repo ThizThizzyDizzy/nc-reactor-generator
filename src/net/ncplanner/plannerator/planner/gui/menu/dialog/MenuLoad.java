@@ -25,21 +25,25 @@ public class MenuLoad extends MenuDialog{
         addButton("System File Chooser", () -> {
             try{
                 Core.createFileChooser((file) -> {
-                    NCPFFile ncpf = FileReader.read(file);
-                    if(ncpf==null)return;
-                    Core.multiblocks.clear();
-                    Core.saved = true;
-                    Core.metadata.clear();
-                    Core.metadata.putAll(ncpf.metadata);
-                    if(ncpf.configuration==null||ncpf.configuration.isPartial()){
-                        if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                            Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
+                    Thread t = new Thread(() -> {
+                        NCPFFile ncpf = FileReader.read(file);
+                        if(ncpf==null)return;
+                        Core.multiblocks.clear();
+                        Core.saved = true;
+                        Core.metadata.clear();
+                        Core.metadata.putAll(ncpf.metadata);
+                        if(ncpf.configuration==null||ncpf.configuration.isPartial()){
+                            if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
+                                Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
+                            }
+                        }else{
+                            Core.configuration = ncpf.configuration;
                         }
-                    }else{
-                        Core.configuration = ncpf.configuration;
-                    }
-                    convertAndImportMultiblocks(ncpf.multiblocks);
-                    close();
+                        convertAndImportMultiblocks(ncpf.multiblocks);
+                        close();
+                    });
+                    t.setDaemon(true);
+                    t.start();
                 }, FileFormat.ALL_PLANNER_FORMATS);
             }catch(IOException ex){
                 Core.error("Failed to load file!", ex);
@@ -82,21 +86,25 @@ public class MenuLoad extends MenuDialog{
                             }.open();
                         });
                         load.addAction(() -> {
-                            NCPFFile ncpf = FileReader.read(file);
-                            if(ncpf==null)return;
-                            Core.multiblocks.clear();
-                            Core.saved = true;
-                            Core.metadata.clear();
-                            Core.metadata.putAll(ncpf.metadata);
-                            if(ncpf.configuration==null||ncpf.configuration.isPartial()){
-                                if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                                    Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
+                            Thread t = new Thread(() -> {
+                                NCPFFile ncpf = FileReader.read(file);
+                                if(ncpf==null)return;
+                                Core.multiblocks.clear();
+                                Core.saved = true;
+                                Core.metadata.clear();
+                                Core.metadata.putAll(ncpf.metadata);
+                                if(ncpf.configuration==null||ncpf.configuration.isPartial()){
+                                    if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
+                                        Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
+                                    }
+                                }else{
+                                    Core.configuration = ncpf.configuration;
                                 }
-                            }else{
-                                Core.configuration = ncpf.configuration;
-                            }
-                            convertAndImportMultiblocks(ncpf.multiblocks);
-                            close();
+                                convertAndImportMultiblocks(ncpf.multiblocks);
+                                close();
+                            });
+                            t.setDaemon(true);
+                            t.start();
                         });
                     }
                     @Override

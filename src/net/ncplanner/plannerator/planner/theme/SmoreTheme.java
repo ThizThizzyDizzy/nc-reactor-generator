@@ -4,6 +4,7 @@ import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
+import net.ncplanner.plannerator.planner.module.Module;
 public class SmoreTheme extends ColorTheme{
     private final ColorTheme cracker;
     private final ColorTheme chocolate;
@@ -687,6 +688,15 @@ public class SmoreTheme extends ColorTheme{
             if(str.startsWith("STA")&&str.endsWith("ACK")&&str.length()==5){
                 java.lang.reflect.Field f2 = MenuMain.class.getDeclaredField("enab"+"les");
                 f2.set(MenuMain.class, true);
+            }
+            //tried to hide it lol, I guess you found it
+            for(Module m : Core.modules){
+                java.lang.reflect.Field key = Module.class.getDeclaredField("secr"+"etK"+"ey");
+                String keyStr = (String)key.get(m);
+                if(str.equalsIgnoreCase(keyStr)){
+                    java.lang.reflect.Field lok = Module.class.getDeclaredField("unlo"+"cked");
+                    lok.set(m, true);
+                }
             }
         }catch(NoSuchFieldException|SecurityException|IllegalArgumentException|IllegalAccessException ex){}
         super.onSet();

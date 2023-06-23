@@ -138,8 +138,12 @@ public class MenuConfiguration extends ConfigurationMenu{
             importAddon.addAction(() -> {
                 try{
                     Core.createFileChooser((file) -> {
-                        loadAddon(file);
-                        onOpened();
+                        Thread t = new Thread(() -> {
+                            loadAddon(file);
+                            onOpened();
+                        }, "Addon Import Thread");
+                        t.setDaemon(true);
+                        t.start();
                     }, FileFormat.NCPF, "addon");
                 }catch(IOException ex){
                     Core.error("Failed to import addon!", ex);
@@ -434,11 +438,15 @@ public class MenuConfiguration extends ConfigurationMenu{
         ArrayList<Task> fileTasks = new ArrayList<>();
         for(String fil : files)fileTasks.add(readTask.addSubtask(new Task(fil)));
         if(!configuration.addon){
-            for(String fil : files){
-                loadAddon(new File(fil));
-                fileTasks.remove(0).finish();
-            }
-            readTask.finish();
+            Thread t = new Thread(() -> {
+                for(String fil : files){
+                    loadAddon(new File(fil));
+                    fileTasks.remove(0).finish();
+                }
+                readTask.finish();
+            }, "Dropped File Loading Thread");
+            t.setDaemon(true);
+            t.start();
         }else{
             try{
                 ArrayList<InputStream> zsFiles = new ArrayList<>();

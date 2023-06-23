@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -36,7 +34,6 @@ import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblock;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImport;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
@@ -638,25 +635,6 @@ public class MenuMain extends Menu{
         if(multiblocks.getSelectedIndex()==-1)return null;
         return ((MenuComponentMultiblock)multiblocks.components.get(multiblocks.getSelectedIndex())).multiblock;
     }
-    private void importMultiblocks(File file){
-        NCPFFile ncpf = FileReader.read(file);
-        if(ncpf==null)return;
-        if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-            Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
-        }
-        convertAndImportMultiblocks(ncpf.multiblocks);
-    }
-    private void convertAndImportMultiblocks(ArrayList<Multiblock> multiblocks){
-        for(Multiblock mb : multiblocks){
-            try{
-                mb.convertTo(Core.configuration);
-            }catch(MissingConfigurationEntryException ex){
-                Core.warning("Failed to load multiblock - Are you missing an addon?", ex);
-                continue;
-            }
-            Core.multiblocks.add(mb);
-        }
-    }
     private static class PendingWrite{
         private final NCPFFile ncpf;
         private final File file;
@@ -671,20 +649,37 @@ public class MenuMain extends Menu{
         }
     }
     @Override
-    public void onFilesDropped(String[] files){
-        for(String fil : files){
-            if((fil.endsWith(".dssl")||fil.endsWith(".essl"))&&Core.dssl){
-                gui.open(new MenuDsslEditor(gui, this));
-                gui.menu.onFilesDropped(files);
-                return;
+public void onFilesDropped(String[] files){
+        Thread t = new Thread(() -> {
+            for(String fil : files){
+                if((fil.endsWith(".dssl")||fil.endsWith(".essl"))&&Core.dssl){
+                    gui.open(new MenuDsslEditor(gui, this));
+                    gui.menu.onFilesDropped(files);
+                    return;
+                }
+                try{
+                    NCPFFile ncpf = FileReader.read(new File(fil));
+                    if(ncpf==null)return;
+                    if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
+                        Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
+                    }
+                    for(Multiblock mb : ncpf.multiblocks){
+                        try{
+                            mb.convertTo(Core.configuration);
+                        }catch(MissingConfigurationEntryException ex){
+                            Core.warning("Failed to load multiblock - Are you missing an addon?", ex);
+                            continue;
+                        }
+                        Core.multiblocks.add(mb);
+                    }
+                }catch(Exception ex){
+                    Core.error("Failed to load file "+fil+"!", ex);
+                }
             }
-            try{
-                importMultiblocks(new File(fil));
-            }catch(Exception ex){
-                Core.error("Failed to load file "+fil+"!", ex);
-            }
-        }
-        onOpened();
+            onOpened();
+        }, "Dropped File Loading Thread");
+        t.setDaemon(true);
+        t.start();
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){

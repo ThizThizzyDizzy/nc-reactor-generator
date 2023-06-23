@@ -9,6 +9,7 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class NCPF2Reader extends NCPF3Reader {
     @Override
     protected byte getTargetVersion() {
@@ -16,20 +17,20 @@ public class NCPF2Reader extends NCPF3Reader {
     }
 
     @Override
-    protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in) {
+    protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
         Config data = Config.newConfig();
         data.load(in);
         Multiblock multiblock;
         int id = data.get("id");
         switch(id){
             case 0:
-                multiblock = readMultiblockUnderhaulSFR(ncpf, data);
+                multiblock = readMultiblockUnderhaulSFR(ncpf, data, recovery);
                 break;
             case 1:
-                multiblock = readMultiblockOverhaulSFR(ncpf, data);
+                multiblock = readMultiblockOverhaulSFR(ncpf, data, recovery);
                 break;
             case 2:
-                multiblock = readMultiblockOverhaulMSR(ncpf, data);
+                multiblock = readMultiblockOverhaulMSR(ncpf, data, recovery);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Multiblock ID: "+id);

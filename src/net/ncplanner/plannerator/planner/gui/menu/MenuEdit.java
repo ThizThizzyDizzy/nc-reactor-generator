@@ -237,7 +237,8 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             }
         });
         resize.addAction(() -> {
-            gui.open(new MenuTransition(gui, this, multiblock.getResizeMenu(gui, this), MenuTransition.SlideTransition.slideFrom(1, 0), 5));
+            Menu resizeMenu = multiblock.getResizeMenu(gui, this);
+            if(resizeMenu!=null)gui.open(new MenuTransition(gui, this, resizeMenu, MenuTransition.SlideTransition.slideFrom(1, 0), 5));
         });
         zoomOut.addAction(() -> {
             zoomOut(1);

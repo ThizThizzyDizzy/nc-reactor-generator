@@ -745,4 +745,8 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     public void setSourceEfficiency(float sourceEfficiency){
         this.sourceEfficiency = sourceEfficiency;
     }
+    @Override
+    public String toString(){
+        return getDisplayName();
+    }
 }

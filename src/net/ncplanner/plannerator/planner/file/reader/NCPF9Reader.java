@@ -12,6 +12,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReacto
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class NCPF9Reader extends NCPF10Reader {
     @Override
     protected byte getTargetVersion() {
@@ -38,7 +39,7 @@ public class NCPF9Reader extends NCPF10Reader {
     }
 
     @Override
-    protected synchronized Multiblock readMultiblockUnderhaulSFR(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockUnderhaulSFR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
         UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
         boolean compact = data.get("compact");
@@ -62,7 +63,7 @@ public class NCPF9Reader extends NCPF10Reader {
         return underhaulSFR;
     }
     @Override
-    protected synchronized Multiblock readMultiblockOverhaulSFR(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockOverhaulSFR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
         OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
         boolean compact = data.get("compact");
@@ -112,7 +113,7 @@ public class NCPF9Reader extends NCPF10Reader {
         return overhaulSFR;
     }
     @Override
-    protected synchronized Multiblock readMultiblockOverhaulMSR(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockOverhaulMSR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
         OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
         boolean compact = data.get("compact");
@@ -163,7 +164,7 @@ public class NCPF9Reader extends NCPF10Reader {
         return overhaulMSR;
     }
     @Override
-    protected synchronized Multiblock readMultiblockOverhaulTurbine(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockOverhaulTurbine(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
         OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)size.get(0), (int)size.get(1), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
         overhaulTurbine.setBearing((int)size.get(2));
@@ -206,7 +207,7 @@ public class NCPF9Reader extends NCPF10Reader {
         return overhaulTurbine;
     }
     @Override
-    protected synchronized Multiblock readMultiblockOverhaulFusionReactor(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockOverhaulFusionReactor(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
         OverhaulFusionReactor overhaulFusionReactor = new OverhaulFusionReactor(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),(int)size.get(3),ncpf.configuration.overhaul.fusion.allRecipes.get(data.get("recipe", (byte)-1)),ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
         ConfigNumberList blocks = data.get("blocks");

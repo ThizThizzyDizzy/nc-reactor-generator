@@ -193,6 +193,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                 &&b.outlet==outlet
                 &&Core.areImagesEqual(b.texture, texture);
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(legacyNames);
         allNames.add(name);
@@ -317,5 +318,9 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     }
     public void setOutlet(boolean outlet){
         this.outlet = outlet;
+    }
+    @Override
+    public String toString(){
+        return getDisplayName();
     }
 }

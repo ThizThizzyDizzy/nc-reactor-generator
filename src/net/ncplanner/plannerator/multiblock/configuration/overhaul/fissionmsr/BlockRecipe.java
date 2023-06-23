@@ -189,6 +189,7 @@ public class BlockRecipe implements Pinnable, IBlockRecipe{
     public String getInputDisplayName(){
         return inputDisplayName==null?inputName:inputDisplayName;
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(inputLegacyNames);
         allNames.add(inputName);
@@ -318,5 +319,9 @@ public class BlockRecipe implements Pinnable, IBlockRecipe{
     }
     public void setHeaterCooling(int heaterCooling){
         this.heaterCooling = heaterCooling;
+    }
+    @Override
+    public String toString(){
+        return getInputDisplayName();
     }
 }

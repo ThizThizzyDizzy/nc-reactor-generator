@@ -89,7 +89,7 @@ public class MenuDialog extends Menu{
         return this;
     }
     public MenuDialog addButton(String text){
-        return addButton(text, null, false);
+        return addButton(text, null, true);
     }
     public MenuDialog addButton(String text, boolean closeOnClick){
         return addButton(text, null, closeOnClick);

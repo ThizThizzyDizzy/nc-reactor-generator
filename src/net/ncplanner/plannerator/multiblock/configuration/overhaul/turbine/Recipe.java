@@ -5,10 +5,11 @@ import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.multiblock.configuration.ThingWithLegacyNames;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
-public class Recipe implements Pinnable{
+public class Recipe implements Pinnable, ThingWithLegacyNames{
     public static Recipe recipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, double power, double coefficient){
         Recipe recipe = new Recipe(inputName, outputName, power, coefficient);
         recipe.inputDisplayName = inputDisplayName;
@@ -90,6 +91,7 @@ public class Recipe implements Pinnable{
         }
         return false;
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(inputLegacyNames);
         allNames.add(inputName);
@@ -141,5 +143,9 @@ public class Recipe implements Pinnable{
     }
     public void setCoefficient(double coefficient){
         this.coefficient = coefficient;
+    }
+    @Override
+    public String toString(){
+        return getInputDisplayName();
     }
 }

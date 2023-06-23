@@ -20,6 +20,7 @@ public class MenuModules extends Menu{
     public void onOpened(){
         list.components.clear();
         for(Module m : Core.modules){
+            if(m.secretKey!=null&&!m.unlocked)continue;
             list.add(new MenuComponentModule(m));
         }
     }

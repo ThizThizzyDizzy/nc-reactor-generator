@@ -12,13 +12,14 @@ import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.ForgeConfig;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class UnderhaulNCConfigReader implements FormatReader{
     @Override
     public boolean formatMatches(InputStream in){
         return ForgeConfig.parse(in).getConfig("fission").hasProperty("fission_cooling_rate");
     }
     @Override
-    public synchronized NCPFFile read(InputStream in){
+    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
         Config config = ForgeConfig.parse(in).getConfig("fission");
         NCPFFile ncpf = new NCPFFile();
         ncpf.configuration = new Configuration("NuclearCraft", null, "Unknown");

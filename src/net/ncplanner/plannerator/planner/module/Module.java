@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
-import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
@@ -11,6 +10,8 @@ public abstract class Module<T>{
     private boolean active;
     public final String name;
     public ArrayList<Configuration> ownConfigs = new ArrayList<>();//used for loading configs on startup
+    public boolean unlocked = true;
+    public String secretKey;
     public Module(String name){
         this(name, false);
     }
@@ -18,8 +19,14 @@ public abstract class Module<T>{
         this.name = name;
         active = defaultActive;
     }
+    public Module(String name, String secretKey){
+        this(name, false);
+        this.secretKey = secretKey;
+        unlocked = false;
+    }
     public final void activate(){
         active = true;
+        unlocked = true;
         onActivated();
         Core.refreshModules();
     }

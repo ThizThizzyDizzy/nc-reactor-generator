@@ -25,8 +25,12 @@ public class MenuImport extends MenuDialog{
         addButton("System File Chooser", () -> {
             try{
                 Core.createFileChooser((file) -> {
-                    importMultiblocks(file);
-                    close();
+                    Thread t = new Thread(() -> {
+                        importMultiblocks(file);
+                        close();
+                    });
+                    t.setDaemon(true);
+                    t.start();
                 }, FileFormat.ALL_PLANNER_FORMATS);
             }catch(IOException ex){
                 Core.error("Failed to import file!", ex);
@@ -68,8 +72,12 @@ public class MenuImport extends MenuDialog{
                             }.open();
                         });
                         imp.addAction(() -> {
-                            importMultiblocks(file);
-                            close();
+                            Thread t = new Thread(() -> {
+                                importMultiblocks(file);
+                                close();
+                            });
+                            t.setDaemon(true);
+                            t.start();
                         });
                     }
                     @Override

@@ -229,4 +229,8 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     public void setActive(String active){
         this.active = active;
     }
+    @Override
+    public String toString(){
+        return getDisplayName();
+    }
 }

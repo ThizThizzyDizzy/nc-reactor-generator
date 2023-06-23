@@ -97,4 +97,8 @@ public class Button extends Component{
         actions.add(action);
         return this;
     }
+    public Button addPriorityAction(Runnable action){
+        actions.add(0, action);
+        return this;
+    }
 }

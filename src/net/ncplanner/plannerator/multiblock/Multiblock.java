@@ -568,6 +568,7 @@ public abstract class Multiblock<T extends Block>{
         recalculate(new ArrayList<>(actual));
     }
     public boolean isBetterThan(Multiblock other, ArrayList<Priority> priorities){
+        if(priorities==null)return true;
         for(Priority p : priorities){
             double result = p.compare(this, other);
             if(result>0)return true;
@@ -576,6 +577,7 @@ public abstract class Multiblock<T extends Block>{
         return false;
     }
     public int compareTo(Multiblock other, ArrayList<Priority> priorities){
+        if(priorities==null)return 0;
         for(Priority p : priorities){
             double result = p.compare(this, other);
             if(result>0)return 1;

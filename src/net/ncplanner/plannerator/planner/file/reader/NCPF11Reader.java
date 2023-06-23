@@ -28,6 +28,7 @@ import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.HeaderFormatReader;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
 import net.ncplanner.plannerator.planner.file.NCPFHeader;
+import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class NCPF11Reader implements FormatReader, HeaderFormatReader {
     @Override
     public boolean formatMatches(InputStream in){
@@ -74,7 +75,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
     }
     @Override
-    public synchronized NCPFFile read(InputStream in){
+    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
         overhaulTurbinePostLoadInputsMap.clear();
         try{
             NCPFFile ncpf = new NCPFFile();
@@ -91,7 +92,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
             config.load(in);
             ncpf.configuration = loadConfiguration(config);
             for(int i = 0; i<multiblocks; i++){
-                ncpf.multiblocks.add(readMultiblock(ncpf, in));
+                ncpf.multiblocks.add(readMultiblock(ncpf, in, recovery));
             }
             for(OverhaulTurbine turbine : overhaulTurbinePostLoadInputsMap.keySet()){
                 for(int i : overhaulTurbinePostLoadInputsMap.get(turbine)){
@@ -105,26 +106,26 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
     }
 
-    protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in) {
+    protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
         Config data = Config.newConfig();
         data.load(in);
         Multiblock multiblock;
         int id = data.get("id");
         switch(id){
             case 0:
-                multiblock = readMultiblockUnderhaulSFR(ncpf, data);
+                multiblock = readMultiblockUnderhaulSFR(ncpf, data, recovery);
                 break;
             case 1:
-                multiblock = readMultiblockOverhaulSFR(ncpf, data);
+                multiblock = readMultiblockOverhaulSFR(ncpf, data, recovery);
                 break;
             case 2:
-                multiblock = readMultiblockOverhaulMSR(ncpf, data);
+                multiblock = readMultiblockOverhaulMSR(ncpf, data, recovery);
                 break;
             case 3:
-                multiblock = readMultiblockOverhaulTurbine(ncpf, data);
+                multiblock = readMultiblockOverhaulTurbine(ncpf, data, recovery);
                 break;
             case 4:
-                multiblock = readMultiblockOverhaulFusionReactor(ncpf, data);
+                multiblock = readMultiblockOverhaulFusionReactor(ncpf, data, recovery);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
@@ -138,19 +139,9 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         return multiblock;
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Underhaul SFR - read multiblock">
-    protected synchronized Multiblock readMultiblockUnderhaulSFR(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockUnderhaulSFR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
-        Fuel f = ncpf.configuration.underhaul.fissionSFR.allFuels.get(0);
-        try{
-            f = ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", -1));
-        }catch(IndexOutOfBoundsException ex){
-            if(Core.recoveryMode){
-                try{
-                    f = Core.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", -1));
-                }catch(IndexOutOfBoundsException exc){}
-            }else throw new RuntimeException(ex);
-        }
+        Fuel f = recovery.recoverUnderhaulSFRFuelNCPF(ncpf, data.get("fuel", -1));
         UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),f);
         boolean compact = data.get("compact");
         ConfigNumberList blocks = data.get("blocks");
@@ -159,16 +150,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
             underhaulSFR.forEachPosition((x, y, z) -> {
                 int bid = (int) blocks.get(index[0]);
                 if(bid>0){
-                    net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b = null;
-                    try{
-                        b = ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1);
-                    }catch(IndexOutOfBoundsException ex){
-                        if(Core.recoveryMode){
-                            try{
-                                b = Core.configuration.underhaul.fissionSFR.allBlocks.get(bid-1);
-                            }catch(IndexOutOfBoundsException exc){}
-                        }else throw new RuntimeException(ex);
-                    }
+                    net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b = recovery.recoverUnderhaulSFRBlockNCPF(ncpf, bid-1);
                     if(b!=null)underhaulSFR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
                 }
                 index[0]++;
@@ -179,35 +161,15 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b = null;
-                try{
-                    b = ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1);
-                }catch(IndexOutOfBoundsException ex){
-                    if(Core.recoveryMode){
-                        try{
-                            b = Core.configuration.underhaul.fissionSFR.allBlocks.get(bid-1);
-                        }catch(IndexOutOfBoundsException exc){}
-                    }else throw new RuntimeException(ex);
-                }
+                net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b = recovery.recoverUnderhaulSFRBlockNCPF(ncpf, bid-1);
                 if(b!=null)underhaulSFR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
             }
         }
         return underhaulSFR;
     }
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Overhaul SFR - read multiblock">
-    protected synchronized Multiblock readMultiblockOverhaulSFR(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockOverhaulSFR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolantRecipe = ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(0);
-        try{
-            coolantRecipe = ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", -1));
-        }catch(IndexOutOfBoundsException ex){
-            if(Core.recoveryMode){
-                try{
-                    coolantRecipe = Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", -1));
-                }catch(IndexOutOfBoundsException exc){}
-            }else throw new RuntimeException(ex);
-        }
+        net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolantRecipe = recovery.recoverOverhaulSFRCoolantRecipeNCPF(ncpf, data.get("coolantRecipe", -1));
         OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),coolantRecipe);
         boolean compact = data.get("compact");
         ConfigNumberList blocks = data.get("blocks");
@@ -216,16 +178,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
             overhaulSFR.forEachPosition((x, y, z) -> {
                 int bid = (int) blocks.get(index[0]);
                 if(bid>0){
-                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b = null;
-                    try{
-                        b = ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1);
-                    }catch(IndexOutOfBoundsException ex){
-                        if(Core.recoveryMode){
-                            try{
-                                b = Core.configuration.overhaul.fissionSFR.allBlocks.get(bid-1);
-                            }catch(IndexOutOfBoundsException exc){}
-                        }else throw new RuntimeException(ex);
-                    }
+                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b = recovery.recoverOverhaulSFRBlockNCPF(ncpf, bid-1);
                     if(b!=null)overhaulSFR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
                 }
                 index[0]++;
@@ -236,16 +189,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b = null;
-                try{
-                    b = ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1);
-                }catch(IndexOutOfBoundsException ex){
-                    if(Core.recoveryMode){
-                        try{
-                            b = Core.configuration.overhaul.fissionSFR.allBlocks.get(bid-1);
-                        }catch(IndexOutOfBoundsException exc){}
-                    }else throw new RuntimeException(ex);
-                }
+                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b = recovery.recoverOverhaulSFRBlockNCPF(ncpf, bid-1);
                 if(b!=null)overhaulSFR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, b));
             }
         }
@@ -255,17 +199,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
             net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block templ = block.template.parent==null?block.template:block.template.parent;
             if(!templ.allRecipes.isEmpty()){
                 int rid = (int)blockRecipes.get(recipeIndex);
-                if(rid!=0){
-                    try{
-                        block.recipe = templ.allRecipes.get(rid-1);
-                    }catch(IndexOutOfBoundsException ex){
-                        if(Core.recoveryMode){
-                            try{
-                                block.recipe = Core.configuration.overhaul.fissionSFR.convert(templ).allRecipes.get(rid-1);
-                            }catch(IndexOutOfBoundsException | MissingConfigurationEntryException exc){}
-                        }else throw new RuntimeException(ex);
-                    }
-                }
+                if(rid!=0)block.recipe = recovery.recoverOverhaulSFRBlockRecipeNCPF(ncpf, templ, rid-1);
                 recipeIndex++;
             }
         }
@@ -279,9 +213,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
         return overhaulSFR;
     }
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Overhaul MSR - read multiblock">
-    protected synchronized Multiblock readMultiblockOverhaulMSR(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockOverhaulMSR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
         OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2));
         boolean compact = data.get("compact");
@@ -291,16 +223,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
             overhaulMSR.forEachPosition((x, y, z) -> {
                 int bid = (int) blocks.get(index[0]);
                 if(bid>0){
-                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b = null;
-                    try{
-                        b = ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1);
-                    }catch(IndexOutOfBoundsException ex){
-                        if(Core.recoveryMode){
-                            try{
-                                b = Core.configuration.overhaul.fissionMSR.allBlocks.get(bid-1);
-                            }catch(IndexOutOfBoundsException exc){}
-                        }else throw new RuntimeException(ex);
-                    }
+                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b = recovery.recoverOverhaulMSRBlockNCPF(ncpf, bid-1);
                     if(b!=null)overhaulMSR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, b));
                 }
                 index[0]++;
@@ -311,16 +234,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b = null;
-                try{
-                    b = ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1);
-                }catch(IndexOutOfBoundsException ex){
-                    if(Core.recoveryMode){
-                        try{
-                            b = Core.configuration.overhaul.fissionMSR.allBlocks.get(bid-1);
-                        }catch(IndexOutOfBoundsException exc){}
-                    }else throw new RuntimeException(ex);
-                }
+                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b = recovery.recoverOverhaulMSRBlockNCPF(ncpf, bid-1);
                 if(b!=null)overhaulMSR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, b));
             }
         }
@@ -330,17 +244,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
             net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block templ = block.template.parent==null?block.template:block.template.parent;
             if(!templ.allRecipes.isEmpty()){
                 int rid = (int)blockRecipes.get(recipeIndex);
-                if(rid!=0){
-                    try{
-                        block.recipe = templ.allRecipes.get(rid-1);
-                    }catch(IndexOutOfBoundsException ex){
-                        if(Core.recoveryMode){
-                            try{
-                                block.recipe = Core.configuration.overhaul.fissionMSR.convert(templ).allRecipes.get(rid-1);
-                            }catch(IndexOutOfBoundsException | MissingConfigurationEntryException exc){}
-                        }else throw new RuntimeException(ex);
-                    }
-                }
+                if(rid!=0)block.recipe = recovery.recoverOverhaulMSRBlockRecipeNCPF(ncpf, templ, rid-1);
                 recipeIndex++;
             }
         }
@@ -354,20 +258,9 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
         return overhaulMSR;
     }
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Overhaul Turbine - read multiblock">
-    protected synchronized Multiblock readMultiblockOverhaulTurbine(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockOverhaulTurbine(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe turbineRecipe = ncpf.configuration.overhaul.turbine.allRecipes.get(0);
-        try{
-            turbineRecipe = ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", -1));
-        }catch(IndexOutOfBoundsException ex){
-            if(Core.recoveryMode){
-                try{
-                    turbineRecipe = Core.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", -1));
-                }catch(IndexOutOfBoundsException exc){}
-            }else throw new RuntimeException(ex);
-        }
+        net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe turbineRecipe = recovery.recoverOverhaulTurbineRecipeNCPF(ncpf, data.get("recipe", -1));
         OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)dimensions.get(0), (int)dimensions.get(2), turbineRecipe);
         if(data.hasProperty("inputs")){
             overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
@@ -381,63 +274,24 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         overhaulTurbine.forEachPosition((x, y, z) -> {
             int bid = (int) blocks.get(index[0]);
             if(bid>0){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block b = null;
-                try{
-                    b = ncpf.configuration.overhaul.turbine.allBlocks.get(bid-1);
-                }catch(IndexOutOfBoundsException ex){
-                    if(Core.recoveryMode){
-                        try{
-                            b = Core.configuration.overhaul.turbine.allBlocks.get(bid-1);
-                        }catch(IndexOutOfBoundsException exc){}
-                    }else throw new RuntimeException(ex);
-                }
+                net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block b = recovery.recoverOverhaulTurbineBlockNCPF(ncpf, bid-1);
                 if(b!=null)overhaulTurbine.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, b));
             }
             index[0]++;
         });
         return overhaulTurbine;
     }
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Overhaul Fusion Reactor - read multiblock">
-    protected synchronized Multiblock readMultiblockOverhaulFusionReactor(NCPFFile ncpf, Config data) {
+    protected synchronized Multiblock readMultiblockOverhaulFusionReactor(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe fusionCoolantRecipe = ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(0);
-        try{
-            fusionCoolantRecipe = ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(data.get("coolantRecipe", -1));
-        }catch(IndexOutOfBoundsException ex){
-            if(Core.recoveryMode){
-                try{
-                    fusionCoolantRecipe = Core.configuration.overhaul.fusion.allCoolantRecipes.get(data.get("coolantRecipe", -1));
-                }catch(IndexOutOfBoundsException exc){}
-            }else throw new RuntimeException(ex);
-        }
-
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe fusionRecipe = ncpf.configuration.overhaul.fusion.allRecipes.get(0);
-        try{
-            fusionRecipe = ncpf.configuration.overhaul.fusion.allRecipes.get(data.get("recipe", -1));
-        }catch(IndexOutOfBoundsException ex){
-            if(Core.recoveryMode){
-                try{
-                    fusionRecipe = Core.configuration.overhaul.fusion.allRecipes.get(data.get("recipe", -1));
-                }catch(IndexOutOfBoundsException exc){}
-            }else throw new RuntimeException(ex);
-        }
+        net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe fusionCoolantRecipe = recovery.recoverOverhaulFusionCoolantRecipeNCPF(ncpf, data.get("coolantRecipe", -1));
+        net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe fusionRecipe = recovery.recoverOverhaulFusionRecipeNCPF(ncpf, data.get("recipe", -1));
         OverhaulFusionReactor overhaulFusionReactor = new OverhaulFusionReactor(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),(int)dimensions.get(3),fusionRecipe,fusionCoolantRecipe);
         ConfigNumberList blocks = data.get("blocks");
         int[] findex = new int[0];
         overhaulFusionReactor.forEachPosition((X, Y, Z) -> {
             int bid = (int) blocks.get(findex[0]);
             if(bid>0){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block b = null;
-                try{
-                    b = ncpf.configuration.overhaul.fusion.allBlocks.get(bid-1);
-                }catch(IndexOutOfBoundsException ex){
-                    if(Core.recoveryMode){
-                        try{
-                            b = Core.configuration.overhaul.fusion.allBlocks.get(bid-1);
-                        }catch(IndexOutOfBoundsException exc){}
-                    }else throw new RuntimeException(ex);
-                }
+                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block b = recovery.recoverOverhaulFusionBlockNCPF(ncpf, bid-1);
                 if(b!=null)overhaulFusionReactor.setBlockExact(X, Y, Z, new net.ncplanner.plannerator.multiblock.overhaul.fusion.Block(ncpf.configuration, X, Y, Z, b));
             }
             findex[0]++;
@@ -447,23 +301,12 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         for(net.ncplanner.plannerator.multiblock.overhaul.fusion.Block block : overhaulFusionReactor.getBlocks()){
             if(!block.template.allRecipes.isEmpty()){
                 int rid = (int)blockRecipes.get(recipeIndex);
-                if(rid!=0){
-                    try{
-                        block.recipe = block.template.allRecipes.get(rid-1);
-                    }catch(IndexOutOfBoundsException ex){
-                        if(Core.recoveryMode){
-                            try{
-                                block.recipe = Core.configuration.overhaul.fusion.convert(block.template).allRecipes.get(rid-1);
-                            }catch(IndexOutOfBoundsException | MissingConfigurationEntryException exc){}
-                        }else throw new RuntimeException(ex);
-                    }
-                }
+                if(rid!=0)block.recipe = recovery.recoverOverhaulFusionBlockRecipeNCPF(ncpf, block.template, rid-1);
                 recipeIndex++;
             }
         }
         return overhaulFusionReactor;
     }
-    //</editor-fold>
 
     protected <Rule extends AbstractPlacementRule<BlockType, Template>,
             BlockType extends IBlockType,

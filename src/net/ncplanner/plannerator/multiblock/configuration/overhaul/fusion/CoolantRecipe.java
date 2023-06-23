@@ -5,10 +5,11 @@ import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.multiblock.configuration.ThingWithLegacyNames;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
-public class CoolantRecipe implements Pinnable{
+public class CoolantRecipe implements Pinnable, ThingWithLegacyNames{
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();
@@ -84,6 +85,7 @@ public class CoolantRecipe implements Pinnable{
     public String getOutputDisplayName(){
         return outputDisplayName==null?outputName:outputDisplayName;
     }
+    @Override
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> allNames = new ArrayList<>(inputLegacyNames);
         allNames.add(inputName);
@@ -132,5 +134,9 @@ public class CoolantRecipe implements Pinnable{
     }
     public void setHeat(int heat){
         this.heat = heat;
+    }
+    @Override
+    public String toString(){
+        return getInputDisplayName();
     }
 }
