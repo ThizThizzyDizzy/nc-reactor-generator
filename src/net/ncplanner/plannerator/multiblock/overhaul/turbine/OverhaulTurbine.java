@@ -939,7 +939,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public BoundingBox getBoundingBox(boolean includeCasing){
         BoundingBox bbox = super.getBoundingBox(includeCasing);
         if(!includeCasing){
-            bbox = new BoundingBox(bbox.x1+1, bbox.y1+1, bbox.z1, bbox.x2-1, bbox.y2-1, bbox.z2);
+            bbox = new BoundingBox(bbox.x1, bbox.y1, bbox.z1-1, bbox.x2, bbox.y2, bbox.z2+1);
         }
         return bbox;
     }
