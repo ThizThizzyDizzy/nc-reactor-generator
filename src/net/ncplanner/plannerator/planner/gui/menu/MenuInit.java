@@ -56,6 +56,7 @@ import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.module.PrimeFuelModule;
+import net.ncplanner.plannerator.planner.module.QuantumTraversedEfficiencyModule;
 import net.ncplanner.plannerator.planner.module.RainbowFactorModule;
 import net.ncplanner.plannerator.planner.module.TiConModule;
 import net.ncplanner.plannerator.planner.module.UnderhaulModule;
@@ -123,7 +124,8 @@ public class MenuInit extends Menu{
         Task tm3 = tm.addSubtask("Adding Fusion Test Module");
         Task tm4 = tm.addSubtask("Adding Rainbow Factor Module");
         Task tm5 = tm.addSubtask("Adding Prime Fuel Module");
-        Task tm6 = tm.addSubtask("Adding [REDACTED] Modules");
+        Task tm6 = tm.addSubtask("Adding Quantum Traversed Efficiency Module");
+        Task tmX = tm.addSubtask("Adding [REDACTED] Modules");
         Task ts = init.addSubtask("Loading settings...");
         Task tmr = init.addSubtask("Refreshing modules...");
         Task tct = init.addSubtask("Adjusting MSR block textures...");
@@ -165,8 +167,10 @@ public class MenuInit extends Menu{
                 tm4.finish();
                 Core.modules.add(new PrimeFuelModule());
                 tm5.finish();
-                Core.modules.add(new TiConModule());
+                Core.modules.add(new QuantumTraversedEfficiencyModule());
                 tm6.finish();
+                Core.modules.add(new TiConModule());
+                tmX.finish();
                 System.out.println("Added Modules");
                 if(f.exists()){
                     Config settings = Config.newConfig(f);

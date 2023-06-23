@@ -14,12 +14,12 @@ public class MathUtil{
     public static String percent(double n, int digits){
         double fac = pow(10, digits);
         double d = (round(n*fac*100)/(double)round(fac));
-        return (digits==0?round(d):d)+"%";
+        return digits==0?round(d)+"%":(d+"%");
     }
     public static String round(double n, int digits){
         double fac = pow(10, digits);
         double d = round(n*fac)/(double)round(fac);
-        return (digits==0?round(d):d)+"";
+        return digits==0?round(d)+"":(d+"");
     }
     public static double pow(double a, double b){
         return Math.pow(a, b);
