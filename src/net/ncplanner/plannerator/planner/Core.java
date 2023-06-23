@@ -107,6 +107,7 @@ public class Core{
     public static boolean imageExport3DView = true;
     public static boolean imageExportCasing = true;
     public static boolean imageExportCasing3D = true;
+    public static boolean imageExportCasingParts = true;
     public static boolean saved = true;
     public static boolean dssl = false;
     public static boolean rememberConfig;
@@ -351,6 +352,7 @@ public class Core{
         settings.set("imageExport3DView", imageExport3DView);
         settings.set("imageExportCasing", imageExportCasing);
         settings.set("imageExportCasing3D", imageExportCasing3D);
+        settings.set("imageExportCasingParts", imageExportCasingParts);
         settings.set("dssl", dssl);
         settings.set("rememberConfig", rememberConfig);
         settings.set("lastLoadedConfig", lastLoadedConfig);

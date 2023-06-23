@@ -21,6 +21,7 @@ public class MenuImageExportPreview extends Menu{
     private final ToggleBox includeCasing = buttons.add(new ToggleBox(0, 80, 300, 40, "Include Casing", Core.imageExportCasing, true));
     private final ToggleBox preview3D = buttons.add(new ToggleBox(0, 40, 300, 40, "Include 3D View", Core.imageExport3DView, true));
     private final ToggleBox includeCasing3D = buttons.add(new ToggleBox(0, 80, 300, 40, "Include Casing in 3D View", Core.imageExportCasing3D, true));
+    private final ToggleBox includeCasingParts = buttons.add(new ToggleBox(0, 80, 300, 40, "Include Casing in Parts List", Core.imageExportCasingParts, true));
     private final Button overlays = buttons.add(new Button(0, 120, 300, 40, "Overlays", true, true));
     private final Button save = buttons.add(new Button(0, 160, 300, 40, "Save", true));
     private final Supplier<Image> img;
@@ -45,6 +46,10 @@ public class MenuImageExportPreview extends Menu{
         });
         includeCasing3D.onChange(() -> {
             Core.imageExportCasing3D = includeCasing3D.isToggledOn;
+            refresh();
+        });
+        includeCasingParts.onChange(() -> {
+            Core.imageExportCasingParts = includeCasingParts.isToggledOn;
             refresh();
         });
         this.overlays.addAction(() -> {

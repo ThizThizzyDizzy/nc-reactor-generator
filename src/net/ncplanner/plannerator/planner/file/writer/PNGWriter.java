@@ -1,5 +1,7 @@
 package net.ncplanner.plannerator.planner.file.writer;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Locale;
 import net.ncplanner.plannerator.discord.Bot;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
@@ -42,6 +44,18 @@ public class PNGWriter extends ImageFormatWriter{
             int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image
             final int blockSize = blSiz;
             ArrayList<PartCount> parts = multi.getPartsList();
+            if(!Core.imageExportCasingParts){
+                for (Iterator<PartCount> it = parts.iterator(); it.hasNext();) {
+                    PartCount part = it.next();
+                    if(part.name.toLowerCase(Locale.ROOT).contains("casing")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("port")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("controller")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("vent")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("glass")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("inlet")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("outlet"))it.remove();
+                }
+            }
             FormattedText s = multi.getSaveTooltip();
             ArrayList<FormattedText> strs = s.split("\n");
             int totalTextHeight = Math.max(textHeight*strs.size(),textHeight*parts.size());
