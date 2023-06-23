@@ -31,10 +31,10 @@ public class CutTool extends EditorTool{
             int maxBZ = Math.max(dragStart[2], dragEnd[2]);
             Axis xAxis = axis.get2DXAxis();
             Axis yAxis = axis.get2DYAxis();
-            int minSX = Math.max(x1,Math.min(x2,minBX*xAxis.x+minBY*xAxis.y+minBZ*xAxis.z-x1));
-            int minSY = Math.max(y1,Math.min(y2,minBX*yAxis.x+minBY*yAxis.y+minBZ*yAxis.z-y1));
-            int maxSX = Math.max(x1,Math.min(x2,maxBX*xAxis.x+maxBY*xAxis.y+maxBZ*xAxis.z-x1));
-            int maxSY = Math.max(y1,Math.min(y2,maxBX*yAxis.x+maxBY*yAxis.y+maxBZ*yAxis.z-y1));
+            int minSX = Math.max(0,Math.min(x2,minBX*xAxis.x+minBY*xAxis.y+minBZ*xAxis.z-x1));
+            int minSY = Math.max(0,Math.min(y2,minBX*yAxis.x+minBY*yAxis.y+minBZ*yAxis.z-y1));
+            int maxSX = Math.max(0,Math.min(x2,maxBX*xAxis.x+maxBY*xAxis.y+maxBZ*xAxis.z-x1));
+            int maxSY = Math.max(0,Math.min(y2,maxBX*yAxis.x+maxBY*yAxis.y+maxBZ*yAxis.z-y1));
             int minSZ = minBX*axis.x+minBY*axis.y+minBZ*axis.z;
             int maxSZ = maxBX*axis.x+maxBY*axis.y+maxBZ*axis.z;
             if(layer>=minSZ&&layer<=maxSZ){

@@ -64,8 +64,8 @@ public class PasteTool extends EditorTool{
                 int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
                 int sz = bx*axis.x+by*axis.y+bz*axis.z;
                 if(sz!=layer)continue;
-                if(sx<x1||sx>x2)continue;
-                if(sy<y1||sy>y2)continue;
+                if(sx<0||sx>x2)continue;
+                if(sy<0||sy>y2)continue;
                 if(entry.block!=null)renderer.setWhite(.5f);
                 else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
                 renderer.drawImage(entry.block==null?null:entry.block.getTexture(), x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);

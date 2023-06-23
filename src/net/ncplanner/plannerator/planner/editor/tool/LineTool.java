@@ -35,8 +35,8 @@ public class LineTool extends EditorTool{
             int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
             int sz = bx*axis.x+by*axis.y+bz*axis.z;
             if(sz!=layer)return;
-            if(sx<x1||sx>x2)return;
-            if(sy<y1||sy>y2)return;
+            if(sx<0||sx>x2)return;
+            if(sy<0||sy>y2)return;
             renderer.drawImage(texture, x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
@@ -47,8 +47,8 @@ public class LineTool extends EditorTool{
             int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
             int sz = bx*axis.x+by*axis.y+bz*axis.z;
             if(sz!=layer)return;
-            if(sx<x1||sx>x2)return;
-            if(sy<y1||sy>y2)return;
+            if(sx<0||sx>x2)return;
+            if(sy<0||sy>y2)return;
             renderer.fillRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
         renderer.setWhite();
