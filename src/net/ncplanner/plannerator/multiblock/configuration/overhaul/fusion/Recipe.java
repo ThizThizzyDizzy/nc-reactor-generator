@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.configuration.ThingWithLegacyNames;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
+import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class Recipe implements Pinnable, ThingWithLegacyNames{
     public String inputName;
     public String inputDisplayName;
@@ -56,14 +56,14 @@ public class Recipe implements Pinnable, ThingWithLegacyNames{
                 for(String s : inputLegacyNames)lst.add(s);
                 inputCfg.set("legacyNames", lst);
             }
-            NCPFWriter.saveTexture(inputCfg, inputTexture);
+            LegacyNCPFWriter.saveTexture(inputCfg, inputTexture);
         }
         config.set("input", inputCfg);
         Config outputCfg = Config.newConfig();
         outputCfg.set("name", outputName);
         if(!partial){
             if(outputDisplayName!=null)outputCfg.set("displayName", outputDisplayName);
-            NCPFWriter.saveTexture(outputCfg, outputTexture);
+            LegacyNCPFWriter.saveTexture(outputCfg, outputTexture);
         }
         config.set("output", outputCfg);
         config.set("efficiency", efficiency);

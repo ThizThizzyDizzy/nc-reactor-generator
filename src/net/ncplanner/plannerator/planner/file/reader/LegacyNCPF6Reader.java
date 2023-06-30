@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.file.reader;
 
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-public class NCPF6Reader extends NCPF7Reader {
+public class LegacyNCPF6Reader extends LegacyNCPF7Reader {
     @Override
     protected byte getTargetVersion() {
         return (byte) 6;

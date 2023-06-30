@@ -18,18 +18,18 @@ import net.ncplanner.plannerator.planner.Updater;
 import net.ncplanner.plannerator.planner.VersionManager;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FormatReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.file.reader.NCPF10Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF11Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF1Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF2Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF3Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF4Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF5Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF6Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF7Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF8Reader;
-import net.ncplanner.plannerator.planner.file.reader.NCPF9Reader;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF10Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF11Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF1Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF2Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF3Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF4Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF5Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF6Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF7Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF8Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF9Reader;
 import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR1Reader;
 import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR2Reader;
 import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR3Reader;
@@ -68,17 +68,17 @@ public class MenuInit extends Menu{
     HashMap<String, Task> readerTasks = new HashMap<>();
     private final ProgressBar progressBar;
     {
-        addReader("NCPF11Reader", ()->{return new NCPF11Reader();});// .ncpf version 11
-        addReader("NCPF10Reader", ()->{return new NCPF10Reader();});// .ncpf version 10
-        addReader("NCPF9Reader", ()->{return new NCPF9Reader();});// .ncpf version 9
-        addReader("NCPF8Reader", ()->{return new NCPF8Reader();});// .ncpf version 8
-        addReader("NCPF7Reader", ()->{return new NCPF7Reader();});// .ncpf version 7
-        addReader("NCPF6Reader", ()->{return new NCPF6Reader();});// .ncpf version 6
-        addReader("NCPF5Reader", ()->{return new NCPF5Reader();});// .ncpf version 5
-        addReader("NCPF4Reader", ()->{return new NCPF4Reader();});// .ncpf version 4
-        addReader("NCPF3Reader", ()->{return new NCPF3Reader();});// .ncpf version 3
-        addReader("NCPF2Reader", ()->{return new NCPF2Reader();});// .ncpf version 2
-        addReader("NCPF1Reader", ()->{return new NCPF1Reader();});// .ncpf version 1
+        addReader("NCPF11Reader", ()->{return new LegacyNCPF11Reader();});// .ncpf version 11
+        addReader("NCPF10Reader", ()->{return new LegacyNCPF10Reader();});// .ncpf version 10
+        addReader("NCPF9Reader", ()->{return new LegacyNCPF9Reader();});// .ncpf version 9
+        addReader("NCPF8Reader", ()->{return new LegacyNCPF8Reader();});// .ncpf version 8
+        addReader("NCPF7Reader", ()->{return new LegacyNCPF7Reader();});// .ncpf version 7
+        addReader("NCPF6Reader", ()->{return new LegacyNCPF6Reader();});// .ncpf version 6
+        addReader("NCPF5Reader", ()->{return new LegacyNCPF5Reader();});// .ncpf version 5
+        addReader("NCPF4Reader", ()->{return new LegacyNCPF4Reader();});// .ncpf version 4
+        addReader("NCPF3Reader", ()->{return new LegacyNCPF3Reader();});// .ncpf version 3
+        addReader("NCPF2Reader", ()->{return new LegacyNCPF2Reader();});// .ncpf version 2
+        addReader("NCPF1Reader", ()->{return new LegacyNCPF1Reader();});// .ncpf version 1
         addReader("OverhaulHellrageSFR6Reader", ()->{return new OverhaulHellrageSFR6Reader();});// hellrage SFR .json 2.1.1-2.1.7 (present)
         addReader("OverhaulHellrageSFR5Reader", ()->{return new OverhaulHellrageSFR5Reader();});// hellrage SFR .json 2.0.32-2.0.37
         addReader("OverhaulHellrageSFR4Reader", ()->{return new OverhaulHellrageSFR4Reader();});// hellrage SFR .json 2.0.31
@@ -288,7 +288,7 @@ public class MenuInit extends Menu{
                                     message = "Could not find external configuration!";
                                     break;
                                 }
-                                NCPFFile ncpf = FileReader.read(file);
+                                LegacyNCPFFile ncpf = FileReader.read(file);
                                 if(ncpf.configuration.addon){
                                     bad = true;
                                     message = ncpf.configuration.getShortName()+" is an addon configuration!";

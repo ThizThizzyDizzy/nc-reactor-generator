@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
+import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class BlockRecipe implements Pinnable, IBlockRecipe{
     public static BlockRecipe heater(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int inputRate, int outputRate, int cooling){
         BlockRecipe recipe = new BlockRecipe(inputName, outputName);
@@ -89,7 +89,7 @@ public class BlockRecipe implements Pinnable, IBlockRecipe{
                 for(String s : inputLegacyNames)lst.add(s);
                 inputCfg.set("legacyNames", lst);
             }
-            NCPFWriter.saveTexture(inputCfg, inputTexture);
+            LegacyNCPFWriter.saveTexture(inputCfg, inputTexture);
         }
         if(inputRate!=0)inputCfg.set("rate", inputRate);
         config.set("input", inputCfg);
@@ -97,7 +97,7 @@ public class BlockRecipe implements Pinnable, IBlockRecipe{
         outputCfg.set("name", outputName);
         if(!partial){
             if(outputDisplayName!=null)outputCfg.set("displayName", outputDisplayName);
-            NCPFWriter.saveTexture(outputCfg, outputTexture);
+            LegacyNCPFWriter.saveTexture(outputCfg, outputTexture);
         }
         if(outputRate!=0)outputCfg.set("rate", outputRate);
         config.set("output", outputCfg);

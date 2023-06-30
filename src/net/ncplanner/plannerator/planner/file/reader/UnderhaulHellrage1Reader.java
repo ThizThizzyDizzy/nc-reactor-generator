@@ -6,7 +6,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class UnderhaulHellrage1Reader implements FormatReader{
     @Override
@@ -19,7 +19,7 @@ public class UnderhaulHellrage1Reader implements FormatReader{
         return major==1&&minor==2&&build>=5&&build<=22;
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized LegacyNCPFFile read(InputStream in, RecoveryHandler recovery){
         JSON.JSONObject hellrage = JSON.parse(in);
         String dimS = hellrage.getString("InteriorDimensions");
         String[] dims = StringUtil.split(dimS, ",");
@@ -43,7 +43,7 @@ public class UnderhaulHellrage1Reader implements FormatReader{
                 }
             }
         }
-        NCPFFile file = new NCPFFile();
+        LegacyNCPFFile file = new LegacyNCPFFile();
         sfr.buildDefaultCasingOnConvert();
         file.multiblocks.add(sfr);
         return file;

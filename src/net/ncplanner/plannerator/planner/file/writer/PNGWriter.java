@@ -19,7 +19,7 @@ import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import static net.ncplanner.plannerator.planner.file.FileWriter.botRunning;
 import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import org.joml.Matrix4f;
 public class PNGWriter extends ImageFormatWriter{
     private final int textHeight = 20;
@@ -29,7 +29,7 @@ public class PNGWriter extends ImageFormatWriter{
         return FileFormat.PNG;
     }
     @Override
-    public Image write(NCPFFile ncpf){
+    public Image write(LegacyNCPFFile ncpf){
         Renderer renderer = new Renderer();
         if(!ncpf.multiblocks.isEmpty()){
             if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multiple multiblocks are not supported by PNG!");

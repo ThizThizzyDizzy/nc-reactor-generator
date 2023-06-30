@@ -23,7 +23,7 @@ import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 public class Hangman extends Game{
     public Multiblock basis;
     public Multiblock current;
@@ -39,7 +39,7 @@ public class Hangman extends Game{
         this.blind = blind;
         ArrayList<Multiblock> multis = new ArrayList<>();
         synchronized(Bot.storedMultiblocks){
-            for(NCPFFile ncpf : Bot.storedMultiblocks){
+            for(LegacyNCPFFile ncpf : Bot.storedMultiblocks){
                 multis.addAll(ncpf.multiblocks);
             }
         }
@@ -236,7 +236,7 @@ public class Hangman extends Game{
             if(!blind&&!silent)exportPng(generateNCPF(current), channel);
         }
     }
-    private void exportPng(NCPFFile ncpf, MessageChannel channel){
+    private void exportPng(LegacyNCPFFile ncpf, MessageChannel channel){
         for(Multiblock m : ncpf.multiblocks){
             m.recalculate();
         }
@@ -251,8 +251,8 @@ public class Hangman extends Game{
             stream.close();
         }
     }
-    private NCPFFile generateNCPF(Multiblock multi){
-        NCPFFile file = new NCPFFile();
+    private LegacyNCPFFile generateNCPF(Multiblock multi){
+        LegacyNCPFFile file = new LegacyNCPFFile();
         multi.showDetails = false;
         file.configuration = config;
         file.multiblocks.add(multi);

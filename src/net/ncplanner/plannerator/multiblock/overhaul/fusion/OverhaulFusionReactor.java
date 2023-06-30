@@ -33,7 +33,7 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -338,7 +338,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return 4;
     }
     @Override
-    protected void save(NCPFFile ncpf, Configuration configuration, Config config){
+    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config){
         ConfigNumberList size = new ConfigNumberList();
         size.add(innerRadius);
         size.add(coreSize);

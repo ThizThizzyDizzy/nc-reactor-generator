@@ -12,7 +12,7 @@ import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.StringUtil;
-import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
+import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
     public static Block controller(String name, String displayName, String texture){
         Block block = new Block(name);
@@ -261,7 +261,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
             if(casingEdge)config.set("casingEdge", casingEdge);
             if(coolantVent){
                 Config coolantVentCfg = Config.newConfig();
-                if(!partial)NCPFWriter.saveTexture(coolantVentCfg, "outTexture", coolantVentOutputTexture);
+                if(!partial)LegacyNCPFWriter.saveTexture(coolantVentCfg, "outTexture", coolantVentOutputTexture);
                 if(!partial&&coolantVentOutputDisplayName!=null)coolantVentCfg.set("outDisplayName", coolantVentOutputDisplayName);
                 config.set("coolantVent", coolantVentCfg);
             }
@@ -311,7 +311,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                     if(!recipes.isEmpty())shieldCfg.set("hasBaseStats", true);
                     shieldCfg.set("heat", shieldHeat);
                     shieldCfg.set("efficiency", shieldEfficiency);
-                    if(!partial)NCPFWriter.saveTexture(shieldCfg, "closedTexture", shieldClosedTexture);
+                    if(!partial)LegacyNCPFWriter.saveTexture(shieldCfg, "closedTexture", shieldClosedTexture);
                 }
                 config.set("shield", shieldCfg);
             }
@@ -328,15 +328,15 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
                 sourceCfg.set("efficiency", sourceEfficiency);
                 config.set("source", sourceCfg);
             }
-            if(!partial)NCPFWriter.saveTexture(config, texture);
+            if(!partial)LegacyNCPFWriter.saveTexture(config, texture);
             if(!recipes.isEmpty()){
                 Config portCfg = Config.newConfig();
                 portCfg.set("name", port.name);
                 if(!partial){
                     if(port.displayName!=null)portCfg.set("inputDisplayName", port.displayName);
-                    NCPFWriter.saveTexture(portCfg, "inputTexture", port.texture);
+                    LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", port.texture);
                     if(port.portOutputDisplayName!=null)portCfg.set("outputDisplayName", port.portOutputDisplayName);
-                    NCPFWriter.saveTexture(portCfg, "outputTexture", port.portOutputTexture);
+                    LegacyNCPFWriter.saveTexture(portCfg, "outputTexture", port.portOutputTexture);
                 }
                 config.set("port", portCfg);
             }

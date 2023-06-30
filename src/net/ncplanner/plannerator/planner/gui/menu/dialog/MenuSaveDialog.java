@@ -5,7 +5,7 @@ import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuSaveDialog extends MenuInputDialog{
@@ -15,7 +15,7 @@ public class MenuSaveDialog extends MenuInputDialog{
     public MenuSaveDialog(GUI gui, Menu parent, Runnable onSaved){
         this(gui, parent, genNCPF(), onSaved);
     }
-    public MenuSaveDialog(GUI gui, Menu parent, NCPFFile ncpf, Runnable onSaved){
+    public MenuSaveDialog(GUI gui, Menu parent, LegacyNCPFFile ncpf, Runnable onSaved){
         super(gui, parent, genName(ncpf), "Filename");
         addButton("Cancel", true);
         addButton("Save Dialog", (dialog, str) -> {
@@ -48,19 +48,19 @@ public class MenuSaveDialog extends MenuInputDialog{
             }
         }).open();
     }
-    private void save(NCPFFile ncpf, File file, String filename){
+    private void save(LegacyNCPFFile ncpf, File file, String filename){
         FileWriter.write(ncpf, file, FileWriter.NCPF);
         new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
         Core.saved = true;
     }
-    private static NCPFFile genNCPF(){
-        NCPFFile ncpf = new NCPFFile();
+    private static LegacyNCPFFile genNCPF(){
+        LegacyNCPFFile ncpf = new LegacyNCPFFile();
         ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
         ncpf.multiblocks.addAll(Core.multiblocks);
         ncpf.metadata.putAll(Core.metadata);
         return ncpf;
     }
-    private static String genName(NCPFFile ncpf){
+    private static String genName(LegacyNCPFFile ncpf){
         String name = Core.filename;
         if(name==null) name = ncpf.metadata.get("name");
         if(name==null||name.isEmpty()){

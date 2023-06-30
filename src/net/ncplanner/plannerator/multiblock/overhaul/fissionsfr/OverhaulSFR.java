@@ -55,7 +55,7 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuComponentOverhaulSFRToggleBlockRecipe;
 import net.ncplanner.plannerator.planner.module.Module;
@@ -1317,7 +1317,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         return 1;
     }
     @Override
-    protected void save(NCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{
+    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{
         boolean compact = isCompact(configuration);//find perfect compression ratio
         config.set("compact", compact);
         config.set("coolantRecipe", configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(coolantRecipe));

@@ -7,26 +7,26 @@ import net.ncplanner.plannerator.multiblock.configuration.ThingWithLegacyNames;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 public class NonRecoveryHandler implements RecoveryHandler{
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel recoverUnderhaulSFRFuelNCPF(NCPFFile ncpf, int id) {
+    public net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel recoverUnderhaulSFRFuelNCPF(LegacyNCPFFile ncpf, int id) {
         return recoverFallbackID("fuel", id, ncpf.configuration.underhaul.fissionSFR.allFuels, Core.configuration.underhaul.fissionSFR.allFuels, false);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block recoverUnderhaulSFRBlockNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block recoverUnderhaulSFRBlockNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("block", id, ncpf.configuration.underhaul.fissionSFR.allBlocks, Core.configuration.underhaul.fissionSFR.allBlocks, true);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recoverOverhaulSFRCoolantRecipeNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recoverOverhaulSFRCoolantRecipeNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("coolant recipe", id, ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes, Core.configuration.overhaul.fissionSFR.allCoolantRecipes, false);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block recoverOverhaulSFRBlockNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block recoverOverhaulSFRBlockNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("block", id, ncpf.configuration.overhaul.fissionSFR.allBlocks, Core.configuration.overhaul.fissionSFR.allBlocks, true);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recoverOverhaulSFRBlockRecipeNCPF(NCPFFile ncpf, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block, int id) {
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recoverOverhaulSFRBlockRecipeNCPF(LegacyNCPFFile ncpf, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block, int id) {
         ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe> fallbackList = null;
         try{
             fallbackList = Core.configuration.overhaul.fissionSFR.convert(block).allRecipes;
@@ -34,11 +34,11 @@ public class NonRecoveryHandler implements RecoveryHandler{
         return recoverFallbackID(block.fuelCell?"fuel":"recipe", id, block.allRecipes, fallbackList, true);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block recoverOverhaulMSRBlockNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block recoverOverhaulMSRBlockNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("block", id, ncpf.configuration.overhaul.fissionMSR.allBlocks, Core.configuration.overhaul.fissionMSR.allBlocks, true);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recoverOverhaulMSRBlockRecipeNCPF(NCPFFile ncpf, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block block, int id) {
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recoverOverhaulMSRBlockRecipeNCPF(LegacyNCPFFile ncpf, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block block, int id) {
         ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe> fallbackList = null;
         try{
             fallbackList = Core.configuration.overhaul.fissionMSR.convert(block).allRecipes;
@@ -46,23 +46,23 @@ public class NonRecoveryHandler implements RecoveryHandler{
         return recoverFallbackID(block.fuelVessel?"fuel":"recipe", id, block.allRecipes, fallbackList, true);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe recoverOverhaulTurbineRecipeNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe recoverOverhaulTurbineRecipeNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("recipe", id, ncpf.configuration.overhaul.turbine.allRecipes, Core.configuration.overhaul.turbine.allRecipes, false);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block recoverOverhaulTurbineBlockNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block recoverOverhaulTurbineBlockNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("block", id, ncpf.configuration.overhaul.turbine.allBlocks, Core.configuration.overhaul.turbine.allBlocks, true);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe recoverOverhaulFusionCoolantRecipeNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe recoverOverhaulFusionCoolantRecipeNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("coolant recipe", id, ncpf.configuration.overhaul.fusion.allCoolantRecipes, Core.configuration.overhaul.fusion.allCoolantRecipes, false);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block recoverOverhaulFusionBlockNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block recoverOverhaulFusionBlockNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("block", id, ncpf.configuration.overhaul.fusion.allBlocks, Core.configuration.overhaul.fusion.allBlocks, true);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe recoverOverhaulFusionBlockRecipeNCPF(NCPFFile ncpf, net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block block, int id) {
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe recoverOverhaulFusionBlockRecipeNCPF(LegacyNCPFFile ncpf, net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block block, int id) {
         ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe> fallbackList = null;
         try{
             fallbackList = Core.configuration.overhaul.fusion.convert(block).allRecipes;
@@ -70,7 +70,7 @@ public class NonRecoveryHandler implements RecoveryHandler{
         return recoverFallbackID("recipe", id, block.allRecipes, fallbackList, true);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe recoverOverhaulFusionRecipeNCPF(NCPFFile ncpf, int id){
+    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe recoverOverhaulFusionRecipeNCPF(LegacyNCPFFile ncpf, int id){
         return recoverFallbackID("recipe", id, ncpf.configuration.overhaul.fusion.allRecipes, Core.configuration.overhaul.fusion.allRecipes, false);
     }
     private <T> T recoverFallbackID(String type, int idx, ArrayList<T> list, ArrayList<T> fallbackList, boolean allowNull){

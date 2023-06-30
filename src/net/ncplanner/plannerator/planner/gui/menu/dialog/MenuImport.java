@@ -9,8 +9,8 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.file.NCPFHeader;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFHeader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -95,7 +95,7 @@ public class MenuImport extends MenuDialog{
                     }
                 });
                 try{
-                    NCPFHeader header = FileReader.readHeader(file);
+                    LegacyNCPFHeader header = FileReader.readHeader(file);
                     if(header!=null){
                         GridLayout l2 = new GridLayout(36, 3);
                         if(header.metadata!=null){
@@ -118,7 +118,7 @@ public class MenuImport extends MenuDialog{
         setContent(layout);
     }
     private void importMultiblocks(File file){
-        NCPFFile ncpf = FileReader.read(file);
+        LegacyNCPFFile ncpf = FileReader.read(file);
         if(ncpf==null)return;
         if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
             Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);

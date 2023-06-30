@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
 import net.ncplanner.plannerator.config2.Config;
-public class NCPF8Reader extends NCPF9Reader {
+public class LegacyNCPF8Reader extends LegacyNCPF9Reader {
     @Override
     protected byte getTargetVersion() {
         return (byte) 8;

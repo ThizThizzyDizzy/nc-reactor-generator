@@ -36,7 +36,7 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -576,7 +576,7 @@ public class Core{
             num++;
         }
         {//multiblocks
-            NCPFFile ncpf = new NCPFFile();
+            LegacyNCPFFile ncpf = new LegacyNCPFFile();
             ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
             ncpf.multiblocks.addAll(Core.multiblocks);
             ncpf.metadata.putAll(Core.metadata);
@@ -585,7 +585,7 @@ public class Core{
         {//configuration
             try(FileOutputStream stream = new FileOutputStream(cfgFile)){
                 Config header = Config.newConfig();
-                header.set("version", NCPFFile.SAVE_VERSION);
+                header.set("version", LegacyNCPFFile.SAVE_VERSION);
                 header.set("count", 0);
                 header.save(stream);
                 Core.configuration.save(null, Config.newConfig()).save(stream);

@@ -36,7 +36,7 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
@@ -496,7 +496,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return 3;
     }
     @Override
-    protected void save(NCPFFile ncpf, Configuration configuration, Config config){
+    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config){
         ConfigNumberList inputs = new ConfigNumberList();
         for(Multiblock m : this.inputs){
             if(ncpf.multiblocks.contains(m))inputs.add(ncpf.multiblocks.indexOf(m));

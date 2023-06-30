@@ -6,24 +6,24 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.planner.file.writer.BGStringWriter;
 import net.ncplanner.plannerator.planner.file.writer.HellrageWriter;
-import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
+import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 import net.ncplanner.plannerator.planner.file.writer.PNGWriter;
 public class FileWriter{
     public static final ArrayList<FormatWriter> formats = new ArrayList<>();
     public static boolean botRunning;
-    public static NCPFWriter NCPF;
+    public static LegacyNCPFWriter NCPF;
     public static HellrageWriter HELLRAGE;
     public static ImageFormatWriter PNG;
     static{
         formats.add(HELLRAGE = new HellrageWriter());
-        formats.add(NCPF = new NCPFWriter());
+        formats.add(NCPF = new LegacyNCPFWriter());
         formats.add(PNG = new PNGWriter());
         formats.add(new BGStringWriter());
     }
-    public static void write(NCPFFile ncpf, OutputStream stream, FormatWriter format){
+    public static void write(LegacyNCPFFile ncpf, OutputStream stream, FormatWriter format){
         format.write(ncpf, stream);
     }
-    public static void write(NCPFFile ncpf, File file, FormatWriter format){
+    public static void write(LegacyNCPFFile ncpf, File file, FormatWriter format){
         if(file.exists())file.delete();
         try{
             file.createNewFile();

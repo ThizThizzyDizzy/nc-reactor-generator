@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
 
-public class NCPF10Reader extends NCPF11Reader {
+public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
     @Override
     protected byte getTargetVersion() {
         return (byte) 10;

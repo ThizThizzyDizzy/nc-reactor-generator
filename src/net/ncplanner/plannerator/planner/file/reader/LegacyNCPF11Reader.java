@@ -26,10 +26,10 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.HeaderFormatReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.file.NCPFHeader;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFHeader;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
-public class NCPF11Reader implements FormatReader, HeaderFormatReader {
+public class LegacyNCPF11Reader implements FormatReader, HeaderFormatReader {
     @Override
     public boolean formatMatches(InputStream in){
         try{
@@ -54,9 +54,9 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         return (byte) 11;
     }
     @Override
-    public synchronized NCPFHeader readHeader(InputStream in){
+    public synchronized LegacyNCPFHeader readHeader(InputStream in){
         try{
-            NCPFHeader ncpf = new NCPFHeader();
+            LegacyNCPFHeader ncpf = new LegacyNCPFHeader();
             Config header = Config.newConfig();
             header.load(in);
             ncpf.version = header.getByte("version");
@@ -75,10 +75,10 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized LegacyNCPFFile read(InputStream in, RecoveryHandler recovery){
         overhaulTurbinePostLoadInputsMap.clear();
         try{
-            NCPFFile ncpf = new NCPFFile();
+            LegacyNCPFFile ncpf = new LegacyNCPFFile();
             Config header = Config.newConfig();
             header.load(in);
             int multiblocks = header.get("count");
@@ -106,7 +106,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
     }
 
-    protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
+    protected synchronized Multiblock readMultiblock(LegacyNCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
         Config data = Config.newConfig();
         data.load(in);
         Multiblock multiblock;
@@ -139,7 +139,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         return multiblock;
     }
 
-    protected synchronized Multiblock readMultiblockUnderhaulSFR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Multiblock readMultiblockUnderhaulSFR(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
         Fuel f = recovery.recoverUnderhaulSFRFuelNCPF(ncpf, data.get("fuel", -1));
         UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),f);
@@ -167,7 +167,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
         return underhaulSFR;
     }
-    protected synchronized Multiblock readMultiblockOverhaulSFR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Multiblock readMultiblockOverhaulSFR(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
         net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolantRecipe = recovery.recoverOverhaulSFRCoolantRecipeNCPF(ncpf, data.get("coolantRecipe", -1));
         OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),coolantRecipe);
@@ -213,7 +213,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
         return overhaulSFR;
     }
-    protected synchronized Multiblock readMultiblockOverhaulMSR(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Multiblock readMultiblockOverhaulMSR(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
         OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2));
         boolean compact = data.get("compact");
@@ -258,7 +258,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         }
         return overhaulMSR;
     }
-    protected synchronized Multiblock readMultiblockOverhaulTurbine(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Multiblock readMultiblockOverhaulTurbine(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
         net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe turbineRecipe = recovery.recoverOverhaulTurbineRecipeNCPF(ncpf, data.get("recipe", -1));
         OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)dimensions.get(0), (int)dimensions.get(2), turbineRecipe);
@@ -281,7 +281,7 @@ public class NCPF11Reader implements FormatReader, HeaderFormatReader {
         });
         return overhaulTurbine;
     }
-    protected synchronized Multiblock readMultiblockOverhaulFusionReactor(NCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Multiblock readMultiblockOverhaulFusionReactor(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.get("dimensions");
         net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe fusionCoolantRecipe = recovery.recoverOverhaulFusionCoolantRecipeNCPF(ncpf, data.get("coolantRecipe", -1));
         net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe fusionRecipe = recovery.recoverOverhaulFusionRecipeNCPF(ncpf, data.get("recipe", -1));

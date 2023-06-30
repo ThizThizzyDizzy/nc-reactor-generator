@@ -22,7 +22,7 @@ import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -308,7 +308,7 @@ public class MenuMain extends Menu{
                 exportMultiblock.isDown = false;
                 exportMultiblock.isFocused = false;
                 focusedComponent = null;
-                NCPFFile ncpf = new NCPFFile();
+                LegacyNCPFFile ncpf = new LegacyNCPFFile();
                 Multiblock multi = getSelectedMultiblock();
                 ncpf.multiblocks.add(multi);
                 ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
@@ -426,7 +426,7 @@ public class MenuMain extends Menu{
             changelog = ex.getClass().getName()+": "+ex.getMessage();
         }
     }
-    private void imprt(NCPFFile ncpf, FormatWriter writer, File file, String filename){
+    private void imprt(LegacyNCPFFile ncpf, FormatWriter writer, File file, String filename){
         FileWriter.write(ncpf, file, writer);
         new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
     }
@@ -636,10 +636,10 @@ public class MenuMain extends Menu{
         return ((MenuComponentMultiblock)multiblocks.components.get(multiblocks.getSelectedIndex())).multiblock;
     }
     private static class PendingWrite{
-        private final NCPFFile ncpf;
+        private final LegacyNCPFFile ncpf;
         private final File file;
         private final FormatWriter writer;
-        private PendingWrite(NCPFFile ncpf, File file, FormatWriter writer){
+        private PendingWrite(LegacyNCPFFile ncpf, File file, FormatWriter writer){
             this.ncpf = ncpf;
             this.file = file;
             this.writer = writer;
@@ -658,7 +658,7 @@ public void onFilesDropped(String[] files){
                     return;
                 }
                 try{
-                    NCPFFile ncpf = FileReader.read(new File(fil));
+                    LegacyNCPFFile ncpf = FileReader.read(new File(fil));
                     if(ncpf==null)return;
                     if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
                         Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);

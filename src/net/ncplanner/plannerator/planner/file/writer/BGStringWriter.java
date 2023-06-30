@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.StringFormatWriter;
 public class BGStringWriter extends StringFormatWriter{
     @Override
@@ -17,7 +17,7 @@ public class BGStringWriter extends StringFormatWriter{
         return true;
     }
     @Override
-    public String write(NCPFFile ncpf){
+    public String write(LegacyNCPFFile ncpf){
         boolean hasRecipeWarned = false;
         if(!ncpf.multiblocks.isEmpty()){
             if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by Building Gadget String!");

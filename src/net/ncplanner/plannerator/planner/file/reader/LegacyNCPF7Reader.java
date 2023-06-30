@@ -3,16 +3,16 @@ import java.io.InputStream;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
-public class NCPF7Reader extends NCPF8Reader {
+public class LegacyNCPF7Reader extends LegacyNCPF8Reader {
     @Override
     protected byte getTargetVersion() {
         return (byte) 7;
     }
 
     @Override
-    protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
+    protected synchronized Multiblock readMultiblock(LegacyNCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
         Config data = Config.newConfig();
         data.load(in);
         Multiblock multiblock;

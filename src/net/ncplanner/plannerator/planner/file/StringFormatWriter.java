@@ -12,16 +12,16 @@ public abstract class StringFormatWriter extends FormatWriter{
         return FileFormat.BG_STRING;
     }
     @Override
-    public void write(NCPFFile ncpf, OutputStream stream){
+    public void write(LegacyNCPFFile ncpf, OutputStream stream){
         try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream))){
             writer.write(write(ncpf));
         }catch(IOException ex){
             throw new RuntimeException(ex);
         }
     }
-    public abstract String write(NCPFFile ncpf);
+    public abstract String write(LegacyNCPFFile ncpf);
     @Override
-    public void openExportSettings(NCPFFile ncpf, Runnable onExport){
+    public void openExportSettings(LegacyNCPFFile ncpf, Runnable onExport){
         new MenuMessageDialog(Core.gui, Core.gui.menu, "Export String").addButton("Copy String", () -> {
             GLFW.glfwSetClipboardString(Core.window, write(ncpf));
         }, true).addButton("Export as file", onExport, true).addButton("Cancel", true).open();

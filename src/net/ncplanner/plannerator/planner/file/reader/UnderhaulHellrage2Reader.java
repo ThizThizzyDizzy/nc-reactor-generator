@@ -5,7 +5,7 @@ import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class UnderhaulHellrage2Reader implements FormatReader{
     @Override
@@ -18,7 +18,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
         return major==1&&minor==2&&build>=23;//&&build<=25;
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized LegacyNCPFFile read(InputStream in, RecoveryHandler recovery){
         JSON.JSONObject hellrage = JSON.parse(in);
         JSON.JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
         JSON.JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");
@@ -37,7 +37,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
                 sfr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
             }
         }
-        NCPFFile file = new NCPFFile();
+        LegacyNCPFFile file = new LegacyNCPFFile();
         sfr.buildDefaultCasingOnConvert();
         file.multiblocks.add(sfr);
         return file;

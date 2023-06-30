@@ -11,7 +11,7 @@ import net.ncplanner.plannerator.multiblock.configuration.RuleContainer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
+import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
     public static Block controller(String name, String displayName, String texture){
         Block block = new Block(name);
@@ -154,7 +154,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
             coilCfg.set("efficiency", coilEfficiency);
             config.set("coil", coilCfg);
         }
-        if(!partial)NCPFWriter.saveTexture(config, texture);
+        if(!partial)LegacyNCPFWriter.saveTexture(config, texture);
         if(!rules.isEmpty()){
             ConfigList ruls = new ConfigList();
             for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : rules){

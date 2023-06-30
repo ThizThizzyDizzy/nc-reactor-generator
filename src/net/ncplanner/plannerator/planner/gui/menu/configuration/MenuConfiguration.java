@@ -30,7 +30,7 @@ import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.JSON;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -108,7 +108,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                             if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
                             try(FileOutputStream stream = new FileOutputStream(file)){
                                 Config header = Config.newConfig();
-                                header.set("version", NCPFFile.SAVE_VERSION);
+                                header.set("version", LegacyNCPFFile.SAVE_VERSION);
                                 header.set("count", 0);
                                 header.save(stream);
                                 AddonConfiguration.generate(Core.configuration, configuration).save(null, Config.newConfig()).save(stream);
@@ -221,7 +221,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     try{
                         Core.createFileChooser((file)->{
                             try{
-                                gui.open(new MenuExploreNCPF(gui, this, configuration, file));
+                                gui.open(new MenuExploreLegacyNCPF(gui, this, configuration, file));
                             }catch(FileNotFoundException ex){
                                 Core.warning("Unable to load file!", ex);
                             }
@@ -234,16 +234,16 @@ public class MenuConfiguration extends ConfigurationMenu{
                     if(configuration.addon){
                         onClosed();
                         Config header = Config.newConfig();
-                        header.set("version", NCPFFile.SAVE_VERSION);
+                        header.set("version", LegacyNCPFFile.SAVE_VERSION);
                         header.set("count", 0);
                         configs.add(header);
                         configs.add(AddonConfiguration.generate(Core.configuration, configuration).save(null, Config.newConfig()));
                     }else{
-                        NCPFFile ncpf = new NCPFFile();
+                        LegacyNCPFFile ncpf = new LegacyNCPFFile();
                         ncpf.configuration = configuration;
                         FileWriter.NCPF.writeToConfigs(ncpf, configs);
                     }
-                    gui.open(new MenuExploreNCPF(gui, this, configuration, configs));
+                    gui.open(new MenuExploreLegacyNCPF(gui, this, configuration, configs));
                 }, true).open();
             }
             else gui.open(new MenuValidateConfiguration(gui, this, configuration));
@@ -1711,7 +1711,7 @@ public class MenuConfiguration extends ConfigurationMenu{
     }
     private void loadAddon(File file){
         try{
-            NCPFFile ncpf = FileReader.read(file);
+            LegacyNCPFFile ncpf = FileReader.read(file);
             if(ncpf==null)return;
             configuration.addAndConvertAddon(AddonConfiguration.convert(ncpf.configuration));
         }catch(Exception ex){

@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.InputStreamProvider;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 public class HeadlessAPI{
     /**
      * Sets the global configuration. This is used when loading from hellrage formats. See multiblock.configuration.Configuration.configurations for a list of loaded configurations
@@ -24,7 +24,7 @@ public class HeadlessAPI{
      * @throws IllegalArgumentException if the file is of an unknown format
      * @return an NCPFFile object containing all the information in the file
      */
-    public static NCPFFile loadFile(File file)throws IllegalArgumentException{
+    public static LegacyNCPFFile loadFile(File file)throws IllegalArgumentException{
         return FileReader.read(file);
     }
     /**
@@ -33,7 +33,7 @@ public class HeadlessAPI{
      * @throws IllegalArgumentException if the file is of an unknown format
      * @return an NCPFFile object containing all the information in the file
      */
-    public static NCPFFile loadFile(InputStreamProvider input)throws IllegalArgumentException{
+    public static LegacyNCPFFile loadFile(InputStreamProvider input)throws IllegalArgumentException{
         return FileReader.read(input);
     }
     /**
@@ -42,7 +42,7 @@ public class HeadlessAPI{
      * @param format the format to convert to- see static fields in planner.file.FileWriter
      * @param output the OutputStream to write the converted file to
      */
-    public static void saveFile(NCPFFile ncpf, FormatWriter format, OutputStream output){
+    public static void saveFile(LegacyNCPFFile ncpf, FormatWriter format, OutputStream output){
         format.write(ncpf, output);
     }
     /**
@@ -68,7 +68,7 @@ public class HeadlessAPI{
      * @param ncpf the NCPFFile to save
      * @return the first multiblock's image
      */
-    public static Image getImage(NCPFFile ncpf){
+    public static Image getImage(LegacyNCPFFile ncpf){
         return FileWriter.PNG.write(ncpf);
     }
     /**
@@ -92,10 +92,10 @@ public class HeadlessAPI{
      * @param ncpf the file to load
      * @return an array containing all multiblocks' images
      */
-    public static Image[] getImages(NCPFFile ncpf){
+    public static Image[] getImages(LegacyNCPFFile ncpf){
         Image[] images = new Image[ncpf.multiblocks.size()];
         for(int i = 0; i<ncpf.multiblocks.size(); i++){
-            NCPFFile ncpf1 = new NCPFFile();
+            LegacyNCPFFile ncpf1 = new LegacyNCPFFile();
             ncpf1.configuration = ncpf.configuration;
             ncpf1.metadata = new HashMap<>(ncpf.metadata);
             ncpf1.multiblocks.add(ncpf.multiblocks.get(i));
@@ -124,7 +124,7 @@ public class HeadlessAPI{
      * @param ncpf the NCPFFile to save
      * @return the first multiblock's information
      */
-    public static String getInfo(NCPFFile ncpf){
+    public static String getInfo(LegacyNCPFFile ncpf){
         return ncpf.multiblocks.get(0).getSaveTooltip().text;
     }
     /**
@@ -148,7 +148,7 @@ public class HeadlessAPI{
      * @param ncpf the file to load
      * @return an array containing all multiblocks' information
      */
-    public static String[] getInfos(NCPFFile ncpf){
+    public static String[] getInfos(LegacyNCPFFile ncpf){
         String[] infos = new String[ncpf.multiblocks.size()];
         for(int i = 0; i<ncpf.multiblocks.size(); i++){
             infos[i] = ncpf.multiblocks.get(i).getSaveTooltip().text;

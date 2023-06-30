@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
-public class NCPF4Reader extends NCPF5Reader {
+public class LegacyNCPF4Reader extends LegacyNCPF5Reader {
     @Override
     protected byte getTargetVersion() {
         return (byte) 4;

@@ -12,7 +12,7 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Pl
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.ForgeConfig;
 import net.ncplanner.plannerator.planner.file.FormatReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class OverhaulNCConfigReader implements FormatReader{
     @Override
@@ -20,11 +20,11 @@ public class OverhaulNCConfigReader implements FormatReader{
         return ForgeConfig.parse(in).getConfig("fission").hasProperty("fission_sink_cooling_rate");
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized LegacyNCPFFile read(InputStream in, RecoveryHandler recovery){
         Config config = ForgeConfig.parse(in);
         Config fission = config.get("fission");
         Config turbine = config.get("turbine");
-        NCPFFile ncpf = new NCPFFile();
+        LegacyNCPFFile ncpf = new LegacyNCPFFile();
         ncpf.configuration = new Configuration("NuclearCraft", "Unknown", null);
         ncpf.configuration.overhaul = new OverhaulConfiguration();
         //<editor-fold defaultstate="collapsed" desc="Fission SFR">

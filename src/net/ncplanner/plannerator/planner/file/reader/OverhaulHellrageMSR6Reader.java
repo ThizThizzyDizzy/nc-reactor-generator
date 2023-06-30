@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class OverhaulHellrageMSR6Reader implements FormatReader{
     @Override
@@ -26,7 +26,7 @@ public class OverhaulHellrageMSR6Reader implements FormatReader{
         return major==2&&minor==1&&build>=1;//&&build<=7;
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized LegacyNCPFFile read(InputStream in, RecoveryHandler recovery){
         JSON.JSONObject hellrage = JSON.parse(in);
         JSON.JSONObject data = hellrage.getJSONObject("Data");
         JSON.JSONObject dims = data.getJSONObject("InteriorDimensions");
@@ -152,7 +152,7 @@ public class OverhaulHellrageMSR6Reader implements FormatReader{
         for(net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block key : sources.keySet()){
             key.addNeutronSource(msr, sources.get(key));
         }
-        NCPFFile file = new NCPFFile();
+        LegacyNCPFFile file = new LegacyNCPFFile();
         msr.buildDefaultCasingOnConvert();
         file.multiblocks.add(msr);
         return file;

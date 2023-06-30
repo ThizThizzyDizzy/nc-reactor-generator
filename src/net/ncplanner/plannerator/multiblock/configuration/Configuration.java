@@ -15,7 +15,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 public class Configuration{
     public String name;
     public String overhaulVersion;
@@ -77,7 +77,7 @@ public class Configuration{
     }
     public void impose(Configuration configuration){
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        NCPFFile saver = new NCPFFile();
+        LegacyNCPFFile saver = new LegacyNCPFFile();
         saver.configuration = this;
         FileWriter.write(saver, out, FileWriter.NCPF);
         try{
@@ -304,7 +304,7 @@ public class Configuration{
     }
     public Configuration copy(){
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        NCPFFile saver = new NCPFFile();
+        LegacyNCPFFile saver = new LegacyNCPFFile();
         saver.configuration = this;
         FileWriter.write(saver, out, FileWriter.NCPF);
         try{

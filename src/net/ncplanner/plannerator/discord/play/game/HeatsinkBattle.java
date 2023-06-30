@@ -27,7 +27,7 @@ import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 public class HeatsinkBattle extends Game{
     public Multiblock basis;
     public Multiblock current;
@@ -50,7 +50,7 @@ public class HeatsinkBattle extends Game{
         ArrayList<Multiblock> multis = new ArrayList<>();
         HashMap<Multiblock, Configuration> configs = new HashMap<>();
         synchronized(Bot.storedMultiblocks){
-            for(NCPFFile ncpf : Bot.storedMultiblocks){
+            for(LegacyNCPFFile ncpf : Bot.storedMultiblocks){
                 for(Multiblock multi : ncpf.multiblocks){
                     configs.put(multi, ncpf.configuration);
                 }
@@ -265,7 +265,7 @@ public class HeatsinkBattle extends Game{
             }catch(NumberFormatException ex){}
         }
     }
-    private void exportPng(NCPFFile ncpf, MessageChannel channel){
+    private void exportPng(LegacyNCPFFile ncpf, MessageChannel channel){
         for(Multiblock m : ncpf.multiblocks){
             m.recalculate();
         }
@@ -280,8 +280,8 @@ public class HeatsinkBattle extends Game{
             stream.close();
         }
     }
-    private NCPFFile generateNCPF(Multiblock multi){
-        NCPFFile file = new NCPFFile();
+    private LegacyNCPFFile generateNCPF(Multiblock multi){
+        LegacyNCPFFile file = new LegacyNCPFFile();
         multi.showDetails = false;
         file.configuration = config;
         file.multiblocks.add(multi);

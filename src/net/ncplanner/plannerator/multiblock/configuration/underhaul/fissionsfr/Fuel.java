@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.configuration.ThingWithLegacyNames;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
+import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class Fuel implements Pinnable, ThingWithLegacyNames{
     public static Fuel fuel(String name, String displayName, float power, float heat, int time, String texture){
         Fuel fuel = new Fuel(name, power, heat, time);
@@ -45,7 +45,7 @@ public class Fuel implements Pinnable, ThingWithLegacyNames{
         config.set("power", power);
         config.set("heat", heat);
         config.set("time", time);
-        if(!partial)NCPFWriter.saveTexture(config, texture);
+        if(!partial)LegacyNCPFWriter.saveTexture(config, texture);
         return config;
     }
     public void setTexture(Image image){

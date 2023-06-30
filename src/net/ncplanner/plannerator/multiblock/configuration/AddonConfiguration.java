@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 public class AddonConfiguration extends Configuration{
     public static AddonConfiguration generate(Configuration parent, Configuration addon){
         AddonConfiguration add = new AddonConfiguration(addon.name, addon.overhaulVersion, addon.underhaulVersion);
@@ -80,7 +80,7 @@ public class AddonConfiguration extends Configuration{
     public AddonConfiguration copy(){
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Config header = Config.newConfig();
-        header.set("version", NCPFFile.SAVE_VERSION);
+        header.set("version", LegacyNCPFFile.SAVE_VERSION);
         header.set("count", 0);
         header.save(out);
         /*AddonConfiguration.generate(Core.configuration, this).*/save(Core.configuration, Config.newConfig()).save(out);

@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
-import net.ncplanner.plannerator.planner.file.reader.NCPF11Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF11Reader;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -22,19 +22,19 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SingleColumnGridLayout;
-public class MenuExploreNCPF extends ConfigurationMenu{
+public class MenuExploreLegacyNCPF extends ConfigurationMenu{
     private final SingleColumnList list;
     private final ProgressBar progress;
     private final ArrayList<Config> configs;
     private boolean consolidate = false;
-    public MenuExploreNCPF(GUI gui, Menu parent, Configuration configuration, File file) throws FileNotFoundException{
+    public MenuExploreLegacyNCPF(GUI gui, Menu parent, Configuration configuration, File file) throws FileNotFoundException{
         this(gui, parent, configuration, new FileInputStream(file));
     }
-    public MenuExploreNCPF(GUI gui, Menu parent, Configuration configuration, InputStream stream){
+    public MenuExploreLegacyNCPF(GUI gui, Menu parent, Configuration configuration, InputStream stream){
         this(gui, parent, configuration, loadConfigs(stream));
     }
     private Task task;
-    public MenuExploreNCPF(GUI gui, Menu parent, Configuration configuration, ArrayList<Config> configs){
+    public MenuExploreLegacyNCPF(GUI gui, Menu parent, Configuration configuration, ArrayList<Config> configs){
         super(gui, parent, configuration, "Explore NCPF");
         progress = add(new ProgressBar(sidebar.width, 0, 0, 0){
             @Override
@@ -721,7 +721,7 @@ public class MenuExploreNCPF extends ConfigurationMenu{
         return blocks;
     }
     private Image loadNCPFTexture(ConfigNumberList lst){
-        return lst==null?null:NCPF11Reader.loadNCPFTexture(lst);
+        return lst==null?null:LegacyNCPF11Reader.loadNCPFTexture(lst);
     }
     private class Block{
         private final Image texture;

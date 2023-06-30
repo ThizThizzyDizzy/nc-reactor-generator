@@ -11,7 +11,7 @@ import net.ncplanner.plannerator.planner.module.Module;
 public abstract class ImageFormatWriter extends FormatWriter{
     public ArrayList<EditorOverlay> overlays = new ArrayList<>();
     @Override
-    public void write(NCPFFile ncpf, OutputStream stream){
+    public void write(LegacyNCPFFile ncpf, OutputStream stream){
         try{
             ImageIO.write(write(ncpf), stream);
             stream.close();
@@ -19,9 +19,9 @@ public abstract class ImageFormatWriter extends FormatWriter{
             throw new RuntimeException(ex);
         }
     }
-    public abstract Image write(NCPFFile ncpf);
+    public abstract Image write(LegacyNCPFFile ncpf);
     @Override
-    public void openExportSettings(NCPFFile ncpf, Runnable onExport){
+    public void openExportSettings(LegacyNCPFFile ncpf, Runnable onExport){
         overlays.clear();
         for(Module m : Core.modules){
             if(m.isActive()){

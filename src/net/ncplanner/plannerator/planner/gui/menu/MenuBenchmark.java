@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
@@ -32,7 +32,7 @@ public class MenuBenchmark extends Menu{
         File file = f;
         if(f==null)return;
         Thread thread = new Thread(() -> {
-            NCPFFile ncpf = FileReader.read(file);
+            LegacyNCPFFile ncpf = FileReader.read(file);
             if(ncpf==null)return;
             Core.multiblocks.clear();
             Core.metadata.clear();

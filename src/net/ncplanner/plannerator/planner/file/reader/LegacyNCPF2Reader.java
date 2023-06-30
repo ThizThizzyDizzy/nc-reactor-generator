@@ -8,16 +8,16 @@ import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockType;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
-public class NCPF2Reader extends NCPF3Reader {
+public class LegacyNCPF2Reader extends LegacyNCPF3Reader {
     @Override
     protected byte getTargetVersion() {
         return (byte) 2;
     }
 
     @Override
-    protected synchronized Multiblock readMultiblock(NCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
+    protected synchronized Multiblock readMultiblock(LegacyNCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
         Config data = Config.newConfig();
         data.load(in);
         Multiblock multiblock;

@@ -30,7 +30,7 @@ import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
@@ -368,11 +368,11 @@ public abstract class Multiblock<T extends Block>{
                     new Vector3f(-1, 0, 0));
         }
     }
-    public final void save(NCPFFile ncpf, Configuration configuration, OutputStream stream) throws MissingConfigurationEntryException{
+    public final void save(LegacyNCPFFile ncpf, Configuration configuration, OutputStream stream) throws MissingConfigurationEntryException{
         Config config = saveToConfig(ncpf, configuration);
         if(config!=null)config.save(stream);
     }
-    public final Config saveToConfig(NCPFFile ncpf, Configuration configuration) throws MissingConfigurationEntryException{
+    public final Config saveToConfig(LegacyNCPFFile ncpf, Configuration configuration) throws MissingConfigurationEntryException{
         int id = getMultiblockID();
         if(id==-1)return null;
         Config config = Config.newConfig();
@@ -393,7 +393,7 @@ public abstract class Multiblock<T extends Block>{
         save(ncpf, configuration, config);
         return config;
     }
-    protected void save(NCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{}
+    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{}
     /**
      * Get the ID to use for saving
      * @return the ID as used in NCPF format, or -1 if this multiblock cannot be saved

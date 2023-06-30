@@ -39,7 +39,7 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.module.Module;
 public class UnderhaulSFR extends CuboidalMultiblock<Block> {
@@ -282,7 +282,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         return 0;
     }
     @Override
-    protected void save(NCPFFile ncpf, Configuration configuration, Config config){
+    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config){
         config.set("fuel", configuration.underhaul.fissionSFR.allFuels.indexOf(fuel));
         boolean compact = isCompact(configuration);//find perfect compression ratio
         config.set("compact", compact);

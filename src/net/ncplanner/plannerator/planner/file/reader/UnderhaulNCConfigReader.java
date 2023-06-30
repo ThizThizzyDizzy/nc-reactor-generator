@@ -11,7 +11,7 @@ import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.P
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.ForgeConfig;
 import net.ncplanner.plannerator.planner.file.FormatReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public class UnderhaulNCConfigReader implements FormatReader{
     @Override
@@ -19,9 +19,9 @@ public class UnderhaulNCConfigReader implements FormatReader{
         return ForgeConfig.parse(in).getConfig("fission").hasProperty("fission_cooling_rate");
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized LegacyNCPFFile read(InputStream in, RecoveryHandler recovery){
         Config config = ForgeConfig.parse(in).getConfig("fission");
-        NCPFFile ncpf = new NCPFFile();
+        LegacyNCPFFile ncpf = new LegacyNCPFFile();
         ncpf.configuration = new Configuration("NuclearCraft", null, "Unknown");
         ncpf.configuration.underhaul = new UnderhaulConfiguration();
         ncpf.configuration.underhaul.fissionSFR = new FissionSFRConfiguration();
@@ -125,7 +125,7 @@ public class UnderhaulNCConfigReader implements FormatReader{
         addFuels(ncpf, config, powerMult, heatMult, fuelUseMult, "californium", "LECf-249", "LECf-249 Oxide", "HECf-249", "HECf-249 Oxide", "LECf-251", "LECf-251 Oxide", "HECf-251", "HECf-251 Oxide");
         return ncpf;
     }
-    private void addFuels(NCPFFile ncpf, Config config, double powerMult, double heatMult, double fuelUseMult, String baseName, String... fuelNames){
+    private void addFuels(LegacyNCPFFile ncpf, Config config, double powerMult, double heatMult, double fuelUseMult, String baseName, String... fuelNames){
         ConfigList time = config.getConfigList("fission_"+baseName+"_fuel_time");
         ConfigList power = config.getConfigList("fission_"+baseName+"_power");
         ConfigList heat = config.getConfigList("fission_"+baseName+"_heat_generation");

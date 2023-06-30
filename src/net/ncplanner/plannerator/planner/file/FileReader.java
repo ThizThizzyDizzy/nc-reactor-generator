@@ -10,10 +10,10 @@ import net.ncplanner.plannerator.planner.file.recovery.RecoveryModeHandler;
 public class FileReader{
     public static final ArrayList<FormatReader> formats = new ArrayList<>();
     public static final RecoveryHandler defaultRecoveryHandler = new NonRecoveryHandler();
-    public static NCPFFile read(InputStreamProvider provider){
+    public static LegacyNCPFFile read(InputStreamProvider provider){
         return read(provider, Core.recoveryMode?new RecoveryModeHandler():defaultRecoveryHandler);
     }
-    public static NCPFFile read(InputStreamProvider provider, RecoveryHandler handler){
+    public static LegacyNCPFFile read(InputStreamProvider provider, RecoveryHandler handler){
         for(FormatReader reader : formats){
             boolean matches = false;
             try{
@@ -23,10 +23,10 @@ public class FileReader{
         }
         throw new IllegalArgumentException("Unknown file format!");
     }
-    public static NCPFFile read(File file){
+    public static LegacyNCPFFile read(File file){
         return read(file, Core.recoveryMode?new RecoveryModeHandler():defaultRecoveryHandler);
     }
-    public static NCPFFile read(File file, RecoveryHandler handler){
+    public static LegacyNCPFFile read(File file, RecoveryHandler handler){
         return read(() -> {
             try{
                 return new FileInputStream(file);
@@ -35,7 +35,7 @@ public class FileReader{
             }
         }, handler);
     }
-    public static NCPFHeader readHeader(InputStreamProvider provider){
+    public static LegacyNCPFHeader readHeader(InputStreamProvider provider){
         for(FormatReader reader : formats){
             if(reader instanceof HeaderFormatReader){
                 boolean matches = false;
@@ -47,7 +47,7 @@ public class FileReader{
         }
         throw new IllegalArgumentException("Unknown file format!");
     }
-    public static NCPFHeader readHeader(File file){
+    public static LegacyNCPFHeader readHeader(File file){
         return readHeader(() -> {
             try{
                 return new FileInputStream(file);

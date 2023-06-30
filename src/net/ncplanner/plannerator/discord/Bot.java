@@ -92,7 +92,7 @@ import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 public class Bot extends ListenerAdapter{
     public static boolean debug = false;
     private static ArrayList<String> prefixes = new ArrayList<>();
@@ -107,7 +107,7 @@ public class Bot extends ListenerAdapter{
     private static MultiblockGenerator generator;
     private static Message generateMessage;
     private static Guild guild = null;
-    public static final ArrayList<NCPFFile> storedMultiblocks = new ArrayList<>();
+    public static final ArrayList<LegacyNCPFFile> storedMultiblocks = new ArrayList<>();
     static{
 //        botCommands.add(new Command("debug"){
 //            @Override
@@ -555,7 +555,7 @@ public class Bot extends ListenerAdapter{
                 Thread t = new Thread(() -> {
                     generator.startThread();
                     synchronized(storedMultiblocks){
-                        for(NCPFFile file : storedMultiblocks){
+                        for(LegacyNCPFFile file : storedMultiblocks){
                             for(Multiblock m : file.multiblocks){
                                 if(m.getDefinitionName().equals(generator.multiblock.getDefinitionName())){
                                     try{
@@ -592,7 +592,7 @@ public class Bot extends ListenerAdapter{
                         generateMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase(Locale.ROOT)+" was generated. :(").build()).queue();
                     }else{
                         generateMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField(generator.multiblock.getGeneralName(), finalMultiblock.getBotTooltip(), false).build()).queue();
-                        NCPFFile ncpf = new NCPFFile();
+                        LegacyNCPFFile ncpf = new LegacyNCPFFile();
                         String name = UUID.randomUUID().toString();
                         ncpf.metadata.put("Author", "S'plodo-Bot");
                         ncpf.metadata.put("Name", name);
@@ -891,7 +891,7 @@ public class Bot extends ListenerAdapter{
                     Multiblock finalMultiblock = null;
                     int total = 0;
                     synchronized(storedMultiblocks){
-                        for(NCPFFile ncpf : storedMultiblocks){
+                        for(LegacyNCPFFile ncpf : storedMultiblocks){
                             MULTIBLOCK:for(Multiblock m : ncpf.multiblocks){
                                 if(ncpf.configuration==null){
                                     m = m.copy();
@@ -958,7 +958,7 @@ public class Bot extends ListenerAdapter{
                     if(finalMultiblock==null||finalMultiblock.isEmpty()){
                         channel.sendMessage(createEmbed("No "+mb.getGeneralName().toLowerCase(Locale.ROOT)+" was found. try `-generate` to make a new "+mb.getGeneralName().toLowerCase(Locale.ROOT)+".").build()).queue();
                     }else{
-                        NCPFFile ncpf = new NCPFFile();
+                        LegacyNCPFFile ncpf = new LegacyNCPFFile();
                         ncpf.multiblocks.add(finalMultiblock);
                         ncpf.configuration = PartialConfiguration.generate(finalMultiblock.getConfiguration(), ncpf.multiblocks);
                         channel.sendMessage(createEmbed("Found "+(configName==null?"":configName+" ")+mb.getGeneralName()).addField(mb.getGeneralName(), finalMultiblock.getBotTooltip(), false).build()).queue();
@@ -2369,7 +2369,7 @@ public class Bot extends ListenerAdapter{
                 }
             }
             try{
-                NCPFFile ncpf = FileReader.read(() -> {
+                LegacyNCPFFile ncpf = FileReader.read(() -> {
                     try{
                         return att.retrieveInputStream().get();
                     }catch(InterruptedException|ExecutionException ex){

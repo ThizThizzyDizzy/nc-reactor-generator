@@ -9,16 +9,16 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
-public class NCPFWriter extends FormatWriter{
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+public class LegacyNCPFWriter extends FormatWriter{
     @Override
     public FileFormat getFileFormat(){
         return FileFormat.NCPF;
     }
     @Override
-    public void write(NCPFFile ncpf, OutputStream stream){
+    public void write(LegacyNCPFFile ncpf, OutputStream stream){
         Config header = Config.newConfig();
-        header.set("version", NCPFFile.SAVE_VERSION);
+        header.set("version", LegacyNCPFFile.SAVE_VERSION);
         header.set("count", ncpf.multiblocks.size());
         Config meta = Config.newConfig();
         for(String key : ncpf.metadata.keySet()){
@@ -44,9 +44,9 @@ public class NCPFWriter extends FormatWriter{
             throw new RuntimeException(ex);
         }
     }
-    public void writeToConfigs(NCPFFile ncpf, ArrayList<Config> configs){
+    public void writeToConfigs(LegacyNCPFFile ncpf, ArrayList<Config> configs){
         Config header = Config.newConfig();
-        header.set("version", NCPFFile.SAVE_VERSION);
+        header.set("version", LegacyNCPFFile.SAVE_VERSION);
         header.set("count", ncpf.multiblocks.size());
         Config meta = Config.newConfig();
         for(String key : ncpf.metadata.keySet()){

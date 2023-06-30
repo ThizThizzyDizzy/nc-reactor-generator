@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
 import net.ncplanner.plannerator.config2.Config;
-public class NCPF3Reader extends NCPF4Reader{
+public class LegacyNCPF3Reader extends LegacyNCPF4Reader{
     @Override
     protected byte getTargetVersion() {
         return (byte) 3;

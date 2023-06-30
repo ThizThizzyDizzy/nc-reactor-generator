@@ -12,7 +12,7 @@ import net.ncplanner.plannerator.multiblock.configuration.RuleContainer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
+import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
     public static Block cooler(String name, String displayName, int cooling, String texture, PlacementRule... rules){
         Block block = new Block(name);
@@ -107,7 +107,7 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         if(moderator)config.set("moderator", true);
         if(casing)config.set("casing", true);
         if(controller)config.set("controller", true);
-        if(!partial)NCPFWriter.saveTexture(config, texture);
+        if(!partial)LegacyNCPFWriter.saveTexture(config, texture);
         return config;
     }
     public void setTexture(Image image){

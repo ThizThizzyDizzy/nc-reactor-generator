@@ -11,14 +11,14 @@ import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.JSON;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 public class HellrageWriter extends FormatWriter{
     @Override
     public FileFormat getFileFormat(){
         return FileFormat.HELLRAGE_REACTOR;
     }
     @Override
-    public void write(NCPFFile ncpf, OutputStream stream){
+    public void write(LegacyNCPFFile ncpf, OutputStream stream){
         boolean hasOverhaul = false;
         for(Multiblock m : ncpf.multiblocks){
             if(m.getDefinitionName().contains("Overhaul"))hasOverhaul = true;

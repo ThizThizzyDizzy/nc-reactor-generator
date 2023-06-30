@@ -11,7 +11,7 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -92,7 +92,7 @@ public class MenuSettings extends SettingsMenu{
                     try{
                         externalConfigTask.progress = i/(float)loadingExternalConfigurations.length;
                         i++;
-                        NCPFFile file = FileReader.read(f);
+                        LegacyNCPFFile file = FileReader.read(f);
                         file.configuration.path = "external/configurations/"+f.getName();
                         if(file.configuration.isPartial()||file.configuration.addon)continue;//get outta here partial configs and addons
                         Button b = new Button(0, 0, 0, 48, "Load "+file.configuration.toString(), true).setTooltip("Replace the current configuration with "+file.configuration.toString()+"\nAll multiblocks will be converted to the new configuration");
@@ -127,7 +127,7 @@ public class MenuSettings extends SettingsMenu{
             try{
                 Core.createFileChooser((file) -> {
                     Thread t = new Thread(() -> {
-                        NCPFFile ncpf = FileReader.read(file);
+                        LegacyNCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
                         Configuration.impose(ncpf.configuration, Core.configuration);
                         for(Multiblock multi : Core.multiblocks){
@@ -153,7 +153,7 @@ public class MenuSettings extends SettingsMenu{
                     if(file==null)return;
                     try(FileOutputStream stream = new FileOutputStream(file)){
                         Config header = Config.newConfig();
-                        header.set("version", NCPFFile.SAVE_VERSION);
+                        header.set("version", LegacyNCPFFile.SAVE_VERSION);
                         header.set("count", 0);
                         header.save(stream);
                         Core.configuration.save(null, Config.newConfig()).save(stream);

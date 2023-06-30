@@ -9,8 +9,8 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.NCPFFile;
-import net.ncplanner.plannerator.planner.file.NCPFHeader;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.file.LegacyNCPFHeader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -26,7 +26,7 @@ public class MenuLoad extends MenuDialog{
             try{
                 Core.createFileChooser((file) -> {
                     Thread t = new Thread(() -> {
-                        NCPFFile ncpf = FileReader.read(file);
+                        LegacyNCPFFile ncpf = FileReader.read(file);
                         if(ncpf==null)return;
                         Core.multiblocks.clear();
                         Core.saved = true;
@@ -87,7 +87,7 @@ public class MenuLoad extends MenuDialog{
                         });
                         load.addAction(() -> {
                             Thread t = new Thread(() -> {
-                                NCPFFile ncpf = FileReader.read(file);
+                                LegacyNCPFFile ncpf = FileReader.read(file);
                                 if(ncpf==null)return;
                                 Core.multiblocks.clear();
                                 Core.saved = true;
@@ -122,7 +122,7 @@ public class MenuLoad extends MenuDialog{
                     }
                 });
                 try{
-                    NCPFHeader header = FileReader.readHeader(file);
+                    LegacyNCPFHeader header = FileReader.readHeader(file);
                     if(header!=null){
                         GridLayout l2 = new GridLayout(36, 3);
                         if(header.metadata!=null){
