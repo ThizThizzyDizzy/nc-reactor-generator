@@ -8,6 +8,13 @@ import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
+import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.tutorial.TutorialFileReader;
 public class UnderhaulModule extends Module{
@@ -29,6 +36,13 @@ public class UnderhaulModule extends Module{
     @Override
     public void registerNCPF(){
         registerNCPFConfiguration(NCPFUnderhaulSFRConfiguration::new, NCPFUnderhaulSFRDesign::new);
+        registerNCPFModule(UnderhaulSFRSettingsModule::new);
+        registerNCPFModule(FuelStatsModule::new);
+        registerNCPFModule(CoolerModule::new);
+        registerNCPFModule(FuelCellModule::new);
+        registerNCPFModule(ModeratorModule::new);
+        registerNCPFModule(CasingModule::new);
+        registerNCPFModule(ControllerModule::new);
     }
     @Override
     public void addTutorials(){

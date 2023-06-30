@@ -509,8 +509,8 @@ public class Core{
         Configuration.clearConfigurations();
         NCPFConfigurationContainer.recognizedConfigurations.clear();
         NCPFDesign.recognizedDesigns.clear();
-        NCPFElement.initRecognizedElements();
-        NCPFModuleContainer.initRecognizedElements();
+        NCPFElement.recognizedElements.clear();
+        NCPFModuleContainer.recognizedModules.clear();
         for(Module m : modules){
             if(m.isActive()){
                 m.addMultiblockTypes(multiblockTypes);

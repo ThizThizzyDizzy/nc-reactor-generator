@@ -1,16 +1,13 @@
 package net.ncplanner.plannerator.ncpf;
 import java.util.HashMap;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.ncpf.module.UnknownNCPFModule;
+import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 public class NCPFModuleContainer extends DefinedNCPFObject{
     public static HashMap<String, Supplier<NCPFModule>> recognizedModules = new HashMap<>();
-    public static void initRecognizedElements(){
-        recognizedModules.clear();
-        recognizedModules.put(new NCPFBlockRecipesModule().name, NCPFBlockRecipesModule::new);
-    }
     public HashMap<String, NCPFModule> modules;
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -29,6 +26,25 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
     }
     public <T extends NCPFModule> T getModule(Supplier<T> module){
         return (T) modules.get(module.get().name);
+    }
+    public void setModule(NCPFModule module){
+        modules.put(module.name, module);
+    }
+    public <T extends NCPFModule> void withModule(Supplier<T> module, Consumer<T> doIfPresent){
+        T t = getModule(module);
+        if(t!=null)doIfPresent.accept(t);
+    }
+    public <T extends NCPFModule> void withModuleOrCreate(Supplier<T> module, Consumer<T> doIfPresent){
+        T t = getOrCreateModule(module);
+        if(t!=null)doIfPresent.accept(t);
+    }
+    public <T extends NCPFModule> T getOrCreateModule(Supplier<T> module){
+        T mod = getModule(module);
+        if(mod==null){
+            mod = module.get();
+            modules.put(mod.name, mod);
+        }
+        return mod;
     }
     public void conglomerate(NCPFModuleContainer addon){
         for(String key : addon.modules.keySet()){

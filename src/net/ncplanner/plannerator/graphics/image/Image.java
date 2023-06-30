@@ -1,5 +1,10 @@
 package net.ncplanner.plannerator.graphics.image;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Base64;
+import net.ncplanner.plannerator.planner.ImageIO;
 import org.lwjgl.BufferUtils;
 public class Image{
     private final int width;
@@ -103,5 +108,21 @@ public class Image{
             }
         }
         return copy;
+    }
+    //thanks ChatGPT! :3
+    public String toBase64(){
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+            ImageIO.write(this, stream);
+            return Base64.getEncoder().encodeToString(stream.toByteArray());
+        }catch(IOException ex){
+            throw new RuntimeException("Failed to encode base 64!", ex);
+        }
+    }
+    public static Image fromBase64(String string){
+        try(ByteArrayInputStream stream = new ByteArrayInputStream(Base64.getDecoder().decode(string))){
+            return ImageIO.read(stream);
+        }catch(IOException ex){
+            throw new RuntimeException("Failed to decode base 64!", ex);
+        }
     }
 }
