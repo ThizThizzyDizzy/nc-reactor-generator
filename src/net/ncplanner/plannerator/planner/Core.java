@@ -30,6 +30,10 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFDesign;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.NCPFFile;
@@ -503,9 +507,14 @@ public class Core{
         multiblockTypes.clear();
         Tutorial.init();
         Configuration.clearConfigurations();
+        NCPFConfigurationContainer.recognizedConfigurations.clear();
+        NCPFDesign.recognizedDesigns.clear();
+        NCPFElement.initRecognizedElements();
+        NCPFModuleContainer.initRecognizedElements();
         for(Module m : modules){
             if(m.isActive()){
                 m.addMultiblockTypes(multiblockTypes);
+                m.registerNCPF();
                 m.addTutorials();
                 m.addConfigurations();
             }

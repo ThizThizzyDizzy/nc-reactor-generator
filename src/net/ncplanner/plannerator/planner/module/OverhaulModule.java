@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
@@ -17,6 +18,12 @@ import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceTargetDeca
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulMSRConfiguration;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulSFRConfiguration;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulTurbineConfiguration;
+import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulMSRDesign;
+import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulSFRDesign;
+import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
@@ -39,6 +46,12 @@ public class OverhaulModule extends Module{
         multiblockTypes.add(new OverhaulSFR());
         multiblockTypes.add(new OverhaulMSR());
         multiblockTypes.add(new OverhaulTurbine());
+    }
+    @Override
+    public void registerNCPF(){
+        registerNCPFConfiguration(NCPFOverhaulSFRConfiguration::new, NCPFOverhaulSFRDesign::new);
+        registerNCPFConfiguration(NCPFOverhaulMSRConfiguration::new, NCPFOverhaulMSRDesign::new);
+        registerNCPFConfiguration(NCPFOverhaulTurbineConfiguration::new, NCPFOverhaulTurbineDesign::new);
     }
     @Override
     public void addTutorials(){

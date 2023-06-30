@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFUnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
@@ -23,6 +25,10 @@ public class UnderhaulModule extends Module{
     @Override
     public void addMultiblockTypes(ArrayList multiblockTypes){
         multiblockTypes.add(new UnderhaulSFR());
+    }
+    @Override
+    public void registerNCPF(){
+        registerNCPFConfiguration(NCPFUnderhaulSFRConfiguration::new, NCPFUnderhaulSFRDesign::new);
     }
     @Override
     public void addTutorials(){

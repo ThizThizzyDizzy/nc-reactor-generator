@@ -1,0 +1,26 @@
+package net.ncplanner.plannerator.ncpf;
+import java.util.HashMap;
+import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
+import net.ncplanner.plannerator.ncpf.design.UnknownNCPFDesign;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+public class NCPFDesign extends DefinedNCPFModularObject{
+    private final NCPFFile file;
+    public NCPFDesign(NCPFFile file){
+        this.file = file;
+    }
+    public static HashMap<String, Supplier<NCPFDesignDefinition>> recognizedDesigns = new HashMap<>();
+    public NCPFDesignDefinition definition;
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        definition = recognizedDesigns.getOrDefault(ncpf.getString("type"), UnknownNCPFDesign::new).get();
+        definition.file = file;
+        definition.convertFromObject(ncpf);
+        super.convertFromObject(ncpf);
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        definition.convertToObject(ncpf);
+        super.convertToObject(ncpf);
+    }
+}

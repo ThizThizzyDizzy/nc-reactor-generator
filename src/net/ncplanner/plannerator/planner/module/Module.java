@@ -1,8 +1,17 @@
 package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFDesign;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
+import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
@@ -53,15 +62,27 @@ public abstract class Module<T>{
     public String getTooltip(Multiblock m, T o){
         return null;
     }
-    public void addConfiguration(Configuration c){
+    public final void addConfiguration(Configuration c){
         Configuration.configurations.add(c);
         c.path = "modules/"+name+"/"+c.name;
         ownConfigs.add(c);
+    }
+    public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration, Supplier<NCPFDesignDefinition> design){
+        String key = design.get().type;
+        NCPFConfigurationContainer.recognizedConfigurations.put(key, configuration);
+        NCPFDesign.recognizedDesigns.put(key, design);
+    }
+    public final void registerNCPFElement(String key, Supplier<NCPFElementDefinition> element){
+        NCPFElement.recognizedElements.put(key, element);
+    }
+    public final void registerNCPFModule(Supplier<NCPFModule> module){
+        NCPFModuleContainer.recognizedModules.put(module.get().name, module);
     }
     public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){}
     public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}
     public void getEditorOverlays(Multiblock multiblock, ArrayList<EditorOverlay> overlays){}
     public void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){}
+    public void registerNCPF(){}
     public void setActive(boolean active){
         if(active)activate();
         else deactivate();
