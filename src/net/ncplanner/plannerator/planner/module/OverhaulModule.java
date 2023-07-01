@@ -28,6 +28,7 @@ import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelVesselModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterStatsModule;
@@ -46,6 +47,15 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.RecipePortsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CoilModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ConnectorModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.InletModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.OutletModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.RecipeStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ShaftModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelStatsModule;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.tutorial.TutorialFileReader;
@@ -72,6 +82,7 @@ public class OverhaulModule extends Module{
         registerNCPFConfiguration(NCPFOverhaulSFRConfiguration::new, NCPFOverhaulSFRDesign::new);
         registerNCPFConfiguration(NCPFOverhaulMSRConfiguration::new, NCPFOverhaulMSRDesign::new);
         registerNCPFConfiguration(NCPFOverhaulTurbineConfiguration::new, NCPFOverhaulTurbineDesign::new);
+        
         registerNCPFModule(OverhaulSFRSettingsModule::new);
         registerNCPFModule(ConductorModule::new);
         registerNCPFModule(CasingModule::new);
@@ -89,6 +100,7 @@ public class OverhaulModule extends Module{
         registerNCPFModule(FuelStatsModule::new);
         registerNCPFModule(IrradiatorStatsModule::new);
         registerNCPFModule(CoolantRecipeStatsModule::new);
+        
         registerNCPFModule(OverhaulMSRSettingsModule::new);
         registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule::new);
         registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule::new);
@@ -105,6 +117,19 @@ public class OverhaulModule extends Module{
         registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelStatsModule::new);
         registerNCPFModule(HeaterStatsModule::new);
         registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorStatsModule::new);
+        
+        registerNCPFModule(OverhaulTurbineSettingsModule::new);
+        registerNCPFModule(BladeModule::new);
+        registerNCPFModule(StatorModule::new);
+        registerNCPFModule(CoilModule::new);
+        registerNCPFModule(BearingModule::new);
+        registerNCPFModule(ShaftModule::new);
+        registerNCPFModule(ConnectorModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ControllerModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
+        registerNCPFModule(InletModule::new);
+        registerNCPFModule(OutletModule::new);
+        registerNCPFModule(RecipeStatsModule::new);
     }
     @Override
     public void addTutorials(){

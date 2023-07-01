@@ -1,6 +1,4 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
