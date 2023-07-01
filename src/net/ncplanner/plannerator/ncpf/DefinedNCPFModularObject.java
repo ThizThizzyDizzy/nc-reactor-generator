@@ -11,7 +11,7 @@ public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
     public NCPFModuleContainer modules;
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        modules = ncpf.getDefinedNCPFObject("modules", new NCPFModuleContainer());
+        modules = ncpf.getDefinedNCPFObject("modules", NCPFModuleContainer::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

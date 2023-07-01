@@ -5,14 +5,13 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.ncpf.module.UnknownNCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 public class NCPFModuleContainer extends DefinedNCPFObject{
     public static HashMap<String, Supplier<NCPFModule>> recognizedModules = new HashMap<>();
     public HashMap<String, NCPFModule> modules;
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String key : ncpf.keySet()){
-            modules.put(key, ncpf.getDefinedNCPFObject(key, recognizedModules.getOrDefault(key, UnknownNCPFModule::new).get()));
+            modules.put(key, ncpf.getDefinedNCPFObject(key, recognizedModules.getOrDefault(key, UnknownNCPFModule::new)));
         }
     }
     @Override

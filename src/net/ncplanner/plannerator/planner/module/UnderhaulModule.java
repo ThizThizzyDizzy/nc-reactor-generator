@@ -9,6 +9,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
@@ -39,6 +40,7 @@ public class UnderhaulModule extends Module{
         registerNCPFModule(UnderhaulSFRSettingsModule::new);
         registerNCPFModule(FuelStatsModule::new);
         registerNCPFModule(CoolerModule::new);
+        registerNCPFModule(ActiveCoolerModule::new);
         registerNCPFModule(FuelCellModule::new);
         registerNCPFModule(ModeratorModule::new);
         registerNCPFModule(CasingModule::new);

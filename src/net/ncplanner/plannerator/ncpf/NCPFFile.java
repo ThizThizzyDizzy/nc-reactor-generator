@@ -11,7 +11,7 @@ public class NCPFFile extends DefinedNCPFObject{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         version = ncpf.getInteger("version");
-        configuration = ncpf.getDefinedNCPFObject("configuration", new NCPFConfigurationContainer());
+        configuration = ncpf.getDefinedNCPFObject("configuration", NCPFConfigurationContainer::new);
         addons = ncpf.getDefinedNCPFList("addons", new NCPFList<>(), NCPFAddon::new);
         conglomeration = new NCPFConfigurationContainer();
         conglomeration.conglomerate(configuration);

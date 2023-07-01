@@ -4,7 +4,7 @@ public class NCPFAddon extends DefinedNCPFModularObject{
     public NCPFConfigurationContainer configuration;
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        configuration = ncpf.getDefinedNCPFObject("configuration", new NCPFConfigurationContainer());
+        configuration = ncpf.getDefinedNCPFObject("configuration", NCPFConfigurationContainer::new);
         super.convertFromObject(ncpf);
     }
     @Override

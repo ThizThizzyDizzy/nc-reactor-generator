@@ -10,7 +10,7 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String key : ncpf.keySet()){
-            configurations.put(key, ncpf.getDefinedNCPFObject(key, recognizedConfigurations.getOrDefault(key, UnknownNCPFConfiguration::new).get()));
+            configurations.put(key, ncpf.getDefinedNCPFObject(key, recognizedConfigurations.getOrDefault(key, UnknownNCPFConfiguration::new)));
         }
     }
     @Override

@@ -1,0 +1,21 @@
+package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference;
+import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+public class RecipePortsModule extends BlockFunctionModule{
+    public BlockReference input;
+    public BlockReference output;
+    public RecipePortsModule(){
+        super("nuclearcraft:overhaul_msr:recipe_ports");
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        input = ncpf.getDefinedNCPFObject("input", BlockReference::new);
+        output = ncpf.getDefinedNCPFObject("output", BlockReference::new);
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setDefinedNCPFObject("input", input);
+        ncpf.setDefinedNCPFObject("output", output);
+    }
+}

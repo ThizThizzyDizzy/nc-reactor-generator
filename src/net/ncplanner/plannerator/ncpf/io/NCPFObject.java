@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
 public class NCPFObject extends HashMap<String, Object>{
-    public <T extends DefinedNCPFObject> T getDefinedNCPFObject(String key, T object){
+    public <T extends DefinedNCPFObject> T getDefinedNCPFObject(String key, Supplier<T> supplier){
+        T object = supplier.get();
         NCPFObject ncpf = getNCPFObject(key);
         object.convertFromObject(ncpf);
         return object;
