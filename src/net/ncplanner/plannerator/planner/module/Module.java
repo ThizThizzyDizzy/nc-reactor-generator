@@ -67,10 +67,11 @@ public abstract class Module<T>{
         c.path = "modules/"+name+"/"+c.name;
         ownConfigs.add(c);
     }
-    public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration, Supplier<NCPFDesignDefinition> design){
-        String key = design.get().type;
-        NCPFConfigurationContainer.recognizedConfigurations.put(key, configuration);
-        NCPFDesign.recognizedDesigns.put(key, design);
+    public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
+        NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);
+    }
+    public final void registerNCPFDesign(Supplier<NCPFDesignDefinition> design){
+        NCPFDesign.recognizedDesigns.put(design.get().type, design);
     }
     public final void registerNCPFElement(String key, Supplier<NCPFElementDefinition> element){
         NCPFElement.recognizedElements.put(key, element);

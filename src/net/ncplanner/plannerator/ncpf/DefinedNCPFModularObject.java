@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.ncpf;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -37,9 +38,12 @@ public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
     }
     public <T extends NCPFModule> T getOrCreateModule(Supplier<T> module){
         return modules.getOrCreateModule(module);
-
     }
     public void conglomerate(DefinedNCPFModularObject addon){
         modules.conglomerate(addon.modules);
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        modules.setReferences(lst);
     }
 }

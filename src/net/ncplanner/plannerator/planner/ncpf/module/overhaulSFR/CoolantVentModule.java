@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
+import java.util.List;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
@@ -14,5 +16,9 @@ public class CoolantVentModule extends BlockFunctionModule{
     @Override
     public void convertToObject(NCPFObject ncpf){
         ncpf.setDefinedNCPFObject("output", output);
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        output.setReferences(lst);
     }
 }

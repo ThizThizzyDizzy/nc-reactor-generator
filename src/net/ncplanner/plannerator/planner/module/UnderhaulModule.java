@@ -36,7 +36,8 @@ public class UnderhaulModule extends Module{
     }
     @Override
     public void registerNCPF(){
-        registerNCPFConfiguration(NCPFUnderhaulSFRConfiguration::new, NCPFUnderhaulSFRDesign::new);
+        registerNCPFConfiguration(NCPFUnderhaulSFRConfiguration::new);
+        registerNCPFDesign(NCPFUnderhaulSFRDesign::new);
         registerNCPFModule(UnderhaulSFRSettingsModule::new);
         registerNCPFModule(FuelStatsModule::new);
         registerNCPFModule(CoolerModule::new);

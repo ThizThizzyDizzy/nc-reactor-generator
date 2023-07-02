@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
+import java.util.List;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
@@ -20,5 +22,9 @@ public class NeutronShieldModule extends BlockFunctionModule{
         ncpf.setInteger("heat_per_flux", heatPerFlux);
         ncpf.setFloat("efficiency", efficiency);
         ncpf.setDefinedNCPFObject("closed", closed);
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        closed.setReferences(lst);
     }
 }

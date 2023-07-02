@@ -5,21 +5,24 @@ import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulTurbineConfigura
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
 public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfiguration{
+    public ConfigurationMetadataModule metadata;
     public OverhaulTurbineSettingsModule settings;
     public List<Block> blocks;
     public List<Recipe> recipes;
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
+        metadata = getModule(ConfigurationMetadataModule::new);
         settings = getModule(OverhaulTurbineSettingsModule::new);
         blocks = copyList(super.blocks, Block::new);
         recipes = copyList(super.recipes, Recipe::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        setModule(settings);
+        setModules(metadata, settings);
         super.blocks = copyList(blocks, NCPFElement::new);
         super.recipes = copyList(recipes, NCPFElement::new);
         super.convertToObject(ncpf);

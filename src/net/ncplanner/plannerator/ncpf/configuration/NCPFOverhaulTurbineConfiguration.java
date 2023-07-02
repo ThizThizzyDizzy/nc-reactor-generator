@@ -6,6 +6,9 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFOverhaulTurbineConfiguration extends NCPFConfiguration{
     public List<NCPFElement> blocks;
     public List<NCPFElement> recipes;
+    public NCPFOverhaulTurbineConfiguration(){
+        super("nuclearcraft:overhaul_turbine");
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
@@ -24,5 +27,9 @@ public class NCPFOverhaulTurbineConfiguration extends NCPFConfiguration{
         NCPFOverhaulTurbineConfiguration addon = (NCPFOverhaulTurbineConfiguration) obj;
         conglomerateElementList(blocks, addon.blocks);
         conglomerateElementList(recipes, addon.recipes);
+    }
+    @Override
+    public List<NCPFElement>[] getElements(){
+        return new List[]{blocks, recipes};
     }
 }

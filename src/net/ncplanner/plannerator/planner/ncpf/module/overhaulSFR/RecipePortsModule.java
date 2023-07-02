@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
+import java.util.List;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
@@ -17,5 +19,10 @@ public class RecipePortsModule extends BlockFunctionModule{
     public void convertToObject(NCPFObject ncpf){
         ncpf.setDefinedNCPFObject("input", input);
         ncpf.setDefinedNCPFObject("output", output);
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        input.setReferences(lst);
+        output.setReferences(lst);
     }
 }

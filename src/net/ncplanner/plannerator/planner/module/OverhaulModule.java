@@ -79,9 +79,12 @@ public class OverhaulModule extends Module{
     }
     @Override
     public void registerNCPF(){
-        registerNCPFConfiguration(NCPFOverhaulSFRConfiguration::new, NCPFOverhaulSFRDesign::new);
-        registerNCPFConfiguration(NCPFOverhaulMSRConfiguration::new, NCPFOverhaulMSRDesign::new);
-        registerNCPFConfiguration(NCPFOverhaulTurbineConfiguration::new, NCPFOverhaulTurbineDesign::new);
+        registerNCPFConfiguration(NCPFOverhaulSFRConfiguration::new);
+        registerNCPFConfiguration(NCPFOverhaulMSRConfiguration::new);
+        registerNCPFConfiguration(NCPFOverhaulTurbineConfiguration::new);
+        registerNCPFDesign(NCPFOverhaulSFRDesign::new);
+        registerNCPFDesign(NCPFOverhaulMSRDesign::new);
+        registerNCPFDesign(NCPFOverhaulTurbineDesign::new);
         
         registerNCPFModule(OverhaulSFRSettingsModule::new);
         registerNCPFModule(ConductorModule::new);

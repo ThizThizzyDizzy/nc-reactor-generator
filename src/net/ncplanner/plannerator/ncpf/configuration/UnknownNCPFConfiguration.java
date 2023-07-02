@@ -1,8 +1,13 @@
 package net.ncplanner.plannerator.ncpf.configuration;
+import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class UnknownNCPFConfiguration extends NCPFConfiguration{
     public NCPFObject ncpf;
+    public UnknownNCPFConfiguration(){
+        super(null);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
@@ -16,5 +21,9 @@ public class UnknownNCPFConfiguration extends NCPFConfiguration{
     @Override
     public void conglomerate(DefinedNCPFModularObject addon){
         ncpf.putAll(((UnknownNCPFConfiguration)addon).ncpf);
+    }
+    @Override
+    public List<NCPFElement>[] getElements(){
+        return new List[0];
     }
 }

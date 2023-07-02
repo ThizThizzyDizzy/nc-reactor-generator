@@ -6,6 +6,9 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFUnderhaulSFRConfiguration extends NCPFConfiguration{
     public List<NCPFElement> blocks;
     public List<NCPFElement> fuels;
+    public NCPFUnderhaulSFRConfiguration(){
+        super("nuclearcraft:underhaul_sfr");
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
@@ -24,5 +27,9 @@ public class NCPFUnderhaulSFRConfiguration extends NCPFConfiguration{
         NCPFUnderhaulSFRConfiguration addon = (NCPFUnderhaulSFRConfiguration) obj;
         conglomerateElementList(blocks, addon.blocks);
         conglomerateElementList(fuels, addon.fuels);
+    }
+    @Override
+    public List<NCPFElement>[] getElements(){
+        return new List[]{blocks, fuels};
     }
 }

@@ -20,11 +20,12 @@ public abstract class DefinedNCPFObject{
             else match.conglomerate(addonElem);
         }
     }
-    public <T extends DefinedNCPFObject> T copyTo(T blankCopy){
+    public <T extends DefinedNCPFObject> T copyTo(Supplier<T> copy){
         NCPFObject obj = new NCPFObject();
         convertToObject(obj);
-        blankCopy.convertFromObject(obj);
-        return blankCopy;
+        T t = copy.get();
+        t.convertFromObject(obj);
+        return t;
     }
     public <T extends DefinedNCPFObject> List<T> copyList(NCPFBlockRecipesModule from, Supplier<T> newCopy){
         return copyList(from.recipes, newCopy);
@@ -36,7 +37,8 @@ public abstract class DefinedNCPFObject{
         return copyList(from, to.recipes, NCPFElement::new);
     }
     public <T extends DefinedNCPFObject, V extends DefinedNCPFObject> List<T> copyList(List<V> from, List<T> to, Supplier<T> newCopy){
-        for(V v : from)to.add(v.copyTo(newCopy.get()));
+        for(V v : from)to.add(v.copyTo(newCopy));
         return to;
     }
+    public void setReferences(List<NCPFElement> lst){}
 }

@@ -1,13 +1,12 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR;
+import java.util.List;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class BlockReference extends NCPFElementReference{
+    public Block block;
     @Override
-    public void convertFromObject(NCPFObject ncpf){
-        super.convertFromObject(ncpf);
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        super.convertToObject(ncpf);
+    public void setReferences(List<NCPFElement> elements){
+        super.setReferences(elements);
+        block = target.copyTo(Block::new);
     }
 }

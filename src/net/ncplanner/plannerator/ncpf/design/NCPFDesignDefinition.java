@@ -1,5 +1,7 @@
 package net.ncplanner.plannerator.ncpf.design;
+import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;

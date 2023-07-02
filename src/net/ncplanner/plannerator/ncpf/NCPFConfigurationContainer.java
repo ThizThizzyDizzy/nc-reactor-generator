@@ -19,6 +19,12 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
             ncpf.setDefinedNCPFObject(key, configurations.get(key));
         }
     }
+    public <T extends NCPFConfiguration> T getConfiguration(Supplier<T> config){
+        return (T) configurations.get(config.get().name);
+    }
+    public void setConfiguration(NCPFConfiguration config){
+        configurations.put(config.name, config);
+    }
     /**
      * Add all parts of another configuration to this one
      * @param addon The addon to add
@@ -30,5 +36,8 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
                 configurations.get(key).conglomerate(addonConfig);
             }else configurations.put(key, addonConfig);
         }
+    }
+    public void setReferences(){
+        configurations.values().forEach(NCPFConfiguration::setReferences);
     }
 }
