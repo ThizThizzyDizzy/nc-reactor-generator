@@ -5,6 +5,10 @@ public class NCPFFluidTagElement extends NCPFElementDefinition{
     public NCPFFluidTagElement(){
         super("fluid_tag");
     }
+    public NCPFFluidTagElement(String name){
+        this();
+        this.name = name;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

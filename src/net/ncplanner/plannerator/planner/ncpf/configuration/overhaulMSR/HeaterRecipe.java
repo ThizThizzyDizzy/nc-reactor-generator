@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
@@ -8,6 +9,10 @@ public class HeaterRecipe extends NCPFElement{
     public HeaterStatsModule stats = new HeaterStatsModule();
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
+    public HeaterRecipe(){}
+    public HeaterRecipe(NCPFElementDefinition definition){
+        super.definition = definition;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

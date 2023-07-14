@@ -7,6 +7,10 @@ public class NCPFItemElement extends NCPFElementDefinition{
     public NCPFItemElement(){
         super("item");
     }
+    public NCPFItemElement(String name){
+        this();
+        this.name = name;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

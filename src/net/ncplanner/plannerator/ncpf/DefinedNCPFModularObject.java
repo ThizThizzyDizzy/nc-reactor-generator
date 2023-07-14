@@ -1,8 +1,10 @@
 package net.ncplanner.plannerator.ncpf;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 /**
  * A DefinedNCPFObject with modules
@@ -45,5 +47,26 @@ public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
     @Override
     public void setReferences(List<NCPFElement> lst){
         modules.setReferences(lst);
+        for(NCPFModule module : modules.modules.values())module.setLocalReferences(this);
+    }
+    public <T extends DefinedNCPFObject> List<T> getRecipes(Supplier<T> newCopy){
+        List<T> list = new ArrayList<>();
+        withModule(NCPFBlockRecipesModule::new, (blockRecipes)->{
+            copyList(blockRecipes.recipes, list, newCopy);
+        });
+        return list;
+    }
+    public void setRecipes(List<? extends DefinedNCPFObject>... recipes){
+        boolean empty = true;
+        for(List l : recipes)if(!l.isEmpty())empty = false;
+        if(empty)return;//nothing to set
+        withModuleOrCreate(NCPFBlockRecipesModule::new, (blockRecipes)->{
+            for(List<? extends DefinedNCPFObject> list : recipes){
+                copyRecipes(list, blockRecipes);
+            }
+        });
+    }
+    public <T extends DefinedNCPFObject> List<NCPFElement> copyRecipes(List<T> from, NCPFBlockRecipesModule to){
+        return copyList(from, to.recipes, NCPFElement::new);
     }
 }

@@ -17,4 +17,7 @@ public class MetadataModule extends NCPFModule{
     public void convertToObject(NCPFObject ncpf){
         ncpf.putAll(metadata);
     }
+    public void put(String key, String value){
+        metadata.put(key, value);
+    }
 }

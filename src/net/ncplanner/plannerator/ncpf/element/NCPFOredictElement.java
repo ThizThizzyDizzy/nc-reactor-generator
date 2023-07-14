@@ -5,6 +5,10 @@ public class NCPFOredictElement extends NCPFElementDefinition{
     public NCPFOredictElement(){
         super("oredict");
     }
+    public NCPFOredictElement(String oredict){
+        this();
+        this.oredict = oredict;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         oredict = ncpf.getString("oredict");

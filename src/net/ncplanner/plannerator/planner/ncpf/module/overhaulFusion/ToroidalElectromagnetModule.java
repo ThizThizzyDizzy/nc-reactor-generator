@@ -1,0 +1,12 @@
+package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+public class ToroidalElectromagnetModule extends BlockFunctionModule{
+    public ToroidalElectromagnetModule(){
+        super("plannerator:fusion_test:electromagnet");
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){}
+    @Override
+    public void convertToObject(NCPFObject ncpf){}
+}

@@ -1,14 +1,21 @@
 package net.ncplanner.plannerator.ncpf.io;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 public class NCPFObject extends HashMap<String, Object>{
     public <T extends DefinedNCPFObject> T getDefinedNCPFObject(String key, Supplier<T> supplier){
         T object = supplier.get();
         NCPFObject ncpf = getNCPFObject(key);
         object.convertFromObject(ncpf);
         return object;
+    }
+    public <T extends DefinedNCPFObject, V extends List<T>> V getDefinedNCPFList(String key, Supplier<T> objectSupplier){
+        return (V)getDefinedNCPFList(key, new ArrayList<>(), objectSupplier);
     }
     public <T extends DefinedNCPFObject, V extends List<T>> V getDefinedNCPFList(String key, V list, Supplier<T> objectSupplier){
         NCPFList ncpf = getNCPFList(key);
@@ -19,6 +26,56 @@ public class NCPFObject extends HashMap<String, Object>{
             list.add(object);
         }
         return list;
+    }
+    
+    public <T extends DefinedNCPFObject> void getDefined3DArray(String name, T[][][] array, List<T> indicies){
+        NCPFList list = getNCPFList(name);
+        int i = 0;
+        for(int x = 0; x<=array.length; x++){
+            for(int y = 0; y<=array[x].length; y++){
+                for(int z = 0; z<=array[z].length; z++){
+                    array[x][y][z] = indicies.get(list.getInteger(i++));
+                }
+            }
+        }
+    }
+    public <T extends DefinedNCPFObject> void setDefined3DArray(String name, T[][][] array, List<T> indicies){
+        NCPFList<Integer> list = new NCPFList<>();
+        for(int x = 0; x<=array.length; x++){
+            for(int y = 0; y<=array[x].length; y++){
+                for(int z = 0; z<=array[z].length; z++){
+                    list.add(indicies.indexOf(array[x][y][z]));
+                }
+            }
+        }
+        setNCPFList(name, list);
+    }
+    
+    public <T extends DefinedNCPFModularObject> void getRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
+        NCPFList list = getNCPFList(name);
+        int r = -1;
+        for(int x = 0; x<=design.length; x++){
+            for(int y = 0; y<=design[x].length; y++){
+                for(int z = 0; z<=design[z].length; z++){
+                    if(design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
+                        array[x][y][z] = design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.get(list.getInteger(++r));
+                    }
+                }
+            }
+        }
+    }
+    public <T extends DefinedNCPFModularObject> void setRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
+        NCPFList list = getNCPFList(name);
+        for(int x = 0; x<=design.length; x++){
+            for(int y = 0; y<=design[x].length; y++){
+                for(int z = 0; z<=design[z].length; z++){
+                    if(design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
+                        list.add(design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.indexOf(array[x][y][z]));
+                    }
+                }
+            }
+        }
+        setNCPFList(name, list);
     }
     
     public void setDefinedNCPFObject(String key, DefinedNCPFObject object){

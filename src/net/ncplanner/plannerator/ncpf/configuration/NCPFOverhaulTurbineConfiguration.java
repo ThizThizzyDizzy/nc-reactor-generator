@@ -13,8 +13,8 @@ public class NCPFOverhaulTurbineConfiguration extends NCPFConfiguration{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        blocks = ncpf.getDefinedNCPFList("blocks", blocks, NCPFElement::new);
-        recipes = ncpf.getDefinedNCPFList("recipes", recipes, NCPFElement::new);
+        blocks = ncpf.getDefinedNCPFList("blocks", NCPFElement::new);
+        recipes = ncpf.getDefinedNCPFList("recipes", NCPFElement::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

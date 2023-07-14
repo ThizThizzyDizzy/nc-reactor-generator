@@ -10,7 +10,7 @@ public class NCPFBlockRecipesModule extends NCPFModule{
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        recipes = ncpf.getDefinedNCPFList("recipes", recipes, NCPFElement::new);
+        recipes = ncpf.getDefinedNCPFList("recipes", NCPFElement::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

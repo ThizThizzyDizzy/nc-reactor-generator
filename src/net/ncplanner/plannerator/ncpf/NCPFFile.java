@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.ncpf;
-import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import java.util.ArrayList;
 public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
@@ -11,9 +10,9 @@ public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
         version = ncpf.getInteger("version");
-        addons = ncpf.getDefinedNCPFList("addons", new NCPFList<>(), NCPFAddon::new);
+        addons = ncpf.getDefinedNCPFList("addons", NCPFAddon::new);
         conglomerate();
-        designs = ncpf.getDefinedNCPFList("designs", new NCPFList<>(), ()->{return new NCPFDesign(this);});
+        designs = ncpf.getDefinedNCPFList("designs", ()->{return new NCPFDesign(this);});
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

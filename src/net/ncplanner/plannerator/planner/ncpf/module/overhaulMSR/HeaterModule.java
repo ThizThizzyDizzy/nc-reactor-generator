@@ -11,7 +11,7 @@ public class HeaterModule extends BlockFunctionModule{
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        rules = ncpf.getDefinedNCPFList("rules", rules, PlacementRule::new);
+        rules = ncpf.getDefinedNCPFList("rules", PlacementRule::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

@@ -13,7 +13,7 @@ public class HeatsinkModule extends BlockFunctionModule{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         cooling = ncpf.getInteger("cooling");
-        rules = ncpf.getDefinedNCPFList("rules", rules, PlacementRule::new);
+        rules = ncpf.getDefinedNCPFList("rules", PlacementRule::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

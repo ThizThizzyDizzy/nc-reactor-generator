@@ -5,6 +5,10 @@ public class NCPFFluidElement extends NCPFElementDefinition{
     public NCPFFluidElement(){
         super("fluid");
     }
+    public NCPFFluidElement(String name){
+        this();
+        this.name = name;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

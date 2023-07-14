@@ -2,8 +2,8 @@ package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR;
 import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.RecipePortsModule;
@@ -21,21 +21,29 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule
 public class Block extends NCPFElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
-    public ConductorModule conductor = new ConductorModule();
-    public CasingModule casing = new CasingModule();
-    public ControllerModule controller = new ControllerModule();
-    public FuelVesselModule fuelVessel = new FuelVesselModule();
-    public IrradiatorModule irradiator = new IrradiatorModule();
-    public ReflectorModule reflector = new ReflectorModule();
-    public ModeratorModule moderator = new ModeratorModule();
-    public NeutronShieldModule neutronShield = new NeutronShieldModule();
-    public HeaterModule heater = new HeaterModule();
-    public NeutronSourceModule neutronSource = new NeutronSourceModule();
-    public PortModule port = new PortModule();
-    public RecipePortsModule recipePorts = new RecipePortsModule();
+    public ConductorModule conductor;
+    public CasingModule casing;
+    public ControllerModule controller;
+    public FuelVesselModule fuelVessel;
+    public IrradiatorModule irradiator;
+    public ReflectorModule reflector;
+    public ModeratorModule moderator;
+    public NeutronShieldModule neutronShield;
+    public HeaterModule heater;
+    public NeutronSourceModule neutronSource;
+    public PortModule port;
+    public RecipePortsModule recipePorts;
     public List<Fuel> fuels = new ArrayList<>();
     public List<HeaterRecipe> heaterRecipes = new ArrayList<>();
     public List<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
+    
+    public Block parent;//not saved, the parent block for this port
+    public Block unToggled;//not saved, the untoggled version of this block
+    public Block toggled;//not saved, the toggled version of this block
+    public Block(){}
+    public Block(NCPFElementDefinition definition){
+        super.definition = definition;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
@@ -53,24 +61,14 @@ public class Block extends NCPFElement{
         neutronSource = getModule(NeutronSourceModule::new);
         port = getModule(PortModule::new);
         recipePorts = getModule(RecipePortsModule::new);
-        withModule(NCPFBlockRecipesModule::new, (blockRecipes)->{
-            if(fuelVessel!=null)fuels = copyList(blockRecipes, Fuel::new);
-            if(heater!=null)heaterRecipes = copyList(blockRecipes, HeaterRecipe::new);
-            if(irradiator!=null)irradiatorRecipes = copyList(blockRecipes, IrradiatorRecipe::new);
-        });
+        if(fuelVessel!=null)fuels = getRecipes(Fuel::new);
+        if(heater!=null)heaterRecipes = getRecipes(HeaterRecipe::new);
+        if(irradiator!=null)irradiatorRecipes = getRecipes(IrradiatorRecipe::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
         setModules(names, texture, conductor, casing, controller, fuelVessel, irradiator, reflector, moderator, neutronShield, heater, neutronSource, port, recipePorts);
-        if(fuelVessel!=null)withModuleOrCreate(NCPFBlockRecipesModule::new, (blockRecipes)->{
-            copyList(fuels, blockRecipes);
-        });
-        if(heater!=null)withModuleOrCreate(NCPFBlockRecipesModule::new, (blockRecipes)->{
-            copyList(heaterRecipes, blockRecipes);
-        });
-        if(irradiator!=null)withModuleOrCreate(NCPFBlockRecipesModule::new, (blockRecipes)->{
-            copyList(irradiatorRecipes, blockRecipes);
-        });
+        setRecipes(fuels, heaterRecipes, irradiatorRecipes);
         super.convertToObject(ncpf);
     }
 }

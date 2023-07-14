@@ -8,6 +8,10 @@ public class NCPFLegacyBlockElement extends NCPFElementDefinition{
     public NCPFLegacyBlockElement(){
         super("legacy_block");
     }
+    public NCPFLegacyBlockElement(String name){
+        this();
+        this.name = name;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

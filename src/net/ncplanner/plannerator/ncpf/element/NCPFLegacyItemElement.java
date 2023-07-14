@@ -8,6 +8,10 @@ public class NCPFLegacyItemElement extends NCPFElementDefinition{
     public NCPFLegacyItemElement(){
         super("legacy_item");
     }
+    public NCPFLegacyItemElement(String name){
+        this();
+        this.name = name;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

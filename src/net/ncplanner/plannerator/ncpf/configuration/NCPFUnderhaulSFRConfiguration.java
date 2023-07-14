@@ -13,8 +13,8 @@ public class NCPFUnderhaulSFRConfiguration extends NCPFConfiguration{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        blocks = ncpf.getDefinedNCPFList("blocks", blocks, NCPFElement::new);
-        fuels = ncpf.getDefinedNCPFList("fuels", fuels, NCPFElement::new);
+        blocks = ncpf.getDefinedNCPFList("blocks", NCPFElement::new);
+        fuels = ncpf.getDefinedNCPFList("fuels", NCPFElement::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

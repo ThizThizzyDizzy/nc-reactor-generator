@@ -12,7 +12,7 @@ public class NCPFOverhaulMSRConfiguration extends NCPFConfiguration{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        blocks = ncpf.getDefinedNCPFList("blocks", blocks, NCPFElement::new);
+        blocks = ncpf.getDefinedNCPFList("blocks", NCPFElement::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

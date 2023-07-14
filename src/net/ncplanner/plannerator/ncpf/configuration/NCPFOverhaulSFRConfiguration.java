@@ -13,8 +13,8 @@ public class NCPFOverhaulSFRConfiguration extends NCPFConfiguration{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        blocks = ncpf.getDefinedNCPFList("blocks", blocks, NCPFElement::new);
-        coolantRecipes = ncpf.getDefinedNCPFList("coolant_recipes", coolantRecipes, NCPFElement::new);
+        blocks = ncpf.getDefinedNCPFList("blocks", NCPFElement::new);
+        coolantRecipes = ncpf.getDefinedNCPFList("coolant_recipes", NCPFElement::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

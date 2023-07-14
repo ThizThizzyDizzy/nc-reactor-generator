@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.configuration.UnknownNCPFConfiguration;
 import java.util.HashMap;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
@@ -23,7 +24,12 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
         return (T) configurations.get(config.get().name);
     }
     public void setConfiguration(NCPFConfiguration config){
+        if(config==null)return;
         configurations.put(config.name, config);
+    }
+    public <T extends NCPFConfiguration> void withConfiguration(Supplier<T> config, Consumer<T> func){
+        T t = getConfiguration(config);
+        if(t!=null)func.accept(t);
     }
     /**
      * Add all parts of another configuration to this one

@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
@@ -16,16 +17,20 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModul
 public class Block extends NCPFElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
-    public BladeModule blade = new BladeModule();
-    public StatorModule stator = new StatorModule();
-    public CoilModule coil = new CoilModule();
-    public BearingModule bearing = new BearingModule();
-    public ShaftModule shaft = new ShaftModule();
-    public ConnectorModule connector = new ConnectorModule();
-    public ControllerModule controller = new ControllerModule();
-    public CasingModule casing = new CasingModule();
-    public InletModule inlet = new InletModule();
-    public OutletModule outlet = new OutletModule();
+    public BladeModule blade;
+    public StatorModule stator;
+    public CoilModule coil;
+    public BearingModule bearing;
+    public ShaftModule shaft;
+    public ConnectorModule connector;
+    public ControllerModule controller;
+    public CasingModule casing;
+    public InletModule inlet;
+    public OutletModule outlet;
+    public Block(){}
+    public Block(NCPFElementDefinition definition){
+        super.definition = definition;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

@@ -5,6 +5,10 @@ public class NCPFLegacyFluidElement extends NCPFElementDefinition{
     public NCPFLegacyFluidElement(){
         super("legacy_fluid");
     }
+    public NCPFLegacyFluidElement(String name){
+        this();
+        this.name = name;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

@@ -16,7 +16,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             max = ncpf.getInteger("max");
         }
         if(rule.hasSubRules){
-            ncpf.getDefinedNCPFList("Rules", rules, NCPFPlacementRule::new);
+            ncpf.getDefinedNCPFList("rules", NCPFPlacementRule::new);
         }else{
             target = ncpf.getDefinedNCPFObject("block", NCPFElementReference::new);
         }

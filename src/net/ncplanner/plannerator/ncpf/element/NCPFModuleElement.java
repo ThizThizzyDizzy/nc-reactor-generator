@@ -5,6 +5,10 @@ public class NCPFModuleElement extends NCPFElementDefinition{
     public NCPFModuleElement(){
         super("module");
     }
+    public NCPFModuleElement(String name){
+        this();
+        this.name = name;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

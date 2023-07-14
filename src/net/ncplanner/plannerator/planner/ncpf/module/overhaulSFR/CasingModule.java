@@ -6,6 +6,10 @@ public class CasingModule extends BlockFunctionModule{
     public CasingModule(){
         super("nuclearcraft:overhaul_sfr:casing");
     }
+    public CasingModule(boolean edge){
+        this();
+        this.edge = edge;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         edge = ncpf.getBoolean("edge");

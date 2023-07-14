@@ -9,6 +9,10 @@ public class NCPFBlockElement extends NCPFElementDefinition{
     public NCPFBlockElement(){
         super("block");
     }
+    public NCPFBlockElement(String name){
+        this();
+        this.name = name;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");
