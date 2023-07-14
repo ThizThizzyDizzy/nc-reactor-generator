@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration;
+import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulSFRConfiguration;
@@ -8,10 +9,10 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantR
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
 public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
-    public ConfigurationMetadataModule metadata;
-    public OverhaulSFRSettingsModule settings;
-    public List<Block> blocks;
-    public List<CoolantRecipe> coolantRecipes;
+    public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();
+    public OverhaulSFRSettingsModule settings = new OverhaulSFRSettingsModule();
+    public List<Block> blocks = new ArrayList<>();
+    public List<CoolantRecipe> coolantRecipes = new ArrayList<>();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

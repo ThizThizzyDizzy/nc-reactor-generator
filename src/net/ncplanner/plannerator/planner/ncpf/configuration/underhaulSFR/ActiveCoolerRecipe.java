@@ -5,9 +5,9 @@ import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 public class ActiveCoolerRecipe extends NCPFElement{
-    public DisplayNamesModule names;
-    public TextureModule texture;
-    public CoolerModule stats;
+    public DisplayNamesModule names = new DisplayNamesModule();
+    public TextureModule texture = new TextureModule();
+    public CoolerModule stats = new CoolerModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

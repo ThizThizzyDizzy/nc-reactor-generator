@@ -4,9 +4,9 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import java.util.ArrayList;
 public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
     public int version;
-    public ArrayList<NCPFAddon> addons;
-    public ArrayList<NCPFDesign> designs;
-    public NCPFConfigurationContainer conglomeration;
+    public ArrayList<NCPFAddon> addons = new ArrayList<>();
+    public ArrayList<NCPFDesign> designs = new ArrayList<>();
+    public NCPFConfigurationContainer conglomeration = new NCPFConfigurationContainer();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

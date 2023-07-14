@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.ncpf.module.NCPFModule;
  * @author thiz
  */
 public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
-    public NCPFModuleContainer modules;
+    public NCPFModuleContainer modules = new NCPFModuleContainer();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         modules = ncpf.getDefinedNCPFObject("modules", NCPFModuleContainer::new);

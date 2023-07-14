@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration;
+import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulTurbineConfiguration;
@@ -8,10 +9,10 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Reci
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
 public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfiguration{
-    public ConfigurationMetadataModule metadata;
-    public OverhaulTurbineSettingsModule settings;
-    public List<Block> blocks;
-    public List<Recipe> recipes;
+    public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();
+    public OverhaulTurbineSettingsModule settings = new OverhaulTurbineSettingsModule();
+    public List<Block> blocks = new ArrayList<>();
+    public List<Recipe> recipes = new ArrayList<>();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

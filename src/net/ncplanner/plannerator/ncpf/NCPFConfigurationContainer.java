@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();
-    public HashMap<String, NCPFConfiguration> configurations;
+    public HashMap<String, NCPFConfiguration> configurations = new HashMap<>();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String key : ncpf.keySet()){

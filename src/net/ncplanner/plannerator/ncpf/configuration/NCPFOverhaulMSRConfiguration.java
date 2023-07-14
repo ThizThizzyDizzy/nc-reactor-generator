@@ -1,10 +1,11 @@
 package net.ncplanner.plannerator.ncpf.configuration;
+import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFOverhaulMSRConfiguration extends NCPFConfiguration{
-    public List<NCPFElement> blocks;
+    public List<NCPFElement> blocks = new ArrayList<>();
     public NCPFOverhaulMSRConfiguration(){
         super("nuclearcraft:overhaul_msr");
     }

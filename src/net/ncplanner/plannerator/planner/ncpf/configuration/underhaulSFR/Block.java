@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR;
+import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -12,15 +13,15 @@ import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
 public class Block extends NCPFElement{
-    public DisplayNamesModule names;
-    public TextureModule texture;
-    public CoolerModule cooler;
-    public ActiveCoolerModule activeCooler;
-    public FuelCellModule fuelCell;
-    public ModeratorModule moderator;
-    public CasingModule casing;
-    public ControllerModule controller;
-    public List<ActiveCoolerRecipe> activeCoolerRecipes;
+    public DisplayNamesModule names = new DisplayNamesModule();
+    public TextureModule texture = new TextureModule();
+    public CoolerModule cooler = new CoolerModule();
+    public ActiveCoolerModule activeCooler = new ActiveCoolerModule();
+    public FuelCellModule fuelCell = new FuelCellModule();
+    public ModeratorModule moderator = new ModeratorModule();
+    public CasingModule casing = new CasingModule();
+    public ControllerModule controller = new ControllerModule();
+    public List<ActiveCoolerRecipe> activeCoolerRecipes = new ArrayList<>();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

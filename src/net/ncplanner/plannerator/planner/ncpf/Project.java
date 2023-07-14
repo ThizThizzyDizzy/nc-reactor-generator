@@ -3,7 +3,7 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
 public class Project extends NCPFFile{
-    public MetadataModule metadata;
+    public MetadataModule metadata = new MetadataModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

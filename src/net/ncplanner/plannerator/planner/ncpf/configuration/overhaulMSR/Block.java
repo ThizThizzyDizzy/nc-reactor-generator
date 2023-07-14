@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR;
+import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -18,23 +19,23 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule;
 public class Block extends NCPFElement{
-    public DisplayNamesModule names;
-    public TextureModule texture;
-    public ConductorModule conductor;
-    public CasingModule casing;
-    public ControllerModule controller;
-    public FuelVesselModule fuelVessel;
-    public IrradiatorModule irradiator;
-    public ReflectorModule reflector;
-    public ModeratorModule moderator;
-    public NeutronShieldModule neutronShield;
-    public HeaterModule heater;
-    public NeutronSourceModule neutronSource;
-    public PortModule port;
-    public RecipePortsModule recipePorts;
-    public List<Fuel> fuels;
-    public List<HeaterRecipe> heaterRecipes;
-    public List<IrradiatorRecipe> irradiatorRecipes;
+    public DisplayNamesModule names = new DisplayNamesModule();
+    public TextureModule texture = new TextureModule();
+    public ConductorModule conductor = new ConductorModule();
+    public CasingModule casing = new CasingModule();
+    public ControllerModule controller = new ControllerModule();
+    public FuelVesselModule fuelVessel = new FuelVesselModule();
+    public IrradiatorModule irradiator = new IrradiatorModule();
+    public ReflectorModule reflector = new ReflectorModule();
+    public ModeratorModule moderator = new ModeratorModule();
+    public NeutronShieldModule neutronShield = new NeutronShieldModule();
+    public HeaterModule heater = new HeaterModule();
+    public NeutronSourceModule neutronSource = new NeutronSourceModule();
+    public PortModule port = new PortModule();
+    public RecipePortsModule recipePorts = new RecipePortsModule();
+    public List<Fuel> fuels = new ArrayList<>();
+    public List<HeaterRecipe> heaterRecipes = new ArrayList<>();
+    public List<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

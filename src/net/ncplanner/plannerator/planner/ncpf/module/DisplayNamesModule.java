@@ -5,7 +5,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 public class DisplayNamesModule extends NCPFModule{
     public String displayName;
-    public ArrayList<String> legacyNames;
+    public ArrayList<String> legacyNames = new ArrayList<>();
     public DisplayNamesModule(){
         super("plannerator:display_names");
     }

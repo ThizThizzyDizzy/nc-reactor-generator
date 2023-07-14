@@ -5,9 +5,9 @@ import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.RecipeStatsModule;
 public class Recipe extends NCPFElement{
-    public RecipeStatsModule stats;
-    public DisplayNamesModule names;
-    public TextureModule texture;
+    public RecipeStatsModule stats = new RecipeStatsModule();
+    public DisplayNamesModule names = new DisplayNamesModule();
+    public TextureModule texture = new TextureModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

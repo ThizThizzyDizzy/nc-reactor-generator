@@ -4,7 +4,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFBlockRecipesModule extends NCPFModule{
-    public ArrayList<NCPFElement> recipes;
+    public ArrayList<NCPFElement> recipes = new ArrayList<>();
     public NCPFBlockRecipesModule(){
         super("ncpf:block_recipes");
     }

@@ -3,7 +3,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public abstract class DefinedNCPFModularConfigurationContainer extends DefinedNCPFModularObject{
-    public NCPFConfigurationContainer configuration;
+    public NCPFConfigurationContainer configuration = new NCPFConfigurationContainer();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

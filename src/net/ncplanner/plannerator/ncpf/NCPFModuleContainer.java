@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.ncpf.module.UnknownNCPFModule;
 public class NCPFModuleContainer extends DefinedNCPFObject{
     public static HashMap<String, Supplier<NCPFModule>> recognizedModules = new HashMap<>();
-    public HashMap<String, NCPFModule> modules;
+    public HashMap<String, NCPFModule> modules = new HashMap<>();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String key : ncpf.keySet()){

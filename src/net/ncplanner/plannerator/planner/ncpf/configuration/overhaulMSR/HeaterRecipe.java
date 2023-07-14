@@ -5,9 +5,9 @@ import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterStatsModule;
 public class HeaterRecipe extends NCPFElement{
-    public HeaterStatsModule stats;
-    public DisplayNamesModule names;
-    public TextureModule texture;
+    public HeaterStatsModule stats = new HeaterStatsModule();
+    public DisplayNamesModule names = new DisplayNamesModule();
+    public TextureModule texture = new TextureModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

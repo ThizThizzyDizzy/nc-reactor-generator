@@ -5,9 +5,9 @@ import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelStatsModule;
 public class Fuel extends NCPFElement{
-    public FuelStatsModule stats;
-    public DisplayNamesModule names;
-    public TextureModule texture;
+    public FuelStatsModule stats = new FuelStatsModule();
+    public DisplayNamesModule names = new DisplayNamesModule();
+    public TextureModule texture = new TextureModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

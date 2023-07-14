@@ -1,11 +1,12 @@
 package net.ncplanner.plannerator.ncpf.configuration;
+import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFOverhaulSFRConfiguration extends NCPFConfiguration{
-    public List<NCPFElement> blocks;
-    public List<NCPFElement> coolantRecipes;
+    public List<NCPFElement> blocks = new ArrayList<>();
+    public List<NCPFElement> coolantRecipes = new ArrayList<>();
     public NCPFOverhaulSFRConfiguration(){
         super("nuclearcraft:overhaul_sfr");
     }
