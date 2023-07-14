@@ -3,7 +3,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.UnknownNCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public abstract class NCPFElementReference extends DefinedNCPFObject{
+public class NCPFElementReference extends DefinedNCPFObject{
     public NCPFElementDefinition definition;
     public NCPFElement target;
     @Override

@@ -73,8 +73,8 @@ public abstract class Module<T>{
     public final void registerNCPFDesign(Supplier<NCPFDesignDefinition> design){
         NCPFDesign.recognizedDesigns.put(design.get().type, design);
     }
-    public final void registerNCPFElement(String key, Supplier<NCPFElementDefinition> element){
-        NCPFElement.recognizedElements.put(key, element);
+    public final void registerNCPFElement(Supplier<NCPFElementDefinition> element){
+        NCPFElement.recognizedElements.put(element.get().type, element);
     }
     public final void registerNCPFModule(Supplier<NCPFModule> module){
         NCPFModuleContainer.recognizedModules.put(module.get().name, module);

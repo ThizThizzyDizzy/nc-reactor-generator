@@ -2,6 +2,9 @@ package net.ncplanner.plannerator.ncpf.element;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class UnknownNCPFElement extends NCPFElementDefinition{
     public NCPFObject ncpf;
+    public UnknownNCPFElement(){
+        super(null);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         this.ncpf = new NCPFObject();

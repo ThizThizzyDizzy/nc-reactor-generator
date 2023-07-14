@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFItemTagElement extends NCPFElementDefinition{
     public String name;
     public String nbt;
+    public NCPFItemTagElement(){
+        super("item_tag");
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

@@ -2,6 +2,9 @@ package net.ncplanner.plannerator.ncpf.element;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFFluidElement extends NCPFElementDefinition{
     public String name;
+    public NCPFFluidElement(){
+        super("fluid");
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

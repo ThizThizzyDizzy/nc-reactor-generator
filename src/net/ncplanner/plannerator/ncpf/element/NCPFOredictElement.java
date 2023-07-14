@@ -2,6 +2,9 @@ package net.ncplanner.plannerator.ncpf.element;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFOredictElement extends NCPFElementDefinition{
     public String oredict;
+    public NCPFOredictElement(){
+        super("oredict");
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         oredict = ncpf.getString("oredict");

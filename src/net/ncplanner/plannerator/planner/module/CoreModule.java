@@ -12,6 +12,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFItemTagElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.Core;
@@ -36,16 +37,17 @@ public class CoreModule<T> extends Module<T>{
     }
     @Override
     public void registerNCPF(){
-        registerNCPFElement("legacy_block", NCPFLegacyBlockElement::new);
-        registerNCPFElement("legacy_item", NCPFLegacyItemElement::new);
-        registerNCPFElement("legacy_fluid", NCPFLegacyFluidElement::new);
-        registerNCPFElement("oredict", NCPFOredictElement::new);
-        registerNCPFElement("block", NCPFBlockElement::new);
-        registerNCPFElement("item", NCPFItemElement::new);
-        registerNCPFElement("fluid", NCPFFluidElement::new);
-        registerNCPFElement("block_tag", NCPFBlockTagElement::new);
-        registerNCPFElement("item_tag", NCPFItemTagElement::new);
-        registerNCPFElement("fluid_tag", NCPFFluidTagElement::new);
+        registerNCPFElement(NCPFLegacyBlockElement::new);
+        registerNCPFElement(NCPFLegacyItemElement::new);
+        registerNCPFElement(NCPFLegacyFluidElement::new);
+        registerNCPFElement(NCPFOredictElement::new);
+        registerNCPFElement(NCPFBlockElement::new);
+        registerNCPFElement(NCPFItemElement::new);
+        registerNCPFElement(NCPFFluidElement::new);
+        registerNCPFElement(NCPFBlockTagElement::new);
+        registerNCPFElement(NCPFItemTagElement::new);
+        registerNCPFElement(NCPFFluidTagElement::new);
+        registerNCPFElement(NCPFModuleElement::new);
         registerNCPFModule(NCPFBlockRecipesModule::new);
 
         registerNCPFModule(MetadataModule::new);

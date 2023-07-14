@@ -5,6 +5,9 @@ public class NCPFLegacyBlockElement extends NCPFElementDefinition{
     public String name;
     public Integer metadata;
     public String nbt;
+    public NCPFLegacyBlockElement(){
+        super("legacy_block");
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

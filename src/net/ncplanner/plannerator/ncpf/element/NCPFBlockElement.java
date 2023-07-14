@@ -6,6 +6,9 @@ public class NCPFBlockElement extends NCPFElementDefinition{
     public String name;
     public HashMap<String, Object> blockstate = new HashMap<>();
     public String nbt;
+    public NCPFBlockElement(){
+        super("block");
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");

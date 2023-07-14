@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.ncpf.element;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public class NCPFFluidTagElement extends NCPFElementDefinition{
+public class NCPFModuleElement extends NCPFElementDefinition{
     public String name;
-    public NCPFFluidTagElement(){
-        super("fluid_tag");
+    public NCPFModuleElement(){
+        super("module");
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -15,7 +15,7 @@ public class NCPFFluidTagElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        NCPFFluidTagElement other = (NCPFFluidTagElement) definition;
+        NCPFModuleElement other = (NCPFModuleElement) definition;
         return name.equals(other.name);
     }
 }

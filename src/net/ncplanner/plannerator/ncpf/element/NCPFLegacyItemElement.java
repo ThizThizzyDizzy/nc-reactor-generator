@@ -5,6 +5,9 @@ public class NCPFLegacyItemElement extends NCPFElementDefinition{
     public String name;
     public Integer metadata;
     public String nbt;
+    public NCPFLegacyItemElement(){
+        super("legacy_item");
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         name = ncpf.getString("name");
