@@ -50,6 +50,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUnsavedChanges;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.module.Module;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -81,6 +82,7 @@ public class Core{
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
     public static HashMap<String, String> metadata = new HashMap<>();
     public static Configuration configuration = new Configuration(null, null, null);
+    public static Project project;//TODO make this actually meaningful lol
     public static Theme theme = Theme.themes.get(0).get(0);
     public static boolean tutorialShown = false;
     public static Image sourceCircle = null;
