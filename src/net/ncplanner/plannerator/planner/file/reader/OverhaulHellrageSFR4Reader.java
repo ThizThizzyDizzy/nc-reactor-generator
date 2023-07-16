@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
 import java.util.HashMap;
-import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
@@ -27,7 +26,7 @@ public class OverhaulHellrageSFR4Reader implements FormatReader{
         return major==2&&minor==0&&build==31;
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized Project read(InputStream in, RecoveryHandler recovery){
         JSON.JSONObject hellrage = JSON.parse(in);
         JSON.JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
         String coolantRecipeName = hellrage.getString("CoolantRecipeName");

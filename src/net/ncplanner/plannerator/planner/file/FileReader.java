@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.recovery.NonRecoveryHandler;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryModeHandler;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 public class FileReader{
     public static final ArrayList<FormatReader> formats = new ArrayList<>();
     public static final RecoveryHandler defaultRecoveryHandler = new NonRecoveryHandler();
-    public static LegacyNCPFFile read(InputStreamProvider provider){
+    public static Project read(InputStreamProvider provider){
         return read(provider, Core.recoveryMode?new RecoveryModeHandler():defaultRecoveryHandler);
     }
-    public static LegacyNCPFFile read(InputStreamProvider provider, RecoveryHandler handler){
+    public static Project read(InputStreamProvider provider, RecoveryHandler handler){
         for(FormatReader reader : formats){
             boolean matches = false;
             try{
@@ -23,10 +24,10 @@ public class FileReader{
         }
         throw new IllegalArgumentException("Unknown file format!");
     }
-    public static LegacyNCPFFile read(File file){
+    public static Project read(File file){
         return read(file, Core.recoveryMode?new RecoveryModeHandler():defaultRecoveryHandler);
     }
-    public static LegacyNCPFFile read(File file, RecoveryHandler handler){
+    public static Project read(File file, RecoveryHandler handler){
         return read(() -> {
             try{
                 return new FileInputStream(file);

@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
-import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
@@ -19,7 +18,7 @@ public class UnderhaulHellrage1Reader implements FormatReader{
         return major==1&&minor==2&&build>=5&&build<=22;
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized Project read(InputStream in, RecoveryHandler recovery){
         JSON.JSONObject hellrage = JSON.parse(in);
         String dimS = hellrage.getString("InteriorDimensions");
         String[] dims = StringUtil.split(dimS, ",");

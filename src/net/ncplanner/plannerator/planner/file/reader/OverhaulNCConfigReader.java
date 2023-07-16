@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
-import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.ForgeConfig;
 import net.ncplanner.plannerator.planner.file.FormatReader;
@@ -19,7 +18,7 @@ public class OverhaulNCConfigReader implements FormatReader{
         return ForgeConfig.parse(in).getConfig("fission").hasProperty("fission_sink_cooling_rate");
     }
     @Override
-    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized Project read(InputStream in, RecoveryHandler recovery){
         Config config = ForgeConfig.parse(in);
         Config fission = config.get("fission");
         Config turbine = config.get("turbine");

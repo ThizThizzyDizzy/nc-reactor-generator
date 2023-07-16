@@ -10,7 +10,6 @@ import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryExce
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFHeader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -121,22 +120,6 @@ public class MenuLoad extends MenuDialog{
                         renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width-del.width-load.width, y+height/2+textHeight/2, text);
                     }
                 });
-                try{
-                    LegacyNCPFHeader header = FileReader.readHeader(file);
-                    if(header!=null){
-                        GridLayout l2 = new GridLayout(36, 3);
-                        if(header.metadata!=null){
-                            String actualName = header.metadata.get("Name");
-                            if(actualName!=null&&!actualName.isEmpty()){
-                                mainLabel.text = actualName;
-                            }
-                        }
-                        l2.add(new Label(0, 0, 0, 0, filename, true));
-                        l2.add(new Label(0, 0, 0, 0, header.multiblocks+" Multiblock"+(header.multiblocks==1?"":"s"), true));
-                        l2.add(new Label(0, 0, 0, 0, "NCPF "+header.version, true));
-                        layout.add(l2);
-                    }
-                }catch(Exception ex){}
                 layout.add(new Label(0, 0, 0, 0, "", true));
             }
         }
