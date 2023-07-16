@@ -1,29 +1,30 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
 import java.io.InputStream;
+import java.util.List;
 import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block;
 public class LegacyNCPF1Reader extends LegacyNCPF2Reader {
     @Override
     protected byte getTargetVersion() {
         return (byte) 1;
     }
-
     @Override
-    protected synchronized Multiblock readMultiblock(LegacyNCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
+    protected synchronized Design readMultiblock(Project ncpf, InputStream in, RecoveryHandler recovery){
         Config data = Config.newConfig();
         data.load(in);
-        Multiblock multiblock;
+        Design design;
         int id = data.get("id");
         switch(id){
             case 0:
-                multiblock = readMultiblockUnderhaulSFR(ncpf, data, recovery);
+                design = readMultiblockUnderhaulSFR(ncpf, data, recovery);
                 break;
             case 1:
-                multiblock = readMultiblockOverhaulSFR(ncpf, data, recovery);
+                design = readMultiblockOverhaulSFR(ncpf, data, recovery);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
@@ -31,15 +32,13 @@ public class LegacyNCPF1Reader extends LegacyNCPF2Reader {
         if(data.hasProperty("metadata")){
             Config metadata = data.get("metadata");
             for(String key : metadata.properties()){
-                multiblock.metadata.put(key, metadata.get(key));
+                design.metadata.put(key, metadata.get(key));
             }
         }
-        return multiblock;
+        return design;
     }
-
     @Override
-    protected void loadOverhaulMSRBlocks(Config overhaul, Configuration parent, Configuration configuration,
-                                         boolean loadSettings, boolean loadingAddon) {
+    protected void loadOverhaulMSRBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings, boolean loadingAddon, boolean isAddon, List<Block> additionalBlocks){
         // MSR reactors did not exist in NCPF 1
     }
 }

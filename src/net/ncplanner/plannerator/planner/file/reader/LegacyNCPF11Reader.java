@@ -11,8 +11,6 @@ import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
-import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
@@ -350,13 +348,18 @@ public class LegacyNCPF11Reader implements FormatReader {
         return overhaulFusion;
     }
 
-    protected <Rule extends NCPFPlacementRule> void readRuleBlock(HashMap<Rule, Integer> postMap, Rule rule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg) {
+    protected <Rule extends NCPFPlacementRule> void readRuleTarget(HashMap<Rule, Integer> postMap, Rule rule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg) {
         boolean isSpecificBlock = ruleCfg.getBoolean("isSpecificBlock");
-        if(isSpecificBlock){
-            postMap.put(rule, ruleCfg.getInt("block"));
-        }else{
-            rule.target = new NCPFModuleReference(blockTypes[ruleCfg.getByte("blockType")]);;
-        }
+        if(isSpecificBlock)readRuleBlock(postMap, rule, ruleCfg);
+        else readRuleBlockType(rule, blockTypes, ruleCfg);
+    }
+
+    protected <Rule extends NCPFPlacementRule> void readRuleBlockType(Rule rule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg) {
+        rule.target = new NCPFModuleReference(blockTypes[ruleCfg.getByte("blockType")]);;
+    }
+
+    protected <Rule extends NCPFPlacementRule> void readRuleBlock(HashMap<Rule, Integer> postMap, Rule rule, Config ruleCfg) {
+        postMap.put(rule, ruleCfg.getInt("block"));
     }
     private final NCPFPlacementRule.RuleType[] ruleTypes = new NCPFPlacementRule.RuleType[]{
         NCPFPlacementRule.RuleType.BETWEEN, 
@@ -366,14 +369,14 @@ public class LegacyNCPF11Reader implements FormatReader {
         NCPFPlacementRule.RuleType.OR, 
         NCPFPlacementRule.RuleType.AND
     };
-    private final Supplier<NCPFModule>[] underhaulSFRBlockTypes = new Supplier[]{
+    protected final Supplier<NCPFModule>[] underhaulSFRBlockTypes = new Supplier[]{
         AirModule::new,//air
         net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule::new,//doesn't do active coolers, but this is underhaul so this isn't a thing anyway
         net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule::new
     };
-    private final Supplier<NCPFModule>[] overhaulSFRBlockTypes = new Supplier[]{
+    protected final Supplier<NCPFModule>[] overhaulSFRBlockTypes = new Supplier[]{
         AirModule::new,//air
         net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.HeatsinkModule::new,
@@ -384,7 +387,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule::new
     };
-    private final Supplier<NCPFModule>[] overhaulMSRBlockTypes = new Supplier[]{
+    protected final Supplier<NCPFModule>[] overhaulMSRBlockTypes = new Supplier[]{
         AirModule::new,//air
         net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule::new,
@@ -395,13 +398,13 @@ public class LegacyNCPF11Reader implements FormatReader {
         net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule::new
     };
-    private final Supplier<NCPFModule>[] overhaulTurbineBlockTypes = new Supplier[]{
+    protected final Supplier<NCPFModule>[] overhaulTurbineBlockTypes = new Supplier[]{
         net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CoilModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ConnectorModule::new
     };
-    private final Supplier<NCPFModule>[] overhaulFusionBlockTypes = new Supplier[]{
+    protected final Supplier<NCPFModule>[] overhaulFusionBlockTypes = new Supplier[]{
         AirModule::new,//air
         net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.PoloidalElectromagnetModule::new,
@@ -420,13 +423,13 @@ public class LegacyNCPF11Reader implements FormatReader {
         switch(rule.rule){
             case BETWEEN:
             case AXIAL:
-                readRuleBlock(postMap, rule, blockTypes, ruleCfg);
+                readRuleTarget(postMap, rule, blockTypes, ruleCfg);
                 rule.min = ruleCfg.getByte("min");
                 rule.max = ruleCfg.getByte("max");
                 break;
             case VERTEX:
             case EDGE:
-                readRuleBlock(postMap, rule, blockTypes, ruleCfg);
+                readRuleTarget(postMap, rule, blockTypes, ruleCfg);
                 break;
             case OR:
                 ConfigList rules = ruleCfg.getConfigList("rules");
@@ -1228,6 +1231,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 if(inputCfg.hasProperty("texture"))recipe.texture.texture = loadNCPFTexture(inputCfg.getConfigNumberList("texture"));
                 configuration.coolantRecipes.add(recipe);
             }
+            project.setConfiguration(configuration);
         }
     }
 //</editor-fold>

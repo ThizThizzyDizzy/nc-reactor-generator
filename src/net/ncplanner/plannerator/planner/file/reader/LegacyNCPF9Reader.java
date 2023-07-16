@@ -1,18 +1,39 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
-import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
-import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
-import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.multiblock.Direction;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
+import static net.ncplanner.plannerator.planner.file.reader.LegacyNCPF11Reader.loadNCPFTexture;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDesign;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
+import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.BreedingBlanketModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.HeatsinkModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ReflectorModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ShieldingModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CoilModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModule;
 public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
     @Override
     protected byte getTargetVersion() {
@@ -26,64 +47,80 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
         return blockCfg.get("outputRate", 0);
     }
 
-    protected void loadTurbineEfficiencyFactors(Config turbine, Configuration configuration) {
-        configuration.overhaul.turbine.throughputEfficiencyLeniencyMult = turbine.get("throughputEfficiencyLeniencyMult");
-        configuration.overhaul.turbine.throughputEfficiencyLeniencyThreshold = turbine.get("throughputEfficiencyLeniencyThreshold");
+    protected void loadTurbineEfficiencyFactors(Config turbine, OverhaulTurbineConfiguration configuration) {
+        configuration.settings.throughputEfficiencyLeniencyMultiplier = turbine.get("throughputEfficiencyLeniencyMult");
+        configuration.settings.throughputEfficiencyLeniencyThreshold = turbine.get("throughputEfficiencyLeniencyThreshold");
     }
 
     protected float readOutputRatio(Config config, String name) {
         return config.getFloat(name);
     }
-    protected boolean readBladeStator(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block blade, Config config, String name) {
+    protected boolean readBladeStator(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block blade, Config config, String name) {
         return config.get(name);
     }
 
     @Override
-    protected synchronized Multiblock readMultiblockUnderhaulSFR(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Design readMultiblockUnderhaulSFR(Project ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
-        UnderhaulSFR underhaulSFR = new UnderhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.underhaul.fissionSFR.allFuels.get(data.get("fuel", (byte)-1)));
+        UnderhaulSFRDesign underhaulSFR = new UnderhaulSFRDesign(ncpf, (int)size.get(0),(int)size.get(1),(int)size.get(2));
+        underhaulSFR.fuel = recovery.recoverUnderhaulSFRFuelLegacyNCPF(ncpf, data.getByte("fuel", (byte)-1));
         boolean compact = data.get("compact");
         ConfigNumberList blocks = data.get("blocks");
         if(compact){
             int[] index = new int[1];
-            underhaulSFR.forEachInternalPosition((x, y, z) -> {
-                int bid = (int) blocks.get(index[0]);
-                if(bid>0)underhaulSFR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
-                index[0]++;
-            });
+            for(int x = 1; x<underhaulSFR.design.length-1; x++){
+                for(int y = 1; y<underhaulSFR.design[x].length-1; y++){
+                    for(int z = 1; z<underhaulSFR.design[x][y].length-1; z++){
+                        int bid = (int) blocks.get(index[0]);
+                        if(bid>0){
+                            net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block b = recovery.recoverUnderhaulSFRBlockLegacyNCPF(ncpf, bid-1);
+                            if(b!=null)underhaulSFR.design[x][y][z] = b;
+                        }
+                        index[0]++;
+                    }
+                }
+            }
         }else{
             for(int j = 0; j<blocks.size(); j+=4){
                 int x = (int) blocks.get(j)+1;
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                underhaulSFR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.underhaul.fissionSFR.allBlocks.get(bid-1)));
+                net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block b = recovery.recoverUnderhaulSFRBlockLegacyNCPF(ncpf, bid-1);
+                if(b!=null)underhaulSFR.design[x][y][z] = b;
             }
         }
         return underhaulSFR;
     }
     @Override
-    protected synchronized Multiblock readMultiblockOverhaulSFR(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Design readMultiblockOverhaulSFR(Project ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
-        OverhaulSFR overhaulSFR = new OverhaulSFR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),ncpf.configuration.overhaul.fissionSFR.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+        OverhaulSFRDesign overhaulSFR = new OverhaulSFRDesign(ncpf, (int)size.get(0),(int)size.get(1),(int)size.get(2));
+        overhaulSFR.coolantRecipe = recovery.recoverOverhaulSFRCoolantRecipeLegacyNCPF(ncpf, data.getByte("coolantRecipe", (byte)-1));
         boolean compact = data.get("compact");
         ConfigNumberList blocks = data.get("blocks");
         if(compact){
             int[] index = new int[1];
-            overhaulSFR.forEachInternalPosition((x, y, z) -> {
-                int bid = (int) blocks.get(index[0]);
-                if(bid>0){
-                    overhaulSFR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+            for(int x = 1; x<overhaulSFR.design.length; x++){
+                for(int y = 1; y<overhaulSFR.design[x].length; y++){
+                    for(int z = 1; z<overhaulSFR.design[x][y].length; z++){
+                        int bid = (int) blocks.get(index[0]);
+                        if(bid>0){
+                            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b = recovery.recoverOverhaulSFRBlockLegacyNCPF(ncpf, bid-1);
+                            if(b!=null)overhaulSFR.design[x][y][z] = b;
+                        }
+                        index[0]++;
+                    }
                 }
-                index[0]++;
-            });
+            }
         }else{
             for(int j = 0; j<blocks.size(); j+=4){
                 int x = (int) blocks.get(j)+1;
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                overhaulSFR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionSFR.allBlocks.get(bid-1)));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b = recovery.recoverOverhaulSFRBlockLegacyNCPF(ncpf, bid-1);
+                if(b!=null)overhaulSFR.design[x][y][z] = b;
             }
         }
         ConfigNumberList fuels = data.get("fuels");
@@ -92,48 +129,59 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
         int fuelIndex = 0;
         int sourceIndex = 0;
         int recipeIndex = 0;
-        ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> srces = new ArrayList<>();
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block bl : ncpf.configuration.overhaul.fissionSFR.allBlocks){
-            if(bl.source)srces.add(bl);
+        ArrayList<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block> srces = new ArrayList<>();
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block bl : ncpf.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+            if(bl.neutronSource!=null)srces.add(bl);
         }
-        for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : overhaulSFR.getBlocks()){
-            if(block.template.fuelCell){
-                block.recipe = block.template.allRecipes.get((int)fuels.get(fuelIndex));
-                fuelIndex++;
-                int sid = (int) sources.get(sourceIndex);
-                if(sid>0)block.addNeutronSource(overhaulSFR, srces.get(sid-1));
-                sourceIndex++;
-            }
-            if(block.template.irradiator){
-                int rid = (int) irradiatorRecipes.get(recipeIndex);
-                if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
-                recipeIndex++;
+        for(int x = 1; x<overhaulSFR.design.length; x++){
+            for(int y = 1; y<overhaulSFR.design[x].length; y++){
+                for(int z = 1; z<overhaulSFR.design[x][y].length; z++){
+                    net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block block = overhaulSFR.design[x][y][z];
+                    if(block.fuelCell!=null){
+                        overhaulSFR.fuels[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block, (int)fuels.get(fuelIndex));
+                        fuelIndex++;
+                        int sid = (int) sources.get(sourceIndex);
+                        if(sid>0)addNeutronSource(overhaulSFR, x, y, z, srces.get(sid-1));
+                        sourceIndex++;
+                    }
+                    if(block.irradiator!=null){
+                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                        if(rid>0)overhaulSFR.irradiatorRecipes[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
+                        recipeIndex++;
+                    }
+                }
             }
         }
         return overhaulSFR;
     }
     @Override
-    protected synchronized Multiblock readMultiblockOverhaulMSR(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Design readMultiblockOverhaulMSR(Project ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
-        OverhaulMSR overhaulMSR = new OverhaulMSR(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2));
+        OverhaulMSRDesign overhaulMSR = new OverhaulMSRDesign(ncpf, (int)size.get(0),(int)size.get(1),(int)size.get(2));
         boolean compact = data.get("compact");
         ConfigNumberList blocks = data.get("blocks");
         if(compact){
             int[] index = new int[1];
-            overhaulMSR.forEachInternalPosition((x, y, z) -> {
-                int bid = (int) blocks.get(index[0]);
-                if(bid>0){
-                    overhaulMSR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+            for(int x = 1; x<overhaulMSR.design.length; x++){
+                for(int y = 1; y<overhaulMSR.design[x].length; y++){
+                    for(int z = 1; z<overhaulMSR.design[x][y].length; z++){
+                        int bid = (int) blocks.get(index[0]);
+                        if(bid>0){
+                            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b = recovery.recoverOverhaulMSRBlockLegacyNCPF(ncpf, bid-1);
+                            if(b!=null)overhaulMSR.design[x][y][z] = b;
+                        }
+                        index[0]++;
+                    }
                 }
-                index[0]++;
-            });
+            }
         }else{
             for(int j = 0; j<blocks.size(); j+=4){
                 int x = (int) blocks.get(j)+1;
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                overhaulMSR.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(ncpf.configuration, x, y, z, ncpf.configuration.overhaul.fissionMSR.allBlocks.get(bid-1)));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b = recovery.recoverOverhaulMSRBlockLegacyNCPF(ncpf, bid-1);
+                if(b!=null)overhaulMSR.design[x][y][z] = b;
             }
         }
         ConfigNumberList fuels = data.get("fuels");
@@ -142,32 +190,40 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
         int fuelIndex = 0;
         int sourceIndex = 0;
         int recipeIndex = 0;
-        ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block> msrces = new ArrayList<>();
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block bl : ncpf.configuration.overhaul.fissionMSR.allBlocks){
-            if(bl.source)msrces.add(bl);
+        ArrayList<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block> srces = new ArrayList<>();
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block bl : ncpf.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+            if(bl.neutronSource!=null)srces.add(bl);
         }
-        for(net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block : overhaulMSR.getBlocks()){
-            if(block.template.fuelVessel){
-                block.recipe = block.template.allRecipes.get((int)fuels.get(fuelIndex));
-                fuelIndex++;
-                int sid = (int) sources.get(sourceIndex);
-                if(sid>0)block.addNeutronSource(overhaulMSR, msrces.get(sid-1));
-                sourceIndex++;
+        for(int x = 1; x<overhaulMSR.design.length; x++){
+            for(int y = 1; y<overhaulMSR.design[x].length; y++){
+                for(int z = 1; z<overhaulMSR.design[x][y].length; z++){
+                    net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block block = overhaulMSR.design[x][y][z];
+                    if(block.fuelVessel!=null){
+                        overhaulMSR.fuels[x][y][z] = recovery.recoverOverhaulMSRBlockRecipeLegacyNCPF(ncpf, block, (int)fuels.get(fuelIndex));
+                        fuelIndex++;
+                        int sid = (int) sources.get(sourceIndex);
+                        if(sid>0)addNeutronSource(overhaulMSR, x, y, z, srces.get(sid-1));
+                        sourceIndex++;
+                    }
+                    if(block.irradiator!=null){
+                        int rid = (int) irradiatorRecipes.get(recipeIndex);
+                        if(rid>0)overhaulMSR.irradiatorRecipes[x][y][z] = recovery.recoverOverhaulMSRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
+                        recipeIndex++;
+                    }
+                }
             }
-            if(block.template.irradiator){
-                int rid = (int) irradiatorRecipes.get(recipeIndex);
-                if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
-                recipeIndex++;
-            }
-            if(block.template.heater&&!block.template.allRecipes.isEmpty())block.recipe = block.template.allRecipes.get(0);
         }
         return overhaulMSR;
     }
     @Override
-    protected synchronized Multiblock readMultiblockOverhaulTurbine(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Design readMultiblockOverhaulTurbine(Project ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
-        OverhaulTurbine overhaulTurbine = new OverhaulTurbine(ncpf.configuration, (int)size.get(0), (int)size.get(1), ncpf.configuration.overhaul.turbine.allRecipes.get(data.get("recipe", (byte)-1)));
-        overhaulTurbine.setBearing((int)size.get(2));
+        int width = (int)size.get(0);
+        int depth = (int)size.get(1);
+        int externalDepth = depth+2;
+        OverhaulTurbineDesign overhaulTurbine = new OverhaulTurbineDesign(ncpf, width, width, depth);
+        overhaulTurbine.recipe = recovery.recoverOverhaulTurbineRecipeLegacyNCPF(ncpf, data.getByte("recipe", (byte)-1));
+        setBearing(overhaulTurbine, (int)size.get(2), ncpf.getConfiguration(OverhaulTurbineConfiguration::new));
         if(data.hasProperty("inputs")){
             overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
             ConfigNumberList inputs = data.get("inputs");
@@ -175,21 +231,21 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
                 overhaulTurbinePostLoadInputsMap.get(overhaulTurbine).add((int)inputs.get(i));
             }
         }
-        ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> allCoils = new ArrayList<>();
-        ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> allBlades = new ArrayList<>();
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block b : ncpf.configuration.overhaul.turbine.allBlocks){
-            if(b.blade)allBlades.add(b);
-            else allCoils.add(b);
+        ArrayList<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block> allCoils = new ArrayList<>();
+        ArrayList<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block> allBlades = new ArrayList<>();
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block b : ncpf.getConfiguration(OverhaulTurbineConfiguration::new).blocks){
+            if(b.blade!=null)allBlades.add(b);
+            else allCoils.add(b);//uhh okay
         }
         ConfigNumberList coils = data.get("coils");
         int index = 0;
         for(int z = 0; z<2; z++){
-            if(z==1)z = overhaulTurbine.getExternalDepth()-1;
-            for(int x = 1; x<=overhaulTurbine.getInternalWidth(); x++){
-                for(int y = 1; y<=overhaulTurbine.getInternalHeight(); y++){
+            if(z==1)z = depth-1;
+            for(int x = 1; x<=width; x++){
+                for(int y = 1; y<=width; y++){
                     int bid = (int) coils.get(index);
                     if(bid>0){
-                        overhaulTurbine.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.turbine.Block(ncpf.configuration, x, y, z, allCoils.get(bid-1)));
+                        overhaulTurbine.design[x][y][z] = recovery.recoverOverhaulTurbineBlockLegacyNCPF(ncpf, bid-1);
                     }
                     index++;
                 }
@@ -197,542 +253,536 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
         }
         ConfigNumberList blades = data.get("blades");
         index = 0;
-        for(int z = 1; z<=overhaulTurbine.getInternalDepth(); z++){
+        for(int z = 1; z<=depth; z++){
             int bid = (int) blades.get(index);
             if(bid>0){
-                overhaulTurbine.setBlade((int)size.get(2), z, allBlades.get(bid-1));
+                setBlade(overhaulTurbine, (int)size.get(2), z, allBlades.get(bid-1));
             }
             index++;
         }
         return overhaulTurbine;
     }
     @Override
-    protected synchronized Multiblock readMultiblockOverhaulFusionReactor(LegacyNCPFFile ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized Design readMultiblockOverhaulFusionReactor(Project ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList size = data.get("size");
-        OverhaulFusionReactor overhaulFusionReactor = new OverhaulFusionReactor(ncpf.configuration, (int)size.get(0),(int)size.get(1),(int)size.get(2),(int)size.get(3),ncpf.configuration.overhaul.fusion.allRecipes.get(data.get("recipe", (byte)-1)),ncpf.configuration.overhaul.fusion.allCoolantRecipes.get(data.get("coolantRecipe", (byte)-1)));
+        OverhaulFusionDesign overhaulFusion = new OverhaulFusionDesign(ncpf, (int)size.get(0),(int)size.get(1),(int)size.get(2),(int)size.get(3));
+        overhaulFusion.recipe = recovery.recoverOverhaulFusionRecipeLegacyNCPF(ncpf, data.getByte("recipe", (byte)-1));
+        overhaulFusion.coolantRecipe = recovery.recoverOverhaulFusionCoolantRecipeLegacyNCPF(ncpf, data.getByte("coolantRecipe", (byte)-1));
         ConfigNumberList blocks = data.get("blocks");
         int[] findex = new int[1];
-        overhaulFusionReactor.forEachPosition((X, Y, Z) -> {
-            int bid = (int)blocks.get(findex[0]);
-            if(bid>0)overhaulFusionReactor.setBlockExact(X, Y, Z, new net.ncplanner.plannerator.multiblock.overhaul.fusion.Block(ncpf.configuration, X, Y, Z, ncpf.configuration.overhaul.fusion.allBlocks.get(bid-1)));
-            findex[0]++;
-        });
-        ConfigNumberList breedingBlanketRecipes = data.get("breedingBlanketRecipes");
-        int recipeIndex = 0;
-        for(net.ncplanner.plannerator.multiblock.overhaul.fusion.Block block : overhaulFusionReactor.getBlocks()){
-            if(block.template.breedingBlanket){
-                int rid = (int) breedingBlanketRecipes.get(recipeIndex);
-                if(rid>0)block.recipe = block.template.allRecipes.get(rid-1);
-                recipeIndex++;
+        for(int x = 0; x<overhaulFusion.design.length; x++){
+            for(int y = 0; y<overhaulFusion.design.length; y++){
+                for(int z = 0; z<overhaulFusion.design.length; z++){
+                    int bid = (int)blocks.get(findex[0]);
+                    if(bid>0)overhaulFusion.design[x][y][z] = recovery.recoverOverhaulFusionBlockLegacyNCPF(ncpf, bid-1);
+                    findex[0]++;
+                }
             }
         }
-        return overhaulFusionReactor;
+        ConfigNumberList breedingBlanketRecipes = data.get("breedingBlanketRecipes");
+        int recipeIndex = 0;
+        for(int x = 0; x<overhaulFusion.design.length; x++){
+            for(int y = 0; y<overhaulFusion.design.length; y++){
+                for(int z = 0; z<overhaulFusion.design.length; z++){
+                    net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block block = overhaulFusion.design[x][y][z];
+                    if(block.breedingBlanket!=null){
+                        int rid = (int) breedingBlanketRecipes.get(recipeIndex);
+                        if(rid>0)overhaulFusion.breedingBlanketRecipes[x][y][z] = recovery.recoverOverhaulFusionBlockRecipeLegacyNCPF(ncpf, block, rid-1);
+                        recipeIndex++;
+                    }
+                }
+            }
+        }
+        return overhaulFusion;
     }
 
     @Override
-    protected void loadUnderhaulBlocks(Config config, Configuration parent, Configuration configuration, boolean loadSettings) {
+    protected void loadUnderhaulBlocks(NCPFConfigurationContainer project, Config config, boolean loadSettings) {
         if(config.hasProperty("underhaul")){
-            configuration.underhaul = new UnderhaulConfiguration();
             Config underhaul = config.get("underhaul");
             if(underhaul.hasProperty("fissionSFR")){
-                configuration.underhaul.fissionSFR = new net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration();
+                UnderhaulSFRConfiguration configuration = new UnderhaulSFRConfiguration();
                 Config fissionSFR = underhaul.get("fissionSFR");
                 if(loadSettings){
-                    configuration.underhaul.fissionSFR.minSize = fissionSFR.get("minSize");
-                    configuration.underhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
-                    configuration.underhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
-                    configuration.underhaul.fissionSFR.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
-                    configuration.underhaul.fissionSFR.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
-                    configuration.underhaul.fissionSFR.activeCoolerRate = fissionSFR.get("activeCoolerRate");
+                    configuration.settings.minSize = fissionSFR.get("minSize");
+                    configuration.settings.maxSize = fissionSFR.get("maxSize");
+                    configuration.settings.neutronReach = fissionSFR.get("neutronReach");
+                    configuration.settings.moderatorExtraPower = fissionSFR.get("moderatorExtraPower");
+                    configuration.settings.moderatorExtraHeat = fissionSFR.get("moderatorExtraHeat");
+                    configuration.settings.activeCoolerRate = fissionSFR.get("activeCoolerRate");
                 }
                 ConfigList blocks = fissionSFR.get("blocks");
                 underhaulPostLoadMap.clear();
                 for(int i = 0; i<blocks.size(); i++){
                     Config blockCfg = blocks.getConfig(i);
-                    net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block block = new net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block(blockCfg.get("name"));
-                    block.active = blockCfg.get("active");
-                    block.cooling = blockCfg.get("cooling", 0);
-                    block.fuelCell = blockCfg.get("fuelCell", false);
-                    block.moderator = blockCfg.get("moderator", false);
-                    if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
-                    if(blockCfg.hasProperty("rules")){
-                        ConfigList rules = blockCfg.get("rules");
-                        for(int idx = 0; idx<rules.size(); idx++){
-                            block.rules.add(readUnderRule(rules.getConfig(idx)));
-                        }
+                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block block = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                    configuration.blocks.add(block);
+                    String active = blockCfg.getString("active");
+                    int cooling = blockCfg.getInt("cooling", 0);
+                    net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule coolerStats = null;//used to add placement rules
+                    if(active!=null){
+                        block.activeCooler = new net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule();
+                        net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe(new NCPFLegacyFluidElement(active));
+                        coolerStats = recipe.stats;
+                        recipe.stats.cooling = cooling;
+                        block.activeCoolerRecipes.add(recipe);
+                    }else if(cooling!=0){
+                        coolerStats = block.cooler = new net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule();
+                        block.cooler.cooling = cooling;
                     }
-                    parent.underhaul.fissionSFR.allBlocks.add(block);configuration.underhaul.fissionSFR.blocks.add(block);
-                }
-                for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.PlacementRule rule : underhaulPostLoadMap.keySet()){
-                    int index = underhaulPostLoadMap.get(rule);
-                    if(index==0){
-                        rule.isSpecificBlock = false;
-                        rule.blockType = net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                    }else{
-                        rule.block = parent.underhaul.fissionSFR.allBlocks.get(index-1);
+                    if(blockCfg.getBoolean("fuelCell", false))block.fuelCell = new net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule();
+                    if(blockCfg.getBoolean("moderator", false))block.moderator = new net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule();
+                    if(blockCfg.hasProperty("texture"))block.texture.texture = loadNCPFTexture(blockCfg.getConfigNumberList("texture"));
+                    if(blockCfg.hasProperty("rules")){
+                        ConfigList rules = blockCfg.getConfigList("rules");
+                        for(int idx = 0; idx<rules.size(); idx++){
+                            coolerStats.rules.add(readUnderRule(rules.getConfig(idx)));
+                        }
                     }
                 }
                 ConfigList fuels = fissionSFR.get("fuels");
                 for(int i = 0; i<fuels.size(); i++){
                     Config fuelCfg = fuels.getConfig(i);
-                    net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel fuel = new net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel(fuelCfg.get("name"), fuelCfg.get("power"), fuelCfg.get("heat"), fuelCfg.get("time"));
-                    parent.underhaul.fissionSFR.allFuels.add(fuel);configuration.underhaul.fissionSFR.fuels.add(fuel);
+                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel(new NCPFLegacyItemElement(fuelCfg.getString("name")));
+                    fuel.stats.power = fuelCfg.getFloat("power");
+                    fuel.stats.heat = fuelCfg.getFloat("heat");
+                    fuel.stats.time = fuelCfg.getInt("time");
+                    configuration.fuels.add(fuel);
                 }
+                project.setConfiguration(configuration);
             }
         }
     }
     @Override
-    protected void loadOverhaulSFRBlocks(Config overhaul, Configuration parent, Configuration configuration, boolean loadSettings, boolean loadingAddon) {
+    protected void loadOverhaulSFRBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings, boolean loadingAddon, boolean isAddon, List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block> additionalBlocks) {
         if(overhaul.hasProperty("fissionSFR")){
-            configuration.overhaul.fissionSFR = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.FissionSFRConfiguration();
-            Config fissionSFR = overhaul.get("fissionSFR");
+            OverhaulSFRConfiguration configuration = new OverhaulSFRConfiguration();
+            Config fissionSFR = overhaul.getConfig("fissionSFR");
             if(loadSettings){
-                configuration.overhaul.fissionSFR.minSize = fissionSFR.get("minSize");
-                configuration.overhaul.fissionSFR.maxSize = fissionSFR.get("maxSize");
-                configuration.overhaul.fissionSFR.neutronReach = fissionSFR.get("neutronReach");
-                configuration.overhaul.fissionSFR.coolingEfficiencyLeniency = fissionSFR.get("coolingEfficiencyLeniency");
-                configuration.overhaul.fissionSFR.sparsityPenaltyMult = fissionSFR.get("sparsityPenaltyMult");
-                configuration.overhaul.fissionSFR.sparsityPenaltyThreshold = fissionSFR.get("sparsityPenaltyThreshold");
+                configuration.settings.minSize = fissionSFR.getInt("minSize");
+                configuration.settings.maxSize = fissionSFR.getInt("maxSize");
+                configuration.settings.neutronReach = fissionSFR.getInt("neutronReach");
+                configuration.settings.coolingEfficiencyLeniency = fissionSFR.getInt("coolingEfficiencyLeniency");
+                configuration.settings.sparsityPenaltyMultiplier = fissionSFR.getFloat("sparsityPenaltyMult");
+                configuration.settings.sparsityPenaltyThreshold = fissionSFR.getFloat("sparsityPenaltyThreshold");
             }
             ConfigList blocks = fissionSFR.get("blocks");
             overhaulSFRPostLoadMap.clear();
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block(blockCfg.get("name"));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                configuration.blocks.add(block);
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
-                    block.heatsink = true;
-                    block.heatsinkHasBaseStats = true;
-                    block.heatsinkCooling = cooling;
+                    block.heatsink = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.HeatsinkModule();
+                    block.heatsink.cooling = cooling;
                 }
-                block.cluster = blockCfg.get("cluster", false);
-                block.createCluster = blockCfg.get("createCluster", false);
-                block.conductor = blockCfg.get("conductor", false);
-                block.fuelCell = blockCfg.get("fuelCell", false);
+                if(blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule();
+                if(blockCfg.getBoolean("fuelCell", false))block.fuelCell = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.FuelCellModule();
                 if(blockCfg.get("reflector", false)){
-                    block.reflector = true;
-                    block.reflectorHasBaseStats = true;
-                    block.reflectorEfficiency = blockCfg.get("efficiency");
-                    block.reflectorReflectivity = blockCfg.get("reflectivity");
+                    block.reflector = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule();
+                    block.reflector.efficiency = blockCfg.get("efficiency");
+                    block.reflector.reflectivity = blockCfg.get("reflectivity");
                 }
-                block.irradiator = blockCfg.get("irradiator", false);
+                if(blockCfg.getBoolean("irradiator", false))block.irradiator = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorModule();
                 if(blockCfg.get("moderator", false)){
-                    block.moderator = true;
-                    block.moderatorHasBaseStats = true;
-                    block.moderatorActive = blockCfg.get("activeModerator", false);
-                    block.moderatorFlux = blockCfg.get("flux");
-                    block.moderatorEfficiency = blockCfg.get("efficiency");
+                    block.moderator = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ModeratorModule();
+                    block.moderator.flux = blockCfg.get("flux");
+                    block.moderator.efficiency = blockCfg.get("efficiency");
                 }
                 if(blockCfg.get("shield", false)){
-                    block.shield = true;
-                    block.shieldHasBaseStats = true;
-                    block.shieldHeat = blockCfg.get("heatMult");
-                    block.shieldEfficiency = blockCfg.get("efficiency");
+                    block.neutronShield = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronShieldModule();
+                    block.neutronShield.heatPerFlux = blockCfg.get("heatMult");
+                    block.neutronShield.efficiency = blockCfg.get("efficiency");
                 }
-                block.blocksLOS = blockCfg.get("blocksLOS", false);
-                block.functional = blockCfg.get("functional");
-                if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
-                if(blockCfg.hasProperty("closedTexture"))block.setShieldClosedTexture(loadNCPFTexture(blockCfg.get("closedTexture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
                     for(int idx = 0; idx<rules.size(); idx++){
-                        block.rules.add(readOverSFRRule(rules.getConfig(idx)));
-                    }
-                }
-                parent.overhaul.fissionSFR.allBlocks.add(block);configuration.overhaul.fissionSFR.blocks.add(block);
-            }
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
-                int index = overhaulSFRPostLoadMap.get(rule);
-                if(index==0){
-                        rule.isSpecificBlock = false;
-                        rule.blockType = net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.PlacementRule.BlockType.AIR;
-                }else{
-                    rule.block = parent.overhaul.fissionSFR.allBlocks.get(index-1);
-                }
-            }
-            if (loadingAddon) {
-                for (net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : parent.overhaul.fissionSFR.allBlocks) {
-                    if (!b.allRecipes.isEmpty()) {
-                        net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block bl = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block(b.name);
-                        bl.fuelCell = b.fuelCell;
-                        bl.irradiator = b.irradiator;
-                        configuration.overhaul.fissionSFR.allBlocks.add(bl);
+                        block.heatsink.rules.add(readOverSFRRule(rules.getConfig(idx)));
                     }
                 }
             }
             ConfigList fuels = fissionSFR.get("fuels");
             for(int i = 0; i<fuels.size(); i++){
                 Config fuelCfg = fuels.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe fuel = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe(fuelCfg.get("name"), "null");
-                fuel.fuelCellEfficiency = fuelCfg.get("efficiency");
-                fuel.fuelCellHeat = fuelCfg.get("heat");
-                fuel.fuelCellTime = fuelCfg.get("time");
-                fuel.fuelCellCriticality = fuelCfg.get("criticality");
-                fuel.fuelCellSelfPriming = fuelCfg.get("selfPriming", false);
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : parent.overhaul.fissionSFR.allBlocks){
-                    if(b.fuelCell){
-                        b.allRecipes.add(fuel);
-                    }
-                }
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : configuration.overhaul.fissionSFR.allBlocks){
-                    if(b.fuelCell){
-                        b.recipes.add(fuel);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel(new NCPFLegacyItemElement(fuelCfg.get("name")));
+                fuel.stats.efficiency = fuelCfg.get("efficiency");
+                fuel.stats.heat = fuelCfg.get("heat");
+                fuel.stats.time = fuelCfg.get("time");
+                fuel.stats.criticality = fuelCfg.get("criticality");
+                fuel.stats.selfPriming = fuelCfg.get("selfPriming", false);
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b : project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+                    if(b.fuelCell!=null){
+                        b.fuels.add(fuel);
                     }
                 }
             }
             ConfigList sources = fissionSFR.get("sources");
             for(int i = 0; i<sources.size(); i++){
                 Config sourceCfg = sources.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block source = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block(sourceCfg.get("name"));
-                source.source = true;
-                source.sourceEfficiency = sourceCfg.get("efficiency");
-                parent.overhaul.fissionSFR.allBlocks.add(source);configuration.overhaul.fissionSFR.blocks.add(source);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block(new NCPFLegacyBlockElement(sourceCfg.getString("name")));
+                configuration.blocks.add(block);
+                block.neutronSource = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceModule();
+                block.neutronSource.efficiency = sourceCfg.get("efficiency");
             }
             ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
             for(int i = 0; i<irradiatorRecipes.size(); i++){
                 Config irradiatorRecipeCfg = irradiatorRecipes.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe irrecipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe(irradiatorRecipeCfg.get("name"), "null");
-                irrecipe.irradiatorEfficiency = irradiatorRecipeCfg.get("efficiency");
-                irrecipe.irradiatorHeat = irradiatorRecipeCfg.get("heat");
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : parent.overhaul.fissionSFR.allBlocks){
-                    if(b.irradiator){
-                        b.allRecipes.add(irrecipe);
-                    }
-                }
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : configuration.overhaul.fissionSFR.allBlocks){
-                    if(b.irradiator){
-                        b.recipes.add(irrecipe);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe(new NCPFLegacyItemElement(irradiatorRecipeCfg.getString("name")));
+                recipe.stats.efficiency = irradiatorRecipeCfg.get("efficiency");
+                recipe.stats.heat = irradiatorRecipeCfg.get("heat");
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b : project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+                    if(b.irradiator!=null){
+                        b.irradiatorRecipes.add(recipe);
                     }
                 }
             }
             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
             for(int i = 0; i<coolantRecipes.size(); i++){
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe coolRecipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe(coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), readOutputRatio(coolantRecipeCfg, "outputRatio"));
-                parent.overhaul.fissionSFR.allCoolantRecipes.add(coolRecipe);configuration.overhaul.fissionSFR.coolantRecipes.add(coolRecipe);
-            }
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : parent.overhaul.fissionSFR.allBlocks){
-                if(!b.allRecipes.isEmpty()){
-                    b.port = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block("null");
-                }
-            }
-            if(configuration.addon){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block cell = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block("Fuel Cell");
-                cell.fuelCell = true;
-                configuration.overhaul.fissionSFR.allBlocks.add(cell);
-                cell.allRecipes.add(new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe("",""));
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block irradiator = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block("Neutron Irradiator");
-                irradiator.irradiator = true;
-                irradiator.allRecipes.add(new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe("",""));
-                configuration.overhaul.fissionSFR.allBlocks.add(irradiator);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe(new NCPFLegacyFluidElement(coolantRecipeCfg.getString("input")));
+                recipe.stats.heat = coolantRecipeCfg.get("heat");
+                recipe.stats.outputRatio = readOutputRatio(coolantRecipeCfg, "outputRatio");
+                configuration.coolantRecipes.add(recipe);
             }
         }
     }
     @Override
-    protected void loadOverhaulMSRBlocks(Config overhaul, Configuration parent, Configuration configuration, boolean loadSettings, boolean loadingAddon) {
+    protected void loadOverhaulMSRBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings, boolean loadingAddon, boolean isAddon, List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block> additionalBlocks) {
         if(overhaul.hasProperty("fissionMSR")){
-            configuration.overhaul.fissionMSR = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.FissionMSRConfiguration();
-            Config fissionMSR = overhaul.get("fissionMSR");
+            OverhaulMSRConfiguration configuration = new OverhaulMSRConfiguration();
+            Config fissionMSR = overhaul.getConfig("fissionMSR");
             if(loadSettings){
-                configuration.overhaul.fissionMSR.minSize = fissionMSR.get("minSize");
-                configuration.overhaul.fissionMSR.maxSize = fissionMSR.get("maxSize");
-                configuration.overhaul.fissionMSR.neutronReach = fissionMSR.get("neutronReach");
-                configuration.overhaul.fissionMSR.coolingEfficiencyLeniency = fissionMSR.get("coolingEfficiencyLeniency");
-                configuration.overhaul.fissionMSR.sparsityPenaltyMult = fissionMSR.get("sparsityPenaltyMult");
-                configuration.overhaul.fissionMSR.sparsityPenaltyThreshold = fissionMSR.get("sparsityPenaltyThreshold");
+                configuration.settings.minSize = fissionMSR.getInt("minSize");
+                configuration.settings.maxSize = fissionMSR.getInt("maxSize");
+                configuration.settings.neutronReach = fissionMSR.getInt("neutronReach");
+                configuration.settings.coolingEfficiencyLeniency = fissionMSR.getInt("coolingEfficiencyLeniency");
+                configuration.settings.sparsityPenaltyMultiplier = fissionMSR.getFloat("sparsityPenaltyMult");
+                configuration.settings.sparsityPenaltyThreshold = fissionMSR.getFloat("sparsityPenaltyThreshold");
             }
             ConfigList blocks = fissionMSR.get("blocks");
             overhaulMSRPostLoadMap.clear();
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block block = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block(blockCfg.get("name"));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                configuration.blocks.add(block);
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
-                    block.heater = true;
-                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe(blockCfg.get("input", ""), blockCfg.get("output", ""));
-                    recipe.heaterCooling = cooling;
-                    recipe.inputRate = parseInputRate(blockCfg);
-                    recipe.outputRate = parseOutputRate(blockCfg);
-                    block.allRecipes.add(recipe);block.recipes.add(recipe);
+                    block.heater = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule();
+                    HeaterRecipe recipe = new HeaterRecipe(new NCPFLegacyFluidElement("null"));
+                    recipe.stats.cooling = cooling;
+                    block.heaterRecipes.add(recipe);
                 }
-                block.cluster = blockCfg.get("cluster", false);
-                block.createCluster = blockCfg.get("createCluster", false);
-                block.conductor = blockCfg.get("conductor", false);
-                block.fuelVessel = blockCfg.get("fuelVessel", false);
+                if(blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule();
+                if(blockCfg.getBoolean("fuelVessel", false))block.fuelVessel = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelVesselModule();
                 if(blockCfg.get("reflector", false)){
-                    block.reflector = true;
-                    block.reflectorHasBaseStats = true;
-                    block.reflectorEfficiency = blockCfg.get("efficiency");
-                    block.reflectorReflectivity = blockCfg.get("reflectivity");
+                    block.reflector = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule();
+                    block.reflector.efficiency = blockCfg.get("efficiency");
+                    block.reflector.reflectivity = blockCfg.get("reflectivity");
                 }
-                block.irradiator = blockCfg.get("irradiator", false);
+                if(blockCfg.getBoolean("irradiator", false))block.irradiator = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorModule();
                 if(blockCfg.get("moderator", false)){
-                    block.moderator = true;
-                    block.moderatorHasBaseStats = true;
-                    block.moderatorActive = blockCfg.get("activeModerator", false);
-                    block.moderatorFlux = blockCfg.get("flux");
-                    block.moderatorEfficiency = blockCfg.get("efficiency");
+                    block.moderator = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ModeratorModule();
+                    block.moderator.flux = blockCfg.get("flux");
+                    block.moderator.efficiency = blockCfg.get("efficiency");
                 }
                 if(blockCfg.get("shield", false)){
-                    block.shield = true;
-                    block.shieldHasBaseStats = true;
-                    block.shieldHeat = blockCfg.get("heatMult");
-                    block.shieldEfficiency = blockCfg.get("efficiency");
+                    block.neutronShield = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronShieldModule();
+                    block.neutronShield.heatPerFlux = blockCfg.get("heatMult");
+                    block.neutronShield.efficiency = blockCfg.get("efficiency");
                 }
-                block.blocksLOS = blockCfg.get("blocksLOS", false);
-                block.functional = blockCfg.get("functional");
-                if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
-                if(blockCfg.hasProperty("closedTexture"))block.setShieldClosedTexture(loadNCPFTexture(blockCfg.get("closedTexture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
                     for(int idx = 0; idx<rules.size(); idx++){
-                        block.rules.add(readOverMSRRule(rules.getConfig(idx)));
-                    }
-                }
-                parent.overhaul.fissionMSR.allBlocks.add(block);configuration.overhaul.fissionMSR.blocks.add(block);
-            }
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
-                int index = overhaulMSRPostLoadMap.get(rule);
-                if(index==0){
-                        rule.isSpecificBlock = false;
-                        rule.blockType = net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.PlacementRule.BlockType.AIR;
-                }else{
-                    rule.block = parent.overhaul.fissionMSR.allBlocks.get(index-1);
-                }
-            }
-            if (loadingAddon) {
-                for (net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : parent.overhaul.fissionMSR.allBlocks) {
-                    if (!b.allRecipes.isEmpty()) {
-                        net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block bl = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block(b.name);
-                        bl.fuelVessel = b.fuelVessel;
-                        bl.irradiator = b.irradiator;
-                        configuration.overhaul.fissionMSR.allBlocks.add(bl);
+                        block.heater.rules.add(readOverMSRRule(rules.getConfig(idx)));
                     }
                 }
             }
             ConfigList fuels = fissionMSR.get("fuels");
             for(int i = 0; i<fuels.size(); i++){
                 Config fuelCfg = fuels.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe(fuelCfg.get("name"), "null");
-                fuel.inputRate = fuel.outputRate = 1;
-                fuel.fuelVesselEfficiency = fuelCfg.get("efficiency");
-                fuel.fuelVesselHeat = fuelCfg.get("heat");
-                fuel.fuelVesselTime = fuelCfg.get("time");
-                fuel.fuelVesselCriticality = fuelCfg.get("criticality");
-                fuel.fuelVesselSelfPriming = fuelCfg.get("selfPriming", false);
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : parent.overhaul.fissionMSR.allBlocks){
-                    if(b.fuelVessel){
-                        b.allRecipes.add(fuel);
-                    }
-                }
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-                    if(b.fuelVessel){
-                        b.recipes.add(fuel);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel(new NCPFLegacyItemElement(fuelCfg.get("name")));
+                fuel.stats.efficiency = fuelCfg.get("efficiency");
+                fuel.stats.heat = fuelCfg.get("heat");
+                fuel.stats.time = fuelCfg.get("time");
+                fuel.stats.criticality = fuelCfg.get("criticality");
+                fuel.stats.selfPriming = fuelCfg.get("selfPriming", false);
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b : project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+                    if(b.fuelVessel!=null){
+                        b.fuels.add(fuel);
                     }
                 }
             }
             ConfigList sources = fissionMSR.get("sources");
             for(int i = 0; i<sources.size(); i++){
                 Config sourceCfg = sources.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block source = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block(sourceCfg.get("name"));
-                source.source = true;
-                source.sourceEfficiency = sourceCfg.get("efficiency");
-                parent.overhaul.fissionMSR.allBlocks.add(source);configuration.overhaul.fissionMSR.blocks.add(source);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block(new NCPFLegacyBlockElement(sourceCfg.getString("name")));
+                configuration.blocks.add(block);
+                block.neutronSource = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceModule();
+                block.neutronSource.efficiency = sourceCfg.get("efficiency");
             }
             ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
             for(int i = 0; i<irradiatorRecipes.size(); i++){
                 Config irradiatorRecipeCfg = irradiatorRecipes.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe irrecipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe(irradiatorRecipeCfg.get("name"), "null");
-                irrecipe.irradiatorEfficiency = irradiatorRecipeCfg.get("efficiency");
-                irrecipe.irradiatorHeat = irradiatorRecipeCfg.get("heat");
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : parent.overhaul.fissionMSR.allBlocks){
-                    if(b.irradiator){
-                        b.allRecipes.add(irrecipe);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe(new NCPFLegacyItemElement(irradiatorRecipeCfg.getString("name")));
+                recipe.stats.efficiency = irradiatorRecipeCfg.get("efficiency");
+                recipe.stats.heat = irradiatorRecipeCfg.get("heat");
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b : project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+                    if(b.irradiator!=null){
+                        b.irradiatorRecipes.add(recipe);
                     }
                 }
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-                    if(b.irradiator){
-                        b.recipes.add(irrecipe);
-                    }
-                }
-            }
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : parent.overhaul.fissionMSR.allBlocks){
-                if(!b.allRecipes.isEmpty()){
-                    b.port = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block("null");
-                }
-            }
-            if(configuration.addon){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block vessel = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block("Fuel Vessel");
-                vessel.fuelVessel = true;
-                configuration.overhaul.fissionMSR.allBlocks.add(vessel);
-                vessel.allRecipes.add(new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe("",""));
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block irradiator = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block("Neutron Irradiator");
-                irradiator.irradiator = true;
-                irradiator.allRecipes.add(new net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe("",""));
-                configuration.overhaul.fissionMSR.allBlocks.add(irradiator);
             }
         }
     }
     @Override
-    protected void loadOverhaulTurbineBlocks(Config overhaul, Configuration parent, Configuration configuration, boolean loadSettings) {
+    protected void loadOverhaulTurbineBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings){
         if(overhaul.hasProperty("turbine")){
-            configuration.overhaul.turbine = new net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.TurbineConfiguration();
+            OverhaulTurbineConfiguration configuration = new OverhaulTurbineConfiguration();
             Config turbine = overhaul.get("turbine");
             if(loadSettings){
-                configuration.overhaul.turbine.minWidth = turbine.get("minWidth");
-                configuration.overhaul.turbine.minLength = turbine.get("minLength");
-                configuration.overhaul.turbine.maxSize = turbine.get("maxSize");
-                configuration.overhaul.turbine.fluidPerBlade = turbine.get("fluidPerBlade");
+                configuration.settings.minWidth = turbine.get("minWidth");
+                configuration.settings.minLength = turbine.get("minLength");
+                configuration.settings.maxSize = turbine.get("maxSize");
+                configuration.settings.fluidPerBlade = turbine.get("fluidPerBlade");
                 loadTurbineEfficiencyFactors(turbine, configuration);
-                configuration.overhaul.turbine.throughputFactor = turbine.get("throughputFactor");
-                configuration.overhaul.turbine.powerBonus = turbine.get("powerBonus");
+                configuration.settings.throughputFactor = turbine.get("throughputFactor");
+                configuration.settings.powerBonus = turbine.get("powerBonus");
             }
             ConfigList coils = turbine.get("coils");
             overhaulTurbinePostLoadMap.clear();
             for(int i = 0; i<coils.size(); i++){
                 Config blockCfg = coils.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block coil = new net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block(blockCfg.get("name"));
-                coil.bearing = blockCfg.get("bearing", false);
-                coil.connector = blockCfg.get("connector", false);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block(new NCPFLegacyBlockElement(blockCfg.get("name")));
+                configuration.blocks.add(block);
+                if(blockCfg.get("bearing", false))block.bearing = new BearingModule();
+                if(blockCfg.get("connector", false))block.connector = new net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ConnectorModule();
                 float eff = blockCfg.get("efficiency");
                 if(eff>0){
-                    coil.coil = true;
-                    coil.coilEfficiency = blockCfg.get("efficiency");
+                    block.coil = new CoilModule();
+                    block.coil.efficiency = blockCfg.get("efficiency");
                 }
-                if(blockCfg.hasProperty("texture"))coil.setTexture(loadNCPFTexture(blockCfg.get("texture")));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
                     for(int idx = 0; idx<rules.size(); idx++){
-                        coil.rules.add(readOverTurbineRule(rules.getConfig(idx)));
+                        block.coil.rules.add(readOverTurbineRule(rules.getConfig(idx)));
                     }
                 }
-                parent.overhaul.turbine.allBlocks.add(coil);configuration.overhaul.turbine.blocks.add(coil);
+                if(blockCfg.hasProperty("texture"))block.texture.texture = loadNCPFTexture(blockCfg.get("texture"));
             }
             ConfigList blades = turbine.get("blades");
             for(int i = 0; i<blades.size(); i++){
                 Config blockCfg = blades.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block blade = new net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block(blockCfg.get("name"));
-                blade.blade = true;
-                blade.bladeExpansion = blockCfg.get("expansion");
-                blade.bladeEfficiency = blockCfg.get("efficiency");
-                blade.bladeStator = readBladeStator(blade, blockCfg, "stator");
-                if(blockCfg.hasProperty("texture"))blade.setTexture(loadNCPFTexture(blockCfg.get("texture")));
-                parent.overhaul.turbine.allBlocks.add(blade);configuration.overhaul.turbine.blocks.add(blade);
-            }
-            ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> allCoils = new ArrayList<>();
-            ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> allBlades = new ArrayList<>();
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block b : parent.overhaul.turbine.allBlocks){
-                if(b.blade)allBlades.add(b);
-                else allCoils.add(b);
-            }
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.PlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
-                int index = overhaulTurbinePostLoadMap.get(rule);
-                if(index==0){
-                    rule.isSpecificBlock = false;
-                    rule.blockType = net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.PlacementRule.BlockType.CASING;
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block blade = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block(new NCPFLegacyBlockElement(blockCfg.get("name")));
+                configuration.blocks.add(blade);
+                if(readBladeStator(blade, blockCfg, "stator")){
+                    blade.stator = new StatorModule();
+                    blade.stator.expansion = blockCfg.get("expansion");
                 }else{
-                    rule.block = allCoils.get(index-1);
+                    blade.blade = new BladeModule();
+                    blade.blade.expansion = blockCfg.get("expansion");
+                    blade.blade.efficiency = blockCfg.get("efficiency");
                 }
+                if(blockCfg.hasProperty("texture"))blade.texture.texture = loadNCPFTexture(blockCfg.get("texture"));
+            }
+            ArrayList<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block> allCoils = new ArrayList<>();
+            ArrayList<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block> allBlades = new ArrayList<>();
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block b : project.getConfiguration(OverhaulTurbineConfiguration::new).blocks){
+                if(b.blade!=null||b.stator!=null)allBlades.add(b);
+                else allCoils.add(b);
             }
             ConfigList recipes = turbine.get("recipes");
             for(int i = 0; i<recipes.size(); i++){
                 Config recipeCfg = recipes.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe recipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe(recipeCfg.get("input"), recipeCfg.get("output"), recipeCfg.get("power"), recipeCfg.get("coefficient"));
-                parent.overhaul.turbine.allRecipes.add(recipe);configuration.overhaul.turbine.recipes.add(recipe);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe(new NCPFLegacyFluidElement(recipeCfg.get("input")));
+                recipe.stats.power = recipeCfg.get("power");
+                recipe.stats.coefficient = recipeCfg.get("coefficient");
+                configuration.recipes.add(recipe);
             }
         }
     }
     @Override
-    protected void loadOverhaulFusionGeneratorBlocks(Config overhaul, Configuration configuration, boolean loadSettings) {
+    protected void loadOverhaulFusionGeneratorBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings){
         if(overhaul.hasProperty("fusion")){
-            configuration.overhaul.fusion = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.FusionConfiguration();
+            OverhaulFusionConfiguration configuration = new OverhaulFusionConfiguration();
             Config fusion = overhaul.get("fusion");
             if(loadSettings){
-                configuration.overhaul.fusion.minInnerRadius = fusion.get("minInnerRadius");
-                configuration.overhaul.fusion.maxInnerRadius = fusion.get("maxInnerRadius");
-                configuration.overhaul.fusion.minCoreSize = fusion.get("minCoreSize");
-                configuration.overhaul.fusion.maxCoreSize = fusion.get("maxCoreSize");
-                configuration.overhaul.fusion.minToroidWidth = fusion.get("minToroidWidth");
-                configuration.overhaul.fusion.maxToroidWidth = fusion.get("maxToroidWidth");
-                configuration.overhaul.fusion.minLiningThickness = fusion.get("minLiningThickness");
-                configuration.overhaul.fusion.maxLiningThickness = fusion.get("maxLiningThickness");
-                configuration.overhaul.fusion.coolingEfficiencyLeniency = fusion.get("coolingEfficiencyLeniency");
-                configuration.overhaul.fusion.sparsityPenaltyMult = fusion.get("sparsityPenaltyMult");
-                configuration.overhaul.fusion.sparsityPenaltyThreshold = fusion.get("sparsityPenaltyThreshold");
+                configuration.settings.minInnerRadius = fusion.get("minInnerRadius");
+                configuration.settings.maxInnerRadius = fusion.get("maxInnerRadius");
+                configuration.settings.minCoreSize = fusion.get("minCoreSize");
+                configuration.settings.maxCoreSize = fusion.get("maxCoreSize");
+                configuration.settings.minToroidWidth = fusion.get("minToroidWidth");
+                configuration.settings.maxToroidWidth = fusion.get("maxToroidWidth");
+                configuration.settings.minLiningThickness = fusion.get("minLiningThickness");
+                configuration.settings.maxLiningThickness = fusion.get("maxLiningThickness");
+                configuration.settings.coolingEfficiencyLeniency = fusion.get("coolingEfficiencyLeniency");
+                configuration.settings.sparsityPenaltyMultiplier = fusion.get("sparsityPenaltyMult");
+                configuration.settings.sparsityPenaltyThreshold = fusion.get("sparsityPenaltyThreshold");
             }
             ConfigList blocks = fusion.get("blocks");
             overhaulFusionPostLoadMap.clear();
+            boolean augmented = false;
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block block = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block(blockCfg.get("name"));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block(new NCPFLegacyBlockElement(blockCfg.get("name")));
+                configuration.blocks.add(block);
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
-                    block.heatsink = true;
-                    block.heatsinkHasBaseStats = true;
-                    block.heatsinkCooling = cooling;
+                    block.heatsink = new HeatsinkModule();
+                    block.heatsink.cooling = cooling;
+                }if(blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConductorModule();
+                if(blockCfg.getBoolean("connector", false))block.connector = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConnectorModule();
+                if(blockCfg.getBoolean("core", false))block.core = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.CoreModule();
+                if(blockCfg.getBoolean("electromagnet", false)){
+                    block.toroid = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule();
+                    block.poloid = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.PoloidalElectromagnetModule();
                 }
-                block.cluster = blockCfg.get("cluster", false);
-                block.createCluster = blockCfg.get("createCluster", false);
-                block.conductor = blockCfg.get("conductor", false);
-                block.core = blockCfg.get("core", false);
-                block.connector = blockCfg.get("connector", false);
-                block.electromagnet = blockCfg.get("electromagnet", false);
-                block.heatingBlanket = blockCfg.get("heatingBlanket", false);
+                if(blockCfg.getBoolean("heatingBlanket", false))block.heatingBlanket = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.HeatingBlanketModule();
                 if(blockCfg.get("reflector", false)){
-                    block.reflector = true;
-                    block.reflectorHasBaseStats = true;
-                    block.reflectorEfficiency = blockCfg.get("efficiency");
+                    block.reflector = new ReflectorModule();
+                    block.reflector.efficiency = blockCfg.get("efficiency");
                 }
-                block.breedingBlanket = blockCfg.get("breedingBlanket", false);
-                block.breedingBlanketAugmented = blockCfg.get("augmentedBreedingBlanket", false);
+                if(blockCfg.get("breedingBlanket", false))block.breedingBlanket = new BreedingBlanketModule();
+                augmented = blockCfg.getBoolean("breedingBlanketAugmented", false);
                 if(blockCfg.get("shielding", false)){
-                    block.shielding = true;
-                    block.shieldingHasBaseStats = true;
-                    block.shieldingShieldiness = blockCfg.get("shieldiness");
+                    block.shielding = new ShieldingModule();
+                    block.shielding.shieldiness = blockCfg.get("shieldiness");
                 }
-                block.functional = blockCfg.get("functional");
-                if(blockCfg.hasProperty("texture"))block.setTexture(loadNCPFTexture(blockCfg.get("texture")));
+                if(blockCfg.hasProperty("texture"))block.texture.texture = loadNCPFTexture(blockCfg.get("texture"));
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.get("rules");
                     for(int idx = 0; idx<rules.size(); idx++){
-                        block.rules.add(readOverFusionRule(rules.getConfig(idx)));
+                        block.heatsink.rules.add(readOverFusionRule(rules.getConfig(idx)));
                     }
-                }
-                configuration.overhaul.fusion.allBlocks.add(block);configuration.overhaul.fusion.blocks.add(block);
-            }
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.PlacementRule rule : overhaulFusionPostLoadMap.keySet()){
-                int index = overhaulFusionPostLoadMap.get(rule);
-                if(index==0){
-                    rule.isSpecificBlock = false;
-                    rule.blockType = net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.PlacementRule.BlockType.AIR;
-                }else{
-                    rule.block = configuration.overhaul.fusion.allBlocks.get(index-1);
                 }
             }
             ConfigList breedingBlanketRecipes = fusion.get("breedingBlanketRecipes");
             for(int i = 0; i<breedingBlanketRecipes.size(); i++){
                 Config breedingBlanketRecipeCfg = breedingBlanketRecipes.getConfig(i);
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block b : configuration.overhaul.fusion.allBlocks){
-                    if(b.breedingBlanket){
-                        net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe breebrecipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe(breedingBlanketRecipeCfg.get("name"), "null");
-                        breebrecipe.breedingBlanketEfficiency = breedingBlanketRecipeCfg.get("efficiency");
-                        breebrecipe.breedingBlanketHeat = ((Number)breedingBlanketRecipeCfg.get("heat")).floatValue();
-                        breebrecipe.breedingBlanketAugmented = b.breedingBlanketAugmented;
-                        b.allRecipes.add(breebrecipe);b.recipes.add(breebrecipe);
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block b : project.getConfiguration(OverhaulFusionConfiguration::new).blocks){
+                    if(b.breedingBlanket!=null){
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe(new NCPFLegacyBlockElement(breedingBlanketRecipeCfg.get("name")));
+                        recipe.stats.efficiency = breedingBlanketRecipeCfg.get("efficiency");
+                        recipe.stats.heat = ((Number)breedingBlanketRecipeCfg.get("heat")).floatValue();
+                        recipe.stats.augmented = augmented;//doesn't work for addons, but fusion addons don't exist this old anyway
+                        b.breedingBlanketRecipes.add(recipe);
                     }
                 }
             }
             ConfigList recipes = fusion.get("recipes");
             for(int i = 0; i<recipes.size(); i++){
                 Config recipeCfg = recipes.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe recipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe(recipeCfg.get("name"), "null", recipeCfg.get("efficiency"), recipeCfg.get("heat"), recipeCfg.get("time"), recipeCfg.getFloat("fluxiness"));
-                configuration.overhaul.fusion.allRecipes.add(recipe);configuration.overhaul.fusion.recipes.add(recipe);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe(new NCPFLegacyFluidElement(recipeCfg.get("name")));
+                recipe.stats.efficiency = recipeCfg.get("efficiency");
+                recipe.stats.heat = recipeCfg.get("heat");
+                recipe.stats.time = recipeCfg.get("time");
+                recipe.stats.fluxiness = recipeCfg.getFloat("fluxiness");
+                configuration.recipes.add(recipe);
             }
             ConfigList coolantRecipes = fusion.get("coolantRecipes");
             for(int i = 0; i<coolantRecipes.size(); i++){
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe coolantRecipe = new net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe(coolantRecipeCfg.get("input"), coolantRecipeCfg.get("output"), coolantRecipeCfg.get("heat"), readOutputRatio(coolantRecipeCfg, "outputRatio"));
-                configuration.overhaul.fusion.allCoolantRecipes.add(coolantRecipe);configuration.overhaul.fusion.coolantRecipes.add(coolantRecipe);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe(new NCPFLegacyFluidElement(coolantRecipeCfg.get("input")));
+                recipe.stats.heat = coolantRecipeCfg.get("heat");
+                recipe.stats.outputRatio = readOutputRatio(coolantRecipeCfg, "outputRatio");
+                configuration.coolantRecipes.add(recipe);
+            }
+        }
+    }
+    public void addNeutronSource(OverhaulSFRDesign sfr, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block source){
+        HashMap<int[], Integer> possible = new HashMap<>();
+        for(Direction d : Direction.values()){
+            int i = 0;
+            while(true){
+                i++;
+                int X = x+d.x*i;
+                int Y = y+d.y*i;
+                int Z = z+d.z*i;
+                if(X<0||Y<0||Z<0||X>=sfr.design.length||Y>=sfr.design[0].length||Z>=sfr.design[0][0].length){
+                    possible.put(new int[]{x+d.x*(i-1),y+d.y*(i-1),z+d.z*(i-1)}, i);
+                    break;
+                }
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b = sfr.design[X][Y][Z];
+                if(b==null)continue;//air
+                if(b.fuelCell!=null||b.reflector!=null||b.irradiator!=null)break;
+            }
+        }
+        ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
+        Collections.sort(keys, (o1, o2) -> {
+            return possible.get(o1)-possible.get(o2);
+        });
+        for(int[] key : keys){
+            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block was = sfr.design[key[0]][key[1]][key[2]];
+            if(tryAddNeutronSource(sfr, source, key[0], key[1], key[2]))break;
+        }
+    }
+    private boolean tryAddNeutronSource(OverhaulSFRDesign sfr, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block source, int X, int Y, int Z){
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b = sfr.design[X][Y][Z];
+        if(b!=null&&(b.neutronSource!=null))return false;
+        sfr.design[X][Y][Z] = source;
+        return true;
+    }
+    public void addNeutronSource(OverhaulMSRDesign msr, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block source){
+        HashMap<int[], Integer> possible = new HashMap<>();
+        for(Direction d : Direction.values()){
+            int i = 0;
+            while(true){
+                i++;
+                int X = x+d.x*i;
+                int Y = y+d.y*i;
+                int Z = z+d.z*i;
+                if(X<0||Y<0||Z<0||X>=msr.design.length||Y>=msr.design[0].length||Z>=msr.design[0][0].length){
+                    possible.put(new int[]{x+d.x*(i-1),y+d.y*(i-1),z+d.z*(i-1)}, i);
+                    break;
+                }
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b = msr.design[X][Y][Z];
+                if(b==null)continue;//air
+                if(b.fuelVessel!=null||b.reflector!=null||b.irradiator!=null)break;
+            }
+        }
+        ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
+        Collections.sort(keys, (o1, o2) -> {
+            return possible.get(o1)-possible.get(o2);
+        });
+        for(int[] key : keys){
+            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block was = msr.design[key[0]][key[1]][key[2]];
+            if(tryAddNeutronSource(msr, source, key[0], key[1], key[2]))break;
+        }
+    }
+    private boolean tryAddNeutronSource(OverhaulMSRDesign msr, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block source, int X, int Y, int Z){
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b = msr.design[X][Y][Z];
+        if(b!=null&&(b.neutronSource!=null))return false;
+        msr.design[X][Y][Z] = source;
+        return true;
+    }
+    public void setBearing(OverhaulTurbineDesign turbine, int bearingSize, OverhaulTurbineConfiguration configuration){
+        int bearingMax = (turbine.design.length+2)/2+bearingSize/2;
+        int bearingMin = (turbine.design.length+2)/2-bearingSize/2;
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block bearing = null;
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block shaft = null;
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block block : configuration.blocks){
+            if(block.shaft!=null&&shaft==null)shaft = block;
+            if(block.bearing!=null&&bearing==null)bearing = block;
+        }
+        for(int z = 0; z<turbine.design[0][0].length+2; z++){
+            for(int x = bearingMin; x<=bearingMax; x++){
+                for(int y = bearingMin; y<=bearingMax; y++){
+                    net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block block = shaft;
+                    if(z==0||z==turbine.design[0][0].length+1)block = bearing;
+                    if(block!=null)turbine.design[x][y][z] = block;
+                }
+            }
+        }
+    }
+    public void setBlade(OverhaulTurbineDesign turbine, int bearingSize, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block block){
+        int bearingMax = (turbine.design.length+2)/2+bearingSize/2;
+        int bearingMin = (turbine.design.length+2)/2-bearingSize/2;
+        for(int x = 1; x<=turbine.design.length; x++){
+            for(int y = 1; y<=turbine.design[0].length; y++){
+                boolean isXBlade = x>=bearingMin&&x<=bearingMax;
+                boolean isYBlade = y>=bearingMin&&y<=bearingMax;
+                if(isXBlade&&isYBlade)continue;//that's the bearing
+                if(isXBlade||isYBlade)turbine.design[x][y][z] = block;
             }
         }
     }

@@ -1,34 +1,33 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
 import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 public class LegacyNCPF7Reader extends LegacyNCPF8Reader {
     @Override
     protected byte getTargetVersion() {
         return (byte) 7;
     }
-
     @Override
-    protected synchronized Multiblock readMultiblock(LegacyNCPFFile ncpf, InputStream in, RecoveryHandler recovery) {
+    protected synchronized Design readMultiblock(Project ncpf, InputStream in, RecoveryHandler recovery){
         Config data = Config.newConfig();
         data.load(in);
-        Multiblock multiblock;
+        Design design;
         int id = data.get("id");
         switch(id){
             case 0:
-                multiblock = readMultiblockUnderhaulSFR(ncpf, data, recovery);
+                design = readMultiblockUnderhaulSFR(ncpf, data, recovery);
                 break;
             case 1:
-                multiblock = readMultiblockOverhaulSFR(ncpf, data, recovery);
+                design = readMultiblockOverhaulSFR(ncpf, data, recovery);
                 break;
             case 2:
-                multiblock = readMultiblockOverhaulMSR(ncpf, data, recovery);
+                design = readMultiblockOverhaulMSR(ncpf, data, recovery);
                 break;
             case 3:
-                multiblock = readMultiblockOverhaulTurbine(ncpf, data, recovery);
+                design = readMultiblockOverhaulTurbine(ncpf, data, recovery);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
@@ -36,14 +35,13 @@ public class LegacyNCPF7Reader extends LegacyNCPF8Reader {
         if(data.hasProperty("metadata")){
             Config metadata = data.get("metadata");
             for(String key : metadata.properties()){
-                multiblock.metadata.put(key, metadata.get(key));
+                design.metadata.put(key, metadata.get(key));
             }
         }
-        return multiblock;
+        return design;
     }
-
     @Override
-    protected void loadOverhaulFusionGeneratorBlocks(Config overhaul, Configuration configuration, boolean loadSettings) {
+    protected void loadOverhaulFusionGeneratorBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings){
         // fusion did not exist in NCPF 7
     }
 }
