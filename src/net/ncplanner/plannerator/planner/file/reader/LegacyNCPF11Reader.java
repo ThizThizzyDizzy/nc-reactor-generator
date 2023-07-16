@@ -1085,7 +1085,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                 if(blockCfg.hasProperty("rules")){
                     ConfigList rules = blockCfg.getConfigList("rules");
                     for(int idx = 0; idx<rules.size(); idx++){
-                        block.coil.rules.add(readOverTurbineRule(rules.getConfig(idx)));
+                        if(block.coil!=null)block.coil.rules.add(readOverTurbineRule(rules.getConfig(idx)));
+                        if(block.connector!=null)block.connector.rules.add(readOverTurbineRule(rules.getConfig(idx)));
                     }
                 }
             }

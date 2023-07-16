@@ -10,15 +10,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class Recipe implements Pinnable, ThingWithLegacyNames{
-    public static Recipe recipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, double power, double coefficient){
-        Recipe recipe = new Recipe(inputName, outputName, power, coefficient);
-        recipe.inputDisplayName = inputDisplayName;
-        recipe.inputLegacyNames.add(inputDisplayName);
-        recipe.setInputTexture(TextureManager.getImage(inputTexture));
-        recipe.outputDisplayName = outputDisplayName;
-        recipe.setOutputTexture(TextureManager.getImage(outputTexture));
-        return recipe;
-    }
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();

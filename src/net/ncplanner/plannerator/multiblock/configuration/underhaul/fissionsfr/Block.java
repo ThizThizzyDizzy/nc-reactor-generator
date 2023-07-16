@@ -14,61 +14,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class Block extends RuleContainer<PlacementRule.BlockType, Block> implements Pinnable, IBlockTemplate {
-    public static Block cooler(String name, String displayName, int cooling, String texture, PlacementRule... rules){
-        Block block = new Block(name);
-        block.displayName = displayName;
-        block.legacyNames.add(displayName);
-        block.cooling = cooling;
-        for(PlacementRule r : rules){
-            block.rules.add(r);
-        }
-        block.setTexture(TextureManager.getImage(texture));
-        return block;
-    }
-    public static Block activeCooler(String name, String displayName, int cooling, String liquid, String texture, PlacementRule... rules){
-        Block block = new Block(name);
-        block.displayName = displayName;
-        block.legacyNames.add(displayName);
-        block.cooling = cooling;
-        block.active = liquid;
-        for(PlacementRule r : rules){
-            block.rules.add(r);
-        }
-        block.setTexture(TextureManager.getImage(texture));
-        return block;
-    }
-    public static Block fuelCell(String name, String displayName, String texture){
-        Block block = new Block(name);
-        block.displayName = displayName;
-        block.legacyNames.add(displayName);
-        block.fuelCell = true;
-        block.setTexture(TextureManager.getImage(texture));
-        return block;
-    }
-    public static Block moderator(String name, String displayName, String texture){
-        Block block = new Block(name);
-        block.displayName = displayName;
-        block.legacyNames.add(displayName);
-        block.moderator = true;
-        block.setTexture(TextureManager.getImage(texture));
-        return block;
-    }
-    public static Block casing(String name, String displayName, String texture){
-        Block block = new Block(name);
-        block.displayName = displayName;
-        block.legacyNames.add(displayName);
-        block.casing = true;
-        block.setTexture(TextureManager.getImage(texture));
-        return block;
-    }
-    public static Block controller(String name, String displayName, String texture){
-        Block block = new Block(name);
-        block.displayName = displayName;
-        block.legacyNames.add(displayName);
-        block.controller = true;
-        block.setTexture(TextureManager.getImage(texture));
-        return block;
-    }
     public String name;
     public String displayName;
     public ArrayList<String> legacyNames = new ArrayList<>();

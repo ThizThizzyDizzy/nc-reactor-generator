@@ -10,44 +10,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class BlockRecipe implements Pinnable, IBlockRecipe{
-    public static BlockRecipe heater(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int inputRate, int outputRate, int cooling){
-        BlockRecipe recipe = new BlockRecipe(inputName, outputName);
-        recipe.inputDisplayName = inputDisplayName;
-        recipe.inputLegacyNames.add(inputDisplayName);
-        recipe.setInputTexture(TextureManager.getImage(inputTexture));
-        recipe.outputDisplayName = outputDisplayName;
-        recipe.setOutputTexture(TextureManager.getImage(outputTexture));
-        recipe.heaterCooling = cooling;
-        recipe.inputRate = inputRate;
-        recipe.outputRate = outputRate;
-        return recipe;
-    }
-    public static BlockRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
-        BlockRecipe recipe = new BlockRecipe(inputName, outputName);
-        recipe.inputDisplayName = inputDisplayName;
-        recipe.inputLegacyNames.add(inputDisplayName);
-        recipe.setInputTexture(TextureManager.getImage(inputTexture));
-        recipe.outputDisplayName = outputDisplayName;
-        recipe.setOutputTexture(TextureManager.getImage(outputTexture));
-        recipe.irradiatorEfficiency = efficiency;
-        recipe.irradiatorHeat = heat;
-        return recipe;
-    }
-    public static BlockRecipe fuel(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
-        BlockRecipe recipe = new BlockRecipe(inputName, outputName);
-        recipe.inputDisplayName = inputDisplayName;
-        recipe.inputLegacyNames.add(inputDisplayName);
-        recipe.setInputTexture(TextureManager.getImage(inputTexture));
-        recipe.outputDisplayName = outputDisplayName;
-        recipe.setOutputTexture(TextureManager.getImage(outputTexture));
-        recipe.fuelVesselEfficiency = efficiency;
-        recipe.fuelVesselHeat = heat;
-        recipe.fuelVesselTime = time;
-        recipe.fuelVesselCriticality = criticality;
-        recipe.fuelVesselSelfPriming = selfPriming;
-        recipe.inputRate = recipe.outputRate = 1;
-        return recipe;
-    }
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();

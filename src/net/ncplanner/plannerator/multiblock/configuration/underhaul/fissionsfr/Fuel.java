@@ -10,13 +10,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class Fuel implements Pinnable, ThingWithLegacyNames{
-    public static Fuel fuel(String name, String displayName, float power, float heat, int time, String texture){
-        Fuel fuel = new Fuel(name, power, heat, time);
-        fuel.displayName = displayName;
-        fuel.legacyNames.add(displayName);
-        fuel.setTexture(TextureManager.getImage(texture));
-        return fuel;
-    }
     public String name;
     public String displayName;
     public ArrayList<String> legacyNames = new ArrayList<>();

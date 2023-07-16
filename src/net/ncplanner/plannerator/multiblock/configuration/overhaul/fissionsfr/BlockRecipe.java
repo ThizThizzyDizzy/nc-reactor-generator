@@ -10,31 +10,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
 public class BlockRecipe implements Pinnable, IBlockRecipe{
-    public static BlockRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
-        BlockRecipe recipe = new BlockRecipe(inputName, outputName);
-        recipe.inputDisplayName = inputDisplayName;
-        recipe.inputLegacyNames.add(inputDisplayName);
-        recipe.setInputTexture(TextureManager.getImage(inputTexture));
-        recipe.outputDisplayName = outputDisplayName;
-        recipe.setOutputTexture(TextureManager.getImage(outputTexture));
-        recipe.irradiatorEfficiency = efficiency;
-        recipe.irradiatorHeat = heat;
-        return recipe;
-    }
-    public static BlockRecipe fuel(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
-        BlockRecipe recipe = new BlockRecipe(inputName, outputName);
-        recipe.inputDisplayName = inputDisplayName;
-        recipe.inputLegacyNames.add(inputDisplayName);
-        recipe.setInputTexture(TextureManager.getImage(inputTexture));
-        recipe.outputDisplayName = outputDisplayName;
-        recipe.setOutputTexture(TextureManager.getImage(outputTexture));
-        recipe.fuelCellEfficiency = efficiency;
-        recipe.fuelCellHeat = heat;
-        recipe.fuelCellTime = time;
-        recipe.fuelCellCriticality = criticality;
-        recipe.fuelCellSelfPriming = selfPriming;
-        return recipe;
-    }
     public String inputName;
     public String inputDisplayName;
     public ArrayList<String> inputLegacyNames = new ArrayList<>();
