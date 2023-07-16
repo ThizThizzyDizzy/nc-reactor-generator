@@ -1,14 +1,17 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
 import java.util.HashMap;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
 public class OverhaulHellrageMSR1Reader implements FormatReader{
     @Override
     public boolean formatMatches(InputStream in){
@@ -24,14 +27,14 @@ public class OverhaulHellrageMSR1Reader implements FormatReader{
         return major==2&&minor==0&&build>=1&&build<=6;
     }
     @Override
-    public synchronized LegacyNCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
         JSON.JSONObject hellrage = JSON.parse(in);
         String dimS = hellrage.getString("InteriorDimensions");
         String[] dims = StringUtil.split(dimS, ",");
-        OverhaulMSR msr = new OverhaulMSR(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+        OverhaulMSRDesign msr = new OverhaulMSRDesign(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
         JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
         for(String name : heatSinks.keySet()){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block block = recovery.recoverOverhaulMSRBlock(name);
+            Block block = recovery.recoverOverhaulMSRBlock(name);
             JSON.JSONArray array = heatSinks.getJSONArray(name);
             for(Object blok : array){
                 String blokLoc = (String) blok;
@@ -39,13 +42,13 @@ public class OverhaulHellrageMSR1Reader implements FormatReader{
                 int x = Integer.parseInt(blockLoc[0]);
                 int y = Integer.parseInt(blockLoc[1]);
                 int z = Integer.parseInt(blockLoc[2]);
-                msr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
-                if(block.heater&&!block.allRecipes.isEmpty())msr.getBlock(x,y,z).recipe = block.allRecipes.get(0);
+                msr.design[x][y][z] = block;
+                msr.heaterRecipes[x][y][z] = block.heaterRecipes.get(0);
             }
         }
         JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
         for(String name : moderators.keySet()){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block block = recovery.recoverOverhaulMSRBlock(name);
+            Block block = recovery.recoverOverhaulMSRBlock(name);
             JSON.JSONArray array = moderators.getJSONArray(name);
             for(Object blok : array){
                 String blokLoc = (String) blok;
@@ -53,14 +56,14 @@ public class OverhaulHellrageMSR1Reader implements FormatReader{
                 int x = Integer.parseInt(blockLoc[0]);
                 int y = Integer.parseInt(blockLoc[1]);
                 int z = Integer.parseInt(blockLoc[2]);
-                msr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, block));
+                msr.design[x][y][z] = block;
             }
         }
         JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
         if(conductors!=null){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block conductor = null;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
-                if(blok.conductor)conductor = blok;
+            Block conductor = null;
+            for(Block blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+                if(blok.conductor!=null)conductor = blok;
             }
             if(conductor==null)throw new IllegalArgumentException("Configuation has no conductors!");
             for(Object blok : conductors){
@@ -69,27 +72,27 @@ public class OverhaulHellrageMSR1Reader implements FormatReader{
                 int x = Integer.parseInt(blockLoc[0]);
                 int y = Integer.parseInt(blockLoc[1]);
                 int z = Integer.parseInt(blockLoc[2]);
-                msr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, conductor));
+                msr.design[x][y][z] = conductor;
             }
         }
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block vessel = null;
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block blok : Core.configuration.overhaul.fissionMSR.allBlocks){
-            if(blok.fuelVessel)vessel = blok;
+        Block vessel = null;
+        for(Block blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+            if(blok.fuelVessel!=null)vessel = blok;
         }
         if(vessel==null)throw new IllegalArgumentException("Configuration has no fuel vessels!");
         JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
-        HashMap<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block> sources = new HashMap<>();
+        HashMap<int[], Block> sources = new HashMap<>();
         for(String name : fuelVessels.keySet()){
             String[] fuelSettings = StringUtil.split(name, ";");
             String fuelName = fuelSettings[0];
-            boolean source = Boolean.parseBoolean(fuelSettings[1]);
-            BlockRecipe fuel = recovery.recoverOverhaulMSRFuel(vessel, fuelName);
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block src = null;
+            boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+            Fuel fuel = recovery.recoverOverhaulMSRFuel(vessel, fuelName);
+            Block src = null;
             float highest = 0;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block scr : Core.configuration.overhaul.fissionMSR.allBlocks){
-                if(scr.source&&scr.sourceEfficiency>highest){
+            for(Block scr : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+                if(scr.neutronSource!=null&&scr.neutronSource.efficiency>highest){
                     src = scr;
-                    highest = src.sourceEfficiency;
+                    highest = src.neutronSource.efficiency;
                 }
             }
             if(src==null)throw new IllegalArgumentException("Configuration has no neutron sources!");
@@ -100,17 +103,16 @@ public class OverhaulHellrageMSR1Reader implements FormatReader{
                 int x = Integer.parseInt(blockLoc[0]);
                 int y = Integer.parseInt(blockLoc[1]);
                 int z = Integer.parseInt(blockLoc[2]);
-                msr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(Core.configuration, x, y, z, vessel));
-                msr.getBlock(x, y, z).recipe = fuel;
-                if(source)sources.put(msr.getBlock(x, y, z), src);
+                msr.design[x][y][z] = vessel;
+                msr.fuels[x][y][z] = fuel;
+                if(hasSource)sources.put(new int[]{x,y,z}, src);
             }
         }
-        for(net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block key : sources.keySet()){
-            key.addNeutronSource(msr, sources.get(key));
+        for(int[] key : sources.keySet()){
+            LegacyNeutronSourceHandler.addNeutronSource(msr, key[0], key[1], key[2], sources.get(key));
         }
-        LegacyNCPFFile file = new LegacyNCPFFile();
-        msr.buildDefaultCasingOnConvert();
-        file.multiblocks.add(msr);
+        Project file = new Project();
+        file.designs.add(msr);
         return file;
     }
 }

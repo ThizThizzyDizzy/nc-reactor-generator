@@ -2,15 +2,18 @@ package net.ncplanner.plannerator.planner.file.reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
 public class OverhaulHellrageSFR6Reader implements FormatReader{
     @Override
     public boolean formatMatches(InputStream in){
@@ -27,42 +30,42 @@ public class OverhaulHellrageSFR6Reader implements FormatReader{
         return major==2&&minor==1&&build>=1;//&&build<=7;
     }
     @Override
-    public synchronized LegacyNCPFFile read(InputStream in, RecoveryHandler recovery){
+    public synchronized NCPFFile read(InputStream in, RecoveryHandler recovery){
         JSON.JSONObject hellrage = JSON.parse(in);
         JSON.JSONObject data = hellrage.getJSONObject("Data");
         JSON.JSONObject dims = data.getJSONObject("InteriorDimensions");
         String coolantRecipeName = data.getString("CoolantRecipeName");
-        CoolantRecipe coolantRecipe = recovery.recoverOverhaulSFRCoolantRecipe(coolantRecipeName);
-        OverhaulSFR sfr = new OverhaulSFR(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"), coolantRecipe);
+        OverhaulSFRDesign sfr = new OverhaulSFRDesign(Core.project, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+        sfr.coolantRecipe = recovery.recoverOverhaulSFRCoolantRecipe(coolantRecipeName);
         JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
         for(String name : heatSinks.keySet()){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block = recovery.recoverOverhaulSFRBlock(name);
+            Block block = recovery.recoverOverhaulSFRBlock(name);
             JSON.JSONArray array = heatSinks.getJSONArray(name);
             for(Object blok : array){
                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
                 int x = blockLoc.getInt("X");
                 int y = blockLoc.getInt("Y");
                 int z = blockLoc.getInt("Z");
-                sfr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
+                sfr.design[x][y][z] = block;
             }
         }
         JSON.JSONObject moderators = data.getJSONObject("Moderators");
         for(String name : moderators.keySet()){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block = recovery.recoverOverhaulSFRBlock(name);
+            Block block = recovery.recoverOverhaulSFRBlock(name);
             JSON.JSONArray array = moderators.getJSONArray(name);
             for(Object blok : array){
                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
                 int x = blockLoc.getInt("X");
                 int y = blockLoc.getInt("Y");
                 int z = blockLoc.getInt("Z");
-                sfr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
+                sfr.design[x][y][z] = block;
             }
         }
         JSON.JSONArray conductors = data.getJSONArray("Conductors");
         if(conductors!=null){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block conductor = null;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
-                for(String nam : blok.getLegacyNames())if(nam.equalsIgnoreCase("conductor"))conductor = blok;
+            Block conductor = null;
+            for(Block blok : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+                if(blok.conductor!=null)conductor = blok;
             }
             if(conductor==null)throw new IllegalArgumentException("Configuation has no conductors!");
             for(Object blok : conductors){
@@ -70,45 +73,45 @@ public class OverhaulHellrageSFR6Reader implements FormatReader{
                     int x = blockLoc.getInt("X");
                     int y = blockLoc.getInt("Y");
                     int z = blockLoc.getInt("Z");
-                sfr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, conductor));
+                sfr.design[x][y][z] = conductor;
             }
         }
         JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
         for(String name : reflectors.keySet()){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block = recovery.recoverOverhaulSFRBlock(name);
+            Block block = recovery.recoverOverhaulSFRBlock(name);
             JSON.JSONArray array = reflectors.getJSONArray(name);
             for(Object blok : array){
                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
                 int x = blockLoc.getInt("X");
                 int y = blockLoc.getInt("Y");
                 int z = blockLoc.getInt("Z");
-                sfr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
+                sfr.design[x][y][z] = block;
             }
         }
         JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
         for(String name : neutronShields.keySet()){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block block = recovery.recoverOverhaulSFRBlock(name);
+            Block block = recovery.recoverOverhaulSFRBlock(name);
             JSON.JSONArray array = neutronShields.getJSONArray(name);
             for(Object blok : array){
                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
                 int x = blockLoc.getInt("X");
                 int y = blockLoc.getInt("Y");
                 int z = blockLoc.getInt("Z");
-                sfr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, block));
+                sfr.design[x][y][z] = block;
             }
         }
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block irradiator = null;
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
-            if(blok.irradiator)irradiator = blok;
+        Block irradiator = null;
+        for(Block blok : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+            if(blok.irradiator!=null)irradiator = blok;
         }
         if(irradiator==null)throw new IllegalArgumentException("Configuration has no irradiators!");
         JSON.JSONObject irradiators = data.getJSONObject("Irradiators");
         for(String name : irradiators.keySet()){
-            BlockRecipe irrecipe = null;
+            IrradiatorRecipe irrecipe = null;
             try{
                 JSON.JSONObject recipe = JSON.parse(name);
-                for(BlockRecipe irr : irradiator.allRecipes){
-                    if(irr.irradiatorHeat==recipe.getFloat("HeatPerFlux")&&irr.irradiatorEfficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
+                for(IrradiatorRecipe irr : irradiator.irradiatorRecipes){
+                    if(irr.stats.heat==recipe.getFloat("HeatPerFlux")&&irr.stats.efficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
                 }
             }catch(IOException ex){
                 throw new IllegalArgumentException("Invalid irradiator recipe: "+name);
@@ -119,23 +122,23 @@ public class OverhaulHellrageSFR6Reader implements FormatReader{
                 int x = blockLoc.getInt("X");
                 int y = blockLoc.getInt("Y");
                 int z = blockLoc.getInt("Z");
-                sfr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, irradiator));
-                sfr.getBlock(x, y, z).recipe = irrecipe;
+                sfr.design[x][y][z] = irradiator;
+                sfr.irradiatorRecipes[x][y][z] = irrecipe;
             }
         }
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block cell = null;
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block blok : Core.configuration.overhaul.fissionSFR.allBlocks){
-            if(blok.fuelCell)cell = blok;
+        Block cell = null;
+        for(Block blok : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+            if(blok.fuelCell!=null)cell = blok;
         }
         if(cell==null)throw new IllegalArgumentException("Configuration has no fuel cells!");
         JSON.JSONObject fuelCells = data.getJSONObject("FuelCells");
-        HashMap<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> sources = new HashMap<>();
+        HashMap<int[], Block> sources = new HashMap<>();
         for(String name : fuelCells.keySet()){
             String[] fuelSettings = StringUtil.split(name, ";");
             String fuelName = fuelSettings[0];
             boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-            BlockRecipe fuel = recovery.recoverOverhaulSFRFuel(cell, fuelName);
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block src = null;
+            Fuel fuel = recovery.recoverOverhaulSFRFuel(cell, fuelName);
+            Block src = null;
             if(hasSource){
                 String sourceName = fuelSettings[2];
                 src = recovery.recoverOverhaulSFRBlock(sourceName);
@@ -146,17 +149,16 @@ public class OverhaulHellrageSFR6Reader implements FormatReader{
                 int x = blockLoc.getInt("X");
                 int y = blockLoc.getInt("Y");
                 int z = blockLoc.getInt("Z");
-                sfr.setBlockExact(x, y, z, new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(Core.configuration, x, y, z, cell));
-                sfr.getBlock(x, y, z).recipe = fuel;
-                if(hasSource)sources.put(sfr.getBlock(x, y, z), src);
+                sfr.design[x][y][z] = cell;
+                sfr.fuels[x][y][z] = fuel;
+                if(hasSource)sources.put(new int[]{x,y,z}, src);
             }
         }
-        for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block key : sources.keySet()){
-            key.addNeutronSource(sfr, sources.get(key));
+        for(int[] key : sources.keySet()){
+            LegacyNeutronSourceHandler.addNeutronSource(sfr, key[0], key[1], key[2], sources.get(key));
         }
-        LegacyNCPFFile file = new LegacyNCPFFile();
-        sfr.buildDefaultCasingOnConvert();
-        file.multiblocks.add(sfr);
+        Project file = new Project();
+        file.designs.add(sfr);
         return file;
     }
 }

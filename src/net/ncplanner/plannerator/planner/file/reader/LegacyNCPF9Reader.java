@@ -1,12 +1,9 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
-import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
@@ -141,7 +138,7 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
                         overhaulSFR.fuels[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block, (int)fuels.get(fuelIndex));
                         fuelIndex++;
                         int sid = (int) sources.get(sourceIndex);
-                        if(sid>0)addNeutronSource(overhaulSFR, x, y, z, srces.get(sid-1));
+                        if(sid>0)LegacyNeutronSourceHandler.addNeutronSource(overhaulSFR, x, y, z, srces.get(sid-1));
                         sourceIndex++;
                     }
                     if(block.irradiator!=null){
@@ -202,7 +199,7 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
                         overhaulMSR.fuels[x][y][z] = recovery.recoverOverhaulMSRBlockRecipeLegacyNCPF(ncpf, block, (int)fuels.get(fuelIndex));
                         fuelIndex++;
                         int sid = (int) sources.get(sourceIndex);
-                        if(sid>0)addNeutronSource(overhaulMSR, x, y, z, srces.get(sid-1));
+                        if(sid>0)LegacyNeutronSourceHandler.addNeutronSource(overhaulMSR, x, y, z, srces.get(sid-1));
                         sourceIndex++;
                     }
                     if(block.irradiator!=null){
@@ -688,72 +685,6 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
                 configuration.coolantRecipes.add(recipe);
             }
         }
-    }
-    public void addNeutronSource(OverhaulSFRDesign sfr, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block source){
-        HashMap<int[], Integer> possible = new HashMap<>();
-        for(Direction d : Direction.values()){
-            int i = 0;
-            while(true){
-                i++;
-                int X = x+d.x*i;
-                int Y = y+d.y*i;
-                int Z = z+d.z*i;
-                if(X<0||Y<0||Z<0||X>=sfr.design.length||Y>=sfr.design[0].length||Z>=sfr.design[0][0].length){
-                    possible.put(new int[]{x+d.x*(i-1),y+d.y*(i-1),z+d.z*(i-1)}, i);
-                    break;
-                }
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b = sfr.design[X][Y][Z];
-                if(b==null)continue;//air
-                if(b.fuelCell!=null||b.reflector!=null||b.irradiator!=null)break;
-            }
-        }
-        ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
-        Collections.sort(keys, (o1, o2) -> {
-            return possible.get(o1)-possible.get(o2);
-        });
-        for(int[] key : keys){
-            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block was = sfr.design[key[0]][key[1]][key[2]];
-            if(tryAddNeutronSource(sfr, source, key[0], key[1], key[2]))break;
-        }
-    }
-    private boolean tryAddNeutronSource(OverhaulSFRDesign sfr, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block source, int X, int Y, int Z){
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b = sfr.design[X][Y][Z];
-        if(b!=null&&(b.neutronSource!=null))return false;
-        sfr.design[X][Y][Z] = source;
-        return true;
-    }
-    public void addNeutronSource(OverhaulMSRDesign msr, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block source){
-        HashMap<int[], Integer> possible = new HashMap<>();
-        for(Direction d : Direction.values()){
-            int i = 0;
-            while(true){
-                i++;
-                int X = x+d.x*i;
-                int Y = y+d.y*i;
-                int Z = z+d.z*i;
-                if(X<0||Y<0||Z<0||X>=msr.design.length||Y>=msr.design[0].length||Z>=msr.design[0][0].length){
-                    possible.put(new int[]{x+d.x*(i-1),y+d.y*(i-1),z+d.z*(i-1)}, i);
-                    break;
-                }
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b = msr.design[X][Y][Z];
-                if(b==null)continue;//air
-                if(b.fuelVessel!=null||b.reflector!=null||b.irradiator!=null)break;
-            }
-        }
-        ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
-        Collections.sort(keys, (o1, o2) -> {
-            return possible.get(o1)-possible.get(o2);
-        });
-        for(int[] key : keys){
-            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block was = msr.design[key[0]][key[1]][key[2]];
-            if(tryAddNeutronSource(msr, source, key[0], key[1], key[2]))break;
-        }
-    }
-    private boolean tryAddNeutronSource(OverhaulMSRDesign msr, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block source, int X, int Y, int Z){
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b = msr.design[X][Y][Z];
-        if(b!=null&&(b.neutronSource!=null))return false;
-        msr.design[X][Y][Z] = source;
-        return true;
     }
     public void setBearing(OverhaulTurbineDesign turbine, int bearingSize, OverhaulTurbineConfiguration configuration){
         int bearingMax = (turbine.design.length+2)/2+bearingSize/2;
