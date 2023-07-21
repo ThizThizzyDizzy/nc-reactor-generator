@@ -21,4 +21,8 @@ public class NCPFOredictElement extends NCPFElementDefinition{
     public boolean matches(NCPFElementDefinition definition){
         return oredict.equals(((NCPFOredictElement)definition).oredict);
     }
+    @Override
+    public String getName(){
+        return oredict;
+    }
 }

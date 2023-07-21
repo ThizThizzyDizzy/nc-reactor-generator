@@ -142,8 +142,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         if(compact){
             int[] index = new int[1];
             for(int x = 0; x<underhaulSFR.design.length; x++){
-                for(int y = 0; y<underhaulSFR.design.length; y++){
-                    for(int z = 0; z<underhaulSFR.design.length; z++){
+                for(int y = 0; y<underhaulSFR.design[x].length; y++){
+                    for(int z = 0; z<underhaulSFR.design[x][y].length; z++){
                         int bid = (int) blocks.get(index[0]);
                         if(bid>0){
                             net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block b = recovery.recoverUnderhaulSFRBlockLegacyNCPF(ncpf, bid-1);
@@ -352,6 +352,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         boolean isSpecificBlock = ruleCfg.getBoolean("isSpecificBlock");
         if(isSpecificBlock)readRuleBlock(postMap, rule, ruleCfg);
         else readRuleBlockType(rule, blockTypes, ruleCfg);
+        rule.setReferences(null);
     }
 
     protected <Rule extends NCPFPlacementRule> void readRuleBlockType(Rule rule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg) {
@@ -511,41 +512,41 @@ public class LegacyNCPF11Reader implements FormatReader {
         for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule rule : underhaulPostLoadMap.keySet()){
             int index = underhaulPostLoadMap.get(rule);
             if(index==0){
-                rule.blockType = new NCPFModuleReference(AirModule::new);
+                rule.target = rule.blockType = new NCPFModuleReference(AirModule::new);
             }else{
-                rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference(project.getConfiguration(UnderhaulSFRConfiguration::new).blocks.get(index-1));
+                rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference(project.getConfiguration(UnderhaulSFRConfiguration::new).blocks.get(index-1));
             }
         }
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
             int index = overhaulSFRPostLoadMap.get(rule);
             if(index==0){
-                rule.blockType = new NCPFModuleReference(AirModule::new);
+                rule.target = rule.blockType = new NCPFModuleReference(AirModule::new);
             }else{
-                rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(project.getConfiguration(OverhaulSFRConfiguration::new).blocks.get(index-1));
+                rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(project.getConfiguration(OverhaulSFRConfiguration::new).blocks.get(index-1));
             }
         }
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
             int index = overhaulMSRPostLoadMap.get(rule);
             if(index==0){
-                rule.blockType = new NCPFModuleReference(AirModule::new);
+                rule.target = rule.blockType = new NCPFModuleReference(AirModule::new);
             }else{
-                rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(project.getConfiguration(OverhaulMSRConfiguration::new).blocks.get(index-1));
+                rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(project.getConfiguration(OverhaulMSRConfiguration::new).blocks.get(index-1));
             }
         }
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
             int index = overhaulTurbinePostLoadMap.get(rule);
             if(index==0){
-                rule.blockType = new NCPFModuleReference(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
+                rule.target = rule.blockType = new NCPFModuleReference(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
             }else{
-                rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference(project.getConfiguration(OverhaulTurbineConfiguration::new).blocks.get(index-1));
+                rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference(project.getConfiguration(OverhaulTurbineConfiguration::new).blocks.get(index-1));
             }
         }
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.PlacementRule rule : overhaulFusionPostLoadMap.keySet()){
             int index = overhaulFusionPostLoadMap.get(rule);
             if(index==0){
-                rule.blockType = new NCPFModuleReference(AirModule::new);
+                rule.target = rule.blockType = new NCPFModuleReference(AirModule::new);
             }else{
-                rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockReference(project.getConfiguration(OverhaulFusionConfiguration::new).blocks.get(index-1));
+                rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockReference(project.getConfiguration(OverhaulFusionConfiguration::new).blocks.get(index-1));
             }
         }
         //combine underhaul active coolers into one
@@ -648,6 +649,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                     net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule coolerStats = null;//used to add placement rules
                     if(active!=null){
                         block.activeCooler = new net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule();
+                        ((NCPFLegacyBlockElement)block.definition).metadata = null;
                         net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe(new NCPFLegacyFluidElement(active));
                         coolerStats = recipe.stats;
                         recipe.stats.cooling = cooling;
@@ -718,8 +720,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                         }
                     }
                 }
-                boolean isFuelCell = false;
-                boolean isIrradiator = false;
+                boolean isFuelCell = blockCfg.hasProperty("fuelCell");
+                boolean isIrradiator = blockCfg.hasProperty("irradiator");
                 if(theBlockThatThisBlockIsAnAddonRecipeBlockFor==null){
                     block.names.displayName = blockCfg.getString("displayName");
                     if(blockCfg.hasProperty("legacyNames")){
@@ -806,9 +808,6 @@ public class LegacyNCPF11Reader implements FormatReader {
                             block.heatsink.rules.add(readOverSFRRule(rules.getConfig(idx)));
                         }
                     }
-                }else{
-                    isFuelCell = blockCfg.hasProperty("fuelCell");
-                    isIrradiator = blockCfg.hasProperty("irradiator");
                 }
                 ConfigList recipes = blockCfg.getConfigList("recipes", new ConfigList());
                 for(int idx = 0; idx<recipes.size(); idx++){
@@ -900,9 +899,9 @@ public class LegacyNCPF11Reader implements FormatReader {
                         }
                     }
                 }
-                boolean isFuelVessel = false;
-                boolean isIrradiator = false;
-                boolean isHeater = false;
+                boolean isFuelVessel = blockCfg.hasProperty("fuelVessel");
+                boolean isIrradiator = blockCfg.hasProperty("irradiator");
+                boolean isHeater = blockCfg.hasProperty("heater");
                 if(theBlockThatThisBlockIsAnAddonRecipeBlockFor==null){
                     block.names.displayName = blockCfg.getString("displayName");
                     if(blockCfg.hasProperty("legacyNames")){
@@ -975,10 +974,6 @@ public class LegacyNCPF11Reader implements FormatReader {
                             block.heater.rules.add(readOverMSRRule(rules.getConfig(idx)));
                         }
                     }
-                }else{
-                    isFuelVessel = blockCfg.hasProperty("fuelVessel");
-                    isIrradiator = blockCfg.hasProperty("irradiator");
-                    isHeater = blockCfg.hasProperty("heater");
                 }
                 ConfigList recipes = blockCfg.getConfigList("recipes", new ConfigList());
                 for(int idx = 0; idx<recipes.size(); idx++){

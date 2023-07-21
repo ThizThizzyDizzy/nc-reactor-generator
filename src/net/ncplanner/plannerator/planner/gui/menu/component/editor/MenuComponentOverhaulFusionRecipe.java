@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe;
 public class MenuComponentOverhaulFusionRecipe extends Component implements Pinnable{
     public final Recipe recipe;
     public MenuComponentOverhaulFusionRecipe(Recipe recipe){
@@ -26,17 +26,17 @@ public class MenuComponentOverhaulFusionRecipe extends Component implements Pinn
         drawText(renderer);
     }
     public void drawText(Renderer renderer){
-        float textLength = renderer.getStringWidth(recipe.getInputDisplayName(), height);
+        float textLength = renderer.getStringWidth(recipe.getDisplayName(), height);
         float scale = Math.min(1, width/textLength);
         float textHeight = (int)(height*scale)-1;
-        renderer.drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.getInputDisplayName());
+        renderer.drawText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.getDisplayName());
     }
     @Override    
     public String getTooltip(){
-        return "Efficiency: "+recipe.efficiency+"\n"
-             + "Base Heat: "+recipe.heat+"\n"
-             + "Fluxiness: "+recipe.fluxiness+"\n"
-             + "Base Time: "+recipe.time;
+        return "Efficiency: "+recipe.stats.efficiency+"\n"
+             + "Base Heat: "+recipe.stats.heat+"\n"
+             + "Fluxiness: "+recipe.stats.fluxiness+"\n"
+             + "Base Time: "+recipe.stats.time;
     }
     @Override
     public ArrayList<String> getSearchableNames(){

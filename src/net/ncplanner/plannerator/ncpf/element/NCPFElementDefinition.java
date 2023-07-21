@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.ncpf.element;
+import java.util.Objects;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
 /**
@@ -12,6 +13,7 @@ public abstract class NCPFElementDefinition extends DefinedNCPFObject{
     }
     public abstract boolean matches(NCPFElementDefinition definition);
     public boolean typeMatches(Supplier<NCPFElementDefinition> match){
-        return type.equals(match.get().type);
+        return Objects.equals(type, match.get().type);
     }
+    public abstract String getName();
 }

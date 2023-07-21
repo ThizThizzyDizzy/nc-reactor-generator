@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion;
 import java.util.ArrayList;
 import java.util.List;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -16,7 +17,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.PoloidalElec
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ReflectorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ShieldingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule;
-public class Block extends NCPFElement{
+public class Block extends NCPFElement implements IBlockTemplate{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;
@@ -32,7 +33,7 @@ public class Block extends NCPFElement{
     public List<BreedingBlanketRecipe> breedingBlanketRecipes = new ArrayList<>();
     public Block(){}
     public Block(NCPFElementDefinition definition){
-        super.definition = definition;
+        super(definition);
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

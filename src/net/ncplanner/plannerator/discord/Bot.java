@@ -435,7 +435,7 @@ public class Bot extends ListenerAdapter{
                 }
                 if(formats.isEmpty()){
                     if(!overhaul)formats.add(FileWriter.HELLRAGE);
-                    formats.add(FileWriter.NCPF);
+                    formats.add(FileWriter.LEGACY_NCPF);
                 }
                 formats.add(FileWriter.PNG);
                 Multiblock multiblockInstance = multiblock.newInstance(configuration,x,y,z);
@@ -875,7 +875,7 @@ public class Bot extends ListenerAdapter{
                 }
                 if(formats.isEmpty()){
                     formats.add(FileWriter.HELLRAGE);
-                    formats.add(FileWriter.NCPF);
+                    formats.add(FileWriter.LEGACY_NCPF);
                 }
                 formats.add(FileWriter.PNG);
 //</editor-fold>

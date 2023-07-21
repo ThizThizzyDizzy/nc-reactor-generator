@@ -7,6 +7,7 @@ public class BlockReference extends NCPFElementReference{
     public Block block;
     public BlockReference(){}
     public BlockReference(Block block){
+        super(block.definition);
         this.block = block;
     }
     @Override

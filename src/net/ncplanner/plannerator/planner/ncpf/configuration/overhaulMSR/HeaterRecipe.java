@@ -11,7 +11,7 @@ public class HeaterRecipe extends NCPFElement{
     public TextureModule texture = new TextureModule();
     public HeaterRecipe(){}
     public HeaterRecipe(NCPFElementDefinition definition){
-        super.definition = definition;
+        super(definition);
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

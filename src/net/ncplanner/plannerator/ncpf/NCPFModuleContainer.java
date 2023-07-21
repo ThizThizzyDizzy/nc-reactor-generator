@@ -28,6 +28,7 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
         return (T) modules.get(module.get().name);
     }
     public void setModule(NCPFModule module){
+        if(module==null)return;
         modules.put(module.name, module);
     }
     public <T extends NCPFModule> void withModule(Supplier<T> module, Consumer<T> doIfPresent){

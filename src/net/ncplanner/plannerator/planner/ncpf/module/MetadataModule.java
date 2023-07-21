@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module;
 import java.util.HashMap;
+import java.util.Set;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 public class MetadataModule extends NCPFModule{
@@ -19,5 +20,20 @@ public class MetadataModule extends NCPFModule{
     }
     public void put(String key, String value){
         metadata.put(key, value);
+    }
+    public String get(String key){
+        return metadata.get(key);
+    }
+    public void clear(){
+        metadata.clear();
+    }
+    public void putAll(HashMap<String, String> metadata){
+        this.metadata.putAll(metadata);
+    }
+    public Set<String> keys(){
+        return metadata.keySet();
+    }
+    public boolean contains(String name){
+        return metadata.containsKey(name);
     }
 }

@@ -115,7 +115,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                             }catch(IOException ex){
                                 Core.error("Failed to save addon", ex);
                             }
-                        }, FileFormat.NCPF, "addon");
+                        }, FileFormat.LEGACY_NCPF, "addon");
                     }catch(IOException ex){
                         Core.error("Failed to save addon!", ex);
                     }
@@ -144,7 +144,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                         }, "Addon Import Thread");
                         t.setDaemon(true);
                         t.start();
-                    }, FileFormat.NCPF, "addon");
+                    }, FileFormat.LEGACY_NCPF, "addon");
                 }catch(IOException ex){
                     Core.error("Failed to import addon!", ex);
                 }
@@ -225,7 +225,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                             }catch(FileNotFoundException ex){
                                 Core.warning("Unable to load file!", ex);
                             }
-                        }, FileFormat.NCPF, "explore");
+                        }, FileFormat.LEGACY_NCPF, "explore");
                     }catch(Exception ex){
                         Core.warning("Unable to load file!", ex);
                     }
@@ -241,7 +241,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     }else{
                         LegacyNCPFFile ncpf = new LegacyNCPFFile();
                         ncpf.configuration = configuration;
-                        FileWriter.NCPF.writeToConfigs(ncpf, configs);
+                        FileWriter.LEGACY_NCPF.writeToConfigs(ncpf, configs);
                     }
                     gui.open(new MenuExploreLegacyNCPF(gui, this, configuration, configs));
                 }, true).open();

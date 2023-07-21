@@ -7,6 +7,7 @@ public class NCPFModuleReference extends NCPFElementReference{
     public Supplier<NCPFModule> module;
     public NCPFModuleReference(){}
     public NCPFModuleReference(Supplier<NCPFModule> module){
+        super(new NCPFModuleElement(module));
         this.module = module;
     }
     @Override

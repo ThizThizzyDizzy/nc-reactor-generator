@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
+import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 
@@ -60,6 +61,10 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
     protected <Rule extends NCPFPlacementRule> void readRuleBlock(HashMap<Rule, Integer> postMap, Rule rule, Config ruleCfg){
         postMap.put(rule, (int)ruleCfg.getByte("block"));
     }
+
+    protected <Rule extends NCPFPlacementRule> void readRuleBlockType(Rule rule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg) {
+        rule.target = new NCPFModuleReference(blockTypes[ruleCfg.getByte("block")]);;
+    }
     @Override
     protected <Rule extends NCPFPlacementRule> Rule readGenericRule(HashMap<Rule, Integer> postMap, Supplier<Rule> newRule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg){
         Rule rule = newRule.get();
@@ -80,8 +85,8 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
             case BETWEEN_GROUP:
             case AXIAL_GROUP:
                 readRuleBlockType(rule, blockTypes, ruleCfg);
-                rule.min = ruleCfg.get("min");
-                rule.max = ruleCfg.get("max");
+                rule.min = ruleCfg.getByte("min");
+                rule.max = ruleCfg.getByte("max");
                 break;
             case EDGE_GROUP:
             case VERTEX_GROUP:
@@ -100,6 +105,7 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
                 }
                 break;
         }
+        rule.setReferences(null);
         return rule;
     }
 }

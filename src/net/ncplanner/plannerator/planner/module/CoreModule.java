@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Block;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.element.NCPFBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFBlockTagElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFFluidElement;

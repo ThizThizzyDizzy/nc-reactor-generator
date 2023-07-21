@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine;
+import java.util.List;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
@@ -9,14 +11,23 @@ public class PlacementRule extends NCPFPlacementRule{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        if(super.target.definition.typeMatches(NCPFModuleElement::new)){
-            blockType = super.target.copyTo(NCPFModuleReference::new);
-        }else block = super.target.copyTo(BlockReference::new);
+        if(!rule.hasSubRules){
+            if(target.definition.typeMatches(NCPFModuleElement::new)){
+                blockType = target.copyTo(NCPFModuleReference::new);
+            }else block = target.copyTo(BlockReference::new);
+        }
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        if(block==null)super.target = blockType;
-        else super.target = block;
+        if(block==null)target = blockType;
+        else target = block;
         super.convertToObject(ncpf);
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        if(target==null)return;
+        if(target.definition.typeMatches(NCPFModuleElement::new)){
+            blockType = target.copyTo(NCPFModuleReference::new);
+        }else block = target.copyTo(BlockReference::new);
     }
 }

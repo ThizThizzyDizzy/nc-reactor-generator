@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -12,7 +13,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModu
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
-public class Block extends NCPFElement{
+public class Block extends NCPFElement implements IBlockTemplate{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public CoolerModule cooler;
@@ -24,7 +25,7 @@ public class Block extends NCPFElement{
     public List<ActiveCoolerRecipe> activeCoolerRecipes = new ArrayList<>();
     public Block(){}
     public Block(NCPFElementDefinition definition){
-        super.definition = definition;
+        super(definition);
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

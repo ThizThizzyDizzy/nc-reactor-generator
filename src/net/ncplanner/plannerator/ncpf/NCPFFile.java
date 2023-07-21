@@ -1,10 +1,11 @@
 package net.ncplanner.plannerator.ncpf;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import java.util.ArrayList;
+import java.util.List;
 public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
     public int version;
-    public ArrayList<NCPFAddon> addons = new ArrayList<>();
-    public ArrayList<NCPFDesign> designs = new ArrayList<>();
+    public List<NCPFAddon> addons = new ArrayList<>();
+    public List<NCPFDesign> designs = new ArrayList<>();
     public NCPFConfigurationContainer conglomeration = new NCPFConfigurationContainer();
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -18,8 +19,8 @@ public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
     public void convertToObject(NCPFObject ncpf){
         ncpf.setInteger("version", version);
         ncpf.setDefinedNCPFList("addons", addons);
-        ncpf.setDefinedNCPFList("designs", designs);
         super.convertToObject(ncpf);
+        ncpf.setDefinedNCPFList("designs", designs);
     }
     public void conglomerate(){
         conglomeration = new NCPFConfigurationContainer();

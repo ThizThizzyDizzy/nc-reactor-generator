@@ -13,6 +13,6 @@ public abstract class NCPFDesignDefinition extends DefinedNCPFObject{
         this.type = type;
     }
     public <T extends NCPFConfiguration> T getConfiguration(){
-        return (T) (type==null?null:file.configuration.configurations.get(type));
+        return (T) (type==null?null:file.conglomeration.configurations.get(type));
     }
 }

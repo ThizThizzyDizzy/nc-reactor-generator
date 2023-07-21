@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
@@ -22,7 +21,6 @@ import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -41,6 +39,11 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dssl.MenuDsslEditor;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 import net.ncplanner.plannerator.planner.vr.VRCore;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -204,7 +207,7 @@ public class MenuMain extends Menu{
                     TextBox key = (TextBox) list.components.get(i);
                     TextBox value = (TextBox) list.components.get(i+1);
                     if(key.text.trim().isEmpty()&&value.text.trim().isEmpty())continue;
-                    Core.metadata.put(key.text, value.text);
+                    Core.project.metadata.put(key.text, value.text);
                 }
                 Core.saved = false;
                 metadating = false;
@@ -219,8 +222,8 @@ public class MenuMain extends Menu{
             if(forceMetaUpdate){
                 forceMetaUpdate = false;
                 list.components.clear();
-                for(String key : Core.metadata.keySet()){
-                    String value = Core.metadata.get(key);
+                for(String key : Core.project.metadata.keys()){
+                    String value = Core.project.metadata.get(key);
                     list.add(new TextBox(0,0,0,0,key, true));
                     list.add(new TextBox(0,0,0,0,value, true));
                 }
@@ -308,12 +311,11 @@ public class MenuMain extends Menu{
                 exportMultiblock.isDown = false;
                 exportMultiblock.isFocused = false;
                 focusedComponent = null;
-                LegacyNCPFFile ncpf = new LegacyNCPFFile();
+                Project ncpf = new Project();//TODO set configuration
                 Multiblock multi = getSelectedMultiblock();
-                ncpf.multiblocks.add(multi);
-                ncpf.configuration = PartialConfiguration.generate(Core.configuration, ncpf.multiblocks);
+                ncpf.designs.add(multi.toDesign());
                 String name = Core.filename;
-                if(name==null) name = ncpf.metadata.get("name");
+//                if(name==null) name = ncpf.metadata.get("name");
                 if(name==null||name.isEmpty()){
                     name = "unnamed";
                     File file = new File(name+"."+format.extensions[0]);
@@ -426,8 +428,8 @@ public class MenuMain extends Menu{
             changelog = ex.getClass().getName()+": "+ex.getMessage();
         }
     }
-    private void imprt(LegacyNCPFFile ncpf, FormatWriter writer, File file, String filename){
-        FileWriter.write(ncpf, file, writer);
+    private void imprt(Project project, FormatWriter writer, File file, String filename){
+        FileWriter.write(project, file, writer);
         new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
     }
     @Override
@@ -549,11 +551,11 @@ public class MenuMain extends Menu{
         convertOverhaulMSFR.width = setInputs.width = editMetadata.width+(Core.vr?vr.width:0);
         setInputs.y = convertOverhaulMSFR.y = addMultiblock.y;
         if(getSelectedMultiblock() instanceof OverhaulSFR){
-            convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionMSR!=null&&!(adding||metadating)&&Core.isControlPressed();
+            convertOverhaulMSFR.enabled = Core.project.conglomeration.hasConfiguration(OverhaulMSRConfiguration::new)&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.text = "Convert to MSR (Hold Control)";
             convertOverhaulMSFR.setTooltip("Convert the currently selected multiblock to an Overhaul MSR\nWARNING: All fuels will be converted to their Flouride counterparts");
         }else if(getSelectedMultiblock() instanceof OverhaulMSR){
-            convertOverhaulMSFR.enabled = Core.configuration.overhaul!=null&&Core.configuration.overhaul.fissionSFR!=null&&!(adding||metadating)&&Core.isControlPressed();
+            convertOverhaulMSFR.enabled = Core.project.conglomeration.hasConfiguration(OverhaulSFRConfiguration::new)&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.text = "Convert to SFR (Hold Control)";
             convertOverhaulMSFR.setTooltip("Convert the currently selected multiblock to an Overhaul SFR\nWARNING: All fuels will be converted to their Oxide counterparts");
         }else{
@@ -628,7 +630,7 @@ public class MenuMain extends Menu{
             });
             multiblocks.add(mcm);
         }
-        String name = Core.metadata.containsKey("Name")?Core.metadata.get("Name"):"";
+        String name = Core.project.metadata.contains("Name")?Core.project.metadata.get("Name"):"";
         editMetadata.text = name.isEmpty()?"Edit Metadata":(name+" | Edit Metadata");
     }
     public Multiblock getSelectedMultiblock(){
@@ -636,10 +638,10 @@ public class MenuMain extends Menu{
         return ((MenuComponentMultiblock)multiblocks.components.get(multiblocks.getSelectedIndex())).multiblock;
     }
     private static class PendingWrite{
-        private final LegacyNCPFFile ncpf;
+        private final Project ncpf;
         private final File file;
         private final FormatWriter writer;
-        private PendingWrite(LegacyNCPFFile ncpf, File file, FormatWriter writer){
+        private PendingWrite(Project ncpf, File file, FormatWriter writer){
             this.ncpf = ncpf;
             this.file = file;
             this.writer = writer;
@@ -649,7 +651,7 @@ public class MenuMain extends Menu{
         }
     }
     @Override
-public void onFilesDropped(String[] files){
+    public void onFilesDropped(String[] files){
         Thread t = new Thread(() -> {
             for(String fil : files){
                 if((fil.endsWith(".dssl")||fil.endsWith(".essl"))&&Core.dssl){
@@ -658,19 +660,12 @@ public void onFilesDropped(String[] files){
                     return;
                 }
                 try{
-                    LegacyNCPFFile ncpf = FileReader.read(new File(fil));
+                    Project ncpf = FileReader.read(new File(fil));
                     if(ncpf==null)return;
-                    if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                        Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
-                    }
-                    for(Multiblock mb : ncpf.multiblocks){
-                        try{
-                            mb.convertTo(Core.configuration);
-                        }catch(MissingConfigurationEntryException ex){
-                            Core.warning("Failed to load multiblock - Are you missing an addon?", ex);
-                            continue;
+                    for(Design d : ncpf.designs){
+                        if(d instanceof MultiblockDesign){
+                            Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
                         }
-                        Core.multiblocks.add(mb);
                     }
                 }catch(Exception ex){
                     Core.error("Failed to load file "+fil+"!", ex);

@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.planner;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,8 +22,6 @@ import net.ncplanner.plannerator.graphics.Shader;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
@@ -35,8 +32,8 @@ import net.ncplanner.plannerator.ncpf.NCPFDesign;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.planner.file.FileFormat;
-import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -50,7 +47,11 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUnsavedChanges;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.module.Module;
+import net.ncplanner.plannerator.planner.ncpf.Configurations;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -80,9 +81,7 @@ public class Core{
     public static boolean debugMode = false;
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
-    public static HashMap<String, String> metadata = new HashMap<>();
-    public static Configuration configuration = new Configuration(null, null, null);
-    public static Project project;//TODO make this actually meaningful lol
+    public static Project project = new Project();
     public static Theme theme = Theme.themes.get(0).get(0);
     public static boolean tutorialShown = false;
     public static Image sourceCircle = null;
@@ -122,9 +121,9 @@ public class Core{
         modules.add(m);
     }
     public static void resetMetadata(){
-        metadata.clear();
-        metadata.put("Name", "");
-        metadata.put("Author", "");
+        project.metadata.clear();
+        project.metadata.put("Name", "");
+        project.metadata.put("Author", "");
     }
     public static void main(String[] args) throws NoSuchMethodException{
         if(Main.novr){
@@ -508,7 +507,7 @@ public class Core{
     public static void refreshModules(){
         multiblockTypes.clear();
         Tutorial.init();
-        Configuration.clearConfigurations();
+        Configurations.clearConfigurations();
         NCPFConfigurationContainer.recognizedConfigurations.clear();
         NCPFDesign.recognizedDesigns.clear();
         NCPFElement.recognizedElements.clear();
@@ -569,32 +568,14 @@ public class Core{
         return alphas.get(image);
     }
     public static int autosave(){
-        File file = new File("autosave.ncpf");
-        File cfgFile = new File("config_autosave.ncpf");
+        File file = new File("autosave.ncpf.json");
         int num = 1;
-        while(file.exists()||cfgFile.exists()){
-            file = new File("autosave"+num+".ncpf");
-            cfgFile = new File("config_autosave"+num+".ncpf");
+        while(file.exists()){
+            file = new File("autosave"+num+".ncpf.json");
             num++;
         }
-        {//multiblocks
-            LegacyNCPFFile ncpf = new LegacyNCPFFile();
-            ncpf.configuration = PartialConfiguration.generate(Core.configuration, Core.multiblocks);
-            ncpf.multiblocks.addAll(Core.multiblocks);
-            ncpf.metadata.putAll(Core.metadata);
-            FileWriter.write(ncpf, file, FileWriter.NCPF);
-        }
-        {//configuration
-            try(FileOutputStream stream = new FileOutputStream(cfgFile)){
-                Config header = Config.newConfig();
-                header.set("version", LegacyNCPFFile.SAVE_VERSION);
-                header.set("count", 0);
-                header.save(stream);
-                Core.configuration.save(null, Config.newConfig()).save(stream);
-            }catch(IOException ex){
-                throw new RuntimeException(ex);
-            }
-        }
+        NCPFFileWriter.write(project, file, NCPFFileWriter.JSON);
+        LegacyNCPFFile ncpf = new LegacyNCPFFile();
         return num;
     }
     public static boolean openURL(String link){
@@ -619,7 +600,7 @@ public class Core{
     }
     public static String getCrashReportData(){
         String s = "";
-        s+=Core.configuration.getCrashReportData()+"\n";
+        s+=Core.project.getCrashReportData()+"\n";
         s+="Theme: "+theme.getClass().getName()+" "+theme.name+"\n\n";
         s += "GUI menu stack:\n";
         if(gui!=null){
@@ -644,6 +625,13 @@ public class Core{
     public static void setVsync(boolean vs){
         if(vsync!=vs)glfwSwapInterval(vs?1:0);
         vsync = vs;
+    }
+    public static void setConfiguration(NCPFConfigurationContainer configuration){
+        configuration.configurations.remove(new OverhaulSFRConfiguration().name);//TODO don do dat
+        configuration.configurations.remove(new OverhaulMSRConfiguration().name);
+        configuration.configurations.remove(new OverhaulTurbineConfiguration().name);
+        project.configuration = configuration;
+        project.conglomerate();
     }
     public static interface BufferRenderer{
         void render(Renderer renderer, int width, int height);
@@ -814,9 +802,9 @@ public class Core{
     }
     public static void warning(String message, Throwable error){
         System.err.println("Warning:");
-        logger.log(Level.WARNING, message, error);
+//        logger.log(Level.WARNING, message, error);
         if(Main.isBot)return;
-        new MenuWarningMessage(gui, gui.menu, message, error).open();
+//        new MenuWarningMessage(gui, gui.menu, message, error).open();
     }
     public static void error(String message, Throwable error){
         System.err.println("Severe Error");

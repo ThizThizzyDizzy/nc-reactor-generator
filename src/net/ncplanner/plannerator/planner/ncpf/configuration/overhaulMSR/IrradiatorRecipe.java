@@ -10,7 +10,9 @@ public class IrradiatorRecipe extends NCPFElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public IrradiatorRecipe(){}
-    public IrradiatorRecipe(NCPFElementDefinition definition){}
+    public IrradiatorRecipe(NCPFElementDefinition definition){
+        super(definition);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

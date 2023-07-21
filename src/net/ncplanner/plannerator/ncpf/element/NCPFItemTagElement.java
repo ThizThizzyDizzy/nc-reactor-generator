@@ -26,4 +26,8 @@ public class NCPFItemTagElement extends NCPFElementDefinition{
         NCPFItemTagElement other = (NCPFItemTagElement) definition;
         return name.equals(other.name)&&Objects.equals(nbt, other.nbt);
     }
+    @Override
+    public String getName(){
+        return name;
+    }
 }

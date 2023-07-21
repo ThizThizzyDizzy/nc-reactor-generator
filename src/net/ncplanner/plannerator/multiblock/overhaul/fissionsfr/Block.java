@@ -17,11 +17,11 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> {
+public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block> {
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block template;
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block template;
     public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe;
     public boolean hasPropogated = false;
     public int moderatorLines;

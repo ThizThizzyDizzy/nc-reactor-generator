@@ -3,10 +3,11 @@ public enum FileFormat{
     PNG("Image", "PNG Image (.png)", "png"),
     HELLRAGE_REACTOR("JSON", "Hellrage Reactor File (.json)", "json"),
     BG_STRING("BG String", "Copy/Paste Building Gadget String (.txt)", "txt"),
-    NCPF("NCPF", "NuclearCraft Planner File", "ncpf"),
+    LEGACY_NCPF("NCPF", "NuclearCraft Planner File", "ncpf"),
     ALL_PLANNER_FORMATS("NuclearCraft Planner File", "NuclearCraft Planner File", "ncpf", "json"),
     ALL_CONFIGURATION_FORMATS("NuclearCraft Configuration File", "NuclearCraft Configuration File", "ncpf", "cfg"),//TODO hellrage .json
-    DSSL("S'tack", "Dodd Simple S'tack Language Script File", "dssl");
+    DSSL("S'tack", "Dodd Simple S'tack Language Script File", "dssl"),
+    NCPF_JSON("NCPF_JSON", "NuclearCraft Planner File (JSON)", "ncpf.json"),;
     public final String name;
     public final String description;
     public final String[] extensions;

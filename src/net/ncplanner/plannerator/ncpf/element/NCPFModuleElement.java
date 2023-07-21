@@ -1,11 +1,19 @@
 package net.ncplanner.plannerator.ncpf.element;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 public class NCPFModuleElement extends NCPFElementDefinition{
     public String name;
     public NCPFModuleElement(){
         super("module");
     }
-    public NCPFModuleElement(String name){
+    public NCPFModuleElement(Supplier<NCPFModule> module){
+        this(module.get());
+    }
+    public NCPFModuleElement(NCPFModule module){
+        this(module.name);
+    }
+    private NCPFModuleElement(String name){
         this();
         this.name = name;
     }
@@ -19,7 +27,14 @@ public class NCPFModuleElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        NCPFModuleElement other = (NCPFModuleElement) definition;
-        return name.equals(other.name);
+        if(definition instanceof NCPFModuleElement){
+            NCPFModuleElement other = (NCPFModuleElement) definition;
+            return name.equals(other.name);
+        }
+        return false;
+    }
+    @Override
+    public String getName(){
+        return name;
     }
 }

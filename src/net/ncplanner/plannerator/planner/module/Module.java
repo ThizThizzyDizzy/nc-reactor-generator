@@ -1,12 +1,13 @@
 package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFDesign;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
@@ -15,10 +16,12 @@ import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
+import net.ncplanner.plannerator.planner.ncpf.Configurations;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 public abstract class Module<T>{
     private boolean active;
     public final String name;
-    public ArrayList<Configuration> ownConfigs = new ArrayList<>();//used for loading configs on startup
+    public ArrayList<NCPFConfigurationContainer> ownConfigs = new ArrayList<>();//used for loading configs on startup
     public boolean unlocked = true;
     public String secretKey;
     public Module(String name){
@@ -62,16 +65,16 @@ public abstract class Module<T>{
     public String getTooltip(Multiblock m, T o){
         return null;
     }
-    public final void addConfiguration(Configuration c){
-        Configuration.configurations.add(c);
-        c.path = "modules/"+name+"/"+c.name;
+    public final void addConfiguration(NCPFConfigurationContainer c){
+        Configurations.configurations.add(c);
         ownConfigs.add(c);
     }
     public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
         NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);
     }
-    public final void registerNCPFDesign(Supplier<NCPFDesignDefinition> design){
+    public final void registerNCPFDesign(Supplier<NCPFDesignDefinition> design, Function<NCPFFile, Design> specificDesign){
         NCPFDesign.recognizedDesigns.put(design.get().type, design);
+        Design.registeredDesigns.put(design.get().type, specificDesign);
     }
     public final void registerNCPFElement(Supplier<NCPFElementDefinition> element){
         NCPFElement.recognizedElements.put(element.get().type, element);

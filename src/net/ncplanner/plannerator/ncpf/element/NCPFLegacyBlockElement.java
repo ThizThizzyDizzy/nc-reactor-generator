@@ -10,6 +10,11 @@ public class NCPFLegacyBlockElement extends NCPFElementDefinition{
     }
     public NCPFLegacyBlockElement(String name){
         this();
+        if(name.matches(".*:\\d+")){
+            String[] nameParts = name.split(":");
+            metadata = Integer.valueOf(nameParts[nameParts.length-1]);
+            name = name.substring(0, name.length()-(metadata+"").length()-1);
+        }
         this.name = name;
     }
     @Override
@@ -26,7 +31,14 @@ public class NCPFLegacyBlockElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        NCPFLegacyBlockElement other = (NCPFLegacyBlockElement) definition;
-        return name.equals(other.name)&&Objects.equals(metadata, other.metadata)&&Objects.equals(nbt, other.nbt);
+        if(definition instanceof NCPFLegacyBlockElement){
+            NCPFLegacyBlockElement other = (NCPFLegacyBlockElement) definition;
+            return name.equals(other.name)&&Objects.equals(metadata, other.metadata)&&Objects.equals(nbt, other.nbt);
+        }
+        return false;
+    }
+    @Override
+    public String getName(){
+        return name;
     }
 }

@@ -21,4 +21,8 @@ public class NCPFLegacyFluidElement extends NCPFElementDefinition{
     public boolean matches(NCPFElementDefinition definition){
         return name.equals(((NCPFLegacyFluidElement)definition).name);
     }
+    @Override
+    public String getName(){
+        return name;
+    }
 }

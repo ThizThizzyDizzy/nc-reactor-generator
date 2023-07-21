@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.file.recovery;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
@@ -17,6 +16,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfi
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 public class RecoveryModeHandler implements RecoveryHandler{
+    HashMap<String, Integer> fallbackChoices = new HashMap<>();
     @Override
     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel recoverUnderhaulSFRFuelLegacyNCPF(Project ncpf, int id) {
         return recoverFallbackID("fuel", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).fuels, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels, false);
@@ -99,12 +99,17 @@ public class RecoveryModeHandler implements RecoveryHandler{
     protected <T extends NCPFElement> T recoverFallbackID(String type, int idx, List<? extends NCPFElement> list, List<? extends NCPFElement> fallbackList, boolean allowNull){
         if(idx>=0&&idx<list.size())return (T)list.get(idx);
         String fallback = fallbackList!=null&&idx>=0&&idx<fallbackList.size()?fallbackList.get(idx).toString():null;
-        MenuMessageDialog dialog = new MenuMessageDialog(cap(type)+" index invalid: "+idx+"/"+list.size()+"!"+"\nReset to "+list.get(0).toString()+"?"+(fallback==null?"":"\nRecover with "+fallback+" from fallback configuration?"));
-        if(allowNull)dialog.addButton("Remove");
-        dialog.addButton("Reset");
-        if(fallback!=null)dialog.addButton("Recover");
-        dialog.addButton("Ignore");
-        int result = dialog.openAsync();
+        String fallbackChoice = type+"~"+idx+"~"+fallback;
+        Integer result = fallbackChoices.get(fallbackChoice);
+        if(result==null){
+            MenuMessageDialog dialog = new MenuMessageDialog(cap(type)+" index invalid: "+idx+"/"+list.size()+"!"+"\nReset to "+list.get(0).toString()+"?"+(fallback==null?"":"\nRecover with "+fallback+" from fallback configuration?"));
+            if(allowNull)dialog.addButton("Remove");
+            dialog.addButton("Reset");
+            if(fallback!=null)dialog.addButton("Recover");
+            dialog.addButton("Ignore");
+            result = dialog.openAsync();
+        }
+        fallbackChoices.put(fallbackChoice, result);
         if(!allowNull)result++;
         if(fallback==null&&result>1)result++;
         switch(result){

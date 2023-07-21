@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
 public class MenuComponentTurbineRecipe extends Component implements Pinnable{
     private final Recipe recipe;
     public MenuComponentTurbineRecipe(Recipe recipe){
@@ -26,15 +26,15 @@ public class MenuComponentTurbineRecipe extends Component implements Pinnable{
         drawText(renderer);
     }
     public void drawText(Renderer renderer){
-        float textLength = renderer.getStringWidth(recipe.getInputDisplayName(), height);
+        float textLength = renderer.getStringWidth(recipe.getDisplayName(), height);
         float scale = Math.min(1, width/textLength);
         float textHeight = (int)(height*scale)-1;
-        renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.getInputDisplayName());
+        renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, recipe.getDisplayName());
     }
     @Override    
     public String getTooltip(){
-        return "Expansion Coefficient: "+recipe.coefficient+"\n"
-             + "Energy Density (RF/mb): "+recipe.power;
+        return "Expansion Coefficient: "+recipe.stats.coefficient+"\n"
+             + "Energy Density (RF/mb): "+recipe.stats.power;
     }
     @Override
     public ArrayList<String> getSearchableNames(){

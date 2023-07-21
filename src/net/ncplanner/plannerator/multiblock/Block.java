@@ -1,28 +1,30 @@
 package net.ncplanner.plannerator.multiblock;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 public abstract class Block implements Pinnable{
-    protected Configuration configuration;
+    protected NCPFConfigurationContainer configuration;
     public int x;
     public int y;
     public int z;
     private Image grayscaleTexture = null;
-    public Block(Configuration configuration, int x, int y, int z){
+    public Block(NCPFConfigurationContainer configuration, int x, int y, int z){
         this.configuration = configuration;
         this.x = x;
         this.y = y;
@@ -30,8 +32,18 @@ public abstract class Block implements Pinnable{
     }
     public abstract Block newInstance(int x, int y, int z);
     public abstract void copyProperties(Block other);
-    public abstract Image getBaseTexture();
-    public abstract Image getTexture();
+    public Image getBaseTexture(){
+        return getTemplate().getTexture();
+    }
+    public Image getTexture(){
+        return getTemplate().getDisplayTexture();
+    }
+    public String getBaseName(){
+        return getTemplate().getName();
+    }
+    public String getName(){
+        return getTemplate().getDisplayName();
+    }
     private Image getGrayscaleTexture(){
         if(grayscaleTexture!=null)return grayscaleTexture;
         Image img = getTexture();
@@ -45,8 +57,7 @@ public abstract class Block implements Pinnable{
         }
         return grayscaleTexture = grayscale;
     }
-    public abstract String getBaseName();
-    public abstract String getName();
+    public abstract IBlockTemplate getTemplate();
     public abstract void clearData();
     public <T extends Block> Queue<T> getAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
@@ -288,18 +299,30 @@ public abstract class Block implements Pinnable{
     public abstract boolean isValid();
     public abstract boolean isActive();
     public abstract boolean isCore();
-    public abstract boolean hasRules();
-    public abstract boolean calculateRules(Multiblock multiblock);
-    public abstract boolean matches(Block template);
+    public abstract List<? extends NCPFPlacementRule> getRules();
+    public boolean matches(Block template){
+        if(template==null)return getTemplate()==null;
+        if(getTemplate()==null)return false;
+        return getTemplate().asElement().definition.matches(template.getTemplate().asElement().definition);
+    }
     public abstract boolean canRequire(Block other);
-    public abstract boolean requires(Block other, Multiblock mb);
+    public boolean requires(Block other, Multiblock mb){
+        int totalDist = Math.abs(other.x-x)+Math.abs(other.y-y)+Math.abs(other.z-z);
+        if(totalDist>1)return false;//too far away
+        for(NCPFPlacementRule rule : getRules()){
+            if(rule.containsTarget(other.getTemplate().asElement().definition))return true;
+        }
+        return false;
+    }
     public abstract boolean canGroup();
     public abstract boolean canBeQuickReplaced();
     public boolean defaultEnabled(){
         return true;
     }
     public abstract Block copy();
-    public abstract boolean isEqual(Block other);
+    public boolean isEqual(Block other){
+        return matches(other);
+    }
     public boolean roughMatch(String blockNam){
         blockNam = StringUtil.toLowerCase(blockNam);
         if(blockNam.endsWith("s"))blockNam = blockNam.substring(0, blockNam.length()-1);
@@ -314,13 +337,12 @@ public abstract class Block implements Pinnable{
     public boolean isFullBlock(){
         return true;
     }
-    public Configuration getConfiguration(){
+    public NCPFConfigurationContainer getConfiguration(){
         return configuration;
     }
-    public abstract void convertTo(Configuration to) throws MissingConfigurationEntryException;
     public boolean shouldRenderFace(Block against){
         return against==null;
     }
     public abstract boolean hasRecipes();
-    public abstract ArrayList<? extends IBlockRecipe> getRecipes();
+    public abstract List<? extends IBlockRecipe> getRecipes();
 }

@@ -6,23 +6,29 @@ import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
+import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
+import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 public class LegacyNCPFWriter extends FormatWriter{
     @Override
     public FileFormat getFileFormat(){
-        return FileFormat.NCPF;
+        return FileFormat.LEGACY_NCPF;
     }
     @Override
-    public void write(LegacyNCPFFile ncpf, OutputStream stream){
+    public void write(Project ncpf, OutputStream stream){
         Config header = Config.newConfig();
         header.set("version", LegacyNCPFFile.SAVE_VERSION);
-        header.set("count", ncpf.multiblocks.size());
+        header.set("count", ncpf.designs.size());
         Config meta = Config.newConfig();
-        for(String key : ncpf.metadata.keySet()){
-            String value = ncpf.metadata.get(key);
+        for(String key : ncpf.metadata.metadata.keySet()){
+            String value = ncpf.metadata.metadata.get(key);
             if(value.trim().isEmpty())continue;
             meta.set(key,value);
         }
@@ -69,7 +75,11 @@ public class LegacyNCPFWriter extends FormatWriter{
     }
     @Override
     public boolean isMultiblockSupported(Multiblock multi){
-        return true;
+        return multi instanceof UnderhaulSFR
+                || multi instanceof OverhaulSFR
+                || multi instanceof OverhaulMSR
+                || multi instanceof OverhaulTurbine
+                || multi instanceof OverhaulFusionReactor;
     }
     public static void saveTexture(Config config, Image texture){
         saveTexture(config, "texture", texture);

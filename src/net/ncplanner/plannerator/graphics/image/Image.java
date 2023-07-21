@@ -119,6 +119,7 @@ public class Image{
         }
     }
     public static Image fromBase64(String string){
+        if(string==null)return null;
         try(ByteArrayInputStream stream = new ByteArrayInputStream(Base64.getDecoder().decode(string))){
             return ImageIO.read(stream);
         }catch(IOException ex){

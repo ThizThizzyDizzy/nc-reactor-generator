@@ -10,6 +10,11 @@ public class NCPFLegacyItemElement extends NCPFElementDefinition{
     }
     public NCPFLegacyItemElement(String name){
         this();
+        if(name.matches(".*:\\d+")){
+            String[] nameParts = name.split(":");
+            metadata = Integer.valueOf(nameParts[nameParts.length-1]);
+            name = name.substring(0, name.length()-(metadata+"").length()-1);
+        }
         this.name = name;
     }
     @Override
@@ -28,5 +33,9 @@ public class NCPFLegacyItemElement extends NCPFElementDefinition{
     public boolean matches(NCPFElementDefinition definition){
         NCPFLegacyItemElement other = (NCPFLegacyItemElement) definition;
         return name.equals(other.name)&&Objects.equals(metadata, other.metadata)&&Objects.equals(nbt, other.nbt);
+    }
+    @Override
+    public String getName(){
+        return name;
     }
 }

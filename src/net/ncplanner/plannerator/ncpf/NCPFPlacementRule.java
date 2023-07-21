@@ -3,9 +3,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.Direction;
+import net.ncplanner.plannerator.multiblock.Edge;
+import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.Vertex;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
+import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.StringUtil;
+import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 public class NCPFPlacementRule extends DefinedNCPFObject{
     public RuleType rule;
     public NCPFElementReference target;//block or module reference
@@ -20,7 +29,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             max = ncpf.getInteger("max");
         }
         if(rule.hasSubRules){
-            ncpf.getDefinedNCPFList("rules", NCPFPlacementRule::new);
+            rules = ncpf.getDefinedNCPFList("rules", NCPFPlacementRule::new);
         }else{
             target = ncpf.getDefinedNCPFObject("block", NCPFElementReference::new);
         }
@@ -38,6 +47,16 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             ncpf.setDefinedNCPFObject("block", target);
         }
     }
+    public boolean containsTarget(NCPFElementDefinition definition){
+        if(rule.hasSubRules){
+            for(NCPFPlacementRule rule : rules){
+                if(rule.containsTarget(definition))return true;
+            }
+            return false;
+        }else{
+            return target.definition.matches(definition);
+        }
+    }
     public enum RuleType{
         BETWEEN("between", true, false),
         AXIAL("axial", true, false),
@@ -51,7 +70,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
         }
         private final String name;
         private final boolean hasQuantity;
-        private final boolean hasSubRules;
+        public final boolean hasSubRules;
         private RuleType(String name, boolean hasQuantity, boolean hasSubRules){
             this.name = name;
             this.hasQuantity = hasQuantity;
@@ -146,5 +165,120 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             }
         }
         return (T)this;
+    }
+    private String getTargetName(){
+        return target.definition.getName();
+    }
+    public String toTooltipString(){
+        switch (rule) {
+            case BETWEEN:
+                if (max == 6) return "At least " + min + " " + getTargetName();
+                if (min == max) return "Exactly " + min + " " + getTargetName();
+                return "Between " + min + " and " + max + " " + getTargetName();
+            case AXIAL:
+                if (max == 3) return "At least " + min + " Axial pairs of " + getTargetName();
+                if (min == max) return "Exactly " + min + " Axial pairs of " + getTargetName();
+                return "Between " + min + " and " + max + " Axial pairs of " + getTargetName();
+            case VERTEX:
+                return "Three " + getTargetName() + " at the same vertex";
+            case EDGE:
+                return "Two " + getTargetName() + " at the same edge";
+            case AND:
+                StringBuilder s = new StringBuilder();
+                for (NCPFPlacementRule rule : rules) {
+                    s.append(" AND ").append(rule.toString());
+                }
+                return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 5);
+            case OR:
+                s = new StringBuilder();
+                for (NCPFPlacementRule rule : rules) {
+                    s.append(" OR ").append(rule.toString());
+                }
+                return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 4);
+        }
+        return "Unknown Rule";
+    }
+    private boolean isAirMatch() {
+        return target!=null&&target.definition.matches(new NCPFModuleReference(AirModule::new).definition);
+    }
+    private <T extends Block> boolean blockMatches(Block block, Multiblock<T> reactor) {
+        if(target.definition instanceof NCPFModuleElement){
+            NCPFModuleReference moduleReference = target.copyTo(NCPFModuleReference::new);
+            moduleReference.setReferences(null);
+            if(moduleReference.definition.matches(new NCPFModuleReference(AirModule::new).definition))return block==null;
+            return block!=null&&block.getTemplate().asElement().hasModule(moduleReference.module);
+        }else{
+            return block!=null&&block.getTemplate().asElement().definition.matches(target.definition);
+        }
+    }
+    public <T extends Block> boolean isValid(Block block, Multiblock<T> reactor) {
+        int num = 0;
+        boolean isAirMatch = isAirMatch();
+        switch (rule) {
+            case BETWEEN:
+                if (isAirMatch) {
+                    num = 6 - block.getAdjacent(reactor).size();
+                } else {
+                    for (Block b : block.getActiveAdjacent(reactor)) {
+                        if (blockMatches(b, reactor)) num++;
+                    }
+                }
+                return num >= min && num <= max;
+            case AXIAL:
+                for(Axis axis : Axis.axes){
+                    if(!reactor.contains(block.x - axis.x, block.y - axis.y, block.z - axis.z))continue;
+                    if(!reactor.contains(block.x + axis.x, block.y + axis.y, block.z + axis.z))continue;
+                    Block b1 = reactor.getBlock(block.x - axis.x, block.y - axis.y, block.z - axis.z);
+                    Block b2 = reactor.getBlock(block.x + axis.x, block.y + axis.y, block.z + axis.z);
+                    if (isAirMatch) {
+                        if (b1 == null && b2 == null) num++;
+                    } else {
+                        if (b1 == null || b2 == null) continue;
+                        if (!b1.isActive() || !b2.isActive()) continue;
+                        if (blockMatches(b1, reactor) && blockMatches(b2, reactor)) num++;
+                    }
+                }
+                return num >= min && num <= max;
+            case VERTEX:
+            case EDGE:
+                boolean[] dirs = new boolean[Direction.values().length];
+                for (Direction d : Direction.values()) {
+                    if(!reactor.contains(block.x + d.x, block.y + d.y, block.z + d.z))continue;
+                    Block b = reactor.getBlock(block.x + d.x, block.y + d.y, block.z + d.z);
+                    if (isAirMatch) {
+                        if (b == null) dirs[d.ordinal()] = true;
+                    } else {
+                        if(b==null)continue;
+                        if (b.isActive() && blockMatches(b, reactor)) dirs[d.ordinal()] = true;
+                    }
+                }
+                if (rule == RuleType.VERTEX) {
+                    outer: for (Vertex e : Vertex.values()) {
+                        for (Direction d : e.directions) {
+                            if (!dirs[d.ordinal()]) continue outer;
+                        }
+                        return true;
+                    }
+                } else if (rule == RuleType.EDGE) {
+                    outer: for (Edge e : Edge.values()) {
+                        for (Direction d : e.directions) {
+                            if (!dirs[d.ordinal()]) continue outer;
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            case AND:
+                for (NCPFPlacementRule rule : rules) {
+                    if (!rule.isValid(block, reactor)) return false;
+                }
+                return true;
+            case OR:
+                for (NCPFPlacementRule rule : rules) {
+                    if (rule.isValid(block, reactor)) return true;
+                }
+                return false;
+        }
+        throw new IllegalArgumentException("Unknown rule type: " + rule);
     }
 }

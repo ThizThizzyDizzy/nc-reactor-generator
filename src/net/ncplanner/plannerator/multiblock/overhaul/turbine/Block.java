@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Place
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> {
+public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block> {
     public net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block template;
     public boolean valid;
     public Block(Configuration configuration, int x, int y, int z, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block){

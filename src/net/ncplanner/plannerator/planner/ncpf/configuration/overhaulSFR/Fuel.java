@@ -11,7 +11,7 @@ public class Fuel extends NCPFElement{
     public TextureModule texture = new TextureModule();
     public Fuel(){}
     public Fuel(NCPFElementDefinition definition){
-        super.definition = definition;
+        super(definition);
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

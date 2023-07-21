@@ -82,11 +82,17 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRotorGraph;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderFuel;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderhaulSFRBlockRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOverlaySettings;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSymmetrySettings;
 import net.ncplanner.plannerator.planner.module.Module;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
@@ -299,20 +305,20 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         refreshPartsList();
         if(multiblock instanceof UnderhaulSFR){
             add(underFuelOrCoolantRecipe);
-            for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel fuel : Core.configuration.underhaul.fissionSFR.allFuels){
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels){
                 underFuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
             }
         }
         if(multiblock instanceof OverhaulSFR){
             add(underFuelOrCoolantRecipe);
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe : Core.configuration.overhaul.fissionSFR.allCoolantRecipes){
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe : Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes){
                 underFuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
             }
             add(blockRecipe);
         }
         if(multiblock instanceof OverhaulTurbine){
             add(underFuelOrCoolantRecipe);
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe recipe : Core.configuration.overhaul.turbine.allRecipes){
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe recipe : Core.project.getConfiguration(OverhaulTurbineConfiguration::new).recipes){
                 underFuelOrCoolantRecipe.add(new MenuComponentTurbineRecipe(recipe));
             }
         }
@@ -321,11 +327,11 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         }
         if(multiblock instanceof OverhaulFusionReactor){
             add(underFuelOrCoolantRecipe);
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe recipe : Core.configuration.overhaul.fusion.allCoolantRecipes){
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe : Core.project.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes){
                 underFuelOrCoolantRecipe.add(new MenuComponentFusionCoolantRecipe(recipe));
             }
             add(fusionRecipe);
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe recipe : Core.configuration.overhaul.fusion.allRecipes){
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recipe : Core.project.getConfiguration(OverhaulFusionConfiguration::new).recipes){
                 fusionRecipe.add(new MenuComponentOverhaulFusionRecipe(recipe));
             }
             fusionRecipe.setSelectedIndex(0);
@@ -356,16 +362,16 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         Core.circleSize = CELL_SIZE;
         editMetadata.text = multiblock.getName().isEmpty()?"Edit Metadata":(multiblock.getName()+" | Edit Metadata");
         if(multiblock instanceof UnderhaulSFR){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.underhaul.fissionSFR.allFuels.indexOf(((UnderhaulSFR)multiblock).fuel));
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
         }
         if(multiblock instanceof OverhaulSFR){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
         }
         if(multiblock instanceof OverhaulTurbine){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.project.getConfiguration(OverhaulTurbineConfiguration::new).recipes.indexOf(((OverhaulTurbine)multiblock).recipe));
         }
         if(multiblock instanceof OverhaulFusionReactor){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.configuration.overhaul.fusion.allCoolantRecipes.indexOf(((OverhaulFusionReactor)multiblock).coolantRecipe));
+            underFuelOrCoolantRecipe.setSelectedIndex(Core.project.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes.indexOf(((OverhaulFusionReactor)multiblock).coolantRecipe));
         }
         multibwauk.components.clear();
         ArrayList<EditorSpace> editorSpaces = multiblock.getEditorSpaces();
@@ -662,6 +668,12 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         if(comp==null)return null;
         return ((MenuComponentOverhaulFusionBlockRecipe)comp).recipe;
     }
+    public ActiveCoolerRecipe getSelectedUnderhaulSFRBlockRecipe(int id){
+        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
+        Component comp = blockRecipe.getSelectedComponent();
+        if(comp==null)return null;
+        return ((MenuComponentUnderhaulSFRBlockRecipe)comp).recipe;
+    }
     @Override
     public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe getSelectedOverhaulSFRBlockRecipe(int id){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
@@ -794,6 +806,12 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                         if(!multiblock.isValid(set.block, b.x, b.y, b.z))it.remove();
                     }
                 }
+            }
+        }
+        if(set.block!=null&&multiblock instanceof UnderhaulSFR){
+            net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)set.block;
+            if(!block.template.activeCoolerRecipes.isEmpty()){
+                block.recipe = getSelectedUnderhaulSFRBlockRecipe(id);
             }
         }
         if(set.block!=null&&multiblock instanceof OverhaulSFR){
@@ -1210,7 +1228,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         }
         if(multiblock instanceof UnderhaulSFR){
             if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel fuel = Core.configuration.underhaul.fissionSFR.allFuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
+                net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel = Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
                 if(((UnderhaulSFR)multiblock).fuel!=fuel){
                     action(new SetFuelAction(this, fuel), true);
                 }
@@ -1288,6 +1306,12 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         if(comp instanceof MenuComponentOverhaulMSRBlockRecipe)was = ((MenuComponentOverhaulMSRBlockRecipe)comp).recipe;
         if(comp instanceof MenuComponentOverhaulFusionBlockRecipe)was = ((MenuComponentOverhaulFusionBlockRecipe)comp).recipe;
         blockRecipe.clear();
+        if(multiblock instanceof UnderhaulSFR){
+            net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block b = ((net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)getSelectedBlock(0)).template;
+            for(ActiveCoolerRecipe recipe : b.activeCoolerRecipes){
+                blockRecipe.add(new MenuComponentUnderhaulSFRBlockRecipe(b, recipe));
+            }
+        }
         if(multiblock instanceof OverhaulSFR){
             net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b = ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)getSelectedBlock(0)).template;
             if(b.parent!=null)b = b.parent;

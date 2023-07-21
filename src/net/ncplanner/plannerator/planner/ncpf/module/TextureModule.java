@@ -4,6 +4,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 public class TextureModule extends NCPFModule{
     public Image texture;
+    public Image displayTexture;
     public TextureModule(){
         super("plannerator:texture");
     }
@@ -15,6 +16,6 @@ public class TextureModule extends NCPFModule{
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        ncpf.setString("texture", texture.toBase64());
+        if(texture!=null)ncpf.setString("texture", texture.toBase64());
     }
 }

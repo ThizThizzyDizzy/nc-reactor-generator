@@ -35,4 +35,8 @@ public class NCPFBlockElement extends NCPFElementDefinition{
         NCPFBlockElement other = (NCPFBlockElement) definition;
         return name.equals(other.name)&&Objects.equals(blockstate, other.blockstate)&&Objects.equals(nbt, other.nbt);
     }
+    @Override
+    public String getName(){
+        return name;
+    }
 }

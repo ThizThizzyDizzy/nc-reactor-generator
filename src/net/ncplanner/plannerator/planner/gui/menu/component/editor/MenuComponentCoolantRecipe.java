@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 public class MenuComponentCoolantRecipe extends Component implements Pinnable{
     private final CoolantRecipe coolantRecipe;
     public MenuComponentCoolantRecipe(CoolantRecipe coolantRecipe){
@@ -22,23 +22,23 @@ public class MenuComponentCoolantRecipe extends Component implements Pinnable{
             else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
         }
         renderer.fillRect(x, y, x+width, y+height);
-        if(coolantRecipe.inputTexture!=null){
+        if(coolantRecipe.getTexture()!=null){
             renderer.setWhite();
-            renderer.drawImage(coolantRecipe.inputDisplayTexture, x, y, x+height, y+height);
+            renderer.drawImage(coolantRecipe.getTexture(), x, y, x+height, y+height);
         }
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText(renderer);
     }
     public void drawText(Renderer renderer){
-        float textLength = renderer.getStringWidth(coolantRecipe.getInputDisplayName(), height);
-        float scale = Math.min(1, (width-(coolantRecipe.inputTexture!=null?height:0))/textLength);
+        float textLength = renderer.getStringWidth(coolantRecipe.getDisplayName(), height);
+        float scale = Math.min(1, (width-(coolantRecipe.getTexture()!=null?height:0))/textLength);
         float textHeight = (int)(height*scale)-1;
-        renderer.drawText(coolantRecipe.inputTexture!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, coolantRecipe.getInputDisplayName());
+        renderer.drawText(coolantRecipe.getTexture()!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, coolantRecipe.getDisplayName());
     }
     @Override
     public String getTooltip(){
-        return "Heat: "+coolantRecipe.heat+"\n"
-             + "Output Ratio: "+coolantRecipe.outputRatio;
+        return "Heat: "+coolantRecipe.stats.heat+"\n"
+             + "Output Ratio: "+coolantRecipe.stats.outputRatio;
     }
     @Override
     public ArrayList<String> getSearchableNames(){

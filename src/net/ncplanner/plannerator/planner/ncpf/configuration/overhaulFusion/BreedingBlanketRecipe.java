@@ -10,7 +10,9 @@ public class BreedingBlanketRecipe extends NCPFElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public BreedingBlanketRecipe(){}
-    public BreedingBlanketRecipe(NCPFElementDefinition definition){}
+    public BreedingBlanketRecipe(NCPFElementDefinition definition){
+        super(definition);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

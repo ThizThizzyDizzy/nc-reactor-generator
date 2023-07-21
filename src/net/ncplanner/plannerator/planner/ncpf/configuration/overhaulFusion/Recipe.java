@@ -11,7 +11,7 @@ public class Recipe extends NCPFElement{
     public TextureModule texture = new TextureModule();
     public Recipe(){}
     public Recipe(NCPFElementDefinition definition){
-        super.definition = definition;
+        super(definition);
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

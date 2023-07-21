@@ -75,45 +75,6 @@ public class Configuration{
     public boolean isPartial(){
         return false;
     }
-    public void impose(Configuration configuration){
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        LegacyNCPFFile saver = new LegacyNCPFFile();
-        saver.configuration = this;
-        FileWriter.write(saver, out, FileWriter.NCPF);
-        try{
-            out.close();
-        }catch(IOException ex){
-            throw new RuntimeException(ex);
-        }
-        Configuration fresh = FileReader.read(() -> {
-            return new ByteArrayInputStream(out.toByteArray());
-        }).configuration;
-        if(fresh.overhaul!=null&&fresh.overhaul.fissionMSR!=null){
-            for(int i = 0; i<fresh.overhaul.fissionMSR.allBlocks.size(); i++){
-                fresh.overhaul.fissionMSR.allBlocks.get(i).displayTexture = overhaul.fissionMSR.allBlocks.get(i).displayTexture;
-            }
-        }
-        impose(fresh, configuration);
-    }
-    public static void impose(Configuration toImpose, Configuration configuration){
-        configuration.addons = toImpose.addons;
-        configuration.alternatives = toImpose.alternatives;
-        configuration.name = toImpose.name;
-        if(configuration.overhaul==null&&configuration.underhaul!=null&&toImpose.underhaul==null&&toImpose.overhaul!=null){
-            //imposing overhaul onto underhaul
-            configuration.overhaul = toImpose.overhaul;
-            configuration.overhaulVersion = toImpose.overhaulVersion;
-        }else if(configuration.underhaul==null&&configuration.overhaul!=null&&toImpose.overhaul==null&&toImpose.underhaul!=null){
-            //imposing underhaul onto overhaul
-            configuration.underhaul = toImpose.underhaul;
-            configuration.underhaulVersion = toImpose.underhaulVersion;
-        }else{
-            configuration.overhaul = toImpose.overhaul;
-            configuration.overhaulVersion = toImpose.overhaulVersion;
-            configuration.underhaul = toImpose.underhaul;
-            configuration.underhaulVersion = toImpose.underhaulVersion;
-        }
-    }
     public void apply(PartialConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         if(underhaul!=null){
             partial.underhaul = new UnderhaulConfiguration();
@@ -306,7 +267,7 @@ public class Configuration{
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         LegacyNCPFFile saver = new LegacyNCPFFile();
         saver.configuration = this;
-        FileWriter.write(saver, out, FileWriter.NCPF);
+        FileWriter.write(saver, out, FileWriter.LEGACY_NCPF);
         try{
             out.close();
         }catch(IOException ex){

@@ -5,7 +5,7 @@ import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
 import net.ncplanner.plannerator.ncpf.design.UnknownNCPFDesign;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFDesign<T extends NCPFDesignDefinition> extends DefinedNCPFModularObject{
-    private final NCPFFile file;
+    public final NCPFFile file;
     public NCPFDesign(NCPFFile file){
         this.file = file;
     }
@@ -20,6 +20,7 @@ public class NCPFDesign<T extends NCPFDesignDefinition> extends DefinedNCPFModul
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
+        ncpf.setString("type", definition.type);
         definition.convertToObject(ncpf);
         super.convertToObject(ncpf);
     }

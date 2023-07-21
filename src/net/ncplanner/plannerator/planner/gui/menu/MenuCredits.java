@@ -2,17 +2,21 @@ package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import net.ncplanner.plannerator.graphics.Font;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
+import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -390,33 +394,12 @@ public class MenuCredits extends Menu{
         possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/smore"), false));
         possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/moresmore"), false));
         possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/foursmore"), false));
-        if(Core.configuration.overhaul!=null){
-            if(Core.configuration.overhaul.fissionSFR!=null){
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : Core.configuration.overhaul.fissionSFR.allBlocks){
-                    if(b.texture!=null)possibleBackgroundElements.add(new BackgroundElement(b.texture, true));
-                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe r : b.allRecipes){
-                        if(r.inputTexture!=null)possibleBackgroundElements.add(new BackgroundElement(r.inputTexture, false));
-                    }
-                }
-            }
-            if(Core.configuration.overhaul.fissionMSR!=null){
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : Core.configuration.overhaul.fissionMSR.allBlocks){
-                    if(b.texture!=null)possibleBackgroundElements.add(new BackgroundElement(b.texture, true));
-                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe r : b.allRecipes){
-                        if(r.inputTexture!=null)possibleBackgroundElements.add(new BackgroundElement(r.inputTexture, false));
-                    }
-                }
-            }
-            if(Core.configuration.overhaul.turbine!=null){
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block b : Core.configuration.overhaul.turbine.allBlocks){
-                    if(b.texture!=null)possibleBackgroundElements.add(new BackgroundElement(b.texture, true));
-                }
-            }
-        }
-        if(Core.configuration.underhaul!=null){
-            if(Core.configuration.underhaul.fissionSFR!=null){
-                for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b : Core.configuration.underhaul.fissionSFR.allBlocks){
-                    if(b.texture!=null)possibleBackgroundElements.add(new BackgroundElement(b.texture, true));
+        for(NCPFConfiguration c : Core.project.conglomeration.configurations.values()){
+            for(List<NCPFElement> elems : c.getElements()){
+                for(NCPFElement elem : elems){
+                    elem.withModule(TextureModule::new, (tex)->{
+                        possibleBackgroundElements.add(new BackgroundElement(tex.texture, elem.definition.type.contains("block")));
+                    });
                 }
             }
         }

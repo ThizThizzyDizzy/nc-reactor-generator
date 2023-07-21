@@ -4,11 +4,10 @@ import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block;
-import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.FissionSFRConfiguration;
-import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
-import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.PlacementRule;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 public class CompiledUnderhaulSFRConfiguration{
     public int minSize;
     public int maxSize;
@@ -20,7 +19,6 @@ public class CompiledUnderhaulSFRConfiguration{
     private final ArrayList<Block> rawBlocks = new ArrayList<>();
     public String[] fuelName;
     public String[] fuelDisplayName;
-    public String[][] fuelLegacyNames;
     public float[] fuelPower;
     public float[] fuelHeat;
     public int[] fuelTime;
@@ -28,7 +26,6 @@ public class CompiledUnderhaulSFRConfiguration{
     public Image[] fuelDisplayTexture;
     public String[] blockName;
     public String[] blockDisplayName;
-    public String[][] blockLegacyNames;
     public int[] blockCooling;
     public boolean[] blockFuelCell;
     public boolean[] blockModerator;
@@ -45,12 +42,12 @@ public class CompiledUnderhaulSFRConfiguration{
     public int[] controllerIndicies;
     public int[][] coolerCalculationStepIndicies;
     public boolean hasRecursiveRules;
-    public static CompiledUnderhaulSFRConfiguration compile(FissionSFRConfiguration config){
-        CompiledUnderhaulSFRConfiguration compiled = new CompiledUnderhaulSFRConfiguration(config.minSize, config.maxSize, config.neutronReach, config.moderatorExtraPower, config.moderatorExtraHeat, config.activeCoolerRate);
-        for(Fuel fuel : config.allFuels){
+    public static CompiledUnderhaulSFRConfiguration compile(UnderhaulSFRConfiguration config){
+        CompiledUnderhaulSFRConfiguration compiled = new CompiledUnderhaulSFRConfiguration(config.settings.minSize, config.settings.maxSize, config.settings.neutronReach, config.settings.moderatorExtraPower, config.settings.moderatorExtraHeat, config.settings.activeCoolerRate);
+        for(Fuel fuel : config.fuels){
             compiled.addFuel(fuel);
         }
-        for(Block block : config.allBlocks){
+        for(Block block : config.blocks){
             compiled.addBlock(block);
         }
         compiled.compile();
@@ -68,13 +65,12 @@ public class CompiledUnderhaulSFRConfiguration{
         rawFuels.add(fuel);
     }
     private void addBlock(Block block){
-        if(block.casing||block.controller)return;
+        if(block.casing!=null||block.controller!=null)return;
         rawBlocks.add(block);
     }
     public void compile(){
         fuelName = new String[rawFuels.size()];
         fuelDisplayName = new String[rawFuels.size()];
-        fuelLegacyNames = new String[rawFuels.size()][];
         fuelPower = new float[rawFuels.size()];
         fuelHeat = new float[rawFuels.size()];
         fuelTime = new int[rawFuels.size()];
@@ -82,19 +78,17 @@ public class CompiledUnderhaulSFRConfiguration{
         fuelDisplayTexture = new Image[rawFuels.size()];
         for(int i = 0; i<rawFuels.size(); i++){
             Fuel fuel = rawFuels.get(i);
-            fuelName[i] = fuel.name;
-            fuelDisplayName[i] = fuel.displayName;
-            fuelLegacyNames[i] = fuel.legacyNames.toArray(new String[fuel.legacyNames.size()]);
-            fuelPower[i] = fuel.power;
-            fuelHeat[i] = fuel.heat;
-            fuelTime[i] = fuel.time;
-            fuelTexture[i] = fuel.texture;
-            fuelDisplayTexture[i] = fuel.displayTexture;
+            fuelName[i] = fuel.getName();
+            fuelDisplayName[i] = fuel.getDisplayName();
+            fuelPower[i] = fuel.stats.power;
+            fuelHeat[i] = fuel.stats.heat;
+            fuelTime[i] = fuel.stats.time;
+            fuelTexture[i] = fuel.getTexture();
+            fuelDisplayTexture[i] = fuel.getDisplayTexture();
         }
         rawFuels.clear();
         blockName = new String[rawBlocks.size()];
         blockDisplayName = new String[rawBlocks.size()];
-        blockLegacyNames = new String[rawBlocks.size()][];
         blockCooling = new int[rawBlocks.size()];
         blockFuelCell = new boolean[rawBlocks.size()];
         blockModerator = new boolean[rawBlocks.size()];
@@ -107,7 +101,7 @@ public class CompiledUnderhaulSFRConfiguration{
         int numCoolers = 0, numCells = 0, numModerators = 0, numCasings = 0, numControllers = 0;
         for(int i = 0; i<rawBlocks.size(); i++){
             Block block = rawBlocks.get(i);
-            if(block.cooling!=0)numCoolers++;
+            if(block.cooler!=0)numCoolers++;
             if(block.fuelCell)numCells++;
             if(block.moderator)numModerators++;
             if(block.casing)numCasings++;

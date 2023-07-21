@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -19,17 +20,17 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
     protected int y;
     protected int z;
     private boolean casingPending = false;
-    public CuboidalMultiblock(Configuration configuration, int x, int y, int z){
+    public CuboidalMultiblock(NCPFConfigurationContainer configuration, int x, int y, int z){
         super(configuration, x, y, z);
         this.x = x;
         this.y = y;
         this.z = z;
     }
     @Override
-    public Multiblock<T> newInstance(Configuration configuration, int... dimensions){
+    public Multiblock<T> newInstance(NCPFConfigurationContainer configuration, int... dimensions){
         return newInstance(configuration, dimensions[0],dimensions[1],dimensions[2]);
     }
-    public abstract Multiblock<T> newInstance(Configuration configuration, int x, int y, int z);
+    public abstract Multiblock<T> newInstance(NCPFConfigurationContainer configuration, int x, int y, int z);
     @Override
     protected void createBlockGrids(){
         blockGrids.add(new BlockGrid(0, 0, 0, dimensions[0]+1, dimensions[1]+1, dimensions[2]+1));//cuz variables aren't set yet
@@ -403,13 +404,6 @@ public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
         });
         return cache;
     }
-    @Override
-    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
-        doConvertTo(to);
-        if(casingPending)buildDefaultCasing();
-        casingPending = false;
-    }
-    public abstract void doConvertTo(Configuration to) throws MissingConfigurationEntryException;
     public void buildDefaultCasingOnConvert(){
         casingPending = true;
     }

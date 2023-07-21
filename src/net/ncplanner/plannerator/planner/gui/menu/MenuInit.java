@@ -9,8 +9,10 @@ import java.util.Locale;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
+import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.Task;
@@ -60,6 +62,10 @@ import net.ncplanner.plannerator.planner.module.QuantumTraversedEfficiencyModule
 import net.ncplanner.plannerator.planner.module.RainbowFactorModule;
 import net.ncplanner.plannerator.planner.module.TiConModule;
 import net.ncplanner.plannerator.planner.module.UnderhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.Configurations;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block;
 import net.ncplanner.plannerator.planner.theme.Theme;
 public class MenuInit extends Menu{
     private final Task init;
@@ -141,8 +147,6 @@ public class MenuInit extends Menu{
                     readerTasks.get(s).finish();
                 }
                 System.out.println("Loaded File Formats");
-                attemptInit(Configuration::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
-                tc1.finish();
                 
                 File f = new File("settings.dat").getAbsoluteFile();
                 if(f.exists()){
@@ -159,7 +163,7 @@ public class MenuInit extends Menu{
                 tmc.finish();
                 Core.modules.add(new UnderhaulModule());
                 tm1.finish();
-                Core.modules.add(new OverhaulModule());
+//                Core.modules.add(new OverhaulModule());
                 tm2.finish();
                 Core.modules.add(new FusionTestModule());
                 tm3.finish();
@@ -224,24 +228,43 @@ public class MenuInit extends Menu{
                 ts.finish();
                 Core.refreshModules();
                 System.out.println("Refreshed Modules");
+                
                 tmr.finish();
-                for(Configuration configuration : Configuration.configurations){
-                    if(configuration.overhaul!=null&&configuration.overhaul.fissionMSR!=null){
-                        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : configuration.overhaul.fissionMSR.allBlocks){
-                            if(b.heater&&!b.getDisplayName().contains("Standard")){
+                attemptInit(Configurations::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
+                tc1.finish();
+                for(NCPFConfigurationContainer configuration : Configurations.configurations){
+                    configuration.withConfiguration(OverhaulMSRConfiguration::new, (msr)->{
+                        for(Block b : msr.blocks){
+                            if(b.heater!=null&&!b.getDisplayName().contains("Standard")){
                                 try{
-                                    b.setInternalTexture(TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", "")));
+                                    Image other = TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", ""));
+                                    Image texture = b.texture.texture;
+                                    int left = Math.max(0,texture.getWidth()*5/16-1);
+                                    int right = Math.min(texture.getWidth()*11/16, texture.getWidth()-1);
+                                    int up = Math.max(0,texture.getHeight()*5/16-1);
+                                    int down = Math.min(texture.getHeight()*11/16, texture.getHeight()-1);
+                                    Image displayImg = new Image(texture.getWidth(), texture.getHeight());
+                                    for(int x = 0; x<texture.getWidth(); x++){
+                                        for(int y = 0; y<texture.getHeight(); y++){
+                                            if(x>left&&y>up&&x<right&&y<down){
+                                                displayImg.setColor(x, y, TextureManager.convert(new Color(other.getRGB(x, y))));
+                                            }else{
+                                                displayImg.setColor(x, y, TextureManager.convert(new Color(texture.getRGB(x, y))));
+                                            }
+                                        }
+                                    }
+                                    b.texture.displayTexture = displayImg;
                                 }catch(Exception ex){
-                                    Core.warning("Failed to load internal texture for MSR Block: "+b.name, ex);
+                                    Core.warning("Failed to load internal texture for MSR Block: "+b.getDisplayName(), ex);
                                 }
                             }
                         }
-                    }
+                    });
                 }
                 System.out.println("Set MSR Textures");
-                tct.finish();
-                Configuration.configurations.get(0).impose(Core.configuration);
+                Core.setConfiguration(Configurations.configurations.get(0));
                 System.out.println("Imposed Configuration");
+                //TODO remember config, but for real this time
                 if(Core.rememberConfig){
                     boolean bad = false;
                     String message = "Unknown location!";
@@ -264,17 +287,17 @@ public class MenuInit extends Menu{
                                     message = "Unknown module "+split[1]+"!";
                                     break;
                                 }
-                                Configuration config = null;
+                                NCPFConfigurationContainer config = null;
                                 for(Object o : module.ownConfigs){
-                                    Configuration c = (Configuration)o;
-                                    if(c.name.equals(split[2]))config = c;
+                                    NCPFConfigurationContainer c = (NCPFConfigurationContainer)o;
+//                                    if(c.name.equals(split[2]))config = c;
                                 }
                                 if(config==null){
                                     bad = true;
                                     message = "Unknown configuration "+split[2]+" of module "+split[1]+"!";
                                     break;
                                 }
-                                config.impose(Core.configuration);
+                                Core.setConfiguration(config);
                                 break;
                             case "external":
                                 if(split.length<2){
@@ -288,18 +311,8 @@ public class MenuInit extends Menu{
                                     message = "Could not find external configuration!";
                                     break;
                                 }
-                                LegacyNCPFFile ncpf = FileReader.read(file);
-                                if(ncpf.configuration.addon){
-                                    bad = true;
-                                    message = ncpf.configuration.getShortName()+" is an addon configuration!";
-                                    break;
-                                }
-                                if(ncpf.configuration.isPartial()){
-                                    bad = true;
-                                    message = ncpf.configuration.getShortName()+" is a partial configuration!";
-                                    break;
-                                }
-                                ncpf.configuration.impose(Core.configuration);
+                                Project ncpf = FileReader.read(file);
+                                Core.setConfiguration(ncpf.conglomeration);
                                 break;
                             case "default": //just do nothing, already done
                                 break;

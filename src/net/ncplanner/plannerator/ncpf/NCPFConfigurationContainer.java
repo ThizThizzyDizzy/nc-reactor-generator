@@ -21,7 +21,12 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
         }
     }
     public <T extends NCPFConfiguration> T getConfiguration(Supplier<T> config){
-        return (T) configurations.get(config.get().name);
+        NCPFConfiguration c = configurations.get(config.get().name);
+        if(c instanceof UnknownNCPFConfiguration)return null;
+        return (T)c;
+    }
+    public boolean hasConfiguration(Supplier<NCPFConfiguration> config){
+        return configurations.containsKey(config.get().name);
     }
     public void setConfiguration(NCPFConfiguration config){
         if(config==null)return;

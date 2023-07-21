@@ -19,4 +19,8 @@ public class UnknownNCPFElement extends NCPFElementDefinition{
     public boolean matches(NCPFElementDefinition definition){
         return false;//always make duplicates
     }
+    @Override
+    public String getName(){
+        return null;
+    }
 }

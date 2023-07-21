@@ -23,7 +23,7 @@ public class PrimeFuelModule extends Module<Integer>{
             int totalCells = 0;
             ArrayList<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> blocks = m.getBlocks();
             for(net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b : blocks){
-                if(b.template.fuelCell)totalCells++;
+                if(b.template.fuelCell!=null)totalCells++;
             }
             return totalCells;
         }
@@ -31,7 +31,7 @@ public class PrimeFuelModule extends Module<Integer>{
             int totalCells = 0;
             ArrayList<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> blocks = m.getBlocks();
             for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b : blocks){
-                if(b.template.fuelCell)totalCells++;
+                if(b.template.fuelCell!=null)totalCells++;
             }
             return totalCells;
         }
@@ -39,7 +39,7 @@ public class PrimeFuelModule extends Module<Integer>{
             int totalVessels = 0;
             ArrayList<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> blocks = m.getBlocks();
             for(net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b : blocks){
-                if(b.template.fuelVessel)totalVessels++;
+                if(b.template.fuelVessel!=null)totalVessels++;
             }
             return totalVessels;
         }

@@ -8,6 +8,8 @@ import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
@@ -18,7 +20,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelStatsModul
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.tutorial.TutorialFileReader;
-public class UnderhaulModule extends Module{
+public class UnderhaulModule extends Module<Object>{
     public UnderhaulModule(){
         super("underhaul", true);
     }
@@ -37,7 +39,8 @@ public class UnderhaulModule extends Module{
     @Override
     public void registerNCPF(){
         registerNCPFConfiguration(NCPFUnderhaulSFRConfiguration::new);
-        registerNCPFDesign(NCPFUnderhaulSFRDesign::new);
+        registerNCPFConfiguration(UnderhaulSFRConfiguration::new);
+        registerNCPFDesign(NCPFUnderhaulSFRDesign::new, UnderhaulSFRDesign::new);
         registerNCPFModule(UnderhaulSFRSettingsModule::new);
         registerNCPFModule(FuelStatsModule::new);
         registerNCPFModule(CoolerModule::new);
@@ -54,12 +57,12 @@ public class UnderhaulModule extends Module{
     }
     @Override
     public void addConfigurations(){
-        addConfiguration(FileReader.read(() -> {
-            return Core.getInputStream("configurations/po3.ncpf");
-        }).configuration.addAlternative("PO3"));
-        addConfiguration(FileReader.read(() -> {
-            return Core.getInputStream("configurations/e2e.ncpf");
-        }).configuration.addAlternative("E2E"));
+//        addConfiguration(FileReader.read(() -> {
+//            return Core.getInputStream("configurations/po3.ncpf");
+//        }).configuration);
+//        addConfiguration(FileReader.read(() -> {
+//            return Core.getInputStream("configurations/e2e.ncpf");
+//        }).configuration);
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Moderator", "Highlights active moderators with a green outline", true){
         @Override

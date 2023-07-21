@@ -22,4 +22,8 @@ public class NCPFFluidElement extends NCPFElementDefinition{
         NCPFFluidElement other = (NCPFFluidElement) definition;
         return name.equals(other.name);
     }
+    @Override
+    public String getName(){
+        return name;
+    }
 }

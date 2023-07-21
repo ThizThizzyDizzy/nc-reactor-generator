@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
 public class MenuComponentFusionCoolantRecipe extends Component implements Pinnable{
     private final CoolantRecipe coolantRecipe;
     public MenuComponentFusionCoolantRecipe(CoolantRecipe coolantRecipe){
@@ -26,15 +26,15 @@ public class MenuComponentFusionCoolantRecipe extends Component implements Pinna
         drawText(renderer);
     }
     public void drawText(Renderer renderer){
-        float textLength = renderer.getStringWidth(coolantRecipe.getInputDisplayName(), height);
+        float textLength = renderer.getStringWidth(coolantRecipe.getDisplayName(), height);
         float scale = Math.min(1, width/textLength);
         float textHeight = (int)(height*scale)-1;
-        renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, coolantRecipe.getInputDisplayName());
+        renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, coolantRecipe.getDisplayName());
     }
     @Override
     public String getTooltip(){
-        return "Heat: "+coolantRecipe.heat+"\n"
-             + "Output Ratio: "+coolantRecipe.outputRatio;
+        return "Heat: "+coolantRecipe.stats.heat+"\n"
+             + "Output Ratio: "+coolantRecipe.stats.outputRatio;
     }
     @Override
     public ArrayList<String> getSearchableNames(){

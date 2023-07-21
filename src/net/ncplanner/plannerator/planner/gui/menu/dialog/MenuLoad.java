@@ -9,12 +9,14 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 public class MenuLoad extends MenuDialog{
     public MenuLoad(GUI gui, Menu parent){
         super(gui, parent);
@@ -25,20 +27,18 @@ public class MenuLoad extends MenuDialog{
             try{
                 Core.createFileChooser((file) -> {
                     Thread t = new Thread(() -> {
-                        LegacyNCPFFile ncpf = FileReader.read(file);
+                        Project ncpf = FileReader.read(file);
                         if(ncpf==null)return;
                         Core.multiblocks.clear();
                         Core.saved = true;
-                        Core.metadata.clear();
-                        Core.metadata.putAll(ncpf.metadata);
-                        if(ncpf.configuration==null||ncpf.configuration.isPartial()){
-                            if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                                Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
+                        Core.project.metadata.clear();
+                        Core.project.metadata.putAll(ncpf.metadata.metadata);
+                        Core.setConfiguration(ncpf.conglomeration);
+                        for(Design d : ncpf.designs){
+                            if(d instanceof MultiblockDesign){
+                                Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
                             }
-                        }else{
-                            Core.configuration = ncpf.configuration;
                         }
-                        convertAndImportMultiblocks(ncpf.multiblocks);
                         close();
                     });
                     t.setDaemon(true);
@@ -86,20 +86,18 @@ public class MenuLoad extends MenuDialog{
                         });
                         load.addAction(() -> {
                             Thread t = new Thread(() -> {
-                                LegacyNCPFFile ncpf = FileReader.read(file);
+                                Project ncpf = FileReader.read(file);
                                 if(ncpf==null)return;
                                 Core.multiblocks.clear();
                                 Core.saved = true;
-                                Core.metadata.clear();
-                                Core.metadata.putAll(ncpf.metadata);
-                                if(ncpf.configuration==null||ncpf.configuration.isPartial()){
-                                    if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                                        Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
+                                Core.project.metadata.clear();
+                                Core.project.metadata.putAll(ncpf.metadata.metadata);
+                                Core.setConfiguration(ncpf.conglomeration);
+                                for(Design d : ncpf.designs){
+                                    if(d instanceof MultiblockDesign){
+                                        Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
                                     }
-                                }else{
-                                    Core.configuration = ncpf.configuration;
                                 }
-                                convertAndImportMultiblocks(ncpf.multiblocks);
                                 close();
                             });
                             t.setDaemon(true);
@@ -126,16 +124,5 @@ public class MenuLoad extends MenuDialog{
         maxWidth = 0.75f;
         layout.width = gui.getWidth()*2/5;
         setContent(layout);
-    }
-    private void convertAndImportMultiblocks(ArrayList<Multiblock> multiblocks){
-        for(Multiblock mb : multiblocks){
-            try{
-                mb.convertTo(Core.configuration);
-            }catch(MissingConfigurationEntryException ex){
-                Core.warning("Failed to load multiblock - Are you missing an addon?", ex);
-                continue;
-            }
-            Core.multiblocks.add(mb);
-        }
     }
 }

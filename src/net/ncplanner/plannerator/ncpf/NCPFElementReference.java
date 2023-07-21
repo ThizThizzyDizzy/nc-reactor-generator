@@ -6,6 +6,10 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFElementReference extends DefinedNCPFObject{
     public NCPFElementDefinition definition;
     public NCPFElement target;
+    public NCPFElementReference(){}
+    public NCPFElementReference(NCPFElementDefinition definition){
+        this.definition = definition;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         definition = NCPFElement.recognizedElements.getOrDefault(ncpf.getString("type"), UnknownNCPFElement::new).get();
@@ -13,6 +17,7 @@ public class NCPFElementReference extends DefinedNCPFObject{
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
+        ncpf.setString("type", definition.type);
         definition.convertToObject(ncpf);
     }
     @Override

@@ -1,24 +1,21 @@
 package net.ncplanner.plannerator.multiblock.underhaul.fissionsfr;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
-import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.PlacementRule;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block> {
-    /**
-     * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
-     */
-    public net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block template;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
+public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block> {
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template;
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe;
     //fuel cell
     public int adjacentCells, adjacentModerators;
     public float energyMult, heatMult;
@@ -28,7 +25,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     //cooler
     public boolean coolerValid;
     boolean casingValid;//also for controllers
-    public Block(Configuration configuration, int x, int y, int z, net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block template){
+    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template){
         super(configuration,x,y,z);
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
@@ -40,40 +37,23 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public void copyProperties(net.ncplanner.plannerator.multiblock.Block other){}
     @Override
-    public Image getBaseTexture(){
-        return template.texture;
-    }
-    @Override
-    public Image getTexture(){
-        return template.displayTexture;
-    }
-    @Override
-    public String getBaseName(){
-        return template.name;
-    }
-    @Override
-    public String getName(){
-        return template.getDisplayName();
-    }
-    @Override
     public boolean isCore(){
         return isFuelCell()||isModerator();
     }
     public boolean isFuelCell(){
-        return template.fuelCell;
+        return template.fuelCell!=null;
     }
     public boolean isModerator(){
-        return template.moderator;
+        return template.moderator!=null;
     }
     public boolean isCooler(){
-        if(template==null)return false;
-        return template.cooling!=0;
+        return template.cooler!=null||(template.activeCooler!=null&&recipe!=null);
     }
     public boolean isCasing(){
-        return template.casing;
+        return template.casing!=null;
     }
     public boolean isController(){
-        return template.controller;
+        return template.controller!=null;
     }
     @Override
     public boolean isActive(){
@@ -84,7 +64,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return isActive()||moderatorValid;
     }
     public int getCooling(){
-        return template.active==null?template.cooling:(template.cooling*getConfiguration().underhaul.fissionSFR.activeCoolerRate/20);
+        return template.activeCooler==null?template.cooler.cooling:recipe.stats.cooling*getConfiguration().getConfiguration(UnderhaulSFRConfiguration::new).settings.activeCoolerRate/20;
     }
     @Override
     public void clearData(){
@@ -113,17 +93,25 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return tip;
     }
     @Override
-    public String getListTooltip(){
+    public String getListTooltip(){//TODO auto-generate somehow?
         String tip = getName();
-        if(isFuelCell())tip+="\nFuel Cell";
-        if(isModerator())tip+="\nModerator";
-        if(isCooler()){
+        if(template.fuelCell!=null)tip+="\nFuel Cell";
+        if(template.moderator!=null)tip+="\nModerator";
+        if(template.cooler!=null){
             tip+="\nCooler"
                 + "\nCooling: "+getCooling()+"H/t";
-            if(template.active!=null)tip+="\nActive ("+template.active+")";
+            for(PlacementRule rule : template.cooler.rules){
+                tip+="\nRequires "+rule.toTooltipString();
+            }
         }
-        for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block> rule : template.rules){
-            tip+="\nRequires "+rule.toString();
+        if(template.activeCooler!=null){
+            tip+="\nActive Cooler";
+            if(recipe!=null){
+                tip+="\nFluid: "+recipe.getDisplayName();
+                for(PlacementRule rule : recipe.stats.rules){
+                    tip+="\nRequires "+rule.toTooltipString();
+                }
+            }
         }
         return tip;
     }
@@ -137,66 +125,29 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
     }
     @Override
-    public boolean hasRules(){
-        return !template.rules.isEmpty();
-    }
-    @Override
-    public boolean calculateRules(Multiblock multiblock){
-        for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block> rule : template.rules){
-            if(!rule.isValid(this, (UnderhaulSFR) multiblock)){
-                return false;
-            }
-        }
-        return true;
-    }
-    @Override
-    public boolean matches(net.ncplanner.plannerator.multiblock.Block template){
-        if(template==null)return false;
-        if(template instanceof Block){
-            return ((Block) template).template==this.template;
-        }
-        return false;
+    public List<PlacementRule> getRules(){
+        if(template.cooler!=null)return template.cooler.rules;
+        if(recipe!=null)return recipe.stats.rules;
+        return new ArrayList<>();
     }
     @Override
     public boolean canRequire(net.ncplanner.plannerator.multiblock.Block oth){
-        if(template.cooling!=0)return requires(oth, null);
+        if(template.cooler!=null||recipe!=null)return requires(oth, null);
         Block other = (Block) oth;
-        if(template.fuelCell||template.moderator)return other.template.moderator||other.template.fuelCell;
-//        if(template.casing)return other.template.casing;
-        return false;
-    }
-    @Override
-    public boolean requires(net.ncplanner.plannerator.multiblock.Block oth, Multiblock mb){
-        if(template.cooling==0)return false;
-        Block other = (Block) oth;
-        int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
-        if(totalDist>1)return false;//too far away
-        if(hasRules()){
-            for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block> rule : template.rules){
-                if(ruleHas((PlacementRule) rule, other))return true;
-            }
-        }
-        return false;
-    }
-    private boolean ruleHas(PlacementRule rule, Block b){
-        if(rule.block==b.template)return true;
-        if(rule.blockType!=null&&rule.blockType.blockMatches(null, b))return true;
-        for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block> rul : rule.rules){
-            if(ruleHas((PlacementRule) rul, b))return true;
-        }
+        if(template.fuelCell!=null||template.moderator!=null)return other.template.moderator!=null||other.template.fuelCell!=null;
         return false;
     }
     @Override
     public boolean canGroup(){
-        return template.cooling!=0;
+        return template.cooler!=null;
     }
     @Override
     public boolean canBeQuickReplaced(){
-        return template.cooling!=0;
+        return template.cooler!=null;
     }
     @Override
     public boolean defaultEnabled(){
-        return template.active==null;
+        return template.activeCooler==null;
     }
     @Override
     public Block copy(){
@@ -209,15 +160,6 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         copy.moderatorActive = moderatorActive;
         copy.coolerValid = coolerValid;
         return copy;
-    }
-    @Override
-    public boolean isEqual(net.ncplanner.plannerator.multiblock.Block other){
-        return other instanceof Block&&((Block)other).template==template;
-    }
-    @Override
-    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
-        template = to.underhaul.fissionSFR.convert(template);
-        configuration = to;
     }
     @Override
     public boolean shouldRenderFace(net.ncplanner.plannerator.multiblock.Block against){
@@ -236,7 +178,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return template.getSimpleSearchableNames();
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block getTemplate() {
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block getTemplate(){
         return template;
     }
     @Override
@@ -245,10 +187,10 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     }
     @Override
     public boolean hasRecipes(){
-        return false;
+        return template.activeCooler!=null;
     }
     @Override
-    public ArrayList<? extends IBlockRecipe> getRecipes(){
-        return new ArrayList<>();
+    public List<? extends IBlockRecipe> getRecipes(){
+        return template.activeCoolerRecipes;
     }
 }

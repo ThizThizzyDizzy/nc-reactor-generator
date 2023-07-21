@@ -11,7 +11,7 @@ public class IrradiatorRecipe extends NCPFElement{
     public TextureModule texture = new TextureModule();
     public IrradiatorRecipe(){}
     public IrradiatorRecipe(NCPFElementDefinition definition){
-        super.definition = definition;
+        super(definition);
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

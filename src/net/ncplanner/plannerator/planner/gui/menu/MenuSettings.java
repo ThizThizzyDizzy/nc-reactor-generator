@@ -160,7 +160,7 @@ public class MenuSettings extends SettingsMenu{
                     }catch(IOException ex){
                         Core.error("Failed to save configuration!", ex);
                     }
-                }, FileFormat.NCPF, "configuration");
+                }, FileFormat.LEGACY_NCPF, "configuration");
             }catch(IOException ex){
                 Core.error("Failed to save configuration!", ex);
             }

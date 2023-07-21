@@ -12,7 +12,6 @@ import java.util.Stack;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.ActionResult;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
@@ -22,6 +21,8 @@ import net.ncplanner.plannerator.multiblock.editor.ppe.PostProcessingEffect;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -36,6 +37,7 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.module.Module;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.joml.Vector2f;
@@ -47,7 +49,7 @@ public abstract class Multiblock<T extends Block>{
     public Queue<Action> queue = new Queue<>();
     public HashMap<String, String> metadata = new HashMap<>();
     public Boolean showDetails = null;//details override
-    public Configuration configuration;
+    public NCPFConfigurationContainer configuration;
     private boolean calculated = false;
     public HashMap<Module, Object> moduleData = new HashMap<Module, Object>();
     public Task calculateTask;
@@ -64,7 +66,7 @@ public abstract class Multiblock<T extends Block>{
         metadata.put("Author", "");
     }
     public ArrayList<BlockGrid<T>> blockGrids = new ArrayList<>();
-    public Multiblock(Configuration configuration, int... dimensions){
+    public Multiblock(NCPFConfigurationContainer configuration, int... dimensions){
         this.configuration = configuration;
         this.dimensions = dimensions;
         createBlockGrids();
@@ -91,10 +93,10 @@ public abstract class Multiblock<T extends Block>{
         return getBlocks().isEmpty();
     }
     public abstract String getDefinitionName();
-    public abstract Multiblock<T> newInstance(Configuration configuration);
-    public abstract Multiblock<T> newInstance(Configuration configuration, int... dimensions);
+    public abstract Multiblock<T> newInstance(NCPFConfigurationContainer configuration);
+    public abstract Multiblock<T> newInstance(NCPFConfigurationContainer configuration, int... dimensions);
     public final Multiblock<T> newInstance(){
-        return newInstance(Core.configuration);
+        return newInstance(Core.project.conglomeration);
     }
     public abstract void getAvailableBlocks(List<T> blocks);
     public final List<T> getAvailableBlocks(){
@@ -196,7 +198,7 @@ public abstract class Multiblock<T extends Block>{
         return s;
     }
     public FormattedText getSaveTooltip(){
-        FormattedText s = new FormattedText(getConfiguration().getSaveName(!getDefinitionName().contains("Underhaul"))+"\n");
+        FormattedText s = new FormattedText("TODO configuration details");
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s.addText(metadata.get(key)+"\n");
@@ -215,7 +217,7 @@ public abstract class Multiblock<T extends Block>{
         return s.addText(getTooltip(true));
     }
     public String getBotTooltip(){
-        String s = getConfiguration().getSaveName(!getDefinitionName().contains("Underhaul"))+"\n";
+        String s = "TODO configuration details";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";
@@ -368,11 +370,11 @@ public abstract class Multiblock<T extends Block>{
                     new Vector3f(-1, 0, 0));
         }
     }
-    public final void save(LegacyNCPFFile ncpf, Configuration configuration, OutputStream stream) throws MissingConfigurationEntryException{
+    public final void save(LegacyNCPFFile ncpf, NCPFConfigurationContainer configuration, OutputStream stream) throws MissingConfigurationEntryException{
         Config config = saveToConfig(ncpf, configuration);
         if(config!=null)config.save(stream);
     }
-    public final Config saveToConfig(LegacyNCPFFile ncpf, Configuration configuration) throws MissingConfigurationEntryException{
+    public final Config saveToConfig(LegacyNCPFFile ncpf, NCPFConfigurationContainer configuration) throws MissingConfigurationEntryException{
         int id = getMultiblockID();
         if(id==-1)return null;
         Config config = Config.newConfig();
@@ -393,13 +395,12 @@ public abstract class Multiblock<T extends Block>{
         save(ncpf, configuration, config);
         return config;
     }
-    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{}
+    protected void save(LegacyNCPFFile ncpf, NCPFConfigurationContainer configuration, Config config) throws MissingConfigurationEntryException{}
     /**
      * Get the ID to use for saving
      * @return the ID as used in NCPF format, or -1 if this multiblock cannot be saved
      */
     public abstract int getMultiblockID();
-    public abstract void convertTo(Configuration to) throws MissingConfigurationEntryException;
     /**
      * @return true if anything changed
      */
@@ -652,8 +653,8 @@ public abstract class Multiblock<T extends Block>{
         }
         return isCompatible(other);
     }
-    public Configuration getConfiguration(){
-        if(configuration==null)return Core.configuration;//TODO maybe force it to have a specific configuration?
+    public NCPFConfigurationContainer getConfiguration(){
+        if(configuration==null)return Core.project.conglomeration;//TODO maybe force it to have a specific configuration?
         return configuration;
     }
     public final ArrayList<FluidStack> getFluidOutputs(){
@@ -687,13 +688,17 @@ public abstract class Multiblock<T extends Block>{
     protected abstract void getExtraParts(ArrayList<PartCount> parts);
     public boolean isValid(Block block, int x, int y, int z){
         Block b = block.newInstance(x, y, z);
-        return b.hasRules()&&b.calculateRules(this);
+        for(NCPFPlacementRule rule : b.getRules()){
+            if(!rule.isValid(b, this)){
+                return false;
+            }
+        }
+        return true;
     }
     public boolean isValid(Block block, int x, int y, int z, T assumingBlock, int assumingX, int assumingY, int assumingZ){
         T was = getBlock(assumingX, assumingY, assumingZ);
         setBlockExact(assumingX, assumingY, assumingZ, assumingBlock);
-        Block b = block.newInstance(x, y, z);
-        boolean ret = b.hasRules()&&b.calculateRules(this);
+        boolean ret = isValid(block, x, y, z);
         setBlockExact(assumingX, assumingY, assumingZ, was);
         return ret;
     }
@@ -844,6 +849,7 @@ public abstract class Multiblock<T extends Block>{
         return null;
     }
     public abstract <T extends LiteMultiblock> T compile();
+    public abstract Design toDesign();
     private static class GraphLink{
         private final Block b1;
         private final Block b2;

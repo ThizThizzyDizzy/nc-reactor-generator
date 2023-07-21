@@ -43,21 +43,27 @@ public abstract class DefinedNCPFObject{
     }
     public <T extends DefinedNCPFObject, V extends DefinedNCPFObject> T[][][] copy3DArray(V[][][] from, Supplier<T> newCopy){
         T[][][] to = (T[][][])new DefinedNCPFObject[from.length][from[0].length][from[0][0].length];
+        copy3DArray(from, to, newCopy);
+        return to;
+    }
+    public <T extends DefinedNCPFObject, V extends DefinedNCPFObject> void copy3DArray(V[][][] from, T[][][] to, Supplier<T> newCopy){
         for(int x = 0; x<from.length; x++){
             for(int y = 0; y<from[x].length; y++){
-                for(int z = 0; z<=from[x][y].length; z++){
-                    to[x][y][z] = from[x][y][z].copyTo(newCopy);
+                for(int z = 0; z<from[x][y].length; z++){
+                    to[x][y][z] = copy(from[x][y][z], newCopy);
                 }
             }
         }
-        return to;
+    }
+    public <T extends DefinedNCPFObject> T copy(DefinedNCPFObject from, Supplier<T> copy){
+        return from==null?null:from.copyTo(copy);
     }
     public <T extends DefinedNCPFObject, V extends DefinedNCPFObject, U extends DefinedNCPFModularObject> T[][][] copy3DArrayConditional(V[][][] from, U[][][] conditions, Supplier<T> newCopy, Supplier<NCPFModule> conditionalModule){
         T[][][] to = (T[][][])new DefinedNCPFObject[from.length][from[0].length][from[0][0].length];
         for(int x = 0; x<from.length; x++){
             for(int y = 0; y<from[x].length; y++){
                 for(int z = 0; z<=from[x][y].length; z++){
-                    if(conditions[x][y][z].hasModule(conditionalModule))to[x][y][z] = from[x][y][z].copyTo(newCopy);
+                    if(conditions[x][y][z].hasModule(conditionalModule))to[x][y][z] = copy(from[x][y][z], newCopy);
                 }
             }
         }

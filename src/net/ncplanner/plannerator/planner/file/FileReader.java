@@ -20,7 +20,7 @@ public class FileReader{
             try{
                 if(reader.formatMatches(provider.getInputStream()))matches = true;
             }catch(Throwable t){}
-            if(matches)return reader.read(provider.getInputStream(), handler);
+            if(matches)return reader.read(provider.getInputStream(), handler).copyTo(Project::new);
         }
         throw new IllegalArgumentException("Unknown file format!");
     }

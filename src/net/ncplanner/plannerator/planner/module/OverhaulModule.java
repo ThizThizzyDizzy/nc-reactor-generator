@@ -145,7 +145,7 @@ public class OverhaulModule extends Module{
     public void addConfigurations(){
         addConfiguration(FileReader.read(() -> {
             return Core.getInputStream("configurations/aapn.ncpf");
-        }).configuration.addAlternative("AAPN"));
+        }).configuration);
         addConfiguration(FileReader.read(() -> {
             return Core.getInputStream("configurations/quanta.ncpf");
         }).configuration);

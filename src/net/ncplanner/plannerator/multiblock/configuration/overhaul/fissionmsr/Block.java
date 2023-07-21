@@ -215,23 +215,6 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
         texture = image;
         displayTexture = TextureManager.convert(image);
     }
-    public void setInternalTexture(Image other){
-        int left = Math.max(0,texture.getWidth()*5/16-1);
-        int right = Math.min(texture.getWidth()*11/16, texture.getWidth()-1);
-        int up = Math.max(0,texture.getHeight()*5/16-1);
-        int down = Math.min(texture.getHeight()*11/16, texture.getHeight()-1);
-        Image displayImg = new Image(texture.getWidth(), texture.getHeight());
-        for(int x = 0; x<texture.getWidth(); x++){
-            for(int y = 0; y<texture.getHeight(); y++){
-                if(x>left&&y>up&&x<right&&y<down){
-                    displayImg.setColor(x, y, TextureManager.convert(new Color(other.getRGB(x, y))));
-                }else{
-                    displayImg.setColor(x, y, TextureManager.convert(new Color(texture.getRGB(x, y))));
-                }
-            }
-        }
-        displayTexture = displayImg;
-    }
     public Image getPortOutputTexture(){
         return portOutputTexture;
     }

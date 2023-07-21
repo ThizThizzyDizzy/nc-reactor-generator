@@ -1,6 +1,8 @@
 package net.ncplanner.plannerator.ncpf.design;
+import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 public class UnknownNCPFDesign extends NCPFDesignDefinition{
     public NCPFList<Integer> design = new NCPFList<>();
     public NCPFObject ncpf;
@@ -21,5 +23,9 @@ public class UnknownNCPFDesign extends NCPFDesignDefinition{
         design.addAll(this.design);
         ncpf.put("design", design);
         ncpf.putAll(this.ncpf);
+    }
+    @Override
+    public Multiblock toMultiblock(Design d){
+        return null;
     }
 }
