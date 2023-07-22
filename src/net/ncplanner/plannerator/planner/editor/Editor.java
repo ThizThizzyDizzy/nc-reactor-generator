@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.tool.EditorTool;
@@ -16,16 +17,7 @@ public interface Editor{
     public void addSelection(int id, ArrayList<int[]> sel);
     public boolean hasSelection(int id);
     public boolean isSelected(int id, int x, int y, int z);
-    @Deprecated
-    public void setCoolantRecipe(int idx);
-    @Deprecated
-    public void setUnderhaulFuel(int idx);
-    @Deprecated
-    public void setFusionCoolantRecipe(int idx);
-    @Deprecated
-    public void setFusionRecipe(int idx);
-    @Deprecated
-    public void setTurbineRecipe(int idx);
+    public void setMultiblockRecipe(int recipeType, int idx);
     /**
      * @deprecated use ClearSelectionAction instead?
      */
@@ -47,9 +39,7 @@ public interface Editor{
     public boolean isShiftPressed(int id);
     public boolean isAltPressed(int id);
     public Color convertToolColor(Color color, int id);
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe getSelectedOverhaulFusionBlockRecipe(int id);
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe getSelectedOverhaulSFRBlockRecipe(int id);
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe getSelectedOverhaulMSRBlockRecipe(int id);
+    public NCPFElement getSelectedBlockRecipe(int id);
     public ArrayList<Suggestion> getSuggestions();
     public Task getTask();
     public Symmetry getSymmetry();

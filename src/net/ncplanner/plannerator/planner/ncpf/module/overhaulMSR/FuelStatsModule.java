@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class FuelStatsModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class FuelStatsModule extends BlockFunctionModule implements ElementStatsModule{
     public float efficiency;
     public int heat;
     public int time;
@@ -25,5 +26,15 @@ public class FuelStatsModule extends BlockFunctionModule{
         ncpf.setInteger("time", time);
         ncpf.setInteger("criticality", criticality);
         ncpf.setBoolean("self_priming", selfPriming);
+    }
+    @Override
+    public String getTooltip(){
+        String ttp = "";
+        ttp+="Efficiency: "+efficiency+"\n";
+        ttp+="Heat: "+heat+"\n";
+        ttp+="Time: "+time+"\n";
+        ttp+="Criticality: "+criticality+"\n";
+        if(selfPriming)ttp+="Self-Priming\n";
+        return ttp;
     }
 }

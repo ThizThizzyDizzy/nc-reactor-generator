@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class RecipeStatsModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class RecipeStatsModule extends BlockFunctionModule implements ElementStatsModule{
     public float efficiency;
     public int heat;
     public int time;
@@ -22,5 +23,12 @@ public class RecipeStatsModule extends BlockFunctionModule{
         ncpf.setInteger("heat", heat);
         ncpf.setInteger("time", time);
         ncpf.setFloat("fluxiness", fluxiness);
+    }
+    @Override
+    public String getTooltip(){
+        return "Efficiency: "+efficiency+"\n"
+             + "Base Heat: "+heat+"\n"
+             + "Fluxiness: "+fluxiness+"\n"
+             + "Base Time: "+time;
     }
 }

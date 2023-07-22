@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class IrradiatorStatsModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class IrradiatorStatsModule extends BlockFunctionModule implements ElementStatsModule{
     public float efficiency;
     public float heat;
     public IrradiatorStatsModule(){
@@ -16,5 +17,10 @@ public class IrradiatorStatsModule extends BlockFunctionModule{
     public void convertToObject(NCPFObject ncpf){
         ncpf.setFloat("efficiency", efficiency);
         ncpf.setFloat("heat", heat);
+    }
+    @Override
+    public String getTooltip(){
+        return "Efficiency: "+efficiency+"\n"
+             + "Heat: "+heat+"\n";
     }
 }

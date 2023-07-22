@@ -22,7 +22,9 @@ import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -657,6 +659,7 @@ public abstract class Multiblock<T extends Block>{
         if(configuration==null)return Core.project.conglomeration;//TODO maybe force it to have a specific configuration?
         return configuration;
     }
+    public abstract NCPFConfiguration getSpecificConfiguration();
     public final ArrayList<FluidStack> getFluidOutputs(){
         ArrayList<FluidStack> outputs = new ArrayList<>();
         getFluidOutputs(outputs);
@@ -850,6 +853,10 @@ public abstract class Multiblock<T extends Block>{
     }
     public abstract <T extends LiteMultiblock> T compile();
     public abstract Design toDesign();
+    public NCPFElement[] getMultiblockRecipes(){
+        return new NCPFElement[0];
+    }
+    public void setMultiblockRecipe(int recipeType, NCPFElement recipe){}
     private static class GraphLink{
         private final Block b1;
         private final Block b2;

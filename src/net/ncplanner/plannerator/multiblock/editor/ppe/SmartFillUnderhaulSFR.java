@@ -27,7 +27,7 @@ public class SmartFillUnderhaulSFR extends PostProcessingEffect<UnderhaulSFR>{
                 }
                 if(!available.isEmpty()){
                     Block b = available.get(rand.nextInt(available.size()));
-                    coolingAdded[0]+=b.template.cooling;
+                    coolingAdded[0]+=b.template.cooler.cooling;
                     multiblock.queueAction(new SetblockAction(x, y, z, b));
                 }
             }

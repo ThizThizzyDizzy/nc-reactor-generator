@@ -26,6 +26,7 @@ import net.ncplanner.plannerator.multiblock.editor.action.SetCoolantRecipeAction
 import net.ncplanner.plannerator.multiblock.editor.action.SetFuelAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetFusionCoolantRecipeAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetFusionRecipeAction;
+import net.ncplanner.plannerator.multiblock.editor.action.SetMultiblockRecipeAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetSelectionAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetTurbineRecipeAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
@@ -34,6 +35,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -60,6 +62,7 @@ import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.DropdownList;
+import net.ncplanner.plannerator.planner.gui.menu.component.DropdownPile;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.Scrollable;
@@ -67,32 +70,22 @@ import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentCoolantRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorListBlock;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorTool;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentFusionCoolantRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblockProgressBar;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentOverhaulFusionBlockRecipe;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentOverhaulFusionRecipe;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentOverhaulMSRBlockRecipe;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentOverhaulSFRBlockRecipe;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentElement;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentSuggestion;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentSuggestor;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRotorGraph;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderFuel;
-import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentUnderhaulSFRBlockRecipe;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOverlaySettings;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSymmetrySettings;
 import net.ncplanner.plannerator.planner.module.Module;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
@@ -164,9 +157,8 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private final Button zoomOut = add(new Button("Zoom out", true));
     private final Button zoomIn = add(new Button("Zoom in", true));
     private final Button resize = add(new Button("Resize", true).setTooltip("Resize the multiblock\nWARNING: This clears the edit history! (undo/redo)"));
-    public final DropdownList underFuelOrCoolantRecipe = new DropdownList(0, 0, 0, 32, true);
-    public final DropdownList fusionRecipe = new DropdownList(0, 0, 0, 32, true);
-    public final DropdownList blockRecipe = new DropdownList(0, 0, 0, 32, true);
+    public final DropdownPile dropdownSelectors = add(new DropdownPile(32));
+    private final DropdownList blockRecipe;
     private final TextView textBox = add(new TextView(0, 0, 0, 0, 24, 24));
     private final Button editMetadata = add(new Button("", true).setTooltip("Modify the multiblock metadata"));
     private final Button symmetrySettings = add(new Button("Symmetry", true));
@@ -303,40 +295,13 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             refreshOverlays();
         });
         refreshPartsList();
-        if(multiblock instanceof UnderhaulSFR){
-            add(underFuelOrCoolantRecipe);
-            for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels){
-                underFuelOrCoolantRecipe.add(new MenuComponentUnderFuel(fuel));
-            }
+        List<NCPFElement>[] recipeLists = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+        for(List<NCPFElement> recipes : recipeLists){
+            DropdownList list;
+            dropdownSelectors.add(list = new DropdownList(0, 0, 0, 32, true));
+            for(NCPFElement elem : recipes)list.add(new MenuComponentElement(elem));
         }
-        if(multiblock instanceof OverhaulSFR){
-            add(underFuelOrCoolantRecipe);
-            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe : Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes){
-                underFuelOrCoolantRecipe.add(new MenuComponentCoolantRecipe(recipe));
-            }
-            add(blockRecipe);
-        }
-        if(multiblock instanceof OverhaulTurbine){
-            add(underFuelOrCoolantRecipe);
-            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe recipe : Core.project.getConfiguration(OverhaulTurbineConfiguration::new).recipes){
-                underFuelOrCoolantRecipe.add(new MenuComponentTurbineRecipe(recipe));
-            }
-        }
-        if(multiblock instanceof OverhaulMSR){
-            add(blockRecipe);
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            add(underFuelOrCoolantRecipe);
-            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe : Core.project.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes){
-                underFuelOrCoolantRecipe.add(new MenuComponentFusionCoolantRecipe(recipe));
-            }
-            add(fusionRecipe);
-            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recipe : Core.project.getConfiguration(OverhaulFusionConfiguration::new).recipes){
-                fusionRecipe.add(new MenuComponentOverhaulFusionRecipe(recipe));
-            }
-            fusionRecipe.setSelectedIndex(0);
-            add(blockRecipe);
-        }
+        blockRecipe = dropdownSelectors.add(new DropdownList(0, 0, 0, 32, true));
         refreshBlockRecipes();
         for(EditorTool tool : editorTools){
             tools.add(new MenuComponentEditorTool(tool));
@@ -361,17 +326,17 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         Core.delCircle = true;
         Core.circleSize = CELL_SIZE;
         editMetadata.text = multiblock.getName().isEmpty()?"Edit Metadata":(multiblock.getName()+" | Edit Metadata");
-        if(multiblock instanceof UnderhaulSFR){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels.indexOf(((UnderhaulSFR)multiblock).fuel));
-        }
-        if(multiblock instanceof OverhaulSFR){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
-        }
-        if(multiblock instanceof OverhaulTurbine){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.project.getConfiguration(OverhaulTurbineConfiguration::new).recipes.indexOf(((OverhaulTurbine)multiblock).recipe));
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            underFuelOrCoolantRecipe.setSelectedIndex(Core.project.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes.indexOf(((OverhaulFusionReactor)multiblock).coolantRecipe));
+        List<NCPFElement>[] recipeLists = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+        NCPFElement[] recipes = multiblock.getMultiblockRecipes();
+        for(int i = 0; i<recipeLists.length; i++){
+            DropdownList list = (DropdownList)dropdownSelectors.components.get(i);
+            int idx = -1;
+            for(int id = 0; id<recipeLists[i].size(); id++){
+                for(NCPFElement recipe : recipes){
+                    if(recipeLists[i].get(id).definition.matches(recipe.definition))idx = id;
+                }
+            }
+            if(idx>-1)list.setSelectedIndex(idx);
         }
         multibwauk.components.clear();
         ArrayList<EditorSpace> editorSpaces = multiblock.getEditorSpaces();
@@ -491,9 +456,9 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         resize.x = gui.getWidth()-resize.width;
         zoomIn.x = resize.x;
         zoomOut.x = zoomIn.x+zoomIn.width;
-        toggle3D.x = suggestionList.x = blockRecipe.x = fusionRecipe.x = underFuelOrCoolantRecipe.x = resize.x;
-        underFuelOrCoolantRecipe.y = resize.height*2+underFuelOrCoolantRecipe.preferredHeight;
-        toggle3D.width = suggestionList.width = blockRecipe.width = fusionRecipe.width = underFuelOrCoolantRecipe.width = resize.width;
+        toggle3D.x = suggestionList.x = dropdownSelectors.x = resize.x;
+        dropdownSelectors.y = resize.height*2;
+        toggle3D.width = suggestionList.width = dropdownSelectors.width = resize.width;
         if(suggestorSettings.isDown){
             suggestorSettings.width = gui.getWidth()-suggestorSettings.x;
             suggestorSettings.y = gui.getHeight()/2;
@@ -504,18 +469,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         for(Component c : tools.components){
             c.width = c.height = partSize;
         }
-        if(multiblock instanceof OverhaulSFR){
-            blockRecipe.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+blockRecipe.preferredHeight;
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            fusionRecipe.y = underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height+fusionRecipe.preferredHeight;
-            blockRecipe.y = fusionRecipe.y+fusionRecipe.height+blockRecipe.preferredHeight;
-        }
-        if(multiblock instanceof OverhaulMSR){
-            underFuelOrCoolantRecipe.x = -5000;
-            blockRecipe.y = resize.height*2+blockRecipe.preferredHeight;
-        }
-        suggestionList.y = Math.max(underFuelOrCoolantRecipe.y+underFuelOrCoolantRecipe.height, Math.max(blockRecipe.y+blockRecipe.height, fusionRecipe.y+fusionRecipe.height));
+        suggestionList.y = dropdownSelectors.y+dropdownSelectors.height;
         suggestionList.height = gui.getHeight()-suggestionList.y-(generate.height+(toggle3D.isToggledOn?toggle3D.width:0));
         multibwauk.height = gui.getHeight()-multibwauk.y-generate.height;
         progress.width = textBox.width;
@@ -530,42 +484,18 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     @Override    
     public void drawForeground(double deltaTime){
         Renderer renderer = new Renderer();
-        if(multiblock instanceof UnderhaulSFR){//so this is below the tooltip
-            renderer.setColor(Core.theme.getSecondaryComponentColor(0));
-            renderer.fillRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y);
-            renderer.setColor(Core.theme.getComponentTextColor(0));
-            renderer.drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Fuel");
+        List<NCPFElement>[] recipeLists = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+        for(int i = 0; i<recipeLists.length; i++){
+            DropdownList list = dropdownSelectors.get(i);
+            renderer.setColor(Core.theme.getSecondaryComponentColor(i));
+            renderer.fillRect(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y);
+            renderer.setColor(Core.theme.getComponentTextColor(i));
+            renderer.drawCenteredText(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y, ((MultiblockRecipeElement)recipeLists[i].get(0)).getRecipeType());
         }
-        if(multiblock instanceof OverhaulSFR){
-            renderer.setColor(Core.theme.getSecondaryComponentColor(0));
-            renderer.fillRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y);
-            renderer.fillRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y);
-            renderer.setColor(Core.theme.getComponentTextColor(0));
-            renderer.drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Coolant Recipe");
-            renderer.drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
-        }
-        if(multiblock instanceof OverhaulMSR){
-            renderer.setColor(Core.theme.getSecondaryComponentColor(0));
-            renderer.fillRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y);
-            renderer.setColor(Core.theme.getComponentTextColor(0));
-            renderer.drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
-        }
-        if(multiblock instanceof OverhaulTurbine){
-            renderer.setColor(Core.theme.getSecondaryComponentColor(0));
-            renderer.fillRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y);
-            renderer.setColor(Core.theme.getComponentTextColor(0));
-            renderer.drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Recipe");
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            renderer.setColor(Core.theme.getSecondaryComponentColor(0));
-            renderer.fillRect(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y);
-            renderer.fillRect(fusionRecipe.x, fusionRecipe.y-fusionRecipe.preferredHeight, fusionRecipe.x+fusionRecipe.width, fusionRecipe.y);
-            renderer.fillRect(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y);
-            renderer.setColor(Core.theme.getComponentTextColor(0));
-            renderer.drawCenteredText(underFuelOrCoolantRecipe.x, underFuelOrCoolantRecipe.y-underFuelOrCoolantRecipe.preferredHeight, underFuelOrCoolantRecipe.x+underFuelOrCoolantRecipe.width, underFuelOrCoolantRecipe.y, "Coolant Recipe");
-            renderer.drawCenteredText(fusionRecipe.x, fusionRecipe.y-fusionRecipe.preferredHeight, fusionRecipe.x+fusionRecipe.width, fusionRecipe.y, "Recipe");
-            renderer.drawCenteredText(blockRecipe.x, blockRecipe.y-blockRecipe.preferredHeight, blockRecipe.x+blockRecipe.width, blockRecipe.y, "Block Recipe");
-        }
+        renderer.setColor(Core.theme.getSecondaryComponentColor(0));
+        renderer.fillRect(dropdownSelectors.x+blockRecipe.x, dropdownSelectors.y+blockRecipe.y-blockRecipe.preferredHeight, dropdownSelectors.x+blockRecipe.x+blockRecipe.width, dropdownSelectors.y+blockRecipe.y);
+        renderer.setColor(Core.theme.getComponentTextColor(0));
+        renderer.drawCenteredText(dropdownSelectors.x+blockRecipe.x, dropdownSelectors.y+blockRecipe.y-blockRecipe.preferredHeight, dropdownSelectors.x+blockRecipe.x+blockRecipe.width, dropdownSelectors.y+blockRecipe.y, "Block Recipe");
         renderer.setWhite();
         super.drawForeground(deltaTime);
     }
@@ -596,48 +526,17 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         }
         boolean hasRecipe = false;
         for(int i = 0; i<blockRecipe.allComponents.size(); i++){
-            Component comp = blockRecipe.allComponents.get(i);
-            if(comp instanceof MenuComponentOverhaulSFRBlockRecipe){
-                MenuComponentOverhaulSFRBlockRecipe bcomp = (MenuComponentOverhaulSFRBlockRecipe)comp;
-                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block).recipe){
-                    hasRecipe = true;
-                    break;
-                }
-            }
-            if(comp instanceof MenuComponentOverhaulMSRBlockRecipe){
-                MenuComponentOverhaulMSRBlockRecipe bcomp = (MenuComponentOverhaulMSRBlockRecipe)comp;
-                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block).recipe){
-                    hasRecipe = true;
-                    break;
-                }
-            }
-            if(comp instanceof MenuComponentOverhaulFusionBlockRecipe){
-                MenuComponentOverhaulFusionBlockRecipe bcomp = (MenuComponentOverhaulFusionBlockRecipe)comp;
-                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block).recipe){
-                    hasRecipe = true;
-                    break;
-                }
-            }
+            MenuComponentElement comp = (MenuComponentElement)blockRecipe.allComponents.get(i);
+            if(comp.element==block.getRecipe())hasRecipe = true;
         }
         if(!hasRecipe){
-            blockRecipe.searchBox.text = "";
-            underFuelOrCoolantRecipe.searchBox.text = "";
-            fusionRecipe.searchBox.text = "";
+            for(int i = 0; i<dropdownSelectors.components.size(); i++)dropdownSelectors.get(i).searchBox.text = "";
             refreshBlockRecipes();
         }
-        for(int i = 0; i<blockRecipe.allComponents.size(); i++){
-            Component comp = blockRecipe.allComponents.get(i);
-            if(comp instanceof MenuComponentOverhaulSFRBlockRecipe){
-                MenuComponentOverhaulSFRBlockRecipe bcomp = (MenuComponentOverhaulSFRBlockRecipe)comp;
-                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block).recipe)blockRecipe.setSelectedIndex(i);
-            }
-            if(comp instanceof MenuComponentOverhaulMSRBlockRecipe){
-                MenuComponentOverhaulMSRBlockRecipe bcomp = (MenuComponentOverhaulMSRBlockRecipe)comp;
-                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block).recipe)blockRecipe.setSelectedIndex(i);
-            }
-            if(comp instanceof MenuComponentOverhaulFusionBlockRecipe){
-                MenuComponentOverhaulFusionBlockRecipe bcomp = (MenuComponentOverhaulFusionBlockRecipe)comp;
-                if(bcomp.recipe==((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block).recipe)blockRecipe.setSelectedIndex(i);
+        if(block.getRecipe()!=null){
+            for(int i = 0; i<blockRecipe.allComponents.size(); i++){
+                MenuComponentElement comp = (MenuComponentElement)blockRecipe.allComponents.get(i);
+                if(comp.element.definition.matches(block.getRecipe().definition))blockRecipe.setSelectedIndex(i);
             }
         }
         lastSelectedBlock = getSelectedBlock(0);
@@ -662,31 +561,11 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         return tool;
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe getSelectedOverhaulFusionBlockRecipe(int id){
+    public NCPFElement getSelectedBlockRecipe(int id){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
         Component comp = blockRecipe.getSelectedComponent();
         if(comp==null)return null;
-        return ((MenuComponentOverhaulFusionBlockRecipe)comp).recipe;
-    }
-    public ActiveCoolerRecipe getSelectedUnderhaulSFRBlockRecipe(int id){
-        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        Component comp = blockRecipe.getSelectedComponent();
-        if(comp==null)return null;
-        return ((MenuComponentUnderhaulSFRBlockRecipe)comp).recipe;
-    }
-    @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe getSelectedOverhaulSFRBlockRecipe(int id){
-        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        Component comp = blockRecipe.getSelectedComponent();
-        if(comp==null)return null;
-        return ((MenuComponentOverhaulSFRBlockRecipe)comp).recipe;
-    }
-    @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe getSelectedOverhaulMSRBlockRecipe(int id){
-        if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        Component comp = blockRecipe.getSelectedComponent();
-        if(comp==null)return null;
-        return ((MenuComponentOverhaulMSRBlockRecipe)comp).recipe;
+        return ((MenuComponentElement)comp).element;
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){
@@ -808,29 +687,8 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 }
             }
         }
-        if(set.block!=null&&multiblock instanceof UnderhaulSFR){
-            net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)set.block;
-            if(!block.template.activeCoolerRecipes.isEmpty()){
-                block.recipe = getSelectedUnderhaulSFRBlockRecipe(id);
-            }
-        }
-        if(set.block!=null&&multiblock instanceof OverhaulSFR){
-            net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)set.block;
-            if(!block.template.allRecipes.isEmpty()||(block.template.parent!=null&&!block.template.parent.allRecipes.isEmpty())){
-                block.recipe = getSelectedOverhaulSFRBlockRecipe(id);
-            }
-        }
-        if(set.block!=null&&multiblock instanceof OverhaulMSR){
-            net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)set.block;
-            if(!block.template.allRecipes.isEmpty()||(block.template.parent!=null&&!block.template.parent.allRecipes.isEmpty())){
-                block.recipe = getSelectedOverhaulMSRBlockRecipe(id);
-            }
-        }
-        if(set.block!=null&&multiblock instanceof OverhaulFusionReactor){
-            net.ncplanner.plannerator.multiblock.overhaul.fusion.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)set.block;
-            if(!block.template.allRecipes.isEmpty()){
-                block.recipe = getSelectedOverhaulFusionBlockRecipe(id);
-            }
+        if(set.block!=null&&set.block.hasRecipes()){
+            set.block.setRecipe(getSelectedBlockRecipe(id));
         }
         action(set, true);
     }
@@ -1159,24 +1017,8 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         return multiblock;
     }
     @Override
-    public void setCoolantRecipe(int idx){
-        underFuelOrCoolantRecipe.setSelectedIndex(idx);
-    }
-    @Override
-    public void setUnderhaulFuel(int idx){
-        underFuelOrCoolantRecipe.setSelectedIndex(idx);
-    }
-    @Override
-    public void setFusionCoolantRecipe(int idx){
-        underFuelOrCoolantRecipe.setSelectedIndex(idx);
-    }
-    @Override
-    public void setFusionRecipe(int idx){
-        fusionRecipe.setSelectedIndex(idx);
-    }
-    @Override
-    public void setTurbineRecipe(int idx){
-        underFuelOrCoolantRecipe.setSelectedIndex(idx);
+    public void setMultiblockRecipe(int recipeType, int idx){
+        dropdownSelectors.get(recipeType).setSelectedIndex(idx);
     }
     @Override
     public ArrayList<ClipboardEntry> getClipboard(int id){
@@ -1226,41 +1068,22 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             refreshBlockRecipes();
             lastSelectedBlock = getSelectedBlock(0);
         }
-        if(multiblock instanceof UnderhaulSFR){
-            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel = Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels.get(underFuelOrCoolantRecipe.getSelectedIndex());
-                if(((UnderhaulSFR)multiblock).fuel!=fuel){
-                    action(new SetFuelAction(this, fuel), true);
+        
+        List<NCPFElement>[] recipeLists = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+        NCPFElement[] recipes = multiblock.getMultiblockRecipes();
+        for(int i = 0; i<recipeLists.length; i++){
+            DropdownList list = (DropdownList)dropdownSelectors.components.get(i);
+            if(list.getSelectedIndex()>-1){
+                NCPFElement element = recipeLists[i].get(list.getSelectedIndex());
+                boolean match = false;
+                for(NCPFElement recipe : recipes){
+                    if(element.definition.matches(recipe.definition)){
+                        match = true;
+                        break;
+                    }
                 }
-            }
-        }
-        if(multiblock instanceof OverhaulSFR){
-            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = Core.configuration.overhaul.fissionSFR.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
-                if(((OverhaulSFR)multiblock).coolantRecipe!=recipe){
-                    action(new SetCoolantRecipeAction(this, recipe), true);
-                }
-            }
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe recipe = Core.configuration.overhaul.fusion.allCoolantRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
-                if(((OverhaulFusionReactor)multiblock).coolantRecipe!=recipe){
-                    action(new SetFusionCoolantRecipeAction(this, recipe), true);
-                }
-            }
-            if(fusionRecipe.getSelectedIndex()>-1){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe recipe = Core.configuration.overhaul.fusion.allRecipes.get(fusionRecipe.getSelectedIndex());
-                if(((OverhaulFusionReactor)multiblock).recipe!=recipe){
-                    action(new SetFusionRecipeAction(this, recipe), true);
-                }
-            }
-        }
-        if(multiblock instanceof OverhaulTurbine){
-            if(underFuelOrCoolantRecipe.getSelectedIndex()>-1){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe recipe = Core.configuration.overhaul.turbine.allRecipes.get(underFuelOrCoolantRecipe.getSelectedIndex());
-                if(((OverhaulTurbine)multiblock).recipe!=recipe){
-                    action(new SetTurbineRecipeAction(this, recipe), true);
+                if(!match){
+                    action(new SetMultiblockRecipeAction(this, i, element), true);
                 }
             }
         }
@@ -1300,45 +1123,19 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         setSelection(id, new ArrayList<>());
     }
     private synchronized void refreshBlockRecipes(){
-        Object was = null;
-        Component comp = blockRecipe.getSelectedComponent();
-        if(comp instanceof MenuComponentOverhaulSFRBlockRecipe)was = ((MenuComponentOverhaulSFRBlockRecipe)comp).recipe;
-        if(comp instanceof MenuComponentOverhaulMSRBlockRecipe)was = ((MenuComponentOverhaulMSRBlockRecipe)comp).recipe;
-        if(comp instanceof MenuComponentOverhaulFusionBlockRecipe)was = ((MenuComponentOverhaulFusionBlockRecipe)comp).recipe;
+        NCPFElement was = null;
+        MenuComponentElement comp = (MenuComponentElement)blockRecipe.getSelectedComponent();
+        if(comp!=null)was = comp.element;
         blockRecipe.clear();
-        if(multiblock instanceof UnderhaulSFR){
-            net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block b = ((net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)getSelectedBlock(0)).template;
-            for(ActiveCoolerRecipe recipe : b.activeCoolerRecipes){
-                blockRecipe.add(new MenuComponentUnderhaulSFRBlockRecipe(b, recipe));
-            }
-        }
-        if(multiblock instanceof OverhaulSFR){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b = ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)getSelectedBlock(0)).template;
-            if(b.parent!=null)b = b.parent;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : b.allRecipes){
-                blockRecipe.add(new MenuComponentOverhaulSFRBlockRecipe(b, recipe));
-            }
-        }
-        if(multiblock instanceof OverhaulMSR){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b = ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)getSelectedBlock(0)).template;
-            if(b.parent!=null)b = b.parent;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : b.allRecipes){
-                blockRecipe.add(new MenuComponentOverhaulMSRBlockRecipe(b, recipe));
-            }
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block b = ((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)getSelectedBlock(0)).template;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe recipe : b.allRecipes){
-                blockRecipe.add(new MenuComponentOverhaulFusionBlockRecipe(b, recipe));
+        NCPFElement currentBlock = getSelectedBlock(0).getTemplate().asElement();
+        if(currentBlock instanceof BlockRecipesElement){
+            List<? extends NCPFElement> recipes = ((BlockRecipesElement)currentBlock).getBlockRecipes();
+            for(NCPFElement recipe : recipes){
+                blockRecipe.add(new MenuComponentElement(recipe));
             }
         }
         if(!blockRecipe.list.components.isEmpty())blockRecipe.setSelectedIndex(blockRecipe.allComponents.indexOf(blockRecipe.list.components.get(0)));
-        for(int i = 0; i<blockRecipe.allComponents.size(); i++){
-            Component c = blockRecipe.allComponents.get(i);
-            if(c instanceof MenuComponentOverhaulSFRBlockRecipe&&was==((MenuComponentOverhaulSFRBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);
-            if(c instanceof MenuComponentOverhaulMSRBlockRecipe&&was==((MenuComponentOverhaulMSRBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);
-            if(c instanceof MenuComponentOverhaulFusionBlockRecipe&&was==((MenuComponentOverhaulFusionBlockRecipe)c).recipe)blockRecipe.setSelectedIndex(i);
-        }
+        for(int i = 0; i<blockRecipe.allComponents.size(); i++)if(was==((MenuComponentElement)blockRecipe.allComponents.get(i)).element)blockRecipe.setSelectedIndex(i);
     }
     public synchronized void refreshPartsList(){
         List<Block> availableBlocks = ((Multiblock<Block>)multiblock).getAvailableBlocks();

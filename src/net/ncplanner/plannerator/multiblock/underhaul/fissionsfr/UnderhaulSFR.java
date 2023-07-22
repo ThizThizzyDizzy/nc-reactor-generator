@@ -28,6 +28,7 @@ import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.CompiledUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
@@ -67,7 +68,8 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         super(configuration, x, y, z);
         this.fuel = fuel==null?(exists()?getConfiguration().getConfiguration(UnderhaulSFRConfiguration::new).fuels.get(0):null):fuel;
     }
-    public UnderhaulSFRConfiguration getConfig(){
+    @Override
+    public UnderhaulSFRConfiguration getSpecificConfiguration(){
         NCPFConfigurationContainer conf = getConfiguration();
         if(conf==null)return null;
         return conf.getConfiguration(UnderhaulSFRConfiguration::new);
@@ -86,34 +88,34 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
-        if(getConfig()==null)return;
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block block : getConfig().blocks){
+        if(getSpecificConfiguration()==null)return;
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block block : getSpecificConfiguration().blocks){
             blocks.add(new Block(getConfiguration(),-1,-1,-1,block));
         }
     }
     @Override
     public int getMinX(){
-        return getConfig().settings.minSize;
+        return getSpecificConfiguration().settings.minSize;
     }
     @Override
     public int getMinY(){
-        return getConfig().settings.minSize;
+        return getSpecificConfiguration().settings.minSize;
     }
     @Override
     public int getMinZ(){
-        return getConfig().settings.minSize;
+        return getSpecificConfiguration().settings.minSize;
     }
     @Override
     public int getMaxX(){
-        return getConfig().settings.maxSize;
+        return getSpecificConfiguration().settings.maxSize;
     }
     @Override
     public int getMaxY(){
-        return getConfig().settings.maxSize;
+        return getSpecificConfiguration().settings.maxSize;
     }
     @Override
     public int getMaxZ(){
-        return getConfig().settings.maxSize;
+        return getSpecificConfiguration().settings.maxSize;
     }
     @Override
     public void clearData(List<Block> blocks){
@@ -189,7 +191,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                         totalEnergyMult+=block.energyMult;
                         cells++;
                     }
-                    if(block.isCooler()&&block.isActive())cooling+=block.getCooling();
+                    if((block.isCooler()||block.template.activeCooler!=null)&&block.isActive())cooling+=block.getCooling();
                     calcStats.progress = i/(double)allBlocks.size();
                 }
                 this.heatMult = totalHeatMult/cells;
@@ -211,7 +213,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         if(addDecals)decals.enqueue(new BlockValidDecal(that.x, that.y, that.z));
         for(Direction d : Direction.values()){
             Queue<Block> toValidate = new Queue<>();
-            for(int i = 1; i<=getConfig().settings.neutronReach+1; i++){
+            for(int i = 1; i<=getSpecificConfiguration().settings.neutronReach+1; i++){
                 if(!contains(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i))break;
                 Block block = getBlock(that.x+d.x*i,that.y+d.y*i,that.z+d.z*i);
                 if(block==null)break;
@@ -238,8 +240,8 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         }
         float baseEff = that.energyMult = that.adjacentCells+1;
         that.heatMult = (baseEff*(baseEff+1))/2;
-        that.energyMult+=baseEff/6*getConfig().settings.moderatorExtraPower*that.adjacentModerators;
-        that.heatMult+=baseEff/6*getConfig().settings.moderatorExtraHeat*that.adjacentModerators;
+        that.energyMult+=baseEff/6*getSpecificConfiguration().settings.moderatorExtraPower*that.adjacentModerators;
+        that.heatMult+=baseEff/6*getSpecificConfiguration().settings.moderatorExtraHeat*that.adjacentModerators;
     }
     /**
      * Calculates the cooler
@@ -250,6 +252,11 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     public boolean calculateCooler(Block block, boolean addDecals){
         if(block.template.cooler==null&&block.template.activeCooler==null)return false;
         boolean wasValid = block.coolerValid;
+        if(block.template.activeCooler!=null&&block.recipe==null){
+            if(block.coolerValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x,block.y,block.z));
+            block.coolerValid = false;
+            return wasValid!=block.coolerValid;
+        }
         for(NCPFPlacementRule rule : block.getRules()){
             if(!rule.isValid(block, this)){
                 if(block.coolerValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x,block.y,block.z));
@@ -306,7 +313,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     }
     @Override
     public boolean exists(){
-        return super.exists()&&getConfig()!=null;
+        return super.exists()&&getSpecificConfiguration()!=null;
     }
     @Override
     public void addGeneratorSettings(SingleColumnList multiblockSettings){}
@@ -466,7 +473,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                             DIRECTION:for(Direction d : Direction.values()){
                                 ArrayList<int[]> toSet = new ArrayList<>();
                                 boolean yep = false;
-                                for(int i = 1; i<=getConfig().settings.neutronReach+1; i++){
+                                for(int i = 1; i<=getSpecificConfiguration().settings.neutronReach+1; i++){
                                     int X = x+d.x*i;
                                     int Y = y+d.y*i;
                                     int Z = z+d.z*i;
@@ -480,7 +487,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
                                             break;
                                         }
                                     }
-                                    if(i<=getConfig().settings.neutronReach){
+                                    if(i<=getSpecificConfiguration().settings.neutronReach){
                                         toSet.add(new int[]{X,Y,Z});
                                     }
                                 }
@@ -686,13 +693,13 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     }
     @Override
     public boolean canBePlacedWithinCasing(Block b){
-        return b.isFuelCell()||b.isModerator()||b.isCooler();
+        return b.isFuelCell()||b.isModerator()||b.isCooler()||b.template.activeCooler!=null;
     }
     @Override
     public void buildDefaultCasing(){
         Block casing = null;
         Block controller = null;
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template : getConfig().blocks){
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template : getSpecificConfiguration().blocks){
             if(template.casing!=null)casing = new Block(getConfiguration(), 0, 0, 0, template);
             if(template.controller!=null)controller = new Block(getConfiguration(), 0, 0, 0, template);
         }
@@ -721,7 +728,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     }
     @Override
     public LiteUnderhaulSFR compile(){
-        LiteUnderhaulSFR sfr = new LiteUnderhaulSFR(CompiledUnderhaulSFRConfiguration.compile(getConfig()));
+        LiteUnderhaulSFR sfr = new LiteUnderhaulSFR(CompiledUnderhaulSFRConfiguration.compile(getSpecificConfiguration()));
         sfr.importAndConvert(this);
         return sfr;
     }
@@ -734,5 +741,13 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         });
         design.fuel = fuel;
         return design;
+    }
+    @Override
+    public NCPFElement[] getMultiblockRecipes(){
+        return new NCPFElement[]{fuel};
+    }
+    @Override
+    public void setMultiblockRecipe(int recipeType, NCPFElement recipe){
+        fuel = (Fuel)recipe;
     }
 }

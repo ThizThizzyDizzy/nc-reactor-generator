@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.RecipePortsModule;
@@ -19,7 +20,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronShieldMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule;
-public class Block extends NCPFElement implements IBlockTemplate{
+public class Block extends NCPFElement implements IBlockTemplate, BlockRecipesElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;
@@ -71,5 +72,9 @@ public class Block extends NCPFElement implements IBlockTemplate{
         setModules(names, texture, conductor, casing, controller, fuelVessel, irradiator, reflector, moderator, neutronShield, heater, neutronSource, port, recipePorts);
         setRecipes(fuels, heaterRecipes, irradiatorRecipes);
         super.convertToObject(ncpf);
+    }
+    @Override
+    public List<? extends NCPFElement> getBlockRecipes(){
+        return pickNotEmpty(fuels, heaterRecipes, irradiatorRecipes);
     }
 }

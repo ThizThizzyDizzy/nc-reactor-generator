@@ -27,4 +27,7 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
         }
         return null;
     }
+    public List<NCPFElement>[] getMultiblockRecipes(){
+        return new List[0];
+    }
 }

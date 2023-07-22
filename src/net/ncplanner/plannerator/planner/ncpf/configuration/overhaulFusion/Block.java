@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.BreedingBlanketModule;
@@ -17,7 +18,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.PoloidalElec
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ReflectorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ShieldingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule;
-public class Block extends NCPFElement implements IBlockTemplate{
+public class Block extends NCPFElement implements IBlockTemplate, BlockRecipesElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;
@@ -57,5 +58,9 @@ public class Block extends NCPFElement implements IBlockTemplate{
         setModules(names, texture, conductor, connector, core, poloid, toroid, heatingBlanket, breedingBlanket, shielding, reflector, heatsink);
         setRecipes(breedingBlanketRecipes);
         super.convertToObject(ncpf);
+    }
+    @Override
+    public List<? extends NCPFElement> getBlockRecipes(){
+        return breedingBlanketRecipes;
     }
 }

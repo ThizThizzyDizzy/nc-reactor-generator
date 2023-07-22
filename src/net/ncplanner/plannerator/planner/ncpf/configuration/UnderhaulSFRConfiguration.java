@@ -28,4 +28,8 @@ public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
         super.fuels = copyList(fuels, NCPFElement::new);
         super.convertToObject(ncpf);
     }
+    @Override
+    public List<NCPFElement>[] getMultiblockRecipes(){
+        return new List[]{fuels};
+    }
 }

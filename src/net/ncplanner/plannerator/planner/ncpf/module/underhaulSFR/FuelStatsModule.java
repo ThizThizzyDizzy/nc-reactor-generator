@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-public class FuelStatsModule extends NCPFModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class FuelStatsModule extends NCPFModule implements ElementStatsModule{
     public float power;
     public float heat;
     public int time;
@@ -23,5 +24,11 @@ public class FuelStatsModule extends NCPFModule{
     @Override
     public void conglomerate(NCPFModule addon){
         throw new UnsupportedOperationException("Fuel stats may not be overwritten!");
+    }
+    @Override
+    public String getTooltip(){
+        return "Base Power: "+power+"\n"
+             + "Base Heat: "+heat+"\n"
+             + "Base Time: "+time;
     }
 }

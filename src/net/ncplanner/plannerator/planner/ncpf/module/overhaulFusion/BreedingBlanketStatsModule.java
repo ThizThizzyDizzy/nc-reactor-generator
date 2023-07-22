@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class BreedingBlanketStatsModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class BreedingBlanketStatsModule extends BlockFunctionModule implements ElementStatsModule{
     public boolean augmented;
     public float efficiency;
     public float heat;
@@ -19,5 +20,13 @@ public class BreedingBlanketStatsModule extends BlockFunctionModule{
         ncpf.setBoolean("augmented", augmented);
         ncpf.setFloat("efficiency", efficiency);
         ncpf.setFloat("heat", heat);
+    }
+    @Override
+    public String getTooltip(){
+        String ttp = "";
+        ttp+="Efficiency: "+efficiency+"\n";
+        ttp+="Heat: "+heat+"\n";
+        if(augmented)ttp+="Augmented"+"\n";
+        return ttp;
     }
 }

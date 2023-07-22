@@ -1,15 +1,17 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.gui.Component;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
-public class MenuComponentUnderFuel extends Component implements Pinnable{
-    private final Fuel fuel;
-    public MenuComponentUnderFuel(Fuel fuel){
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class MenuComponentElement extends Component implements Pinnable{
+    public final NCPFElement element;
+    public MenuComponentElement(NCPFElement element){
         super(0, 0, 0, 0);
-        this.fuel = fuel;
+        this.element = element;
     }
     @Override
     public void draw(double deltaTime){
@@ -22,37 +24,42 @@ public class MenuComponentUnderFuel extends Component implements Pinnable{
             else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
         }
         renderer.fillRect(x, y, x+width, y+height);
-        if(fuel.texture!=null){
+        if(element.getTexture()!=null){
             renderer.setWhite();
-            renderer.drawImage(fuel.getTexture(), x, y, x+height, y+height);
+            renderer.drawImage(element.getTexture(), x, y, x+height, y+height);
         }
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         drawText(renderer);
     }
     public void drawText(Renderer renderer){
-        float textLength = renderer.getStringWidth(fuel.getDisplayName(), height);
-        float scale = Math.min(1, (width-(fuel.texture!=null?height:0))/textLength);
+        float textLength = renderer.getStringWidth(element.getDisplayName(), height);
+        float scale = Math.min(1, (width-(element.getTexture()!=null?height:0))/textLength);
         float textHeight = (int)(height*scale)-1;
-        renderer.drawText(fuel.texture!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, fuel.getDisplayName());
+        renderer.drawText(element.getTexture()!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, element.getDisplayName());
     }
-    @Override
+    @Override    
     public String getTooltip(){
-        return "Base Power: "+fuel.stats.power+"\n"
-             + "Base Heat: "+fuel.stats.heat+"\n"
-             + "Base Time: "+fuel.stats.time;
+        String ttp = "";
+        for(NCPFModule module : element.modules.modules.values()){
+            if(module instanceof ElementStatsModule){
+                ElementStatsModule stats = (ElementStatsModule)module;
+                ttp+="\n"+stats.getTooltip();
+            }
+        }
+        return ttp.trim();
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        ArrayList<String> lst = fuel.getSearchableNames();
+        ArrayList<String> lst = element.getSearchableNames();
         for(String s : getTooltip().split("\n"))lst.add(s.trim());
         return lst;
     }
     @Override
     public ArrayList<String> getSimpleSearchableNames(){
-        return fuel.getSimpleSearchableNames();
+        return element.getSimpleSearchableNames();
     }
     @Override
     public String getPinnedName(){
-        return fuel.getPinnedName();
+        return element.getPinnedName();
     }
 }

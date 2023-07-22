@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class RecipeStatsModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class RecipeStatsModule extends BlockFunctionModule implements ElementStatsModule{
     public double power;
     public double coefficient;
     public RecipeStatsModule(){
@@ -16,5 +17,10 @@ public class RecipeStatsModule extends BlockFunctionModule{
     public void convertToObject(NCPFObject ncpf){
         ncpf.setDouble("power", power);
         ncpf.setDouble("coefficient", coefficient);
+    }
+    @Override
+    public String getTooltip(){
+        return "Expansion Coefficient: "+coefficient+"\n"
+             + "Energy Density (RF/mb): "+power;
     }
 }

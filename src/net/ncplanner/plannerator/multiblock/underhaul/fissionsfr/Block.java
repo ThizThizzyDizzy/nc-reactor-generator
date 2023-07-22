@@ -8,10 +8,12 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
 public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block> {
     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template;
@@ -64,7 +66,9 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return isActive()||moderatorValid;
     }
     public int getCooling(){
-        return template.activeCooler==null?template.cooler.cooling:recipe.stats.cooling*getConfiguration().getConfiguration(UnderhaulSFRConfiguration::new).settings.activeCoolerRate/20;
+        if(template.cooler!=null)return template.cooler.cooling;
+        if(template.activeCooler!=null&&recipe!=null)return recipe.stats.cooling*getConfiguration().getConfiguration(UnderhaulSFRConfiguration::new).settings.activeCoolerRate/20;
+        return 0;
     }
     @Override
     public void clearData(){
@@ -89,6 +93,9 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
         if(isCooler()){
             tip+="\nCooler "+(coolerValid?"Valid":"Invalid");
+        }
+        if(template.activeCooler!=null){
+            tip+="\nActive Cooler "+(coolerValid?"Valid":"Invalid");
         }
         return tip;
     }
@@ -192,5 +199,13 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public List<? extends IBlockRecipe> getRecipes(){
         return template.activeCoolerRecipes;
+    }
+    @Override
+    public ActiveCoolerRecipe getRecipe(){
+        return recipe;
+    }
+    @Override
+    public void setRecipe(NCPFElement recipe){
+        this.recipe = (ActiveCoolerRecipe)recipe;
     }
 }

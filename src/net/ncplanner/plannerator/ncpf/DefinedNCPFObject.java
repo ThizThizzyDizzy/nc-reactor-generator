@@ -38,6 +38,7 @@ public abstract class DefinedNCPFObject{
         return copyList(from, new ArrayList<>(), newCopy);
     }
     public <T extends DefinedNCPFObject, V extends DefinedNCPFObject> List<T> copyList(List<V> from, List<T> to, Supplier<T> newCopy){
+        to.clear();//prevents duplicating active cooler recipes
         for(V v : from)to.add(v.copyTo(newCopy));
         return to;
     }

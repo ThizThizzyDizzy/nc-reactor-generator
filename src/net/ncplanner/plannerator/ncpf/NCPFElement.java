@@ -1,13 +1,16 @@
 package net.ncplanner.plannerator.ncpf;
 import java.util.ArrayList;
+import java.util.Arrays;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import java.util.HashMap;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.ncpf.element.UnknownNCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
     public static HashMap<String, Supplier<NCPFElementDefinition>> recognizedElements = new HashMap<>();
@@ -38,7 +41,14 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
     }
     @Override
     public ArrayList<String> getSearchableNames(){
-        return getSimpleSearchableNames();
+        ArrayList<String> names = getSimpleSearchableNames();
+        for(NCPFModule module : modules.modules.values()){
+            if(module instanceof ElementStatsModule){
+                ElementStatsModule stats = (ElementStatsModule)module;
+                names.addAll(Arrays.asList(stats.getTooltip().trim().split("\n")));
+            }
+        }
+        return names;
     }
     //TODO include placement rules somehow?
     public String getName(){

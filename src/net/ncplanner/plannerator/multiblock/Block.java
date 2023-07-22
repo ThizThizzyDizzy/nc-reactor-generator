@@ -8,6 +8,7 @@ import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -293,6 +294,7 @@ public abstract class Block implements Pinnable{
     }
     public Block copy(int x, int y, int z){
         Block b = newInstance(x, y, z);
+        b.setRecipe(getRecipe());
         copyProperties(b);
         return b;
     }
@@ -345,4 +347,6 @@ public abstract class Block implements Pinnable{
     }
     public abstract boolean hasRecipes();
     public abstract List<? extends IBlockRecipe> getRecipes();
+    public abstract NCPFElement getRecipe();
+    public abstract void setRecipe(NCPFElement recipe);
 }

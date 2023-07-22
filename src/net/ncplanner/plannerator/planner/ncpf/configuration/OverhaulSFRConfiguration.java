@@ -28,4 +28,8 @@ public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
         super.coolantRecipes = copyList(coolantRecipes, NCPFElement::new);
         super.convertToObject(ncpf);
     }
+    @Override
+    public List<NCPFElement>[] getMultiblockRecipes(){
+        return new List[]{coolantRecipes};
+    }
 }

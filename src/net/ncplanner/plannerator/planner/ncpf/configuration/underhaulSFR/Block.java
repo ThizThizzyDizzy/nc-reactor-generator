@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
@@ -13,7 +14,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModu
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
-public class Block extends NCPFElement implements IBlockTemplate{
+public class Block extends NCPFElement implements IBlockTemplate, BlockRecipesElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public CoolerModule cooler;
@@ -45,5 +46,9 @@ public class Block extends NCPFElement implements IBlockTemplate{
         setModules(names, texture, cooler, activeCooler, fuelCell, moderator, casing, controller);
         setRecipes(activeCoolerRecipes);
         super.convertToObject(ncpf);
+    }
+    @Override
+    public List<? extends NCPFElement> getBlockRecipes(){
+        return activeCoolerRecipes;
     }
 }

@@ -28,4 +28,8 @@ public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfigurati
         super.recipes = copyList(recipes, NCPFElement::new);
         super.convertToObject(ncpf);
     }
+    @Override
+    public List<NCPFElement>[] getMultiblockRecipes(){
+        return new List[]{recipes};
+    }
 }

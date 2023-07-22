@@ -48,4 +48,8 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks,coolantRecipes,recipes};
     }
+    @Override
+    public List<NCPFElement>[] getMultiblockRecipes(){
+        return new List[]{recipes, coolantRecipes};
+    }
 }
