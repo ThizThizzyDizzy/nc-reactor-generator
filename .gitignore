@@ -12,6 +12,7 @@
 /smorebank.dat
 /special.dat
 /*.ncpf
+/*.ncpf.*
 /*.dssl
 /version.version
 /benchmark.ncpf

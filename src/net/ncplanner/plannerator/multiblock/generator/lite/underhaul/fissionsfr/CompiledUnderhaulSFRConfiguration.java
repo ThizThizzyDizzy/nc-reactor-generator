@@ -1,13 +1,19 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
+import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
 public class CompiledUnderhaulSFRConfiguration{
     public int minSize;
     public int maxSize;
@@ -16,25 +22,27 @@ public class CompiledUnderhaulSFRConfiguration{
     public float moderatorExtraHeat;
     public int activeCoolerRate;
     private final ArrayList<Fuel> rawFuels = new ArrayList<>();
-    private final ArrayList<Block> rawBlocks = new ArrayList<>();
-    public String[] fuelName;
+    private final ArrayList<NCPFElement> rawBlocks = new ArrayList<>();
+    private final ArrayList<BlockAndRecipe> rawBlocksWithRecipes = new ArrayList<>();
+    public NCPFElementDefinition[] fuelDefinition;
     public String[] fuelDisplayName;
     public float[] fuelPower;
     public float[] fuelHeat;
     public int[] fuelTime;
     public Image[] fuelTexture;
     public Image[] fuelDisplayTexture;
-    public String[] blockName;
+    public NCPFElementDefinition[] blockDefinition;
     public String[] blockDisplayName;
     public int[] blockCooling;
     public boolean[] blockFuelCell;
     public boolean[] blockModerator;
     public boolean[] blockCasing;
     public boolean[] blockController;
-    public String[] blockActive;
+    public NCPFElementDefinition[] blockActive;
     public Image[] blockTexture;
     public Image[] blockDisplayTexture;
-    public CompiledUnderhaulSFRPlacementRule[][] blockPlacementRules;
+    public String[] blockType;
+    public CompiledPlacementRule[][] blockPlacementRules;
     public int[] coolerIndicies;
     public int[] fuelCellIndicies;
     public int[] moderatorIndicies;
@@ -66,10 +74,15 @@ public class CompiledUnderhaulSFRConfiguration{
     }
     private void addBlock(Block block){
         if(block.casing!=null||block.controller!=null)return;
-        rawBlocks.add(block);
+        if(block.activeCooler!=null){
+            for(ActiveCoolerRecipe recipe : block.activeCoolerRecipes)rawBlocksWithRecipes.add(new BlockAndRecipe(block, recipe));
+        }else{
+            rawBlocksWithRecipes.add(new BlockAndRecipe(block, null));
+            rawBlocks.add(block);
+        }
     }
     public void compile(){
-        fuelName = new String[rawFuels.size()];
+        fuelDefinition = new NCPFElementDefinition[rawFuels.size()];
         fuelDisplayName = new String[rawFuels.size()];
         fuelPower = new float[rawFuels.size()];
         fuelHeat = new float[rawFuels.size()];
@@ -78,7 +91,7 @@ public class CompiledUnderhaulSFRConfiguration{
         fuelDisplayTexture = new Image[rawFuels.size()];
         for(int i = 0; i<rawFuels.size(); i++){
             Fuel fuel = rawFuels.get(i);
-            fuelName[i] = fuel.getName();
+            fuelDefinition[i] = fuel.definition;
             fuelDisplayName[i] = fuel.getDisplayName();
             fuelPower[i] = fuel.stats.power;
             fuelHeat[i] = fuel.stats.heat;
@@ -87,43 +100,51 @@ public class CompiledUnderhaulSFRConfiguration{
             fuelDisplayTexture[i] = fuel.getDisplayTexture();
         }
         rawFuels.clear();
-        blockName = new String[rawBlocks.size()];
-        blockDisplayName = new String[rawBlocks.size()];
-        blockCooling = new int[rawBlocks.size()];
-        blockFuelCell = new boolean[rawBlocks.size()];
-        blockModerator = new boolean[rawBlocks.size()];
-        blockCasing = new boolean[rawBlocks.size()];
-        blockController = new boolean[rawBlocks.size()];
-        blockActive = new String[rawBlocks.size()];
-        blockTexture = new Image[rawBlocks.size()];
-        blockDisplayTexture = new Image[rawBlocks.size()];
-        blockPlacementRules = new CompiledUnderhaulSFRPlacementRule[rawBlocks.size()][];
+        blockDefinition = new NCPFElementDefinition[rawBlocksWithRecipes.size()];
+        blockDisplayName = new String[rawBlocksWithRecipes.size()];
+        blockCooling = new int[rawBlocksWithRecipes.size()];
+        blockFuelCell = new boolean[rawBlocksWithRecipes.size()];
+        blockModerator = new boolean[rawBlocksWithRecipes.size()];
+        blockCasing = new boolean[rawBlocksWithRecipes.size()];
+        blockController = new boolean[rawBlocksWithRecipes.size()];
+        blockActive = new NCPFElementDefinition[rawBlocksWithRecipes.size()];
+        blockTexture = new Image[rawBlocksWithRecipes.size()];
+        blockDisplayTexture = new Image[rawBlocksWithRecipes.size()];
+        blockType = new String[rawBlocksWithRecipes.size()];
+        blockPlacementRules = new CompiledPlacementRule[rawBlocksWithRecipes.size()][];
         int numCoolers = 0, numCells = 0, numModerators = 0, numCasings = 0, numControllers = 0;
-        for(int i = 0; i<rawBlocks.size(); i++){
-            Block block = rawBlocks.get(i);
-            if(block.cooler!=0)numCoolers++;
-            if(block.fuelCell)numCells++;
-            if(block.moderator)numModerators++;
-            if(block.casing)numCasings++;
-            if(block.controller)numControllers++;
-            blockName[i] = block.name;
-            blockDisplayName[i] = block.displayName;
-            blockLegacyNames[i] = block.legacyNames.toArray(new String[block.legacyNames.size()]);
-            blockCooling[i] = block.active!=null?block.cooling*activeCoolerRate/20:block.cooling;
-            blockFuelCell[i] = block.fuelCell;
-            blockModerator[i] = block.moderator;
-            blockCasing[i] = block.casing;
-            blockController[i] = block.controller;
-            blockActive[i] = block.active;
-            blockTexture[i] = block.texture;
-            blockDisplayTexture[i] = block.displayTexture;
-            blockPlacementRules[i] = new CompiledUnderhaulSFRPlacementRule[block.rules.size()];
-            for(int j = 0; j<block.rules.size(); j++){
-                AbstractPlacementRule<PlacementRule.BlockType, Block> rule = block.rules.get(j);
-                blockPlacementRules[i][j] = CompiledUnderhaulSFRPlacementRule.compileUnderhaulSFR(rule, rawBlocks);
+        for(int i = 0; i<rawBlocksWithRecipes.size(); i++){
+            BlockAndRecipe raw = rawBlocksWithRecipes.get(i);
+            Block block = raw.block;
+            ActiveCoolerRecipe recipe = raw.recipe;
+            if(block.cooler!=null||recipe!=null)numCoolers++;
+            if(block.fuelCell!=null)numCells++;
+            if(block.moderator!=null)numModerators++;
+            if(block.casing!=null)numCasings++;
+            if(block.controller!=null)numControllers++;
+            blockDefinition[i] = block.definition;
+            blockDisplayName[i] = block.names.displayName;
+            blockCooling[i] = recipe!=null?recipe.stats.cooling*activeCoolerRate/20:(block.cooler==null?0:block.cooler.cooling);
+            blockFuelCell[i] = block.fuelCell!=null;
+            blockModerator[i] = block.moderator!=null;
+            blockCasing[i] = block.casing!=null;
+            blockController[i] = block.controller!=null;
+            blockActive[i] = recipe==null?null:recipe.definition;
+            blockTexture[i] = block.texture.texture;
+            blockDisplayTexture[i] = block.texture.displayTexture;
+            String type = null;
+            for(NCPFModule module : block.modules.modules.values()){
+                if(module instanceof BlockFunctionModule)type = ((BlockFunctionModule)module).name;
+            }
+            blockType[i] = type;
+            List<PlacementRule> rules = recipe==null?(block.cooler==null?null:block.cooler.rules):recipe.stats.rules;
+            blockPlacementRules[i] = new CompiledPlacementRule[rules==null?0:rules.size()];
+            for(int j = 0; j<blockPlacementRules[i].length; j++){
+                PlacementRule rule = rules.get(j);
+                blockPlacementRules[i][j] = CompiledPlacementRule.compile(rule, rawBlocks, CasingModule::new);
             }
         }
-        rawBlocks.clear();
+        rawBlocksWithRecipes.clear();
         coolerIndicies = new int[numCoolers];
         fuelCellIndicies = new int[numCells];
         moderatorIndicies = new int[numModerators];
@@ -134,7 +155,7 @@ public class CompiledUnderhaulSFRConfiguration{
         int moderatorIndex = 0;
         int casingIndex = 0;
         int controllerIndex = 0;
-        for(int i = 0; i<blockName.length; i++){
+        for(int i = 0; i<blockDefinition.length; i++){
             if(blockCooling[i]!=0){
                 coolerIndicies[coolerIndex] = i;
                 coolerIndex++;
@@ -194,27 +215,34 @@ public class CompiledUnderhaulSFRConfiguration{
             }
         }
     }
-    public boolean matches(Configuration config){
+    public boolean matches(UnderhaulSFRConfiguration config){
         return config!=null
-                &&config.underhaul!=null
-                &&config.underhaul.fissionSFR!=null
-                &&config.underhaul.fissionSFR.allFuels.size()==fuelName.length
-                &&config.underhaul.fissionSFR.allBlocks.size()==blockName.length;
+                &&config.fuels.size()==fuelDefinition.length
+                &&config.blocks.size()==rawBlocks.size();
     }
-    private boolean usesCooler(CompiledPlacementRule<PlacementRule.BlockType, Block>[] rules){
+    private boolean usesCooler(CompiledPlacementRule[] rules){
         if(rules==null)return false;
-        for(CompiledPlacementRule<PlacementRule.BlockType, Block> rule : rules){
+        for(CompiledPlacementRule rule : rules){
             if(usesCooler(rule.rules))return true;
-            if(rule.isSpecificBlock&&blockCooling[rule.block]!=0)return true;
+            if(rule.block==-1)continue;
+            if(rule.blockType==null&&blockCooling[rule.block]!=0)return true;
         }
         return false;
     }
-    private boolean onlyContains(CompiledPlacementRule<PlacementRule.BlockType, Block>[] rules, ArrayList<Integer> blocks){
+    private boolean onlyContains(CompiledPlacementRule[] rules, ArrayList<Integer> blocks){
         if(rules==null)return true;
-        for(CompiledPlacementRule<PlacementRule.BlockType, Block> rule : rules){
+        for(CompiledPlacementRule rule : rules){
             if(!onlyContains(rule.rules, blocks))return false;
-            if(rule.isSpecificBlock&&blockCooling[rule.block]!=0&&!blocks.contains(rule.block))return false;
+            if(rule.blockType==null&&(rule.block!=-1&&blockCooling[rule.block]!=0)&&!blocks.contains(rule.block))return false;
         }
         return true;
+    }
+    private static class BlockAndRecipe{
+        private final Block block;
+        private final ActiveCoolerRecipe recipe;
+        public BlockAndRecipe(Block block, ActiveCoolerRecipe recipe){
+            this.block = block;
+            this.recipe = recipe;
+        }
     }
 }

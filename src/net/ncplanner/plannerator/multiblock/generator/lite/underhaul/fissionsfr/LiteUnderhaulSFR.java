@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
+import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
 import net.ncplanner.plannerator.multiblock.generator.lite.GeneratorStage;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
@@ -30,8 +30,14 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingPercent;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     public final CompiledUnderhaulSFRConfiguration configuration;
     public int[][][] cellEfficiency;
@@ -60,7 +66,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     public LiteUnderhaulSFR(CompiledUnderhaulSFRConfiguration configuration){
         this.configuration = configuration;
         blocks = new int[configuration.maxSize][configuration.maxSize][configuration.maxSize];
-        blockCount = new int[configuration.blockName.length];//only initialized this early for variables
+        blockCount = new int[configuration.blockDefinition.length];//only initialized this early for variables
         for(int x = 0; x<configuration.maxSize; x++){
             for(int y = 0; y<configuration.maxSize; y++){
                 for(int z = 0; z<configuration.maxSize; z++){
@@ -71,7 +77,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         dims = new int[]{configuration.minSize,configuration.minSize,configuration.minSize};//default to minimum size
     }
     public void countBlocks(){
-        blockCount = new int[configuration.blockName.length];
+        blockCount = new int[configuration.blockDefinition.length];
         for(int x = 0; x<dims[0]; x++){
             for(int y = 0; y<dims[1]; y++){
                 for(int z = 0; z<dims[2]; z++){
@@ -192,8 +198,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                                     }
                                     int was = blockEfficiency[x][y][z];
                                     blockEfficiency[x][y][z] = 1;
-                                    for(CompiledUnderhaulSFRPlacementRule rule : configuration.blockPlacementRules[c]){
-                                        if(!rule.isValid(adjacents, active, configuration)){
+                                    for(CompiledPlacementRule rule : configuration.blockPlacementRules[c]){
+                                        if(!rule.isValid(adjacents, active, configuration.blockType)){
                                             blockEfficiency[x][y][z] = 0;
                                             cooling-=configuration.blockCooling[c]*(was-blockEfficiency[x][y][z]);
                                             somethingChanged += was-blockEfficiency[x][y][z];
@@ -229,13 +235,26 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         heatMult = (float)this.heat/cells/configuration.fuelHeat[fuel];
         efficiency = (float)this.power/cells/configuration.fuelPower[fuel];
     }
-    public UnderhaulSFR unpack(Configuration config){
+    public UnderhaulSFR unpack(NCPFConfigurationContainer configg){
+        UnderhaulSFRConfiguration config = configg.getConfiguration(UnderhaulSFRConfiguration::new);
         if(!configuration.matches(config))throw new IllegalArgumentException("Unable to unpack Underhaul SFR: Configuration does not match!");
-        UnderhaulSFR sfr = new UnderhaulSFR(config, dims[0], dims[1], dims[2], config.underhaul.fissionSFR.allFuels.get(fuel));
+        UnderhaulSFR sfr = new UnderhaulSFR(configg, dims[0], dims[1], dims[2], config.fuels.get(fuel));
         for(int x = 0; x<dims[0]; x++){
             for(int y = 0; y<dims[1]; y++){
                 for(int z = 0; z<dims[2]; z++){
-                    sfr.setBlock(x+1, y+1, z+1, new Block(config, x+1, y+1, z+1, config.underhaul.fissionSFR.allBlocks.get(blocks[x][y][z])));
+                    int id = blocks[x][y][z];
+                    int bid = id;
+                    while(configuration.blockActive[bid]!=null&&configuration.blockActive[bid-1]!=null)bid--;
+                    Block block = new Block(configg, x+1, y+1, z+1, config.blocks.get(bid));
+                    if(configuration.blockActive[id]!=null){
+                        List<? extends NCPFElement> recipes = block.getTemplate().getBlockRecipes();
+                        for(NCPFElement element : recipes){
+                            if(element.definition.matches(configuration.blockActive[id])){
+                                block.setRecipe(element);
+                            }
+                        }
+                    }
+                    sfr.setBlock(x+1, y+1, z+1, block);
                 }
             }
         }
@@ -274,16 +293,16 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         dims[2] = sfr.getInternalDepth();
         sfr.forEachInternalPosition((x, y, z) -> {
             Block block = sfr.getBlock(x, y, z);
-            String name = block==null?null:block.template.name;
+            NCPFElementDefinition definition = block==null?null:block.template.definition;
             int b = -1;
-            for(int i = 0; i<configuration.blockName.length; i++){
-                if(configuration.blockName[i].equals(name))b = i;
+            for(int i = 0; i<configuration.blockDefinition.length; i++){
+                if(configuration.blockDefinition[i].matches(definition))b = i;
             }
             blocks[x-1][y-1][z-1] = b;
         });
         int f = 0;
-        for(int i = 0; i<configuration.fuelName.length; i++){
-            if(configuration.fuelName[i].equals(sfr.fuel.name))f = i;
+        for(int i = 0; i<configuration.fuelDefinition.length; i++){
+            if(configuration.fuelDefinition[i].matches(sfr.fuel.definition))f = i;
         }
         fuel = f;
     }
@@ -344,7 +363,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         };
         for(int i = 0; i<blockCount.length; i++){
             int j = i;
-            vars[7+i] = new VariableInt("Block Count: "+configuration.blockName[i]){
+            vars[7+i] = new VariableInt("Block Count: "+configuration.blockDefinition[i]){
                 @Override
                 public int getValue(){
                     return blockCount[j];
@@ -411,27 +430,32 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         }
         System.arraycopy(sfr.blockCount, 0, blockCount, 0, blockCount.length);
     }
-    private void copyArraysFrom(LiteUnderhaulSFR sfr){
-    }
     @Override
-    public UnderhaulSFR export(Configuration config){
+    public UnderhaulSFR export(NCPFConfigurationContainer configg){
+        UnderhaulSFRConfiguration config = configg.getConfiguration(UnderhaulSFRConfiguration::new);
         Fuel fuel = null;
-        for(Fuel f : config.underhaul.fissionSFR.allFuels){
-            if(f.name.equals(configuration.fuelName[this.fuel])){
+        for(Fuel f : config.fuels){
+            if(f.definition.matches(configuration.fuelDefinition[this.fuel])){
                 fuel = f;
                 break;
             }
         }
         calculate();
-        UnderhaulSFR sfr = new UnderhaulSFR(config, dims[0], dims[1], dims[2], fuel);
+        UnderhaulSFR sfr = new UnderhaulSFR(configg, dims[0], dims[1], dims[2], fuel);
         sfr.forEachInternalPosition((x, y, z) -> {
             int block = blocks[x-1][y-1][z-1];
             if(blockValid[x-1][y-1][z-1]+blockEfficiency[x-1][y-1][z-1]<=0)block = -1;
             Block bl = null;
             if(block>=0){
-                for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b : config.underhaul.fissionSFR.allBlocks){
-                    if(b.name.equals(configuration.blockName[block])){
-                        bl = new Block(config, x, y, z, b);
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block b : config.blocks){
+                    if(b.definition.matches(configuration.blockDefinition[block])){
+                        bl = new Block(configg, x, y, z, b);
+                        NCPFElementDefinition active = configuration.blockActive[block];
+                        if(active!=null){
+                            for(ActiveCoolerRecipe recipe : b.activeCoolerRecipes){
+                                if(recipe.definition.matches(active))bl.recipe = recipe;
+                            }
+                        }
                         break;
                     }
                 }
@@ -528,7 +552,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 symmetry.mz.set(true);
                 ArrayList<Integer> indicies = new ArrayList<>();
                 indicies.add(0);
-                for(int i = 0; i<configuration.blockName.length; i++){
+                for(int i = 0; i<configuration.blockDefinition.length; i++){
                     if(configuration.blockCooling[i]==0)indicies.add(i+1);
                 }
                 int[] indcs = new int[indicies.size()];
@@ -625,8 +649,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 symmetry.mz.set(true);
                 ArrayList<Integer> indicies = new ArrayList<>();
                 indicies.add(0);
-                for(int i = 0; i<configuration.blockName.length; i++){
-                    if(!configuration.blockName[i].contains("active"))indicies.add(i+1);
+                for(int i = 0; i<configuration.blockDefinition.length; i++){
+                    if(configuration.blockActive[i]==null)indicies.add(i+1);
                 }
                 int[] indcs = new int[indicies.size()];
                 for(int i = 0; i<indicies.size(); i++){
@@ -723,8 +747,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 symmetry.mz.set(true);
                 ArrayList<Integer> indicies = new ArrayList<>();
                 indicies.add(0);
-                for(int i = 0; i<configuration.blockName.length; i++){
-                    if(!configuration.blockName[i].contains("active"))indicies.add(i+1);
+                for(int i = 0; i<configuration.blockDefinition.length; i++){
+                    if(configuration.blockActive[i]==null)indicies.add(i+1);
                 }
                 int[] indcs = new int[indicies.size()];
                 for(int i = 0; i<indicies.size(); i++){
@@ -851,8 +875,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 symmetry.mz.set(true);
                 ArrayList<Integer> indicies = new ArrayList<>();
                 indicies.add(0);
-                for(int i = 0; i<configuration.blockName.length; i++){
-                    if(!configuration.blockName[i].contains("active"))indicies.add(i+1);
+                for(int i = 0; i<configuration.blockDefinition.length; i++){
+                    if(configuration.blockActive[i]==null)indicies.add(i+1);
                 }
                 int[] indcs = new int[indicies.size()];
                 for(int i = 0; i<indicies.size(); i++){
@@ -954,7 +978,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 symmetry.mz.set(true);
                 ArrayList<Integer> indicies = new ArrayList<>();
                 indicies.add(0);
-                for(int i = 0; i<configuration.blockName.length; i++){
+                for(int i = 0; i<configuration.blockDefinition.length; i++){
                     if(configuration.blockCooling[i]==0)indicies.add(i+1);
                 }
                 int[] indcs = new int[indicies.size()];
@@ -1051,8 +1075,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 symmetry.mz.set(true);
                 ArrayList<Integer> indicies = new ArrayList<>();
                 indicies.add(0);
-                for(int i = 0; i<configuration.blockName.length; i++){
-                    if(!configuration.blockName[i].contains("active"))indicies.add(i+1);
+                for(int i = 0; i<configuration.blockDefinition.length; i++){
+                    if(configuration.blockActive[i]==null)indicies.add(i+1);
                 }
                 int[] indcs = new int[indicies.size()];
                 for(int i = 0; i<indicies.size(); i++){
@@ -1149,8 +1173,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 symmetry.mz.set(true);
                 ArrayList<Integer> indicies = new ArrayList<>();
                 indicies.add(0);
-                for(int i = 0; i<configuration.blockName.length; i++){
-                    if(!configuration.blockName[i].contains("active"))indicies.add(i+1);
+                for(int i = 0; i<configuration.blockDefinition.length; i++){
+                    if(configuration.blockActive[i]==null)indicies.add(i+1);
                 }
                 int[] indcs = new int[indicies.size()];
                 for(int i = 0; i<indicies.size(); i++){
@@ -1291,8 +1315,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 symmetry.mz.set(true);
                 ArrayList<Integer> indicies = new ArrayList<>();
                 indicies.add(0);
-                for(int i = 0; i<configuration.blockName.length; i++){
-                    if(!configuration.blockName[i].contains("active"))indicies.add(i+1);
+                for(int i = 0; i<configuration.blockDefinition.length; i++){
+                    if(configuration.blockActive[i]==null)indicies.add(i+1);
                 }
                 int[] indcs = new int[indicies.size()];
                 for(int i = 0; i<indicies.size(); i++){
