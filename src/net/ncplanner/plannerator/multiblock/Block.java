@@ -6,16 +6,18 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
-import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
+import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -58,7 +60,7 @@ public abstract class Block implements Pinnable{
         }
         return grayscaleTexture = grayscale;
     }
-    public abstract IBlockTemplate getTemplate();
+    public abstract NCPFElement getTemplate();
     public abstract void clearData();
     public <T extends Block> Queue<T> getAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
@@ -79,7 +81,20 @@ public abstract class Block implements Pinnable{
         return adjacent;
     }
     public abstract String getTooltip(Multiblock multiblock);
-    public abstract String getListTooltip();
+    public String getListTooltip(){
+        String tip = getName();
+        for(NCPFModule module : getTemplate().modules.modules.values()){
+            if(module instanceof BlockFunctionModule){
+                BlockFunctionModule mod = (BlockFunctionModule)module;
+                tip+="\n"+mod.getFunctionName();
+            }
+            if(module instanceof ElementStatsModule){
+                ElementStatsModule mod = (ElementStatsModule)module;
+                tip+="\n"+mod.getTooltip().trim();
+            }
+        }
+        return tip;
+    }
     public void render(Renderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
         render(renderer, x, y, width, height, overlays, 1, multiblock);
     }
@@ -300,19 +315,20 @@ public abstract class Block implements Pinnable{
     }
     public abstract boolean isValid();
     public abstract boolean isActive();
+    @Deprecated
     public abstract boolean isCore();
     public abstract List<? extends NCPFPlacementRule> getRules();
     public boolean matches(Block template){
         if(template==null)return getTemplate()==null;
         if(getTemplate()==null)return false;
-        return getTemplate().asElement().definition.matches(template.getTemplate().asElement().definition);
+        return getTemplate().definition.matches(template.getTemplate().definition);
     }
     public abstract boolean canRequire(Block other);
     public boolean requires(Block other, Multiblock mb){
         int totalDist = Math.abs(other.x-x)+Math.abs(other.y-y)+Math.abs(other.z-z);
         if(totalDist>1)return false;//too far away
         for(NCPFPlacementRule rule : getRules()){
-            if(rule.containsTarget(other.getTemplate().asElement().definition))return true;
+            if(rule.containsTarget(other.getTemplate().definition))return true;
         }
         return false;
     }

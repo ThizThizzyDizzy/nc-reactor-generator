@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
-import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -21,7 +20,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronShieldMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule;
-public class Block extends NCPFElement implements IBlockTemplate, BlockRecipesElement{
+public class Block extends NCPFElement implements BlockRecipesElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;

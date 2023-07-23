@@ -8,4 +8,5 @@ public abstract class BlockFunctionModule extends NCPFModule{
     public void conglomerate(NCPFModule addon){
         throw new UnsupportedOperationException("Block stats may not be overwritten!");
     }
+    public abstract String getFunctionName();
 }

@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
 import net.ncplanner.plannerator.multiblock.generator.lite.GeneratorStage;
@@ -13,12 +12,10 @@ import net.ncplanner.plannerator.multiblock.generator.lite.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionGreaterEqual;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionLess;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionLessEqual;
-import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.RandomQuantityMutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.mutator.StandardMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.mutator.SingleMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.ClearInvalidMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomBlockMutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomFuelMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableFloat;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableInt;
@@ -382,16 +379,6 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         return vars[i];
     }
     @Override
-    public void getMutators(ArrayList<Supplier<Mutator>> mutators){
-        mutators.add(() -> {
-            return new RandomBlockMutator(this);
-        });
-        mutators.add(() -> {
-            return new RandomFuelMutator(this);
-        });
-        mutators.add(ClearInvalidMutator::new);
-    }
-    @Override
     public LiteUnderhaulSFR copy(){
         LiteUnderhaulSFR copy = new LiteUnderhaulSFR(configuration);
         copy.copyFrom(this);
@@ -488,15 +475,15 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         //<editor-fold defaultstate="collapsed" desc="Max Output">
         LiteGenerator<LiteUnderhaulSFR> gen = new LiteGenerator<>("Maximize Output");
         SettingInt reactorCount = new SettingInt("Reactor Count", 4);
-        gen.settings.add(reactorCount);
+        gen.parameters.add(reactorCount);
         SettingPercent minEfficiency = new SettingPercent("Min Efficiency", 6);
-        gen.settings.add(minEfficiency);
+        gen.parameters.add(minEfficiency);
         SettingInt ctimeout = new SettingInt("Core Timeout (ms)", 500);
-        gen.settings.add(ctimeout);
+        gen.parameters.add(ctimeout);
         SettingInt timeout = new SettingInt("Timeout (ms)", 2_000);
-        gen.settings.add(timeout);
+        gen.parameters.add(timeout);
         SettingInt finalTimeout = new SettingInt("Final Timeout (ms)", 10_000);
-        gen.settings.add(finalTimeout);
+        gen.parameters.add(finalTimeout);
         //<editor-fold defaultstate="collapsed" desc="Stage 1 - build core">
         {
             GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
@@ -560,7 +547,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                     indcs[i] = indicies.get(i);
                 }
                 rbm.indicies.set(indcs);
-                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
+                mutator.mutator = rbm;
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/10));
                 stage.steps.add(mutator);
             }
@@ -657,7 +645,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                     indcs[i] = indicies.get(i);
                 }
                 rbm.indicies.set(indcs);
-                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
+                mutator.mutator = rbm;
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
                 stage.steps.add(mutator);
             }
@@ -738,7 +727,9 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 efficiency.operator.set(efficiencyOp);
                 stage.priorities.add(efficiency);
             }
-            stage.steps.add(new StandardMutator<>(new ClearInvalidMutator()));
+            SingleMutator<LiteUnderhaulSFR> singleMutator = new SingleMutator();
+            singleMutator.mutator = new ClearInvalidMutator();
+            stage.steps.add(singleMutator);
             {
                 RandomBlockMutator rbm = new RandomBlockMutator(this);
                 Symmetry symmetry = rbm.symmetry.get();
@@ -755,7 +746,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                     indcs[i] = indicies.get(i);
                 }
                 rbm.indicies.set(indcs);
-                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
+                mutator.mutator = rbm;
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
                 stage.steps.add(mutator);
             }
@@ -866,7 +858,9 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 efficiency.operator.set(efficiencyOp);
                 stage.priorities.add(efficiency);
             }
-            stage.steps.add(new StandardMutator<>(new ClearInvalidMutator()));
+            SingleMutator<LiteUnderhaulSFR> singleMutator = new SingleMutator();
+            singleMutator.mutator = new ClearInvalidMutator();
+            stage.steps.add(singleMutator);
             {
                 RandomBlockMutator rbm = new RandomBlockMutator(this);
                 Symmetry symmetry = rbm.symmetry.get();
@@ -883,7 +877,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                     indcs[i] = indicies.get(i);
                 }
                 rbm.indicies.set(indcs);
-                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
+                mutator.mutator = rbm;
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
                 stage.steps.add(mutator);
             }
@@ -914,15 +909,15 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         //<editor-fold defaultstate="collapsed" desc="Max Efficiency">
         LiteGenerator<LiteUnderhaulSFR> gen = new LiteGenerator<>("Maximize Efficiency");
         SettingInt reactorCount = new SettingInt("Reactor Count", 4);
-        gen.settings.add(reactorCount);
+        gen.parameters.add(reactorCount);
         SettingInt minOutput = new SettingInt("Min Output", 1);
-        gen.settings.add(minOutput);
+        gen.parameters.add(minOutput);
         SettingInt ctimeout = new SettingInt("Core Timeout (ms)", 500);
-        gen.settings.add(ctimeout);
+        gen.parameters.add(ctimeout);
         SettingInt timeout = new SettingInt("Timeout (ms)", 2_000);
-        gen.settings.add(timeout);
+        gen.parameters.add(timeout);
         SettingInt finalTimeout = new SettingInt("Final Timeout (ms)", 10_000);
-        gen.settings.add(finalTimeout);
+        gen.parameters.add(finalTimeout);
         //<editor-fold defaultstate="collapsed" desc="Stage 1 - build core">
         {
             GeneratorStage<LiteUnderhaulSFR> stage = new GeneratorStage<>();
@@ -986,7 +981,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                     indcs[i] = indicies.get(i);
                 }
                 rbm.indicies.set(indcs);
-                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
+                mutator.mutator = rbm;
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/10));
                 stage.steps.add(mutator);
             }
@@ -1083,7 +1079,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                     indcs[i] = indicies.get(i);
                 }
                 rbm.indicies.set(indcs);
-                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
+                mutator.mutator = rbm;
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
                 stage.steps.add(mutator);
             }
@@ -1164,7 +1161,9 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 output.operator.set(outputOp);
                 stage.priorities.add(output);
             }
-            stage.steps.add(new StandardMutator<>(new ClearInvalidMutator()));
+            SingleMutator<LiteUnderhaulSFR> singleMutator = new SingleMutator();
+            singleMutator.mutator = new ClearInvalidMutator();
+            stage.steps.add(singleMutator);
             {
                 RandomBlockMutator rbm = new RandomBlockMutator(this);
                 Symmetry symmetry = rbm.symmetry.get();
@@ -1181,7 +1180,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                     indcs[i] = indicies.get(i);
                 }
                 rbm.indicies.set(indcs);
-                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
+                mutator.mutator = rbm;
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
                 stage.steps.add(mutator);
             }
@@ -1306,7 +1306,9 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 output.operator.set(outputOp);
                 stage.priorities.add(output);
             }
-            stage.steps.add(new StandardMutator<>(new ClearInvalidMutator()));
+            SingleMutator<LiteUnderhaulSFR> singleMutator = new SingleMutator();
+            singleMutator.mutator = new ClearInvalidMutator();
+            stage.steps.add(singleMutator);
             {
                 RandomBlockMutator rbm = new RandomBlockMutator(this);
                 Symmetry symmetry = rbm.symmetry.get();
@@ -1323,7 +1325,8 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                     indcs[i] = indicies.get(i);
                 }
                 rbm.indicies.set(indcs);
-                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator(rbm);
+                RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
+                mutator.mutator = rbm;
                 mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
                 stage.steps.add(mutator);
             }

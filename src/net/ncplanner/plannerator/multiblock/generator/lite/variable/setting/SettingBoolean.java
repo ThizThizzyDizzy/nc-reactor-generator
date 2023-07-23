@@ -1,17 +1,21 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.variable.setting;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.OptionButton;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
-public class SettingBoolean implements Setting<Boolean>{
-    private final String name;
+public class SettingBoolean extends Parameter<Boolean> implements Setting<Boolean>{
     private boolean value;
-    private final String otherName;
+    private String otherName;
     private boolean allowSliding = false;
+    public SettingBoolean(){
+        super("boolean");
+    }
     public SettingBoolean(String name, boolean value){
         this(name, value, null);
     }
     public SettingBoolean(String name, boolean value, String otherName){
+        this();
         this.name = name;
         this.value = value;
         this.otherName = otherName;
@@ -51,5 +55,15 @@ public class SettingBoolean implements Setting<Boolean>{
                 }
             }).allowSliding(allowSliding);
         }
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        name = ncpf.getString("name");
+        value = ncpf.getBoolean("value");
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setString("name", name);
+        ncpf.setBoolean("value", value);
     }
 }

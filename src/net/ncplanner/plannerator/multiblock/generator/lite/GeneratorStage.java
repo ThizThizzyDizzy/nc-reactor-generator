@@ -5,7 +5,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableLong;
-public class GeneratorStage<T extends LiteMultiblock> implements ThingWithVariables{
+import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+public class GeneratorStage<T extends LiteMultiblock> extends DefinedNCPFObject implements ThingWithVariables{
     public Variable[] vars = new Variable[]{new VariableLong("Hits"){
         @Override
         public long getValue(){
@@ -46,5 +48,20 @@ public class GeneratorStage<T extends LiteMultiblock> implements ThingWithVariab
         for(Priority<T> priority : priorities){
             priority.reset();
         }
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        steps = ncpf.getRegisteredNCPFList("steps", GeneratorMutator.getRegisteredMutators());
+        stageTransitions = ncpf.getDefinedNCPFList("stage_transitions", StageTransition<T>::new);
+        priorities = ncpf.getDefinedNCPFList("priorities", Priority<T>::new);
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setRegisteredNCPFList("steps", steps);
+        ncpf.setDefinedNCPFList("stage_transitions", stageTransitions);
+        ncpf.setDefinedNCPFList("priorities", priorities);
+    }
+    public void setIndicies(T multiblock){
+        for(GeneratorMutator<T> step : steps)step.setIndicies(multiblock);
     }
 }

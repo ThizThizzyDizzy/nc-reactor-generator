@@ -6,7 +6,6 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
-import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
@@ -15,7 +14,7 @@ import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
-public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block> {
+public class Block extends net.ncplanner.plannerator.multiblock.Block{
     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template;
     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe;
     //fuel cell
@@ -83,10 +82,10 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
         if(isFuelCell()){
             tip+="\n"
-                    + " Adjacent Cells: "+adjacentCells+"\n"
-                    + " Adjacent Moderators: "+adjacentModerators+"\n"
-                    + " Energy Multiplier: "+MathUtil.percent(energyMult, 0)+"\n"
-                    + " Heat Multiplier: "+MathUtil.percent(heatMult, 0);
+            + " Adjacent Cells: "+adjacentCells+"\n"
+            + " Adjacent Moderators: "+adjacentModerators+"\n"
+            + " Energy Multiplier: "+MathUtil.percent(energyMult, 0)+"\n"
+            + " Heat Multiplier: "+MathUtil.percent(heatMult, 0);
         }
         if(isModerator()){
             tip+="\nModerator "+(moderatorActive?"Active":(moderatorValid?"Valid":"Invalid"));
@@ -96,29 +95,6 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
         if(template.activeCooler!=null){
             tip+="\nActive Cooler "+(coolerValid?"Valid":"Invalid");
-        }
-        return tip;
-    }
-    @Override
-    public String getListTooltip(){//TODO auto-generate somehow?
-        String tip = getName();
-        if(template.fuelCell!=null)tip+="\nFuel Cell";
-        if(template.moderator!=null)tip+="\nModerator";
-        if(template.cooler!=null){
-            tip+="\nCooler"
-                + "\nCooling: "+getCooling()+"H/t";
-            for(PlacementRule rule : template.cooler.rules){
-                tip+="\nRequires "+rule.toTooltipString();
-            }
-        }
-        if(template.activeCooler!=null){
-            tip+="\nActive Cooler";
-            if(recipe!=null){
-                tip+="\nFluid: "+recipe.getDisplayName();
-                for(PlacementRule rule : recipe.stats.rules){
-                    tip+="\nRequires "+rule.toTooltipString();
-                }
-            }
         }
         return tip;
     }

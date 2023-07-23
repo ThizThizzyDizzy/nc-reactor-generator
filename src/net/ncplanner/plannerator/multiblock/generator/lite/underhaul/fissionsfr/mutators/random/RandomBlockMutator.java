@@ -1,15 +1,21 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random;
 import java.util.Random;
+import net.ncplanner.plannerator.multiblock.generator.lite.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingIndicies;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingSymmetry;
-public class RandomBlockMutator implements Mutator<LiteUnderhaulSFR>{
-    public SettingIndicies indicies;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
+    public SettingIndicies indicies = new SettingIndicies("Blocks");
     public SettingSymmetry symmetry = new SettingSymmetry();
+    public RandomBlockMutator(){
+        super("nuclearcraft:underhaul_sfr:random_block");
+    }
     public RandomBlockMutator(LiteUnderhaulSFR multiblock){
-        indicies = new SettingIndicies("Blocks", multiblock.configuration.blockDisplayName, multiblock.configuration.blockDisplayTexture, "Air");
+        this();
+        setIndicies(multiblock);
     }
     @Override
     public String getTitle(){
@@ -34,5 +40,19 @@ public class RandomBlockMutator implements Mutator<LiteUnderhaulSFR>{
     public Setting getSetting(int i){
         if(i==1)return symmetry;
         return indicies;
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        indicies.set(ncpf.getIntArray("indicies"));
+        symmetry.set(ncpf.getDefinedNCPFObject("symmetry", Symmetry::new));
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setIntArray("indicies", indicies.get());
+        ncpf.setDefinedNCPFObject("symmetry", symmetry.get());
+    }
+    @Override
+    public void setIndicies(LiteUnderhaulSFR multiblock){
+        indicies.init(multiblock.configuration.blockDisplayName, multiblock.configuration.blockDisplayTexture, "Air");
     }
 }

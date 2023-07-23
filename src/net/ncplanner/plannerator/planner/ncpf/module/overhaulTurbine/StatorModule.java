@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class StatorModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class StatorModule extends BlockFunctionModule implements ElementStatsModule{
     public float expansion;
     public StatorModule(){
         super("nuclearcraft:overhaul_turbine:stator");
@@ -13,5 +14,13 @@ public class StatorModule extends BlockFunctionModule{
     @Override
     public void convertToObject(NCPFObject ncpf){
         ncpf.setFloat("expansion", expansion);
+    }
+    @Override
+    public String getFunctionName(){
+        return "Stator";
+    }
+    @Override
+    public String getTooltip(){
+        return "Expansion: "+expansion;
     }
 }

@@ -6,7 +6,8 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class NeutronShieldModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class NeutronShieldModule extends BlockFunctionModule implements ElementStatsModule{
     public int heatPerFlux;
     public float efficiency;
     public BlockReference closed;
@@ -35,5 +36,14 @@ public class NeutronShieldModule extends BlockFunctionModule{
             ((Block)parentObject).toggled = closed.block;
             closed.block.unToggled = (Block)parentObject;
         }
+    }
+    @Override
+    public String getFunctionName(){
+        return "Neutron Shield";
+    }
+    @Override
+    public String getTooltip(){
+        return "Heat Per Flux: "+heatPerFlux+"\n"
+                + "Efficiency: "+efficiency;
     }
 }

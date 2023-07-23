@@ -1,8 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
-public class RecipeStatsModule extends BlockFunctionModule implements ElementStatsModule{
+import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
+public class RecipeStatsModule extends NCPFRecipeStatsModule{
     public float efficiency;
     public int heat;
     public int time;

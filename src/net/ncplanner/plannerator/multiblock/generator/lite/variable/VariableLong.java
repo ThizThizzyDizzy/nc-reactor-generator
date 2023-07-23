@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.variable;
-public abstract class VariableLong extends VariableNumber<Long>{
+public abstract class VariableLong implements VariableNumber<Long>{
     private final String name;
     public VariableLong(String name){
         this.name = name;

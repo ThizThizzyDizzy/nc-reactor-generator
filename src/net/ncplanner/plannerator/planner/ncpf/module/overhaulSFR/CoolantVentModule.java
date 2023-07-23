@@ -30,4 +30,8 @@ public class CoolantVentModule extends BlockFunctionModule{
             output.block.unToggled = (Block)parentObject;
         }
     }
+    @Override
+    public String getFunctionName(){
+        return "Coolant Vent";
+    }
 }

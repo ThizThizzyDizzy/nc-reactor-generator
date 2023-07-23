@@ -265,6 +265,10 @@ public class Core{
         
         Shader shader = new Shader("vert.shader", "frag.shader");
         
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            error("Uncaught Exception in Thread "+t.getName()+"!", e);
+        });
+        
         stbi_set_flip_vertically_on_load(true);
         Renderer renderer = new Renderer();
         gui.initInput();
@@ -630,8 +634,8 @@ public class Core{
         configuration.configurations.remove(new OverhaulSFRConfiguration().name);//TODO don do dat
         configuration.configurations.remove(new OverhaulMSRConfiguration().name);
         configuration.configurations.remove(new OverhaulTurbineConfiguration().name);
-        project.configuration = configuration;
-        project.conglomerate();
+        project.conglomeration = project.configuration = configuration;
+//        project.conglomerate();//TODO this duplicates references!
     }
     public static interface BufferRenderer{
         void render(Renderer renderer, int width, int height);
@@ -802,9 +806,9 @@ public class Core{
     }
     public static void warning(String message, Throwable error){
         System.err.println("Warning:");
-//        logger.log(Level.WARNING, message, error);
+        logger.log(Level.WARNING, message, error);
         if(Main.isBot)return;
-//        new MenuWarningMessage(gui, gui.menu, message, error).open();
+        new MenuWarningMessage(gui, gui.menu, message, error).open();
     }
     public static void error(String message, Throwable error){
         System.err.println("Severe Error");

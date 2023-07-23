@@ -24,4 +24,8 @@ public class OverhaulMSRConfiguration extends NCPFOverhaulMSRConfiguration{
         super.blocks = copyList(blocks, NCPFElement::new);
         super.convertToObject(ncpf);
     }
+    @Override
+    public List<NCPFElement>[] getElements(){
+        return new List[]{blocks};
+    }
 }

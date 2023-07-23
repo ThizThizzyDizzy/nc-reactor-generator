@@ -76,9 +76,6 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
         withModule(DisplayNamesModule::new, (names)-> nams.addAll(names.legacyNames));
         return nams;
     }
-    public NCPFElement asElement(){//for IBlockTemplate
-        return this;
-    }
     @Override
     public String toString(){
         return getDisplayName();

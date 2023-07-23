@@ -9,4 +9,8 @@ public class InletModule extends BlockFunctionModule{
     public void convertFromObject(NCPFObject ncpf){}
     @Override
     public void convertToObject(NCPFObject ncpf){}
+    @Override
+    public String getFunctionName(){
+        return "Inlet";
+    }
 }

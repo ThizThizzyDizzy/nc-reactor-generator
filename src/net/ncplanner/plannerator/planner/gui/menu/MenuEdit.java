@@ -1124,7 +1124,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         MenuComponentElement comp = (MenuComponentElement)blockRecipe.getSelectedComponent();
         if(comp!=null)was = comp.element;
         blockRecipe.clear();
-        NCPFElement currentBlock = getSelectedBlock(0).getTemplate().asElement();
+        NCPFElement currentBlock = getSelectedBlock(0).getTemplate();
         if(currentBlock instanceof BlockRecipesElement){
             List<? extends NCPFElement> recipes = ((BlockRecipesElement)currentBlock).getBlockRecipes();
             for(NCPFElement recipe : recipes){

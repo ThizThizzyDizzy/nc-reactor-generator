@@ -32,4 +32,8 @@ public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
     public List<NCPFElement>[] getMultiblockRecipes(){
         return new List[]{coolantRecipes};
     }
+    @Override
+    public List<NCPFElement>[] getElements(){
+        return new List[]{blocks,coolantRecipes};
+    }
 }

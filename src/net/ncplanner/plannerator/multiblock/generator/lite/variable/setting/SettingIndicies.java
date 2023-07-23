@@ -8,19 +8,10 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 public class SettingIndicies implements Setting<int[]>{
     private final String name;
     private int[] value;
-    public final String[] names;
-    private final Image[] images;
-    public SettingIndicies(String name, int[] value, String[] names, Image[] images, String air){
+    public String[] names;
+    public Image[] images;
+    public SettingIndicies(String name){
         this.name = name;
-        this.value = air==null?value:insert(0, shift(value));
-        this.names = insert(air, names);
-        this.images = air==null?images:insert(null, images);
-    }
-    public SettingIndicies(String name, String[] names, Image[] images, String air){
-        this(name, gen(names), names, images, air);
-    }
-    public SettingIndicies(String name, String[] names, Image[] images){
-        this(name, names, images, null);
     }
     @Override
     public String getName(){
@@ -94,5 +85,12 @@ public class SettingIndicies implements Setting<int[]>{
             newArr[i+1] = array[i];
         }
         return newArr;
+    }
+    public void init(String[] names, Image[] images, String air){
+        this.names = insert(air, names);
+        this.images = air==null?images:insert(null, images);
+    }
+    public void init(String[] names, Image[] images){
+        init(names, images, null);
     }
 }

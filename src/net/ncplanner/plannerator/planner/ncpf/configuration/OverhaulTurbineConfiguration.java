@@ -32,4 +32,8 @@ public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfigurati
     public List<NCPFElement>[] getMultiblockRecipes(){
         return new List[]{recipes};
     }
+    @Override
+    public List<NCPFElement>[] getElements(){
+        return new List[]{blocks,recipes};
+    }
 }

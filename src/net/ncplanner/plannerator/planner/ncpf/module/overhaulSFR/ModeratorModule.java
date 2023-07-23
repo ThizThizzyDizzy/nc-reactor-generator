@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class ModeratorModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class ModeratorModule extends BlockFunctionModule implements ElementStatsModule{
     public int flux;
     public float efficiency;
     public ModeratorModule(){
@@ -16,5 +17,14 @@ public class ModeratorModule extends BlockFunctionModule{
     public void convertToObject(NCPFObject ncpf){
         ncpf.setInteger("flux", flux);
         ncpf.setFloat("efficiency", efficiency);
+    }
+    @Override
+    public String getFunctionName(){
+        return "Moderator";
+    }
+    @Override
+    public String getTooltip(){
+        return "Flux: "+flux+"\n"
+                + "Efficiency: "+efficiency;
     }
 }

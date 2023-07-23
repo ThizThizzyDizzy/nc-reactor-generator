@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-public class BladeModule extends BlockFunctionModule{
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+public class BladeModule extends BlockFunctionModule implements ElementStatsModule{
     public float efficiency;
     public float expansion;
     public BladeModule(){
@@ -16,5 +17,14 @@ public class BladeModule extends BlockFunctionModule{
     public void convertToObject(NCPFObject ncpf){
         ncpf.setFloat("efficiency", efficiency);
         ncpf.setFloat("expansion", expansion);
+    }
+    @Override
+    public String getFunctionName(){
+        return "Blade";
+    }
+    @Override
+    public String getTooltip(){
+        return "Efficiency: "+efficiency+
+                "\nExpansion: "+expansion;
     }
 }

@@ -31,7 +31,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
         if(rule.hasSubRules){
             rules = ncpf.getDefinedNCPFList("rules", NCPFPlacementRule::new);
         }else{
-            target = ncpf.getDefinedNCPFObject("block", NCPFElementReference::new);
+            target = ncpf.getDefinedModuleOrElementReference("block");
         }
     }
     @Override
@@ -167,7 +167,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
         return (T)this;
     }
     private String getTargetName(){
-        return target.definition.getName();
+        return target.getDisplayName();
     }
     public String toTooltipString(){
         switch (rule) {
@@ -186,13 +186,13 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             case AND:
                 StringBuilder s = new StringBuilder();
                 for (NCPFPlacementRule rule : rules) {
-                    s.append(" AND ").append(rule.toString());
+                    s.append(" AND ").append(rule.toTooltipString());
                 }
                 return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 5);
             case OR:
                 s = new StringBuilder();
                 for (NCPFPlacementRule rule : rules) {
-                    s.append(" OR ").append(rule.toString());
+                    s.append(" OR ").append(rule.toTooltipString());
                 }
                 return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 4);
         }
@@ -206,9 +206,9 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             NCPFModuleReference moduleReference = target.copyTo(NCPFModuleReference::new);
             moduleReference.setReferences(null);
             if(moduleReference.definition.matches(new NCPFModuleReference(AirModule::new).definition))return block==null;
-            return block!=null&&block.getTemplate().asElement().hasModule(moduleReference.module);
+            return block!=null&&block.getTemplate().hasModule(moduleReference.module);
         }else{
-            return block!=null&&block.getTemplate().asElement().definition.matches(target.definition);
+            return block!=null&&block.getTemplate().definition.matches(target.definition);
         }
     }
     public <T extends Block> boolean isValid(Block block, Multiblock<T> reactor) {

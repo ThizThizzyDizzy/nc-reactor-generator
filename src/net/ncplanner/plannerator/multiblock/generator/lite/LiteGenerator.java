@@ -8,10 +8,14 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableInt;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableLong;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingString;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Parameter;
+import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.Queue;
-public class LiteGenerator<T extends LiteMultiblock> implements ThingWithSettings, ThingWithVariables{
+import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
+public class LiteGenerator<T extends LiteMultiblock> extends DefinedNCPFObject implements ThingWithSettings, ThingWithVariables{
     public SettingString name = new SettingString("Name", "Custom");
-    public ArrayList<Setting> settings = new ArrayList<>();
+    public ArrayList<Parameter> parameters = new ArrayList<>();
     public Variable[] vars = new Variable[]{new VariableLong("Hits"){
         @Override
         public long getValue(){
@@ -135,12 +139,12 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithSetting
     }
     @Override
     public int getSettingCount(){
-        return settings.size()+1;
+        return parameters.size()+1;
     }
     @Override
     public Setting getSetting(int i){
         if(i==0)return name;
-        return settings.get(i-1);
+        return parameters.get(i-1);
     }
     public void reset(){
         hits = 0;
@@ -149,5 +153,20 @@ public class LiteGenerator<T extends LiteMultiblock> implements ThingWithSetting
         for(GeneratorStage<T> stag : stages){
             stag.reset();
         }
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        MenuGenerator.current.generator = this;
+        parameters = ncpf.getRegisteredNCPFList("parameters", Parameter.registeredParameters);
+        stages = new ArrayList<>();
+        ncpf.getDefinedNCPFList("stages", stages, GeneratorStage<T>::new);
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setRegisteredNCPFList("parameters", parameters);
+        ncpf.setDefinedNCPFList("stages", stages);
+    }
+    public void setIndicies(T multiblock){
+        for(GeneratorStage<T> stage : stages)stage.setIndicies(multiblock);
     }
 }

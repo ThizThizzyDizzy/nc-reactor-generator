@@ -3,7 +3,11 @@ import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
-public class ClearInvalidMutator implements Mutator<LiteUnderhaulSFR>{
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+public class ClearInvalidMutator extends Mutator<LiteUnderhaulSFR>{
+    public ClearInvalidMutator(){
+        super("nuclearcraft:underhaul_sfr:clear_invalid");
+    }
     @Override
     public String getTitle(){
         return "Clear Invalid Mutator";
@@ -31,4 +35,8 @@ public class ClearInvalidMutator implements Mutator<LiteUnderhaulSFR>{
     public Setting getSetting(int i){
         return null;
     }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){}
+    @Override
+    public void convertToObject(NCPFObject ncpf){}
 }

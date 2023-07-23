@@ -18,4 +18,8 @@ public class CasingModule extends BlockFunctionModule{
     public void convertToObject(NCPFObject ncpf){
         ncpf.setBoolean("edge", edge);
     }
+    @Override
+    public String getFunctionName(){
+        return "Casing";
+    }
 }

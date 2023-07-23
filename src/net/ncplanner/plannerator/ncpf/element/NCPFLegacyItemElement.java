@@ -31,8 +31,11 @@ public class NCPFLegacyItemElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        NCPFLegacyItemElement other = (NCPFLegacyItemElement) definition;
-        return name.equals(other.name)&&Objects.equals(metadata, other.metadata)&&Objects.equals(nbt, other.nbt);
+        if(definition instanceof NCPFLegacyItemElement){
+            NCPFLegacyItemElement other = (NCPFLegacyItemElement) definition;
+            return name.equals(other.name)&&Objects.equals(metadata, other.metadata)&&Objects.equals(nbt, other.nbt);
+        }
+        return false;
     }
     @Override
     public String getName(){

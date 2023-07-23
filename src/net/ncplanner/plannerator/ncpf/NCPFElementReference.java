@@ -29,4 +29,7 @@ public class NCPFElementReference extends DefinedNCPFObject{
             }
         }
     }
+    public String getDisplayName(){
+        return target==null?definition.getName():target.getDisplayName();
+    }
 }

@@ -9,4 +9,8 @@ public class BreedingBlanketModule extends BlockFunctionModule{
     public void convertFromObject(NCPFObject ncpf){}
     @Override
     public void convertToObject(NCPFObject ncpf){}
+    @Override
+    public String getFunctionName(){
+        return "Breeding Blanket";
+    }
 }

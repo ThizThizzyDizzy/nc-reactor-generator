@@ -18,6 +18,6 @@ public class BlockReference extends NCPFElementReference{
     @Override
     public void setReferences(List<NCPFElement> elements){
         super.setReferences(elements);
-        block = target.copyTo(Block::new);
+        block = (Block)target;
     }
 }

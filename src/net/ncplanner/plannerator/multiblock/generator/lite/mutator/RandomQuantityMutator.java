@@ -6,8 +6,8 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 public class RandomQuantityMutator<T extends LiteMultiblock> extends GeneratorMutator<T>{
     public SettingInt min = new SettingInt("Minimum tries", 1);
     public SettingInt max = new SettingInt("Maximum tries", 100);
-    public RandomQuantityMutator(Mutator<T> mutator){
-        super(mutator);
+    public RandomQuantityMutator(){
+        super("random_quantity");
     }
     @Override
     public String getTitle(){

@@ -4,15 +4,15 @@ import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingConditionList;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class ConditionOr extends Condition{
     public SettingConditionList conditions = new SettingConditionList(null, new ArrayList<>());
+    public ConditionOr(){
+        super("or");
+    }
     @Override
     public String getTitle(){
         return "Or";
-    }
-    @Override
-    public String getTooltip(){
-        return null;
     }
     @Override
     public boolean check(Random rand){
@@ -45,5 +45,13 @@ public class ConditionOr extends Condition{
         for(Condition condition : conditions.get()){
             condition.reset();
         }
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        conditions.set(ncpf.getRegisteredNCPFList("conditions", registeredConditions));
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setRegisteredNCPFList("conditions", conditions.get());
     }
 }

@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
@@ -22,11 +23,19 @@ public class CoolerModule extends BlockFunctionModule implements ElementStatsMod
         ncpf.setDefinedNCPFList("rules", rules);
     }
     @Override
+    public String getFunctionName(){
+        return "Cooler";
+    }
+    @Override
     public String getTooltip(){
         String tip = "Cooling: "+cooling;
         for(PlacementRule rule : rules){
             tip+="\nRequires "+rule.toTooltipString();
         }
         return tip;
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        rules.forEach((rule) -> rule.setReferences(lst));
     }
 }

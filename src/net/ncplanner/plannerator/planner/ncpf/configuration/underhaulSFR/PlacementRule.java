@@ -25,9 +25,11 @@ public class PlacementRule extends NCPFPlacementRule{
     }
     @Override
     public void setReferences(List<NCPFElement> lst){
-        if(target==null)return;
-        if(target.definition.typeMatches(NCPFModuleElement::new)){
-            blockType = target.copyTo(NCPFModuleReference::new);
-        }else block = target.copyTo(BlockReference::new);
+        if(lst==null){
+            if(target==null)return;
+            if(target.definition.typeMatches(NCPFModuleElement::new)){
+                target = blockType = target.copyTo(NCPFModuleReference::new);
+            }else target = block = target.copyTo(BlockReference::new);
+        }else if(target!=null)target.setReferences(lst);
     }
 }

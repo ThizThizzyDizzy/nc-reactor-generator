@@ -32,4 +32,8 @@ public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
     public List<NCPFElement>[] getMultiblockRecipes(){
         return new List[]{fuels};
     }
+    @Override
+    public List<NCPFElement>[] getElements(){
+        return new List[]{blocks, fuels};
+    }
 }

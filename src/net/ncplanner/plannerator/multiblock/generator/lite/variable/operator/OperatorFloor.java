@@ -3,6 +3,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableInt;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstInt;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingVariable;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class OperatorFloor extends VariableInt implements Operator{
     public SettingVariable<Number> v = new SettingVariable(null, new ConstInt(0));
     public OperatorFloor(){
@@ -19,5 +20,17 @@ public class OperatorFloor extends VariableInt implements Operator{
     @Override
     public Setting getSetting(int i){
         return v;
+    }
+    @Override
+    public String getType(){
+        return "floor";
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setVariable("v", v);
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        ncpf.getVariable("v", v);
     }
 }

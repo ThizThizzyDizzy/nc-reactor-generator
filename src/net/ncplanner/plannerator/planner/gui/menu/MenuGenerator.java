@@ -23,6 +23,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Parameter;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -31,12 +32,31 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoadFile;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickCondition;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickGeneratorMutator;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickMutator;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickVariable;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickParameter;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.module.GeneratorSettingsModule;
 import org.joml.Matrix4f;
 public class MenuGenerator<T extends LiteMultiblock> extends Menu{
+    public static MenuGenerator current;
+    public Variable getVariable(String name){
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<Variable> vars = new ArrayList<>();
+        getAllVariables(vars, names);
+        int idx = names.indexOf(name);
+        if(idx==-1)throw new RuntimeException("Couldn't find variable: "+name);
+        return vars.get(names.indexOf(name));
+    }
+    public String getVariableName(Variable var){
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<Variable> vars = new ArrayList<>();
+        getAllVariables(vars, names);
+        return names.get(vars.indexOf(var));
+    }
     public final T multiblock;
     public final T priorityMultiblock;
     private final Button done = add(new Button(0, 0, 0, 48, "Done", true, true)).setTooltip("Finish generation and return to the editor");
@@ -61,6 +81,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     private boolean wasRunning;
     private HashMap<T, StoreAnimation> storeAnims = new HashMap<>();
     private final int internalGens;
+    private int maxSpeed;
     public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
         super(gui, editor);
         this.multiblock = multiblock.compile();
@@ -162,6 +183,15 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 gens = newGens;
                 rebuildGUI();
             }));
+            stageSettings.add(new Button(0, 0, 0, 32, "Load Generator Settings", true).addAction(() -> {
+                current = this;
+                new MenuLoadFile(gui, this, (ncpf) -> {
+                    generator = ncpf.getModule(GeneratorSettingsModule<T>::new).generator;
+                    generator.setIndicies(multiblock);
+                    currentStage = 0;
+                    rebuildGUI();
+                }).open();
+            }));
             stageSettings.add(new Label(0, 0, 0, 36, "Generator", true));
             addSettings(generator, 1);
             stageSettings.add(new Button(0, 0, 0, 32, "Customize", true).addAction(() -> {
@@ -174,11 +204,11 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 rebuildGUI();
             }));
             generator.name.addSettings(stageSettings, this);
-            stageSettings.add(new Label(0, 0, 0, 40, "Generator Variables", true));
-            for(Setting setting : generator.settings){
+            stageSettings.add(new Label(0, 0, 0, 40, "Generator Parameters", true));
+            for(Parameter setting : generator.parameters){
                 stageSettings.add(new Label(0, 0, 0, 36, setting.getName()){
                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
-                        generator.settings.remove(setting);
+                        generator.parameters.remove(setting);
                         rebuildGUI();
                     }));
                     @Override
@@ -189,9 +219,9 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 });
                 setting.addSettings(stageSettings, this);
             }
-            stageSettings.add(new Button(0, 0, 0, 36, "Add Variable", true).addAction(() -> {
-                new MenuPickVariable<>(gui, this, multiblock, (var)->{
-                    generator.settings.add(var);
+            stageSettings.add(new Button(0, 0, 0, 36, "Add Parameter", true).addAction(() -> {
+                new MenuPickParameter<>(gui, this, multiblock, (var)->{
+                    generator.parameters.add(var);
                     rebuildGUI();
                 }).open();
             }));
@@ -266,6 +296,16 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 stage.stageTransitions.add(new StageTransition<>());
                 rebuildGUI();
             }));
+            stageSettings.add(new Button(0, 0, 0, 32, "Save Generator Settings", true).addAction(() -> {
+                Project ncpf = new Project();
+                ncpf.configuration = Core.project.configuration;
+                ncpf.conglomeration = Core.project.conglomeration;
+                GeneratorSettingsModule settings = new GeneratorSettingsModule();
+                current = this;
+                settings.generator = generator;
+                ncpf.setModule(settings);
+                new MenuSaveDialog(gui, this, ncpf, null).open();
+            }));
         }
     }
     float rot = 0;
@@ -276,7 +316,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         int size = Math.max(multiblock.getDimension(0), Math.max(multiblock.getDimension(1), multiblock.getDimension(2)));
         if(wasRunning&&!running){
             wasRunning = running;
-            return new SpinAnimation(4*7f/size);
+            return new SpinAnimation(4*size/7f);
         }
         wasRunning = running;
         float duration = 0;
@@ -329,14 +369,14 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     }
     @Override
     public void render3d(double deltaTime){
-        anim.pos+=deltaTime;
+        anim.pos+=deltaTime*getAnimationSpeedModifier();
         if(anim.pos>anim.length)anim = nextAnim(anim.pos-anim.length);
         Renderer renderer = new Renderer();
         int w = multiblock.getDimension(0);
         int h = multiblock.getDimension(1);
         int d = multiblock.getDimension(2);
         float size = Math.max(w, Math.max(h, d));
-        rot+=deltaTime*20*7/size;
+        rot+=deltaTime*20*7/size*getAnimationSpeedModifier();
         renderer.pushModel(new Matrix4f().rotate((float)MathUtil.toRadians(rot+anim.getYRotOffset()), 0, 1, 0).scale(2f/size, 2f/size, 2f/size).translate(-multiblock.getDimension(0)/2f, -multiblock.getDimension(1)/2f, -multiblock.getDimension(2)/2f));
         for(int x = 0; x<w; x++){
             for(int y = 0; y<h; y++){
@@ -417,7 +457,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             Setting setting = thing.getSetting(i);
             setting.addSettings(stageSettings, this);
         }
-    }
+    }    
     public void getAllVariables(ArrayList<Variable> vars, ArrayList<String> names){
         for(int i = 0; i<generator.getSettingCount(); i++){
             Setting s = generator.getSetting(i);
@@ -439,28 +479,28 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             GeneratorStage<T> stage = generator.stages.get(stageIdx);
             for(int i = 0; i<stage.getVariableCount(); i++){
                 Variable v = stage.getVariable(i);
-                vars.add(v);names.add("generator.stages["+i+"]{Stage "+(stageIdx+1)+"}."+v.getName());
+                vars.add(v);names.add("generator.stages["+stageIdx+"]{Stage "+(stageIdx+1)+"}."+v.getName());
             }
             for(int stepIdx = 0; stepIdx<stage.steps.size(); stepIdx++){
                 GeneratorMutator<T> step = stage.steps.get(stepIdx);
                 for(int i = 0; i<step.getVariableCount(); i++){
                     Variable v = step.getVariable(i);
-                    vars.add(v);names.add("generator.stages["+i+"]{Stage "+(stageIdx+1)+"}.steps["+stepIdx+"]{Step "+(stepIdx+1)+" ("+step.getTitle()+")}."+v.getName());
+                    vars.add(v);names.add("generator.stages["+stageIdx+"]{Stage "+(stageIdx+1)+"}.steps["+stepIdx+"]{Step "+(stepIdx+1)+" ("+step.getTitle()+")}."+v.getName());
                 }
                 for(int i = 0; i<step.conditions.size(); i++){
                     Condition condition = step.conditions.get(i);
-                    condition.getAllVariables(vars, names, "generator.stages["+i+"]{Stage "+(stageIdx+1)+"}.steps["+stepIdx+"]{Step "+(stepIdx+1)+" ("+step.getTitle()+")}.conditions["+i+"]{Condition "+(i+1)+" ("+step.conditions.get(i).getTitle()+")}");
+                    condition.getAllVariables(vars, names, "generator.stages["+stageIdx+"]{Stage "+(stageIdx+1)+"}.steps["+stepIdx+"]{Step "+(stepIdx+1)+" ("+step.getTitle()+")}.conditions["+i+"]{Condition "+(i+1)+" ("+step.conditions.get(i).getTitle()+")}");
                 }
             }
             for(int transitionIdx = 0; transitionIdx<stage.stageTransitions.size(); transitionIdx++){
                 StageTransition<T> transition = stage.stageTransitions.get(transitionIdx);
                 for(int i = 0; i<transition.getVariableCount(); i++){
                     Variable v = transition.getVariable(i);
-                    vars.add(v);names.add("generator.stages["+i+"]{Stage "+(stageIdx+1)+"}.transitions["+(transitionIdx+1)+"]{Transition "+(transitionIdx+1)+"}."+v.getName());
+                    vars.add(v);names.add("generator.stages["+stageIdx+"]{Stage "+(stageIdx+1)+"}.transitions["+(transitionIdx+1)+"]{Transition "+(transitionIdx+1)+"}."+v.getName());
                 }
                 for(int i = 0; i<transition.conditions.size(); i++){
                     Condition condition = transition.conditions.get(i);
-                    condition.getAllVariables(vars, names, "generator.stages["+i+"]{Stage "+(stageIdx+1)+"}.transitions["+(transitionIdx+1)+"]{Transition "+(transitionIdx+1)+"}.conditions["+i+"]{Condition "+(i+1)+" ("+transition.conditions.get(i).getTitle()+")}");
+                    condition.getAllVariables(vars, names, "generator.stages["+stageIdx+"]{Stage "+(stageIdx+1)+"}.transitions["+(transitionIdx+1)+"]{Transition "+(transitionIdx+1)+"}.conditions["+i+"]{Condition "+(i+1)+" ("+transition.conditions.get(i).getTitle()+")}");
                 }
             }
         }
@@ -515,6 +555,15 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         });
     }
     Random arand = new Random();
+    private double getAnimationSpeedModifier(){
+        if(!running){
+            maxSpeed = 1;
+            return 1;
+        }
+        int size = generator.timestamps.size();
+        maxSpeed = Math.max(size, maxSpeed);
+        return size/(float)maxSpeed;
+    }
     private class StoreAnimation extends Animation{
         private final T mb;
         private boolean closing;

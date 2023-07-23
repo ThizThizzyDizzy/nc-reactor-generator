@@ -2,12 +2,14 @@ package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.ClearInvalidMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomBlockMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomFuelMutator;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
-import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
@@ -49,6 +51,10 @@ public class UnderhaulModule extends Module<Object>{
         registerNCPFModule(ModeratorModule::new);
         registerNCPFModule(CasingModule::new);
         registerNCPFModule(ControllerModule::new);
+        
+        registerMutator(RandomBlockMutator::new);
+        registerMutator(RandomFuelMutator::new);
+        registerMutator(ClearInvalidMutator::new);
     }
     @Override
     public void addTutorials(){

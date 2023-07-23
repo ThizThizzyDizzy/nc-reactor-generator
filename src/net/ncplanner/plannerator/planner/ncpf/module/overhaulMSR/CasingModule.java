@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 public class CasingModule extends BlockFunctionModule{
     public boolean edge;
     public CasingModule(){
@@ -17,5 +18,9 @@ public class CasingModule extends BlockFunctionModule{
     @Override
     public void convertToObject(NCPFObject ncpf){
         ncpf.setBoolean("edge", edge);
+    }
+    @Override
+    public String getFunctionName(){
+        return "Casing";
     }
 }

@@ -2,12 +2,8 @@ package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -17,35 +13,18 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
-public class MenuLoad extends MenuDialog{
+public class MenuLoad extends MenuLoadFile{
     public MenuLoad(GUI gui, Menu parent){
-        super(gui, parent);
-        addButton("Cancel", () -> {
-            close();
-        });
-        addButton("System File Chooser", () -> {
-            try{
-                Core.createFileChooser((file) -> {
-                    Thread t = new Thread(() -> {
-                        Project ncpf = FileReader.read(file);
-                        if(ncpf==null)return;
-                        Core.multiblocks.clear();
-                        Core.saved = true;
-                        Core.project.metadata.clear();
-                        Core.project.metadata.putAll(ncpf.metadata.metadata);
-                        Core.setConfiguration(ncpf.conglomeration);
-                        for(Design d : ncpf.designs){
-                            if(d instanceof MultiblockDesign){
-                                Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
-                            }
-                        }
-                        close();
-                    });
-                    t.setDaemon(true);
-                    t.start();
-                }, FileFormat.ALL_PLANNER_FORMATS);
-            }catch(IOException ex){
-                Core.error("Failed to load file!", ex);
+        super(gui, parent, (ncpf) -> {
+            Core.multiblocks.clear();
+            Core.saved = true;
+            Core.project.metadata.clear();
+            Core.project.metadata.putAll(ncpf.metadata.metadata);
+            Core.setConfiguration(ncpf.conglomeration);
+            for(Design d : ncpf.designs){
+                if(d instanceof MultiblockDesign){
+                    Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
+                }
             }
         });
         refresh();
@@ -88,16 +67,7 @@ public class MenuLoad extends MenuDialog{
                             Thread t = new Thread(() -> {
                                 Project ncpf = FileReader.read(file);
                                 if(ncpf==null)return;
-                                Core.multiblocks.clear();
-                                Core.saved = true;
-                                Core.project.metadata.clear();
-                                Core.project.metadata.putAll(ncpf.metadata.metadata);
-                                Core.setConfiguration(ncpf.conglomeration);
-                                for(Design d : ncpf.designs){
-                                    if(d instanceof MultiblockDesign){
-                                        Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
-                                    }
-                                }
+                                onLoad.accept(ncpf);
                                 close();
                             });
                             t.setDaemon(true);

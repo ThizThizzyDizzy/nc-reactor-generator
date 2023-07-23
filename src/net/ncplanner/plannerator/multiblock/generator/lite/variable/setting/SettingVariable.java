@@ -1,18 +1,11 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.variable.setting;
 import java.util.ArrayList;
+import java.util.function.Supplier;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstFloat;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstInt;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstRandom;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.Constant;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.Operator;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorAddition;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorDivision;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorFloor;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMaximum;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMinimum;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorMultiplication;
-import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorSubtraction;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
@@ -90,26 +83,14 @@ public class SettingVariable<T> implements Setting<Variable<T>>{
     private void selectConstant(MenuGenerator menu){
         ArrayList<Variable> allConsts = new ArrayList<>();
         ArrayList<String> allNames = new ArrayList<>();
-        allConsts.add(new ConstInt(0));
-        allNames.add("Integer");
-        allConsts.add(new ConstFloat(0));
-        allNames.add("Float");
-        allConsts.add(new ConstRandom());
-        allNames.add("Random");
-        allConsts.add(new OperatorAddition());
-        allNames.add("Addition");
-        allConsts.add(new OperatorSubtraction());
-        allNames.add("Subtraction");
-        allConsts.add(new OperatorMultiplication());
-        allNames.add("Multiplication");
-        allConsts.add(new OperatorDivision());
-        allNames.add("Division");
-        allConsts.add(new OperatorMinimum());
-        allNames.add("Minimum");
-        allConsts.add(new OperatorMaximum());
-        allNames.add("Maximum");
-        allConsts.add(new OperatorFloor());
-        allNames.add("Floor");
+        Constant.registeredConstants.forEach((key, val) -> {
+            allNames.add(key);
+            allConsts.add((Variable)val.get());
+        });
+        Operator.registeredOperators.forEach((key, val) -> {
+            allNames.add(key);
+            allConsts.add((Variable)val.get());
+        });
         ArrayList<Variable<T>> constants = new ArrayList<>();
         ArrayList<String> names = new ArrayList<>();
         for(int i = 0; i<allConsts.size(); i++){
@@ -123,5 +104,51 @@ public class SettingVariable<T> implements Setting<Variable<T>>{
             ttip = null;
             menu.rebuildGUI();
         }).open();
+    }
+    public Variable convertFromObject(NCPFObject ncpf){
+        String type = ncpf.getString("type");
+        String subtype = ncpf.getString(type);
+        switch(type){
+            case "constant":
+                Supplier<Constant> cons = Constant.registeredConstants.get(subtype);
+                if(cons==null)throw new IllegalArgumentException("Failed to load unregistered constant: "+subtype);
+                Constant constant = cons.get();
+                constant.convertFromObject(ncpf);
+                return (Variable)constant;
+            case "operator":
+                Supplier<Operator> oper = Operator.registeredOperators.get(subtype);
+                if(oper==null)throw new IllegalArgumentException("Failed to load unregistered operator: "+subtype);
+                Operator operator = oper.get();
+                operator.convertFromObject(ncpf);
+                return (Variable)operator;
+            case "variable":
+                Variable var = MenuGenerator.current.getVariable(subtype);
+                if(var==null)throw new RuntimeException("Failed to load invalid variable: "+subtype);
+                return var;
+
+            default:
+                throw new IllegalArgumentException("Unknown variable type: "+type+"!");
+        }
+    }
+    public NCPFObject convertToObject(){
+        NCPFObject ncpf = new NCPFObject();
+        String type = "variable";
+        if(value instanceof Operator){
+            Operator operator = (Operator)value;
+            type = "operator";
+            ncpf.setString(type, operator.getType());
+            operator.convertToObject(ncpf);
+        }else if(value instanceof Constant){
+            Constant constant = (Constant)value;
+            type = "constant";
+            ncpf.setString(type, constant.getType());
+            constant.convertToObject(ncpf);
+        }else{
+            String k = MenuGenerator.current.getVariableName(value);
+            if(k==null)throw new RuntimeException("Variable key is missing!");
+            ncpf.setString(type, k);
+        }
+        ncpf.setString("type", type);
+        return ncpf;
     }
 }

@@ -14,4 +14,8 @@ public class PortModule extends BlockFunctionModule{
     public void convertToObject(NCPFObject ncpf){
         ncpf.setBoolean("output", output);
     }
+    @Override
+    public String getFunctionName(){
+        return (output?"Output":"Input")+" Port";
+    }
 }

@@ -6,7 +6,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableLong
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.OperatorSubtraction;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingVariable;
-public class Priority<T extends LiteMultiblock> implements ThingWithSettings, ThingWithVariables{
+import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+public class Priority<T extends LiteMultiblock> extends DefinedNCPFObject implements ThingWithSettings, ThingWithVariables{
     public Variable[] vars = new Variable[]{new VariableLong("Hits"){
         @Override
         public long getValue(){
@@ -37,5 +39,15 @@ public class Priority<T extends LiteMultiblock> implements ThingWithSettings, Th
         for(Condition condition : conditions){
             condition.reset();
         }
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        conditions = ncpf.getRegisteredNCPFList("conditions", Condition.registeredConditions);
+        ncpf.getVariable("operator", operator);
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setRegisteredNCPFList("conditions", conditions);
+        ncpf.setVariable("operator", operator);
     }
 }

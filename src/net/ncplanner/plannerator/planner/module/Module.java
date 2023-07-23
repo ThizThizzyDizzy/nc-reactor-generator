@@ -4,6 +4,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
+import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
+import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.Constant;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.Operator;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Parameter;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFDesign;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -81,6 +87,24 @@ public abstract class Module<T>{
     }
     public final void registerNCPFModule(Supplier<NCPFModule> module){
         NCPFModuleContainer.recognizedModules.put(module.get().name, module);
+    }
+    public final void registerGeneratorMutator(Supplier<GeneratorMutator> mutator){
+        GeneratorMutator.registeredMutators.put(mutator.get().type, mutator);
+    }
+    public final void registerMutator(Supplier<Mutator> mutator){
+        Mutator.registeredMutators.put(mutator.get().type, mutator);
+    }
+    public final void registerOperator(Supplier<Operator> operator){
+        Operator.registeredOperators.put(operator.get().getType(), operator);
+    }
+    public final void registerConstant(Supplier<Constant> constant){
+        Constant.registeredConstants.put(constant.get().getType(), constant);
+    }
+    public final void registerCondition(Supplier<Condition> condition){
+        Condition.registeredConditions.put(condition.get().type, condition);
+    }
+    public final void registerParameter(Supplier<Parameter> parameter){
+        Parameter.registeredParameters.put(parameter.get().type, parameter);
     }
     public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){}
     public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}

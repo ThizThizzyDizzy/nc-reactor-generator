@@ -1,8 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
-public class CoolantRecipeStatsModule extends BlockFunctionModule implements ElementStatsModule{
+import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
+public class CoolantRecipeStatsModule extends NCPFRecipeStatsModule{
     public int heat;
     public float outputRatio;
     public CoolantRecipeStatsModule(){

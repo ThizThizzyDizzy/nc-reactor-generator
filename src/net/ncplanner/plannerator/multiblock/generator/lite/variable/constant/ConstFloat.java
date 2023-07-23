@@ -1,11 +1,15 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.variable.constant;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableFloat;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 public class ConstFloat extends VariableFloat implements Constant{
-    public ConstFloat(float value){
+    public ConstFloat(){
         super("Constant");
+    }
+    public ConstFloat(float value){
+        this();
         this.value = value;
     }
     public float value;
@@ -22,5 +26,17 @@ public class ConstFloat extends VariableFloat implements Constant{
                 });
             }
         }.setFloatFilter());
+    }
+    @Override
+    public String getType(){
+        return "float";
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setFloat("value", value);
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        value = ncpf.getFloat("value");
     }
 }

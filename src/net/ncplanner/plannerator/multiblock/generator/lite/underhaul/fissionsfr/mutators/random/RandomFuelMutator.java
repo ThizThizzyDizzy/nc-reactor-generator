@@ -4,10 +4,15 @@ import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingIndicies;
-public class RandomFuelMutator implements Mutator<LiteUnderhaulSFR>{
-    public SettingIndicies indicies;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+public class RandomFuelMutator extends Mutator<LiteUnderhaulSFR>{
+    public SettingIndicies indicies = new SettingIndicies("Fuels");
+    public RandomFuelMutator(){
+        super("nuclearcraft:underhaul_sfr:random_fuel");
+    }
     public RandomFuelMutator(LiteUnderhaulSFR multiblock){
-        indicies = new SettingIndicies("Fuels", multiblock.configuration.fuelDisplayName, multiblock.configuration.fuelDisplayTexture);
+        this();
+        setIndicies(multiblock);
     }
     @Override
     public String getTitle(){
@@ -28,5 +33,17 @@ public class RandomFuelMutator implements Mutator<LiteUnderhaulSFR>{
     @Override
     public Setting getSetting(int i){
         return indicies;
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        indicies.set(ncpf.getIntArray("indicies"));
+    }
+    @Override
+    public void convertToObject(NCPFObject ncpf){
+        ncpf.setIntArray("indicies", indicies.get());
+    }
+    @Override
+    public void setIndicies(LiteUnderhaulSFR multiblock){
+        indicies.init(multiblock.configuration.fuelDisplayName, multiblock.configuration.fuelDisplayTexture);
     }
 }
