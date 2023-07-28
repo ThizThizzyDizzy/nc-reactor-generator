@@ -35,47 +35,6 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     public Block(String name){
         this.name = name;
     }
-    public Config save(Configuration parent, TurbineConfiguration configuration, boolean partial){
-        Config config = Config.newConfig();
-        config.set("name", name);
-        if(!partial){
-            if(displayName!=null)config.set("displayName", displayName);
-            if(!legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : legacyNames)lst.add(s);
-                config.set("legacyNames", lst);
-            }
-        }
-        if(bearing)config.set("bearing", true);
-        if(shaft)config.set("shaft", true);
-        if(connector)config.set("connector", true);
-        if(controller)config.set("controller", true);
-        if(casing)config.set("casing", true);
-        if(casingEdge)config.set("casingEdge", true);
-        if(inlet)config.set("inlet", true);
-        if(outlet)config.set("outlet", true);
-        if(blade){
-            Config bladeCfg = Config.newConfig();
-            bladeCfg.set("efficiency", bladeEfficiency);
-            bladeCfg.set("expansion", bladeExpansion);
-            bladeCfg.set("stator", bladeStator);
-            config.set("blade", bladeCfg);
-        }
-        if(coil){
-            Config coilCfg = Config.newConfig();
-            coilCfg.set("efficiency", coilEfficiency);
-            config.set("coil", coilCfg);
-        }
-        if(!partial)LegacyNCPFWriter.saveTexture(config, texture);
-        if(!rules.isEmpty()){
-            ConfigList ruls = new ConfigList();
-            for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : rules){
-                ruls.add(rule.save(parent, configuration));
-            }
-            config.set("rules", ruls);
-        }
-        return config;
-    }
     public Image getTexture(){
         return texture;
     }

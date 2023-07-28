@@ -20,7 +20,6 @@ import net.ncplanner.plannerator.planner.Updater;
 import net.ncplanner.plannerator.planner.VersionManager;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FormatReader;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF10Reader;
 import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF11Reader;
 import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF1Reader;
@@ -163,7 +162,7 @@ public class MenuInit extends Menu{
                 tmc.finish();
                 Core.modules.add(new UnderhaulModule());
                 tm1.finish();
-//                Core.modules.add(new OverhaulModule());
+                Core.modules.add(new OverhaulModule());
                 tm2.finish();
                 Core.modules.add(new FusionTestModule());
                 tm3.finish();

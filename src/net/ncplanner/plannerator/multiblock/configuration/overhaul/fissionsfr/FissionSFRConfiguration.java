@@ -35,34 +35,6 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
         }
         return strs;
     }
-    public Config save(Configuration parent, boolean partial){
-        Config config = Config.newConfig();
-        if(parent==null&&!partial){
-            config.set("minSize", minSize);
-            config.set("maxSize", maxSize);
-            config.set("neutronReach", neutronReach);
-            config.set("coolingEfficiencyLeniency", coolingEfficiencyLeniency);
-            config.set("sparsityPenaltyMult", sparsityPenaltyMult);
-            config.set("sparsityPenaltyThreshold", sparsityPenaltyThreshold);
-        }
-        ConfigList blocks = new ConfigList();
-        for(Block block : this.blocks){
-            if(block.parent!=null)continue;
-            blocks.add(block.save(parent, this, partial));
-        }
-        if(parent!=null){
-            for(Block b : allBlocks){
-                blocks.add(b.save(parent, this, partial));
-            }
-        }
-        config.set("blocks", blocks);
-        ConfigList coolantRecipes = new ConfigList();
-        for(CoolantRecipe recipe : this.coolantRecipes){
-            coolantRecipes.add(recipe.save(partial));
-        }
-        config.set("coolantRecipes", coolantRecipes);
-        return config;
-    }
     public void apply(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         ArrayList<Block> usedBlocks = new ArrayList<>();
         ArrayList<CoolantRecipe> usedCoolantRecipes = new ArrayList<>();

@@ -8,6 +8,11 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.Configurations;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDefinition;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDesign;
+import net.ncplanner.plannerator.planner.ncpf.module.OverhaulFusionSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.*;
 public class FusionTestModule extends Module{
     public FusionTestModule(){
         super("fusion_test");
@@ -23,6 +28,26 @@ public class FusionTestModule extends Module{
     @Override
     public void addMultiblockTypes(ArrayList multiblockTypes){
         multiblockTypes.add(new OverhaulFusionReactor());
+    }
+    @Override
+    public void registerNCPF(){
+        registerNCPFConfiguration(OverhaulFusionConfiguration::new);
+        registerNCPFDesign(OverhaulFusionDefinition::new, OverhaulFusionDesign::new);
+        
+        registerNCPFModule(OverhaulFusionSettingsModule::new);
+        registerNCPFModule(BreedingBlanketModule::new);
+        registerNCPFModule(BreedingBlanketStatsModule::new);
+        registerNCPFModule(ConductorModule::new);
+        registerNCPFModule(ConnectorModule::new);
+        registerNCPFModule(CoolantRecipeStatsModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.CoreModule::new);
+        registerNCPFModule(HeatingBlanketModule::new);
+        registerNCPFModule(HeatsinkModule::new);
+        registerNCPFModule(PoloidalElectromagnetModule::new);
+        registerNCPFModule(RecipeStatsModule::new);
+        registerNCPFModule(ReflectorModule::new);
+        registerNCPFModule(ShieldingModule::new);
+        registerNCPFModule(ToroidalElectromagnetModule::new);
     }
     @Override
     public void addConfigurations(){

@@ -27,31 +27,6 @@ public class Recipe implements Pinnable, ThingWithLegacyNames{
         this.power = power;
         this.coefficient = coefficient;
     }
-    public Config save(boolean partial){
-        Config config = Config.newConfig();
-        Config inputCfg = Config.newConfig();
-        inputCfg.set("name", inputName);
-        if(!partial){
-            if(inputDisplayName!=null)inputCfg.set("displayName", inputDisplayName);
-            if(!inputLegacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : inputLegacyNames)lst.add(s);
-                inputCfg.set("legacyNames", lst);
-            }
-            LegacyNCPFWriter.saveTexture(inputCfg, inputTexture);
-        }
-        config.set("input", inputCfg);
-        Config outputCfg = Config.newConfig();
-        outputCfg.set("name", outputName);
-        if(!partial){
-            if(outputDisplayName!=null)outputCfg.set("displayName", outputDisplayName);
-            LegacyNCPFWriter.saveTexture(outputCfg, outputTexture);
-        }
-        config.set("output", outputCfg);
-        config.set("power", power);
-        config.set("coefficient", coefficient);
-        return config;
-    }
     public Image getInputTexture(){
         return inputTexture;
     }

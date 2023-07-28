@@ -16,14 +16,6 @@ public class OverhaulConfiguration{
     public FissionMSRConfiguration fissionMSR;
     public TurbineConfiguration turbine;
     public FusionConfiguration fusion;
-    public Config save(Configuration parent, boolean partial){
-        Config config = Config.newConfig();
-        if(fissionSFR!=null)config.set("fissionSFR", fissionSFR.save(parent, partial));
-        if(fissionMSR!=null)config.set("fissionMSR", fissionMSR.save(parent, partial));
-        if(turbine!=null)config.set("turbine", turbine.save(parent, partial));
-        if(fusion!=null)config.set("fusion", fusion.save(parent, partial));
-        return config;
-    }
     public void apply(OverhaulConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         if(fissionSFR!=null){
             partial.fissionSFR = new FissionSFRConfiguration();

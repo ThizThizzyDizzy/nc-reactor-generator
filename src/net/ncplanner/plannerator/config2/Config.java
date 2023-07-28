@@ -436,25 +436,6 @@ public class Config extends ConfigBase implements Cloneable{
         data.put(key, base);
     }
     @Override
-    public Config clone(){
-        Config c = newConfig();
-        c.file = file;
-        c.type = type;
-        c.path = path;
-        c.stream = stream;
-        c.keys.addAll(keys);
-        for(String s : data.keySet()){
-            ConfigBase b = data.get(s);
-            if(b instanceof Config){
-                c.data.put(s, ((Config)b).clone());
-                //TODO make ConfigList and ConfigNumberList deep-clone as well
-            }else{
-                c.data.put(s, b);
-            }
-        }
-        return c;
-    }
-    @Override
     public boolean equals(Object obj){
         if(obj==null||obj.getClass()!=getClass()) return false;
         Config c = (Config)obj;

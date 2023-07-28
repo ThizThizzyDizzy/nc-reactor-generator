@@ -3,15 +3,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.OverhaulConfiguration;
 import net.ncplanner.plannerator.multiblock.configuration.underhaul.UnderhaulConfiguration;
-import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
@@ -21,32 +18,6 @@ public class Configuration{
     public String overhaulVersion;
     public String underhaulVersion;
     public boolean addon;
-    public ArrayList<Configuration> addons = new ArrayList<>();
-    public static final ArrayList<Configuration> configurations = new ArrayList<>();
-    public static final ArrayList<Supplier<AddonConfiguration>> internalAddons = new ArrayList<>();
-    public static final HashMap<Supplier<AddonConfiguration>, String> addonLinks = new HashMap<>();
-    public static final HashMap<Supplier<AddonConfiguration>, AddonConfiguration> internalAddonCache = new HashMap<>();
-    public static Configuration NUCLEARCRAFT;
-    public static void addInternalAddon(Supplier<AddonConfiguration> internalAddon, String link){
-        internalAddons.add(internalAddon);
-        addonLinks.put(internalAddon, link);
-    }
-    public static void initNuclearcraftConfiguration(){
-        if(NUCLEARCRAFT!=null)return;//already done m8
-        NUCLEARCRAFT = FileReader.read(() -> {
-            return Core.getInputStream("configurations/nuclearcraft.ncpf");
-        }).configuration.addAlternative("").addAlternative("SF4");
-        configurations.add(NUCLEARCRAFT);
-        NUCLEARCRAFT.path = "default";
-    }
-    public static void clearConfigurations(){
-        configurations.clear();
-        configurations.add(NUCLEARCRAFT);
-        internalAddons.clear();
-        addonLinks.clear();
-        internalAddonCache.clear();
-    }
-    public ArrayList<String> alternatives = new ArrayList<>();
     public String path;
     public Configuration(String name, String version, String underhaulVersion){
         this.name = name;
@@ -55,26 +26,6 @@ public class Configuration{
     }
     public UnderhaulConfiguration underhaul;
     public OverhaulConfiguration overhaul;
-    public Config save(Configuration parent, Config config){
-        config.set("partial", isPartial());
-        config.set("addon", addon);
-        if(underhaul!=null)config.set("underhaul", underhaul.save(parent, isPartial()));
-        if(underhaulVersion!=null)config.set("underhaulVersion", underhaulVersion);
-        if(overhaul!=null)config.set("overhaul", overhaul.save(parent, isPartial()));
-        if(overhaulVersion!=null)config.set("version", overhaulVersion);
-        config.set("name", name);
-        if(!addons.isEmpty()){
-            ConfigList addns = new ConfigList();
-            for(Configuration cnfg : addons){
-                addns.add(cnfg.save(this, Config.newConfig()));
-            }
-            config.set("addons", addns);
-        }
-        return config;
-    }
-    public boolean isPartial(){
-        return false;
-    }
     public void apply(PartialConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         if(underhaul!=null){
             partial.underhaul = new UnderhaulConfiguration();

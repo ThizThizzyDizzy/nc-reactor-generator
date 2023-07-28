@@ -10,13 +10,6 @@ import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.F
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 public class UnderhaulConfiguration{
     public FissionSFRConfiguration fissionSFR;
-    public Config save(Configuration parent, boolean partial){
-        Config config = Config.newConfig();
-        if(fissionSFR!=null){
-            config.set("fissionSFR", fissionSFR.save(parent, partial));
-        }
-        return config;
-    }
     public void apply(UnderhaulConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         if(fissionSFR!=null){
             partial.fissionSFR = new FissionSFRConfiguration();

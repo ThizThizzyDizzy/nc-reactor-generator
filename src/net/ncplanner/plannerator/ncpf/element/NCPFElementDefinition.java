@@ -16,4 +16,8 @@ public abstract class NCPFElementDefinition extends DefinedNCPFObject{
         return Objects.equals(type, match.get().type);
     }
     public abstract String getName();
+    @Override
+    public String toString(){
+        return getName();
+    }
 }

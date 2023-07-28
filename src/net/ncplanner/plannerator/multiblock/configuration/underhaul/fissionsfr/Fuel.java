@@ -24,23 +24,6 @@ public class Fuel implements Pinnable, ThingWithLegacyNames{
         this.heat = heat;
         this.time = time;
     }
-    public Config save(boolean partial){
-        Config config = Config.newConfig();
-        config.set("name", name);
-        if(!partial){
-            if(displayName!=null)config.set("displayName", displayName);
-            if(!legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : legacyNames)lst.add(s);
-                config.set("legacyNames", lst);
-            }
-        }
-        config.set("power", power);
-        config.set("heat", heat);
-        config.set("time", time);
-        if(!partial)LegacyNCPFWriter.saveTexture(config, texture);
-        return config;
-    }
     public void setTexture(Image image){
         texture = image;
         displayTexture = TextureManager.convert(image);

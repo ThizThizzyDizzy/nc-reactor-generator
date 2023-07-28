@@ -291,23 +291,6 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         return finalTooltip;
     }
     @Override
-    public int getMultiblockID(){
-        return 0;
-    }
-    @Override
-    protected void save(LegacyNCPFFile ncpf, NCPFConfigurationContainer configuration, Config config){
-        UnderhaulSFRConfiguration usfr = configuration.getConfiguration(UnderhaulSFRConfiguration::new);
-        config.set("fuel", usfr.fuels.indexOf(fuel));
-        config.set("compact", true);
-        ConfigNumberList blox = new ConfigNumberList();
-        forEachPosition((x, y, z) -> {
-            Block block = getBlock(x, y, z);
-            if(block==null)blox.add(0);
-            else blox.add(usfr.blocks.indexOf(block.template)+1);
-        });
-        config.set("blocks", blox);
-    }
-    @Override
     public boolean validate(){
         return false;
     }

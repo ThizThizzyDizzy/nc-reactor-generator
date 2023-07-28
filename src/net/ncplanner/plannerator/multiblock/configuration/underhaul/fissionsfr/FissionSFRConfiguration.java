@@ -34,28 +34,6 @@ public class FissionSFRConfiguration extends AbstractBlockContainer<Block> {
         }
         return strs;
     }
-    public Config save(Configuration parent, boolean partial){
-        Config config = Config.newConfig();
-        if(parent==null&&!partial){
-            config.set("minSize", minSize);
-            config.set("maxSize", maxSize);
-            config.set("neutronReach", neutronReach);
-            config.set("moderatorExtraPower", moderatorExtraPower);
-            config.set("moderatorExtraHeat", moderatorExtraHeat);
-            config.set("activeCoolerRate", activeCoolerRate);
-        }
-        ConfigList blocks = new ConfigList();
-        for(Block b : this.blocks){
-            blocks.add(b.save(parent, this, partial));
-        }
-        config.set("blocks", blocks);
-        ConfigList fuels = new ConfigList();
-        for(Fuel f : this.fuels){
-            fuels.add(f.save(partial));
-        }
-        config.set("fuels", fuels);
-        return config;
-    }
     public void apply(FissionSFRConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         Set<Block> usedBlocks = new HashSet<>();
         Set<Fuel> usedFuels = new HashSet<>();

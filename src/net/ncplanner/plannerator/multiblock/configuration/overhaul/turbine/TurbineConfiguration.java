@@ -36,30 +36,6 @@ public class TurbineConfiguration extends AbstractBlockContainer<Block> {
         }
         return strs;
     }
-    public Config save(Configuration parent, boolean partial){
-        Config config = Config.newConfig();
-        if(parent==null&&!partial){
-            config.set("minWidth", minWidth);
-            config.set("minLength", minLength);
-            config.set("maxSize", maxSize);
-            config.set("fluidPerBlade", fluidPerBlade);
-            config.set("throughputEfficiencyLeniencyMult", throughputEfficiencyLeniencyMult);
-            config.set("throughputEfficiencyLeniencyThreshold", throughputEfficiencyLeniencyThreshold);
-            config.set("throughputFactor", throughputFactor);
-            config.set("powerBonus", powerBonus);
-        }
-        ConfigList blocks = new ConfigList();
-        for(Block block : this.blocks){
-            blocks.add(block.save(parent, this, partial));
-        }
-        config.set("blocks", blocks);
-        ConfigList recipes = new ConfigList();
-        for(Recipe recipe : this.recipes){
-            recipes.add(recipe.save(partial));
-        }
-        config.set("recipes", recipes);
-        return config;
-    }
     public void apply(TurbineConfiguration partial, ArrayList<Multiblock> multiblocks, PartialConfiguration parent){
         ArrayList<Block> usedBlocks = new ArrayList<>();
         ArrayList<Recipe> usedRecipes = new ArrayList<>();

@@ -13,13 +13,7 @@ import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
-import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
-import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModule;
-import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
-import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
-import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelStatsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
+import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.*;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.tutorial.TutorialFileReader;
 public class UnderhaulModule extends Module<Object>{

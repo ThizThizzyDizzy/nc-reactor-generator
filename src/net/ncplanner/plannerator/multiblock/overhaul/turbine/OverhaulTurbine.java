@@ -492,10 +492,6 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return text;
     }
     @Override
-    public int getMultiblockID(){
-        return 3;
-    }
-    @Override
     protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config){
         ConfigNumberList inputs = new ConfigNumberList();
         for(Multiblock m : this.inputs){

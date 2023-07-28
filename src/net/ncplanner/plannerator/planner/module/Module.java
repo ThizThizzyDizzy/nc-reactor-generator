@@ -22,6 +22,7 @@ import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
+import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configurations;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 public abstract class Module<T>{
@@ -74,6 +75,9 @@ public abstract class Module<T>{
     public final void addConfiguration(NCPFConfigurationContainer c){
         Configurations.configurations.add(c);
         ownConfigs.add(c);
+    }
+    public final void addAddon(Addon addon, String link){
+        Configurations.addInternalAddon(addon, link);
     }
     public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
         NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);

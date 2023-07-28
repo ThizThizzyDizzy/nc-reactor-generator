@@ -1313,50 +1313,6 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         }
     }
     @Override
-    public int getMultiblockID(){
-        return 1;
-    }
-    @Override
-    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config) throws MissingConfigurationEntryException{
-        boolean compact = isCompact(configuration);//find perfect compression ratio
-        config.set("compact", compact);
-        config.set("coolantRecipe", configuration.overhaul.fissionSFR.allCoolantRecipes.indexOf(coolantRecipe));
-        ConfigNumberList blox = new ConfigNumberList();
-        if(compact){
-            forEachPosition((x, y, z) -> {
-                Block block = getBlock(x, y, z);
-                if(block==null)blox.add(0);
-                else blox.add(configuration.overhaul.fissionSFR.allBlocks.indexOf(block.template)+1);
-            });
-        }else{
-            for(Block block : getBlocks()){
-                blox.add(block.x);
-                blox.add(block.y);
-                blox.add(block.z);
-                blox.add(configuration.overhaul.fissionSFR.allBlocks.indexOf(block.template)+1);
-            }
-        }
-        config.set("blocks", blox);
-        ConfigNumberList blockRecipes = new ConfigNumberList();
-        for(Block block : getBlocks()){
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block templ = configuration.overhaul.fissionSFR.convert(block.template.parent==null?block.template:block.template.parent);
-            net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recip = templ.convert(block.recipe);
-            if(templ.allRecipes.isEmpty())continue;
-            blockRecipes.add(templ.allRecipes.indexOf(recip)+1);
-        }
-        config.set("blockRecipes", blockRecipes);
-        ConfigNumberList ports = new ConfigNumberList();
-        for(Block block : getBlocks()){
-            if(block.template.parent!=null||block.template.coolantVent){
-                ports.add(block.isToggled?1:0);
-            }
-        }
-        config.set("ports", ports);
-    }
-    private boolean isCompact(Configuration configuration){
-        return isCompact(configuration.overhaul.fissionSFR.allBlocks.size());
-    }
-    @Override
     public void doConvertTo(Configuration to) throws MissingConfigurationEntryException{
         if(to.overhaul==null||to.overhaul.fissionSFR==null)return;
         for(Block block : getBlocks(true)){

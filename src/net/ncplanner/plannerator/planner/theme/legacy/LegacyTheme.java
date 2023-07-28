@@ -657,7 +657,6 @@ public abstract class LegacyTheme extends ColorTheme{
     public Color getRGBA(Color color){
         return getRGBA(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
     }
-    //TODO no brighter()/darker()
     public Color getBrighterEditorListBorderColor(){
         return brighter(getEditorListBorderColor());
     }

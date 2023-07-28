@@ -41,4 +41,8 @@ public class NCPFLegacyBlockElement extends NCPFElementDefinition{
     public String getName(){
         return name;
     }
+    @Override
+    public String toString(){
+        return metadata!=null?name+":"+metadata:name;
+    }
 }

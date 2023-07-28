@@ -372,37 +372,7 @@ public abstract class Multiblock<T extends Block>{
                     new Vector3f(-1, 0, 0));
         }
     }
-    public final void save(LegacyNCPFFile ncpf, NCPFConfigurationContainer configuration, OutputStream stream) throws MissingConfigurationEntryException{
-        Config config = saveToConfig(ncpf, configuration);
-        if(config!=null)config.save(stream);
-    }
-    public final Config saveToConfig(LegacyNCPFFile ncpf, NCPFConfigurationContainer configuration) throws MissingConfigurationEntryException{
-        int id = getMultiblockID();
-        if(id==-1)return null;
-        Config config = Config.newConfig();
-        config.set("id", id);
-        Config meta = Config.newConfig();
-        for(String key : metadata.keySet()){
-            String value = metadata.get(key);
-            if(value.trim().isEmpty())continue;
-            meta.set(key,value);
-        }
-        if(meta.properties().length>0){
-            config.set("metadata", meta);
-        }
-        ConfigNumberList dimensions = new ConfigNumberList();
-        for(int i : this.dimensions)dimensions.add(i);
-        config.set("dimensions", dimensions);
-        forceRescan = true;
-        save(ncpf, configuration, config);
-        return config;
-    }
     protected void save(LegacyNCPFFile ncpf, NCPFConfigurationContainer configuration, Config config) throws MissingConfigurationEntryException{}
-    /**
-     * Get the ID to use for saving
-     * @return the ID as used in NCPF format, or -1 if this multiblock cannot be saved
-     */
-    public abstract int getMultiblockID();
     /**
      * @return true if anything changed
      */

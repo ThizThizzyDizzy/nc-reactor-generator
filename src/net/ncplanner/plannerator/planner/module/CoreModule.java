@@ -42,6 +42,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
+import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.GeneratorSettingsModule;
@@ -74,12 +75,16 @@ public class CoreModule<T> extends Module<T>{
         registerNCPFElement(NCPFItemTagElement::new);
         registerNCPFElement(NCPFFluidTagElement::new);
         registerNCPFElement(NCPFModuleElement::new);
+        
         registerNCPFModule(NCPFBlockRecipesModule::new);
 
         registerNCPFModule(MetadataModule::new);
         registerNCPFModule(ConfigurationMetadataModule::new);
+        
         registerNCPFModule(DisplayNamesModule::new);
         registerNCPFModule(TextureModule::new);
+        
+        registerNCPFModule(AirModule::new);
         
         registerNCPFModule(GeneratorSettingsModule::new);
         

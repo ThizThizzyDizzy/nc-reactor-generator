@@ -7,8 +7,6 @@ import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.AddonConfiguration;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.multiblock.editor.decal.CellFluxDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceDecal;
@@ -26,36 +24,15 @@ import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelVesselModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterStatsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ControllerModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CoolantRecipeStatsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CoolantVentModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.FuelCellModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.HeatsinkModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorStatsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ModeratorModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronShieldModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.RecipePortsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CoilModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ConnectorModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.InletModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.OutletModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.RecipeStatsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ShaftModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.*;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.*;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.*;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelStatsModule;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.tutorial.TutorialFileReader;
@@ -82,26 +59,26 @@ public class OverhaulModule extends Module{
         registerNCPFConfiguration(NCPFOverhaulSFRConfiguration::new);
         registerNCPFConfiguration(NCPFOverhaulMSRConfiguration::new);
         registerNCPFConfiguration(NCPFOverhaulTurbineConfiguration::new);
-        registerNCPFDesign(NCPFOverhaulSFRDesign::new);
-        registerNCPFDesign(NCPFOverhaulMSRDesign::new);
-        registerNCPFDesign(NCPFOverhaulTurbineDesign::new);
+        registerNCPFDesign(NCPFOverhaulSFRDesign::new, OverhaulSFRDesign::new);
+        registerNCPFDesign(NCPFOverhaulMSRDesign::new, OverhaulMSRDesign::new);
+        registerNCPFDesign(NCPFOverhaulTurbineDesign::new, OverhaulTurbineDesign::new);
         
         registerNCPFModule(OverhaulSFRSettingsModule::new);
-        registerNCPFModule(ConductorModule::new);
-        registerNCPFModule(CasingModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule::new);
         registerNCPFModule(CoolantVentModule::new);
-        registerNCPFModule(ControllerModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ControllerModule::new);
         registerNCPFModule(FuelCellModule::new);
-        registerNCPFModule(IrradiatorModule::new);
-        registerNCPFModule(ReflectorModule::new);
-        registerNCPFModule(ModeratorModule::new);
-        registerNCPFModule(NeutronShieldModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ModeratorModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronShieldModule::new);
         registerNCPFModule(HeatsinkModule::new);
-        registerNCPFModule(NeutronSourceModule::new);
-        registerNCPFModule(PortModule::new);
-        registerNCPFModule(RecipePortsModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.RecipePortsModule::new);
         registerNCPFModule(FuelStatsModule::new);
-        registerNCPFModule(IrradiatorStatsModule::new);
+        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorStatsModule::new);
         registerNCPFModule(CoolantRecipeStatsModule::new);
         
         registerNCPFModule(OverhaulMSRSettingsModule::new);
@@ -149,106 +126,66 @@ public class OverhaulModule extends Module{
         addConfiguration(FileReader.read(() -> {
             return Core.getInputStream("configurations/quanta.ncpf");
         }).configuration);
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/extreme_reactors.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/mc-mods/extreme-reactors");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/ic2.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/mc-mods/ic2-classic");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/qmd.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/mc-mods/qmd");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/trinity.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/mc-mods/trinity");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/ncouto.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/moar_heat_sinks.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/moar-heat-sinks");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/moar_fuels.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/moarfuels");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/moar_fuels_lite.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/moarfuels");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/moar_fuels_ultra_lite.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/moarfuels");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/moar_reactor_functionality.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/nuclear_oil_refining.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/nuclear_tree_factory.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/nuclear-tree-factory");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/bes.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/aop.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/aop");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/nco_confectionery.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/nco-confectionery");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/thorium_mixed_fuels.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/inert_matrix_fuels.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/alloy_heat_sinks.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/spicy_heat_sinks_stable.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
-        Configuration.addInternalAddon(() -> {
-            return AddonConfiguration.convert(FileReader.read(() -> {
-                return Core.getInputStream("configurations/addons/spicy_heat_sinks_unstable.ncpf");
-            }).configuration);
-        }, "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/extreme_reactors.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/extreme-reactors");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/ic2.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/ic2-classic");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/qmd.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/qmd");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/trinity.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/trinity");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/ncouto.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/moar_heat_sinks.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moar-heat-sinks");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/moar_fuels.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moarfuels");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/moar_fuels_lite.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moarfuels");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/moar_fuels_ultra_lite.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moarfuels");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/moar_reactor_functionality.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/nuclear_oil_refining.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/nuclear_tree_factory.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/nuclear-tree-factory");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/bes.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/aop.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/aop");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/nco_confectionery.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/nco-confectionery");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/thorium_mixed_fuels.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/inert_matrix_fuels.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/alloy_heat_sinks.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/spicy_heat_sinks_stable.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
+        addAddon(FileReader.read(() -> {
+            return Core.getInputStream("configurations/addons/spicy_heat_sinks_unstable.ncpf");
+        }).addons.get(0), "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Active Moderators", "Highlights active moderators with a green outline", true){
         @Override
@@ -278,7 +215,7 @@ public class OverhaulModule extends Module{
         @Override
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-            if(b.recipe!=null&&(b.template.parent==null?b.template.allRecipes:b.template.parent.allRecipes).size()>1){
+            if(b.recipe!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
                 renderer.setWhite(b.template.parent==null?1:0.75f);
                 renderer.drawImage(b.recipe.inputDisplayTexture, x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
             }
@@ -299,11 +236,11 @@ public class OverhaulModule extends Module{
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
             if(mode==1)return;
             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-            if(b.template.fuelCell&&(b.template.fuelCellHasBaseStats||b.recipe!=null)){
-                boolean self = b.recipe==null?b.template.fuelCellSelfPriming:b.recipe.fuelCellSelfPriming;
+            if(b.template.fuelCell!=null&&b.recipe!=null){
+                boolean self = b.recipe.fuelCellSelfPriming;
                 net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block src = b.source;
                 if(src!=null||self){
-                    b.drawCircle(renderer, x, y, width, height, Core.theme.getBlockColorSourceCircle(src==null?1:src.template.sourceEfficiency, self));
+                    b.drawCircle(renderer, x, y, width, height, Core.theme.getBlockColorSourceCircle(src==null?1:src.template.neutronSource.efficiency, self));
                 }
             }
         }

@@ -28,33 +28,6 @@ public class Block extends RuleContainer<PlacementRule.BlockType, Block> impleme
     public Block(String name){
         this.name = name;
     }
-    public Config save(Configuration parent, FissionSFRConfiguration configuration, boolean partial){
-        Config config = Config.newConfig();
-        config.set("name", name);
-        if(!partial){
-            if(displayName!=null)config.set("displayName", displayName);
-            if(!legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : legacyNames)lst.add(s);
-                config.set("legacyNames", lst);
-            }
-        }
-        if(cooling!=0)config.set("cooling", cooling);
-        if(!rules.isEmpty()){
-            ConfigList ruls = new ConfigList();
-            for(AbstractPlacementRule<PlacementRule.BlockType, Block> rule : rules){
-                ruls.add(rule.save(parent, configuration));
-            }
-            config.set("rules", ruls);
-        }
-        if(active!=null)config.set("active", active);
-        if(fuelCell)config.set("fuelCell", true);
-        if(moderator)config.set("moderator", true);
-        if(casing)config.set("casing", true);
-        if(controller)config.set("controller", true);
-        if(!partial)LegacyNCPFWriter.saveTexture(config, texture);
-        return config;
-    }
     public void setTexture(Image image){
         texture = image;
         Image displayImg = new Image(image.getWidth(), image.getHeight());
